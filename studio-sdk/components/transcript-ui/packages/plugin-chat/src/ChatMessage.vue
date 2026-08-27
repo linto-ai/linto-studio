@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { MarkdownView, EditorIcon, CopyButton } from "@linto/transcript-ui-ui"
-import { useI18n } from "@linto/transcript-ui-i18n"
-import type { ChatMessage } from "@linto/transcript-ui-core"
+import { MarkdownView, EditorIcon, CopyButton } from "@linto-ai/transcript-ui-ui"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
+import type { ChatMessage } from "@linto-ai/transcript-ui-core"
 
 const props = defineProps<{
   message: ChatMessage

@@ -2,7 +2,7 @@
 import { computed } from "vue"
 import EditorIcon from "../atoms/EditorIcon.vue"
 import Button from "../atoms/Button.vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 
 export type DocumentArticleStatus = "done" | "processing" | "error"
 

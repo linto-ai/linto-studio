@@ -1,4 +1,4 @@
-import type { WatermarkToken } from "@linto/transcript-ui-core"
+import type { WatermarkToken } from "@linto-ai/transcript-ui-core"
 
 export type WatermarkPart =
   | { type: "text"; value: string }

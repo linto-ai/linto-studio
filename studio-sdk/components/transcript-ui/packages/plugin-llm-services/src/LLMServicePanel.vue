@@ -5,11 +5,11 @@ import {
   EditorIcon,
   DocumentArticle,
   type DocumentArticleStatus,
-} from "@linto/transcript-ui-ui"
+} from "@linto-ai/transcript-ui-ui"
 import { computed, ref, watch } from "vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
-import { useCore } from "@linto/transcript-ui-core"
-import type { LLMService } from "@linto/transcript-ui-core"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
+import { useCore } from "@linto-ai/transcript-ui-core"
+import type { LLMService } from "@linto-ai/transcript-ui-core"
 
 const props = defineProps<{
   service: LLMService

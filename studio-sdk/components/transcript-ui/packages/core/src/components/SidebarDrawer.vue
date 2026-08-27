@@ -8,7 +8,7 @@ import {
   DialogClose,
 } from "reka-ui"
 import { X } from "lucide-vue-next"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 
 const open = defineModel<boolean>("open", { required: true })
 const { t } = useI18n()

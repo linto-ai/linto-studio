@@ -1,8 +1,34 @@
 {
-  "name": "@linto/transcript-ui-plugin-chat",
-  "version": "0.1.0",
+  "name": "@linto-ai/transcript-ui-plugin-chat",
+  "version": "0.9.0",
+  "description": "Chat panel plugin for @linto-ai/transcript-ui — talk with an LLM assistant about the transcript",
+  "keywords": [
+    "vue",
+    "vue3",
+    "transcript",
+    "chat",
+    "llm",
+    "linto-plugin"
+  ],
+  "sideEffects": [
+    "**/*.vue"
+  ],
+  "homepage": "https://github.com/linto-ai/linto-studio",
+  "bugs": "https://github.com/linto-ai/linto-studio/issues",
+  "author": "Tom Darboux <tdarboux@linagora.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linto-ai/linto-studio.git",
+    "directory": "studio-sdk/components/transcript-ui/packages/plugin-chat"
+  },
   "type": "module",
   "license": "AGPL-3.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "src"
+  ],
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
@@ -12,9 +38,9 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
-    "@linto/transcript-ui-core": "workspace:*",
-    "@linto/transcript-ui-i18n": "workspace:*",
-    "@linto/transcript-ui-ui": "workspace:*",
+    "@linto-ai/transcript-ui-core": "workspace:*",
+    "@linto-ai/transcript-ui-i18n": "workspace:*",
+    "@linto-ai/transcript-ui-ui": "workspace:*",
     "vue-stick-to-bottom": "^1.0.0"
   }
 }

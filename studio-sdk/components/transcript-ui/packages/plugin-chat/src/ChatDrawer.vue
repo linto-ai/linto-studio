@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Button, EditorIcon } from "@linto/transcript-ui-ui"
+import { Button, EditorIcon } from "@linto-ai/transcript-ui-ui"
 import { ref, watch, onUnmounted, useId } from "vue"
-import { useCore } from "@linto/transcript-ui-core"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useCore } from "@linto-ai/transcript-ui-core"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import ChatSessionList from "./ChatSessionList.vue"
 import ChatMessageList from "./ChatMessageList.vue"
 import ChatComposer from "./ChatComposer.vue"

@@ -1,5 +1,5 @@
 import type { EditorPluginState } from "../types"
-import { helpers } from "@linto/transcript-ui-core"
+import { helpers } from "@linto-ai/transcript-ui-core"
 
 const { switchTurnSpeaker, createSpeakerAndAssign } = helpers
 import { getActiveTranslationStore } from "../tools/getActiveTranslationStore"

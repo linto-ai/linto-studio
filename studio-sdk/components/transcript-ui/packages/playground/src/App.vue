@@ -11,14 +11,14 @@ import {
   type Channel,
   type Speaker,
   type WhisperXDocument,
-} from "@linto/transcript-ui-core"
-import { createAudioPlugin } from "@linto/transcript-ui-plugin-audio"
-import { createTranscriptionEditorPlugin } from "@linto/transcript-ui-plugin-transcription-editor"
-import { createLLMServicesPlugin } from "@linto/transcript-ui-plugin-llm-services"
-import { createChatPlugin } from "@linto/transcript-ui-plugin-chat"
-//import { createLivePlugin } from "@linto/transcript-ui-plugin-live"
-//import { createSubtitlePlugin } from "@linto/transcript-ui-plugin-subtitle"
-import type { LivePartialEvent, LiveFinalEvent } from "@linto/transcript-ui-plugin-live"
+} from "@linto-ai/transcript-ui-core"
+import { createAudioPlugin } from "@linto-ai/transcript-ui-plugin-audio"
+import { createTranscriptionEditorPlugin } from "@linto-ai/transcript-ui-plugin-transcription-editor"
+import { createLLMServicesPlugin } from "@linto-ai/transcript-ui-plugin-llm-services"
+import { createChatPlugin } from "@linto-ai/transcript-ui-plugin-chat"
+//import { createLivePlugin } from "@linto-ai/transcript-ui-plugin-live"
+//import { createSubtitlePlugin } from "@linto-ai/transcript-ui-plugin-subtitle"
+import type { LivePartialEvent, LiveFinalEvent } from "@linto-ai/transcript-ui-plugin-live"
 
 // TranscriptUI owns its core (creation, i18n, loading/error overlay,
 // destroy-on-unmount) — we just reach into it once mounted to activate

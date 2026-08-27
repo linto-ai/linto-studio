@@ -1,5 +1,5 @@
 import type { Ref } from "vue"
-import type { Core } from "@linto/transcript-ui-core"
+import type { Core } from "@linto-ai/transcript-ui-core"
 import type { LockHeartbeat } from "./tools/LockHeartbeat"
 
 export interface TranscriptionEditorSavePayload {

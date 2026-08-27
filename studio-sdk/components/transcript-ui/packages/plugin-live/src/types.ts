@@ -4,4 +4,4 @@ export type {
   LivePartialEventData as LivePartialEvent,
   LiveFinalEventData as LiveFinalEvent,
   LiveTranslationEventData as LiveTranslationEvent,
-} from "@linto/transcript-ui-core"
+} from "@linto-ai/transcript-ui-core"

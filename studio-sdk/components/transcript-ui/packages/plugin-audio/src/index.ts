@@ -1,6 +1,6 @@
 import { ref, computed, watch, watchEffect } from "vue"
-import type { Core, CorePlugin, AudioPluginApi, AudioSource } from "@linto/transcript-ui-core"
-import { utils } from "@linto/transcript-ui-core"
+import type { Core, CorePlugin, AudioPluginApi, AudioSource } from "@linto-ai/transcript-ui-core"
+import { utils } from "@linto-ai/transcript-ui-core"
 import AudioPlayer from "./AudioPlayer.vue"
 
 const { findActiveWord, firstWordStart, lastWordEnd } = utils

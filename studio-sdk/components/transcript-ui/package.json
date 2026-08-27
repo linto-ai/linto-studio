@@ -1,8 +1,32 @@
 {
-  "name": "@linto/transcript-ui",
-  "version": "0.1.0",
+  "name": "@linto-ai/transcript-ui",
+  "version": "0.9.0",
+  "description": "Vue 3 components for displaying and interacting with a transcript — batteries-included entry point (core + UI kit + i18n)",
+  "keywords": [
+    "vue",
+    "vue3",
+    "transcript",
+    "transcription",
+    "linto"
+  ],
+  "sideEffects": false,
+  "homepage": "https://github.com/linto-ai/linto-studio",
+  "bugs": "https://github.com/linto-ai/linto-studio/issues",
+  "author": "Tom Darboux <tdarboux@linagora.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linto-ai/linto-studio.git",
+    "directory": ""
+  },
   "type": "module",
   "license": "AGPL-3.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "bun": ">=1.4.0",
+    "node": ">=24"
+  },
   "workspaces": [
     "packages/*"
   ],
@@ -29,9 +53,9 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
-    "@linto/transcript-ui-core": "workspace:*",
-    "@linto/transcript-ui-i18n": "workspace:*",
-    "@linto/transcript-ui-ui": "workspace:*"
+    "@linto-ai/transcript-ui-core": "workspace:*",
+    "@linto-ai/transcript-ui-i18n": "workspace:*",
+    "@linto-ai/transcript-ui-ui": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

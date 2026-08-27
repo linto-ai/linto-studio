@@ -2,7 +2,7 @@
 import { onMounted, useTemplateRef } from "vue"
 import { placeCaretAt } from "../utils/placeCaretAt"
 import { computeSelectionOffset } from "../utils/computeSelectionOffset"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 
 // Plain-text in-place editor for one turn. Strictly a single text node inside
 // a plaintext-only contenteditable — never any markup in editable content

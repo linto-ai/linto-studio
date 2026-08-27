@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { SpeakerIndicator, SwitchToggle, EditableText, SelectableListItem, EditorIcon, SpeakerMenu } from "@linto/transcript-ui-ui"
+import { SpeakerIndicator, SwitchToggle, EditableText, SelectableListItem, EditorIcon, SpeakerMenu } from "@linto-ai/transcript-ui-ui"
 import { computed, ref } from "vue"
 import ChannelSelector from "./ChannelSelector.vue"
 import TranslationSelector from "./TranslationSelector.vue"
 import MergeDialog from "./molecules/MergeDialog.vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useCore } from "../core"
 import { renameSpeaker } from "../core/helpers"
 import type { Speaker } from "../types/editor"

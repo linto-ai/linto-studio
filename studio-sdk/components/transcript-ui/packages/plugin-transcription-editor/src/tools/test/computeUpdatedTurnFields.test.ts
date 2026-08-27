@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test"
 import { computeUpdatedTurnFields } from "../computeUpdatedTurnFields"
-import { utils } from "@linto/transcript-ui-core"
+import { utils } from "@linto-ai/transcript-ui-core"
 
 const { layoutWords } = utils
 

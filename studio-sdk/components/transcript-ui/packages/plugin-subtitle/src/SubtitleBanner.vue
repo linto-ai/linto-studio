@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, useTemplateRef, watch } from "vue"
-import { useCore } from "@linto/transcript-ui-core"
+import { useCore } from "@linto-ai/transcript-ui-core"
 import { useSubtitleScroller } from "./useSubtitleScroller"
 import { useWatermarkCycle } from "./useWatermarkCycle"
 import SubtitleWatermark from "./SubtitleWatermark.vue"

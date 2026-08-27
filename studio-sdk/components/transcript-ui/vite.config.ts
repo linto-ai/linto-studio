@@ -26,14 +26,14 @@ export default defineConfig({
     rollupOptions: {
       // core/ui/i18n stay real dependencies of the published package rather
       // than being inlined — npm installs them transitively, so a consumer
-      // who also depends on @linto/transcript-ui-core directly (e.g. to add
+      // who also depends on @linto-ai/transcript-ui-core directly (e.g. to add
       // a plugin) doesn't end up with two copies of it.
       external: [
         "vue",
         "yjs",
-        "@linto/transcript-ui-core",
-        "@linto/transcript-ui-ui",
-        "@linto/transcript-ui-i18n",
+        "@linto-ai/transcript-ui-core",
+        "@linto-ai/transcript-ui-ui",
+        "@linto-ai/transcript-ui-i18n",
       ],
       output: {
         globals: { vue: "Vue" },

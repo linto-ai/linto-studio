@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { EditorIcon } from "@linto/transcript-ui-ui"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { EditorIcon } from "@linto-ai/transcript-ui-ui"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 
 defineProps<{
   /** Technical reason (server message), shown as a muted detail line. */

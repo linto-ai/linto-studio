@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { EditorIcon } from "@linto/transcript-ui-ui"
+import { EditorIcon } from "@linto-ai/transcript-ui-ui"
 import { StickToBottom } from "vue-stick-to-bottom"
 import ChatMessage from "./ChatMessage.vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
-import type { ChatMessage as ChatMessageType } from "@linto/transcript-ui-core"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
+import type { ChatMessage as ChatMessageType } from "@linto-ai/transcript-ui-core"
 
 defineProps<{
   messages: ChatMessageType[]

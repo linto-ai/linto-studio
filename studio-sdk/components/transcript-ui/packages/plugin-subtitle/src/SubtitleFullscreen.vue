@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, useTemplateRef } from "vue"
 import { X } from "lucide-vue-next"
-import { useCore } from "@linto/transcript-ui-core"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useCore } from "@linto-ai/transcript-ui-core"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useSubtitleScroller } from "./useSubtitleScroller"
 import { useWatermarkCycle } from "./useWatermarkCycle"
 import SubtitleWatermark from "./SubtitleWatermark.vue"

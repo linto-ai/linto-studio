@@ -1,4 +1,4 @@
-import type { SpeakerRenamed } from "@linto/transcript-ui-core"
+import type { SpeakerRenamed } from "@linto-ai/transcript-ui-core"
 import type { EditorPluginState } from "../types"
 import { trackBroadcastVersion } from "../tools/trackBroadcastVersion"
 

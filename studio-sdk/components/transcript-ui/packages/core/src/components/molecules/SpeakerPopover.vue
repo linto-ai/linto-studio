@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { PopoverList, SpeakerIndicator, Button, FormInput, type FormField } from "@linto/transcript-ui-ui"
+import { PopoverList, SpeakerIndicator, Button, FormInput, type FormField } from "@linto-ai/transcript-ui-ui"
 import { ref, computed, nextTick, useTemplateRef, watch } from "vue"
 import { useCore } from "../../core"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { switchTurnSpeaker, createSpeakerAndAssign } from "../../core/helpers"
 import type { Speaker } from "../../types/editor"
 

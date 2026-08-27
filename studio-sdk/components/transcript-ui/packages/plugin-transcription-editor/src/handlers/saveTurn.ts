@@ -1,5 +1,5 @@
 import type { EditorPluginState } from "../types"
-import { utils } from "@linto/transcript-ui-core"
+import { utils } from "@linto-ai/transcript-ui-core"
 
 const { computeTurnPlainText } = utils
 import { computeUpdatedTurnFields } from "../tools/computeUpdatedTurnFields"

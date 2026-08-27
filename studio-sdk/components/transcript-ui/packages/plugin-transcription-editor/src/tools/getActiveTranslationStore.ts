@@ -1,4 +1,4 @@
-import type { Core, TranslationStore } from "@linto/transcript-ui-core"
+import type { Core, TranslationStore } from "@linto-ai/transcript-ui-core"
 
 /** The edited text belongs to ONE language track: the active translation
  *  (cross mode has no mutable store and is not editable). */

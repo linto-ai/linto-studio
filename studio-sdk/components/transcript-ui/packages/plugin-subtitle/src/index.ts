@@ -5,7 +5,7 @@ import type {
   SubtitlePluginApi,
   WatermarkPluginApi,
   WatermarkToken,
-} from "@linto/transcript-ui-core"
+} from "@linto-ai/transcript-ui-core"
 import SubtitleBanner from "./SubtitleBanner.vue"
 import SubtitleFullscreen from "./SubtitleFullscreen.vue"
 

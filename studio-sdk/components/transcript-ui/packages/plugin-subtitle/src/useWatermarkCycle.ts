@@ -1,5 +1,5 @@
 import { onBeforeUnmount, onMounted, ref, watch } from "vue"
-import type { WatermarkPluginApi } from "@linto/transcript-ui-core"
+import type { WatermarkPluginApi } from "@linto-ai/transcript-ui-core"
 
 export function useWatermarkCycle(api: WatermarkPluginApi | undefined) {
   const visible = ref(false)

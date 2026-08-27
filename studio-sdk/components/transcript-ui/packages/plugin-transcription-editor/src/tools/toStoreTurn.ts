@@ -1,6 +1,6 @@
-import type { WireTurn } from "@linto/transcript-ui-core"
-import type { Turn } from "@linto/transcript-ui-core"
-import { utils } from "@linto/transcript-ui-core"
+import type { WireTurn } from "@linto-ai/transcript-ui-core"
+import type { Turn } from "@linto-ai/transcript-ui-core"
+import { utils } from "@linto-ai/transcript-ui-core"
 
 const { wordsFromApi } = utils
 

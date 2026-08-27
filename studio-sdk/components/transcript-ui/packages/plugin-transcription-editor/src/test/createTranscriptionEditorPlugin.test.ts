@@ -1,8 +1,8 @@
 import { describe, expect, it } from "bun:test"
 import { createTranscriptionEditorPlugin } from "../index"
 import type { TranscriptionEditorOptions } from "../index"
-import { makeTestCore } from "@linto/transcript-ui-core/test-utils"
-import type { Core } from "@linto/transcript-ui-core"
+import { makeTestCore } from "@linto-ai/transcript-ui-core/test-utils"
+import type { Core } from "@linto-ai/transcript-ui-core"
 
 function makeEditorCore(options?: TranscriptionEditorOptions): Core {
   const core = makeTestCore()

@@ -1,4 +1,4 @@
-# @linto/transcript-ui
+# @linto-ai/transcript-ui
 
 
 A Vue 3 component for displaying and interacting with a **transcript** — an ordered list of speech turns, each attributed to a speaker. On its own it's a read-only viewer; a plugin system adds everything else on top: a collaborative editing mode, a live transcription mode, and hooks for LLM services (summaries, chat).
@@ -16,12 +16,12 @@ It's used in production inside [LinTO Studio](https://github.com/linto-ai/linto-
 
 | Package | Purpose |
 |---|---|
-| `@linto/transcript-ui` | Batteries-included entry point — re-exports `core` + `ui` + `i18n`. What most consumers install. |
-| `@linto/transcript-ui-core` | State layer (`createCore`, stores, format adapters) and the `TranscriptUI`/`Layout` shell. |
-| `@linto/transcript-ui-ui` | Design-system components (buttons, icons, markdown rendering, …) and the CSS tokens. |
-| `@linto/transcript-ui-i18n` | i18n engine and translation dictionary. |
-| `@linto/transcript-ui-plugin-*` | One package per plugin — see below. |
-| `@linto/transcript-ui-webcomponent` | `<linto-editor>` custom element, for hosts that aren't Vue. |
+| `@linto-ai/transcript-ui` | Batteries-included entry point — re-exports `core` + `ui` + `i18n`. What most consumers install. |
+| `@linto-ai/transcript-ui-core` | State layer (`createCore`, stores, format adapters) and the `TranscriptUI`/`Layout` shell. |
+| `@linto-ai/transcript-ui-ui` | Design-system components (buttons, icons, markdown rendering, …) and the CSS tokens. |
+| `@linto-ai/transcript-ui-i18n` | i18n engine and translation dictionary. |
+| `@linto-ai/transcript-ui-plugin-*` | One package per plugin — see below. |
+| `@linto-ai/transcript-ui-webcomponent` | `<linto-editor>` custom element, for hosts that aren't Vue. |
 
 `core`/`ui`/`i18n`/plugin packages ship as source (no build step of their own) — your bundler compiles them as part of your own app, so there's nothing to pre-build to consume them from a Vue app. `webcomponent` ships a pre-built, self-contained bundle instead.
 
@@ -41,19 +41,19 @@ A separate guide on writing your own plugin will follow.
 ## Installation
 
 ```bash
-npm install @linto/transcript-ui
+npm install @linto-ai/transcript-ui
 ```
 
 That's the core state layer, the UI kit, and i18n — enough to display a read-only transcript. Add plugins as needed:
 
 ```bash
-npm install @linto/transcript-ui-plugin-audio @linto/transcript-ui-plugin-transcription-editor
+npm install @linto-ai/transcript-ui-plugin-audio @linto-ai/transcript-ui-plugin-transcription-editor
 ```
 
 For a non-Vue host, install the Web Component instead:
 
 ```bash
-npm install @linto/transcript-ui-webcomponent
+npm install @linto-ai/transcript-ui-webcomponent
 ```
 
 ## Quick start
@@ -63,8 +63,8 @@ npm install @linto/transcript-ui-webcomponent
 ```vue
 <script setup lang="ts">
 import { onMounted, useTemplateRef } from "vue"
-import { TranscriptUI, mapApiDocument, type Core } from "@linto/transcript-ui-core"
-import { createAudioPlugin } from "@linto/transcript-ui-plugin-audio"
+import { TranscriptUI, mapApiDocument, type Core } from "@linto-ai/transcript-ui-core"
+import { createAudioPlugin } from "@linto-ai/transcript-ui-plugin-audio"
 
 // TranscriptUI creates and owns its own `core` — grab it once mounted to
 // activate plugins and load a document.
@@ -88,8 +88,8 @@ onMounted(async () => {
 
 ```html
 <script type="module">
-  import { register, createAudioPlugin } from '@linto/transcript-ui-webcomponent'
-  import { mapApiDocument } from '@linto/transcript-ui-core'
+  import { register, createAudioPlugin } from '@linto-ai/transcript-ui-webcomponent'
+  import { mapApiDocument } from '@linto-ai/transcript-ui-core'
 
   register() // defines <linto-editor>
 

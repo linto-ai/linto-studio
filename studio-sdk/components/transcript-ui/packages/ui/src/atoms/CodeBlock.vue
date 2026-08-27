@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue"
 import CopyButton from "./CopyButton.vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 
 const props = defineProps<{
   code: string

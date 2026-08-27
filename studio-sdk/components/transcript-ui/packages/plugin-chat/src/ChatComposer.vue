@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Button } from "@linto/transcript-ui-ui"
+import { Button } from "@linto-ai/transcript-ui-ui"
 import { ref, useId, onMounted, useTemplateRef } from "vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 
 const props = defineProps<{
   disabled?: boolean

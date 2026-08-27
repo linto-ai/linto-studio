@@ -1,7 +1,7 @@
-import type { TurnUpdate } from "@linto/transcript-ui-core"
+import type { TurnUpdate } from "@linto-ai/transcript-ui-core"
 import type { EditorPluginState } from "../types"
 import { trackBroadcastVersion } from "../tools/trackBroadcastVersion"
-import { utils } from "@linto/transcript-ui-core"
+import { utils } from "@linto-ai/transcript-ui-core"
 
 const { wordsFromApi } = utils
 import { findTranslationStore } from "../tools/findTranslationStore"

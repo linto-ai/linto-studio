@@ -5,7 +5,7 @@ import type {
   ChatMessage,
   ChatSession,
   ChatPluginApi,
-} from "@linto/transcript-ui-core"
+} from "@linto-ai/transcript-ui-core"
 import ChatDrawer from "./ChatDrawer.vue"
 
 export type { ChatMessage, ChatSession, ChatPluginApi }

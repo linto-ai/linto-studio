@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PopoverList from "../atoms/PopoverList.vue"
 import Button from "../atoms/Button.vue"
-import { useI18n, type TranslationKey } from "@linto/transcript-ui-i18n"
+import { useI18n, type TranslationKey } from "@linto-ai/transcript-ui-i18n"
 
 export interface DownloadFormat {
   format: string

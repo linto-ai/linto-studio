@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import MicrophoneIllustration from "./MicrophoneIllustration.vue"
 
 const { t } = useI18n()

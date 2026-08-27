@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { FormInput } from "@linto/transcript-ui-ui"
+import { FormInput } from "@linto-ai/transcript-ui-ui"
 import { computed } from "vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { buildTranslationItems } from "../utils/intl"
 import type { TranslationInfo } from "../core/types"
 

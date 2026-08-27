@@ -1,3 +1,3 @@
-export * from "@linto/transcript-ui-core";
-export * from "@linto/transcript-ui-ui";
-export * from "@linto/transcript-ui-i18n";
+export * from "@linto-ai/transcript-ui-core";
+export * from "@linto-ai/transcript-ui-ui";
+export * from "@linto-ai/transcript-ui-i18n";

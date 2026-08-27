@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Button, CopyButton } from "@linto/transcript-ui-ui"
+import { Button, CopyButton } from "@linto-ai/transcript-ui-ui"
 import { useTurnSelection } from "../composables/useTurnSelection"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 
 const selection = useTurnSelection()
 const { t } = useI18n()

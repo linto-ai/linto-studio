@@ -10,8 +10,8 @@ import WaveSurfer from "wavesurfer.js"
 import RegionsPlugin, {
   type Region,
 } from "wavesurfer.js/dist/plugins/regions.esm.js"
-import { utils, useCore } from "@linto/transcript-ui-core"
-import type { CoreEventMap, Turn } from "@linto/transcript-ui-core"
+import { utils, useCore } from "@linto-ai/transcript-ui-core"
+import type { CoreEventMap, Turn } from "@linto-ai/transcript-ui-core"
 
 export interface UseAudioPlayerOptions {
   containerRef: Ref<HTMLElement | null>

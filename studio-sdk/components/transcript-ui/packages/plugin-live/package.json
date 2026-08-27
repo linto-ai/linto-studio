@@ -1,8 +1,33 @@
 {
-  "name": "@linto/transcript-ui-plugin-live",
-  "version": "0.1.0",
+  "name": "@linto-ai/transcript-ui-plugin-live",
+  "version": "0.9.0",
+  "description": "Live transcription plugin for @linto-ai/transcript-ui — ingests a real-time partial/final feed",
+  "keywords": [
+    "vue",
+    "vue3",
+    "transcript",
+    "live",
+    "real-time",
+    "asr",
+    "linto-plugin"
+  ],
+  "sideEffects": false,
+  "homepage": "https://github.com/linto-ai/linto-studio",
+  "bugs": "https://github.com/linto-ai/linto-studio/issues",
+  "author": "Tom Darboux <tdarboux@linagora.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linto-ai/linto-studio.git",
+    "directory": "studio-sdk/components/transcript-ui/packages/plugin-live"
+  },
   "type": "module",
   "license": "AGPL-3.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "src"
+  ],
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
@@ -12,6 +37,6 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
-    "@linto/transcript-ui-core": "workspace:*"
+    "@linto-ai/transcript-ui-core": "workspace:*"
   }
 }

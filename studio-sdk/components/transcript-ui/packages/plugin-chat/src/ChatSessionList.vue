@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Button, SelectableListItem, FormInput, type FormField } from "@linto/transcript-ui-ui"
+import { Button, SelectableListItem, FormInput, type FormField } from "@linto-ai/transcript-ui-ui"
 import { ref, computed } from "vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
-import type { ChatSession } from "@linto/transcript-ui-core"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
+import type { ChatSession } from "@linto-ai/transcript-ui-core"
 
 const props = defineProps<{
   sessions: ChatSession[]

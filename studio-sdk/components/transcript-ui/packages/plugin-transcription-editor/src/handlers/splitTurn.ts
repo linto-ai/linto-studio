@@ -1,6 +1,6 @@
 import type { EditorPluginState } from "../types"
 import { saveTurn } from "./saveTurn"
-import { utils } from "@linto/transcript-ui-core"
+import { utils } from "@linto-ai/transcript-ui-core"
 
 const { computeTurnPlainText } = utils
 import { computeOffsetInNormalizedText } from "../tools/computeOffsetInNormalizedText"

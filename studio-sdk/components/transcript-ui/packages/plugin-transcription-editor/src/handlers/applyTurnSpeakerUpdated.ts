@@ -1,4 +1,4 @@
-import type { TurnSpeakerUpdated } from "@linto/transcript-ui-core"
+import type { TurnSpeakerUpdated } from "@linto-ai/transcript-ui-core"
 import type { EditorPluginState } from "../types"
 import { trackBroadcastVersion } from "../tools/trackBroadcastVersion"
 import { findTranslationStore } from "../tools/findTranslationStore"

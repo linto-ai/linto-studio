@@ -1,13 +1,13 @@
-# @linto/transcript-ui-webcomponent
+# @linto-ai/transcript-ui-webcomponent
 
-[@linto/transcript-ui](https://github.com/linto-ai/linto-studio/tree/master/studio-sdk/components/transcript-ui) packaged as a `<linto-editor>` [Web Component](https://developer.mozilla.org/en-US/docs/Web/API/Web_components), for hosts that aren't Vue. Self-contained: Vue itself, every official plugin, fonts, and styles are all bundled in — nothing else to install.
+[@linto-ai/transcript-ui](https://github.com/linto-ai/linto-studio/tree/master/studio-sdk/components/transcript-ui) packaged as a `<linto-editor>` [Web Component](https://developer.mozilla.org/en-US/docs/Web/API/Web_components), for hosts that aren't Vue. Self-contained: Vue itself, every official plugin, fonts, and styles are all bundled in — nothing else to install.
 
 ## Usage
 
 ```html
 <script type="module">
-  import { register, createAudioPlugin } from '@linto/transcript-ui-webcomponent'
-  import { mapApiDocument } from '@linto/transcript-ui-core'
+  import { register, createAudioPlugin } from '@linto-ai/transcript-ui-webcomponent'
+  import { mapApiDocument } from '@linto-ai/transcript-ui-core'
 
   register() // defines <linto-editor>
 
@@ -21,11 +21,11 @@
 <linto-editor locale="en"></linto-editor>
 ```
 
-`register(tagName?)` defines the custom element (`linto-editor` by default — pass a different name if that tag is already taken). The element exposes its `core` as a plain property (`el.core`), the same `Core` object documented in [`@linto/transcript-ui-core`](https://github.com/linto-ai/linto-studio/tree/master/studio-sdk/components/transcript-ui/packages/core#readme) — activate plugins on it exactly as you would in a direct Vue integration.
+`register(tagName?)` defines the custom element (`linto-editor` by default — pass a different name if that tag is already taken). The element exposes its `core` as a plain property (`el.core`), the same `Core` object documented in [`@linto-ai/transcript-ui-core`](https://github.com/linto-ai/linto-studio/tree/master/studio-sdk/components/transcript-ui/packages/core#readme) — activate plugins on it exactly as you would in a direct Vue integration.
 
 Every plugin factory (`createAudioPlugin`, `createChatPlugin`, `createLLMServicesPlugin`, `createLivePlugin`, `createSubtitlePlugin`, `createTranscriptionEditorPlugin`) is re-exported from this same package — see each plugin's own README (linked from the [root README](https://github.com/linto-ai/linto-studio/tree/master/studio-sdk/components/transcript-ui#readme)) for its options.
 
-Because everything is bundled ahead of time, this package doesn't benefit from picking plugins individually the way the direct-Vue integration does — installing it gets you all of them, at whatever `dist/` weighs. If bundle size matters more than not touching Vue, use `@linto/transcript-ui` + individual plugin packages instead.
+Because everything is bundled ahead of time, this package doesn't benefit from picking plugins individually the way the direct-Vue integration does — installing it gets you all of them, at whatever `dist/` weighs. If bundle size matters more than not touching Vue, use `@linto-ai/transcript-ui` + individual plugin packages instead.
 
 ## Without a bundler, via a CDN
 
@@ -34,7 +34,7 @@ The package also ships as a single self-contained IIFE script (no ES modules, no
 Once published to npm, jsDelivr/unpkg serve it by default (no path needed, via the `unpkg`/`jsdelivr` `package.json` fields):
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@linto/transcript-ui-webcomponent"></script>
+<script src="https://cdn.jsdelivr.net/npm/@linto-ai/transcript-ui-webcomponent"></script>
 <script>
   LintoEditor.register()
   document.querySelector('linto-editor').core.use(LintoEditor.createAudioPlugin())

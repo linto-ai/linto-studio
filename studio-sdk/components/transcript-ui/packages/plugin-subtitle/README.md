@@ -1,11 +1,11 @@
-# @linto/transcript-ui-plugin-subtitle
+# @linto-ai/transcript-ui-plugin-subtitle
 
 Fullscreen or banner subtitle display driven by the transcript (live or not), with an optional cycling watermark (text and/or image tokens).
 
 ## Usage
 
 ```ts
-import { createSubtitlePlugin } from "@linto/transcript-ui-plugin-subtitle"
+import { createSubtitlePlugin } from "@linto-ai/transcript-ui-plugin-subtitle"
 
 core.use(
   createSubtitlePlugin({

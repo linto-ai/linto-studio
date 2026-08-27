@@ -1,4 +1,4 @@
-import { computeTextOffsetInContainer } from "@linto/transcript-ui-ui"
+import { computeTextOffsetInContainer } from "@linto-ai/transcript-ui-ui"
 
 interface CaretPoint {
   node: Node

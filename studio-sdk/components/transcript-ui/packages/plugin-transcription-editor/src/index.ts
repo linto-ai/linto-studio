@@ -11,7 +11,7 @@ import type {
   TurnSplit,
   TurnsMerged,
   TurnUpdate,
-} from "@linto/transcript-ui-core"
+} from "@linto-ai/transcript-ui-core"
 import type {
   EditorPluginState,
   TranscriptionEditorLockPayload,

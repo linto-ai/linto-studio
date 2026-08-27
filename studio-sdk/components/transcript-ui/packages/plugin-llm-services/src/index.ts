@@ -8,7 +8,7 @@ import type {
   LLMServiceVersion,
   LLMServiceGeneration,
   LLMServicesPluginApi,
-} from "@linto/transcript-ui-core"
+} from "@linto-ai/transcript-ui-core"
 import LLMServicePanel from "./LLMServicePanel.vue"
 
 export type {

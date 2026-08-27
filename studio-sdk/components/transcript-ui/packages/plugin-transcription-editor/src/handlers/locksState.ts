@@ -1,4 +1,4 @@
-import type { TurnLock } from "@linto/transcript-ui-core"
+import type { TurnLock } from "@linto-ai/transcript-ui-core"
 import type { EditorPluginState } from "../types"
 import type { TranscriptionEditorLockPayload } from "../types"
 import { computeLockKey } from "../tools/computeLockKey"

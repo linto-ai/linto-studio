@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { SpeakerIndicator } from "@linto/transcript-ui-ui"
+import { SpeakerIndicator } from "@linto-ai/transcript-ui-ui"
 import { computed } from "vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import * as utils from "../utils"
 import type { Speaker } from "../types/editor"
 

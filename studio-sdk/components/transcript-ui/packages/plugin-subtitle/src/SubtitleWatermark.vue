@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { useCore } from "@linto/transcript-ui-core"
+import { useCore } from "@linto-ai/transcript-ui-core"
 import { parseWatermark } from "./utils/parseWatermark"
 
 defineProps<{ visible: boolean }>()

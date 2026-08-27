@@ -9,7 +9,7 @@ import {
 import TurndownService from "turndown"
 import { gfm } from "turndown-plugin-gfm"
 import Button from "./Button.vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { renderMarkdown } from "../utils/markdown"
 import { getShadowAwareSelection } from "../utils/shadowAwareSelection"
 

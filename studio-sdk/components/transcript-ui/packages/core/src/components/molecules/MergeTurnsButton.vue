@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Button } from "@linto/transcript-ui-ui"
+import { Button } from "@linto-ai/transcript-ui-ui"
 import { computed } from "vue"
 import { useCore } from "../../core"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 
 // Always-visible merge control between two adjacent turns. A lock on either
 // side DISABLES it (the layout must not jump, and the lock badge tells why);

@@ -1,11 +1,11 @@
-# @linto/transcript-ui-plugin-audio
+# @linto-ai/transcript-ui-plugin-audio
 
 Audio playback synced with the transcript: waveform display, active-word/active-turn highlighting as playback progresses, click-to-seek, and per-speaker region coloring on the waveform.
 
 ## Usage
 
 ```ts
-import { createAudioPlugin } from "@linto/transcript-ui-plugin-audio"
+import { createAudioPlugin } from "@linto-ai/transcript-ui-plugin-audio"
 
 core.use(
   createAudioPlugin({

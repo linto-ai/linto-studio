@@ -6,8 +6,8 @@ import type {
   TranslationInfo,
   TranslationStore,
   Turn,
-} from "@linto/transcript-ui-core"
-import { CROSS_TRANSLATION_ID, utils } from "@linto/transcript-ui-core"
+} from "@linto-ai/transcript-ui-core"
+import { CROSS_TRANSLATION_ID, utils } from "@linto-ai/transcript-ui-core"
 import type {
   LivePartialEvent,
   LiveFinalEvent,

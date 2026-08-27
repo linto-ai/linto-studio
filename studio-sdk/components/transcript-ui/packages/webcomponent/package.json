@@ -1,13 +1,35 @@
 {
-  "name": "@linto/transcript-ui-webcomponent",
-  "version": "0.1.0",
+  "name": "@linto-ai/transcript-ui-webcomponent",
+  "version": "0.9.0",
+  "description": "@linto-ai/transcript-ui packaged as a <linto-editor> Web Component, for non-Vue hosts",
+  "keywords": [
+    "web-component",
+    "custom-element",
+    "transcript",
+    "transcription",
+    "linto"
+  ],
+  "sideEffects": true,
+  "homepage": "https://github.com/linto-ai/linto-studio",
+  "bugs": "https://github.com/linto-ai/linto-studio/issues",
+  "author": "Tom Darboux <tdarboux@linagora.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linto-ai/linto-studio.git",
+    "directory": "studio-sdk/components/transcript-ui/packages/webcomponent"
+  },
   "type": "module",
   "license": "AGPL-3.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist"
   ],
   "main": "./dist/linto-editor.js",
   "module": "./dist/linto-editor.js",
+  "unpkg": "./dist/linto-editor.iife.js",
+  "jsdelivr": "./dist/linto-editor.iife.js",
   "exports": {
     ".": {
       "import": "./dist/linto-editor.js"
@@ -17,15 +39,15 @@
     "build": "vue-tsc -b && vite build"
   },
   "devDependencies": {
-    "@linto/transcript-ui-core": "workspace:*",
-    "@linto/transcript-ui-i18n": "workspace:*",
-    "@linto/transcript-ui-ui": "workspace:*",
-    "@linto/transcript-ui-plugin-audio": "workspace:*",
-    "@linto/transcript-ui-plugin-chat": "workspace:*",
-    "@linto/transcript-ui-plugin-live": "workspace:*",
-    "@linto/transcript-ui-plugin-llm-services": "workspace:*",
-    "@linto/transcript-ui-plugin-subtitle": "workspace:*",
-    "@linto/transcript-ui-plugin-transcription-editor": "workspace:*",
+    "@linto-ai/transcript-ui-core": "workspace:*",
+    "@linto-ai/transcript-ui-i18n": "workspace:*",
+    "@linto-ai/transcript-ui-ui": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-audio": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-chat": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-live": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-llm-services": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-subtitle": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-transcription-editor": "workspace:*",
     "prismjs": "^1.30.0",
     "vue": "^3.5.25",
     "@types/prismjs": "^1.26.6",

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { DocumentArticle, type DownloadFormat, DownloadMenu } from "@linto/transcript-ui-ui"
+import { DocumentArticle, type DownloadFormat, DownloadMenu } from "@linto-ai/transcript-ui-ui"
 import { computed } from "vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useCore } from "../core"
 import * as utils from "../utils"
 

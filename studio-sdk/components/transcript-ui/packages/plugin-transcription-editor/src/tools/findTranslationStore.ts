@@ -1,4 +1,4 @@
-import type { Core, TranslationStore } from "@linto/transcript-ui-core"
+import type { Core, TranslationStore } from "@linto-ai/transcript-ui-core"
 
 /** A translation store by id, across every channel — server broadcasts may
  *  target a track the user is not looking at. */

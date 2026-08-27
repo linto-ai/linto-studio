@@ -1,5 +1,5 @@
 import { onMounted, onUnmounted, watch, type ComputedRef, type Ref } from "vue"
-import { useCore } from "@linto/transcript-ui-core"
+import { useCore } from "@linto-ai/transcript-ui-core"
 import { SubtitleScroller } from "./SubtitleScroller"
 
 interface UseSubtitleScrollerOptions {

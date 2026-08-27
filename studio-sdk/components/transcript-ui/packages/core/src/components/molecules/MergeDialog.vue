@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Button, FormInput } from "@linto/transcript-ui-ui"
+import { Button, FormInput } from "@linto-ai/transcript-ui-ui"
 import { ref, computed, watch, useTemplateRef } from "vue"
 import { useCore } from "../../core"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { countTurnsForSpeaker, mergeSpeakers } from "../../core/helpers"
 
 const props = defineProps<{

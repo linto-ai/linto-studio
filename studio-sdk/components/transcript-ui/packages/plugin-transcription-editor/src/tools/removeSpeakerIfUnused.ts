@@ -1,4 +1,4 @@
-import type { Core } from "@linto/transcript-ui-core"
+import type { Core } from "@linto-ai/transcript-ui-core"
 
 /**
  * Drop a speaker from the GLOBAL store only when no LOADED track still

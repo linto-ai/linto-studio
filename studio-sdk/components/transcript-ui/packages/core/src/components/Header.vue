@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Button, EditorIcon } from "@linto/transcript-ui-ui"
+import { Button, EditorIcon } from "@linto-ai/transcript-ui-ui"
 import { computed } from "vue"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import * as utils from "../utils"
 
 const props = defineProps<{

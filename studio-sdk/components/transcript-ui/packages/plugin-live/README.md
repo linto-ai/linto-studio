@@ -1,11 +1,11 @@
-# @linto/transcript-ui-plugin-live
+# @linto-ai/transcript-ui-plugin-live
 
 Ingests a real-time transcription feed: partial and final segments as they arrive, text-to-speech playback of live turns, and the state the subtitle plugin and transcript panel read to follow along live.
 
 ## Usage
 
 ```ts
-import { createLivePlugin } from "@linto/transcript-ui-plugin-live"
+import { createLivePlugin } from "@linto-ai/transcript-ui-plugin-live"
 
 core.use(createLivePlugin({ tts: true })) // tts: offer voice playback of live turns
 ```

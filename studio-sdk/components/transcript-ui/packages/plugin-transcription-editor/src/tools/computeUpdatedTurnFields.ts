@@ -1,5 +1,5 @@
-import type { Turn, Word } from "@linto/transcript-ui-core"
-import { utils } from "@linto/transcript-ui-core"
+import type { Turn, Word } from "@linto-ai/transcript-ui-core"
+import { utils } from "@linto-ai/transcript-ui-core"
 
 const { wordsFromText, carryWordTimes } = utils
 

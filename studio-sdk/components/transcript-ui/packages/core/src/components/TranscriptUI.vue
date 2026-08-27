@@ -6,7 +6,7 @@ import EditorErrorOverlay from "./EditorErrorOverlay.vue"
 import { createCore } from "../core/createCore"
 import { provideCore } from "../core/useCore"
 import { useEditorReady } from "../composables/useEditorReady"
-import { provideI18n, type Locale } from "@linto/transcript-ui-i18n"
+import { provideI18n, type Locale } from "@linto-ai/transcript-ui-i18n"
 
 const props = withDefaults(
   defineProps<{
@@ -55,10 +55,10 @@ defineExpose({ core })
 </template>
 
 <style lang="css">
-@import "@linto/transcript-ui-ui/styles/fonts.css";
-@import "@linto/transcript-ui-ui/styles/variables.css";
-@import "@linto/transcript-ui-ui/styles/base.css";
-@import "@linto/transcript-ui-ui/styles/popover-list.css";
+@import "@linto-ai/transcript-ui-ui/styles/fonts.css";
+@import "@linto-ai/transcript-ui-ui/styles/variables.css";
+@import "@linto-ai/transcript-ui-ui/styles/base.css";
+@import "@linto-ai/transcript-ui-ui/styles/popover-list.css";
 
 /* Positioning context for the absolute loading overlay. */
 .editor-root {

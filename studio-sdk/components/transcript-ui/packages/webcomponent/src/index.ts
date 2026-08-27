@@ -1,5 +1,5 @@
 import { defineCustomElement } from "vue"
-import { TranscriptUI, SpeakerLabel, SpeakerPopover } from "@linto/transcript-ui-core"
+import { TranscriptUI, SpeakerLabel, SpeakerPopover } from "@linto-ai/transcript-ui-core"
 
 // Components rendered outside the SFC tree (popovers, dialogs) don't get
 // their scoped styles injected into the Shadow DOM automatically. Collect
@@ -7,7 +7,7 @@ import { TranscriptUI, SpeakerLabel, SpeakerPopover } from "@linto/transcript-ui
 // mounted components (fonts/design tokens via TranscriptUI's own <style>,
 // the Prism theme via CodeBlock's) don't need this — Vue injects those
 // into the shadow root on its own.
-import { FormInput, SpeakerIndicator, Badge, Button } from "@linto/transcript-ui-ui"
+import { FormInput, SpeakerIndicator, Badge, Button } from "@linto-ai/transcript-ui-ui"
 
 function getComponentStyles(comp: unknown): string[] {
   return (comp as { styles?: string[] }).styles ?? []
@@ -31,11 +31,11 @@ export function register(tagName = "linto-editor") {
 }
 
 export { LintoEditor }
-export { createLivePlugin } from "@linto/transcript-ui-plugin-live"
-export { createAudioPlugin } from "@linto/transcript-ui-plugin-audio"
-export type { AudioPluginOptions } from "@linto/transcript-ui-plugin-audio"
-export { createSubtitlePlugin } from "@linto/transcript-ui-plugin-subtitle"
-export { createTranscriptionEditorPlugin } from "@linto/transcript-ui-plugin-transcription-editor"
-export { createLLMServicesPlugin } from "@linto/transcript-ui-plugin-llm-services"
-export { createChatPlugin } from "@linto/transcript-ui-plugin-chat"
-export { mapApiTurns } from "@linto/transcript-ui-core"
+export { createLivePlugin } from "@linto-ai/transcript-ui-plugin-live"
+export { createAudioPlugin } from "@linto-ai/transcript-ui-plugin-audio"
+export type { AudioPluginOptions } from "@linto-ai/transcript-ui-plugin-audio"
+export { createSubtitlePlugin } from "@linto-ai/transcript-ui-plugin-subtitle"
+export { createTranscriptionEditorPlugin } from "@linto-ai/transcript-ui-plugin-transcription-editor"
+export { createLLMServicesPlugin } from "@linto-ai/transcript-ui-plugin-llm-services"
+export { createChatPlugin } from "@linto-ai/transcript-ui-plugin-chat"
+export { mapApiTurns } from "@linto-ai/transcript-ui-core"

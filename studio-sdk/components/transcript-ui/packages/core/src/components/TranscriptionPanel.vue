@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button } from "@linto/transcript-ui-ui"
+import { Button } from "@linto-ai/transcript-ui-ui"
 import {
   computed,
   useTemplateRef,
@@ -12,7 +12,7 @@ import { useStickToBottom } from "vue-stick-to-bottom"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
 import TranscriptionEmpty from "./TranscriptionEmpty.vue"
 import { useCore } from "../core"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useFollowPlayback } from "../composables/useFollowPlayback"
 import { throttle } from "../utils"
 import type { Turn, Speaker } from "../types/editor"

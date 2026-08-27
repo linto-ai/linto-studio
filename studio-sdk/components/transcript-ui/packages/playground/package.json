@@ -1,5 +1,5 @@
 {
-  "name": "@linto/transcript-ui-playground",
+  "name": "@linto-ai/transcript-ui-playground",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,15 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@linto/transcript-ui-core": "workspace:*",
-    "@linto/transcript-ui-i18n": "workspace:*",
-    "@linto/transcript-ui-ui": "workspace:*",
-    "@linto/transcript-ui-plugin-audio": "workspace:*",
-    "@linto/transcript-ui-plugin-chat": "workspace:*",
-    "@linto/transcript-ui-plugin-live": "workspace:*",
-    "@linto/transcript-ui-plugin-llm-services": "workspace:*",
-    "@linto/transcript-ui-plugin-subtitle": "workspace:*",
-    "@linto/transcript-ui-plugin-transcription-editor": "workspace:*",
+    "@linto-ai/transcript-ui-core": "workspace:*",
+    "@linto-ai/transcript-ui-i18n": "workspace:*",
+    "@linto-ai/transcript-ui-ui": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-audio": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-chat": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-live": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-llm-services": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-subtitle": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-transcription-editor": "workspace:*",
     "prismjs": "^1.30.0",
     "vue": "^3.5.25"
   },

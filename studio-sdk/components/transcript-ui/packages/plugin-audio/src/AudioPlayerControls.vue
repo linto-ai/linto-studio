@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-vue-next'
-import { Button } from '@linto/transcript-ui-ui'
-import { useI18n } from '@linto/transcript-ui-i18n'
+import { Button } from '@linto-ai/transcript-ui-ui'
+import { useI18n } from '@linto-ai/transcript-ui-i18n'
 
 defineProps<{
   isPlaying: boolean

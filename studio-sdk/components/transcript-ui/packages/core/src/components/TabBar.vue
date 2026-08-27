@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Tabs, type TabItem } from "@linto/transcript-ui-ui"
+import { Tabs, type TabItem } from "@linto-ai/transcript-ui-ui"
 import { computed } from "vue"
 import { TRANSCRIPTION_TAB, VERBATIM_TAB } from "./TabBar.constants"
-import { useI18n } from "@linto/transcript-ui-i18n"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useCore } from "../core"
 
 const props = defineProps<{
