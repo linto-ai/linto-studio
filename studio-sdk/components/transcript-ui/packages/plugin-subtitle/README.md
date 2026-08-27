@@ -1,5 +1,7 @@
 # @linto-ai/transcript-ui-plugin-subtitle
 
+Part of [**@linto-ai/transcript-ui**](https://www.npmjs.com/package/@linto-ai/transcript-ui) — see there for the full package list and quick start.
+
 Fullscreen or banner subtitle display driven by the transcript (live or not), with an optional cycling watermark (text and/or image tokens).
 
 ## Usage

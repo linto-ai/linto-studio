@@ -1,5 +1,7 @@
 # @linto-ai/transcript-ui-ui
 
+Part of [**@linto-ai/transcript-ui**](https://www.npmjs.com/package/@linto-ai/transcript-ui) — see there for the full package list and quick start.
+
 Design-system components and CSS tokens for [@linto-ai/transcript-ui](https://github.com/linto-ai/linto-studio/tree/master/studio-sdk/components/transcript-ui). Zero dependency on the transcript domain — every component here takes plain props (a string, a color, a list) and can be reused outside this project.
 
 ## What's in here

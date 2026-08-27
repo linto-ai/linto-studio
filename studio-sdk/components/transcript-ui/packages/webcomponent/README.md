@@ -1,5 +1,7 @@
 # @linto-ai/transcript-ui-webcomponent
 
+Part of [**@linto-ai/transcript-ui**](https://www.npmjs.com/package/@linto-ai/transcript-ui) — see there for the full package list and quick start.
+
 [@linto-ai/transcript-ui](https://github.com/linto-ai/linto-studio/tree/master/studio-sdk/components/transcript-ui) packaged as a `<linto-editor>` [Web Component](https://developer.mozilla.org/en-US/docs/Web/API/Web_components), for hosts that aren't Vue. Self-contained: Vue itself, every official plugin, fonts, and styles are all bundled in — nothing else to install.
 
 ## Usage

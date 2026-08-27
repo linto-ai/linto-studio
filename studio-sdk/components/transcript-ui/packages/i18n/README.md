@@ -1,5 +1,7 @@
 # @linto-ai/transcript-ui-i18n
 
+Part of [**@linto-ai/transcript-ui**](https://www.npmjs.com/package/@linto-ai/transcript-ui) — see there for the full package list and quick start.
+
 i18n engine and translation dictionary for [@linto-ai/transcript-ui](https://github.com/linto-ai/linto-studio/tree/master/studio-sdk/components/transcript-ui).
 
 ## Usage

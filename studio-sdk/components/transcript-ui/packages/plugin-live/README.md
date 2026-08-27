@@ -1,5 +1,7 @@
 # @linto-ai/transcript-ui-plugin-live
 
+Part of [**@linto-ai/transcript-ui**](https://www.npmjs.com/package/@linto-ai/transcript-ui) — see there for the full package list and quick start.
+
 Ingests a real-time transcription feed: partial and final segments as they arrive, text-to-speech playback of live turns, and the state the subtitle plugin and transcript panel read to follow along live.
 
 ## Usage

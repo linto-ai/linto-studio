@@ -1,5 +1,7 @@
 # @linto-ai/transcript-ui-plugin-audio
 
+Part of [**@linto-ai/transcript-ui**](https://www.npmjs.com/package/@linto-ai/transcript-ui) — see there for the full package list and quick start.
+
 Audio playback synced with the transcript: waveform display, active-word/active-turn highlighting as playback progresses, click-to-seek, and per-speaker region coloring on the waveform.
 
 ## Usage

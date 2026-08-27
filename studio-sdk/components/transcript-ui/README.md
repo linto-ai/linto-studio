@@ -1,14 +1,14 @@
 # @linto-ai/transcript-ui
 
 
-A Vue 3 component for displaying and interacting with a **transcript** — an ordered list of speech turns, each attributed to a speaker. On its own it's a read-only viewer; a plugin system adds everything else on top: a collaborative editing mode, a live transcription mode, and hooks for LLM services (summaries, chat).
+A Vue 3 component for displaying and interacting with a **transcript**: turns attributed to a speaker, organized into one or more audio channels and language tracks. On its own it's a read-only viewer; a plugin system adds everything else on top: a collaborative editing mode, a live transcription mode, and hooks for LLM services (summaries, chat).
 
 It ships two built-in adapters, so a document can come from either:
 - the LinTO Studio API format
 - WhisperX output
 
 
-![screenshot of linto.app](screenshot.jpg)
+![Screenshot of transcript UI](screenshot.jpg)
 
 It's used in production inside [LinTO Studio](https://github.com/linto-ai/linto-studio) — this package lives in that same repository — and integrated into other projects too, e.g. [LinTO-Nextcloud](https://github.com/tjiho/LinTO-Nextcloud).
 
@@ -16,14 +16,12 @@ It's used in production inside [LinTO Studio](https://github.com/linto-ai/linto-
 
 | Package | Purpose |
 |---|---|
-| `@linto-ai/transcript-ui` | Batteries-included entry point — re-exports `core` + `ui` + `i18n`. What most consumers install. |
+| `@linto-ai/transcript-ui` | Batteries-included entry point — re-exports `core` + `ui` + `i18n`. The base package: everything you need for a read-only transcript, nothing plugin-specific. |
 | `@linto-ai/transcript-ui-core` | State layer (`createCore`, stores, format adapters) and the `TranscriptUI`/`Layout` shell. |
 | `@linto-ai/transcript-ui-ui` | Design-system components (buttons, icons, markdown rendering, …) and the CSS tokens. |
 | `@linto-ai/transcript-ui-i18n` | i18n engine and translation dictionary. |
 | `@linto-ai/transcript-ui-plugin-*` | One package per plugin — see below. |
-| `@linto-ai/transcript-ui-webcomponent` | `<linto-editor>` custom element, for hosts that aren't Vue. |
-
-`core`/`ui`/`i18n`/plugin packages ship as source (no build step of their own) — your bundler compiles them as part of your own app, so there's nothing to pre-build to consume them from a Vue app. `webcomponent` ships a pre-built, self-contained bundle instead.
+| `@linto-ai/transcript-ui-webcomponent` | `<linto-editor>` custom element, for hosts that aren't Vue3 — bundles every official plugin in. |
 
 ## Plugins
 
@@ -35,8 +33,6 @@ Each plugin is a separate package — install only what you need:
 - [Subtitle](packages/plugin-subtitle/README.md) — fullscreen/banner subtitle display, with an optional watermark.
 - [LLM services](packages/plugin-llm-services/README.md) — generated documents (summaries, reports) derived from the transcript.
 - [Chat](packages/plugin-chat/README.md) — a chat panel for talking with an LLM assistant about the transcript.
-
-A separate guide on writing your own plugin will follow.
 
 ## Installation
 

@@ -1,5 +1,7 @@
 # @linto-ai/transcript-ui-plugin-llm-services
 
+Part of [**@linto-ai/transcript-ui**](https://www.npmjs.com/package/@linto-ai/transcript-ui) — see there for the full package list and quick start.
+
 Generated documents derived from the transcript — summaries, reports, key points — with versioning, regeneration, and progress/status tracking. No network calls: the host generates content and pushes it in; this plugin only holds and exposes the state.
 
 ## Usage

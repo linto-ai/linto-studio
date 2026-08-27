@@ -1,5 +1,7 @@
 # @linto-ai/transcript-ui-plugin-transcription-editor
 
+Part of [**@linto-ai/transcript-ui**](https://www.npmjs.com/package/@linto-ai/transcript-ui) — see there for the full package list and quick start.
+
 Collaborative editing of turns and speakers: rename, split, merge, and reassign, with per-turn locks and server-authoritative sync. This plugin never computes the retimed truth itself — every option below is optimistic-local-then-server-broadcast: the edit applies instantly in the UI, your callback pushes it to the backend, and the backend's broadcast (applied back through `core.transcriptionEditor.apply*`) is what actually sticks.
 
 ## Usage

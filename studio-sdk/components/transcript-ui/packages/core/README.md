@@ -1,5 +1,7 @@
 # @linto-ai/transcript-ui-core
 
+Part of [**@linto-ai/transcript-ui**](https://www.npmjs.com/package/@linto-ai/transcript-ui) — see there for the full package list and quick start.
+
 The main piece of @linto-ai/transcript-ui — a Vue component for displaying and interacting with a transcript. It bundles the document state (`createCore`), the editor layout (`Layout`), and adapters that convert LinTO Studio API or WhisperX transcripts into a format it understands.
 
 ## Usage
