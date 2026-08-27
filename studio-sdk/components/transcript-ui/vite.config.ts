@@ -9,6 +9,11 @@ export default defineConfig({
     vue(),
     dts({
       tsconfigPath: "./tsconfig.app.json",
+      // Without this, the emitted path mirrors the smallest common path of
+      // every included file — since types/**/*.d.ts sits outside src/, that
+      // becomes the package root, and src/index.ts ends up at
+      // dist/src/index.d.ts instead of dist/index.d.ts.
+      entryRoot: "src",
     }),
   ],
   build: {
