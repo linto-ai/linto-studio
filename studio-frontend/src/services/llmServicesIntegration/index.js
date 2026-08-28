@@ -5,7 +5,7 @@
 //
 // All work lives in actions/. This file only wires deps together.
 
-import { createLLMServicesPlugin } from "@linto/transcript-ui/webcomponent"
+import { createLLMServicesPlugin } from "@linto-ai/transcript-ui-webcomponent"
 import store from "@/store"
 
 import { loadServices } from "./actions/loadServices.js"
@@ -58,8 +58,7 @@ export function setupLLMServices(
   )
 
   const socket = apiEventWS?.socket
-  const handleUpdate = (u) =>
-    onLlmJobUpdate({ core, store, conversationId }, u)
+  const handleUpdate = (u) => onLlmJobUpdate({ core, store, conversationId }, u)
   const handleComplete = (u) =>
     onLlmJobComplete({ core, store, state, conversationId, t }, u)
   const handleError = (u) =>

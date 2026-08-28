@@ -7,7 +7,7 @@
 // All work lives in actions/. This file only wires deps together. Mirrors
 // services/llmServicesIntegration/index.js.
 
-import { createChatPlugin } from "@linto/transcript-ui/webcomponent"
+import { createChatPlugin } from "@linto-ai/transcript-ui-webcomponent"
 
 import { onLoadSessions } from "./actions/onLoadSessions"
 import { onLoadSession } from "./actions/onLoadSession"
@@ -23,7 +23,9 @@ export function setupChat(core, { conversationId }) {
 
   const unsub = [
     core.on("chat:loadSessions", () => onLoadSessions(ctx)),
-    core.on("chat:loadSession", ({ sessionId }) => onLoadSession(ctx, sessionId)),
+    core.on("chat:loadSession", ({ sessionId }) =>
+      onLoadSession(ctx, sessionId),
+    ),
     core.on("chat:createSession", () => onCreateSession(ctx)),
     core.on("chat:deleteSession", ({ sessionId }) =>
       onDeleteSession(ctx, sessionId),

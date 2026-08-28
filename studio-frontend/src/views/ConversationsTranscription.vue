@@ -27,7 +27,7 @@ import {
   createTranscriptionEditorPlugin,
   createAudioPlugin,
   mapApiTurns,
-} from "@linto/transcript-ui/webcomponent"
+} from "@linto-ai/transcript-ui-webcomponent"
 
 import { setupLLMServices } from "@/services/llmServicesIntegration"
 import { setupChat } from "@/services/chatIntegration"
@@ -39,7 +39,9 @@ import {
   apiGetAudioFileFromConversation,
   apiGetAudioWaveFormFromConversation,
 } from "@/api/conversation"
+import { customDebug } from "@/tools/customDebug"
 
+const debug = customDebug("vue:editor")
 export default {
   components: { LayoutV2, PublicationModal },
   props: {
@@ -77,6 +79,7 @@ export default {
         this.conversationId,
       )
       this.canWrite = USER_RIGHTS.hasRightAccess(right, USER_RIGHTS.WRITE)
+      debug("canWrite", this.canWrite)
     } catch (e) {
       console.error("[host] failed to fetch conversation right", e)
       this.canWrite = false
