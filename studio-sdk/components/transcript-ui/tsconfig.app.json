@@ -1,21 +1,13 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "types": ["vite/client"],
-
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    // This package's own file just re-exports real published packages
+    // (core/ui/i18n) — resolve them through node_modules like a real
+    // consumer would, not through the monorepo-wide `paths` mapping.
+    // Otherwise vite-plugin-dts inlines them as local relative paths in the
+    // emitted .d.ts, which don't exist once only dist/ is published.
+    "paths": {}
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": [
-    "src/**/test/**",
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts"
-  ]
+  "include": ["src/**/*.ts", "types/**/*.d.ts"]
 }

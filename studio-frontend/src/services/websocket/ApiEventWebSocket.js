@@ -245,7 +245,10 @@ export default class ApiEventWebSocket {
     this.socket.off("editor:turn_split", this._editorTurnSplit)
     this.socket.off("editor:turns_merged", this._editorTurnsMerged)
     this.socket.off("editor:turn_deleted", this._editorTurnDeleted)
-    this.socket.off("editor:turn_speaker_updated", this._editorTurnSpeakerUpdated)
+    this.socket.off(
+      "editor:turn_speaker_updated",
+      this._editorTurnSpeakerUpdated,
+    )
     this.socket.off("editor:speaker_renamed", this._editorSpeakerRenamed)
     this.socket.off("editor:speaker_replaced", this._editorSpeakerReplaced)
     this.socket.on("editor:turn_locked", this._editorTurnLocked)
@@ -254,7 +257,10 @@ export default class ApiEventWebSocket {
     this.socket.on("editor:turn_split", this._editorTurnSplit)
     this.socket.on("editor:turns_merged", this._editorTurnsMerged)
     this.socket.on("editor:turn_deleted", this._editorTurnDeleted)
-    this.socket.on("editor:turn_speaker_updated", this._editorTurnSpeakerUpdated)
+    this.socket.on(
+      "editor:turn_speaker_updated",
+      this._editorTurnSpeakerUpdated,
+    )
     this.socket.on("editor:speaker_renamed", this._editorSpeakerRenamed)
     this.socket.on("editor:speaker_replaced", this._editorSpeakerReplaced)
 
@@ -272,7 +278,10 @@ export default class ApiEventWebSocket {
     this.socket.off("editor:turn_split", this._editorTurnSplit)
     this.socket.off("editor:turns_merged", this._editorTurnsMerged)
     this.socket.off("editor:turn_deleted", this._editorTurnDeleted)
-    this.socket.off("editor:turn_speaker_updated", this._editorTurnSpeakerUpdated)
+    this.socket.off(
+      "editor:turn_speaker_updated",
+      this._editorTurnSpeakerUpdated,
+    )
     this.socket.off("editor:speaker_renamed", this._editorSpeakerRenamed)
     this.socket.off("editor:speaker_replaced", this._editorSpeakerReplaced)
     this.socket.emit("editor:leave", this.currentEditorConversationId)

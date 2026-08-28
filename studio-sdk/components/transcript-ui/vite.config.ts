@@ -9,7 +9,11 @@ export default defineConfig({
     vue(),
     dts({
       tsconfigPath: "./tsconfig.app.json",
-      exclude: ["src/main.ts", "src/App.vue", "src/webcomponent.ts"],
+      // Without this, the emitted path mirrors the smallest common path of
+      // every included file — since types/**/*.d.ts sits outside src/, that
+      // becomes the package root, and src/index.ts ends up at
+      // dist/src/index.d.ts instead of dist/index.d.ts.
+      entryRoot: "src",
     }),
   ],
   build: {
@@ -20,7 +24,17 @@ export default defineConfig({
       fileName: "index",
     },
     rollupOptions: {
-      external: ["vue", "yjs"],
+      // core/ui/i18n stay real dependencies of the published package rather
+      // than being inlined — npm installs them transitively, so a consumer
+      // who also depends on @linto-ai/transcript-ui-core directly (e.g. to add
+      // a plugin) doesn't end up with two copies of it.
+      external: [
+        "vue",
+        "yjs",
+        "@linto-ai/transcript-ui-core",
+        "@linto-ai/transcript-ui-ui",
+        "@linto-ai/transcript-ui-i18n",
+      ],
       output: {
         globals: { vue: "Vue" },
       },

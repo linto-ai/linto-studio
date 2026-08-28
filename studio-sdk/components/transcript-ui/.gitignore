@@ -10,8 +10,16 @@ lerna-debug.log*
 node_modules
 dist-ssr
 *.local
-# publish the webcomponent build
-!dist 
+# this repo uses Bun (bun.lock) — never commit a lockfile from another tool
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+# tarballs from scripts/pack-all.sh
+/.pack
+# publish the built packages (root lean bundle + webcomponent) — anchored so
+# it doesn't also resurrect throwaway build output like packages/playground/dist
+!/dist
+!/packages/webcomponent/dist
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

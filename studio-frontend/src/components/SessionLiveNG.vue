@@ -23,7 +23,7 @@ import {
 import {
   createLivePlugin,
   createSubtitlePlugin,
-} from "@linto/transcript-ui/webcomponent"
+} from "@linto-ai/transcript-ui-webcomponent"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 import classifySessionTurn from "@/tools/classifySessionTurn"
 import {
@@ -33,6 +33,7 @@ import {
 import { getEnv } from "@/tools/getEnv"
 import { bus } from "@/main.js"
 import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
+import { customDebug } from "@/tools/customDebug"
 
 const PAGE_SIZE = 50
 
@@ -65,6 +66,7 @@ export default {
       // Distinguishes the first connect from a reconnect in the isConnected
       // watcher: only a reconnect needs a content resync.
       wsWasConnected: false,
+      debug: customDebug("vue:debug:SessionLiveNG"),
     }
   },
   computed: {
@@ -94,6 +96,7 @@ export default {
     },
   },
   mounted() {
+    // setTimeout(() => {
     this.initEditor()
     this.aquireWakeLock()
     document.addEventListener("visibilitychange", this.renewWakeLock)
@@ -101,6 +104,7 @@ export default {
       `websocket/orga_${this.currentOrganizationScope}_session_cleared`,
       this.clear,
     )
+    // }, 1000)
   },
   beforeDestroy() {
     this.offChannelChange?.()
@@ -213,17 +217,18 @@ export default {
       // initial selection does not trigger a channel reset and refetch.
       const initialId =
         this.initialChannelId != null ? String(this.initialChannelId) : null
-      if (initialId && editor.channels.has(initialId)) {
-        editor.setActiveChannel(initialId)
+      if (initialId && core.channels.has(initialId)) {
+        core.setActiveChannel(initialId)
       }
 
-      this.activeChannelIndex = this.editor?.activeChannelId.value ?? null
+      this.activeChannelIndex = this.core?.activeChannelId.value ?? null
 
       await this.fetchTurnsPage()
 
       this.offScrollTop = core.on("scroll:top", () => this.fetchTurnsPage())
 
       this.offChannelChange = core.on("channel:change", ({ channelId }) => {
+        this.debug("Change channel", channelId)
         this.activeChannelIndex = channelId
         this.historyOffset = 0
 
@@ -246,7 +251,7 @@ export default {
     // replay missed room events): reset the channel and reload the latest
     // page — same pattern as channel:change and clear().
     resyncAfterReconnect() {
-      const channel = this.editor?.activeChannel?.value
+      const channel = this.core?.activeChannel?.value
       if (!channel) {
         return
       }
