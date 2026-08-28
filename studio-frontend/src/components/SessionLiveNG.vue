@@ -24,6 +24,7 @@ import {
   createLivePlugin,
   createSubtitlePlugin,
 } from "@linto/transcript-ui/webcomponent"
+import { ChatIntegration } from "@/services/chatIntegration"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 import classifySessionTurn from "@/tools/classifySessionTurn"
 import {
@@ -48,11 +49,14 @@ export default {
     displaySubtitles: { type: Boolean, default: false },
     // Forwarded to the status banner; "idle" when the host has no microphone.
     microphoneStatus: { type: String, default: "idle" },
+    // Turns true once the parent has checked feature availability
+    catchupEnabled: { type: Boolean, default: false },
   },
   data() {
     return {
       livePlugin: null,
       core: null,
+      chatHandle: null,
       offChannelChange: null,
       offScrollTop: null,
       offWatermarkDisplay: null,
@@ -92,6 +96,9 @@ export default {
         this.resyncAfterReconnect()
       }
     },
+    catchupEnabled() {
+      this.setupSessionChat()
+    },
   },
   mounted() {
     this.initEditor()
@@ -103,6 +110,7 @@ export default {
     )
   },
   beforeDestroy() {
+    this.chatHandle?.dispose()
     this.offChannelChange?.()
     this.offScrollTop?.()
     this.offSubtitle?.()
@@ -213,11 +221,11 @@ export default {
       // initial selection does not trigger a channel reset and refetch.
       const initialId =
         this.initialChannelId != null ? String(this.initialChannelId) : null
-      if (initialId && editor.channels.has(initialId)) {
-        editor.setActiveChannel(initialId)
+      if (initialId && core.channels.has(initialId)) {
+        core.setActiveChannel(initialId)
       }
 
-      this.activeChannelIndex = this.editor?.activeChannelId.value ?? null
+      this.activeChannelIndex = core.activeChannelId.value ?? null
 
       await this.fetchTurnsPage()
 
@@ -240,13 +248,38 @@ export default {
         this.wsWasConnected = true
         this.subscribeToWebsocket()
       }
+
+      this.setupSessionChat()
+    },
+
+    setupSessionChat() {
+      if (this.chatHandle || !this.core || !this.catchupEnabled) return
+      this.chatHandle = markRaw(
+        new ChatIntegration(this.core, {
+          scope: {
+            kind: "session",
+            organizationId: this.currentOrganizationScope,
+            sessionId: this.session.id,
+          },
+        }),
+      )
+    },
+
+    // mode/lang are wire fields for the session backend, which builds the
+    // real catchup prompt server-side; the content is only the displayed
+    // user message.
+    openCatchup() {
+      this.chatHandle?.openWithPrompt(this.$t("chat.catchup_request_message"), {
+        mode: "catchup",
+        lang: this.$i18n.locale,
+      })
     },
 
     // Finals emitted while the socket was down are lost (the server does not
     // replay missed room events): reset the channel and reload the latest
     // page — same pattern as channel:change and clear().
     resyncAfterReconnect() {
-      const channel = this.editor?.activeChannel?.value
+      const channel = this.core?.activeChannel?.value
       if (!channel) {
         return
       }

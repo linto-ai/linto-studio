@@ -8988,7 +8988,7 @@ var LintoEditor = (function(exports) {
     "chat.history": "Historique",
     "chat.newChat": "Nouvelle conversation",
     "chat.rename": "Renommer",
-    "chat.deleteSession": "Supprimer",
+    "chat.deleteDiscussion": "Supprimer",
     "chat.deleteConfirm": "Supprimer ?",
     "chat.cancel": "Annuler",
     "chat.confirmDelete": "Confirmer",
@@ -9123,7 +9123,7 @@ var LintoEditor = (function(exports) {
     "chat.history": "History",
     "chat.newChat": "New chat",
     "chat.rename": "Rename",
-    "chat.deleteSession": "Delete",
+    "chat.deleteDiscussion": "Delete",
     "chat.deleteConfirm": "Delete?",
     "chat.cancel": "Cancel",
     "chat.confirmDelete": "Confirm",
@@ -12690,7 +12690,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     if (options.document) {
       buildFromDocument(options.document);
     }
-    const core = {
+    const core = /* @__PURE__ */ shallowReactive({
       title,
       date,
       activeChannelId,
@@ -12707,7 +12707,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       emit: emit2,
       use,
       destroy
-    };
+    });
     return core;
   }
   const coreKey = /* @__PURE__ */ Symbol("core");
@@ -19933,7 +19933,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   const _hoisted_4$b = { class: "form-field__input-wrapper" };
   const _hoisted_5$a = ["id", "disabled", "required", "aria-required", "aria-invalid", "aria-describedby"];
   const _hoisted_6$8 = ["value"];
-  const _hoisted_7$5 = ["type", "id", "disabled", "readonly", "placeholder", "autocomplete", "required", "aria-required", "aria-invalid", "aria-describedby"];
+  const _hoisted_7$6 = ["type", "id", "disabled", "readonly", "placeholder", "autocomplete", "required", "aria-required", "aria-invalid", "aria-describedby"];
   const _hoisted_8$3 = {
     key: 3,
     class: "form-field__actions"
@@ -20116,7 +20116,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               onKeydown,
               onBlur: _cache[4] || (_cache[4] = ($event) => emit2("blur", $event)),
               onFocus: _cache[5] || (_cache[5] = ($event) => emit2("focus", $event))
-            }), null, 16, _hoisted_7$5)), [
+            }), null, 16, _hoisted_7$6)), [
               [vModelDynamic, draft.value]
             ]),
             showConfirmationButtons.value ? (openBlock(), createElementBlock("div", _hoisted_8$3, [
@@ -21160,7 +21160,7 @@ ${text2}` : text2;
   const _hoisted_4$8 = { class: "document-article__toolbar-center" };
   const _hoisted_5$8 = { class: "document-article__toolbar-right" };
   const _hoisted_6$7 = { class: "document-article__body" };
-  const _hoisted_7$4 = {
+  const _hoisted_7$5 = {
     key: 0,
     class: "document-article__center document-article__center--processing",
     role: "status",
@@ -21214,7 +21214,7 @@ ${text2}` : text2;
             ])
           ])) : createCommentVNode("", true),
           createBaseVNode("div", _hoisted_6$7, [
-            props.status === "processing" ? (openBlock(), createElementBlock("div", _hoisted_7$4, [
+            props.status === "processing" ? (openBlock(), createElementBlock("div", _hoisted_7$5, [
               createVNode(EditorIcon, {
                 name: "spinner",
                 spin: "",
@@ -21296,7 +21296,7 @@ ${text2}` : text2;
   const _hoisted_4$7 = { class: "verbatim-panel__doc-title" };
   const _hoisted_5$7 = { class: "verbatim-panel__turns" };
   const _hoisted_6$6 = { class: "verbatim-panel__turn-header" };
-  const _hoisted_7$3 = { class: "verbatim-panel__speaker-name" };
+  const _hoisted_7$4 = { class: "verbatim-panel__speaker-name" };
   const _hoisted_8$1 = {
     key: 0,
     class: "verbatim-panel__meta"
@@ -21366,7 +21366,7 @@ ${text2}` : text2;
                       class: "verbatim-panel__turn"
                     }, [
                       createBaseVNode("header", _hoisted_6$6, [
-                        createBaseVNode("strong", _hoisted_7$3, toDisplayString(speakerName(turn.speakerId)), 1),
+                        createBaseVNode("strong", _hoisted_7$4, toDisplayString(speakerName(turn.speakerId)), 1),
                         turn.startTime != null ? (openBlock(), createElementBlock("span", _hoisted_8$1, [
                           _cache[0] || (_cache[0] = createBaseVNode("span", {
                             class: "verbatim-panel__sep",
@@ -23058,7 +23058,7 @@ ${text2}` : text2;
     key: 2,
     class: "sidebar-section"
   };
-  const _hoisted_7$2 = { class: "sidebar-title" };
+  const _hoisted_7$3 = { class: "sidebar-title" };
   const _hoisted_8 = { class: "subtitle-toggle" };
   const _hoisted_9 = { class: "subtitle-toggle-label" };
   const _hoisted_10 = { class: "subtitle-slider" };
@@ -23199,7 +23199,7 @@ ${text2}` : text2;
             }, null, 8, ["translations", "selected-translation-id"])
           ])) : createCommentVNode("", true),
           unref(core).subtitle ? (openBlock(), createElementBlock("section", _hoisted_6$5, [
-            createBaseVNode("h2", _hoisted_7$2, toDisplayString(unref(t2)("sidebar.subtitle")), 1),
+            createBaseVNode("h2", _hoisted_7$3, toDisplayString(unref(t2)("sidebar.subtitle")), 1),
             createBaseVNode("div", _hoisted_8, [
               createBaseVNode("span", _hoisted_9, toDisplayString(unref(t2)("subtitle.show")), 1),
               createVNode(SwitchToggle, {
@@ -23413,7 +23413,7 @@ ${text2}` : text2;
   const _hoisted_4$4 = { class: "time-display" };
   const _hoisted_5$4 = { class: "time-display" };
   const _hoisted_6$4 = { class: "controls-right" };
-  const _hoisted_7$1 = ["value", "aria-label", "disabled"];
+  const _hoisted_7$2 = ["value", "aria-label", "disabled"];
   const _sfc_main$h = /* @__PURE__ */ defineComponent({
     __name: "AudioPlayerControls",
     props: {
@@ -23522,7 +23522,7 @@ ${text2}` : text2;
                 "aria-label": unref(t2)("player.volume"),
                 disabled: !__props.isReady,
                 onInput: onVolumeInput
-              }, null, 40, _hoisted_7$1), [
+              }, null, 40, _hoisted_7$2), [
                 [vShow, showVolumeSlider.value]
               ])
             ], 32),
@@ -26249,19 +26249,20 @@ ${text2}` : text2;
   const _style_0$d = "\n.subtitle-fullscreen[data-v-e3ae14e0] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0] {\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  border: none;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.subtitle-fullscreen__close[data-v-e3ae14e0]:hover,\n.subtitle-fullscreen__close[data-v-e3ae14e0]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-e3ae14e0] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-e3ae14e0],\n  .subtitle-fullscreen__canvas[data-v-e3ae14e0] {\n    transition: none;\n}\n}\n";
   const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$d]], ["__scopeId", "data-v-e3ae14e0"]]);
   const _hoisted_1$b = ["aria-label"];
-  const _hoisted_2$a = { class: "chat-session-list__header" };
-  const _hoisted_3$8 = { class: "chat-session-list__title" };
-  const _hoisted_4$3 = { class: "chat-session-list__items" };
-  const _hoisted_5$3 = {
+  const _hoisted_2$a = { class: "chat-discussion-list__header" };
+  const _hoisted_3$8 = { class: "chat-discussion-list__title" };
+  const _hoisted_4$3 = { class: "chat-discussion-list__actions" };
+  const _hoisted_5$3 = { class: "chat-discussion-list__items" };
+  const _hoisted_6$3 = {
     key: 1,
-    class: "chat-session-confirm"
+    class: "chat-discussion-confirm"
   };
-  const _hoisted_6$3 = { class: "chat-session-confirm__text" };
+  const _hoisted_7$1 = { class: "chat-discussion-confirm__text" };
   const _sfc_main$c = /* @__PURE__ */ defineComponent({
-    __name: "ChatSessionList",
+    __name: "ChatDiscussionList",
     props: {
-      sessions: { type: Array },
-      activeSessionId: { type: [String, null] }
+      discussions: { type: Array },
+      activeDiscussionId: { type: [String, null] }
     },
     emits: ["select", "create", "rename", "delete"],
     setup(__props, { emit: __emit }) {
@@ -26274,17 +26275,17 @@ ${text2}` : text2;
       const renameField = computed(() => ({
         customParams: { "aria-label": t2("chat.rename") }
       }));
-      function startRename(session) {
+      function startRename(discussion) {
         deleteTargetId.value = null;
-        renameValue.value = session.title;
-        renamingId.value = session.id;
+        renameValue.value = discussion.title;
+        renamingId.value = discussion.id;
       }
       function confirmRename() {
         const id = renamingId.value;
         if (!id) return;
         renamingId.value = null;
         const title = renameValue.value.trim();
-        const current = props.sessions.find((s2) => s2.id === id);
+        const current = props.discussions.find((d2) => d2.id === id);
         if (title && title !== current?.title) emit2("rename", id, title);
       }
       function cancelRename() {
@@ -26295,8 +26296,8 @@ ${text2}` : text2;
         if (event.key === "Enter") confirmRename();
         else if (event.key === "Escape") cancelRename();
       }
-      function requestDelete(sessionId) {
-        deleteTargetId.value = sessionId;
+      function requestDelete(discussionId) {
+        deleteTargetId.value = discussionId;
       }
       function cancelDelete() {
         deleteTargetId.value = null;
@@ -26309,26 +26310,28 @@ ${text2}` : text2;
       }
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("nav", {
-          class: "chat-session-list",
+          class: "chat-discussion-list",
           "aria-label": unref(t2)("chat.history")
         }, [
           createBaseVNode("header", _hoisted_2$a, [
             createBaseVNode("h3", _hoisted_3$8, toDisplayString(unref(t2)("chat.history")), 1),
-            createVNode(Button, {
-              icon: "plus",
-              variant: "transparent",
-              size: "sm",
-              "aria-label": unref(t2)("chat.newChat"),
-              onClick: _cache[0] || (_cache[0] = ($event) => emit2("create"))
-            }, null, 8, ["aria-label"])
+            createBaseVNode("div", _hoisted_4$3, [
+              createVNode(Button, {
+                icon: "plus",
+                variant: "transparent",
+                size: "sm",
+                "aria-label": unref(t2)("chat.newChat"),
+                onClick: _cache[0] || (_cache[0] = ($event) => emit2("create"))
+              }, null, 8, ["aria-label"])
+            ])
           ]),
-          createBaseVNode("ul", _hoisted_4$3, [
-            (openBlock(true), createElementBlock(Fragment, null, renderList(__props.sessions, (session) => {
+          createBaseVNode("ul", _hoisted_5$3, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList(__props.discussions, (discussion) => {
               return openBlock(), createElementBlock("li", {
-                key: session.id,
-                class: "chat-session-item"
+                key: discussion.id,
+                class: "chat-discussion-item"
               }, [
-                renamingId.value === session.id ? (openBlock(), createBlock(FormInput, {
+                renamingId.value === discussion.id ? (openBlock(), createBlock(FormInput, {
                   key: 0,
                   modelValue: renameValue.value,
                   "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => renameValue.value = $event),
@@ -26338,8 +26341,8 @@ ${text2}` : text2;
                   size: "sm",
                   onKeydown: onRenameKeydown,
                   onBlur: confirmRename
-                }, null, 8, ["modelValue", "field"])) : deleteTargetId.value === session.id ? (openBlock(), createElementBlock("div", _hoisted_5$3, [
-                  createBaseVNode("span", _hoisted_6$3, toDisplayString(unref(t2)("chat.deleteConfirm")), 1),
+                }, null, 8, ["modelValue", "field"])) : deleteTargetId.value === discussion.id ? (openBlock(), createElementBlock("div", _hoisted_6$3, [
+                  createBaseVNode("span", _hoisted_7$1, toDisplayString(unref(t2)("chat.deleteConfirm")), 1),
                   createVNode(Button, {
                     icon: "x",
                     variant: "transparent",
@@ -26357,10 +26360,10 @@ ${text2}` : text2;
                   }, null, 8, ["aria-label"])
                 ])) : (openBlock(), createBlock(SelectableListItem, {
                   key: 2,
-                  current: session.id === __props.activeSessionId,
-                  label: session.title,
-                  title: session.title,
-                  onSelect: ($event) => emit2("select", session.id)
+                  current: discussion.id === __props.activeDiscussionId,
+                  label: discussion.title,
+                  title: discussion.title,
+                  onSelect: ($event) => emit2("select", discussion.id)
                 }, {
                   actions: withCtx(() => [
                     createVNode(Button, {
@@ -26368,15 +26371,15 @@ ${text2}` : text2;
                       variant: "transparent",
                       size: "sm",
                       "aria-label": unref(t2)("chat.rename"),
-                      onClick: ($event) => startRename(session)
+                      onClick: ($event) => startRename(discussion)
                     }, null, 8, ["aria-label", "onClick"]),
                     createVNode(Button, {
                       icon: "trash",
                       variant: "transparent",
                       intent: "destructive",
                       size: "sm",
-                      "aria-label": unref(t2)("chat.deleteSession"),
-                      onClick: ($event) => requestDelete(session.id)
+                      "aria-label": unref(t2)("chat.deleteDiscussion"),
+                      onClick: ($event) => requestDelete(discussion.id)
                     }, null, 8, ["aria-label", "onClick"])
                   ]),
                   _: 2
@@ -26388,8 +26391,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$c = "\n.chat-session-list[data-v-abf4cb1f] {\n  width: var(--chat-session-list-width, 200px);\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  border-right: 1px solid var(--color-border);\n  background-color: var(--color-surface-hover);\n  transition: width 0.2s ease;\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-session-list[data-v-abf4cb1f] {\n    transition: none;\n}\n}\n.chat-session-list__header[data-v-abf4cb1f] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm) var(--spacing-md);\n}\n.chat-session-list__title[data-v-abf4cb1f] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-muted);\n}\n.chat-session-list__items[data-v-abf4cb1f] {\n  flex: 1;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  overflow-y: auto;\n}\n\n/* Delete confirmation row */\n.chat-session-confirm[data-v-abf4cb1f] {\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.chat-session-confirm__text[data-v-abf4cb1f] {\n  flex: 1;\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  color: var(--color-danger);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n";
-  const ChatSessionList = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$c]], ["__scopeId", "data-v-abf4cb1f"]]);
+  const _style_0$c = "\n.chat-discussion-list[data-v-26082835] {\n  width: var(--chat-discussion-list-width, 200px);\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  border-right: 1px solid var(--color-border);\n  background-color: var(--color-surface-hover);\n  transition: width 0.2s ease;\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-discussion-list[data-v-26082835] {\n    transition: none;\n}\n}\n.chat-discussion-list__header[data-v-26082835] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm) var(--spacing-md);\n}\n.chat-discussion-list__actions[data-v-26082835] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n.chat-discussion-list__title[data-v-26082835] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-muted);\n}\n.chat-discussion-list__items[data-v-26082835] {\n  flex: 1;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  overflow-y: auto;\n}\n\n/* Delete confirmation row */\n.chat-discussion-confirm[data-v-26082835] {\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.chat-discussion-confirm__text[data-v-26082835] {\n  flex: 1;\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  color: var(--color-danger);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n";
+  const ChatDiscussionList = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$c]], ["__scopeId", "data-v-26082835"]]);
   const _sfc_main$b = /* @__PURE__ */ defineComponent({
     __name: "CopyButton",
     props: {
@@ -26641,7 +26644,7 @@ ${text2}` : text2;
     __name: "ChatMessageList",
     props: {
       messages: { type: Array },
-      hasActiveSession: { type: Boolean },
+      hasActiveDiscussion: { type: Boolean },
       isLoading: { type: Boolean }
     },
     setup(__props) {
@@ -26655,7 +26658,7 @@ ${text2}` : text2;
               spin: ""
             }),
             createBaseVNode("span", _hoisted_3$5, toDisplayString(unref(t2)("editor.loading")), 1)
-          ])) : !__props.hasActiveSession ? (openBlock(), createElementBlock("div", _hoisted_4$1, [
+          ])) : !__props.hasActiveDiscussion ? (openBlock(), createElementBlock("div", _hoisted_4$1, [
             createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyState")), 1)
           ])) : __props.messages.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
             createBaseVNode("p", null, toDisplayString(unref(t2)("chat.emptyChat")), 1)
@@ -26681,8 +26684,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$7 = "\n.chat-message-list[data-v-a132e63a] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n  flex-direction: column;\n}\n.chat-message-list__state[data-v-a132e63a] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-lg);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n}\n.chat-message-list__state[data-v-a132e63a] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-message-list__scroll[data-v-a132e63a] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n.chat-message-list__items[data-v-a132e63a] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n";
-  const ChatMessageList = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$7]], ["__scopeId", "data-v-a132e63a"]]);
+  const _style_0$7 = "\n.chat-message-list[data-v-cd284fbd] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n  flex-direction: column;\n}\n.chat-message-list__state[data-v-cd284fbd] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-lg);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n}\n.chat-message-list__state[data-v-cd284fbd] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-message-list__scroll[data-v-cd284fbd] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n.chat-message-list__items[data-v-cd284fbd] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n";
+  const ChatMessageList = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$7]], ["__scopeId", "data-v-cd284fbd"]]);
   const _hoisted_1$6 = { class: "chat-composer" };
   const _hoisted_2$5 = ["for"];
   const _hoisted_3$4 = ["id", "placeholder", "disabled"];
@@ -26776,7 +26779,7 @@ ${text2}` : text2;
         (open) => {
           if (open) {
             expanded.value = false;
-            core.emit("chat:loadSessions", void 0);
+            core.emit("chat:loadDiscussions", void 0);
             window.addEventListener("keydown", onKeydown);
           } else {
             window.removeEventListener("keydown", onKeydown);
@@ -26784,17 +26787,17 @@ ${text2}` : text2;
         }
       );
       onUnmounted(() => window.removeEventListener("keydown", onKeydown));
-      function onSelect(sessionId) {
-        core.emit("chat:loadSession", { sessionId });
+      function onSelect(discussionId) {
+        core.emit("chat:loadDiscussionMessages", { discussionId });
       }
       function onCreate() {
-        core.emit("chat:createSession", void 0);
+        core.emit("chat:createDiscussion", void 0);
       }
-      function onRename(sessionId, title) {
-        core.emit("chat:renameSession", { sessionId, title });
+      function onRename(discussionId, title) {
+        core.emit("chat:renameDiscussion", { discussionId, title });
       }
-      function onDelete(sessionId) {
-        core.emit("chat:deleteSession", { sessionId });
+      function onDelete(discussionId) {
+        core.emit("chat:deleteDiscussion", { discussionId });
       }
       function onSend(content) {
         core.emit("chat:send", { content });
@@ -26843,22 +26846,22 @@ ${text2}` : text2;
                   ])
                 ]),
                 createBaseVNode("div", _hoisted_5, [
-                  createVNode(ChatSessionList, {
-                    sessions: unref(chat).sessions.value,
-                    "active-session-id": unref(chat).activeSessionId.value,
+                  createVNode(ChatDiscussionList, {
+                    discussions: unref(chat).discussions.value,
+                    "active-discussion-id": unref(chat).activeDiscussionId.value,
                     onSelect,
                     onCreate,
                     onRename,
                     onDelete
-                  }, null, 8, ["sessions", "active-session-id"]),
+                  }, null, 8, ["discussions", "active-discussion-id"]),
                   createBaseVNode("div", _hoisted_6, [
                     createVNode(ChatMessageList, {
                       messages: unref(chat).allMessages.value,
-                      "has-active-session": unref(chat).activeSessionId.value !== null,
-                      "is-loading": unref(chat).isLoadingSession.value
-                    }, null, 8, ["messages", "has-active-session", "is-loading"]),
+                      "has-active-discussion": unref(chat).activeDiscussionId.value !== null,
+                      "is-loading": unref(chat).isLoadingDiscussion.value
+                    }, null, 8, ["messages", "has-active-discussion", "is-loading"]),
                     createVNode(ChatComposer, {
-                      disabled: unref(chat).isStreaming.value || unref(chat).isLoadingSession.value,
+                      disabled: unref(chat).isStreaming.value || unref(chat).isLoadingDiscussion.value,
                       onSend
                     }, null, 8, ["disabled"])
                   ])
@@ -26871,8 +26874,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$5 = "\n.chat-overlay[data-v-3b5af03a] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-drawer);\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  justify-content: flex-end;\n}\n.chat-drawer[data-v-3b5af03a] {\n  /* Centered reading column for messages + composer; cascades to the child\n     components through the DOM regardless of scoped styles. */\n  --chat-content-max-width: 760px;\n  --chat-session-list-width: 200px;\n  width: min(620px, 100vw);\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n  transition: width 0.2s ease;\n}\n\n/* Near-full-width: keeps a backdrop strip on the left so click-outside still\n   closes the panel. */\n.chat-drawer--expanded[data-v-3b5af03a] {\n  width: min(1400px, 96vw);\n  --chat-session-list-width: 300px;\n}\n.chat-drawer__header[data-v-3b5af03a] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-drawer__title[data-v-3b5af03a] {\n  margin: 0;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font-size: var(--font-size-base);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.chat-drawer__title[data-v-3b5af03a] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-drawer__actions[data-v-3b5af03a] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n\n/* The expand toggle is desktop-only: on phones the panel is already full-width. */\n@media (max-width: 640px) {\n.chat-drawer__expand[data-v-3b5af03a] {\n    display: none;\n}\n}\n.chat-drawer__body[data-v-3b5af03a] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n}\n.chat-drawer__main[data-v-3b5af03a] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n/* ── Slide + fade transition ── */\n.chat-drawer-enter-active[data-v-3b5af03a],\n.chat-drawer-leave-active[data-v-3b5af03a] {\n  transition: opacity 0.2s ease;\n}\n.chat-drawer-enter-active .chat-drawer[data-v-3b5af03a],\n.chat-drawer-leave-active .chat-drawer[data-v-3b5af03a] {\n  transition: transform 0.25s ease;\n}\n.chat-drawer-enter-from[data-v-3b5af03a],\n.chat-drawer-leave-to[data-v-3b5af03a] {\n  opacity: 0;\n}\n.chat-drawer-enter-from .chat-drawer[data-v-3b5af03a],\n.chat-drawer-leave-to .chat-drawer[data-v-3b5af03a] {\n  transform: translateX(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-drawer[data-v-3b5af03a],\n  .chat-drawer-enter-active[data-v-3b5af03a],\n  .chat-drawer-leave-active[data-v-3b5af03a],\n  .chat-drawer-enter-active .chat-drawer[data-v-3b5af03a],\n  .chat-drawer-leave-active .chat-drawer[data-v-3b5af03a] {\n    transition: none;\n}\n}\n";
-  const ChatDrawer = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-3b5af03a"]]);
+  const _style_0$5 = "\n.chat-overlay[data-v-2df61cbf] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-drawer);\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  justify-content: flex-end;\n}\n.chat-drawer[data-v-2df61cbf] {\n  /* Centered reading column for messages + composer; cascades to the child\n     components through the DOM regardless of scoped styles. */\n  --chat-content-max-width: 760px;\n  --chat-discussion-list-width: 200px;\n  width: min(620px, 100vw);\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n  transition: width 0.2s ease;\n}\n\n/* Near-full-width: keeps a backdrop strip on the left so click-outside still\n   closes the panel. */\n.chat-drawer--expanded[data-v-2df61cbf] {\n  width: min(1400px, 96vw);\n  --chat-discussion-list-width: 300px;\n}\n.chat-drawer__header[data-v-2df61cbf] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-drawer__title[data-v-2df61cbf] {\n  margin: 0;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font-size: var(--font-size-base);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.chat-drawer__title[data-v-2df61cbf] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-drawer__actions[data-v-2df61cbf] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n\n/* The expand toggle is desktop-only: on phones the panel is already full-width. */\n@media (max-width: 640px) {\n.chat-drawer__expand[data-v-2df61cbf] {\n    display: none;\n}\n}\n.chat-drawer__body[data-v-2df61cbf] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n}\n.chat-drawer__main[data-v-2df61cbf] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n/* ── Slide + fade transition ── */\n.chat-drawer-enter-active[data-v-2df61cbf],\n.chat-drawer-leave-active[data-v-2df61cbf] {\n  transition: opacity 0.2s ease;\n}\n.chat-drawer-enter-active .chat-drawer[data-v-2df61cbf],\n.chat-drawer-leave-active .chat-drawer[data-v-2df61cbf] {\n  transition: transform 0.25s ease;\n}\n.chat-drawer-enter-from[data-v-2df61cbf],\n.chat-drawer-leave-to[data-v-2df61cbf] {\n  opacity: 0;\n}\n.chat-drawer-enter-from .chat-drawer[data-v-2df61cbf],\n.chat-drawer-leave-to .chat-drawer[data-v-2df61cbf] {\n  transform: translateX(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-drawer[data-v-2df61cbf],\n  .chat-drawer-enter-active[data-v-2df61cbf],\n  .chat-drawer-leave-active[data-v-2df61cbf],\n  .chat-drawer-enter-active .chat-drawer[data-v-2df61cbf],\n  .chat-drawer-leave-active .chat-drawer[data-v-2df61cbf] {\n    transition: none;\n}\n}\n";
+  const ChatDrawer = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-2df61cbf"]]);
   const _hoisted_1$4 = ["aria-label"];
   const _hoisted_2$3 = { class: "selection-count" };
   const _hoisted_3$2 = { class: "selection-actions" };
@@ -28969,12 +28972,12 @@ pre[class*="language-"] {
       name: "chat",
       install(core) {
         const drawerOpen = /* @__PURE__ */ ref(false);
-        const sessions = /* @__PURE__ */ ref([]);
-        const activeSessionId = /* @__PURE__ */ ref(null);
+        const discussions = /* @__PURE__ */ ref([]);
+        const activeDiscussionId = /* @__PURE__ */ ref(null);
         const messages = /* @__PURE__ */ ref([]);
         const isStreaming = /* @__PURE__ */ ref(false);
         const streamingContent = /* @__PURE__ */ ref("");
-        const isLoadingSession = /* @__PURE__ */ ref(false);
+        const isLoadingDiscussion = /* @__PURE__ */ ref(false);
         let seq = 0;
         const nextId = () => `local-${++seq}`;
         const allMessages = computed(() => {
@@ -28991,21 +28994,21 @@ pre[class*="language-"] {
         });
         const api = {
           drawerOpen,
-          sessions,
-          activeSessionId,
+          discussions,
+          activeDiscussionId,
           messages,
           isStreaming,
           streamingContent,
-          isLoadingSession,
+          isLoadingDiscussion,
           allMessages,
           setDrawerOpen(open) {
             drawerOpen.value = open;
           },
-          setSessions(next2) {
-            sessions.value = next2;
+          setDiscussions(next2) {
+            discussions.value = next2;
           },
-          setActiveSession(sessionId) {
-            activeSessionId.value = sessionId;
+          setActiveDiscussion(discussionId) {
+            activeDiscussionId.value = discussionId;
           },
           setMessages(next2) {
             messages.value = next2;
@@ -29013,12 +29016,12 @@ pre[class*="language-"] {
           addMessage(message) {
             messages.value = [...messages.value, message];
           },
-          updateSessionTitle(sessionId, title) {
-            const session = sessions.value.find((s2) => s2.id === sessionId);
-            if (session) session.title = title;
+          updateDiscussionTitle(discussionId, title) {
+            const discussion = discussions.value.find((d2) => d2.id === discussionId);
+            if (discussion) discussion.title = title;
           },
-          setLoadingSession(loading) {
-            isLoadingSession.value = loading;
+          setLoadingDiscussion(loading) {
+            isLoadingDiscussion.value = loading;
           },
           streamStart() {
             isStreaming.value = true;
@@ -29047,12 +29050,12 @@ pre[class*="language-"] {
         };
         core.chat = api;
         return () => {
-          sessions.value = [];
+          discussions.value = [];
           messages.value = [];
-          activeSessionId.value = null;
+          activeDiscussionId.value = null;
           isStreaming.value = false;
           streamingContent.value = "";
-          isLoadingSession.value = false;
+          isLoadingDiscussion.value = false;
           drawerOpen.value = false;
           core.chat = void 0;
         };

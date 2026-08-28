@@ -184,4 +184,5 @@ module.exports = {
   ensureSpeaker,
   createTurn,
   dedupeClosedCaptionsBySegmentId,
+  DEFAULT_SPEAKER_NAME,
 }

@@ -125,7 +125,7 @@ const en: Record<keyof typeof fr, string> = {
   'chat.history': 'History',
   'chat.newChat': 'New chat',
   'chat.rename': 'Rename',
-  'chat.deleteSession': 'Delete',
+  'chat.deleteDiscussion': 'Delete',
   'chat.deleteConfirm': 'Delete?',
   'chat.cancel': 'Cancel',
   'chat.confirmDelete': 'Confirm',

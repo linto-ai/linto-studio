@@ -4,7 +4,7 @@ import { useCore } from "../core"
 import { useI18n } from "../i18n"
 import Button from "./atoms/Button.vue"
 import EditorIcon from "./atoms/EditorIcon.vue"
-import ChatSessionList from "./molecules/ChatSessionList.vue"
+import ChatDiscussionList from "./molecules/ChatDiscussionList.vue"
 import ChatMessageList from "./molecules/ChatMessageList.vue"
 import ChatComposer from "./molecules/ChatComposer.vue"
 
@@ -35,7 +35,7 @@ watch(
   (open) => {
     if (open) {
       expanded.value = false
-      core.emit("chat:loadSessions", undefined)
+      core.emit("chat:loadDiscussions", undefined)
       window.addEventListener("keydown", onKeydown)
     } else {
       window.removeEventListener("keydown", onKeydown)
@@ -45,17 +45,17 @@ watch(
 
 onUnmounted(() => window.removeEventListener("keydown", onKeydown))
 
-function onSelect(sessionId: string): void {
-  core.emit("chat:loadSession", { sessionId })
+function onSelect(discussionId: string): void {
+  core.emit("chat:loadDiscussionMessages", { discussionId })
 }
 function onCreate(): void {
-  core.emit("chat:createSession", undefined)
+  core.emit("chat:createDiscussion", undefined)
 }
-function onRename(sessionId: string, title: string): void {
-  core.emit("chat:renameSession", { sessionId, title })
+function onRename(discussionId: string, title: string): void {
+  core.emit("chat:renameDiscussion", { discussionId, title })
 }
-function onDelete(sessionId: string): void {
-  core.emit("chat:deleteSession", { sessionId })
+function onDelete(discussionId: string): void {
+  core.emit("chat:deleteDiscussion", { discussionId })
 }
 function onSend(content: string): void {
   core.emit("chat:send", { content })
@@ -97,9 +97,9 @@ function onSend(content: string): void {
         </header>
 
         <div class="chat-drawer__body">
-          <ChatSessionList
-            :sessions="chat.sessions.value"
-            :active-session-id="chat.activeSessionId.value"
+          <ChatDiscussionList
+            :discussions="chat.discussions.value"
+            :active-discussion-id="chat.activeDiscussionId.value"
             @select="onSelect"
             @create="onCreate"
             @rename="onRename"
@@ -108,10 +108,12 @@ function onSend(content: string): void {
           <div class="chat-drawer__main">
             <ChatMessageList
               :messages="chat.allMessages.value"
-              :has-active-session="chat.activeSessionId.value !== null"
-              :is-loading="chat.isLoadingSession.value" />
+              :has-active-discussion="chat.activeDiscussionId.value !== null"
+              :is-loading="chat.isLoadingDiscussion.value" />
             <ChatComposer
-              :disabled="chat.isStreaming.value || chat.isLoadingSession.value"
+              :disabled="
+                chat.isStreaming.value || chat.isLoadingDiscussion.value
+              "
               @send="onSend" />
           </div>
         </div>
@@ -134,7 +136,7 @@ function onSend(content: string): void {
   /* Centered reading column for messages + composer; cascades to the child
      components through the DOM regardless of scoped styles. */
   --chat-content-max-width: 760px;
-  --chat-session-list-width: 200px;
+  --chat-discussion-list-width: 200px;
   width: min(620px, 100vw);
   height: 100%;
   display: flex;
@@ -148,7 +150,7 @@ function onSend(content: string): void {
    closes the panel. */
 .chat-drawer--expanded {
   width: min(1400px, 96vw);
-  --chat-session-list-width: 300px;
+  --chat-discussion-list-width: 300px;
 }
 
 .chat-drawer__header {

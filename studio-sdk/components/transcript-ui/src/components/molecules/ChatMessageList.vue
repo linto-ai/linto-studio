@@ -7,7 +7,7 @@ import type { ChatMessage as ChatMessageType } from "../../core/types"
 
 defineProps<{
   messages: ChatMessageType[]
-  hasActiveSession: boolean
+  hasActiveDiscussion: boolean
   isLoading: boolean
 }>()
 
@@ -16,18 +16,18 @@ const { t } = useI18n()
 
 <template>
   <div class="chat-message-list">
-    <!-- Loading the session history -->
+    <!-- Loading the discussion history -->
     <div v-if="isLoading" class="chat-message-list__state" role="status">
       <EditorIcon name="spinner" :size="28" spin />
       <span class="sr-only">{{ t("editor.loading") }}</span>
     </div>
 
-    <!-- No session selected yet -->
-    <div v-else-if="!hasActiveSession" class="chat-message-list__state">
+    <!-- No discussion selected yet -->
+    <div v-else-if="!hasActiveDiscussion" class="chat-message-list__state">
       <p>{{ t("chat.emptyState") }}</p>
     </div>
 
-    <!-- Active session but empty -->
+    <!-- Active discussion but empty -->
     <div v-else-if="messages.length === 0" class="chat-message-list__state">
       <p>{{ t("chat.emptyChat") }}</p>
     </div>

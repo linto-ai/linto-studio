@@ -19,6 +19,14 @@
         <IsMobile>
           <div class="flex gap-small">
             <Button
+              v-if="canCatchup"
+              @click="openCatchup"
+              variant="secondary"
+              :aria-label="$t('chat.catchup_button')"
+              :title="$t('chat.catchup_button')"
+              icon="sparkle" />
+
+            <Button
               v-if="isAtLeastMeetingManager && !isFromPublicLink"
               :to="settingsRoute"
               variant="primary"
@@ -33,6 +41,14 @@
           </div>
 
           <template #desktop>
+            <Button
+              v-if="canCatchup"
+              @click="openCatchup"
+              variant="secondary"
+              size="sm"
+              :label="$t('chat.catchup_button')"
+              icon="sparkle" />
+
             <Button
               v-if="isAtLeastMeetingManager && !isFromPublicLink"
               :to="settingsRoute"
@@ -63,6 +79,7 @@
         :displaySubtitles="displaySubtitles"
         :isFromPublicLink="isFromPublicLink"
         :microphoneStatus="microphoneStatus"
+        :catchupEnabled="canCatchup"
         @retry-microphone="retryAudioConnection"
         @reconfigure-microphone="showMicrophoneSetup = true" />
 
@@ -92,7 +109,7 @@
   </LayoutV2>
 </template>
 <script>
-import { mapGetters } from "vuex"
+import { mapGetters, mapState } from "vuex"
 
 import { sessionMixin } from "@/mixins/session.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole"
@@ -142,7 +159,12 @@ export default {
     // if not started, redirect to home
     // if stopped, redirect to conversation
   },
-  mounted() {},
+  mounted() {
+    // Org members only: the catchup button cannot appear outside an org scope
+    if (this.isAuthenticated && this.currentOrganizationScope) {
+      this.$store.dispatch("chat/checkAvailability")
+    }
+  },
   watch: {
     sessionLoaded() {
       if (this.sessionLoaded) {
@@ -195,6 +217,9 @@ export default {
       this.$refs["sessionLiveNG"].showMobileSubtitles()
       this.showSubtitlesFullscreen = true
     },
+    openCatchup() {
+      this.$refs.sessionLiveNG?.openCatchup()
+    },
     closeSubtitleFullscreen() {
       this.showSubtitlesFullscreen = false
     },
@@ -208,6 +233,17 @@ export default {
     },
     ...mapGetters("system", ["isMobile"]),
     ...mapGetters("user", ["isAuthenticated"]),
+    ...mapState("chat", ["catchupEnabled"]),
+    canCatchup() {
+      return (
+        this.sessionLoaded &&
+        !this.isTerminated &&
+        this.isAuthenticated &&
+        !this.isFromPublicLink &&
+        !!this.currentOrganizationScope &&
+        this.catchupEnabled
+      )
+    },
   },
   components: {
     LayoutV2,

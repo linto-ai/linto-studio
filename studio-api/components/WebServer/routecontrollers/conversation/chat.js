@@ -7,8 +7,18 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 
 const {
-  ConversationNotFound,
+  HISTORY_CONTEXT_MESSAGES,
+  MAX_MESSAGE_CHARS,
+  MAX_TITLE_CHARS,
+  buildContextMessages,
+  resolveChatFlavor,
+  sseError,
+  streamAndPersistReply,
 } = require(
+  `${process.cwd()}/components/WebServer/controllers/llm/chatCompletions.js`,
+)
+
+const { ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
@@ -35,9 +45,8 @@ function buildTranscriptText(conversation) {
  * Load the latest completed summary for a conversation from LLM Gateway
  */
 async function loadLatestSummary(conversationId) {
-  const exports = await model.conversationExport.getByConvAndFormat(
-    conversationId,
-  )
+  const exports =
+    await model.conversationExport.getByConvAndFormat(conversationId)
   for (const exp of exports) {
     if (exp.status === "complete" && exp.jobId) {
       try {
@@ -56,33 +65,26 @@ async function loadLatestSummary(conversationId) {
 }
 
 /**
- * Resolve the default flavor ID for the configured chat service
- * Throws on misconfiguration so callers can return explicit errors
+ * Verify ownership and scoping; { session } or { status, error }.
+ * Conversation mismatch answers 404 on CRUD but 403 on sendMessage.
  */
-async function resolveDefaultChatFlavor() {
-  const baseUrl = process.env.LLM_GATEWAY_SERVICES
-  if (!baseUrl) throw new Error("LLM_GATEWAY_SERVICES not configured")
-
-  const serviceId = process.env.LLM_CHAT_SERVICE_ID
-  if (!serviceId) throw new Error("LLM_CHAT_SERVICE_ID not configured")
-
-  const flavorsResp = await axios.get(
-    `${baseUrl}/api/v1/services/${serviceId}/flavors`,
-  )
-  const flavors = flavorsResp?.items || flavorsResp || []
-  if (!Array.isArray(flavors) || flavors.length === 0) {
-    throw new Error(`No active flavor for chat service ${serviceId}`)
+async function loadOwnedSession(
+  req,
+  mismatchResponse = { status: 404, error: "Chat session not found" },
+) {
+  const sessions = await model.chatSessions.getById(req.params.sessionId)
+  if (!sessions || sessions.length === 0) {
+    return { status: 404, error: "Chat session not found" }
   }
 
-  const defaultFlavor = flavors.find((f) => f.is_default && f.is_active)
-  const activeFlavor = flavors.find((f) => f.is_active)
-  const flavor = defaultFlavor || activeFlavor
-
-  if (!flavor) {
-    throw new Error(`No active flavor for chat service ${serviceId}`)
+  const session = sessions[0]
+  if (session.userId !== req.payload.data.userId) {
+    return { status: 403, error: "Not authorized" }
   }
-
-  return flavor.id
+  if (session.conversationId !== req.params.conversationId) {
+    return mismatchResponse
+  }
+  return { session }
 }
 
 /**
@@ -101,10 +103,9 @@ async function createSession(req, res, next) {
     let flavorId = req.body.flavorId || null
     const title = req.body.title || "New chat"
 
-    // Resolve default flavor if not provided
     if (!flavorId) {
       try {
-        flavorId = await resolveDefaultChatFlavor()
+        flavorId = await resolveChatFlavor()
       } catch (e) {
         appLogger.warn(`[Chat] ${e.message}`)
         return res.status(503).json({ error: e.message })
@@ -141,25 +142,20 @@ async function listSessions(req, res, next) {
       conversationId,
       userId,
     )
-
-    // Enrich with message count via aggregation
-    const enriched = await Promise.all(
-      sessions.map(async (s) => {
-        const messages = await model.chatMessages.getBySession(
-          s._id.toString(),
-        )
-        return {
-          _id: s._id.toString(),
-          title: s.title,
-          flavorId: s.flavorId,
-          messageCount: messages.length,
-          created_at: s.created_at,
-          updated_at: s.updated_at,
-        }
-      }),
+    const counts = await model.chatMessages.countBySessions(
+      sessions.map((s) => s._id.toString()),
     )
 
-    res.status(200).json(enriched)
+    res.status(200).json(
+      sessions.map((s) => ({
+        _id: s._id.toString(),
+        title: s.title,
+        flavorId: s.flavorId,
+        messageCount: counts[s._id.toString()] || 0,
+        created_at: s.created_at,
+        updated_at: s.updated_at,
+      })),
+    )
   } catch (error) {
     next(error)
   }
@@ -171,21 +167,14 @@ async function listSessions(req, res, next) {
  */
 async function getSession(req, res, next) {
   try {
-    const { sessionId } = req.params
-
-    const sessions = await model.chatSessions.getById(sessionId)
-    if (!sessions || sessions.length === 0) {
-      return res.status(404).json({ error: "Chat session not found" })
+    const { session, status, error } = await loadOwnedSession(req)
+    if (!session) {
+      return res.status(status).json({ error })
     }
 
-    const session = sessions[0]
-    if (session.userId !== req.payload.data.userId) {
-      return res.status(403).json({ error: "Not authorized" })
-    }
-    if (session.conversationId !== req.params.conversationId) {
-      return res.status(404).json({ error: "Chat session not found" })
-    }
-    const messages = await model.chatMessages.getBySession(sessionId)
+    const messages = await model.chatMessages.getBySession(
+      session._id.toString(),
+    )
 
     res.status(200).json({
       _id: session._id.toString(),
@@ -213,33 +202,23 @@ async function getSession(req, res, next) {
  */
 async function updateSession(req, res, next) {
   try {
-    const { sessionId } = req.params
     const { title } = req.body
 
     if (!title || !title.trim()) {
       return res.status(400).json({ error: "Title is required" })
     }
-
-    const sessions = await model.chatSessions.getById(sessionId)
-    if (!sessions || sessions.length === 0) {
-      return res.status(404).json({ error: "Chat session not found" })
-    }
-
-    const session = sessions[0]
-    if (session.userId !== req.payload.data.userId) {
-      return res.status(403).json({ error: "Not authorized" })
-    }
-    if (session.conversationId !== req.params.conversationId) {
-      return res.status(404).json({ error: "Chat session not found" })
-    }
-
-    if (title.trim().length > 200) {
+    if (title.trim().length > MAX_TITLE_CHARS) {
       return res.status(400).json({ error: "Title too long" })
     }
 
-    await model.chatSessions.updateTitle(sessionId, title.trim())
+    const { session, status, error } = await loadOwnedSession(req)
+    if (!session) {
+      return res.status(status).json({ error })
+    }
 
-    res.status(200).json({ _id: sessionId, title: title.trim() })
+    await model.chatSessions.updateTitle(session._id.toString(), title.trim())
+
+    res.status(200).json({ _id: session._id.toString(), title: title.trim() })
   } catch (error) {
     next(error)
   }
@@ -251,25 +230,13 @@ async function updateSession(req, res, next) {
  */
 async function deleteSession(req, res, next) {
   try {
-    const { sessionId } = req.params
-
-    // Verify session exists and belongs to current user
-    const sessions = await model.chatSessions.getById(sessionId)
-    if (!sessions || sessions.length === 0) {
-      return res.status(404).json({ error: "Chat session not found" })
+    const { session, status, error } = await loadOwnedSession(req)
+    if (!session) {
+      return res.status(status).json({ error })
     }
 
-    const session = sessions[0]
-    if (session.userId !== req.payload.data.userId) {
-      return res.status(403).json({ error: "Not authorized" })
-    }
-    if (session.conversationId !== req.params.conversationId) {
-      return res.status(404).json({ error: "Chat session not found" })
-    }
-
-    // Delete messages first, then session
-    await model.chatMessages.deleteBySession(sessionId)
-    await model.chatSessions.delete(sessionId)
+    await model.chatMessages.deleteBySession(session._id.toString())
+    await model.chatSessions.delete(session._id.toString())
 
     res.status(200).json({ status: "deleted" })
   } catch (error) {
@@ -289,63 +256,40 @@ async function sendMessage(req, res, next) {
     if (!content || !content.trim()) {
       return res.status(400).json({ error: "Message content is required" })
     }
-    if (content.trim().length > 50000) {
+    if (content.trim().length > MAX_MESSAGE_CHARS) {
       return res.status(400).json({ error: "Message too long" })
     }
 
-    // 1. Save user message
-    await model.chatMessages.create({
-      sessionId,
-      role: "user",
-      content: content.trim(),
-    })
+    // All reads: the ownership verdict lands before anything is written
+    const [owned, conversations, summary, history] = await Promise.all([
+      loadOwnedSession(req, {
+        status: 403,
+        error: "Session does not belong to this conversation",
+      }),
+      model.conversations.getById(conversationId, ["name", "text", "speakers"]),
+      loadLatestSummary(conversationId),
+      model.chatMessages.getLastBySession(sessionId, HISTORY_CONTEXT_MESSAGES),
+    ])
+    const { session, status, error } = owned
+    if (!session) {
+      return res.status(status).json({ error })
+    }
 
-    // 2. Load all messages for session
-    const allMessages = await model.chatMessages.getBySession(sessionId)
-    const messages = allMessages.slice(-50) // Keep last 50 messages max
-    const llmMessages = messages.map((m) => ({
-      role: m.role,
-      content: m.content,
-    }))
-
-    // 3. Load conversation transcript
-    const conversations = await model.conversations.getById(conversationId)
     if (!conversations || conversations.length === 0) {
       throw new ConversationNotFound()
     }
     const conversation = conversations[0]
     const transcript = buildTranscriptText(conversation)
 
-    // 4. Load summary if available
-    const summary = await loadLatestSummary(conversationId)
+    const llmMessages = buildContextMessages(history, content.trim())
 
-    // 5. Load session for flavorId
-    const sessionRecords = await model.chatSessions.getById(sessionId)
-    if (!sessionRecords || sessionRecords.length === 0) {
-      return res.status(404).json({ error: "Chat session not found" })
-    }
-    const session = sessionRecords[0]
-    if (session.userId !== req.payload.data.userId) {
-      return res.status(403).json({ error: "Not authorized" })
-    }
-    if (session.conversationId !== conversationId) {
-      return res.status(403).json({ error: "Session does not belong to this conversation" })
-    }
+    // Settled by streamAndPersistReply, off the time-to-first-token path
+    const userMessageWrite = model.chatMessages.create({
+      sessionId,
+      role: "user",
+      content: content.trim(),
+    })
 
-    // 6. Guard: reject if session has no flavor configured
-    if (!session.flavorId) {
-      res.setHeader("Content-Type", "text/event-stream")
-      res.setHeader("Cache-Control", "no-cache")
-      res.setHeader("Connection", "keep-alive")
-      res.flushHeaders()
-      res.write(
-        `event: error\ndata: ${JSON.stringify({ error: "Chat not configured: no flavor" })}\n\n`,
-      )
-      res.end()
-      return
-    }
-
-    // 7. Build LLM Gateway request
     const gatewayPayload = {
       flavor_id: session.flavorId,
       messages: llmMessages,
@@ -360,135 +304,19 @@ async function sendMessage(req, res, next) {
       organization_id: session.organizationId || undefined,
     }
 
-    // 8. SSE headers
-    res.setHeader("Content-Type", "text/event-stream")
-    res.setHeader("Cache-Control", "no-cache")
-    res.setHeader("Connection", "keep-alive")
-    res.flushHeaders()
-
-    // 9. POST to LLM Gateway with streaming
-    const baseUrl = process.env.LLM_GATEWAY_SERVICES
-    if (!baseUrl) {
-      res.write(
-        `event: error\ndata: ${JSON.stringify({ error: "LLM Gateway not configured" })}\n\n`,
-      )
-      res.end()
-      return
-    }
-
-    const response = await fetch(`${baseUrl}/api/v1/chat/completions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(gatewayPayload),
+    await streamAndPersistReply(res, {
+      chatSessionId: sessionId,
+      flavorId: session.flavorId,
+      gatewayPayload,
+      pendingWrites: [userMessageWrite],
     })
-
-    if (!response.ok) {
-      const errMsg = "LLM service error"
-      try {
-        await response.text()
-      } catch (e) {
-        /* ignore */
-      }
-      res.write(
-        `event: error\ndata: ${JSON.stringify({ error: errMsg })}\n\n`,
-      )
-      res.end()
-      return
-    }
-
-    // 9. Pipe response while accumulating content
-    let assistantContent = ""
-    let tokenCount = null
-    const reader = response.body.getReader()
-    const decoder = new TextDecoder()
-
-    let buffer = ""
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-
-      buffer += decoder.decode(value, { stream: true })
-
-      // Parse SSE events from buffer
-      const lines = buffer.split("\n")
-      buffer = lines.pop() // Keep incomplete line
-
-      let eventType = null
-      for (const line of lines) {
-        if (line.startsWith("event: ")) {
-          eventType = line.slice(7).trim()
-        } else if (line.startsWith("data: ")) {
-          const data = line.slice(6)
-          try {
-            const parsed = JSON.parse(data)
-            if (eventType === "token" && parsed.content) {
-              assistantContent += parsed.content
-            }
-            if (eventType === "done" && parsed.usage) {
-              tokenCount = parsed.usage.total_tokens
-            }
-          } catch (e) {
-            /* ignore parse errors */
-          }
-
-          // Forward to client
-          res.write(`event: ${eventType}\ndata: ${data}\n\n`)
-        }
-      }
-    }
-
-    // 10. Save assistant message
-    if (assistantContent) {
-      await model.chatMessages.create({
-        sessionId,
-        role: "assistant",
-        content: assistantContent,
-        tokenCount,
-      })
-
-      // Update session timestamp
-      await model.chatSessions.updateTitle(sessionId, session.title)
-    }
-
-    res.end()
   } catch (error) {
-    // If headers already sent, write error as SSE
     if (res.headersSent) {
-      res.write(
-        `event: error\ndata: ${JSON.stringify({ error: "Internal error" })}\n\n`,
-      )
+      sseError(res, "Internal error")
       res.end()
     } else {
       next(error)
     }
-  }
-}
-
-/**
- * GET /api/chat/status
- * Returns whether the chat feature is configured and the chat service is active
- */
-async function chatStatus(req, res) {
-  const gatewayUrl = process.env.LLM_GATEWAY_SERVICES?.trim()
-  const chatServiceId = process.env.LLM_CHAT_SERVICE_ID?.trim()
-
-  if (!gatewayUrl || !chatServiceId) {
-    return res.status(200).json({ enabled: false })
-  }
-
-  try {
-    const response = await axios.get(
-      `${gatewayUrl}/api/v1/services/${chatServiceId}`,
-      { timeout: 3000 },
-    )
-    const serviceActive = response?.is_active !== false
-    const hasActiveFlavor = (response?.flavors || []).some(
-      (f) => f.is_active !== false,
-    )
-    res.status(200).json({ enabled: serviceActive && hasActiveFlavor })
-  } catch {
-    // Gateway unreachable or service not found — disable chat
-    res.status(200).json({ enabled: false })
   }
 }
 
@@ -499,5 +327,4 @@ module.exports = {
   deleteSession,
   updateSession,
   sendMessage,
-  chatStatus,
 }

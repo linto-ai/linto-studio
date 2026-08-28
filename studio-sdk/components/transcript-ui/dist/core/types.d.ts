@@ -80,16 +80,16 @@ export interface CoreEventMap {
     "verbatim:export": {
         format: string;
     };
-    "chat:loadSessions": void;
-    "chat:createSession": void;
-    "chat:loadSession": {
-        sessionId: string;
+    "chat:loadDiscussions": void;
+    "chat:createDiscussion": void;
+    "chat:loadDiscussionMessages": {
+        discussionId: string;
     };
-    "chat:deleteSession": {
-        sessionId: string;
+    "chat:deleteDiscussion": {
+        discussionId: string;
     };
-    "chat:renameSession": {
-        sessionId: string;
+    "chat:renameDiscussion": {
+        discussionId: string;
         title: string;
     };
     "chat:send": {
@@ -479,27 +479,27 @@ export interface ChatMessage {
     /** True only for the virtual in-flight assistant message during streaming. */
     streaming?: boolean;
 }
-export interface ChatSession {
+export interface ChatDiscussion {
     id: string;
     title: string;
 }
 export interface ChatPluginApi {
     readonly drawerOpen: Ref<boolean>;
-    readonly sessions: Ref<ChatSession[]>;
-    readonly activeSessionId: Ref<string | null>;
+    readonly discussions: Ref<ChatDiscussion[]>;
+    readonly activeDiscussionId: Ref<string | null>;
     readonly messages: Ref<ChatMessage[]>;
     readonly isStreaming: Ref<boolean>;
     readonly streamingContent: Ref<string>;
-    readonly isLoadingSession: Ref<boolean>;
+    readonly isLoadingDiscussion: Ref<boolean>;
     /** messages plus the in-flight assistant message while streaming */
     readonly allMessages: ComputedRef<ChatMessage[]>;
     setDrawerOpen(open: boolean): void;
-    setSessions(sessions: ChatSession[]): void;
-    setActiveSession(sessionId: string | null): void;
+    setDiscussions(discussions: ChatDiscussion[]): void;
+    setActiveDiscussion(discussionId: string | null): void;
     setMessages(messages: ChatMessage[]): void;
     addMessage(message: ChatMessage): void;
-    updateSessionTitle(sessionId: string, title: string): void;
-    setLoadingSession(loading: boolean): void;
+    updateDiscussionTitle(discussionId: string, title: string): void;
+    setLoadingDiscussion(loading: boolean): void;
     streamStart(): void;
     streamAppend(token: string): void;
     /** Finalize the streamed text as a permanent assistant message and reset. */

@@ -42,11 +42,11 @@ export interface CoreEventMap {
   "llmService:saveVersion": { id: string; content: string }
   "llmService:selectGeneration": { id: string; generationId: string }
   "verbatim:export": { format: string }
-  "chat:loadSessions": void
-  "chat:createSession": void
-  "chat:loadSession": { sessionId: string }
-  "chat:deleteSession": { sessionId: string }
-  "chat:renameSession": { sessionId: string; title: string }
+  "chat:loadDiscussions": void
+  "chat:createDiscussion": void
+  "chat:loadDiscussionMessages": { discussionId: string }
+  "chat:deleteDiscussion": { discussionId: string }
+  "chat:renameDiscussion": { discussionId: string; title: string }
   "chat:send": { content: string }
   destroy: void
 }
@@ -497,7 +497,7 @@ export interface ChatMessage {
   streaming?: boolean
 }
 
-export interface ChatSession {
+export interface ChatDiscussion {
   id: string
   title: string
 }
@@ -505,12 +505,12 @@ export interface ChatSession {
 export interface ChatPluginApi {
   // ── State (read by the UI) ──
   readonly drawerOpen: Ref<boolean>
-  readonly sessions: Ref<ChatSession[]>
-  readonly activeSessionId: Ref<string | null>
+  readonly discussions: Ref<ChatDiscussion[]>
+  readonly activeDiscussionId: Ref<string | null>
   readonly messages: Ref<ChatMessage[]>
   readonly isStreaming: Ref<boolean>
   readonly streamingContent: Ref<string>
-  readonly isLoadingSession: Ref<boolean>
+  readonly isLoadingDiscussion: Ref<boolean>
   /** messages plus the in-flight assistant message while streaming */
   readonly allMessages: ComputedRef<ChatMessage[]>
 
@@ -518,12 +518,12 @@ export interface ChatPluginApi {
   setDrawerOpen(open: boolean): void
 
   // ── State setters (host-pushed after network) ──
-  setSessions(sessions: ChatSession[]): void
-  setActiveSession(sessionId: string | null): void
+  setDiscussions(discussions: ChatDiscussion[]): void
+  setActiveDiscussion(discussionId: string | null): void
   setMessages(messages: ChatMessage[]): void
   addMessage(message: ChatMessage): void
-  updateSessionTitle(sessionId: string, title: string): void
-  setLoadingSession(loading: boolean): void
+  updateDiscussionTitle(discussionId: string, title: string): void
+  setLoadingDiscussion(loading: boolean): void
 
   // ── Streaming lifecycle ──
   streamStart(): void

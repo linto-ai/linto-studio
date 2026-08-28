@@ -124,7 +124,7 @@ const fr = {
   "chat.history": "Historique",
   "chat.newChat": "Nouvelle conversation",
   "chat.rename": "Renommer",
-  "chat.deleteSession": "Supprimer",
+  "chat.deleteDiscussion": "Supprimer",
   "chat.deleteConfirm": "Supprimer ?",
   "chat.cancel": "Annuler",
   "chat.confirmDelete": "Confirmer",

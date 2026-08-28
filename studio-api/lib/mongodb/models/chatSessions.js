@@ -1,6 +1,4 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:chatSessions",
-)
+const debug = require("debug")("linto:lib:mongodb:models:chatSessions")
 const MongoModel = require(`../model`)
 
 /**
@@ -9,7 +7,9 @@ const MongoModel = require(`../model`)
  * Schema:
  * {
  *   _id: ObjectId,
- *   conversationId: string,
+ *   conversationId: string (chat on a conversation),
+ *   liveSessionId: string (chat on a live session, UUID),
+ *   channelId: string (live session channel),
  *   organizationId: string,
  *   userId: string,
  *   title: string,
@@ -47,6 +47,18 @@ class ChatSessionModel extends MongoModel {
     }
   }
 
+  async getByLiveSessionAndUser(liveSessionId, userId, organizationId) {
+    try {
+      return await this.mongoRequest(
+        { liveSessionId, userId, organizationId },
+        { sort: { created_at: -1 } },
+      )
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getById(sessionId) {
     try {
       return await this.mongoRequest({
@@ -75,6 +87,19 @@ class ChatSessionModel extends MongoModel {
         { _id: this.getObjectId(sessionId) },
         "$set",
         { title, updated_at: new Date() },
+      )
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async touch(sessionId) {
+    try {
+      return await this.mongoUpdateOne(
+        { _id: this.getObjectId(sessionId) },
+        "$set",
+        { updated_at: new Date() },
       )
     } catch (error) {
       console.error(error)

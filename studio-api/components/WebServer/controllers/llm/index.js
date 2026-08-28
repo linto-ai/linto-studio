@@ -10,6 +10,7 @@ const FormData = require("form-data")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
+const { UUID_V4_PATTERN } = require(`${process.cwd()}/lib/utility/uuid.js`)
 
 /**
  * Generate plain text from conversation turns
@@ -39,9 +40,16 @@ async function generateText(conversation, metadata) {
  */
 async function request(req, query, conversation, metadata, conversationExport) {
   let content = await generateText(conversation, metadata)
-  // Extract organization ID from conversation
-  const organizationId = conversation.organization?.organizationId?.toString() || null
-  return requestAPIV2(req, query, content, conversationExport, conversation, organizationId)
+  const organizationId =
+    conversation.organization?.organizationId?.toString() || null
+  return requestAPIV2(
+    req,
+    query,
+    content,
+    conversationExport,
+    conversation,
+    organizationId,
+  )
 }
 
 /**
@@ -60,7 +68,14 @@ async function request(req, query, conversation, metadata, conversationExport) {
  *
  * Response: { job_id, status, service_id, service_name, flavor_id, flavor_name, ... }
  */
-async function requestAPIV2(req, query, content, conversationExport, conversation, organizationId = null) {
+async function requestAPIV2(
+  req,
+  query,
+  content,
+  conversationExport,
+  conversation,
+  organizationId = null,
+) {
   if (process.env.LLM_GATEWAY_SERVICES === undefined) {
     throw new Error("LLM_GATEWAY_SERVICES is not defined")
   }
@@ -145,7 +160,9 @@ async function requestAPIV2(req, query, content, conversationExport, conversatio
       conversationExport.fallbackReason = response.fallback_reason
     }
 
-    appLogger.info(`[LLM V2] Job created: ${jobId} for service ${response.service_name} (org: ${organizationId || "none"})`)
+    appLogger.info(
+      `[LLM V2] Job created: ${jobId} for service ${response.service_name} (org: ${organizationId || "none"})`,
+    )
   } catch (err) {
     appLogger.error(`[LLM V2] Request failed: ${err.message}`)
     jobId = undefined
@@ -161,16 +178,20 @@ async function requestAPIV2(req, query, content, conversationExport, conversatio
     // IMPORTANT: Update database immediately so WebSocket lookups can find conversationId
     await model.conversationExport.updateStatus(conversationExport)
 
-    // Ensure organization WebSocket is connected and register callback for this job
     await organizationWsManager.ensureConnection(organizationId, baseUrl)
-    organizationWsManager.registerJobCallback(organizationId, jobId, async (update) => {
-      await handleJobUpdate(jobId, update)
-    })
+    organizationWsManager.registerJobCallback(
+      organizationId,
+      jobId,
+      async (update) => {
+        await handleJobUpdate(jobId, update)
+      },
+    )
   } else if (jobId) {
-    // Fallback: no organization ID, still register job but with null org
     conversationExport.jobId = jobId
     await model.conversationExport.updateStatus(conversationExport)
-    appLogger.warn(`[LLM V2] Job ${jobId} created without organization ID - WebSocket monitoring limited`)
+    appLogger.warn(
+      `[LLM V2] Job ${jobId} created without organization ID - WebSocket monitoring limited`,
+    )
   }
 
   LogManager.logLlmEvent(req, {
@@ -243,7 +264,7 @@ async function handleJobUpdate(jobId, update) {
         await model.conversationGenerations.updateStatus(
           jobId,
           generationStatus === "complete" ? "completed" : generationStatus,
-          update.error || null
+          update.error || null,
         )
         debug(`Updated generation status for job ${jobId}: ${generationStatus}`)
       }
@@ -252,7 +273,9 @@ async function handleJobUpdate(jobId, update) {
       debug(`No generation record to update for job ${jobId}`)
     }
   } catch (error) {
-    appLogger.error(`[LLM V2] Error handling job update for ${jobId}: ${error.message}`)
+    appLogger.error(
+      `[LLM V2] Error handling job update for ${jobId}: ${error.message}`,
+    )
   }
 }
 
@@ -260,13 +283,18 @@ async function handleJobUpdate(jobId, update) {
  * Resolve service ID from service name/route
  * V2 services can be looked up by name
  */
-async function resolveServiceId(serviceIdentifier) {
+async function resolveServiceId(serviceIdentifier, { timeout } = {}) {
   const baseUrl = process.env.LLM_GATEWAY_SERVICES
 
+  // Already an ID, no need to list services
+  if (UUID_V4_PATTERN.test(serviceIdentifier)) {
+    return serviceIdentifier
+  }
+
   try {
-    // Try to find service by name or route
     const response = await axios.get(
-      `${baseUrl}/api/v1/services?page=1&page_size=100`
+      `${baseUrl}/api/v1/services?page=1&page_size=100`,
+      { timeout },
     )
 
     const services = response.items || []
@@ -274,7 +302,7 @@ async function resolveServiceId(serviceIdentifier) {
       (s) =>
         s.name === serviceIdentifier ||
         s.route === serviceIdentifier ||
-        s.id === serviceIdentifier
+        s.id === serviceIdentifier,
     )
 
     if (service) {
@@ -296,15 +324,13 @@ async function resolveFlavorId(serviceId, flavorName) {
   const baseUrl = process.env.LLM_GATEWAY_SERVICES
 
   try {
-    // Get service details with flavors
     const response = await axios.get(`${baseUrl}/api/v1/services/${serviceId}`)
 
     const flavors = response.flavors || []
 
-    // If flavor name provided, find matching flavor
     if (flavorName) {
       const flavor = flavors.find(
-        (f) => f.name === flavorName || f.id === flavorName
+        (f) => f.name === flavorName || f.id === flavorName,
       )
       if (flavor) {
         return flavor.id
@@ -331,10 +357,17 @@ async function resolveFlavorId(serviceId, flavorName) {
 async function initWebSocketConnection(convExport) {
   if (convExport && convExport.jobId && convExport.organizationId) {
     const baseUrl = process.env.LLM_GATEWAY_SERVICES
-    await organizationWsManager.ensureConnection(convExport.organizationId, baseUrl)
-    organizationWsManager.registerJobCallback(convExport.organizationId, convExport.jobId, async (update) => {
-      await handleJobUpdate(convExport.jobId, update)
-    })
+    await organizationWsManager.ensureConnection(
+      convExport.organizationId,
+      baseUrl,
+    )
+    organizationWsManager.registerJobCallback(
+      convExport.organizationId,
+      convExport.jobId,
+      async (update) => {
+        await handleJobUpdate(convExport.jobId, update)
+      },
+    )
   }
 }
 
@@ -352,11 +385,17 @@ async function processJobWithWebSocket(jobId, conversationExport) {
     if (organizationId) {
       const baseUrl = process.env.LLM_GATEWAY_SERVICES
       await organizationWsManager.ensureConnection(organizationId, baseUrl)
-      organizationWsManager.registerJobCallback(organizationId, jobId, async (update) => {
-        await handleJobUpdate(jobId, update)
-      })
+      organizationWsManager.registerJobCallback(
+        organizationId,
+        jobId,
+        async (update) => {
+          await handleJobUpdate(jobId, update)
+        },
+      )
     } else {
-      appLogger.warn(`[LLM V2] Cannot monitor job ${jobId} - no organization ID`)
+      appLogger.warn(
+        `[LLM V2] Cannot monitor job ${jobId} - no organization ID`,
+      )
     }
   } catch (err) {
     conversationExport.status = "error"
@@ -402,7 +441,12 @@ async function getJobResult(jobId) {
  * @param {string} templateId - Optional template ID
  * @param {number} versionNumber - Optional version number for per-version export
  */
-async function exportJobDocument(jobId, format = "pdf", templateId = null, versionNumber = null) {
+async function exportJobDocument(
+  jobId,
+  format = "pdf",
+  templateId = null,
+  versionNumber = null,
+) {
   if (!jobId) throw new Error("Job ID is required")
 
   const baseUrl = process.env.LLM_GATEWAY_SERVICES
@@ -455,7 +499,14 @@ async function cancelJob(jobId) {
  * Check if job is in terminal state
  */
 function completedJob(job) {
-  const terminalStatuses = ["complete", "completed", "error", "failed", "cancelled", "unknown"]
+  const terminalStatuses = [
+    "complete",
+    "completed",
+    "error",
+    "failed",
+    "cancelled",
+    "unknown",
+  ]
   return terminalStatuses.includes(job.status)
 }
 
@@ -487,7 +538,9 @@ async function getJobMarkdownContent(jobId) {
 
     return null
   } catch (err) {
-    appLogger.error(`[LLM V2] Failed to get markdown content for job ${jobId}: ${err.message}`)
+    appLogger.error(
+      `[LLM V2] Failed to get markdown content for job ${jobId}: ${err.message}`,
+    )
     return null
   }
 }
@@ -518,25 +571,39 @@ function formatJobUpdateForBroadcast(conversationId, update) {
  * @param {string} jobId - Job ID
  * @param {Function} broadcastFn - Function to call with formatted updates
  */
-async function registerBroadcastCallback(organizationId, conversationId, jobId, broadcastFn) {
+async function registerBroadcastCallback(
+  organizationId,
+  conversationId,
+  jobId,
+  broadcastFn,
+) {
   if (!organizationId || !jobId) {
-    appLogger.warn(`[LLM V2] Cannot register broadcast callback: missing organizationId or jobId`)
+    appLogger.warn(
+      `[LLM V2] Cannot register broadcast callback: missing organizationId or jobId`,
+    )
     return
   }
 
   const baseUrl = process.env.LLM_GATEWAY_SERVICES
   try {
     await organizationWsManager.ensureConnection(organizationId, baseUrl)
-    organizationWsManager.registerJobCallback(organizationId, jobId, async (update) => {
-      // Handle the update internally
-      await handleJobUpdate(jobId, update)
+    organizationWsManager.registerJobCallback(
+      organizationId,
+      jobId,
+      async (update) => {
+        await handleJobUpdate(jobId, update)
 
-      // Broadcast to WebSocket clients
-      const formattedUpdate = formatJobUpdateForBroadcast(conversationId, update)
-      broadcastFn(formattedUpdate)
-    })
+        const formattedUpdate = formatJobUpdateForBroadcast(
+          conversationId,
+          update,
+        )
+        broadcastFn(formattedUpdate)
+      },
+    )
   } catch (err) {
-    appLogger.error(`[LLM V2] Failed to register broadcast callback: ${err.message}`)
+    appLogger.error(
+      `[LLM V2] Failed to register broadcast callback: ${err.message}`,
+    )
   }
 }
 
@@ -544,6 +611,7 @@ module.exports = {
   generateText,
   request,
   requestAPIV2,
+  resolveServiceId,
   pollingLlm: processJobWithWebSocket,
   initWebSocketConnection,
   getSocketStatus,

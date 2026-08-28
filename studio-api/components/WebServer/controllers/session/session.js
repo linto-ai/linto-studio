@@ -27,6 +27,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const crypto = require("crypto")
 
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const { UUID_V4_PATTERN } = require(`${process.cwd()}/lib/utility/uuid.js`)
 
 function verifyPublicSessionPassword(storedHash, inputPassword) {
   const inputKey = crypto.pbkdf2Sync(
@@ -120,11 +121,8 @@ async function forwardSessionAliasPublic(req, next, res) {
 
 async function forwardSessionAlias(req, next, res) {
   try {
-    const uuidV4Pattern =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
     // User is accessing a session by its ID
-    if (uuidV4Pattern.test(req.params.id)) {
+    if (UUID_V4_PATTERN.test(req.params.id)) {
       const existingSession = await model.sessionData.getBySessionId(
         req.params.id,
       )

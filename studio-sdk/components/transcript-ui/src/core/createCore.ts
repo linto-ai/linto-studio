@@ -132,7 +132,9 @@ export function createCore(options: CoreOptions = {}): Core {
 
   // ── Assemble ──────────────────────────────────────────────────────
 
-  const core: Core = {
+  // Shallow-reactive so late plugin installs (core.chat = …, set after the
+  // Layout first rendered) are picked up by `v-if="core.chat"` guards.
+  const core: Core = shallowReactive({
     title,
     date,
     activeChannelId,
@@ -149,7 +151,7 @@ export function createCore(options: CoreOptions = {}): Core {
     emit,
     use,
     destroy,
-  }
+  })
 
   return core
 }

@@ -4,95 +4,105 @@ import { getCookie } from "@/tools/getCookie"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
-/**
- * Check if chat feature is enabled on the backend
- */
-export async function apiGetChatStatus() {
-  const req = await sendRequest(`${BASE_API}/chat/status`, { method: "get" })
-  if (req.status === "success") return req.data
-  return { enabled: false }
+// Wire path: the backend still names chat discussions "sessions".
+function chatDiscussionsUrl(scope) {
+  if (scope.kind === "session") {
+    return `${BASE_API}/organizations/${scope.organizationId}/sessions/${scope.sessionId}/chat/sessions`
+  }
+  return `${BASE_API}/conversations/${scope.conversationId}/chat/sessions`
 }
 
 /**
- * Create a new chat session for a conversation
+ * Chat and catchup availability; null when the check itself failed
+ * (network/API error), so callers can retry instead of caching "disabled"
  */
-export async function apiCreateChatSession(conversationId, flavorId = null) {
+export async function apiGetChatStatus() {
+  const req = await sendRequest(`${BASE_API}/chat/status`, { method: "get" })
+  if (req?.status === "success") return req.data
+  return null
+}
+
+/**
+ * Create a new chat discussion
+ */
+export async function apiCreateChatDiscussion(scope, { title } = {}) {
   const body = {}
-  if (flavorId) body.flavorId = flavorId
+  if (title) body.title = title
+  // Only live-session discussions are pinned to a channel; the conversation
+  // backend has no such field.
+  if (scope.kind === "session" && scope.channelId != null) {
+    body.channelId = scope.channelId
+  }
 
   const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions`,
+    chatDiscussionsUrl(scope),
     { method: "post" },
     body,
   )
   if (req.status === "success") return req.data
-  throw new Error(req.message || "Failed to create chat session")
+  throw new Error(req.message || "Failed to create chat discussion")
 }
 
 /**
- * List all chat sessions for a conversation (current user)
+ * List all chat discussions in a scope (current user)
  */
-export async function apiListChatSessions(conversationId) {
-  const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions`,
-    { method: "get" },
-  )
+export async function apiListChatDiscussions(scope) {
+  const req = await sendRequest(chatDiscussionsUrl(scope), { method: "get" })
   if (req.status === "success") return req.data
   return []
 }
 
 /**
- * Get a chat session with all messages
+ * Get a chat discussion with all messages
  */
-export async function apiGetChatSession(conversationId, sessionId) {
-  const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}`,
-    { method: "get" },
-  )
+export async function apiGetChatDiscussion(scope, discussionId) {
+  const req = await sendRequest(`${chatDiscussionsUrl(scope)}/${discussionId}`, {
+    method: "get",
+  })
   if (req.status === "success") return req.data
-  throw new Error(req.message || "Failed to get chat session")
+  throw new Error(req.message || "Failed to get chat discussion")
 }
 
 /**
- * Update a chat session title
+ * Update a chat discussion title
  */
-export async function apiUpdateChatSessionTitle(
-  conversationId,
-  sessionId,
-  title,
-) {
+export async function apiUpdateChatDiscussionTitle(scope, discussionId, title) {
   const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}`,
+    `${chatDiscussionsUrl(scope)}/${discussionId}`,
     { method: "patch" },
     { title },
   )
   if (req.status === "success") return req.data
-  throw new Error(req.message || "Failed to update chat session title")
+  throw new Error(req.message || "Failed to update chat discussion title")
 }
 
 /**
- * Delete a chat session and all its messages
+ * Delete a chat discussion and all its messages
  */
-export async function apiDeleteChatSession(conversationId, sessionId) {
-  const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}`,
-    { method: "delete" },
-  )
+export async function apiDeleteChatDiscussion(scope, discussionId) {
+  const req = await sendRequest(`${chatDiscussionsUrl(scope)}/${discussionId}`, {
+    method: "delete",
+  })
   return req.status === "success"
 }
 
 /**
  * Send a chat message with SSE streaming.
  * Uses native fetch (not axios) for streaming support.
+ * requestArgs carries the extra wire fields ({ mode, lang }): the session
+ * backend uses them for server-built prompts (catchup), the conversation
+ * backend ignores them.
  */
 export async function apiSendChatMessage(
-  conversationId,
-  sessionId,
-  content,
+  scope,
+  discussionId,
+  prompt,
+  requestArgs,
   { onToken, onDone, onError },
 ) {
+  const { mode, lang } = requestArgs ?? {}
   const userToken = getCookie("authToken")
-  const url = `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}/messages`
+  const url = `${chatDiscussionsUrl(scope)}/${discussionId}/messages`
 
   try {
     const response = await fetch(url, {
@@ -101,7 +111,7 @@ export async function apiSendChatMessage(
         "Content-Type": "application/json",
         Authorization: `Bearer ${userToken}`,
       },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ content: prompt, mode, lang }),
     })
 
     if (!response.ok) {
@@ -113,6 +123,9 @@ export async function apiSendChatMessage(
     const reader = response.body.getReader()
     const decoder = new TextDecoder()
     let buffer = ""
+    // Survives chunk boundaries: an "event:" line may arrive in a different
+    // read than its "data:" line
+    let eventType = null
 
     while (true) {
       const { done, value } = await reader.read()
@@ -122,7 +135,6 @@ export async function apiSendChatMessage(
       const lines = buffer.split("\n")
       buffer = lines.pop()
 
-      let eventType = null
       for (const line of lines) {
         if (line.startsWith("event: ")) {
           eventType = line.slice(7).trim()

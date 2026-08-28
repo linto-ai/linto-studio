@@ -4,18 +4,18 @@ import Button from "../atoms/Button.vue"
 import SelectableListItem from "../atoms/SelectableListItem.vue"
 import FormInput, { type FormField } from "./FormInput.vue"
 import { useI18n } from "../../i18n"
-import type { ChatSession } from "../../core/types"
+import type { ChatDiscussion } from "../../core/types"
 
 const props = defineProps<{
-  sessions: ChatSession[]
-  activeSessionId: string | null
+  discussions: ChatDiscussion[]
+  activeDiscussionId: string | null
 }>()
 
 const emit = defineEmits<{
-  select: [sessionId: string]
+  select: [discussionId: string]
   create: []
-  rename: [sessionId: string, title: string]
-  delete: [sessionId: string]
+  rename: [discussionId: string, title: string]
+  delete: [discussionId: string]
 }>()
 
 const { t } = useI18n()
@@ -28,10 +28,10 @@ const renameField = computed<FormField>(() => ({
   customParams: { "aria-label": t("chat.rename") },
 }))
 
-function startRename(session: ChatSession): void {
+function startRename(discussion: ChatDiscussion): void {
   deleteTargetId.value = null
-  renameValue.value = session.title
-  renamingId.value = session.id
+  renameValue.value = discussion.title
+  renamingId.value = discussion.id
 }
 
 function confirmRename(): void {
@@ -39,7 +39,7 @@ function confirmRename(): void {
   if (!id) return
   renamingId.value = null
   const title = renameValue.value.trim()
-  const current = props.sessions.find((s) => s.id === id)
+  const current = props.discussions.find((d) => d.id === id)
   if (title && title !== current?.title) emit("rename", id, title)
 }
 
@@ -55,8 +55,8 @@ function onRenameKeydown(event: KeyboardEvent): void {
   else if (event.key === "Escape") cancelRename()
 }
 
-function requestDelete(sessionId: string): void {
-  deleteTargetId.value = sessionId
+function requestDelete(discussionId: string): void {
+  deleteTargetId.value = discussionId
 }
 
 function cancelDelete(): void {
@@ -72,25 +72,27 @@ function confirmDelete(): void {
 </script>
 
 <template>
-  <nav class="chat-session-list" :aria-label="t('chat.history')">
-    <header class="chat-session-list__header">
-      <h3 class="chat-session-list__title">{{ t("chat.history") }}</h3>
-      <Button
-        icon="plus"
-        variant="transparent"
-        size="sm"
-        :aria-label="t('chat.newChat')"
-        @click="emit('create')" />
+  <nav class="chat-discussion-list" :aria-label="t('chat.history')">
+    <header class="chat-discussion-list__header">
+      <h3 class="chat-discussion-list__title">{{ t("chat.history") }}</h3>
+      <div class="chat-discussion-list__actions">
+        <Button
+          icon="plus"
+          variant="transparent"
+          size="sm"
+          :aria-label="t('chat.newChat')"
+          @click="emit('create')" />
+      </div>
     </header>
 
-    <ul class="chat-session-list__items">
+    <ul class="chat-discussion-list__items">
       <li
-        v-for="session in sessions"
-        :key="session.id"
-        class="chat-session-item">
+        v-for="discussion in discussions"
+        :key="discussion.id"
+        class="chat-discussion-item">
         <!-- Rename mode -->
         <FormInput
-          v-if="renamingId === session.id"
+          v-if="renamingId === discussion.id"
           v-model="renameValue"
           :field="renameField"
           :focus="true"
@@ -101,9 +103,9 @@ function confirmDelete(): void {
 
         <!-- Delete confirmation -->
         <div
-          v-else-if="deleteTargetId === session.id"
-          class="chat-session-confirm">
-          <span class="chat-session-confirm__text">
+          v-else-if="deleteTargetId === discussion.id"
+          class="chat-discussion-confirm">
+          <span class="chat-discussion-confirm__text">
             {{ t("chat.deleteConfirm") }}
           </span>
           <Button
@@ -124,24 +126,24 @@ function confirmDelete(): void {
         <!-- Normal display -->
         <SelectableListItem
           v-else
-          :current="session.id === activeSessionId"
-          :label="session.title"
-          :title="session.title"
-          @select="emit('select', session.id)">
+          :current="discussion.id === activeDiscussionId"
+          :label="discussion.title"
+          :title="discussion.title"
+          @select="emit('select', discussion.id)">
           <template #actions>
             <Button
               icon="pencil"
               variant="transparent"
               size="sm"
               :aria-label="t('chat.rename')"
-              @click="startRename(session)" />
+              @click="startRename(discussion)" />
             <Button
               icon="trash"
               variant="transparent"
               intent="destructive"
               size="sm"
-              :aria-label="t('chat.deleteSession')"
-              @click="requestDelete(session.id)" />
+              :aria-label="t('chat.deleteDiscussion')"
+              @click="requestDelete(discussion.id)" />
           </template>
         </SelectableListItem>
       </li>
@@ -150,8 +152,8 @@ function confirmDelete(): void {
 </template>
 
 <style scoped>
-.chat-session-list {
-  width: var(--chat-session-list-width, 200px);
+.chat-discussion-list {
+  width: var(--chat-discussion-list-width, 200px);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -161,19 +163,24 @@ function confirmDelete(): void {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .chat-session-list {
+  .chat-discussion-list {
     transition: none;
   }
 }
 
-.chat-session-list__header {
+.chat-discussion-list__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: var(--spacing-sm) var(--spacing-md);
 }
 
-.chat-session-list__title {
+.chat-discussion-list__actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.chat-discussion-list__title {
   margin: 0;
   font-size: var(--font-size-xs);
   font-weight: 600;
@@ -182,7 +189,7 @@ function confirmDelete(): void {
   color: var(--color-text-muted);
 }
 
-.chat-session-list__items {
+.chat-discussion-list__items {
   flex: 1;
   margin: 0;
   padding: 0;
@@ -191,14 +198,14 @@ function confirmDelete(): void {
 }
 
 /* Delete confirmation row */
-.chat-session-confirm {
+.chat-discussion-confirm {
   display: flex;
   align-items: center;
   gap: 2px;
   padding: var(--spacing-xs) var(--spacing-sm);
 }
 
-.chat-session-confirm__text {
+.chat-discussion-confirm__text {
   flex: 1;
   min-width: 0;
   font-size: var(--font-size-xs);

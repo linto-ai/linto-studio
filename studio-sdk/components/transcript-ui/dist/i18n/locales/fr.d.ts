@@ -122,7 +122,7 @@ declare const fr: {
     readonly "chat.history": "Historique";
     readonly "chat.newChat": "Nouvelle conversation";
     readonly "chat.rename": "Renommer";
-    readonly "chat.deleteSession": "Supprimer";
+    readonly "chat.deleteDiscussion": "Supprimer";
     readonly "chat.deleteConfirm": "Supprimer ?";
     readonly "chat.cancel": "Annuler";
     readonly "chat.confirmDelete": "Confirmer";

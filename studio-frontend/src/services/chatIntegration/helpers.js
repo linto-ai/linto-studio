@@ -1,15 +1,12 @@
-// Mapping + small helpers between the API shape (api/chat.js) and the SDK
-// chat plugin shape (core.chat.*). The SDK is agnostic: it uses `id`, the API
-// returns `_id`.
+// Maps API shapes (_id) to the SDK chat plugin shapes (id).
+// The wire still calls a discussion a "session".
 
-export function truncateTitle(text, maxLen = 30) {
-  const trimmed = text.trim()
-  if (trimmed.length <= maxLen) return trimmed
-  return trimmed.slice(0, maxLen).trimEnd() + "..."
-}
-
-export function mapSession(session) {
-  return { id: session._id, title: session.title }
+export function mapDiscussion(apiSession) {
+  return {
+    id: apiSession._id,
+    title: apiSession.title,
+    channelId: apiSession.channelId,
+  }
 }
 
 export function mapMessage(message, index) {
