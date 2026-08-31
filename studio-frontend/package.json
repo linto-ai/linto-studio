@@ -46,7 +46,7 @@
   "dependencies": {
     "@iconify/vue2": "^2.1.0",
     "@joeattardi/emoji-button": "^4.6.4",
-    "@linto-ai/transcript-ui-webcomponent": "^0.9.5",
+    "@linto-ai/transcript-ui-webcomponent": "^0.9.12",
     "@linto-ai/webvoicesdk": "github:linto-ai/WebVoiceSDK",
     "axios": "^1.13.2",
     "chart.js": "^4.5.1",

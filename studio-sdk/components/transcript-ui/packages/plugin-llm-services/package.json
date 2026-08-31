@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui-plugin-llm-services",
-  "version": "0.9.11",
+  "version": "0.9.12",
   "description": "LLM-generated documents plugin for @linto-ai/transcript-ui — summaries and reports derived from the transcript",
   "keywords": [
     "vue",

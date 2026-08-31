@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui",
-  "version": "0.9.11",
+  "version": "0.9.12",
   "description": "Vue 3 components for displaying and interacting with a transcript — batteries-included entry point (core + UI kit + i18n)",
   "keywords": [
     "vue",

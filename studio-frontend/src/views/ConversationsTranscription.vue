@@ -1,10 +1,7 @@
 <template>
   <LayoutV2 noHeader>
     <div class="transcription-editor-wrapper">
-      <linto-editor
-        ref="editor"
-        :locale="$i18n.locale"
-        :verbatimFormats="verbatimFormats" />
+      <linto-editor ref="editor" :locale="$i18n.locale" />
     </div>
     <PublicationModal
       v-model="publicationModal.open"
@@ -154,12 +151,15 @@ export default {
             this.$apiEventWS.renameEditorSpeaker(payload),
           replaceSpeaker: (payload) =>
             this.$apiEventWS.replaceEditorSpeaker(payload),
+          undo: (payload) => this.$apiEventWS.undoEditor(payload),
+          redo: (payload) => this.$apiEventWS.redoEditor(payload),
           refetchTranslation: (translationId) =>
             this.refetchTranslation(translationId),
         }),
       )
       const mode = this.canWrite ? "edit" : "view"
       core.capabilities.value = { text: mode, speakers: mode }
+      core.verbatimFormats.value = this.verbatimFormats
       // Lock state flows one way: server broadcasts → plugin setters. The
       // join ack (and every reconnection re-ack) reseeds the whole map.
       this.$apiEventWS.joinEditorRoom(this.conversationId, {
@@ -185,6 +185,8 @@ export default {
           core.transcriptionEditor?.applySpeakerRenamed(renamed),
         onSpeakerReplaced: (replaced) =>
           core.transcriptionEditor?.applySpeakerReplaced(replaced),
+        onSpeakerRestored: (restored) =>
+          core.transcriptionEditor?.applySpeakerRestored(restored),
       })
 
       // setupLLMServices returns { dispose }; store the disposer so it matches

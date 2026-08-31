@@ -25,7 +25,7 @@
     },
     "packages/core": {
       "name": "@linto-ai/transcript-ui-core",
-      "version": "0.9.11",
+      "version": "0.9.12",
       "dependencies": {
         "@linto-ai/transcript-ui-i18n": "workspace:*",
         "@linto-ai/transcript-ui-ui": "workspace:*",
@@ -37,7 +37,7 @@
     },
     "packages/i18n": {
       "name": "@linto-ai/transcript-ui-i18n",
-      "version": "0.9.11",
+      "version": "0.9.12",
       "peerDependencies": {
         "vue": "^3.5.0",
       },
@@ -67,7 +67,7 @@
     },
     "packages/plugin-audio": {
       "name": "@linto-ai/transcript-ui-plugin-audio",
-      "version": "0.9.11",
+      "version": "0.9.12",
       "dependencies": {
         "@linto-ai/transcript-ui-core": "workspace:*",
         "@linto-ai/transcript-ui-i18n": "workspace:*",
@@ -80,7 +80,7 @@
     },
     "packages/plugin-chat": {
       "name": "@linto-ai/transcript-ui-plugin-chat",
-      "version": "0.9.11",
+      "version": "0.9.12",
       "dependencies": {
         "@linto-ai/transcript-ui-core": "workspace:*",
         "@linto-ai/transcript-ui-i18n": "workspace:*",
@@ -93,7 +93,7 @@
     },
     "packages/plugin-live": {
       "name": "@linto-ai/transcript-ui-plugin-live",
-      "version": "0.9.11",
+      "version": "0.9.12",
       "dependencies": {
         "@linto-ai/transcript-ui-core": "workspace:*",
       },
@@ -103,7 +103,7 @@
     },
     "packages/plugin-llm-services": {
       "name": "@linto-ai/transcript-ui-plugin-llm-services",
-      "version": "0.9.11",
+      "version": "0.9.12",
       "dependencies": {
         "@linto-ai/transcript-ui-core": "workspace:*",
         "@linto-ai/transcript-ui-i18n": "workspace:*",
@@ -115,7 +115,7 @@
     },
     "packages/plugin-subtitle": {
       "name": "@linto-ai/transcript-ui-plugin-subtitle",
-      "version": "0.9.11",
+      "version": "0.9.12",
       "dependencies": {
         "@linto-ai/transcript-ui-core": "workspace:*",
         "@linto-ai/transcript-ui-i18n": "workspace:*",
@@ -130,7 +130,7 @@
     },
     "packages/plugin-transcription-editor": {
       "name": "@linto-ai/transcript-ui-plugin-transcription-editor",
-      "version": "0.9.11",
+      "version": "0.9.12",
       "dependencies": {
         "@linto-ai/transcript-ui-core": "workspace:*",
       },
@@ -140,7 +140,7 @@
     },
     "packages/ui": {
       "name": "@linto-ai/transcript-ui-ui",
-      "version": "0.9.11",
+      "version": "0.9.12",
       "dependencies": {
         "@linto-ai/transcript-ui-i18n": "workspace:*",
         "dompurify": "^3.2.4",
@@ -161,7 +161,7 @@
     },
     "packages/webcomponent": {
       "name": "@linto-ai/transcript-ui-webcomponent",
-      "version": "0.9.11",
+      "version": "0.9.12",
       "devDependencies": {
         "@linto-ai/transcript-ui-core": "workspace:*",
         "@linto-ai/transcript-ui-i18n": "workspace:*",
