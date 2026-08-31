@@ -1,14 +1,17 @@
 const MongoModel = require(`../model`)
 const MongoDriver = require(`../driver`)
 
+// Undo window, enforced by the revisions_expiration TTL index.
+const REVISION_TTL_MS = 1000 * 60 * 60
+
 /**
  * Undo/redo history for speaker mutations: one append-only document per
  * ORIGINAL mutation (rename_speaker / replace_speaker / update_turn_speaker),
  * chained via previousHead. Undo/redo do NOT append — they only move the
  * cursor (conversations.undoHead, see conversationEditor.js) back and forth
  * along this same chain and re-apply before/after; see EditorHandler's
- * onUndo/onRedo. This collection is also the audit trail (list by
- * translationId).
+ * onUndo/onRedo. Revisions expire after one hour (expiresAt +
+ * revisions_expiration TTL index), so history listing only covers that window.
  *
  * A revision can have several "children" sharing the same previousHead: an
  * undo rewinds the cursor, and a genuinely NEW mutation made from there
@@ -33,11 +36,29 @@ class EditorRevisionsModel extends MongoModel {
    * — no cross-replica clock skew, and it doubles as findByPreviousHead's
    * fork tie-breaker (see there) and as the audit-log timestamp.
    */
-  async insert({ _id, translationId, parentId, type, before, after, previousHead, author }) {
+  async insert({
+    _id,
+    translationId,
+    parentId,
+    type,
+    before,
+    after,
+    previousHead,
+    author,
+  }) {
     await this.getCollection().findOneAndUpdate(
       { _id },
       {
-        $set: { translationId, parentId, type, before, after, previousHead, author },
+        $set: {
+          translationId,
+          parentId,
+          type,
+          before,
+          after,
+          previousHead,
+          author,
+          expiresAt: new Date(Date.now() + REVISION_TTL_MS),
+        },
         $currentDate: { at: true },
       },
       { upsert: true },

@@ -52,6 +52,7 @@ describe("editorRevisions.insert", () => {
           after: { speakerId: "spk-1", name: "Marie D." },
           previousHead: null,
           author: { userId: "user-1", userName: "Marie Dupont" },
+          expiresAt: expect.any(Date),
         },
         $currentDate: { at: true },
       },
@@ -80,7 +81,9 @@ describe("editorRevisions.findByPreviousHead", () => {
 
   test("accepts null (the start-of-history cursor) as a previousHead value", async () => {
     const next = jest.fn().mockResolvedValue(null)
-    mockCollection.find.mockReturnValue({ sort: () => ({ limit: () => ({ next }) }) })
+    mockCollection.find.mockReturnValue({
+      sort: () => ({ limit: () => ({ next }) }),
+    })
 
     const result = await editorRevisions.findByPreviousHead("tr-1", null)
 
