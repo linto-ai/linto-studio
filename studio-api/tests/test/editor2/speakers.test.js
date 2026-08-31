@@ -10,6 +10,11 @@ jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
     updateEditorTurnSpeaker: jest.fn(),
     renameEditorSpeaker: jest.fn(),
     replaceEditorSpeaker: jest.fn(),
+    swapConversationUndoHead: jest.fn(),
+  },
+  editorRevisions: {
+    createObjectId: jest.fn(() => "rev-id"),
+    insert: jest.fn(),
   },
 }))
 
@@ -66,6 +71,9 @@ function makeCtx({ joined = true } = {}) {
 beforeEach(() => {
   jest.clearAllMocks()
   access.hasAccess.mockResolvedValue(true)
+  // Happy-path default: the head swap succeeds, so revisionId flows through
+  // as "rev-id" unless a test explicitly wants to exercise the race/failure.
+  model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
 })
 
 describe("requireWrite", () => {
@@ -130,8 +138,22 @@ describe("onUpdateTurnSpeaker", () => {
       speaker: { id: "spk-1", name: "Marie" },
       removedSpeakerId: "spk-2",
       version: 3,
+      revisionId: "rev-id",
     })
-    expect(ack).toHaveBeenCalledWith({ ok: true, version: 3 })
+    expect(ack).toHaveBeenCalledWith({ ok: true, version: 3, revisionId: "rev-id" })
+    // spk-2 (previous) was turn-2's assignment: recorded so undo can restore it.
+    expect(model.editorRevisions.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "update_turn_speaker",
+        before: { turnId: "turn-2", speakerId: "spk-2", speakerName: "Thomas" },
+        after: { turnId: "turn-2", speakerId: "spk-1", speakerName: "Marie" },
+      }),
+    )
+    expect(model.conversationEditor.swapConversationUndoHead).toHaveBeenCalledWith(
+      "tr-1",
+      null,
+      "rev-id",
+    )
   })
 
   test("no GC when the previous speaker still has turns", async () => {
@@ -206,8 +228,12 @@ describe("onUpdateTurnSpeaker", () => {
 })
 
 describe("onRenameSpeaker", () => {
-  test("renames (trimmed) and broadcasts", async () => {
-    model.conversationEditor.renameEditorSpeaker.mockResolvedValue({ version: 6 })
+  test("renames (trimmed), records a revision and broadcasts", async () => {
+    model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
+      version: 6,
+      previousName: "Marie",
+      undoHead: null,
+    })
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -227,8 +253,22 @@ describe("onRenameSpeaker", () => {
       speakerId: "spk-1",
       name: "Marie D.",
       version: 6,
+      revisionId: "rev-id",
     })
-    expect(ack).toHaveBeenCalledWith({ ok: true, version: 6 })
+    expect(ack).toHaveBeenCalledWith({ ok: true, version: 6, revisionId: "rev-id" })
+    expect(model.editorRevisions.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "rename_speaker",
+        before: { speakerId: "spk-1", name: "Marie" },
+        after: { speakerId: "spk-1", name: "Marie D." },
+        previousHead: null,
+      }),
+    )
+    expect(model.conversationEditor.swapConversationUndoHead).toHaveBeenCalledWith(
+      "tr-1",
+      null,
+      "rev-id",
+    )
   })
 
   test("refuses an empty name and an unknown speaker", async () => {
@@ -253,8 +293,13 @@ describe("onRenameSpeaker", () => {
 })
 
 describe("onReplaceSpeaker", () => {
-  test("replaces and broadcasts (removal implied)", async () => {
-    model.conversationEditor.replaceEditorSpeaker.mockResolvedValue({ version: 7 })
+  test("replaces and broadcasts, using the affected turns/fromSpeaker captured atomically by the mutation itself", async () => {
+    model.conversationEditor.replaceEditorSpeaker.mockResolvedValue({
+      version: 7,
+      fromSpeaker: { speaker_id: "spk-1", speaker_name: "Marie" },
+      turnIds: ["turn-1", "turn-3"],
+      undoHead: null,
+    })
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -274,8 +319,19 @@ describe("onReplaceSpeaker", () => {
       fromSpeakerId: "spk-1",
       toSpeakerId: "spk-2",
       version: 7,
+      revisionId: "rev-id",
     })
-    expect(ack).toHaveBeenCalledWith({ ok: true, version: 7 })
+    expect(ack).toHaveBeenCalledWith({ ok: true, version: 7, revisionId: "rev-id" })
+    expect(model.editorRevisions.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "replace_speaker",
+        before: {
+          fromSpeaker: { speaker_id: "spk-1", speaker_name: "Marie" },
+          toSpeakerId: "spk-2",
+          turnIds: ["turn-1", "turn-3"],
+        },
+      }),
+    )
   })
 
   test("refuses self-replacement and unknown speakers", async () => {
@@ -288,6 +344,8 @@ describe("onReplaceSpeaker", () => {
     )
     expect(ack1).toHaveBeenCalledWith({ ok: false, reason: "invalid_payload" })
 
+    // The mutation's own filter requires both speakers to exist; a missing
+    // one just means no document matched, same as before.
     model.conversationEditor.replaceEditorSpeaker.mockResolvedValue(null)
     const ack2 = jest.fn()
     await onReplaceSpeaker(
@@ -296,5 +354,56 @@ describe("onReplaceSpeaker", () => {
       ack2,
     )
     expect(ack2).toHaveBeenCalledWith({ ok: false, reason: "unknown_speaker" })
+  })
+})
+
+describe("recordSpeakerRevision resilience", () => {
+  test("a lost head-swap race doesn't block the mutation: it still broadcasts, just with revisionId: null", async () => {
+    model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
+      version: 6,
+      previousName: "Marie",
+      undoHead: null,
+    })
+    model.conversationEditor.swapConversationUndoHead.mockResolvedValue(false)
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onRenameSpeaker(
+      ctx,
+      { translationId: "tr-1", speakerId: "spk-1", name: "Marie D." },
+      ack,
+    )
+
+    expect(ctx.emit).toHaveBeenCalledWith("editor:speaker_renamed", {
+      translationId: "tr-1",
+      speakerId: "spk-1",
+      name: "Marie D.",
+      version: 6,
+      revisionId: null,
+    })
+    expect(ack).toHaveBeenCalledWith({ ok: true, version: 6, revisionId: null })
+  })
+
+  test("a failure writing the revision itself doesn't block the mutation either", async () => {
+    model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
+      version: 6,
+      previousName: "Marie",
+      undoHead: null,
+    })
+    model.editorRevisions.insert.mockRejectedValue(new Error("mongo blip"))
+    const consoleError = jest.spyOn(console, "error").mockImplementation(() => {})
+    const ctx = makeCtx()
+    const ack = jest.fn()
+
+    await onRenameSpeaker(
+      ctx,
+      { translationId: "tr-1", speakerId: "spk-1", name: "Marie D." },
+      ack,
+    )
+
+    expect(ack).toHaveBeenCalledWith({ ok: true, version: 6, revisionId: null })
+    expect(model.conversationEditor.swapConversationUndoHead).not.toHaveBeenCalled()
+    expect(consoleError).toHaveBeenCalled()
+    consoleError.mockRestore()
   })
 })

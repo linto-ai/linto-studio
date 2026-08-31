@@ -12,6 +12,8 @@ const { onMergeTurns } = require("./handlers/onMergeTurns")
 const { onUpdateTurnSpeaker } = require("./handlers/onUpdateTurnSpeaker")
 const { onRenameSpeaker } = require("./handlers/onRenameSpeaker")
 const { onReplaceSpeaker } = require("./handlers/onReplaceSpeaker")
+const { onUndo } = require("./handlers/onUndo")
+const { onRedo } = require("./handlers/onRedo")
 const { onDisconnect } = require("./handlers/onDisconnect")
 const { requireFamily } = require("./decorators/requireFamily")
 const { requireLock } = require("./decorators/requireLock")
@@ -35,6 +37,10 @@ const onUpdateTurnSpeakerGuarded = requireFamily(requireWrite(onUpdateTurnSpeake
 const onRenameSpeakerGuarded = requireFamily(requireWrite(onRenameSpeaker))
 // prettier-ignore
 const onReplaceSpeakerGuarded = requireFamily(requireWrite(onReplaceSpeaker))
+// prettier-ignore
+const onUndoGuarded = requireFamily(requireWrite(onUndo))
+// prettier-ignore
+const onRedoGuarded = requireFamily(requireWrite(onRedo))
 
 class EditorHandler extends Component {
   constructor(app) {
@@ -78,6 +84,12 @@ class EditorHandler extends Component {
     )
     socket.on("editor:replace_speaker", (payload, ack) =>
       onReplaceSpeakerGuarded({ io, socket }, payload, ack),
+    )
+    socket.on("editor:undo", (payload, ack) =>
+      onUndoGuarded({ io, socket }, payload, ack),
+    )
+    socket.on("editor:redo", (payload, ack) =>
+      onRedoGuarded({ io, socket }, payload, ack),
     )
     socket.on("editor:lock_turn", (payload, ack) =>
       onLockTurnGuarded({ io, socket }, payload, ack),

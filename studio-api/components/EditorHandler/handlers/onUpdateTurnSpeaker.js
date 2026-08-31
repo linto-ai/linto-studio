@@ -5,6 +5,7 @@ const { randomUUID } = require("crypto")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
+const { recordSpeakerRevision } = require("../utils/recordSpeakerRevision")
 
 /**
  * Point a turn at an existing speaker (speakerId) or create one (speakerName).
@@ -24,6 +25,7 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
     const conversations = await model.conversations.getById(translationId, [
       "text",
       "speakers",
+      "undoHead",
     ])
     if (!conversations || conversations.length !== 1) {
       return reply({ ok: false, reason: "conflict" })
@@ -63,6 +65,9 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
       !turns.some((t) => t.turn_id !== turnId && t.speaker_id === previous)
         ? previous
         : undefined
+    const previousSpeaker = previous
+      ? (conversations[0].speakers || []).find((s) => s.speaker_id === previous)
+      : undefined
 
     const updated = await model.conversationEditor.updateEditorTurnSpeaker(
       translationId,
@@ -73,6 +78,29 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
       return reply({ ok: false, reason: "conflict" })
     }
 
+    // No previous speaker on this turn (shouldn't happen — diarization
+    // always assigns one — but there's nothing to undo back TO): skip
+    // recording a revision, the mutation itself still applies and broadcasts.
+    const revisionId = previousSpeaker
+      ? await recordSpeakerRevision({
+          translationId,
+          parentId,
+          type: "update_turn_speaker",
+          before: {
+            turnId,
+            speakerId: previousSpeaker.speaker_id,
+            speakerName: previousSpeaker.speaker_name,
+          },
+          after: {
+            turnId,
+            speakerId: speaker.speaker_id,
+            speakerName: speaker.speaker_name,
+          },
+          previousHead: conversations[0].undoHead ?? null,
+          author: socket.data.editorUser,
+        })
+      : null
+
     debug(
       `turn=${turnId} speaker=${speaker.speaker_id} removed=${removedSpeakerId ?? "-"} version=${updated.version}`,
     )
@@ -82,8 +110,9 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
       speaker: { id: speaker.speaker_id, name: speaker.speaker_name },
       ...(removedSpeakerId && { removedSpeakerId }),
       version: updated.version,
+      revisionId,
     })
-    reply({ ok: true, version: updated.version })
+    reply({ ok: true, version: updated.version, revisionId })
   } catch (err) {
     debug(`update turn speaker failed: ${err.message}`)
     reply({ ok: false, reason: "error" })

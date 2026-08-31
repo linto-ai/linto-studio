@@ -4,6 +4,7 @@ const debug = require("debug")(
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
+const { recordSpeakerRevision } = require("../utils/recordSpeakerRevision")
 
 // Speaker merge: the replaced speaker's removal is implied by the broadcast,
 // no separate event. No lock (atomic, last-write-wins).
@@ -33,6 +34,20 @@ async function onReplaceSpeaker({ io, socket }, payload, ack) {
       return reply({ ok: false, reason: "unknown_speaker" })
     }
 
+    const revisionId = await recordSpeakerRevision({
+      translationId,
+      parentId,
+      type: "replace_speaker",
+      before: {
+        fromSpeaker: updated.fromSpeaker,
+        toSpeakerId,
+        turnIds: updated.turnIds,
+      },
+      after: { fromSpeakerId, toSpeakerId },
+      previousHead: updated.undoHead,
+      author: socket.data.editorUser,
+    })
+
     debug(
       `speaker=${fromSpeakerId} replaced by ${toSpeakerId} version=${updated.version}`,
     )
@@ -41,8 +56,9 @@ async function onReplaceSpeaker({ io, socket }, payload, ack) {
       fromSpeakerId,
       toSpeakerId,
       version: updated.version,
+      revisionId,
     })
-    reply({ ok: true, version: updated.version })
+    reply({ ok: true, version: updated.version, revisionId })
   } catch (err) {
     debug(`replace speaker failed: ${err.message}`)
     reply({ ok: false, reason: "error" })
