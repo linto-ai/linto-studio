@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DocumentArticle, type DownloadFormat, DownloadMenu } from "@linto-ai/transcript-ui-ui"
+import { DocumentArticle, DownloadMenu } from "@linto-ai/transcript-ui-ui"
 import { computed } from "vue"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useCore } from "../core"
@@ -7,14 +7,6 @@ import * as utils from "../utils"
 
 const core = useCore()
 const { locale } = useI18n()
-
-const formats: DownloadFormat[] = [
-  { format: "docx", labelKey: "format.docx" },
-  { format: "pdf", labelKey: "format.pdf" },
-  { format: "txt", labelKey: "format.txt" },
-  { format: "json", labelKey: "format.json" },
-  { format: "whisperx", labelKey: "format.whisperx" },
-]
 
 const turns = computed(
   () => core.activeChannel.value?.activeTranslation.value.turns.value ?? [],
@@ -45,17 +37,38 @@ function turnText(turn: {
   return turn.words.map((w) => w.text).join(" ")
 }
 
+// "txt" needs no backend — it's just the turns joined into text — so it's
+// the one format the core always fulfills itself. Anything else (docx, pdf,
+// whisperx…) only exists once the host lists it in verbatimFormats, and is
+// then always the host's to fulfill via "verbatim:export".
+function exportAsText(): void {
+  const text = utils.buildVerbatimText(
+    title.value,
+    turns.value.map((turn) => ({
+      speakerName: speakerName(turn.speakerId),
+      time: turn.startTime != null ? utils.formatTime(turn.startTime) : null,
+      languageName: turn.language ? languageName(turn.language) : null,
+      text: turnText(turn),
+    })),
+  )
+  utils.downloadTextFile(`${title.value || "transcript"}.txt`, text)
+}
+
 function onExport(format?: string): void {
   if (!format) return
+  if (format === "txt" && core.verbatimFormatsAreDefault) {
+    exportAsText()
+    return
+  }
   core.emit("verbatim:export", { format })
 }
 </script>
 
 <template>
   <section class="verbatim-panel">
-    <DocumentArticle :formats="formats" @export="onExport">
+    <DocumentArticle>
       <template #toolbar-right>
-        <DownloadMenu :formats="formats" @select="onExport" />
+        <DownloadMenu :formats="core.verbatimFormats" @select="onExport" />
       </template>
 
       <article class="verbatim-panel__content">

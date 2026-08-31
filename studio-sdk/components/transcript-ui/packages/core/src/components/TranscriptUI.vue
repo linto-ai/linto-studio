@@ -45,7 +45,7 @@ defineExpose({ core })
 </script>
 
 <template>
-  <div class="editor-root">
+  <div class="transcript-ui-root">
     <Layout
       v-if="core.channels.size"
       :show-header="!props.noHeader" />
@@ -61,7 +61,7 @@ defineExpose({ core })
 @import "@linto-ai/transcript-ui-ui/styles/popover-list.css";
 
 /* Positioning context for the absolute loading overlay. */
-.editor-root {
+.transcript-ui-root {
   position: relative;
   height: 100%;
 }

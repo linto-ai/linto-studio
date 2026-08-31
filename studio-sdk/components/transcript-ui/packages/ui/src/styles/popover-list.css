@@ -2,7 +2,7 @@
    Kept global because Reka portals render outside the component's scoped
    CSS boundary. */
 
-.popover-list {
+.transcript-ui-root .transcript-ui-popover-list {
   min-width: 180px;
   padding: var(--spacing-xs);
   background-color: var(--color-surface);
@@ -13,7 +13,7 @@
   z-index: 50;
 }
 
-.popover-list__items {
+.transcript-ui-root .transcript-ui-popover-list__items {
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -24,7 +24,7 @@
   overflow-y: auto;
 }
 
-.popover-list__item {
+.transcript-ui-root .transcript-ui-popover-list__item {
   all: unset;
   box-sizing: border-box;
   display: flex;
@@ -38,17 +38,17 @@
   cursor: pointer;
 }
 
-.popover-list__item:hover,
-.popover-list__item[data-highlighted] {
+.transcript-ui-root .transcript-ui-popover-list__item:hover,
+.transcript-ui-root .transcript-ui-popover-list__item[data-highlighted] {
   background-color: var(--color-surface-hover);
 }
 
-.popover-list__item:focus-visible {
+.transcript-ui-root .transcript-ui-popover-list__item:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: -2px;
 }
 
-.popover-list__item--current {
+.transcript-ui-root .transcript-ui-popover-list__item--current {
   background-color: color-mix(
     in srgb,
     var(--color-primary) 10%,
@@ -56,12 +56,12 @@
   );
 }
 
-.popover-list__divider {
+.transcript-ui-root .transcript-ui-popover-list__divider {
   height: 1px;
   background-color: var(--color-border);
   margin: var(--spacing-xs) 0;
 }
 
-.popover-list__footer {
+.transcript-ui-root .transcript-ui-popover-list__footer {
   padding: var(--spacing-xs);
 }

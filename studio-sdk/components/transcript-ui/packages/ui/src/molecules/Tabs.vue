@@ -64,7 +64,7 @@ function onSelect(tab: TabItem<T>): void {
   scrollbar-width: thin;
 }
 
-.tab {
+.transcript-ui-root .tab {
   all: unset;
   box-sizing: border-box;
   display: inline-flex;
@@ -84,22 +84,22 @@ function onSelect(tab: TabItem<T>): void {
     border-color var(--transition-duration);
 }
 
-.tab:hover:not([disabled]) {
+.transcript-ui-root .tab:hover:not([disabled]) {
   color: var(--color-text-primary);
 }
 
-.tab:focus-visible {
+.transcript-ui-root .tab:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: -2px;
   border-radius: var(--radius-sm);
 }
 
-.tab--active {
+.transcript-ui-root .tab--active {
   color: var(--color-text-primary);
   border-bottom-color: var(--color-primary);
 }
 
-.tab[disabled] {
+.transcript-ui-root .tab[disabled] {
   opacity: 0.4;
   cursor: not-allowed;
 }

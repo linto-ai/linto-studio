@@ -19,7 +19,7 @@ const { t } = useI18n()
     <!-- Loading the session history -->
     <div v-if="isLoading" class="chat-message-list__state" role="status">
       <EditorIcon name="spinner" :size="28" spin />
-      <span class="sr-only">{{ t("editor.loading") }}</span>
+      <span class="transcript-ui-sr-only">{{ t("editor.loading") }}</span>
     </div>
 
     <!-- No session selected yet -->

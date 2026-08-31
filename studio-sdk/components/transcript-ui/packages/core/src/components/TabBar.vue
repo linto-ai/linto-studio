@@ -45,7 +45,6 @@ function onSelect(value: string): void {
 
 <template>
   <Tabs
-    v-if="core.llmServices"
     :tabs="tabs"
     :model-value="modelValue"
     @update:model-value="onSelect" />

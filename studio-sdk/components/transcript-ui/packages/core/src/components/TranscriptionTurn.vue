@@ -320,7 +320,7 @@ function onCheckboxChange(event: MouseEvent) {
 }
 
 /* Same reset as the popover's own trigger: the label IS the button. */
-.speaker-trigger {
+.transcript-ui-root .speaker-trigger {
   all: unset;
   cursor: pointer;
   display: inline-flex;
@@ -328,7 +328,7 @@ function onCheckboxChange(event: MouseEvent) {
   border-radius: var(--radius-sm);
 }
 
-.speaker-trigger:focus-visible {
+.transcript-ui-root .speaker-trigger:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }

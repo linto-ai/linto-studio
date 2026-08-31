@@ -36,7 +36,13 @@ else
   echo "Dry run (pass --live to actually publish) — version $version"
 fi
 
-# Leaf-first publish order.
+# Leaf-first publish order. Always run the full set: root's own
+# dependencies on i18n/ui/core are "workspace:*", rewritten to the real
+# version by `bun publish` at the moment root is published — commenting out
+# entries here (e.g. "already published, skip them") desyncs that rewrite
+# from a partial run and publishes root pinned to whatever stale version
+# those packages last resolved to, not the one just bumped. That's exactly
+# how transcript-ui@0.9.6 ended up depending on transcript-ui-core@0.9.0.
 order=(
   i18n
   ui
@@ -67,19 +73,41 @@ for name in "${order[@]}"; do
   bump_version "$root_dir/packages/$name/package.json"
 done
 
-echo "Refreshing the lockfile..."
+echo "Regenerating the lockfile..."
+# A plain `bun install` treats an already-resolved workspace member's
+# `version` field as unchanged and won't refresh it in bun.lock even after
+# bump_version rewrote its package.json — `--force` doesn't help either.
+# `bun publish` reads that lockfile-cached version when rewriting root's
+# "workspace:*" deps, so a stale entry publishes root pinned to whatever
+# version each package *first* had, silently. Deleting the lockfile forces a
+# real re-resolution. This is exactly how transcript-ui@0.9.6 (and 0.9.7)
+# ended up depending on transcript-ui-core@0.9.0.
+rm -f "$root_dir/bun.lock"
 (cd "$root_dir" && bun install)
 
 publish_dir() {
   local dir="$1"
   echo
   echo "--- publishing $(basename "$dir") ---"
-  (cd "$dir" && bun publish $publish_flag)
+  (cd "$dir" && NODE_OPTIONS="--dns-result-order=ipv4first --no-network-family-autoselection" bun publish $publish_flag)
 }
 
 for name in "${order[@]}"; do
   publish_dir "$root_dir/packages/$name"
 done
+
+# Guard against the exact bug this script once shipped: root's
+# "workspace:*" deps on i18n/ui/core only resolve correctly at publish time
+# if those packages are genuinely at $version. Verify before publishing root
+# instead of trusting that every package in `order` actually ran above.
+for name in i18n ui core; do
+  pkg_version="$(node -p "require('$root_dir/packages/$name/package.json').version")"
+  if [ "$pkg_version" != "$version" ]; then
+    echo "Refusing to publish root: packages/$name is at $pkg_version, not $version." >&2
+    exit 1
+  fi
+done
+
 publish_dir "$root_dir"
 
 echo

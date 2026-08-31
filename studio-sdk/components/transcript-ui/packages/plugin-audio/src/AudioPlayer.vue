@@ -37,8 +37,8 @@ defineExpose({ seekTo, pause })
   <footer class="audio-player">
     <div
       ref="waveformRef"
-      class="waveform-container"
-      :class="{ 'waveform-container--loading': isLoading }" />
+      class="transcript-ui-waveform-container"
+      :class="{ 'transcript-ui-waveform-container--loading': isLoading }" />
     <AudioPlayerControls
       :is-playing="isPlaying"
       :current-time="formattedCurrentTime"
@@ -63,11 +63,11 @@ defineExpose({ seekTo, pause })
   flex-shrink: 0;
 }
 
-.waveform-container {
+.transcript-ui-waveform-container {
   min-height: 32px;
 }
 
-.waveform-container--loading {
+.transcript-ui-waveform-container--loading {
   background: linear-gradient(
     90deg,
     var(--color-border-light, var(--color-border)) 25%,
@@ -89,7 +89,7 @@ defineExpose({ seekTo, pause })
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .waveform-container--loading {
+  .transcript-ui-waveform-container--loading {
     animation: none;
   }
 }
