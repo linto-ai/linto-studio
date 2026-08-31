@@ -22181,7 +22181,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               _: 1
             }, 8, ["aria-label"])) : createCommentVNode("", true),
             createVNode(unref(Button), {
-              variant: "transparent",
+              variant: "secondary",
               "aria-label": unref(t2)("header.undo"),
               disabled: !props.canUndo,
               onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("undo"))
@@ -22195,7 +22195,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               _: 1
             }, 8, ["aria-label", "disabled"]),
             createVNode(unref(Button), {
-              variant: "transparent",
+              variant: "secondary",
               "aria-label": unref(t2)("header.redo"),
               disabled: !props.canRedo,
               onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("redo"))
@@ -22230,8 +22230,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$p = '\n.editor-header[data-v-8968ae44] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-8968ae44] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-8968ae44] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-8968ae44] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-8968ae44] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-8968ae44]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-8968ae44] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-8968ae44] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-8968ae44] {\n    font-size: var(--font-size-base);\n}\n}\n';
-  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-8968ae44"]]);
+  const _style_0$p = '\n.editor-header[data-v-6464a453] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-6464a453] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-6464a453] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-6464a453] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-6464a453] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-6464a453]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-6464a453] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-6464a453] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-6464a453] {\n    font-size: var(--font-size-base);\n}\n}\n';
+  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-6464a453"]]);
   const TRANSCRIPTION_TAB = "__transcription__";
   const VERBATIM_TAB = "__verbatim__";
   const _sfc_main$t = /* @__PURE__ */ defineComponent({

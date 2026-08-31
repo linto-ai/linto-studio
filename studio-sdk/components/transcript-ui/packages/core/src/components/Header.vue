@@ -49,7 +49,10 @@ const metaParts = computed(() =>
     <div class="header-main">
       <h1 class="document-title">{{ formattedTitle }}</h1>
       <div v-if="metaParts.length" class="document-meta">
-        <span v-for="(part, i) in metaParts" :key="i" class="document-meta__part">
+        <span
+          v-for="(part, i) in metaParts"
+          :key="i"
+          class="document-meta__part">
           {{ part }}
         </span>
       </div>
@@ -63,14 +66,14 @@ const metaParts = computed(() =>
         <template #icon><EditorIcon name="users" :size="16" /></template>
       </Button>
       <Button
-        variant="transparent"
+        variant="secondary"
         :aria-label="t('header.undo')"
         :disabled="!props.canUndo"
         @click="$emit('undo')">
         <template #icon><EditorIcon name="undo" :size="16" /></template>
       </Button>
       <Button
-        variant="transparent"
+        variant="secondary"
         :aria-label="t('header.redo')"
         :disabled="!props.canRedo"
         @click="$emit('redo')">
