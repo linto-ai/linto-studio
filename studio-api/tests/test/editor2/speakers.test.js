@@ -118,6 +118,8 @@ describe("onUpdateTurnSpeaker", () => {
     model.conversations.getById.mockResolvedValue([CONV])
     model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
       version: 3,
+      previousSpeaker: { speaker_id: "spk-2", speaker_name: "Thomas" },
+      undoHead: null,
     })
     const ctx = makeCtx()
     const ack = jest.fn()
@@ -139,8 +141,14 @@ describe("onUpdateTurnSpeaker", () => {
       removedSpeakerId: "spk-2",
       version: 3,
       revisionId: "rev-id",
+      redoRevisionId: null,
     })
-    expect(ack).toHaveBeenCalledWith({ ok: true, version: 3, revisionId: "rev-id" })
+    expect(ack).toHaveBeenCalledWith({
+      ok: true,
+      version: 3,
+      revisionId: "rev-id",
+      redoRevisionId: null,
+    })
     // spk-2 (previous) was turn-2's assignment: recorded so undo can restore it.
     expect(model.editorRevisions.insert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -254,8 +262,14 @@ describe("onRenameSpeaker", () => {
       name: "Marie D.",
       version: 6,
       revisionId: "rev-id",
+      redoRevisionId: null,
     })
-    expect(ack).toHaveBeenCalledWith({ ok: true, version: 6, revisionId: "rev-id" })
+    expect(ack).toHaveBeenCalledWith({
+      ok: true,
+      version: 6,
+      revisionId: "rev-id",
+      redoRevisionId: null,
+    })
     expect(model.editorRevisions.insert).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "rename_speaker",
@@ -320,8 +334,14 @@ describe("onReplaceSpeaker", () => {
       toSpeakerId: "spk-2",
       version: 7,
       revisionId: "rev-id",
+      redoRevisionId: null,
     })
-    expect(ack).toHaveBeenCalledWith({ ok: true, version: 7, revisionId: "rev-id" })
+    expect(ack).toHaveBeenCalledWith({
+      ok: true,
+      version: 7,
+      revisionId: "rev-id",
+      redoRevisionId: null,
+    })
     expect(model.editorRevisions.insert).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "replace_speaker",
@@ -380,8 +400,14 @@ describe("recordSpeakerRevision resilience", () => {
       name: "Marie D.",
       version: 6,
       revisionId: null,
+      redoRevisionId: null,
     })
-    expect(ack).toHaveBeenCalledWith({ ok: true, version: 6, revisionId: null })
+    expect(ack).toHaveBeenCalledWith({
+      ok: true,
+      version: 6,
+      revisionId: null,
+      redoRevisionId: null,
+    })
   })
 
   test("a failure writing the revision itself doesn't block the mutation either", async () => {
@@ -401,7 +427,12 @@ describe("recordSpeakerRevision resilience", () => {
       ack,
     )
 
-    expect(ack).toHaveBeenCalledWith({ ok: true, version: 6, revisionId: null })
+    expect(ack).toHaveBeenCalledWith({
+      ok: true,
+      version: 6,
+      revisionId: null,
+      redoRevisionId: null,
+    })
     expect(model.conversationEditor.swapConversationUndoHead).not.toHaveBeenCalled()
     expect(consoleError).toHaveBeenCalled()
     consoleError.mockRestore()

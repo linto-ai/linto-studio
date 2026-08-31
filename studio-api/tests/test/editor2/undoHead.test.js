@@ -72,6 +72,66 @@ describe("conversationEditor.renameEditorSpeaker", () => {
   })
 })
 
+describe("conversationEditor.updateEditorTurnSpeaker", () => {
+  test("captures the turn's previous speaker and undo head from the pre-image atomically", async () => {
+    mockCollection.findOneAndUpdate.mockResolvedValue({
+      editorVersion: 9,
+      text: [
+        { turn_id: "turn-1", speaker_id: "spk-1" },
+        { turn_id: "turn-2", speaker_id: "spk-2" },
+      ],
+      speakers: [
+        { speaker_id: "spk-1", speaker_name: "Marie" },
+        { speaker_id: "spk-2", speaker_name: "Thomas" },
+      ],
+      undoHead: "rev-0",
+    })
+
+    const result = await conversationEditor.updateEditorTurnSpeaker(
+      "conv-1",
+      "turn-2",
+      { speaker_id: "spk-1", speaker_name: "Marie" },
+    )
+
+    expect(result).toEqual({
+      version: 10,
+      previousSpeaker: { speaker_id: "spk-2", speaker_name: "Thomas" },
+      undoHead: "rev-0",
+    })
+    const [, , options] = mockCollection.findOneAndUpdate.mock.calls[0]
+    expect(options.returnDocument).toBe("before")
+  })
+
+  test("missing editorVersion/undoHead default to 0/null", async () => {
+    mockCollection.findOneAndUpdate.mockResolvedValue({
+      text: [{ turn_id: "turn-2", speaker_id: "spk-2" }],
+      speakers: [{ speaker_id: "spk-2", speaker_name: "Thomas" }],
+    })
+
+    const result = await conversationEditor.updateEditorTurnSpeaker(
+      "conv-1",
+      "turn-2",
+      { speaker_id: "spk-1", speaker_name: "Marie" },
+    )
+
+    expect(result).toEqual({
+      version: 1,
+      previousSpeaker: { speaker_id: "spk-2", speaker_name: "Thomas" },
+      undoHead: null,
+    })
+  })
+
+  test("null when the conversation or turn no longer exists", async () => {
+    mockCollection.findOneAndUpdate.mockResolvedValue(null)
+    await expect(
+      conversationEditor.updateEditorTurnSpeaker("conv-1", "turn-404", {
+        speaker_id: "spk-1",
+        speaker_name: "Marie",
+      }),
+    ).resolves.toBeNull()
+  })
+})
+
 describe("conversationEditor.replaceEditorSpeaker", () => {
   test("captures fromSpeaker, the exact affected turnIds, and undoHead from the pre-image atomically", async () => {
     mockCollection.findOneAndUpdate.mockResolvedValue({

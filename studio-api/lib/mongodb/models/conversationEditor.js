@@ -210,9 +210,18 @@ class ConversationEditorModel extends MongoModel {
    * the speakers array (added when new, dropped when no longer referenced)
    * and bumps editorVersion. Returns null when the conversation or turn no
    * longer exists.
+   *
+   * returnDocument "before" (not "after"): the pre-image gives us the
+   * turn's previous speaker and the current undo head in the SAME atomic
+   * op as the mutation — same reasoning as renameEditorSpeaker /
+   * replaceEditorSpeaker (see EditorHandler/handlers/onUpdateTurnSpeaker.js).
+   * Reading undoHead separately, before this write, left a race window
+   * spanning the whole handler where a concurrent mutation could move the
+   * head first and silently strand the recorded revision unreachable.
+   * @returns {Promise<{version:number, previousSpeaker:object|undefined, undoHead:import("mongodb").ObjectId|null}|null>}
    */
   async updateEditorTurnSpeaker(conversationId, turnId, speaker) {
-    const result = await MongoDriver.constructor.db
+    const before = await MongoDriver.constructor.db
       .collection(this.collection)
       .findOneAndUpdate(
         { _id: this.getObjectId(conversationId), "text.turn_id": turnId },
@@ -279,12 +288,22 @@ class ConversationEditorModel extends MongoModel {
           },
         ],
         {
-          returnDocument: "after",
-          projection: { editorVersion: 1 },
+          returnDocument: "before",
+          projection: { editorVersion: 1, text: 1, speakers: 1, undoHead: 1 },
           includeResultMetadata: false,
         },
       )
-    return result ? { version: result.editorVersion } : null
+    if (!before) return null
+    const previousSpeakerId = (before.text || []).find(
+      (t) => t.turn_id === turnId,
+    )?.speaker_id
+    return {
+      version: (before.editorVersion ?? 0) + 1,
+      previousSpeaker: (before.speakers || []).find(
+        (s) => s.speaker_id === previousSpeakerId,
+      ),
+      undoHead: before.undoHead ?? null,
+    }
   }
 
   /**

@@ -109,8 +109,12 @@ function onTranslationChange(translationId: string) {
       :speaker-count="speakers.size"
       :is-mobile="isMobile"
       :can-ask="!!core.chat"
+      :can-undo="core.transcriptionEditor?.canUndo.value ?? false"
+      :can-redo="core.transcriptionEditor?.canRedo.value ?? false"
       @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
-      @open-chat="core.chat?.setDrawerOpen(true)" />
+      @open-chat="core.chat?.setDrawerOpen(true)"
+      @undo="core.transcriptionEditor?.undo()"
+      @redo="core.transcriptionEditor?.redo()" />
     <TabBar v-model="activeTab" />
     <SelectionActionBar v-if="showTranscription" />
     <main class="editor-body">

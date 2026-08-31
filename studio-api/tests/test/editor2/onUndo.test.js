@@ -126,8 +126,15 @@ test("undoes a rename_speaker: cursor swap passes, restores the old name, does N
     name: "Marie",
     version: 8,
     revisionId: "rev-0",
+    // The revision we just undid IS the redo target from the new cursor.
+    redoRevisionId: "oid:rev-1",
   })
-  expect(ack).toHaveBeenCalledWith({ ok: true, version: 8, revisionId: "rev-0" })
+  expect(ack).toHaveBeenCalledWith({
+    ok: true,
+    version: 8,
+    revisionId: "rev-0",
+    redoRevisionId: "oid:rev-1",
+  })
 })
 
 test("undoes an update_turn_speaker: restores the previous assignment and hints removedSpeakerId for the one being left", async () => {
@@ -159,6 +166,7 @@ test("undoes an update_turn_speaker: restores the previous assignment and hints 
     removedSpeakerId: "spk-1",
     version: 10,
     revisionId: "rev-0",
+    redoRevisionId: "oid:rev-3",
   })
 })
 
@@ -193,8 +201,14 @@ test("undoes a replace_speaker: resurrects fromSpeaker and broadcasts editor:spe
     turnIds: ["turn-1", "turn-3"],
     version: 9,
     revisionId: null,
+    redoRevisionId: "oid:rev-2",
   })
-  expect(ack).toHaveBeenCalledWith({ ok: true, version: 9, revisionId: null })
+  expect(ack).toHaveBeenCalledWith({
+    ok: true,
+    version: 9,
+    revisionId: null,
+    redoRevisionId: "oid:rev-2",
+  })
 })
 
 test("cursor swap succeeds but the restore itself fails: reports error", async () => {

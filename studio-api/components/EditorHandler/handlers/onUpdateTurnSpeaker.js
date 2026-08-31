@@ -25,7 +25,6 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
     const conversations = await model.conversations.getById(translationId, [
       "text",
       "speakers",
-      "undoHead",
     ])
     if (!conversations || conversations.length !== 1) {
       return reply({ ok: false, reason: "conflict" })
@@ -65,9 +64,6 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
       !turns.some((t) => t.turn_id !== turnId && t.speaker_id === previous)
         ? previous
         : undefined
-    const previousSpeaker = previous
-      ? (conversations[0].speakers || []).find((s) => s.speaker_id === previous)
-      : undefined
 
     const updated = await model.conversationEditor.updateEditorTurnSpeaker(
       translationId,
@@ -81,22 +77,22 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
     // No previous speaker on this turn (shouldn't happen — diarization
     // always assigns one — but there's nothing to undo back TO): skip
     // recording a revision, the mutation itself still applies and broadcasts.
-    const revisionId = previousSpeaker
+    const revisionId = updated.previousSpeaker
       ? await recordSpeakerRevision({
           translationId,
           parentId,
           type: "update_turn_speaker",
           before: {
             turnId,
-            speakerId: previousSpeaker.speaker_id,
-            speakerName: previousSpeaker.speaker_name,
+            speakerId: updated.previousSpeaker.speaker_id,
+            speakerName: updated.previousSpeaker.speaker_name,
           },
           after: {
             turnId,
             speakerId: speaker.speaker_id,
             speakerName: speaker.speaker_name,
           },
-          previousHead: conversations[0].undoHead ?? null,
+          previousHead: updated.undoHead,
           author: socket.data.editorUser,
         })
       : null
@@ -111,8 +107,10 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
       ...(removedSpeakerId && { removedSpeakerId }),
       version: updated.version,
       revisionId,
+      // @see onRenameSpeaker.js
+      redoRevisionId: null,
     })
-    reply({ ok: true, version: updated.version, revisionId })
+    reply({ ok: true, version: updated.version, revisionId, redoRevisionId: null })
   } catch (err) {
     debug(`update turn speaker failed: ${err.message}`)
     reply({ ok: false, reason: "error" })

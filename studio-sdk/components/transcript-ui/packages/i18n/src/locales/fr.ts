@@ -73,6 +73,8 @@ const fr = {
   "selection.select": "Sélectionner {name}",
   "selection.deselect": "Désélectionner {name}",
   "header.ask": "Demander",
+  "header.undo": "Annuler",
+  "header.redo": "Rétablir",
   "header.speakerCount": "{count} intervenant | {count} intervenants",
   "tabs.transcription": "Transcription",
   "tabs.verbatim": "Verbatim",

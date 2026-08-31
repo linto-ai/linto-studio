@@ -56,13 +56,26 @@ async function onRedo({ io, socket }, payload, ack) {
       return reply({ ok: false, reason: "not_last_revision" })
     }
 
-    const applied = await applyForward(translationId, revision)
+    // Run alongside applyForward, not after: independent of it (one mutates
+    // the conversation, the other only reads editorRevisions) and both are
+    // needed before broadcasting, so there's no reason to serialize them.
+    const [applied, next] = await Promise.all([
+      applyForward(translationId, revision),
+      model.editorRevisions.findByPreviousHead(translationId, revision._id),
+    ])
     if (!applied) {
       debug(
         `redo restore failed after the cursor moved (revision=${revision._id}, type=${revision.type})`,
       )
       return reply({ ok: false, reason: "error" })
     }
+    // Is there yet ANOTHER step to redo to, from here? Unlike onUndo.js this
+    // genuinely needs the lookup: advancing can run out of chain (this WAS
+    // the tip before undo brought the cursor back to it), where undoing
+    // never does (there's always a previousHead, even if it's null).
+    // isUndoable: same defensive gate as line 43-46 — a redo TARGET this
+    // handler doesn't know how to redo is the same as no target at all.
+    const redoRevisionId = next && isUndoable(next.type) ? next._id : null
 
     debug(`revision=${revision._id} type=${revision.type} redone`)
     io.to(computeEditorRoomName(parentId)).emit(applied.event, {
@@ -70,8 +83,14 @@ async function onRedo({ io, socket }, payload, ack) {
       ...applied.payload,
       version: applied.version,
       revisionId: revision._id,
+      redoRevisionId,
     })
-    reply({ ok: true, version: applied.version, revisionId: revision._id })
+    reply({
+      ok: true,
+      version: applied.version,
+      revisionId: revision._id,
+      redoRevisionId,
+    })
   } catch (err) {
     debug(`redo failed: ${err.message}`)
     reply({ ok: false, reason: "error" })

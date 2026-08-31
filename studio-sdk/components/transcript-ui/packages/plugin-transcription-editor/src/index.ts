@@ -1,10 +1,11 @@
-import { ref, shallowReactive } from "vue"
+import { computed, ref, shallowReactive } from "vue"
 import type {
   Core,
   CorePlugin,
   TranscriptionEditorPluginApi,
   SpeakerRenamed,
   SpeakerReplaced,
+  SpeakerRestored,
   TurnDeleted,
   TurnLock,
   TurnSpeakerUpdated,
@@ -18,6 +19,7 @@ import type {
   TranscriptionEditorOptions,
 } from "./types"
 import { LockHeartbeat } from "./tools/LockHeartbeat"
+import { getActiveTranslationStore } from "./tools/getActiveTranslationStore"
 import { beginEdit as beginEditHandler } from "./handlers/beginEdit"
 import { cancelEdit as cancelEditHandler } from "./handlers/cancelEdit"
 import { saveTurn as saveTurnHandler } from "./handlers/saveTurn"
@@ -30,9 +32,12 @@ import { applyTurnDeleted as applyTurnDeletedHandler } from "./handlers/applyTur
 import { updateTurnSpeaker as updateTurnSpeakerHandler } from "./handlers/updateTurnSpeaker"
 import { renameSpeaker as renameSpeakerHandler } from "./handlers/renameSpeaker"
 import { replaceSpeaker as replaceSpeakerHandler } from "./handlers/replaceSpeaker"
+import { undo as undoHandler } from "./handlers/undo"
+import { redo as redoHandler } from "./handlers/redo"
 import { applyTurnSpeakerUpdated as applyTurnSpeakerUpdatedHandler } from "./handlers/applyTurnSpeakerUpdated"
 import { applySpeakerRenamed as applySpeakerRenamedHandler } from "./handlers/applySpeakerRenamed"
 import { applySpeakerReplaced as applySpeakerReplacedHandler } from "./handlers/applySpeakerReplaced"
+import { applySpeakerRestored as applySpeakerRestoredHandler } from "./handlers/applySpeakerRestored"
 import {
   getTurnLock as getTurnLockHandler,
   setLocks as setLocksHandler,
@@ -70,11 +75,23 @@ class EditorSession implements EditorPluginState, TranscriptionEditorPluginApi {
   heartbeat = new LockHeartbeat(HEARTBEAT_INTERVAL_MS)
   versions = new Map<string, number>()
   pendingRefetches = new Set<string>()
+  undoHeads = shallowReactive(new Map<string, string | null>())
+  redoHeads = shallowReactive(new Map<string, string | null>())
 
   constructor(core: Core, options: TranscriptionEditorOptions) {
     this.core = core
     this.options = options
   }
+
+  canUndo = computed(() => {
+    const store = getActiveTranslationStore(this.core)
+    return !!store && !!this.undoHeads.get(store.id)
+  })
+
+  canRedo = computed(() => {
+    const store = getActiveTranslationStore(this.core)
+    return !!store && !!this.redoHeads.get(store.id)
+  })
 
   beginEdit(turnId: string, caretOffset?: number): Promise<void> {
     return beginEditHandler(this, turnId, caretOffset)
@@ -135,6 +152,14 @@ class EditorSession implements EditorPluginState, TranscriptionEditorPluginApi {
     replaceSpeakerHandler(this, fromSpeakerId, toSpeakerId)
   }
 
+  undo(): void {
+    undoHandler(this)
+  }
+
+  redo(): void {
+    redoHandler(this)
+  }
+
   applyTurnSpeakerUpdated(update: TurnSpeakerUpdated): void {
     applyTurnSpeakerUpdatedHandler(this, update)
   }
@@ -145,6 +170,10 @@ class EditorSession implements EditorPluginState, TranscriptionEditorPluginApi {
 
   applySpeakerReplaced(replaced: SpeakerReplaced): void {
     applySpeakerReplacedHandler(this, replaced)
+  }
+
+  applySpeakerRestored(restored: SpeakerRestored): void {
+    applySpeakerRestoredHandler(this, restored)
   }
 
   getTurnLock(turnId: string) {
@@ -172,6 +201,8 @@ class EditorSession implements EditorPluginState, TranscriptionEditorPluginApi {
     this.locks.clear()
     this.versions.clear()
     this.pendingRefetches.clear()
+    this.undoHeads.clear()
+    this.redoHeads.clear()
   }
 
   destroy(): void {

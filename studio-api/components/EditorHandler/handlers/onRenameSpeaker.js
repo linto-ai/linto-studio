@@ -43,8 +43,13 @@ async function onRenameSpeaker({ io, socket }, payload, ack) {
       name,
       version: updated.version,
       revisionId,
+      // A fresh mutation always forks away from anything undo-able-back-to:
+      // redoRevisionId is provably null right after it (nothing could have
+      // been chained onto a revision that didn't exist a moment ago) — see
+      // onUndo.js/onRedo.js for where this actually varies.
+      redoRevisionId: null,
     })
-    reply({ ok: true, version: updated.version, revisionId })
+    reply({ ok: true, version: updated.version, revisionId, redoRevisionId: null })
   } catch (err) {
     debug(`rename speaker failed: ${err.message}`)
     reply({ ok: false, reason: "error" })

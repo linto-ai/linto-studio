@@ -3,9 +3,11 @@ import type { EditorPluginState } from "../types"
 import { trackBroadcastVersion } from "../tools/trackBroadcastVersion"
 import { findTranslationStore } from "../tools/findTranslationStore"
 import { removeSpeakerIfUnused } from "../tools/removeSpeakerIfUnused"
+import { trackUndoRedoHeads } from "../tools/trackUndoRedoHeads"
 
-/** Apply a turn↔speaker assignment broadcast by the server, including its
- *  GC consequence (removedSpeakerId rides the broadcast). */
+/** Apply a turn↔speaker assignment broadcast by the server (a plain
+ *  assignment OR an undo/redo replaying one — see trackUndoRedoHeads),
+ *  including its GC consequence (removedSpeakerId rides the broadcast). */
 export function applyTurnSpeakerUpdated(
   state: EditorPluginState,
   update: TurnSpeakerUpdated,
@@ -28,4 +30,11 @@ export function applyTurnSpeakerUpdated(
   if (update.removedSpeakerId) {
     removeSpeakerIfUnused(state.core, update.removedSpeakerId)
   }
+
+  trackUndoRedoHeads(
+    state,
+    update.translationId,
+    update.revisionId,
+    update.redoRevisionId,
+  )
 }

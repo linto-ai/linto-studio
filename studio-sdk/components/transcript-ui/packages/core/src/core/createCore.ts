@@ -33,9 +33,17 @@ export function createCore(options: CoreOptions = {}): Core {
   const capabilities = ref<CoreCapabilities>(
     options.capabilities ?? { text: "edit", speakers: "edit" },
   )
-  const verbatimFormatsAreDefault = options.verbatimFormats == null
-  const verbatimFormats =
-    options.verbatimFormats ?? DEFAULT_VERBATIM_FORMATS
+  // Ref, not a plain array: unlike `document` (setDocument) or `capabilities`
+  // (already a Ref), there is no dedicated setter, and no web component prop
+  // either (an array can't cross an HTML attribute cleanly) — a host sets
+  // this the same way it sets capabilities, core.verbatimFormats.value = […],
+  // once it holds `core` (see TranscriptUI's defineExpose).
+  const verbatimFormats = ref<DownloadFormat[]>(
+    options.verbatimFormats ?? DEFAULT_VERBATIM_FORMATS,
+  )
+  const verbatimFormatsAreDefault = computed(
+    () => verbatimFormats.value === DEFAULT_VERBATIM_FORMATS,
+  )
 
   // ── Event bus ──────────────────────────────────────────────────────
 

@@ -65,14 +65,24 @@ async function onUndo({ io, socket }, payload, ack) {
       return reply({ ok: false, reason: "error" })
     }
 
+    // The revision we just undid IS the redo target from here — no extra
+    // lookup needed: nothing could have chained onto it since it was, until
+    // this call, still the live undo cursor (the swap above just confirmed
+    // that). @see onRedo.js, where advancing FURTHER genuinely needs one.
     debug(`revision=${revisionId} type=${revision.type} undone`)
     io.to(computeEditorRoomName(parentId)).emit(applied.event, {
       translationId,
       ...applied.payload,
       version: applied.version,
       revisionId: revision.previousHead,
+      redoRevisionId: objectRevisionId,
     })
-    reply({ ok: true, version: applied.version, revisionId: revision.previousHead })
+    reply({
+      ok: true,
+      version: applied.version,
+      revisionId: revision.previousHead,
+      redoRevisionId: objectRevisionId,
+    })
   } catch (err) {
     debug(`undo failed: ${err.message}`)
     reply({ ok: false, reason: "error" })

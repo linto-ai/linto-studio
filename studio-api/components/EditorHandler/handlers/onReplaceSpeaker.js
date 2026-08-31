@@ -57,8 +57,10 @@ async function onReplaceSpeaker({ io, socket }, payload, ack) {
       toSpeakerId,
       version: updated.version,
       revisionId,
+      // @see onRenameSpeaker.js
+      redoRevisionId: null,
     })
-    reply({ ok: true, version: updated.version, revisionId })
+    reply({ ok: true, version: updated.version, revisionId, redoRevisionId: null })
   } catch (err) {
     debug(`replace speaker failed: ${err.message}`)
     reply({ ok: false, reason: "error" })

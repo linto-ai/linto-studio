@@ -1,7 +1,10 @@
 <template>
   <LayoutV2 noHeader>
     <div class="transcription-editor-wrapper">
-      <linto-editor ref="editor" :locale="$i18n.locale" />
+      <linto-editor
+        ref="editor"
+        :locale="$i18n.locale"
+        :verbatimFormats="verbatimFormats" />
     </div>
     <PublicationModal
       v-model="publicationModal.open"
@@ -60,6 +63,13 @@ export default {
       editListeners: [],
       canWrite: false,
       publicationModal: { open: false, jobId: null },
+      verbatimFormats: [
+        { format: "docx", labelKey: "format.docx" },
+        { format: "pdf", labelKey: "format.pdf" },
+        { format: "txt", labelKey: "format.txt" },
+        { format: "json", labelKey: "format.json" },
+        { format: "whisperx", labelKey: "format.whisperx" },
+      ],
     }
   },
   async mounted() {

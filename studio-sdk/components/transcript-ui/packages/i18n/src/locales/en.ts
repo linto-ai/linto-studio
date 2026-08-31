@@ -74,6 +74,8 @@ const en: Record<keyof typeof fr, string> = {
   'selection.select': 'Select {name}',
   'selection.deselect': 'Deselect {name}',
   'header.ask': 'Ask',
+  'header.undo': 'Undo',
+  'header.redo': 'Redo',
   'header.speakerCount': '{count} speaker | {count} speakers',
   'tabs.transcription': 'Transcription',
   'tabs.verbatim': 'Verbatim',
