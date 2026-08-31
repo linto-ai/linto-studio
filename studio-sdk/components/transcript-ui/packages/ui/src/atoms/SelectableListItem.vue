@@ -79,39 +79,43 @@ const emit = defineEmits<{
 }
 
 /* ── The selectable button ── */
-.selectable-list-item__main {
+.transcript-ui-root .selectable-list-item__main {
+  /* Full reset (same convention as Button, EditableText, Tabs…): the
+     previous partial reset (background/border/font only) left margin,
+     padding, and appearance to whatever the host page's UA/global styles
+     happened to set. */
+  all: unset;
+  box-sizing: border-box;
   flex: 1;
   min-width: 0;
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  background: none;
-  border: none;
   font: inherit;
   color: var(--color-text-primary);
   text-align: left;
   cursor: pointer;
 }
 
-.selectable-list-item--md .selectable-list-item__main {
+.transcript-ui-root .selectable-list-item--md .selectable-list-item__main {
   padding: var(--spacing-sm);
 }
 
-.selectable-list-item--sm .selectable-list-item__main {
+.transcript-ui-root .selectable-list-item--sm .selectable-list-item__main {
   padding: var(--spacing-xs) var(--spacing-sm);
   color: var(--color-text-secondary);
 }
 
-.selectable-list-item__main:focus-visible {
+.transcript-ui-root .selectable-list-item__main:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: -2px;
 }
 
-.selectable-list-item__main:disabled {
+.transcript-ui-root .selectable-list-item__main:disabled {
   cursor: not-allowed;
 }
 
-.selectable-list-item--current .selectable-list-item__main {
+.transcript-ui-root .selectable-list-item--current .selectable-list-item__main {
   color: var(--color-primary);
   font-weight: 600;
 }

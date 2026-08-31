@@ -42,7 +42,7 @@ onMounted(() => {
 
 <template>
   <div class="chat-composer">
-    <label :for="textareaId" class="sr-only">{{ t("chat.placeholder") }}</label>
+    <label :for="textareaId" class="transcript-ui-sr-only">{{ t("chat.placeholder") }}</label>
     <textarea
       :id="textareaId"
       v-model="text"

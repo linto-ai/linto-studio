@@ -1,4 +1,5 @@
 import type { Component, ComputedRef, Ref, ShallowRef } from "vue"
+import type { DownloadFormat } from "@linto-ai/transcript-ui-ui"
 import type {
   AudioSource,
   Channel,
@@ -149,6 +150,19 @@ export interface CoreOptions {
   document?: EditorDocument
   activeChannelId?: string
   capabilities?: CoreCapabilities
+  /**
+   * Formats offered in the verbatim panel's download menu. The host knows
+   * which export backends actually exist (docx/pdf generation, whisperx
+   * alignment…) — the core doesn't assume any of them, so it stays empty by
+   * default in the sense that the host owns the whole list once it supplies
+   * one: every format then goes through the "verbatim:export" event for the
+   * host to fulfill.
+   *
+   * Left unset, the core falls back to a single "txt" entry it fulfills
+   * itself — no backend needed, it just joins the turns into a plain-text
+   * file client-side.
+   */
+  verbatimFormats?: DownloadFormat[]
 }
 
 // ── Audio Plugin API ────────────────────────────────────────────────────
@@ -556,6 +570,11 @@ export interface Core {
   readonly date: Ref<string | number | null>
   readonly activeChannelId: Ref<string>
   readonly capabilities: Ref<CoreCapabilities>
+  /** Formats shown in the verbatim panel's download menu (see CoreOptions.verbatimFormats). */
+  readonly verbatimFormats: DownloadFormat[]
+  /** True when verbatimFormats is the built-in default — the verbatim panel
+   *  then fulfills "txt" itself instead of emitting "verbatim:export". */
+  readonly verbatimFormatsAreDefault: boolean
 
   // ── Stores ───────────────────────────────────────────────────────────
   readonly speakers: SpeakersStore

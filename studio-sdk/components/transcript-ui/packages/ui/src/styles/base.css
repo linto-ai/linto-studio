@@ -1,5 +1,5 @@
 /* Utility */
-.sr-only {
+.transcript-ui-sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -12,16 +12,16 @@
 }
 
 /* Overlay (shared by sidebar drawer + sheet select) */
-.editor-overlay {
+.transcript-ui-overlay {
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.4);
   z-index: var(--z-overlay);
-  animation: overlay-fade-in 200ms ease;
+  animation: transcript-ui-overlay-fade-in 200ms ease;
 }
 
 /* Drawer mobile (sidebar) */
-.sidebar-drawer {
+.transcript-ui-sidebar-drawer {
   position: fixed;
   top: 0;
   right: 0;
@@ -30,13 +30,13 @@
   z-index: var(--z-drawer);
   background-color: var(--color-surface);
   box-shadow: var(--shadow-md);
-  animation: drawer-slide-in 250ms ease;
+  animation: transcript-ui-drawer-slide-in 250ms ease;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
-.sidebar-close {
+.transcript-ui-sidebar-close {
   position: absolute;
   top: var(--spacing-sm);
   right: var(--spacing-sm);
@@ -53,13 +53,13 @@
   z-index: 1;
 }
 
-.sidebar-close:hover {
+.transcript-ui-sidebar-close:hover {
   background-color: var(--color-surface-hover);
   color: var(--color-text-primary);
 }
 
 /* Keyframes */
-@keyframes overlay-fade-in {
+@keyframes transcript-ui-overlay-fade-in {
   from {
     opacity: 0;
   }
@@ -68,7 +68,7 @@
   }
 }
 
-@keyframes drawer-slide-in {
+@keyframes transcript-ui-drawer-slide-in {
   from {
     translate: 100% 0;
   }
@@ -78,8 +78,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .editor-overlay,
-  .sidebar-drawer {
+  .transcript-ui-overlay,
+  .transcript-ui-sidebar-drawer {
     animation: none;
   }
 }
@@ -89,7 +89,7 @@
    transcript), and each backdrop-filter forces a separate WebRender backdrop
    render target — on a multi-hour document this balloons GPU/GTT memory to
    several GB and freezes weaker machines. The border/shadow alone read fine. */
-.waveform-container ::part(region) {
+.transcript-ui-waveform-container ::part(region) {
   border-top: 2px solid var(--region-color, rgba(255, 255, 255, 0.4));
   border-bottom: 1px solid var(--region-color, rgba(255, 255, 255, 0.4));
   box-shadow:

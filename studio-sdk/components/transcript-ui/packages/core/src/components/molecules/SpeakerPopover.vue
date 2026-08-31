@@ -125,7 +125,7 @@ function onCancelNew(): void {
 </template>
 
 <style scoped>
-.speaker-popover-trigger {
+.transcript-ui-root .speaker-popover-trigger {
   all: unset;
   cursor: pointer;
   display: inline-flex;
@@ -133,7 +133,7 @@ function onCancelNew(): void {
   border-radius: var(--radius-sm);
 }
 
-.speaker-popover-trigger:focus-visible {
+.transcript-ui-root .speaker-popover-trigger:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }

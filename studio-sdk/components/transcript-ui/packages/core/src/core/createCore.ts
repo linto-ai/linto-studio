@@ -1,4 +1,5 @@
 import { ref, computed, shallowReactive, type Component } from "vue"
+import type { DownloadFormat } from "@linto-ai/transcript-ui-ui"
 import type { Channel, EditorDocument } from "../types/editor"
 import type {
   Core,
@@ -17,6 +18,12 @@ import { ensureDocumentSpeakers } from "./helpers/ensureDocumentSpeakers"
 import { ensureSpeakersFromTurns } from "./helpers/ensureSpeakersFromTurns"
 import * as utils from "../utils"
 
+// No backend can generate this — it's just the turns joined into text — so
+// it's the one format the core always offers and fulfills itself.
+const DEFAULT_VERBATIM_FORMATS: DownloadFormat[] = [
+  { format: "txt", labelKey: "format.txt" },
+]
+
 export function createCore(options: CoreOptions = {}): Core {
   // ── State ──────────────────────────────────────────────────────────
 
@@ -26,6 +33,9 @@ export function createCore(options: CoreOptions = {}): Core {
   const capabilities = ref<CoreCapabilities>(
     options.capabilities ?? { text: "edit", speakers: "edit" },
   )
+  const verbatimFormatsAreDefault = options.verbatimFormats == null
+  const verbatimFormats =
+    options.verbatimFormats ?? DEFAULT_VERBATIM_FORMATS
 
   // ── Event bus ──────────────────────────────────────────────────────
 
@@ -143,6 +153,8 @@ export function createCore(options: CoreOptions = {}): Core {
     date,
     activeChannelId,
     capabilities,
+    verbatimFormats,
+    verbatimFormatsAreDefault,
     speakers,
     channels,
     activeChannel,

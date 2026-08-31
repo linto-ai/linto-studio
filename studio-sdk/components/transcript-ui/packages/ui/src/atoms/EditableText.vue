@@ -92,7 +92,7 @@ function onKeydown(e: KeyboardEvent): void {
 </template>
 
 <style scoped>
-.editable-text-display {
+.transcript-ui-root .editable-text-display {
   all: unset;
   cursor: text;
   text-align: left;
@@ -105,11 +105,11 @@ function onKeydown(e: KeyboardEvent): void {
   min-width: 0;
 }
 
-.editable-text-display:not(:disabled):hover {
+.transcript-ui-root .editable-text-display:not(:disabled):hover {
   border-color: var(--color-border);
 }
 
-.editable-text-display:disabled {
+.transcript-ui-root .editable-text-display:disabled {
   cursor: default;
 }
 </style>

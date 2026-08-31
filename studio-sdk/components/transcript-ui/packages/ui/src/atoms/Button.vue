@@ -73,7 +73,7 @@ const classes = computed(() => [
 </template>
 
 <style scoped>
-.editor-btn {
+.transcript-ui-root .editor-btn {
   /* Default tokens — overridden by variant/intent/size modifiers */
   --btn-bg: transparent;
   --btn-text: var(--color-text-secondary);
@@ -86,11 +86,18 @@ const classes = computed(() => [
   --btn-height: 32px;
   --btn-gap: var(--spacing-xs);
 
+  /* Same reset as every other custom button in this codebase (see
+     EditableText, EditorCheckbox, Tabs, SpeakerPopover, TranscriptionTurn):
+     `all: unset` clears the UA button chrome (margin, appearance, inherited
+     font mismatches on Safari/Firefox, the Firefox ::-moz-focus-inner
+     padding) that the previous per-property overrides below left in place.
+     Every property the button actually needs is re-declared after it. */
+  all: unset;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--btn-gap);
-  box-sizing: border-box;
   height: var(--btn-height);
   padding: var(--btn-padding-y) var(--btn-padding-x);
   font-family: var(--font-family);
@@ -109,12 +116,12 @@ const classes = computed(() => [
     border-color var(--transition-duration);
 }
 
-.editor-btn:hover:not(:disabled) {
+.transcript-ui-root .editor-btn:hover:not(:disabled) {
   background-color: var(--btn-hover-bg);
   color: var(--btn-hover-text);
 }
 
-.editor-btn:focus-visible {
+.transcript-ui-root .editor-btn:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
@@ -122,11 +129,11 @@ const classes = computed(() => [
 /* Note: this rule is repeated lower in the file (after variants) to win the
    cascade on the variant CSS vars. Keep this lightweight version for the
    cursor and hover suppression. */
-.editor-btn:disabled {
+.transcript-ui-root .editor-btn:disabled {
   cursor: not-allowed;
 }
 
-.editor-btn:disabled:hover {
+.transcript-ui-root .editor-btn:disabled:hover {
   background-color: var(--btn-bg);
   color: var(--btn-text);
 }
@@ -138,19 +145,26 @@ const classes = computed(() => [
   text-box: cap alphabetic;
 }
 
-/* Sizes */
-.editor-btn--sm {
+/* Sizes.
+   .transcript-ui-root prefix here too — not because Nextcloud could ever
+   target --btn-* directly, but because these vars are read by the BASE
+   .editor-btn rule (also prefixed, so specificity (0,3,0)): if a variant
+   rule sets the same custom property at a lower specificity (0,2,0), the
+   base rule's default wins over it regardless of source order, silently
+   breaking every variant. All rules touching --btn-* must stay at the same
+   specificity as the base rule. */
+.transcript-ui-root .editor-btn--sm {
   /* defaults */
 }
 
-.editor-btn--md {
+.transcript-ui-root .editor-btn--md {
   --btn-padding-y: 0;
   --btn-padding-x: var(--spacing-md);
   --btn-font-size: var(--font-size-sm);
   --btn-height: 40px;
 }
 
-.editor-btn--lg {
+.transcript-ui-root .editor-btn--lg {
   --btn-padding-y: 0;
   --btn-padding-x: var(--spacing-md);
   --btn-font-size: var(--font-size-base);
@@ -158,18 +172,18 @@ const classes = computed(() => [
 }
 
 /* Icon-only: square */
-.editor-btn--icon-only {
+.transcript-ui-root .editor-btn--icon-only {
   width: var(--btn-height);
   padding: 0;
 }
 
-.editor-btn--block {
+.transcript-ui-root .editor-btn--block {
   display: flex;
   width: 100%;
 }
 
 /* Variants — default intent */
-.editor-btn--primary {
+.transcript-ui-root .editor-btn--primary {
   --btn-bg: var(--color-primary);
   --btn-text: var(--color-white);
   --btn-border-color: var(--color-primary);
@@ -177,7 +191,7 @@ const classes = computed(() => [
   --btn-hover-text: var(--color-white);
 }
 
-.editor-btn--secondary {
+.transcript-ui-root .editor-btn--secondary {
   --btn-bg: transparent;
   --btn-text: var(--color-primary);
   --btn-border-color: var(--color-primary);
@@ -185,7 +199,7 @@ const classes = computed(() => [
   --btn-hover-text: var(--color-white);
 }
 
-.editor-btn--tertiary {
+.transcript-ui-root .editor-btn--tertiary {
   --btn-bg: transparent;
   --btn-text: var(--color-text-primary);
   --btn-border-color: var(--color-border);
@@ -193,7 +207,7 @@ const classes = computed(() => [
   --btn-hover-text: var(--color-text-primary);
 }
 
-.editor-btn--transparent {
+.transcript-ui-root .editor-btn--transparent {
   --btn-bg: transparent;
   --btn-text: var(--color-text-secondary);
   --btn-border-color: transparent;
@@ -204,7 +218,7 @@ const classes = computed(() => [
 /* Literal theme inversion: background = the theme's text color and
    vice-versa — high contrast in both light and dark themes without
    borrowing the primary color's semantics. */
-.editor-btn--inverse {
+.transcript-ui-root .editor-btn--inverse {
   --btn-bg: var(--color-text-primary);
   --btn-text: var(--color-background);
   --btn-border-color: transparent;
@@ -213,7 +227,7 @@ const classes = computed(() => [
 }
 
 /* Destructive intent overrides */
-.editor-btn--destructive.editor-btn--primary {
+.transcript-ui-root .editor-btn--destructive.editor-btn--primary {
   --btn-bg: var(--color-danger);
   --btn-text: var(--color-white);
   --btn-border-color: var(--color-danger);
@@ -221,7 +235,7 @@ const classes = computed(() => [
   --btn-hover-text: var(--color-white);
 }
 
-.editor-btn--destructive.editor-btn--secondary {
+.transcript-ui-root .editor-btn--destructive.editor-btn--secondary {
   --btn-bg: transparent;
   --btn-text: var(--color-danger);
   --btn-border-color: var(--color-danger);
@@ -229,8 +243,8 @@ const classes = computed(() => [
   --btn-hover-text: var(--color-white);
 }
 
-.editor-btn--destructive.editor-btn--tertiary,
-.editor-btn--destructive.editor-btn--transparent {
+.transcript-ui-root .editor-btn--destructive.editor-btn--tertiary,
+.transcript-ui-root .editor-btn--destructive.editor-btn--transparent {
   --btn-text: var(--color-danger);
   --btn-hover-bg: var(--color-danger-soft);
   --btn-hover-text: var(--color-danger);
@@ -238,7 +252,7 @@ const classes = computed(() => [
 
 /* Disabled: gray-out regardless of variant. Placed after the variants so the
    CSS var overrides win the cascade (same specificity, last declaration). */
-.editor-btn:disabled {
+.transcript-ui-root .editor-btn:disabled {
   --btn-bg: var(--color-surface);
   --btn-text: var(--color-text-muted);
   --btn-border-color: var(--color-border);
@@ -248,7 +262,7 @@ const classes = computed(() => [
 
 /* The transparent variant has no chrome when enabled — disabling it must not
    ADD a box; the muted text alone carries the disabled signal. */
-.editor-btn--transparent:disabled {
+.transcript-ui-root .editor-btn--transparent:disabled {
   --btn-bg: transparent;
   --btn-border-color: transparent;
   --btn-hover-bg: transparent;
@@ -256,7 +270,7 @@ const classes = computed(() => [
 
 /* Inverse stays a filled, borderless chip when disabled — dimmed, but the
    silhouette must not change. */
-.editor-btn--inverse:disabled {
+.transcript-ui-root .editor-btn--inverse:disabled {
   --btn-bg: var(--color-surface-hover);
   --btn-border-color: transparent;
   --btn-hover-bg: var(--color-surface-hover);

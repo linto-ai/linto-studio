@@ -102,7 +102,12 @@ onUnmounted(() => {
   background-color: var(--color-black);
 }
 
-.subtitle-fullscreen__close {
+.transcript-ui-root .subtitle-fullscreen__close {
+  /* Full reset (same convention as Button, EditableText, Tabs…): the
+     previous partial reset (border/background only) left margin, padding,
+     and appearance to whatever the host page's UA/global styles set. */
+  all: unset;
+  box-sizing: border-box;
   position: absolute;
   top: var(--spacing-md, 16px);
   right: var(--spacing-md, 16px);
@@ -112,7 +117,6 @@ onUnmounted(() => {
   justify-content: center;
   width: 40px;
   height: 40px;
-  border: none;
   background: rgba(255, 255, 255, 0.1);
   color: var(--color-white);
   border-radius: var(--radius-md, 8px);
@@ -120,8 +124,8 @@ onUnmounted(() => {
   transition: background-color var(--transition-duration) ease;
 }
 
-.subtitle-fullscreen__close:hover,
-.subtitle-fullscreen__close:focus-visible {
+.transcript-ui-root .subtitle-fullscreen__close:hover,
+.transcript-ui-root .subtitle-fullscreen__close:focus-visible {
   background: rgba(255, 255, 255, 0.25);
   outline: 2px solid rgba(255, 255, 255, 0.5);
   outline-offset: 2px;

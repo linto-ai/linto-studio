@@ -26,7 +26,7 @@ defineEmits<{
 </template>
 
 <style scoped>
-.checkbox {
+.transcript-ui-root .checkbox {
   all: unset;
   width: 16px;
   height: 16px;
@@ -43,16 +43,16 @@ defineEmits<{
     border-color var(--transition-duration);
 }
 
-.checkbox:hover {
+.transcript-ui-root .checkbox:hover {
   border-color: var(--color-primary);
 }
 
-.checkbox:focus-visible {
+.transcript-ui-root .checkbox:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-.checkbox[data-state="checked"] {
+.transcript-ui-root .checkbox[data-state="checked"] {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
 }

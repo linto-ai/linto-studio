@@ -22,9 +22,15 @@
  *   --color-border-light     Light borders
  *
  * Typography, spacing, radius, and shadows are also overridable.
+ *
+ * Scoped to .transcript-ui-root (the embedder's root element) instead of
+ * :root — until the web-component wrapper puts this behind a real Shadow
+ * DOM, `:root`/`body`/`*` here would leak straight onto the host app's own
+ * page (its tokens, its font, its box-sizing reset on every element). :host
+ * stays for that future shadow-root case.
  */
 
-:root,
+.transcript-ui-root,
 :host {
   /* Colors — light theme */
   --color-background: #f8f9fa;
@@ -92,8 +98,8 @@
   --glass-border: rgba(255, 255, 255, 0.3);
 }
 
-:host,
-body {
+.transcript-ui-root,
+:host {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   line-height: var(--line-height);
@@ -109,10 +115,12 @@ body {
   overflow: hidden;
 }
 
-/* Reset */
-*,
-*::before,
-*::after {
+/* Reset, scoped to our own subtree so the host app's elements outside
+   .transcript-ui-root keep their own margin/padding/box-sizing. */
+.transcript-ui-root,
+.transcript-ui-root *,
+.transcript-ui-root *::before,
+.transcript-ui-root *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;

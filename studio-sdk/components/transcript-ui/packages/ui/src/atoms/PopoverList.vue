@@ -64,25 +64,25 @@ function keyFor(item: T, index: number): string | number {
     </DropdownMenuTrigger>
     <DropdownMenuPortal disabled>
       <DropdownMenuContent
-        class="popover-list"
+        class="transcript-ui-popover-list"
         position-strategy="absolute"
         :side="side"
         :align="align"
         :side-offset="sideOffset">
-        <ul v-if="items.length > 0" class="popover-list__items">
+        <ul v-if="items.length > 0" class="transcript-ui-popover-list__items">
           <DropdownMenuItem
             v-for="(item, index) in items"
             :key="keyFor(item, index)"
             as="li"
-            class="popover-list__item"
-            :class="{ 'popover-list__item--current': isCurrent?.(item) }"
+            class="transcript-ui-popover-list__item"
+            :class="{ 'transcript-ui-popover-list__item--current': isCurrent?.(item) }"
             @select="emit('select', item)">
             <slot name="item" :item="item" />
           </DropdownMenuItem>
         </ul>
         <template v-if="$slots.footer">
-          <div v-if="items.length > 0" class="popover-list__divider" />
-          <div class="popover-list__footer">
+          <div v-if="items.length > 0" class="transcript-ui-popover-list__divider" />
+          <div class="transcript-ui-popover-list__footer">
             <slot name="footer" />
           </div>
         </template>

@@ -17,11 +17,11 @@ const { t } = useI18n()
 <template>
   <DialogRoot v-model:open="open">
     <DialogPortal disabled>
-      <DialogOverlay class="editor-overlay" />
-      <DialogContent class="sidebar-drawer">
-        <DialogTitle class="sr-only">{{ t("sidebar.speakers") }}</DialogTitle>
+      <DialogOverlay class="transcript-ui-overlay" />
+      <DialogContent class="transcript-ui-sidebar-drawer">
+        <DialogTitle class="transcript-ui-sr-only">{{ t("sidebar.speakers") }}</DialogTitle>
         <DialogClose
-          class="sidebar-close"
+          class="transcript-ui-sidebar-close"
           :aria-label="t('header.closeSidebar')">
           <X :size="20" />
         </DialogClose>
