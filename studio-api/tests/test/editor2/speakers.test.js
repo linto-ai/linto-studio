@@ -17,6 +17,8 @@ jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
     insert: jest.fn(),
   },
 }))
+// Silence winston: a mocked insert failure is expected noise here.
+jest.mock(`${process.cwd()}/lib/logger/logger`, () => ({ error: jest.fn() }))
 
 const access = require(
   `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
@@ -95,7 +97,11 @@ describe("requireWrite", () => {
   test("refuses without join, without translationId, without WRITE", async () => {
     const handler = jest.fn()
     const ack1 = jest.fn()
-    await requireWrite(handler)(makeCtx({ joined: false }), { translationId: "tr-1" }, ack1)
+    await requireWrite(handler)(
+      makeCtx({ joined: false }),
+      { translationId: "tr-1" },
+      ack1,
+    )
     expect(ack1).toHaveBeenCalledWith({ ok: false, reason: "unauthorized" })
 
     const ack2 = jest.fn()
@@ -127,11 +133,12 @@ describe("onUpdateTurnSpeaker", () => {
     // turn-2 was spk-2's ONLY turn: assigning spk-1 orphans spk-2.
     await onUpdateTurnSpeaker(ctx, { ...BASE, speakerId: "spk-1" }, ack)
 
-    expect(model.conversationEditor.updateEditorTurnSpeaker).toHaveBeenCalledWith(
-      "tr-1",
-      "turn-2",
-      { speaker_id: "spk-1", speaker_name: "Marie" },
-    )
+    expect(
+      model.conversationEditor.updateEditorTurnSpeaker,
+    ).toHaveBeenCalledWith("tr-1", "turn-2", {
+      speaker_id: "spk-1",
+      speaker_name: "Marie",
+    })
     const [event, broadcast] = ctx.emit.mock.calls[0]
     expect(event).toBe("editor:turn_speaker_updated")
     expect(broadcast).toEqual({
@@ -157,11 +164,9 @@ describe("onUpdateTurnSpeaker", () => {
         after: { turnId: "turn-2", speakerId: "spk-1", speakerName: "Marie" },
       }),
     )
-    expect(model.conversationEditor.swapConversationUndoHead).toHaveBeenCalledWith(
-      "tr-1",
-      null,
-      "rev-id",
-    )
+    expect(
+      model.conversationEditor.swapConversationUndoHead,
+    ).toHaveBeenCalledWith("tr-1", null, "rev-id")
   })
 
   test("no GC when the previous speaker still has turns", async () => {
@@ -208,7 +213,9 @@ describe("onUpdateTurnSpeaker", () => {
 
     await onUpdateTurnSpeaker(ctx, { ...BASE, speakerId: "spk-2" }, ack)
 
-    expect(model.conversationEditor.updateEditorTurnSpeaker).not.toHaveBeenCalled()
+    expect(
+      model.conversationEditor.updateEditorTurnSpeaker,
+    ).not.toHaveBeenCalled()
     expect(ctx.emit).not.toHaveBeenCalled()
     expect(ack).toHaveBeenCalledWith({ ok: true })
   })
@@ -278,11 +285,9 @@ describe("onRenameSpeaker", () => {
         previousHead: null,
       }),
     )
-    expect(model.conversationEditor.swapConversationUndoHead).toHaveBeenCalledWith(
-      "tr-1",
-      null,
-      "rev-id",
-    )
+    expect(
+      model.conversationEditor.swapConversationUndoHead,
+    ).toHaveBeenCalledWith("tr-1", null, "rev-id")
   })
 
   test("refuses an empty name and an unknown speaker", async () => {
@@ -417,7 +422,6 @@ describe("recordSpeakerRevision resilience", () => {
       undoHead: null,
     })
     model.editorRevisions.insert.mockRejectedValue(new Error("mongo blip"))
-    const consoleError = jest.spyOn(console, "error").mockImplementation(() => {})
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -433,8 +437,8 @@ describe("recordSpeakerRevision resilience", () => {
       revisionId: null,
       redoRevisionId: null,
     })
-    expect(model.conversationEditor.swapConversationUndoHead).not.toHaveBeenCalled()
-    expect(consoleError).toHaveBeenCalled()
-    consoleError.mockRestore()
+    expect(
+      model.conversationEditor.swapConversationUndoHead,
+    ).not.toHaveBeenCalled()
   })
 })

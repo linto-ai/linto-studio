@@ -1,4 +1,5 @@
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 /**
  * Append one entry to the speaker undo/redo history and advance the track's
@@ -48,7 +49,7 @@ async function recordSpeakerRevision({
     )
     return swapped ? revisionId : null
   } catch (err) {
-    console.error(
+    logger.error(
       `[EditorHandler] failed to record ${type} revision (translation=${translationId}): ${err.message}`,
     )
     return null
