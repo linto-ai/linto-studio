@@ -1,3 +1,32 @@
+# 1.8.6
+
+_2026_09_01_
+
+- Transcription editor
+  - New editor rebuilt on Vue 3
+  - Undo support for speakers edits
+  - Publish the editor UI component as a standalone open-source package
+- Microphone recording
+  - Automatic reconnection when the microphone connection drops
+  - Show a notification when the microphone stops sending audio, with better error handling
+- Sessions
+  - Prevent starting several quick meetings at the same time
+  - Segment size defaults are now applied server-side
+  - Show session channels in the media overview
+- Backoffice
+  - Impersonate users and organizations in read-only mode
+  - Apply member rights filters to all non-maintainer roles in listings
+- Notifications
+  - Make notifications dismissible on click
+- Security
+  - Harden conversation updates and remove default admin credentials
+  - Restrict publication template access to the owning organization
+- SDK
+  - Add voiceprint group retrieval and speaker identification status
+  - Support organization-level speaker identification
+- Bugfix
+  - Fix voice sample upload errors being reported incorrectly
+
 # 1.8.5
 
 _2026_06_13_
