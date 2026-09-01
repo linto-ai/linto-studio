@@ -55,7 +55,7 @@ function build(spec) {
           // requireEntitlement without a URL :organizationId and without an
           // orgFrom -> a misconfiguration. We skip (don't 500 the request) but
           // WARN loudly so the misdeclared gate is caught in prod logs rather
-          // than silently letting a premium feature through.
+          // than silently letting a paid feature through.
           logger.warn(
             `requireEntitlement(${cfg.capability}): no org resolved on ${req.method} ${req.originalUrl || req.url} — gate skipped (declare an orgFrom)`,
           )

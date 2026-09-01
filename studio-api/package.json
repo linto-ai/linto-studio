@@ -78,9 +78,6 @@
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3"
   },
-  "optionalDependencies": {
-    "linto-saas": "file:../../linto-studio-cloud-service"
-  },
   "overrides": {
     "minimatch": "^10.2.1",
     "undici": "^6.27.0",

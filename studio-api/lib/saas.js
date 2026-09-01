@@ -78,7 +78,7 @@ async function syncSeats(orgId, seatCount) {
   }
 }
 
-// Backoffice: flag/unflag an org as comp (full premium, no billing). FAIL-SOFT.
+// Backoffice: flag/unflag an org as comp (fullest plan, no billing). FAIL-SOFT.
 async function setBillingExempt(orgId, exempt) {
   const pp = plugin()
   if (!pp) return

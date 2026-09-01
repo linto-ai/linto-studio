@@ -193,7 +193,7 @@ async function assertLiveProfileAllowed(req) {
       if (!backend) continue
       // STRICT resolution for the ACCESS gate: an unmapped/unknown backend (a
       // future GPU/external engine, a typo) must NOT be treated as the cheap
-      // free tier. Unknown -> most-restricted category (external => premium-only)
+      // free tier. Unknown -> most-restricted category (external => paid-only)
       // so a new paid backend is never silently runnable on free.
       const cat = saas.categoryOfStrict(backend) || "external"
       categories.add(cat)

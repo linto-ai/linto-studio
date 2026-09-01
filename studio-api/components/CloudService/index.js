@@ -1,5 +1,22 @@
-const { createPaymentProcessor } = require("linto-saas")
 const Component = require(`../component.js`)
+
+// The private SaaS plugin is NOT a declared dependency: it is installed into the
+// image at deploy time (npm install <path-or-tarball> linto-saas). Declaring it
+// would put a machine-local `file:` path in the public lockfile and break CI.
+// This module is only ever required when "CloudService" is in COMPONENTS, so a
+// missing plugin means the operator asked for the SaaS build without shipping
+// it — fail loudly with something actionable rather than a bare MODULE_NOT_FOUND.
+let createPaymentProcessor
+try {
+  ;({ createPaymentProcessor } = require("linto-saas"))
+} catch (err) {
+  throw new Error(
+    "CloudService is enabled but the private 'linto-saas' plugin is not installed. " +
+      "Install it in studio-api (npm install <path-to-linto-saas>) or drop " +
+      "CloudService from COMPONENTS to run the open-source build. " +
+      `Original error: ${err.message}`,
+  )
+}
 
 // Studio auth model, reused to secure the /cloud API (see buildGuards).
 const auth_middlewares = require(
