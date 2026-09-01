@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:version:1.8.7:editorRevisionsTtl`,
+  `linto:components:MongoMigration:version:1.8.6:editorRevisionsTtl`,
 )
 
 // Separate file so databases that already played editorRevisions.js still get

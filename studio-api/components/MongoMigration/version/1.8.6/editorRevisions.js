@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:version:1.8.7:editorRevisions`,
+  `linto:components:MongoMigration:version:1.8.6:editorRevisions`,
 )
 
 // Undo/redo history for speaker mutations (rename/replace/update_turn_speaker).
