@@ -87,6 +87,18 @@ async function syncSeats(orgId, seatCount) {
 }
 
 // Backoffice: flag/unflag an org as comp (fullest plan, no billing). FAIL-SOFT.
+// Backoffice: switch an org between the ordinary SaaS mode and MANAGED (we
+// host this customer; every gate is bypassed plugin-side). NO-OP in OSS.
+async function setOrgMode(orgId, mode) {
+  const pp = plugin()
+  if (!pp) return
+  try {
+    return await pp.setOrgMode(orgId, mode)
+  } catch (e) {
+    /* fail-soft */
+  }
+}
+
 async function setBillingExempt(orgId, exempt) {
   const pp = plugin()
   if (!pp) return
@@ -159,6 +171,7 @@ module.exports = {
   recordLive,
   syncSeats,
   setBillingExempt,
+  setOrgMode,
   purgeOrganization,
   purgeUser,
   categoryOf,

@@ -120,8 +120,16 @@ class CloudService extends Component {
 
     // manageConnection:true (default) -> own mongoose connection to studio's DB.
     // seedOnStart -> upsert the plan catalog on boot.
+    // SAAS_DEFAULT_PLAN_KEY is the plan an organization WITHOUT a subscription
+    // row falls back to. It defaults to the free plan, which is right in steady
+    // state and dangerous on the very first activation: every pre-existing
+    // organization on the deployment — including customers we host — would be
+    // downgraded to free quotas by a config change alone, silently, with users
+    // simply starting to get 402s. Point it at a permissive plan while
+    // migrating existing orgs, then set it back.
     this.paymentProcessor = createPaymentProcessor({
       seedOnStart: true,
+      defaultPlanKey: process.env.SAAS_DEFAULT_PLAN_KEY || undefined,
       stripe: {}, // mode resolved from STRIPE_MODE / STRIPE_SECRET_KEY (fake by default)
     })
 

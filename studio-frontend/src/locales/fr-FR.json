@@ -102,7 +102,11 @@
       "enable_free": "Activer l'offert",
       "disable_free": "Désactiver l'offert",
       "set_seats": "Forcer les sièges",
-      "saved": "Enregistré"
+      "saved": "Enregistré",
+      "managed": "Hébergement managé",
+      "managed_hint": "On héberge ce client sur notre infra. Toutes les portes sont ouvertes : aucun quota, aucune fonctionnalité verrouillée, y compris celles ajoutées plus tard. Ce qu'il peut réellement lancer dépend uniquement des profils de transcription partagés avec son organisation. L'usage reste mesuré. À ne pas confondre avec l'accès offert, qui est un geste commercial sur une org SaaS ordinaire.",
+      "enable_managed": "Passer en managé",
+      "disable_managed": "Repasser en SaaS"
     }
   },
   "apply": "Appliquer",

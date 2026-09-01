@@ -7,6 +7,11 @@
         <span class="bo-billing__k">{{ $t("billing.backoffice.plan") }}</span>
         <span class="bo-billing__v">
           <strong>{{ billing.planKey }}</strong>
+          <span
+            v-if="isManaged"
+            class="bo-billing__tag bo-billing__tag--managed"
+            >{{ $t("billing.backoffice.managed") }}</span
+          >
           <span v-if="billing.billingExempt" class="bo-billing__tag">{{
             $t("billing.page.comp")
           }}</span>
@@ -22,6 +27,26 @@
           {{ fmt(m, m.used) }} / {{ m.limit == null ? "∞" : fmt(m, m.limit) }}
         </span>
       </div>
+    </div>
+
+    <!-- Managed mode: hosted customer, every gate bypassed. Deliberately shown
+         above the comp toggle: it answers a different question (do we host this
+         org?) and it overrides everything below it. -->
+    <div class="bo-billing__exempt">
+      <div class="bo-billing__exempt-text">
+        <strong>{{ $t("billing.backoffice.managed") }}</strong>
+        <p>{{ $t("billing.backoffice.managed_hint") }}</p>
+      </div>
+      <Button
+        :variant="isManaged ? 'secondary' : 'primary'"
+        :loading="busy"
+        @click="toggleManaged">
+        {{
+          isManaged
+            ? $t("billing.backoffice.disable_managed")
+            : $t("billing.backoffice.enable_managed")
+        }}
+      </Button>
     </div>
 
     <!-- Complete-free toggle: full Premium, unlimited (incl. API key), no billing -->
@@ -42,8 +67,9 @@
       </Button>
     </div>
 
-    <!-- Manual seat override (normally derived from membership) -->
-    <div class="bo-billing__seats" v-if="!isExempt">
+    <!-- Manual seat override (normally derived from membership). Meaningless on
+         a managed org, which is not billed per seat. -->
+    <div class="bo-billing__seats" v-if="!isExempt && !isManaged">
       <span>{{ $t("billing.backoffice.set_seats") }}</span>
       <input
         type="number"
@@ -62,6 +88,7 @@ import {
   apiAdminGetOrgBilling,
   apiAdminSetExempt,
   apiAdminSetSeats,
+  apiAdminSetOrgMode,
 } from "@/api/cloud"
 import Button from "@/components/atoms/Button.vue"
 
@@ -84,6 +111,9 @@ export default {
     isExempt() {
       return !!this.billing?.billingExempt
     },
+    isManaged() {
+      return this.billing?.orgMode === "managed"
+    },
     meters() {
       const caps = this.billing?.usage?.capabilities || {}
       return Object.entries(caps).map(([key, c]) => ({
@@ -103,6 +133,19 @@ export default {
       this.billing = await apiAdminGetOrgBilling(this.organizationId)
       if (this.billing && typeof this.billing.seats === "number") {
         this.seatsInput = this.billing.seats
+      }
+    },
+    async toggleManaged() {
+      this.busy = true
+      try {
+        await apiAdminSetOrgMode(
+          this.organizationId,
+          this.isManaged ? "saas" : "managed",
+          { message: this.$t("billing.backoffice.saved") },
+        )
+        await this.load()
+      } finally {
+        this.busy = false
       }
     },
     async toggleExempt() {
@@ -177,6 +220,12 @@ export default {
     border-radius: 999px;
     padding: 0.05em 0.5em;
     font-size: 0.72rem;
+
+    // managed reads as a deployment fact, not a commercial one: keep it
+    // visually distinct from the green "comp" tag.
+    &--managed {
+      background: var(--primary-color, #4a5fd9);
+    }
   }
   &__exempt {
     display: flex;

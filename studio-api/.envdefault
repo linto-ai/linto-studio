@@ -4,6 +4,17 @@ LOG_LEVEL=debug
 LOG_FORMAT=text
 
 COMPONENTS=WebServer,IoHandler,MongoMigration,EditorHandler
+
+# SaaS mode (private linto-saas plugin). Add CloudService to COMPONENTS above to
+# turn metered billing on; leave it out for the plain open-source build.
+# SAAS_DEFAULT_PLAN_KEY is the plan an org WITHOUT a subscription row falls back
+# to. Default = the free plan. On a FIRST activation, every pre-existing org on
+# the deployment falls into it at once, so point it at a permissive plan while
+# you migrate existing orgs, then set it back.
+# SAAS_DEFAULT_PLAN_KEY=free_payg
+# STRIPE_MODE=fake
+# STRIPE_SECRET_KEY=
+# STRIPE_WEBHOOK_SECRET=
 WEBSERVER_HTTP_PORT=80
 WEBSERVER_SESSION_SECRET=secret
 
@@ -23,7 +34,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.8.6
+DB_MIGRATION_TARGET=1.8.7
 
 # STT Config
 GATEWAY_SERVICES=https://<domain>

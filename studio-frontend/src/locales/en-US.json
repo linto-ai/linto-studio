@@ -102,7 +102,11 @@
       "enable_free": "Enable complimentary",
       "disable_free": "Disable complimentary",
       "set_seats": "Override seats",
-      "saved": "Saved"
+      "saved": "Saved",
+      "managed": "Managed hosting",
+      "managed_hint": "We host this customer on our own infrastructure. Every gate is open: no quotas, no locked features, including ones added later. What it can actually run depends only on the transcriber profiles shared with its organization. Usage is still measured. Not to be confused with complimentary access, which is a commercial gesture on an ordinary SaaS org.",
+      "enable_managed": "Switch to managed",
+      "disable_managed": "Back to SaaS"
     }
   },
   "apply": "Apply",

@@ -1,9 +1,9 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:version:1.8.8:version`,
+  `linto:components:MongoMigration:version:1.8.7:version`,
 )
 
-const previous_version = "1.8.7"
-const version = "1.8.8"
+const previous_version = "1.8.6"
+const version = "1.8.7"
 
 module.exports = {
   async up(db) {

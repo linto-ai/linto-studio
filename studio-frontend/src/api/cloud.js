@@ -132,6 +132,16 @@ export async function apiAdminSetExempt(organizationId, exempt, notif = null) {
 }
 
 // POST /cloud/admin/orgs/:orgId/seats { seats } -> { updated, seats }
+export async function apiAdminSetOrgMode(organizationId, mode, notif = null) {
+  const res = await sendRequest(
+    `${CLOUD_API}/admin/orgs/${organizationId}/mode`,
+    { method: "post" },
+    { mode },
+    notif,
+  )
+  return res?.data
+}
+
 export async function apiAdminSetSeats(organizationId, seats, notif = null) {
   const res = await sendRequest(
     `${CLOUD_API}/admin/orgs/${organizationId}/seats`,

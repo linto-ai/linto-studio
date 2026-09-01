@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:version:1.8.8:organizationsPersonalIndex`,
+  `linto:components:MongoMigration:version:1.8.7:organizationsPersonalIndex`,
 )
 
 const logger = require(`${process.cwd()}/lib/logger/logger`)
