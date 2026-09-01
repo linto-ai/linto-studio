@@ -2,7 +2,8 @@
   "billing": {
     "beta": "Public Beta",
     "premium": "Premium",
-    "per_seat": "Forfait / mois",
+    "price_flat": "{price} / mois",
+    "price_per_seat": "{price} / siège / mois",
     "used_of": "{used} sur {total}",
     "reset_on": "Reset le {date}",
     "upgrade_cta": "Passer pro",
@@ -13,7 +14,6 @@
     "upgrade_done": "Bienvenue dans Premium !",
     "limit_reached": "Vous avez atteint la limite de votre offre gratuite.",
     "feature_locked": "Cette fonctionnalité est incluse dans une offre payante.",
-    "watermark_hint": "Sortie gratuite — passez pro pour retirer le watermark",
     "meter": {
       "import": "Imports",
       "ai": "Analyses IA",

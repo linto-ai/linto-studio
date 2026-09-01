@@ -169,20 +169,20 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("billing", ["isPremium", "premiumPlan", "billingExempt"]),
-    // The org currently pays per seat (premium, not complimentary/exempt). Only
-    // then does promoting to a contributor role add a billable seat.
+    ...mapGetters("billing", ["isPerSeat", "currentPlan", "billingExempt"]),
+    // Only a PER-SEAT plan bills an extra seat on promotion. The flat solo plan
+    // has no seats at all, and a complimentary org is never billed.
     seatBilled() {
-      return IS_MODE_CLOUD && this.isPremium && !this.billingExempt
+      return IS_MODE_CLOUD && this.isPerSeat && !this.billingExempt
     },
     seatPriceLabel() {
-      const cents = this.premiumPlan?.pricing?.amountCents
+      const cents = this.currentPlan?.pricing?.amountCents
       if (!cents) return ""
       const v = cents / 100
       try {
         return new Intl.NumberFormat(this.$i18n?.locale || "fr-FR", {
           style: "currency",
-          currency: (this.premiumPlan?.pricing?.currency || "eur").toUpperCase(),
+          currency: (this.currentPlan?.pricing?.currency || "eur").toUpperCase(),
         }).format(v)
       } catch (e) {
         return `${v} €`

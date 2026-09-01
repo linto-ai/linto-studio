@@ -79,10 +79,13 @@ export default {
     return apiSetBillingProfile(organizationId, profile)
   },
 
-  // MVP upgrade: create a premium subscription (fake Stripe locally). Returns
-  // { subscription, clientSecret } — clientSecret is used with real Stripe.
+  // Subscribe the org to a paid plan. Returns { subscription, clientSecret };
+  // clientSecret is only set with real Stripe. No default planKey: with two paid
+  // plans in the grid, guessing one here would silently bill the wrong thing.
+  // Seats are derived server-side from membership, so `seats` is only a hint.
   async upgrade({ dispatch, rootGetters }, payload = {}) {
-    const { planKey = "premium", seats = 1, orgId } = payload
+    const { planKey, seats = 1, orgId } = payload
+    if (!planKey) return null
     const organizationId = currentOrg(rootGetters, orgId)
     if (!organizationId) return null
     const result = await apiCreateSubscription(organizationId, planKey, seats)

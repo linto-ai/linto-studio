@@ -8,8 +8,8 @@
     @click="goToOrgSettings">
     <div class="saas-usage-footer__title">
       <span>{{ $t("billing.page.usage") }}</span>
-      <span class="saas-usage-footer__plan" :class="{ premium: isPremium }">{{
-        isPremium ? $t("billing.premium") : $t("billing.page.free_plan")
+      <span class="saas-usage-footer__plan" :class="{ paid: isPaid }">{{
+        planLabel || $t("billing.page.free_plan")
       }}</span>
     </div>
 
@@ -41,7 +41,7 @@ import { mapGetters, mapActions } from "vuex"
 export default {
   name: "SaasUsageFooter",
   computed: {
-    ...mapGetters("billing", ["isFree", "isPremium", "primaryMeter"]),
+    ...mapGetters("billing", ["isFree", "isPaid", "planLabel", "primaryMeter"]),
     ...mapGetters("organizations", {
       currentOrgScope: "getCurrentOrganizationScope",
     }),

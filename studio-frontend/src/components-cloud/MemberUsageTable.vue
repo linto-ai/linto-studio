@@ -59,17 +59,13 @@ export default {
   name: "MemberUsageTable",
   components: { UserInfoInline },
   computed: {
-    ...mapGetters("billing", ["usageByMember"]),
+    ...mapGetters("billing", ["usageByMember", "planLabel"]),
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
       allUsers: "getCurrentOrganizationAllUsers",
       currentOrgScope: "getCurrentOrganizationScope",
     }),
-    planLabel() {
-      return this.usageByMember?.planKey === "premium"
-        ? this.$t("billing.premium")
-        : "Free"
-    },
+
     rows() {
       const members =
         (this.currentOrganization && this.currentOrganization.users) || []

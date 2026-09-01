@@ -2,9 +2,9 @@
   <div class="sub-panel">
     <div class="sub-panel__head">
       <h2 class="sub-panel__title">{{ $t("billing.page.title") }}</h2>
-      <div class="sub-panel__badge" :class="{ premium: isPremium, comp: billingExempt }">
+      <div class="sub-panel__badge" :class="{ paid: isPaid, comp: billingExempt }">
         <span v-if="billingExempt">★ {{ $t("billing.page.comp") }}</span>
-        <span v-else-if="isPremium">★ {{ $t("billing.premium") }}</span>
+        <span v-else-if="isPaid">★ {{ planLabel }}</span>
         <span v-else>{{ $t("billing.page.free_plan") }}</span>
       </div>
     </div>
@@ -69,7 +69,6 @@
           <li>{{ $t("billing.feature.api") }}</li>
         </ul>
         <div class="billing-plan__row">
-          <span class="billing-plan__price">{{ $t("billing.per_seat") }}</span>
           <Button v-if="isOrgAdmin" variant="primary" @click="showUpgrade = true">
             {{ $t("billing.upgrade_cta") }}
           </Button>
@@ -77,10 +76,10 @@
         </div>
       </div>
 
-      <!-- PREMIUM -->
+      <!-- PAID (flat solo or per-seat team) -->
       <div v-else class="billing-plan">
         <dl class="billing-detail">
-          <div class="billing-detail__row">
+          <div class="billing-detail__row" v-if="isPerSeat">
             <dt>{{ $t("billing.page.seats") }}</dt>
             <dd>{{ seats }}</dd>
           </div>
@@ -159,7 +158,9 @@ export default {
   computed: {
     ...mapGetters("billing", [
       "isFree",
-      "isPremium",
+      "isPaid",
+      "isPerSeat",
+      "planLabel",
       "meters",
       "subscription",
       "usage",

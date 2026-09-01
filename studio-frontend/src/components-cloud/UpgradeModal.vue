@@ -8,7 +8,6 @@
         ×
       </button>
 
-      <div class="upgrade-modal__badge">★ {{ $t("billing.premium") }}</div>
       <h2 class="upgrade-modal__title">{{ $t("billing.upgrade_title") }}</h2>
       <p class="upgrade-modal__sub">{{ $t("billing.upgrade_subtitle") }}</p>
       <p v-if="contextMessage" class="upgrade-modal__context">
@@ -23,7 +22,21 @@
         <li>{{ $t("billing.feature.api") }}</li>
       </ul>
 
-      <div class="upgrade-modal__price">{{ $t("billing.per_seat") }}</div>
+      <!-- Plan choice. The grid has a flat solo plan and a per-seat team plan;
+           which ones exist is catalog data, never hardcoded here. Seats are
+           derived server-side from membership, so there is nothing to enter. -->
+      <div class="upgrade-modal__plans">
+        <button
+          v-for="p in paidPlans"
+          :key="p.planKey"
+          type="button"
+          class="upgrade-modal__plan"
+          :class="{ selected: p.planKey === selectedPlanKey }"
+          @click="selectedPlanKey = p.planKey">
+          <span class="upgrade-modal__plan-name">{{ p.displayName }}</span>
+          <span class="upgrade-modal__plan-price">{{ priceLabel(p) }}</span>
+        </button>
+      </div>
 
       <div v-if="done" class="upgrade-modal__done">
         ✓ {{ $t("billing.upgrade_done") }}
@@ -150,10 +163,11 @@ export default {
         vatId: "",
       },
       billingError: "",
+      selectedPlanKey: null,
     }
   },
   computed: {
-    ...mapGetters("billing", ["premiumPlan"]),
+    ...mapGetters("billing", ["paidPlans"]),
     ...mapGetters("organizations", { orgScope: "getCurrentOrganizationScope" }),
     contextMessage() {
       if (!this.reason) return ""
@@ -166,11 +180,39 @@ export default {
       return ""
     },
   },
+  watch: {
+    // Default to the cheapest paid plan as soon as the catalog lands.
+    paidPlans: {
+      immediate: true,
+      handler(plans) {
+        if (!this.selectedPlanKey && plans.length) {
+          this.selectedPlanKey = plans[0].planKey
+        }
+      },
+    },
+  },
   mounted() {
-    if (!this.premiumPlan) this.fetchPlans()
+    if (!this.paidPlans.length) this.fetchPlans()
   },
   methods: {
     ...mapActions("billing", ["upgrade", "fetchPlans", "refresh", "saveBillingProfile"]),
+    priceLabel(plan) {
+      const cents = plan?.pricing?.amountCents
+      if (!cents) return ""
+      let price
+      try {
+        price = new Intl.NumberFormat(this.$i18n?.locale || "fr-FR", {
+          style: "currency",
+          currency: (plan.pricing.currency || "eur").toUpperCase(),
+          maximumFractionDigits: 0,
+        }).format(cents / 100)
+      } catch (e) {
+        price = `${cents / 100} €`
+      }
+      return plan.pricing.perSeat
+        ? this.$t("billing.price_per_seat", { price })
+        : this.$t("billing.price_flat", { price })
+    },
     async confirm() {
       // Live mode: collect the legal billing profile BEFORE subscribing (required
       // for compliant invoices / automatic_tax). Fake/local mode: subscribe now.
@@ -180,7 +222,7 @@ export default {
       }
       this.busy = true
       try {
-        const result = await this.upgrade({ planKey: "premium", seats: 1 })
+        const result = await this.upgrade({ planKey: this.selectedPlanKey })
         if (!result) return
         this.finishDone()
       } finally {
@@ -205,7 +247,7 @@ export default {
           this.billingError = this.$t("billing.billing_profile.error")
           return
         }
-        const result = await this.upgrade({ planKey: "premium", seats: 1 })
+        const result = await this.upgrade({ planKey: this.selectedPlanKey })
         if (!result) {
           // Subscription creation failed (also a swallowed sendRequest error);
           // surface it instead of leaving the modal silently stuck.

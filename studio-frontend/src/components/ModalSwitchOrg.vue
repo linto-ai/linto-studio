@@ -62,16 +62,20 @@
             </div>
           </div>
         </router-link>
-        <div class="modal-switch-org__list__item new-org">
-          <Button
-            v-if="isOrganizationInitiator"
-            :label="$t('modal_switch_org.create_organization')"
-            icon="plus"
-            size="sm"
-            variant="primary"
-            color="primary"
-            @click="isCreateModalOpen = true" />
-        </div>
+        <!-- Creating an EXTRA organization is a paid capability in cloud mode
+             (the API returns 403 otherwise). Always rendered in OSS builds. -->
+        <HasEntitlement capability="organization.create">
+          <div class="modal-switch-org__list__item new-org">
+            <Button
+              v-if="isOrganizationInitiator"
+              :label="$t('modal_switch_org.create_organization')"
+              icon="plus"
+              size="sm"
+              variant="primary"
+              color="primary"
+              @click="isCreateModalOpen = true" />
+          </div>
+        </HasEntitlement>
       </div>
       <ModalCreateOrganization
         v-model="isCreateModalOpen"
@@ -86,6 +90,7 @@ import Modal from "@/components/molecules/Modal.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
 import FavoriteStar from "@/components/atoms/FavoriteStar.vue"
 import { orgDisplayName } from "@/tools/orgDisplayName"
+import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
@@ -96,6 +101,7 @@ export default {
     Modal,
     ModalCreateOrganization,
     FavoriteStar,
+    HasEntitlement,
   },
   mixins: [platformRoleMixin, orgaRoleMixin],
   props: {

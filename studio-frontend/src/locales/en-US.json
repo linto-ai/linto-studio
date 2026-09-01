@@ -2,7 +2,8 @@
   "billing": {
     "beta": "Public Beta",
     "premium": "Premium",
-    "per_seat": "Flat / month",
+    "price_flat": "{price} / month",
+    "price_per_seat": "{price} / seat / month",
     "used_of": "{used} of {total}",
     "reset_on": "Resets on {date}",
     "upgrade_cta": "Go Pro",
@@ -13,7 +14,6 @@
     "upgrade_done": "Welcome to Premium!",
     "limit_reached": "You've reached your free plan limit.",
     "feature_locked": "This feature is included in a paid plan.",
-    "watermark_hint": "Free output — upgrade to remove the watermark",
     "meter": {
       "import": "Imports",
       "ai": "AI insights",
