@@ -84,7 +84,7 @@ async function addUserInOrganization(req, res, next) {
       if (magicId) {
         const createOrganization = await model.organizations.createDefault(
           userId,
-          req.body.email + "'s Organization",
+          req.body.email,
           {},
         )
         if (createOrganization.insertedCount !== 1) {

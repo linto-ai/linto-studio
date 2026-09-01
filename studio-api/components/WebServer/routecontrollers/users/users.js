@@ -68,7 +68,7 @@ async function createUser(req, res, next) {
       user.img = await storeFile(req.files.file, STORE_TYPE.PICTURE)
     else user.img = defaultPicture()
 
-    if (!organizationName) organizationName = user.email + "'s Organization"
+    if (!organizationName) organizationName = user.email
 
     if ((await model.users.getByEmail(user.email)).length !== 0)
       throw new UserConflict()
@@ -200,6 +200,7 @@ async function updateUser(req, res, next) {
         req.body.accountNotifications ||
         req.body.emailNotifications ||
         req.body.private !== undefined ||
+        req.body.onboarded !== undefined ||
         req.body.password
       )
     )
@@ -232,6 +233,7 @@ async function updateUser(req, res, next) {
     if (req.body.firstname) user.firstname = req.body.firstname
     if (req.body.lastname) user.lastname = req.body.lastname
     if (req.body.private !== undefined) user.private = req.body.private
+    if (req.body.onboarded !== undefined) user.onboarded = req.body.onboarded
     if (req.body.password) user.password = req.body.password
 
     if (req.body.accountNotifications) {

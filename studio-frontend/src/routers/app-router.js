@@ -476,6 +476,20 @@ let router = new Router({
       },
     },
     {
+      path: "/onboarding",
+      name: "onboarding",
+      components: {
+        default: () => import("../views/OnboardingWizard.vue"),
+        ...componentsWithoutHeader,
+      },
+      defaultProps,
+      meta: {
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
+      },
+    },
+    {
       path: "/magiclink-auth/:magicId",
       name: "magic-link-login",
       defaultProps,
@@ -950,6 +964,20 @@ router.beforeEach(async (to, from, next) => {
 
         return next({ name: "backoffice" })
       }
+    }
+
+    // New accounts must finish onboarding (name their organization) before
+    // they can use the app. Backoffice stays reachable for platform admins.
+    if (
+      store.getters["user/needsOnboarding"] &&
+      to.name !== "onboarding" &&
+      !to.meta?.backoffice
+    ) {
+      routerDebug("Redirect to onboarding wizard")
+      return next({ name: "onboarding" })
+    }
+    if (to.name === "onboarding" && !store.getters["user/needsOnboarding"]) {
+      return next({ name: "explore" })
     }
 
     // Handle direct "next" query parameter

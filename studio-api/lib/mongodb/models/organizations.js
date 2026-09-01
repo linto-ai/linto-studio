@@ -219,6 +219,22 @@ class OrganizationModel extends MongoModel {
     }
   }
 
+  // Resolve a user's personal/master organization (the billing subject used to
+  // gate paid actions such as creating extra organizations). createDefault sets
+  // {owner, personal:true} at signup; child orgs created via POST /organizations
+  // are personal:false so they never match. Oldest wins for determinism.
+  // Re-throws on DB error so callers can fail CLOSED (a billing gate must never
+  // fail open).
+  async getPersonalByOwner(userId) {
+    const rows = await this.mongoRequest(
+      { owner: userId.toString(), personal: true },
+      public_projection,
+    )
+    if (!Array.isArray(rows) || rows.length === 0) return null
+    rows.sort((a, b) => new Date(a.created) - new Date(b.created))
+    return rows[0]
+  }
+
   async listSelf(userId) {
     try {
       const query = {

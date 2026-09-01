@@ -2,17 +2,17 @@
   "billing": {
     "beta": "Public Beta",
     "premium": "Premium",
-    "per_seat": "Per seat / month",
+    "per_seat": "Flat / month",
     "used_of": "{used} of {total}",
     "reset_on": "Resets on {date}",
     "upgrade_cta": "Go Pro",
     "upgrade_title": "Upgrade to Premium",
-    "upgrade_subtitle": "Unlock unlimited usage and team features.",
+    "upgrade_subtitle": "Get the full AI value: rich summaries, speaker ID and clean, editable output.",
     "cancel": "Cancel",
     "confirm_upgrade": "Upgrade",
     "upgrade_done": "Welcome to Premium!",
     "limit_reached": "You've reached your free plan limit.",
-    "feature_locked": "This feature is included in Premium.",
+    "feature_locked": "This feature is included in a paid plan.",
     "watermark_hint": "Free output — upgrade to remove the watermark",
     "meter": {
       "import": "Imports",
@@ -28,8 +28,8 @@
       "empty": "No members yet."
     },
     "feature": {
-      "unlimited": "Unlimited audio imports & AI insights",
-      "collaboration": "Team workspace & sharing",
+      "unlimited": "Generous monthly fair-use for imports & AI insights",
+      "collaboration": "Full insight catalog & original audio quality",
       "speaker_id": "Speaker identification",
       "no_watermark": "No watermark, editable output",
       "api": "API access"
@@ -98,7 +98,7 @@
       "plan": "Plan",
       "seats": "Billable seats",
       "complete_free": "Complimentary access (complete free)",
-      "complete_free_hint": "Full Premium, unlimited everything (imports, AI, live) AND unlimited API-key usage, with no Stripe billing. For internal use or partner orgs connecting services to your platform.",
+      "complete_free_hint": "Full Business, unlimited everything (imports, AI, live) AND unlimited API-key usage, with no Stripe billing. For internal use or partner orgs connecting services to your platform.",
       "enable_free": "Enable complimentary",
       "disable_free": "Disable complimentary",
       "set_seats": "Override seats",
@@ -1092,8 +1092,7 @@
     "sections": {
       "organization": "Organisation",
       "media": "Media",
-      "personal": "Personal",
-      "my_space": "My space"
+      "personal": "Personal"
     },
     "tabs": {
       "explore": "Media",
@@ -1123,6 +1122,15 @@
     "no_access_detail": "You do not yet belong to an organisation. An administrator must add you to one before you can access the platform's resources.",
     "no_access_action": "Please contact your organisation's administrator to obtain access.",
     "back_to_login": "Back to login page"
+  },
+  "onboarding": {
+    "welcome_title": "Welcome to LinTO Studio",
+    "name_org_help": "To get started, give your organisation a name. This is your workspace: it's where you create transcriptions and can invite collaborators.",
+    "org_name_label": "Organisation name",
+    "org_name_placeholder": "e.g. My team, Comms department…",
+    "org_name_required": "Please enter a name.",
+    "continue": "Continue",
+    "generic_error": "Something went wrong. Please try again."
   },
   "organisation": {
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",

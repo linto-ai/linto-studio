@@ -2,17 +2,17 @@
   "billing": {
     "beta": "Public Beta",
     "premium": "Premium",
-    "per_seat": "Par siège / mois",
+    "per_seat": "Forfait / mois",
     "used_of": "{used} sur {total}",
     "reset_on": "Reset le {date}",
     "upgrade_cta": "Passer pro",
     "upgrade_title": "Passer à Premium",
-    "upgrade_subtitle": "Débloquez l'usage illimité et les fonctions d'équipe.",
+    "upgrade_subtitle": "Toute la valeur IA : résumés riches, identification des locuteurs et sorties éditables sans watermark.",
     "cancel": "Annuler",
     "confirm_upgrade": "Passer pro",
     "upgrade_done": "Bienvenue dans Premium !",
     "limit_reached": "Vous avez atteint la limite de votre offre gratuite.",
-    "feature_locked": "Cette fonctionnalité est incluse dans Premium.",
+    "feature_locked": "Cette fonctionnalité est incluse dans une offre payante.",
     "watermark_hint": "Sortie gratuite — passez pro pour retirer le watermark",
     "meter": {
       "import": "Imports",
@@ -28,8 +28,8 @@
       "empty": "Aucun membre."
     },
     "feature": {
-      "unlimited": "Imports audio & analyses IA illimités",
-      "collaboration": "Espace d'équipe & partage",
+      "unlimited": "Usage mensuel généreux pour les imports & analyses IA",
+      "collaboration": "Catalogue d'analyses complet & qualité audio originale",
       "speaker_id": "Identification des locuteurs",
       "no_watermark": "Sans watermark, sorties éditables",
       "api": "Accès API"
@@ -98,7 +98,7 @@
       "plan": "Offre",
       "seats": "Sièges facturés",
       "complete_free": "Accès offert (complete free)",
-      "complete_free_hint": "Premium complet, tout illimité (imports, IA, direct) ET usage de la clé API illimité, sans facturation Stripe. Pour un usage interne ou des orgs partenaires qui connectent des services à ta plateforme.",
+      "complete_free_hint": "Business complet, tout illimité (imports, IA, direct) ET usage de la clé API illimité, sans facturation Stripe. Pour un usage interne ou des orgs partenaires qui connectent des services à ta plateforme.",
       "enable_free": "Activer l'offert",
       "disable_free": "Désactiver l'offert",
       "set_seats": "Forcer les sièges",
@@ -1089,8 +1089,7 @@
     "sections": {
       "organization": "Organisation",
       "media": "Médias",
-      "personal": "Personnel",
-      "my_space": "Mon espace"
+      "personal": "Personnel"
     },
     "account": {
       "account_link": "Mon compte",
@@ -1117,6 +1116,15 @@
     "no_access_detail": "Votre compte n'est pas encore rattaché à une organisation. Un administrateur doit vous y ajouter pour que vous puissiez accéder aux ressources de la plateforme.",
     "no_access_action": "Veuillez contacter l'administrateur de votre organisation afin d'obtenir les droits d'accès.",
     "back_to_login": "Retour à la page de connexion"
+  },
+  "onboarding": {
+    "welcome_title": "Bienvenue sur LinTO Studio",
+    "name_org_help": "Pour commencer, donnez un nom à votre organisation. C'est votre espace de travail : vous y réaliserez vos transcriptions et pourrez y inviter des collaborateurs.",
+    "org_name_label": "Nom de l'organisation",
+    "org_name_placeholder": "Ex : Mon équipe, Service communication…",
+    "org_name_required": "Veuillez saisir un nom.",
+    "continue": "Continuer",
+    "generic_error": "Une erreur est survenue. Veuillez réessayer."
   },
   "organisation": {
     "add_member_description": "Recherchez des utilisateurs par prénom, nom ou adresse électronique",

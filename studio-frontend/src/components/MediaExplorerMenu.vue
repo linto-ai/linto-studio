@@ -113,7 +113,7 @@ export default {
       return this.$store.getters["user/getUserId"]
     },
     orgName() {
-      return orgDisplayName(this.currentOrganization, this.currentUserId)
+      return orgDisplayName(this.currentOrganization)
     },
     isMediaRoute() {
       return this.$route.name === "explore" || this.$route.name === "inbox"

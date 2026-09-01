@@ -158,7 +158,7 @@ export default {
       this.$emit("close")
     },
     getOrgDisplayName(org) {
-      return orgDisplayName(org, this.userInfo._id)
+      return orgDisplayName(org)
     },
   },
 }

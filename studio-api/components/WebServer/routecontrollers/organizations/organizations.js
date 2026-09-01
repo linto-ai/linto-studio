@@ -10,11 +10,45 @@ const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const { OrganizationError, OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
+const { SaasFeatureLocked } = require(
+  `${process.cwd()}/components/WebServer/error/exception/saas`,
+)
+const saas = require(`${process.cwd()}/lib/saas`)
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function createOrganization(req, res, next) {
   try {
     requireParam(req.body.name, OrganizationUnsupportedMediaType)
+
+    // PAID GATE (SaaS only): creating an EXTRA organization (a "workspace") is a
+    // paid-plan feature, layered on top of the route's requireOrganizationInitiatorAccess
+    // right. We bill against the caller's personal/master org (the subscription
+    // subject), since the new org has no plan yet. FAIL-CLOSED: when SaaS is on
+    // and we cannot resolve a billing subject, deny — a billing gate must never
+    // fail open. No-op in the OSS build (saas.enabled() === false). See lib/saas.
+    if (saas.enabled()) {
+      let personalOrg = null
+      try {
+        personalOrg = await model.organizations.getPersonalByOwner(
+          req.payload.data.userId,
+        )
+      } catch (err) {
+        throw new SaasFeatureLocked("Cannot resolve billing subject", {
+          reason: "feature_disabled",
+          capability: "organization.create",
+        })
+      }
+      if (!personalOrg || !personalOrg._id) {
+        throw new SaasFeatureLocked("No billing subject for org creation", {
+          reason: "feature_disabled",
+          capability: "organization.create",
+        })
+      }
+      await saas.enforce({
+        orgId: String(personalOrg._id),
+        capability: "organization.create",
+      })
+    }
 
     const organization = {
       name: req.body.name,
