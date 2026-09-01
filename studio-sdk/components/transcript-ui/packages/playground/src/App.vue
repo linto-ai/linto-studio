@@ -16,6 +16,11 @@ import { createAudioPlugin } from "@linto-ai/transcript-ui-plugin-audio"
 import { createTranscriptionEditorPlugin } from "@linto-ai/transcript-ui-plugin-transcription-editor"
 import { createLLMServicesPlugin } from "@linto-ai/transcript-ui-plugin-llm-services"
 import { createChatPlugin } from "@linto-ai/transcript-ui-plugin-chat"
+import {
+  SUMMARY_MARKDOWN,
+  KEYPOINTS_MARKDOWN,
+  REPLY_MARKDOWN,
+} from "./placeholderContent"
 //import { createLivePlugin } from "@linto-ai/transcript-ui-plugin-live"
 //import { createSubtitlePlugin } from "@linto-ai/transcript-ui-plugin-subtitle"
 import type { LivePartialEvent, LiveFinalEvent } from "@linto-ai/transcript-ui-plugin-live"
@@ -70,14 +75,6 @@ function setupChatMock(): void {
 
   let seq = 0
   const newId = (prefix: string): string => `${prefix}-${++seq}-${Date.now()}`
-
-  const REPLY_MARKDOWN =
-    "Bonne question. Voici ce que je retiens de la transcription :\n\n" +
-    "- **Charge réseau** au-dessus des prévisions pendant les pics\n" +
-    "- Trois pistes envisagées dont le **cache distribué**\n" +
-    "- Migration prévue la semaine prochaine\n\n" +
-    "```js\n// invalidation à revoir si cache distribué\ncache.invalidate(key)\n```\n\n" +
-    "Tu veux que je détaille un point ?"
 
   function streamReply(): void {
     chat.streamStart()
@@ -175,17 +172,6 @@ function setupChatMock(): void {
 }
 
 // ── Mock LLM services demo ────────────────────────────────────────────
-
-const SUMMARY_MARKDOWN =
-  "Here is the structured response in French, following your instructions:\n---\n## Thèmes discutés\n- **Détérioration psychologique ou émotionnelle**\n- **Routine et expérience quotidienne négative**\n## Mots-clés\n- Descente progressive\n- Souffrance\n- Perdition\n- État (négatif)\n- Jour (quotidien)\n## Plan détaillé\n### **Détérioration psychologique ou émotionnelle**\n- Descente progressive\n- Souffrance\n- Perdition\n- État (négatif)\n### **Routine et expérience quotidienne négative**\n- Jour (quotidien)\n---\n## Rapport\n### **Détérioration psychologique ou émotionnelle**\n- **Descente progressive** : Les échanges décrivent une dégradation continue de l’état mental ou émotionnel, évoquant une spirale négative qui s’aggrave avec le temps.\n- **Souffrance** : Ce thème central reflète une expérience douloureuse, qu’elle soit physique, psychologique ou existentielle, vécue de manière répétée ou chronique.\n- **Perdition** : Le terme suggère une perte de repères, une dérive ou un sentiment d’aliénation, comme si la personne ou le groupe concerné était en train de se \"perdre\".\n- **État (négatif)** : L’accent est mis sur un état général de détresse, de désespoir ou d’épuisement, sans perspective d’amélioration immédiate.\n### **Routine et expérience quotidienne négative**\n- **Jour (quotidien)** : La répétition des jours est présentée comme un facteur aggravant, où chaque journée contribue à renforcer un sentiment de fatalité ou de stagnation dans la souffrance.\n---\n## Plan d’action\n1. **Évaluation et soutien psychologique**\n   - Identifier les causes sous-jacentes de cette \"descente progressive\" (stress professionnel, isolement, etc.) via des entretiens individuels ou des enquêtes anonymes.\n   - Mettre en place un système de soutien psychologique (cellule d’écoute, partenariats avec des professionnels) pour les personnes concernées.\n2. **Briser la routine négative**\n   - Organiser des ateliers ou des activités collectives pour rompre la monotonie et redonner un sens positif au quotidien (ex. : projets collaboratifs, pauses bien-être).\n   - Encourager des pratiques de gratitude ou de mindfulness pour rééquilibrer la perception des journées.\n3. **Prévention et sensibilisation**\n   - Former les managers et les équipes à repérer les signes de souffrance ou de perdition chez leurs collègues (ex. : changements de comportement, absentéisme).\n   - Diffuser des ressources internes (guides, webinaires) sur la gestion du stress et la résilience.\n4. **Suivi et amélioration continue**\n   - Créer un groupe de travail dédié pour évaluer l’efficacité des mesures mises en place et ajuster les actions en fonction des retours.\n   - Instaurer des points réguliers avec les équipes pour mesurer l’évolution du climat émotionnel et adapter les solutions.\n---\n*Note : Ce plan d’action est générique et doit être adapté au contexte spécifique de l’organisation (taille, secteur, culture d’entreprise, etc.).*"
-
-const KEYPOINTS_MARKDOWN = `# Points clés
-
-- **Charge réseau** au-dessus des prévisions pendant les pics
-- **Cache distribué** : 3 pistes envisagées, dont la mise en cache distribuée
-- **Migration** prévue la semaine prochaine — backend prêt
-- **Risque** : revoir le schéma d'invalidation si on choisit le cache distribué (~2 semaines)
-`
 
 function setupLLMMock(): void {
   if (!core.llmServices) return

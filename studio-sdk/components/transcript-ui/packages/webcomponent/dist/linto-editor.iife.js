@@ -29357,9 +29357,12 @@ section.turn:has([data-state="open"]) {
       const activeVersionNumber = computed(
         () => props.service.activeVersionNumber.value
       );
+      const hasContent = computed(
+        () => !!content.value || versions.value.length > 0
+      );
       const isEmpty = computed(() => {
         if (articleStatus.value !== "done") return false;
-        return !content.value && versions.value.length === 0;
+        return !hasContent.value;
       });
       const isUpdated = computed(() => {
         const channel = core.activeChannel.value;
@@ -29440,7 +29443,7 @@ section.turn:has([data-state="open"]) {
               createVNode(unref(Button), {
                 variant: "primary",
                 icon: "download",
-                disabled: articleStatus.value === "processing",
+                disabled: articleStatus.value === "processing" || !hasContent.value,
                 "aria-label": unref(t2)("llmService.download"),
                 title: unref(t2)("llmService.download"),
                 onClick: onExport
@@ -29486,8 +29489,8 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0$5 = "\n.llm-service-panel[data-v-b3e9aba7] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-b3e9aba7] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-b3e9aba7] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-b3e9aba7] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-b3e9aba7] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-b3e9aba7] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-b3e9aba7] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-b3e9aba7"]]);
+  const _style_0$5 = "\n.llm-service-panel[data-v-0222a168] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-0222a168] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-0222a168] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-0222a168] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-0222a168] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-0222a168] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-0222a168] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-0222a168"]]);
   function createService(init) {
     return {
       id: init.id,

@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui-i18n",
-  "version": "0.9.16",
+  "version": "0.9.17",
   "description": "i18n engine and translation dictionary for @linto-ai/transcript-ui",
   "keywords": [
     "vue",

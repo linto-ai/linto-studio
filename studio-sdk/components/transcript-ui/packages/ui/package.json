@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui-ui",
-  "version": "0.9.16",
+  "version": "0.9.17",
   "description": "Design-system components and CSS tokens for @linto-ai/transcript-ui",
   "keywords": [
     "vue",

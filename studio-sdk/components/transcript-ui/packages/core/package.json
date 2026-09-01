@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui-core",
-  "version": "0.9.16",
+  "version": "0.9.17",
   "description": "State layer and UI shell for @linto-ai/transcript-ui — core, stores, format adapters, and the TranscriptUI component",
   "keywords": [
     "vue",
