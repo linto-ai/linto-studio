@@ -236,11 +236,10 @@ class ActivityLog extends MongoModel {
   // but keep the row so org-level KPIs (counts/durations) stay intact.
   async anonymizeByUser(userId) {
     try {
-      return await this.mongoUpdateMany(
-        { "user.id": String(userId) },
-        "$set",
-        { "user.id": null, "user.info": null },
-      )
+      return await this.mongoUpdateMany({ "user.id": String(userId) }, "$set", {
+        "user.id": null,
+        "user.info": null,
+      })
     } catch (error) {
       console.error("anonymizeByUser error:", error)
       return error

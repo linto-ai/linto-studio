@@ -2,7 +2,9 @@
   <div class="sub-panel">
     <div class="sub-panel__head">
       <h2 class="sub-panel__title">{{ $t("billing.page.title") }}</h2>
-      <div class="sub-panel__badge" :class="{ paid: isPaid, comp: billingExempt }">
+      <div
+        class="sub-panel__badge"
+        :class="{ paid: isPaid, comp: billingExempt }">
         <span v-if="billingExempt">★ {{ $t("billing.page.comp") }}</span>
         <span v-else-if="isPaid">★ {{ planLabel }}</span>
         <span v-else>{{ $t("billing.page.free_plan") }}</span>
@@ -21,7 +23,10 @@
           <div class="billing-meter__bar">
             <div
               class="billing-meter__fill"
-              :class="{ full: !m.unlimited && m.remaining <= 0, unlimited: m.unlimited }"
+              :class="{
+                full: !m.unlimited && m.remaining <= 0,
+                unlimited: m.unlimited,
+              }"
               :style="{ width: (m.unlimited ? 100 : m.percent) + '%' }"></div>
           </div>
           <!-- Live (direct) breakdown: per-profile minutes + translation languages -->
@@ -31,9 +36,17 @@
             <span v-if="liveDetail.channels != null">{{
               $t("billing.live.channels", { n: liveDetail.channels })
             }}</span>
-            <span v-if="liveDetail.translationLangs && liveDetail.translationLangs.length">{{
-              $t("billing.live.translations", { langs: liveDetail.translationLangs.join(", ") })
-            }}</span>
+            <span
+              v-if="
+                liveDetail.translationLangs &&
+                liveDetail.translationLangs.length
+              "
+              >{{
+                $t("billing.live.translations", {
+                  langs: liveDetail.translationLangs.join(", "),
+                })
+              }}</span
+            >
             <span
               v-for="(secs, cat) in liveDetail.byProfile"
               :key="cat"
@@ -69,10 +82,15 @@
           <li>{{ $t("billing.feature.api") }}</li>
         </ul>
         <div class="billing-plan__row">
-          <Button v-if="isOrgAdmin" variant="primary" @click="showUpgrade = true">
+          <Button
+            v-if="isOrgAdmin"
+            variant="primary"
+            @click="showUpgrade = true">
             {{ $t("billing.upgrade_cta") }}
           </Button>
-          <span v-else class="billing-plan__note">{{ $t("billing.page.admin_only") }}</span>
+          <span v-else class="billing-plan__note">{{
+            $t("billing.page.admin_only")
+          }}</span>
         </div>
       </div>
 
@@ -91,19 +109,32 @@
             class="billing-detail__row"
             v-if="subscription && subscription.cancelAtPeriodEnd">
             <dt>{{ $t("billing.page.status") }}</dt>
-            <dd class="billing-detail__warn">{{ $t("billing.page.cancels_at_period_end") }}</dd>
+            <dd class="billing-detail__warn">
+              {{ $t("billing.page.cancels_at_period_end") }}
+            </dd>
           </div>
         </dl>
         <div
           class="billing-plan__row"
           v-if="isOrgAdmin && subscription && !subscription.cancelAtPeriodEnd">
-          <Button v-if="!confirmingCancel" variant="secondary" @click="confirmingCancel = true">
+          <Button
+            v-if="!confirmingCancel"
+            variant="secondary"
+            @click="confirmingCancel = true">
             {{ $t("billing.page.cancel_sub") }}
           </Button>
           <template v-else>
-            <span class="billing-plan__confirm">{{ $t("billing.page.cancel_confirm") }}</span>
-            <Button variant="secondary" @click="confirmingCancel = false">{{ $t("billing.cancel") }}</Button>
-            <Button variant="secondary" intent="destructive" :loading="busy" @click="doCancel">
+            <span class="billing-plan__confirm">{{
+              $t("billing.page.cancel_confirm")
+            }}</span>
+            <Button variant="secondary" @click="confirmingCancel = false">{{
+              $t("billing.cancel")
+            }}</Button>
+            <Button
+              variant="secondary"
+              intent="destructive"
+              :loading="busy"
+              @click="doCancel">
               {{ $t("billing.page.cancel_yes") }}
             </Button>
           </template>
@@ -129,7 +160,11 @@
             <td>{{ fmtAmount(inv.amount, inv.currency) }}</td>
             <td>{{ inv.status }}</td>
             <td class="sub-panel__invoice-dl">
-              <a v-if="inv.pdf || inv.url" :href="inv.pdf || inv.url" target="_blank" rel="noopener">
+              <a
+                v-if="inv.pdf || inv.url"
+                :href="inv.pdf || inv.url"
+                target="_blank"
+                rel="noopener">
                 {{ $t("billing.invoices.download") }}
               </a>
             </td>

@@ -191,10 +191,15 @@ async function transcribe(isSingleFile, req, res, next) {
     // read we keep the cheap pre-check above + the post-hoc recording.
     let importSeconds = 0
     try {
-      const probed = await addAudioDuration({ metadata: {} }, formData.file_data)
+      const probed = await addAudioDuration(
+        { metadata: {} },
+        formData.file_data,
+      )
       importSeconds = Math.round(probed?.metadata?.audio?.duration || 0)
     } catch (e) {
-      debug(`import duration probe failed, skipping precise quota gate: ${e && e.message}`)
+      debug(
+        `import duration probe failed, skipping precise quota gate: ${e && e.message}`,
+      )
     }
     if (importSeconds > 0) {
       await saas.enforce({

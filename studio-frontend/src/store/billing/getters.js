@@ -10,13 +10,13 @@ export default {
   usage: (s) => s.usage,
   usageByMember: (s) => s.usageByMember,
   subscription: (s) => s.subscription,
-  billingExempt: (s) => !!(s.usage?.billingExempt || s.subscription?.billingExempt),
+  billingExempt: (s) =>
+    !!(s.usage?.billingExempt || s.subscription?.billingExempt),
   invoices: (s) => s.invoices || [],
   // live (direct) breakdown surfaced by the usage summary: { channels, translationLangs, byProfile }
   liveDetail: (s) => s.usage?.live || null,
   loading: (s) => s.loading,
-  planKey: (s) =>
-    s.usage?.planKey || s.subscription?.planKey || "free_payg",
+  planKey: (s) => s.usage?.planKey || s.subscription?.planKey || "free_payg",
   isFree: (s, g) => g.planKey === "free_payg",
   currentPlan: (s, g) => s.plans.find((p) => p.planKey === g.planKey) || null,
   // Anything that is not the implicit free plan. Deliberately NOT "is premium":
@@ -27,7 +27,9 @@ export default {
   paidPlans: (s) =>
     s.plans
       .filter((p) => p.pricing && p.pricing.model !== "free")
-      .sort((a, b) => (a.pricing.amountCents || 0) - (b.pricing.amountCents || 0)),
+      .sort(
+        (a, b) => (a.pricing.amountCents || 0) - (b.pricing.amountCents || 0),
+      ),
   // Display name of the plan in force, from the catalog (never a hardcoded label).
   planLabel: (s, g) => g.currentPlan?.displayName || "",
   // Is the plan in force billed per seat? Only then does promoting a member cost

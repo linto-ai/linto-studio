@@ -249,7 +249,9 @@ module.exports = (webServer) => {
             forwardParams: proxyForwardParams,
             // SaaS gate on the chosen transcriber profile category
             // (live.profiles) before the session is created. NO-OP in OSS.
-            executeBeforeResult: withLiveProfileGate(checkChannelsSecurityLevel),
+            executeBeforeResult: withLiveProfileGate(
+              checkChannelsSecurityLevel,
+            ),
           },
           {
             path: "/organizations/:organizationId/sessions/:id",

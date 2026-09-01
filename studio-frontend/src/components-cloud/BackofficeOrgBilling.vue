@@ -7,7 +7,9 @@
         <span class="bo-billing__k">{{ $t("billing.backoffice.plan") }}</span>
         <span class="bo-billing__v">
           <strong>{{ billing.planKey }}</strong>
-          <span v-if="billing.billingExempt" class="bo-billing__tag">{{ $t("billing.page.comp") }}</span>
+          <span v-if="billing.billingExempt" class="bo-billing__tag">{{
+            $t("billing.page.comp")
+          }}</span>
         </span>
       </div>
       <div class="bo-billing__row">
@@ -32,15 +34,25 @@
         :variant="isExempt ? 'secondary' : 'primary'"
         :loading="busy"
         @click="toggleExempt">
-        {{ isExempt ? $t("billing.backoffice.disable_free") : $t("billing.backoffice.enable_free") }}
+        {{
+          isExempt
+            ? $t("billing.backoffice.disable_free")
+            : $t("billing.backoffice.enable_free")
+        }}
       </Button>
     </div>
 
     <!-- Manual seat override (normally derived from membership) -->
     <div class="bo-billing__seats" v-if="!isExempt">
       <span>{{ $t("billing.backoffice.set_seats") }}</span>
-      <input type="number" min="1" v-model.number="seatsInput" class="bo-billing__seats-input" />
-      <Button variant="secondary" :loading="busy" @click="saveSeats">{{ $t("apply") }}</Button>
+      <input
+        type="number"
+        min="1"
+        v-model.number="seatsInput"
+        class="bo-billing__seats-input" />
+      <Button variant="secondary" :loading="busy" @click="saveSeats">{{
+        $t("apply")
+      }}</Button>
     </div>
   </section>
 </template>
@@ -107,9 +119,13 @@ export default {
     async saveSeats() {
       this.busy = true
       try {
-        await apiAdminSetSeats(this.organizationId, Math.max(1, this.seatsInput || 1), {
-          message: this.$t("billing.backoffice.saved"),
-        })
+        await apiAdminSetSeats(
+          this.organizationId,
+          Math.max(1, this.seatsInput || 1),
+          {
+            message: this.$t("billing.backoffice.saved"),
+          },
+        )
         await this.load()
       } finally {
         this.busy = false

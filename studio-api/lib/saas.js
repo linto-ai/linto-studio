@@ -2,10 +2,9 @@
 // NO-OP when the plugin is absent (open-source build) or not yet loaded, so the
 // OSS core behaves exactly as before. SaaS mode = the CloudService component is
 // in COMPONENTS and the `linto-saas` package is installed.
-const {
-  SaasQuotaExceeded,
-  SaasFeatureLocked,
-} = require(`${process.cwd()}/components/WebServer/error/exception/saas`)
+const { SaasQuotaExceeded, SaasFeatureLocked } = require(
+  `${process.cwd()}/components/WebServer/error/exception/saas`,
+)
 
 let mod = null
 try {
@@ -34,9 +33,18 @@ function enabled() {
 async function enforce({ orgId, capability, value, profile }) {
   const pp = plugin()
   if (!pp) return null
-  const v = await pp.entitlements.checkEntitlement({ orgId, capability, value, profile })
+  const v = await pp.entitlements.checkEntitlement({
+    orgId,
+    capability,
+    value,
+    profile,
+  })
   if (!v.allowed) {
-    const extras = { reason: v.reason, capability: v.capability, remaining: v.remaining }
+    const extras = {
+      reason: v.reason,
+      capability: v.capability,
+      remaining: v.remaining,
+    }
     if (v.reason === "quota_exceeded") {
       throw new SaasQuotaExceeded(`Quota exceeded: ${capability}`, extras)
     }

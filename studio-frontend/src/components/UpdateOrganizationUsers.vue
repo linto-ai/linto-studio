@@ -80,8 +80,12 @@
       class="seat-promo-modal"
       @click.self="cancelPromotion">
       <div class="seat-promo-modal__card">
-        <div class="seat-promo-modal__badge">＋ {{ $t("billing.seat_promo.seat") }}</div>
-        <h3 class="seat-promo-modal__title">{{ $t("billing.seat_promo.title") }}</h3>
+        <div class="seat-promo-modal__badge">
+          ＋ {{ $t("billing.seat_promo.seat") }}
+        </div>
+        <h3 class="seat-promo-modal__title">
+          {{ $t("billing.seat_promo.title") }}
+        </h3>
         <p class="seat-promo-modal__msg">
           {{
             $t("billing.seat_promo.message", {
@@ -93,10 +97,16 @@
             })
           }}
         </p>
-        <p class="seat-promo-modal__prorate">{{ $t("billing.seat_promo.prorated") }}</p>
+        <p class="seat-promo-modal__prorate">
+          {{ $t("billing.seat_promo.prorated") }}
+        </p>
         <div class="seat-promo-modal__actions">
-          <Button variant="secondary" @click="cancelPromotion">{{ $t("billing.cancel") }}</Button>
-          <Button variant="primary" @click="confirmPromotion">{{ $t("billing.seat_promo.confirm") }}</Button>
+          <Button variant="secondary" @click="cancelPromotion">{{
+            $t("billing.cancel")
+          }}</Button>
+          <Button variant="primary" @click="confirmPromotion">{{
+            $t("billing.seat_promo.confirm")
+          }}</Button>
         </div>
       </div>
     </div>
@@ -182,7 +192,9 @@ export default {
       try {
         return new Intl.NumberFormat(this.$i18n?.locale || "fr-FR", {
           style: "currency",
-          currency: (this.currentPlan?.pricing?.currency || "eur").toUpperCase(),
+          currency: (
+            this.currentPlan?.pricing?.currency || "eur"
+          ).toUpperCase(),
         }).format(v)
       } catch (e) {
         return `${v} €`

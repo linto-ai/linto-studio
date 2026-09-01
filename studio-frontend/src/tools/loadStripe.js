@@ -11,7 +11,9 @@ function loadStripeScript() {
   if (window.Stripe) return Promise.resolve(window.Stripe)
   if (scriptPromise) return scriptPromise
   scriptPromise = new Promise((resolve, reject) => {
-    const existing = document.querySelector('script[src^="https://js.stripe.com/v3"]')
+    const existing = document.querySelector(
+      'script[src^="https://js.stripe.com/v3"]',
+    )
     if (existing) {
       existing.addEventListener("load", () => resolve(window.Stripe))
       existing.addEventListener("error", reject)

@@ -46,8 +46,13 @@
            (real Stripe). Fake/local mode skips straight to done. -->
       <div v-else-if="step === 'card'" class="upgrade-modal__card-step">
         <p class="upgrade-modal__card-label">{{ $t("billing.card.label") }}</p>
-        <div v-show="!cardFatal" ref="cardEl" class="upgrade-modal__card-input"></div>
-        <p v-if="cardError" class="upgrade-modal__card-error">{{ cardError }}</p>
+        <div
+          v-show="!cardFatal"
+          ref="cardEl"
+          class="upgrade-modal__card-input"></div>
+        <p v-if="cardError" class="upgrade-modal__card-error">
+          {{ cardError }}
+        </p>
         <div class="upgrade-modal__actions">
           <Button variant="secondary" @click="$emit('close')">{{
             $t("billing.cancel")
@@ -97,7 +102,9 @@
           v-model="billing.vatId"
           class="upgrade-modal__field"
           :placeholder="$t('billing.billing_profile.vat_id')" />
-        <p v-if="billingError" class="upgrade-modal__card-error">{{ billingError }}</p>
+        <p v-if="billingError" class="upgrade-modal__card-error">
+          {{ billingError }}
+        </p>
         <div class="upgrade-modal__actions">
           <Button variant="secondary" @click="$emit('close')">{{
             $t("billing.cancel")
@@ -159,7 +166,13 @@ export default {
       // automatic_tax is on (and good practice regardless).
       billing: {
         legalName: "",
-        address: { line1: "", line2: "", postal_code: "", city: "", country: "FR" },
+        address: {
+          line1: "",
+          line2: "",
+          postal_code: "",
+          city: "",
+          country: "FR",
+        },
         vatId: "",
       },
       billingError: "",
@@ -195,7 +208,12 @@ export default {
     if (!this.paidPlans.length) this.fetchPlans()
   },
   methods: {
-    ...mapActions("billing", ["upgrade", "fetchPlans", "refresh", "saveBillingProfile"]),
+    ...mapActions("billing", [
+      "upgrade",
+      "fetchPlans",
+      "refresh",
+      "saveBillingProfile",
+    ]),
     priceLabel(plan) {
       const cents = plan?.pricing?.amountCents
       if (!cents) return ""
@@ -265,7 +283,8 @@ export default {
           this.finishDone()
         }
       } catch (e) {
-        this.billingError = (e && e.message) || this.$t("billing.billing_profile.error")
+        this.billingError =
+          (e && e.message) || this.$t("billing.billing_profile.error")
       } finally {
         this.busy = false
       }

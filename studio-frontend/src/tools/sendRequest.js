@@ -82,7 +82,10 @@ export async function sendRequest(
     // SaaS gating: surface the upgrade flow globally (filtered services / quota
     // exhausted / feature locked) regardless of the caller.
     const saasCode = error?.response?.data?.code
-    if (saasCode === "SAAS_QUOTA_EXCEEDED" || saasCode === "SAAS_FEATURE_LOCKED") {
+    if (
+      saasCode === "SAAS_QUOTA_EXCEEDED" ||
+      saasCode === "SAAS_FEATURE_LOCKED"
+    ) {
       bus.$emit("saas-upgrade-needed", error.response.data)
     }
     if (notif) {

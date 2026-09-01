@@ -33,7 +33,12 @@
             <span v-else class="member-usage__uid">{{ m.userId }}</span>
           </td>
           <td>
-            <span v-if="m.isSeat" class="member-usage__badge" :title="$t('billing.member_usage.billable')">●</span>
+            <span
+              v-if="m.isSeat"
+              class="member-usage__badge"
+              :title="$t('billing.member_usage.billable')"
+              >●</span
+            >
             <span v-else class="member-usage__free">—</span>
           </td>
           <td>{{ fmtDuration(m.import) }}</td>

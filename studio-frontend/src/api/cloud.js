@@ -4,11 +4,17 @@ import { getEnv } from "@/tools/getEnv"
 // The SaaS plugin (linto-saas) is mounted at /cloud on studio-api, sibling to
 // /api (so the Stripe webhook bypasses studio auth). VUE_APP_CONVO_API ends in
 // /api, so we strip it to reach /cloud.
-const CLOUD_API = getEnv("VUE_APP_CONVO_API").replace(/\/api\/?$/, "") + "/cloud"
+const CLOUD_API =
+  getEnv("VUE_APP_CONVO_API").replace(/\/api\/?$/, "") + "/cloud"
 
 // GET /cloud/plans -> [{ planKey, displayName, pricing, entitlements }]
 export async function apiGetPlans(notif = null) {
-  const res = await sendRequest(`${CLOUD_API}/plans`, { method: "get" }, {}, notif)
+  const res = await sendRequest(
+    `${CLOUD_API}/plans`,
+    { method: "get" },
+    {},
+    notif,
+  )
   return res?.data
 }
 
@@ -64,7 +70,11 @@ export async function apiCreateSubscription(
 
 // PUT /cloud/subscriptions/billing-profile { organizationId, legalName, email?, address, vatId? }
 // Persist legal billing details on the Stripe customer (compliant invoices).
-export async function apiSetBillingProfile(organizationId, profile, notif = null) {
+export async function apiSetBillingProfile(
+  organizationId,
+  profile,
+  notif = null,
+) {
   const res = await sendRequest(
     `${CLOUD_API}/subscriptions/billing-profile`,
     { method: "put" },

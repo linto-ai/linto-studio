@@ -15,8 +15,12 @@
 
     <div class="saas-usage-footer__meter" v-if="isFree && primaryMeter">
       <div class="saas-usage-footer__meter-head">
-        <span class="saas-usage-footer__meter-label">{{ $t(primaryMeter.label) }}</span>
-        <span class="saas-usage-footer__meter-value">{{ usedOfLimit(primaryMeter) }}</span>
+        <span class="saas-usage-footer__meter-label">{{
+          $t(primaryMeter.label)
+        }}</span>
+        <span class="saas-usage-footer__meter-value">{{
+          usedOfLimit(primaryMeter)
+        }}</span>
       </div>
       <div class="saas-usage-footer__bar">
         <div

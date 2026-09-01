@@ -145,7 +145,9 @@ async function deleteOrganizationCascade(organizationId) {
   try {
     await model.activityLog.deleteByOrganization(organizationId)
   } catch (e) {
-    logger.error(`activityLog.deleteByOrganization failed for ${organizationId}: ${e && e.message}`)
+    logger.error(
+      `activityLog.deleteByOrganization failed for ${organizationId}: ${e && e.message}`,
+    )
   }
 }
 

@@ -49,9 +49,7 @@ export default {
     if (!organizationId) return null
     const subs = await apiGetSubscriptions(organizationId)
     const active = Array.isArray(subs)
-      ? subs.find((x) =>
-          ["active", "trialing", "past_due"].includes(x.status),
-        )
+      ? subs.find((x) => ["active", "trialing", "past_due"].includes(x.status))
       : null
     commit("setSubscription", active || null)
     return subs

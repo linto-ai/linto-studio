@@ -431,7 +431,10 @@ class LoggerContext {
         } catch (_) {
           /* user lookup failed -> keep the id, drop the info */
         }
-        context.user = { id: actorUserId, info: info || cache.users[actorUserId] || null }
+        context.user = {
+          id: actorUserId,
+          info: info || cache.users[actorUserId] || null,
+        }
       }
 
       if (organizationId) {

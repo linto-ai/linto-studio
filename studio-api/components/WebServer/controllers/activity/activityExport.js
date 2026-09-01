@@ -35,7 +35,9 @@ function transformActivityLog(log) {
   const details = log.saas
     ? Object.entries(log.saas)
         .filter(([, v]) => v !== null && v !== undefined && v !== "")
-        .map(([k, v]) => `${k}=${typeof v === "object" ? JSON.stringify(v) : v}`)
+        .map(
+          ([k, v]) => `${k}=${typeof v === "object" ? JSON.stringify(v) : v}`,
+        )
         .join(", ")
     : ""
 

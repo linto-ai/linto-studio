@@ -180,7 +180,9 @@ async function removeUserFromPlatform(userId) {
     // strip only the personal dimension (user.id + user.info).
     await model.activityLog.anonymizeByUser(userId)
   } catch (e) {
-    logger.error(`activityLog.anonymizeByUser failed for ${userId}: ${e && e.message}`)
+    logger.error(
+      `activityLog.anonymizeByUser failed for ${userId}: ${e && e.message}`,
+    )
   }
 }
 
