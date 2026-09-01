@@ -6,7 +6,11 @@
       @retry-websocket="websocketInstance.retry()"
       @retry-microphone="$emit('retry-microphone')"
       @reconfigure-microphone="$emit('reconfigure-microphone')" />
-    <linto-editor ref="editor" :locale="$i18n.locale.split('-')[0]" no-header />
+    <linto-editor
+      ref="editor"
+      :locale="$i18n.locale.split('-')[0]"
+      no-header
+      no-verbatim />
   </div>
 </template>
 

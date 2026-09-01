@@ -13,10 +13,19 @@ import type { LLMService } from "@linto-ai/transcript-ui-core"
 
 const props = defineProps<{
   service: LLMService
+  split?: boolean
+}>()
+
+const emit = defineEmits<{
+  "update:split": [value: boolean]
 }>()
 
 const core = useCore()
 const { t } = useI18n()
+
+function toggleSplit(): void {
+  emit("update:split", !props.split)
+}
 
 const articleStatus = computed<DocumentArticleStatus>(() => {
   const s = props.service.status.value
@@ -34,11 +43,18 @@ const activeVersionNumber = computed(
   () => props.service.activeVersionNumber.value,
 )
 
+// Nothing generated yet AND no saved version to fall back to — regardless
+// of status (covers "error" with nothing generated too, not just "done").
+// Download has nothing to export in this case.
+const hasContent = computed<boolean>(
+  () => !!content.value || versions.value.length > 0,
+)
+
 // Empty = no content has been generated yet AND no saved versions exist.
 // We surface a CTA in place of an empty editor.
 const isEmpty = computed<boolean>(() => {
   if (articleStatus.value !== "done") return false
-  return !content.value && versions.value.length === 0
+  return !hasContent.value
 })
 
 // "Up to date" = the current version is more recent than the transcription's
@@ -135,12 +151,19 @@ function onSave(): void {
         <Button
           variant="primary"
           icon="download"
-          :disabled="articleStatus === 'processing'"
+          :disabled="articleStatus === 'processing' || !hasContent"
           :aria-label="t('llmService.download')"
           :title="t('llmService.download')"
           @click="onExport">
           {{ t("llmService.download") }}
         </Button>
+        <Button
+          :variant="split ? 'primary' : 'secondary'"
+          icon="panel-right"
+          :aria-pressed="!!split"
+          :aria-label="t('llmService.split')"
+          :title="t('llmService.split')"
+          @click="toggleSplit" />
       </template>
 
       <div v-if="isEmpty" class="llm-service-panel__empty" role="status">

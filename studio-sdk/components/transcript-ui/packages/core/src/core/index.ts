@@ -26,6 +26,7 @@ export type {
   TurnSpeakerUpdated,
   SpeakerRenamed,
   SpeakerReplaced,
+  SpeakerRestored,
   LivePluginApi,
   LivePartialEventData,
   LiveFinalEventData,

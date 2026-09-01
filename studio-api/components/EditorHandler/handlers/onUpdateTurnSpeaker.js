@@ -5,6 +5,7 @@ const { randomUUID } = require("crypto")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { computeEditorRoomName } = require("../utils/computeEditorRoomName")
+const { recordSpeakerRevision } = require("../utils/recordSpeakerRevision")
 
 /**
  * Point a turn at an existing speaker (speakerId) or create one (speakerName).
@@ -73,6 +74,29 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
       return reply({ ok: false, reason: "conflict" })
     }
 
+    // No previous speaker on this turn (shouldn't happen — diarization
+    // always assigns one — but there's nothing to undo back TO): skip
+    // recording a revision, the mutation itself still applies and broadcasts.
+    const revisionId = updated.previousSpeaker
+      ? await recordSpeakerRevision({
+          translationId,
+          parentId,
+          type: "update_turn_speaker",
+          before: {
+            turnId,
+            speakerId: updated.previousSpeaker.speaker_id,
+            speakerName: updated.previousSpeaker.speaker_name,
+          },
+          after: {
+            turnId,
+            speakerId: speaker.speaker_id,
+            speakerName: speaker.speaker_name,
+          },
+          previousHead: updated.undoHead,
+          author: socket.data.editorUser,
+        })
+      : null
+
     debug(
       `turn=${turnId} speaker=${speaker.speaker_id} removed=${removedSpeakerId ?? "-"} version=${updated.version}`,
     )
@@ -82,8 +106,11 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
       speaker: { id: speaker.speaker_id, name: speaker.speaker_name },
       ...(removedSpeakerId && { removedSpeakerId }),
       version: updated.version,
+      revisionId,
+      // @see onRenameSpeaker.js
+      redoRevisionId: null,
     })
-    reply({ ok: true, version: updated.version })
+    reply({ ok: true, version: updated.version, revisionId, redoRevisionId: null })
   } catch (err) {
     debug(`update turn speaker failed: ${err.message}`)
     reply({ ok: false, reason: "error" })

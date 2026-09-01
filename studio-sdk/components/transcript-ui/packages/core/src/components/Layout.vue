@@ -12,14 +12,16 @@ import TranslationSelector from "./TranslationSelector.vue"
 import SelectionActionBar from "./SelectionActionBar.vue"
 import { useIsMobile } from "../composables/useIsMobile"
 import { provideTurnSelection } from "../composables/useTurnSelection"
-import { useCore } from "../core"
+import { useCore, type LLMService } from "../core"
 
 const props = withDefaults(
   defineProps<{
     showHeader?: boolean
+    showVerbatim?: boolean
   }>(),
   {
     showHeader: true,
+    showVerbatim: true,
   },
 )
 
@@ -27,7 +29,45 @@ const core = useCore()
 const { isMobile } = useIsMobile()
 const isSidebarOpen = ref(false)
 
-const activeTab = ref<string>(TRANSCRIPTION_TAB)
+const shownPanels = ref<string[]>([TRANSCRIPTION_TAB])
+// The ?? never actually triggers — every shownPanels mutation keeps at least one entry — it's just satisfying noUncheckedIndexedAccess.
+const activeTab = computed(() => shownPanels.value[0] ?? TRANSCRIPTION_TAB)
+
+// Guarded by showVerbatim: split shows verbatim alongside a service, so it
+// makes no sense (and shouldn't be reachable) wherever verbatim itself is
+// turned off.
+const isSplit = computed({
+  get: () => props.showVerbatim && shownPanels.value.length > 1,
+  set: (value: boolean) => {
+    if (!props.showVerbatim) return
+    shownPanels.value = value
+      ? [...shownPanels.value, VERBATIM_TAB]
+      : shownPanels.value.filter((id) => id !== VERBATIM_TAB)
+  },
+})
+
+type PanelDescriptor =
+  | { id: string; kind: "transcription" }
+  | { id: string; kind: "verbatim" }
+  | { id: string; kind: "service"; service: LLMService }
+
+// Resolved once per render, not inline in the template: avoids calling
+// core.llmServices.get() twice per item (once to guard, once to bind) with
+// no type-narrowing between the two — a discriminated union the template
+// just switches on instead.
+const panels = computed<PanelDescriptor[]>(() =>
+  shownPanels.value.map((id): PanelDescriptor => {
+    if (id === TRANSCRIPTION_TAB) return { id, kind: "transcription" }
+    if (id === VERBATIM_TAB) return { id, kind: "verbatim" }
+    const service = core.llmServices?.get(id)
+    // Unknown/vanished service id (e.g. llmServices isn't installed):
+    // same fallback as the old single-tab code — show transcription rather
+    // than nothing.
+    return service
+      ? { id, kind: "service", service }
+      : { id, kind: "transcription" }
+  }),
+)
 
 const activeTurns = computed(
   () => core.activeChannel.value?.activeTranslation.value.turns.value ?? [],
@@ -46,11 +86,6 @@ const activeTranslationId = computed(
 const speakerList = computed(() => Array.from(speakers.values()))
 
 const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB)
-const showVerbatim = computed(() => activeTab.value === VERBATIM_TAB)
-const activeService = computed(() => {
-  if (showTranscription.value || showVerbatim.value) return null
-  return core.llmServices?.get(activeTab.value) ?? null
-})
 
 watch(activeTab, (id) => {
   if (!core.llmServices) return
@@ -69,8 +104,21 @@ watch(
       activeTab.value !== VERBATIM_TAB &&
       !core.llmServices?.get(activeTab.value)
     ) {
-      activeTab.value = TRANSCRIPTION_TAB
+      shownPanels.value = [TRANSCRIPTION_TAB]
     }
+  },
+)
+
+// showVerbatim is a prop, not user-driven state, so this fires rarely (a
+// host re-rendering with a different noVerbatim) — but if it flips to false
+// while verbatim is showing (primary or split), drop it rather than leave
+// a panel the host just said it doesn't want reachable.
+watch(
+  () => props.showVerbatim,
+  (canShow) => {
+    if (canShow) return
+    const withoutVerbatim = shownPanels.value.filter((id) => id !== VERBATIM_TAB)
+    shownPanels.value = withoutVerbatim.length > 0 ? withoutVerbatim : [TRANSCRIPTION_TAB]
   },
 )
 
@@ -109,24 +157,38 @@ function onTranslationChange(translationId: string) {
       :speaker-count="speakers.size"
       :is-mobile="isMobile"
       :can-ask="!!core.chat"
+      :can-undo="core.transcriptionEditor?.canUndo.value ?? false"
+      :can-redo="core.transcriptionEditor?.canRedo.value ?? false"
       @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
-      @open-chat="core.chat?.setDrawerOpen(true)" />
-    <TabBar v-model="activeTab" />
+      @open-chat="core.chat?.setDrawerOpen(true)"
+      @undo="core.transcriptionEditor?.undo()"
+      @redo="core.transcriptionEditor?.redo()" />
+    <TabBar
+      :model-value="activeTab"
+      :show-verbatim="props.showVerbatim"
+      @update:model-value="(tab) => (shownPanels = [tab])" />
     <SelectionActionBar v-if="showTranscription" />
-    <main class="editor-body">
-      <TranscriptionPanel
-        v-if="showTranscription"
-        :turns="activeTurns"
-        :speakers="speakers" />
-      <VerbatimPanel v-else-if="showVerbatim" />
-      <component
-        :is="core.components.llmServicePanel"
-        v-else-if="activeService"
-        :key="activeService.id"
-        :service="activeService" />
-      <TranscriptionPanel v-else :turns="activeTurns" :speakers="speakers" />
+    <main
+      class="editor-body"
+      :class="{ 'editor-body--no-sidebar': panels.length > 1 }">
+      <div
+        class="editor-body__panels"
+        :class="{ 'editor-body__panels--split': panels.length > 1 }">
+        <template v-for="panel in panels" :key="panel.id">
+          <TranscriptionPanel
+            v-if="panel.kind === 'transcription'"
+            :turns="activeTurns"
+            :speakers="speakers" />
+          <VerbatimPanel v-else-if="panel.kind === 'verbatim'" />
+          <component
+            :is="core.components.llmServicePanel"
+            v-else
+            :service="panel.service"
+            v-model:split="isSplit" />
+        </template>
+      </div>
       <SpeakerSidebar
-        v-if="!isMobile"
+        v-if="!isMobile && panels.length === 1"
         :speakers="speakerList"
         :channels="channels"
         :selected-channel-id="core.activeChannelId.value"
@@ -136,7 +198,9 @@ function onTranslationChange(translationId: string) {
         @update:selected-channel-id="onChannelChange"
         @update:selected-translation-id="onTranslationChange" />
 
-      <SidebarDrawer v-if="isMobile" v-model:open="isSidebarOpen">
+      <SidebarDrawer
+        v-if="isMobile && panels.length === 1"
+        v-model:open="isSidebarOpen">
         <SpeakerSidebar
           :speakers="speakerList"
           :channels="channels"
@@ -195,6 +259,27 @@ function onTranslationChange(translationId: string) {
   grid-template-columns: 1fr var(--sidebar-width);
   flex: 1;
   min-height: 0;
+}
+
+/* Split mode: two panels already share the body between them, no room (or
+   need) for the speaker sidebar too — see Layout's panels/isSplit state. */
+.editor-body--no-sidebar {
+  grid-template-columns: 1fr;
+}
+
+.editor-body__panels {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+
+.editor-body__panels > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.editor-body__panels--split > * + * {
+  border-left: 1px solid var(--color-border);
 }
 
 .mobile-selectors {

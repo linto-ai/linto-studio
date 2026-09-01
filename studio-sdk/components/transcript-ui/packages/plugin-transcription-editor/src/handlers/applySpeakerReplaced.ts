@@ -3,9 +3,11 @@ import type { EditorPluginState } from "../types"
 import { trackBroadcastVersion } from "../tools/trackBroadcastVersion"
 import { findTranslationStore } from "../tools/findTranslationStore"
 import { removeSpeakerIfUnused } from "../tools/removeSpeakerIfUnused"
+import { trackUndoRedoHeads } from "../tools/trackUndoRedoHeads"
 
-/** Apply a speaker replacement broadcast by the server: reassign the track's
- *  turns, then drop the replaced speaker (implied removal). */
+/** Apply a speaker replacement broadcast by the server (a plain replace OR a
+ *  redo replaying one — see trackUndoRedoHeads): reassign the track's turns, then
+ *  drop the replaced speaker (implied removal). */
 export function applySpeakerReplaced(
   state: EditorPluginState,
   replaced: SpeakerReplaced,
@@ -27,4 +29,10 @@ export function applySpeakerReplaced(
   }
 
   removeSpeakerIfUnused(state.core, replaced.fromSpeakerId)
+  trackUndoRedoHeads(
+    state,
+    replaced.translationId,
+    replaced.revisionId,
+    replaced.redoRevisionId,
+  )
 }

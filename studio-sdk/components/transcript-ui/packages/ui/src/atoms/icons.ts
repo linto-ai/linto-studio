@@ -25,6 +25,7 @@ import {
   Table as TableIcon,
   MessageCircle,
   MoreVertical,
+  PanelRight,
   Pause,
   Pencil,
   Play,
@@ -94,6 +95,7 @@ export const iconMap: Record<string, Component> = {
   "message-circle": MessageCircle,
   "refresh-cw": RefreshCw,
   sparkles: Sparkles,
+  "panel-right": PanelRight,
 }
 
 export function resolveIcon(name?: string): Component | undefined {

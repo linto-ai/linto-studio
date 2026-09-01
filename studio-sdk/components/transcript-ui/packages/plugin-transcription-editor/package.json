@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui-plugin-transcription-editor",
-  "version": "0.9.11",
+  "version": "0.9.18",
   "description": "Collaborative editing plugin for @linto-ai/transcript-ui — rename, split, merge turns and speakers with locks",
   "keywords": [
     "vue",

@@ -263,6 +263,10 @@ export interface TurnSpeakerUpdated {
   speaker: { id: string; name: string }
   removedSpeakerId?: string
   version?: number
+  /** @see SpeakerRenamed.revisionId */
+  revisionId?: string | null
+  /** @see SpeakerRenamed.redoRevisionId */
+  redoRevisionId?: string | null
 }
 
 export interface SpeakerRenamed {
@@ -270,6 +274,18 @@ export interface SpeakerRenamed {
   speakerId: string
   name: string
   version?: number
+  /** The undo cursor AFTER this broadcast (see onUndo/onRedo server-side) —
+   *  a plain rename and an undo/redo replaying one are indistinguishable on
+   *  the wire, and don't need to be: both just mean "the cursor is here
+   *  now". Absent from broadcasts predating the undo/redo feature. */
+  revisionId?: string | null
+  /** The revision a redo would target FROM this new cursor, server-computed
+   *  — null when there's nothing to redo to. This is server truth, not a
+   *  client guess: right after a fresh mutation it's always null (nothing
+   *  could already be chained onto a revision that didn't exist a moment
+   *  ago), right after an undo it's the revision just undone, right after a
+   *  redo it's whatever (if anything) comes next in the chain. */
+  redoRevisionId?: string | null
 }
 
 /** From-speaker replaced by to-speaker on every turn — its removal is
@@ -279,6 +295,27 @@ export interface SpeakerReplaced {
   fromSpeakerId: string
   toSpeakerId: string
   version?: number
+  /** @see SpeakerRenamed.revisionId */
+  revisionId?: string | null
+  /** @see SpeakerRenamed.redoRevisionId */
+  redoRevisionId?: string | null
+}
+
+/** Undo of a replace_speaker: fromSpeaker resurrected and turnIds moved back
+ *  onto it — the mirror of SpeakerReplaced, not its opposite payload shape
+ *  (fromSpeaker rides the raw stored speaker record, not just its id, since
+ *  restoring it is literally re-inserting that record). Redo of the same
+ *  replace_speaker re-broadcasts SpeakerReplaced, not this. */
+export interface SpeakerRestored {
+  translationId: string
+  fromSpeaker: { speaker_id: string; speaker_name: string }
+  toSpeakerId: string
+  turnIds: string[]
+  version?: number
+  /** @see SpeakerRenamed.revisionId */
+  revisionId?: string | null
+  /** @see SpeakerRenamed.redoRevisionId */
+  redoRevisionId?: string | null
 }
 
 export interface TranscriptionEditorPluginApi {
@@ -310,6 +347,16 @@ export interface TranscriptionEditorPluginApi {
   /** Reassign every turn of a speaker to another (speaker merge). */
   replaceSpeaker(fromSpeakerId: string, toSpeakerId: string): void
 
+  // ── Undo/redo (speaker mutations only — see server EditorHandler) ──
+  /** True when the active translation has a speaker mutation to undo. */
+  readonly canUndo: ComputedRef<boolean>
+  /** True when the active translation has an undo to redo — server-computed
+   *  (see SpeakerRenamed.redoRevisionId), not a client guess: stays correct
+   *  across collaborators, no staleness caveat. */
+  readonly canRedo: ComputedRef<boolean>
+  undo(): void
+  redo(): void
+
   // ── Server sync (host-pushed from broadcasts) ──
   /** Apply a saved turn broadcast by the server (any track, any author). */
   applyTurnUpdate(update: TurnUpdate): void
@@ -330,6 +377,9 @@ export interface TranscriptionEditorPluginApi {
   applyTurnSpeakerUpdated(update: TurnSpeakerUpdated): void
   applySpeakerRenamed(renamed: SpeakerRenamed): void
   applySpeakerReplaced(replaced: SpeakerReplaced): void
+  /** Apply an undo of replace_speaker (server event editor:speaker_restored
+   *  — redo re-broadcasts applySpeakerReplaced instead, see SpeakerRestored). */
+  applySpeakerRestored(restored: SpeakerRestored): void
 
   // ── Locks (host-pushed from server broadcasts; UI pulls per turn) ──
   /** Lock held on a turn of the ACTIVE translation, if any. */
@@ -570,11 +620,15 @@ export interface Core {
   readonly date: Ref<string | number | null>
   readonly activeChannelId: Ref<string>
   readonly capabilities: Ref<CoreCapabilities>
-  /** Formats shown in the verbatim panel's download menu (see CoreOptions.verbatimFormats). */
-  readonly verbatimFormats: DownloadFormat[]
-  /** True when verbatimFormats is the built-in default — the verbatim panel
-   *  then fulfills "txt" itself instead of emitting "verbatim:export". */
-  readonly verbatimFormatsAreDefault: boolean
+  /** Formats shown in the verbatim panel's download menu (see
+   *  CoreOptions.verbatimFormats for the initial value). A Ref, not a plain
+   *  array: there's no dedicated setter and no web component prop (a web
+   *  component attribute can't carry an array) — set verbatimFormats.value
+   *  directly once you hold `core`, the same way you set capabilities. */
+  readonly verbatimFormats: Ref<DownloadFormat[]>
+  /** True when verbatimFormats is still the built-in default — the verbatim
+   *  panel then fulfills "txt" itself instead of emitting "verbatim:export". */
+  readonly verbatimFormatsAreDefault: ComputedRef<boolean>
 
   // ── Stores ───────────────────────────────────────────────────────────
   readonly speakers: SpeakersStore

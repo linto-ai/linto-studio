@@ -28,16 +28,16 @@ const isDate = (val) => toTypeString(val) === "[object Date]";
 const isFunction = (val) => typeof val === "function";
 const isString = (val) => typeof val === "string";
 const isSymbol = (val) => typeof val === "symbol";
-const isObject$2 = (val) => val !== null && typeof val === "object";
+const isObject$1 = (val) => val !== null && typeof val === "object";
 const isPromise = (val) => {
-  return (isObject$2(val) || isFunction(val)) && isFunction(val.then) && isFunction(val.catch);
+  return (isObject$1(val) || isFunction(val)) && isFunction(val.then) && isFunction(val.catch);
 };
 const objectToString$1 = Object.prototype.toString;
 const toTypeString = (value) => objectToString$1.call(value);
 const toRawType = (value) => {
   return toTypeString(value).slice(8, -1);
 };
-const isPlainObject$2 = (val) => toTypeString(val) === "[object Object]";
+const isPlainObject$1 = (val) => toTypeString(val) === "[object Object]";
 const isIntegerKey = (key) => isString(key) && key !== "NaN" && key[0] !== "-" && "" + parseInt(key, 10) === key;
 const isReservedProp = /* @__PURE__ */ makeMap(
   // the leading comma is intentional so empty string "" is also included
@@ -108,7 +108,7 @@ function normalizeStyle(value) {
       }
     }
     return res;
-  } else if (isString(value) || isObject$2(value)) {
+  } else if (isString(value) || isObject$1(value)) {
     return value;
   }
 }
@@ -136,7 +136,7 @@ function normalizeClass(value) {
         res += normalized + " ";
       }
     }
-  } else if (isObject$2(value)) {
+  } else if (isObject$1(value)) {
     for (const name in value) {
       if (value[name]) {
         res += name + " ";
@@ -203,8 +203,8 @@ function looseEqual(a2, b2) {
   if (aValidType || bValidType) {
     return aValidType && bValidType ? looseCompareArrays(a2, b2) : false;
   }
-  aValidType = isObject$2(a2);
-  bValidType = isObject$2(b2);
+  aValidType = isObject$1(a2);
+  bValidType = isObject$1(b2);
   if (aValidType || bValidType) {
     if (!aValidType || !bValidType) {
       return false;
@@ -241,7 +241,7 @@ const isRef$1 = (val) => {
   return !!(val && val["__v_isRef"] === true);
 };
 const toDisplayString = (val) => {
-  return isString(val) ? val : val == null ? "" : isArray(val) || isObject$2(val) && (val.toString === objectToString$1 || !isFunction(val.toString)) ? isRef$1(val) ? toDisplayString(val.value) : JSON.stringify(val, replacer, 2) : String(val);
+  return isString(val) ? val : val == null ? "" : isArray(val) || isObject$1(val) && (val.toString === objectToString$1 || !isFunction(val.toString)) ? isRef$1(val) ? toDisplayString(val.value) : JSON.stringify(val, replacer, 2) : String(val);
 };
 const replacer = (_key, val) => {
   if (isRef$1(val)) {
@@ -262,7 +262,7 @@ const replacer = (_key, val) => {
     };
   } else if (isSymbol(val)) {
     return stringifySymbol(val);
-  } else if (isObject$2(val) && !isArray(val) && !isPlainObject$2(val)) {
+  } else if (isObject$1(val) && !isArray(val) && !isPlainObject$1(val)) {
     return String(val);
   }
   return val;
@@ -1154,9 +1154,9 @@ class BaseReactiveHandler {
     }
     if (/* @__PURE__ */ isRef(res)) {
       const value = targetIsArray && isIntegerKey(key) ? res : res.value;
-      return isReadonly2 && isObject$2(value) ? /* @__PURE__ */ readonly(value) : value;
+      return isReadonly2 && isObject$1(value) ? /* @__PURE__ */ readonly(value) : value;
     }
-    if (isObject$2(res)) {
+    if (isObject$1(res)) {
       return isReadonly2 ? /* @__PURE__ */ readonly(res) : /* @__PURE__ */ reactive(res);
     }
     return res;
@@ -1500,7 +1500,7 @@ function shallowReadonly(target) {
   );
 }
 function createReactiveObject(target, isReadonly2, baseHandlers, collectionHandlers, proxyMap) {
-  if (!isObject$2(target)) {
+  if (!isObject$1(target)) {
     return target;
   }
   if (target["__v_raw"] && !(isReadonly2 && target["__v_isReactive"])) {
@@ -1554,8 +1554,8 @@ function markRaw(value) {
   }
   return value;
 }
-const toReactive = (value) => isObject$2(value) ? /* @__PURE__ */ reactive(value) : value;
-const toReadonly = (value) => isObject$2(value) ? /* @__PURE__ */ readonly(value) : value;
+const toReactive = (value) => isObject$1(value) ? /* @__PURE__ */ reactive(value) : value;
+const toReadonly = (value) => isObject$1(value) ? /* @__PURE__ */ readonly(value) : value;
 // @__NO_SIDE_EFFECTS__
 function isRef(r2) {
   return r2 ? r2["__v_isRef"] === true : false;
@@ -1712,7 +1712,7 @@ function toRef(source, key, defaultValue) {
     return source;
   } else if (isFunction(source)) {
     return new GetterRefImpl(source);
-  } else if (isObject$2(source) && arguments.length > 1) {
+  } else if (isObject$1(source) && arguments.length > 1) {
     return propertyToRef(source, key, defaultValue);
   } else {
     return /* @__PURE__ */ ref(source);
@@ -1929,7 +1929,7 @@ function watch$1(source, cb, options = EMPTY_OBJ) {
   return watchHandle;
 }
 function traverse(value, depth = Infinity, seen) {
-  if (depth <= 0 || !isObject$2(value) || value["__v_skip"]) {
+  if (depth <= 0 || !isObject$1(value) || value["__v_skip"]) {
     return value;
   }
   seen = seen || /* @__PURE__ */ new Map();
@@ -1948,7 +1948,7 @@ function traverse(value, depth = Infinity, seen) {
     value.forEach((v2) => {
       traverse(v2, depth, seen);
     });
-  } else if (isPlainObject$2(value)) {
+  } else if (isPlainObject$1(value)) {
     for (const key in value) {
       traverse(value[key], depth, seen);
     }
@@ -3200,7 +3200,7 @@ function defineComponent(options, extraOptions) {
     /* @__PURE__ */ (() => extend$1({ name: options.name }, extraOptions, { setup: options }))()
   ) : options;
 }
-function useId$2() {
+function useId$1() {
   const i2 = getCurrentInstance();
   if (i2) {
     return (i2.appContext.config.idPrefix || "v") + "-" + i2.ids[0] + i2.ids[1]++;
@@ -3499,7 +3499,7 @@ function renderList(source, renderItem, cache, index) {
         ret[i2] = renderItem(i2 + 1, i2, void 0, cached && cached[i2]);
       }
     }
-  } else if (isObject$2(source)) {
+  } else if (isObject$1(source)) {
     if (source[Symbol.iterator]) {
       ret = Array.from(
         source,
@@ -3794,7 +3794,7 @@ function applyOptions(instance) {
   }
   if (dataOptions) {
     const data = dataOptions.call(publicThis, publicThis);
-    if (!isObject$2(data)) ;
+    if (!isObject$1(data)) ;
     else {
       instance.data = /* @__PURE__ */ reactive(data);
     }
@@ -3883,7 +3883,7 @@ function resolveInjections(injectOptions, ctx, checkDuplicateProperties = NOOP) 
   for (const key in injectOptions) {
     const opt = injectOptions[key];
     let injected;
-    if (isObject$2(opt)) {
+    if (isObject$1(opt)) {
       if ("default" in opt) {
         injected = inject(
           opt.from || key,
@@ -3928,7 +3928,7 @@ function createWatcher(raw, ctx, publicThis, key) {
     {
       watch(getter, raw.bind(publicThis));
     }
-  } else if (isObject$2(raw)) {
+  } else if (isObject$1(raw)) {
     if (isArray(raw)) {
       raw.forEach((r2) => createWatcher(r2, ctx, publicThis, key));
     } else {
@@ -3964,7 +3964,7 @@ function resolveMergedOptions(instance) {
     }
     mergeOptions(resolved, base, optionMergeStrategies);
   }
-  if (isObject$2(base)) {
+  if (isObject$1(base)) {
     cache.set(base, resolved);
   }
   return resolved;
@@ -4102,7 +4102,7 @@ function createAppAPI(render2, hydrate) {
     if (!isFunction(rootComponent)) {
       rootComponent = extend$1({}, rootComponent);
     }
-    if (rootProps != null && !isObject$2(rootProps)) {
+    if (rootProps != null && !isObject$1(rootProps)) {
       rootProps = null;
     }
     const context2 = createAppContext();
@@ -4343,7 +4343,7 @@ function normalizeEmitsOptions(comp, appContext, asMixin = false) {
     }
   }
   if (!raw && !hasExtends) {
-    if (isObject$2(comp)) {
+    if (isObject$1(comp)) {
       cache.set(comp, null);
     }
     return null;
@@ -4353,7 +4353,7 @@ function normalizeEmitsOptions(comp, appContext, asMixin = false) {
   } else {
     extend$1(normalized, raw);
   }
-  if (isObject$2(comp)) {
+  if (isObject$1(comp)) {
     cache.set(comp, normalized);
   }
   return normalized;
@@ -4548,7 +4548,7 @@ function hasPropsChanged(prevProps, nextProps, emitsOptions) {
 function hasPropValueChanged(nextProps, prevProps, key) {
   const nextProp = nextProps[key];
   const prevProp = prevProps[key];
-  if (key === "style" && isObject$2(nextProp) && isObject$2(prevProp)) {
+  if (key === "style" && isObject$1(nextProp) && isObject$1(prevProp)) {
     return !looseEqual(nextProp, prevProp);
   }
   return nextProp !== prevProp;
@@ -4796,7 +4796,7 @@ function normalizePropsOptions(comp, appContext, asMixin = false) {
     }
   }
   if (!raw && !hasExtends) {
-    if (isObject$2(comp)) {
+    if (isObject$1(comp)) {
       cache.set(comp, EMPTY_ARR);
     }
     return EMPTY_ARR;
@@ -4846,7 +4846,7 @@ function normalizePropsOptions(comp, appContext, asMixin = false) {
     }
   }
   const res = [normalized, needCastKeys];
-  if (isObject$2(comp)) {
+  if (isObject$1(comp)) {
     cache.set(comp, res);
   }
   return res;
@@ -6500,14 +6500,14 @@ function _createVNode(type, props = null, children = null, patchFlag = 0, dynami
     if (klass && !isString(klass)) {
       props.class = normalizeClass(klass);
     }
-    if (isObject$2(style)) {
+    if (isObject$1(style)) {
       if (/* @__PURE__ */ isProxy(style) && !isArray(style)) {
         style = extend$1({}, style);
       }
       props.style = normalizeStyle(style);
     }
   }
-  const shapeFlag = isString(type) ? 1 : isSuspense(type) ? 128 : isTeleport(type) ? 64 : isObject$2(type) ? 4 : isFunction(type) ? 2 : 0;
+  const shapeFlag = isString(type) ? 1 : isSuspense(type) ? 128 : isTeleport(type) ? 64 : isObject$1(type) ? 4 : isFunction(type) ? 2 : 0;
   return createBaseVNode(
     type,
     props,
@@ -6887,7 +6887,7 @@ function handleSetupResult(instance, setupResult, isSSR) {
     } else {
       instance.render = setupResult;
     }
-  } else if (isObject$2(setupResult)) {
+  } else if (isObject$1(setupResult)) {
     instance.setupState = proxyRefs(setupResult);
   } else ;
   finishComponentSetup(instance);
@@ -6984,7 +6984,7 @@ function h$2(type, propsOrChildren, children) {
     setBlockTracking(-1);
     const l4 = arguments.length;
     if (l4 === 2) {
-      if (isObject$2(propsOrChildren) && !isArray(propsOrChildren)) {
+      if (isObject$1(propsOrChildren) && !isArray(propsOrChildren)) {
         if (isVNode(propsOrChildren)) {
           return createVNode(type, null, [propsOrChildren]);
         }
@@ -7270,7 +7270,7 @@ function resolveTransitionProps(rawProps) {
 function normalizeDuration(duration) {
   if (duration == null) {
     return null;
-  } else if (isObject$2(duration)) {
+  } else if (isObject$1(duration)) {
     return [NumberOf(duration.enter), NumberOf(duration.leave)];
   } else {
     const n2 = NumberOf(duration);
@@ -7784,7 +7784,7 @@ const REMOVAL = {};
 // @__NO_SIDE_EFFECTS__
 function defineCustomElement(options, extraOptions, _createApp) {
   let Comp = /* @__PURE__ */ defineComponent(options, extraOptions);
-  if (isPlainObject$2(Comp)) Comp = extend$1({}, Comp, extraOptions);
+  if (isPlainObject$1(Comp)) Comp = extend$1({}, Comp, extraOptions);
   class VueCustomElement extends VueElement {
     constructor(initialProps) {
       super(Comp, initialProps, _createApp);
@@ -8050,7 +8050,7 @@ class VueElement extends BaseClass {
           this.dispatchEvent(
             new CustomEvent(
               event,
-              isPlainObject$2(args[0]) ? extend$1({ detail: args }, args[0]) : { detail: args }
+              isPlainObject$1(args[0]) ? extend$1({ detail: args }, args[0]) : { detail: args }
             )
           );
         };
@@ -9407,8 +9407,12 @@ function createCore(options = {}) {
   const capabilities = /* @__PURE__ */ ref(
     options.capabilities ?? { text: "edit", speakers: "edit" }
   );
-  const verbatimFormatsAreDefault = options.verbatimFormats == null;
-  const verbatimFormats = options.verbatimFormats ?? DEFAULT_VERBATIM_FORMATS;
+  const verbatimFormats = /* @__PURE__ */ ref(
+    options.verbatimFormats ?? DEFAULT_VERBATIM_FORMATS
+  );
+  const verbatimFormatsAreDefault = computed(
+    () => verbatimFormats.value === DEFAULT_VERBATIM_FORMATS
+  );
   const { on, off, emit: emit2, clear: clearEvents } = createEventBus();
   const speakersInternal = createSpeakersStore(emit2);
   const speakers = speakersInternal;
@@ -9536,7 +9540,7 @@ const _export_sfc = (sfc, props) => {
   return target;
 };
 const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["styles", [_style_0$G]], ["__scopeId", "data-v-392808cc"]]);
-const hasA11yProp$1 = (props) => {
+const hasA11yProp = (props) => {
   for (const prop in props) {
     if (prop.startsWith("aria-") || prop === "role" || prop === "title") {
       return true;
@@ -9544,20 +9548,20 @@ const hasA11yProp$1 = (props) => {
   }
   return false;
 };
-const isEmptyString$1 = (value) => value === "";
-const mergeClasses$1 = (...classes) => classes.filter((className, index, array) => {
+const isEmptyString = (value) => value === "";
+const mergeClasses = (...classes) => classes.filter((className, index, array) => {
   return Boolean(className) && className.trim() !== "" && array.indexOf(className) === index;
 }).join(" ").trim();
-const toKebabCase$1 = (string) => string.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
-const toCamelCase$1 = (string) => string.replace(
+const toKebabCase = (string) => string.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+const toCamelCase = (string) => string.replace(
   /^([A-Z])|[\s-_]+(\w)/g,
   (match, p1, p2) => p2 ? p2.toUpperCase() : p1.toLowerCase()
 );
-const toPascalCase$1 = (string) => {
-  const camelCase = toCamelCase$1(string);
+const toPascalCase = (string) => {
+  const camelCase = toCamelCase(string);
   return camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
 };
-var defaultAttributes$1 = {
+var defaultAttributes = {
   xmlns: "http://www.w3.org/2000/svg",
   width: 24,
   height: 24,
@@ -9568,38 +9572,38 @@ var defaultAttributes$1 = {
   "stroke-linecap": "round",
   "stroke-linejoin": "round"
 };
-const Icon$1 = ({
+const Icon = ({
   name,
   iconNode,
   absoluteStrokeWidth,
   "absolute-stroke-width": absoluteStrokeWidthKebabCase,
   strokeWidth,
   "stroke-width": strokeWidthKebabCase,
-  size: size2 = defaultAttributes$1.width,
-  color = defaultAttributes$1.stroke,
+  size: size2 = defaultAttributes.width,
+  color = defaultAttributes.stroke,
   ...props
 }, { slots }) => {
   return h$2(
     "svg",
     {
-      ...defaultAttributes$1,
+      ...defaultAttributes,
       ...props,
       width: size2,
       height: size2,
       stroke: color,
-      "stroke-width": isEmptyString$1(absoluteStrokeWidth) || isEmptyString$1(absoluteStrokeWidthKebabCase) || absoluteStrokeWidth === true || absoluteStrokeWidthKebabCase === true ? Number(strokeWidth || strokeWidthKebabCase || defaultAttributes$1["stroke-width"]) * 24 / Number(size2) : strokeWidth || strokeWidthKebabCase || defaultAttributes$1["stroke-width"],
-      class: mergeClasses$1(
+      "stroke-width": isEmptyString(absoluteStrokeWidth) || isEmptyString(absoluteStrokeWidthKebabCase) || absoluteStrokeWidth === true || absoluteStrokeWidthKebabCase === true ? Number(strokeWidth || strokeWidthKebabCase || defaultAttributes["stroke-width"]) * 24 / Number(size2) : strokeWidth || strokeWidthKebabCase || defaultAttributes["stroke-width"],
+      class: mergeClasses(
         "lucide",
         props.class,
-        ...name ? [`lucide-${toKebabCase$1(toPascalCase$1(name))}-icon`, `lucide-${toKebabCase$1(name)}`] : ["lucide-icon"]
+        ...name ? [`lucide-${toKebabCase(toPascalCase(name))}-icon`, `lucide-${toKebabCase(name)}`] : ["lucide-icon"]
       ),
-      ...!slots.default && !hasA11yProp$1(props) && { "aria-hidden": "true" }
+      ...!slots.default && !hasA11yProp(props) && { "aria-hidden": "true" }
     },
     [...iconNode.map((child) => h$2(...child)), ...slots.default ? [slots.default()] : []]
   );
 };
-const createLucideIcon$1 = (iconName, iconNode) => (props, { slots, attrs }) => h$2(
-  Icon$1,
+const createLucideIcon = (iconName, iconNode) => (props, { slots, attrs }) => h$2(
+  Icon,
   {
     ...attrs,
     ...props,
@@ -9608,21 +9612,21 @@ const createLucideIcon$1 = (iconName, iconNode) => (props, { slots, attrs }) => 
   },
   slots
 );
-const ArrowDown = createLucideIcon$1("arrow-down", [
+const ArrowDown = createLucideIcon("arrow-down", [
   ["path", { d: "M12 5v14", key: "s699le" }],
   ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
 ]);
-const Bold = createLucideIcon$1("bold", [
+const Bold = createLucideIcon("bold", [
   [
     "path",
     { d: "M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8", key: "mg9rjx" }
   ]
 ]);
-const Check = createLucideIcon$1("check", [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]]);
-const ChevronDown = createLucideIcon$1("chevron-down", [
+const Check = createLucideIcon("check", [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]]);
+const ChevronDown = createLucideIcon("chevron-down", [
   ["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]
 ]);
-const ClipboardList = createLucideIcon$1("clipboard-list", [
+const ClipboardList = createLucideIcon("clipboard-list", [
   ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
   [
     "path",
@@ -9636,7 +9640,7 @@ const ClipboardList = createLucideIcon$1("clipboard-list", [
   ["path", { d: "M8 11h.01", key: "1dfujw" }],
   ["path", { d: "M8 16h.01", key: "18s6g9" }]
 ]);
-const ClipboardType = createLucideIcon$1("clipboard-type", [
+const ClipboardType = createLucideIcon("clipboard-type", [
   ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
   [
     "path",
@@ -9649,30 +9653,30 @@ const ClipboardType = createLucideIcon$1("clipboard-type", [
   ["path", { d: "M11 17h2", key: "12w5me" }],
   ["path", { d: "M12 11v6", key: "1bwqyc" }]
 ]);
-const CodeXml = createLucideIcon$1("code-xml", [
+const CodeXml = createLucideIcon("code-xml", [
   ["path", { d: "m18 16 4-4-4-4", key: "1inbqp" }],
   ["path", { d: "m6 8-4 4 4 4", key: "15zrgr" }],
   ["path", { d: "m14.5 4-5 16", key: "e7oirm" }]
 ]);
-const Code = createLucideIcon$1("code", [
+const Code = createLucideIcon("code", [
   ["path", { d: "m16 18 6-6-6-6", key: "eg8j8" }],
   ["path", { d: "m8 6-6 6 6 6", key: "ppft3o" }]
 ]);
-const Copy = createLucideIcon$1("copy", [
+const Copy = createLucideIcon("copy", [
   ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
   ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
 ]);
-const Download = createLucideIcon$1("download", [
+const Download = createLucideIcon("download", [
   ["path", { d: "M12 15V3", key: "m9g1x1" }],
   ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
   ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
 ]);
-const EllipsisVertical = createLucideIcon$1("ellipsis-vertical", [
+const EllipsisVertical = createLucideIcon("ellipsis-vertical", [
   ["circle", { cx: "12", cy: "12", r: "1", key: "41hilf" }],
   ["circle", { cx: "12", cy: "5", r: "1", key: "gxeob9" }],
   ["circle", { cx: "12", cy: "19", r: "1", key: "lyex9k" }]
 ]);
-const FileText = createLucideIcon$1("file-text", [
+const FileText = createLucideIcon("file-text", [
   [
     "path",
     {
@@ -9685,31 +9689,31 @@ const FileText = createLucideIcon$1("file-text", [
   ["path", { d: "M16 13H8", key: "t4e002" }],
   ["path", { d: "M16 17H8", key: "z1uh3a" }]
 ]);
-const Heading1 = createLucideIcon$1("heading-1", [
+const Heading1 = createLucideIcon("heading-1", [
   ["path", { d: "M4 12h8", key: "17cfdx" }],
   ["path", { d: "M4 18V6", key: "1rz3zl" }],
   ["path", { d: "M12 18V6", key: "zqpxq5" }],
   ["path", { d: "m17 12 3-2v8", key: "1hhhft" }]
 ]);
-const Heading2 = createLucideIcon$1("heading-2", [
+const Heading2 = createLucideIcon("heading-2", [
   ["path", { d: "M4 12h8", key: "17cfdx" }],
   ["path", { d: "M4 18V6", key: "1rz3zl" }],
   ["path", { d: "M12 18V6", key: "zqpxq5" }],
   ["path", { d: "M21 18h-4c0-4 4-3 4-6 0-1.5-2-2.5-4-1", key: "9jr5yi" }]
 ]);
-const Heading3 = createLucideIcon$1("heading-3", [
+const Heading3 = createLucideIcon("heading-3", [
   ["path", { d: "M4 12h8", key: "17cfdx" }],
   ["path", { d: "M4 18V6", key: "1rz3zl" }],
   ["path", { d: "M12 18V6", key: "zqpxq5" }],
   ["path", { d: "M17.5 10.5c1.7-1 3.5 0 3.5 1.5a2 2 0 0 1-2 2", key: "68ncm8" }],
   ["path", { d: "M17 17.5c2 1.5 4 .3 4-1.5a2 2 0 0 0-2-2", key: "1ejuhz" }]
 ]);
-const Italic = createLucideIcon$1("italic", [
+const Italic = createLucideIcon("italic", [
   ["line", { x1: "19", x2: "10", y1: "4", y2: "4", key: "15jd3p" }],
   ["line", { x1: "14", x2: "5", y1: "20", y2: "20", key: "bu0au3" }],
   ["line", { x1: "15", x2: "9", y1: "4", y2: "20", key: "uljnxc" }]
 ]);
-const ListOrdered = createLucideIcon$1("list-ordered", [
+const ListOrdered = createLucideIcon("list-ordered", [
   ["path", { d: "M11 5h10", key: "1cz7ny" }],
   ["path", { d: "M11 12h10", key: "1438ji" }],
   ["path", { d: "M11 19h10", key: "11t30w" }],
@@ -9717,7 +9721,7 @@ const ListOrdered = createLucideIcon$1("list-ordered", [
   ["path", { d: "M4 9h2", key: "r1h2o0" }],
   ["path", { d: "M6.5 20H3.4c0-1 2.6-1.925 2.6-3.5a1.5 1.5 0 0 0-2.6-1.02", key: "xtkcd5" }]
 ]);
-const List = createLucideIcon$1("list", [
+const List = createLucideIcon("list", [
   ["path", { d: "M3 5h.01", key: "18ugdj" }],
   ["path", { d: "M3 12h.01", key: "nlz23k" }],
   ["path", { d: "M3 19h.01", key: "noohij" }],
@@ -9725,21 +9729,21 @@ const List = createLucideIcon$1("list", [
   ["path", { d: "M8 12h13", key: "1za7za" }],
   ["path", { d: "M8 19h13", key: "m83p4d" }]
 ]);
-const LoaderCircle = createLucideIcon$1("loader-circle", [
+const LoaderCircle = createLucideIcon("loader-circle", [
   ["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]
 ]);
-const Maximize = createLucideIcon$1("maximize", [
+const Maximize = createLucideIcon("maximize", [
   ["path", { d: "M8 3H5a2 2 0 0 0-2 2v3", key: "1dcmit" }],
   ["path", { d: "M21 8V5a2 2 0 0 0-2-2h-3", key: "1e4gt3" }],
   ["path", { d: "M3 16v3a2 2 0 0 0 2 2h3", key: "wsl5sc" }],
   ["path", { d: "M16 21h3a2 2 0 0 0 2-2v-3", key: "18trek" }]
 ]);
-const Merge = createLucideIcon$1("merge", [
+const Merge = createLucideIcon("merge", [
   ["path", { d: "m8 6 4-4 4 4", key: "ybng9g" }],
   ["path", { d: "M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22", key: "1hyw0i" }],
   ["path", { d: "m20 22-5-5", key: "1m27yz" }]
 ]);
-const MessageCircle = createLucideIcon$1("message-circle", [
+const MessageCircle = createLucideIcon("message-circle", [
   [
     "path",
     {
@@ -9748,17 +9752,21 @@ const MessageCircle = createLucideIcon$1("message-circle", [
     }
   ]
 ]);
-const Minimize = createLucideIcon$1("minimize", [
+const Minimize = createLucideIcon("minimize", [
   ["path", { d: "M8 3v3a2 2 0 0 1-2 2H3", key: "hohbtr" }],
   ["path", { d: "M21 8h-3a2 2 0 0 1-2-2V3", key: "5jw1f3" }],
   ["path", { d: "M3 16h3a2 2 0 0 1 2 2v3", key: "198tvr" }],
   ["path", { d: "M16 21v-3a2 2 0 0 1 2-2h3", key: "ph8mxp" }]
 ]);
-const Pause$1 = createLucideIcon$1("pause", [
+const PanelRight = createLucideIcon("panel-right", [
+  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", key: "afitv7" }],
+  ["path", { d: "M15 3v18", key: "14nvp0" }]
+]);
+const Pause = createLucideIcon("pause", [
   ["rect", { x: "14", y: "3", width: "5", height: "18", rx: "1", key: "kaeet6" }],
   ["rect", { x: "5", y: "3", width: "5", height: "18", rx: "1", key: "1wsw3u" }]
 ]);
-const Pencil = createLucideIcon$1("pencil", [
+const Pencil = createLucideIcon("pencil", [
   [
     "path",
     {
@@ -9768,7 +9776,7 @@ const Pencil = createLucideIcon$1("pencil", [
   ],
   ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
 ]);
-const Play$1 = createLucideIcon$1("play", [
+const Play = createLucideIcon("play", [
   [
     "path",
     {
@@ -9777,11 +9785,11 @@ const Play$1 = createLucideIcon$1("play", [
     }
   ]
 ]);
-const Plus = createLucideIcon$1("plus", [
+const Plus = createLucideIcon("plus", [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "M12 5v14", key: "s699le" }]
 ]);
-const Quote = createLucideIcon$1("quote", [
+const Quote = createLucideIcon("quote", [
   [
     "path",
     {
@@ -9797,17 +9805,17 @@ const Quote = createLucideIcon$1("quote", [
     }
   ]
 ]);
-const Redo2 = createLucideIcon$1("redo-2", [
+const Redo2 = createLucideIcon("redo-2", [
   ["path", { d: "m15 14 5-5-5-5", key: "12vg1m" }],
   ["path", { d: "M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13", key: "6uklza" }]
 ]);
-const RefreshCw = createLucideIcon$1("refresh-cw", [
+const RefreshCw = createLucideIcon("refresh-cw", [
   ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
   ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
   ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
   ["path", { d: "M8 16H3v5", key: "1cv678" }]
 ]);
-const Save = createLucideIcon$1("save", [
+const Save = createLucideIcon("save", [
   [
     "path",
     {
@@ -9818,7 +9826,7 @@ const Save = createLucideIcon$1("save", [
   ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
   ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
 ]);
-const SendHorizontal = createLucideIcon$1("send-horizontal", [
+const SendHorizontal = createLucideIcon("send-horizontal", [
   [
     "path",
     {
@@ -9828,7 +9836,7 @@ const SendHorizontal = createLucideIcon$1("send-horizontal", [
   ],
   ["path", { d: "M6 12h16", key: "s4cdu5" }]
 ]);
-const Settings = createLucideIcon$1("settings", [
+const Settings = createLucideIcon("settings", [
   [
     "path",
     {
@@ -9838,7 +9846,7 @@ const Settings = createLucideIcon$1("settings", [
   ],
   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ]);
-const SkipBack$1 = createLucideIcon$1("skip-back", [
+const SkipBack = createLucideIcon("skip-back", [
   [
     "path",
     {
@@ -9848,7 +9856,7 @@ const SkipBack$1 = createLucideIcon$1("skip-back", [
   ],
   ["path", { d: "M3 20V4", key: "1ptbpl" }]
 ]);
-const SkipForward$1 = createLucideIcon$1("skip-forward", [
+const SkipForward = createLucideIcon("skip-forward", [
   ["path", { d: "M21 4v16", key: "7j8fe9" }],
   [
     "path",
@@ -9858,7 +9866,7 @@ const SkipForward$1 = createLucideIcon$1("skip-forward", [
     }
   ]
 ]);
-const Sparkles = createLucideIcon$1("sparkles", [
+const Sparkles = createLucideIcon("sparkles", [
   [
     "path",
     {
@@ -9870,20 +9878,20 @@ const Sparkles = createLucideIcon$1("sparkles", [
   ["path", { d: "M22 4h-4", key: "gwowj6" }],
   ["circle", { cx: "4", cy: "20", r: "2", key: "6kqj1y" }]
 ]);
-const Table = createLucideIcon$1("table", [
+const Table = createLucideIcon("table", [
   ["path", { d: "M12 3v18", key: "108xh3" }],
   ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", key: "afitv7" }],
   ["path", { d: "M3 9h18", key: "1pudct" }],
   ["path", { d: "M3 15h18", key: "5xshup" }]
 ]);
-const Trash2 = createLucideIcon$1("trash-2", [
+const Trash2 = createLucideIcon("trash-2", [
   ["path", { d: "M10 11v6", key: "nco0om" }],
   ["path", { d: "M14 11v6", key: "outv1u" }],
   ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6", key: "miytrc" }],
   ["path", { d: "M3 6h18", key: "d0wm0j" }],
   ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2", key: "e791ji" }]
 ]);
-const TriangleAlert = createLucideIcon$1("triangle-alert", [
+const TriangleAlert = createLucideIcon("triangle-alert", [
   [
     "path",
     {
@@ -9894,23 +9902,23 @@ const TriangleAlert = createLucideIcon$1("triangle-alert", [
   ["path", { d: "M12 9v4", key: "juzpu7" }],
   ["path", { d: "M12 17h.01", key: "p32p05" }]
 ]);
-const Undo2 = createLucideIcon$1("undo-2", [
+const Undo2 = createLucideIcon("undo-2", [
   ["path", { d: "M9 14 4 9l5-5", key: "102s5s" }],
   ["path", { d: "M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11", key: "f3b9sd" }]
 ]);
-const UserPlus = createLucideIcon$1("user-plus", [
+const UserPlus = createLucideIcon("user-plus", [
   ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
   ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }],
   ["line", { x1: "19", x2: "19", y1: "8", y2: "14", key: "1bvyxn" }],
   ["line", { x1: "22", x2: "16", y1: "11", y2: "11", key: "1shjgl" }]
 ]);
-const Users = createLucideIcon$1("users", [
+const Users = createLucideIcon("users", [
   ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
   ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", key: "16gr8j" }],
   ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", key: "kshegd" }],
   ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }]
 ]);
-const Volume2$1 = createLucideIcon$1("volume-2", [
+const Volume2 = createLucideIcon("volume-2", [
   [
     "path",
     {
@@ -9921,7 +9929,7 @@ const Volume2$1 = createLucideIcon$1("volume-2", [
   ["path", { d: "M16 9a5 5 0 0 1 0 6", key: "1q6k2b" }],
   ["path", { d: "M19.364 18.364a9 9 0 0 0 0-12.728", key: "ijwkga" }]
 ]);
-const VolumeX$1 = createLucideIcon$1("volume-x", [
+const VolumeX = createLucideIcon("volume-x", [
   [
     "path",
     {
@@ -9932,7 +9940,7 @@ const VolumeX$1 = createLucideIcon$1("volume-x", [
   ["line", { x1: "22", x2: "16", y1: "9", y2: "15", key: "1ewh16" }],
   ["line", { x1: "16", x2: "22", y1: "9", y2: "15", key: "5ykzw1" }]
 ]);
-const X$2 = createLucideIcon$1("x", [
+const X$1 = createLucideIcon("x", [
   ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
   ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
 ]);
@@ -9957,20 +9965,20 @@ const iconMap = {
   maximize: Maximize,
   merge: Merge,
   minimize: Minimize,
-  pause: Pause$1,
-  play: Play$1,
+  pause: Pause,
+  play: Play,
   quote: Quote,
   redo: Redo2,
   table: Table,
   save: Save,
   settings: Settings,
-  "skip-back": SkipBack$1,
-  "skip-forward": SkipForward$1,
+  "skip-back": SkipBack,
+  "skip-forward": SkipForward,
   undo: Undo2,
   users: Users,
-  volume: Volume2$1,
-  "volume-mute": VolumeX$1,
-  x: X$2,
+  volume: Volume2,
+  "volume-mute": VolumeX,
+  x: X$1,
   "circle-notch": LoaderCircle,
   spinner: LoaderCircle,
   "more-vertical": EllipsisVertical,
@@ -9982,7 +9990,8 @@ const iconMap = {
   "file-text": FileText,
   "message-circle": MessageCircle,
   "refresh-cw": RefreshCw,
-  sparkles: Sparkles
+  sparkles: Sparkles,
+  "panel-right": PanelRight
 };
 function resolveIcon(name) {
   if (!name) return void 0;
@@ -10095,8 +10104,8 @@ const _sfc_main$M = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$E = "\n.editor-btn[data-v-fa428533] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  /* Same reset as every other custom button in this codebase (see\n     EditableText, EditorCheckbox, Tabs, SpeakerPopover, TranscriptionTurn):\n     `all: unset` clears the UA button chrome (margin, appearance, inherited\n     font mismatches on Safari/Firefox, the Firefox ::-moz-focus-inner\n     padding) that the previous per-property overrides below left in place.\n     Every property the button actually needs is re-declared after it. */\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.editor-btn[data-v-fa428533]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.editor-btn[data-v-fa428533]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.editor-btn[data-v-fa428533]:disabled {\n  cursor: not-allowed;\n}\n.editor-btn[data-v-fa428533]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-fa428533] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes */\n.editor-btn--sm[data-v-fa428533] {\n  /* defaults */\n}\n.editor-btn--md[data-v-fa428533] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.editor-btn--lg[data-v-fa428533] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.editor-btn--icon-only[data-v-fa428533] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.editor-btn--block[data-v-fa428533] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.editor-btn--primary[data-v-fa428533] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--secondary[data-v-fa428533] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--tertiary[data-v-fa428533] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.editor-btn--transparent[data-v-fa428533] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Literal theme inversion: background = the theme's text color and\n   vice-versa — high contrast in both light and dark themes without\n   borrowing the primary color's semantics. */\n.editor-btn--inverse[data-v-fa428533] {\n  --btn-bg: var(--color-text-primary);\n  --btn-text: var(--color-background);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-text-secondary);\n  --btn-hover-text: var(--color-background);\n}\n\n/* Destructive intent overrides */\n.editor-btn--destructive.editor-btn--primary[data-v-fa428533] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--secondary[data-v-fa428533] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.editor-btn--destructive.editor-btn--tertiary[data-v-fa428533],\n.editor-btn--destructive.editor-btn--transparent[data-v-fa428533] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.editor-btn[data-v-fa428533]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n\n/* The transparent variant has no chrome when enabled — disabling it must not\n   ADD a box; the muted text alone carries the disabled signal. */\n.editor-btn--transparent[data-v-fa428533]:disabled {\n  --btn-bg: transparent;\n  --btn-border-color: transparent;\n  --btn-hover-bg: transparent;\n}\n\n/* Inverse stays a filled, borderless chip when disabled — dimmed, but the\n   silhouette must not change. */\n.editor-btn--inverse[data-v-fa428533]:disabled {\n  --btn-bg: var(--color-surface-hover);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n}\n";
-const Button = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$E]], ["__scopeId", "data-v-fa428533"]]);
+const _style_0$E = "\n.transcript-ui-root .editor-btn[data-v-050bd95b] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  /* Same reset as every other custom button in this codebase (see\n     EditableText, EditorCheckbox, Tabs, SpeakerPopover, TranscriptionTurn):\n     `all: unset` clears the UA button chrome (margin, appearance, inherited\n     font mismatches on Safari/Firefox, the Firefox ::-moz-focus-inner\n     padding) that the previous per-property overrides below left in place.\n     Every property the button actually needs is re-declared after it. */\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled {\n  cursor: not-allowed;\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-050bd95b] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes.\n   .transcript-ui-root prefix here too — not because Nextcloud could ever\n   target --btn-* directly, but because these vars are read by the BASE\n   .editor-btn rule (also prefixed, so specificity (0,3,0)): if a variant\n   rule sets the same custom property at a lower specificity (0,2,0), the\n   base rule's default wins over it regardless of source order, silently\n   breaking every variant. All rules touching --btn-* must stay at the same\n   specificity as the base rule. */\n.transcript-ui-root .editor-btn--sm[data-v-050bd95b] {\n  /* defaults */\n}\n.transcript-ui-root .editor-btn--md[data-v-050bd95b] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.transcript-ui-root .editor-btn--lg[data-v-050bd95b] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.transcript-ui-root .editor-btn--icon-only[data-v-050bd95b] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.transcript-ui-root .editor-btn--block[data-v-050bd95b] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.transcript-ui-root .editor-btn--primary[data-v-050bd95b] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--secondary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--tertiary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.transcript-ui-root .editor-btn--transparent[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Literal theme inversion: background = the theme's text color and\n   vice-versa — high contrast in both light and dark themes without\n   borrowing the primary color's semantics. */\n.transcript-ui-root .editor-btn--inverse[data-v-050bd95b] {\n  --btn-bg: var(--color-text-primary);\n  --btn-text: var(--color-background);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-text-secondary);\n  --btn-hover-text: var(--color-background);\n}\n\n/* Destructive intent overrides */\n.transcript-ui-root .editor-btn--destructive.editor-btn--primary[data-v-050bd95b] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--destructive.editor-btn--secondary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--destructive.editor-btn--tertiary[data-v-050bd95b],\n.transcript-ui-root .editor-btn--destructive.editor-btn--transparent[data-v-050bd95b] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n\n/* The transparent variant has no chrome when enabled — disabling it must not\n   ADD a box; the muted text alone carries the disabled signal. */\n.transcript-ui-root .editor-btn--transparent[data-v-050bd95b]:disabled {\n  --btn-bg: transparent;\n  --btn-border-color: transparent;\n  --btn-hover-bg: transparent;\n}\n\n/* Inverse stays a filled, borderless chip when disabled — dimmed, but the\n   silhouette must not change. */\n.transcript-ui-root .editor-btn--inverse[data-v-050bd95b]:disabled {\n  --btn-bg: var(--color-surface-hover);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n}\n";
+const Button = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$E]], ["__scopeId", "data-v-050bd95b"]]);
 const _sfc_main$L = /* @__PURE__ */ defineComponent({
   __name: "CopyButton",
   props: {
@@ -10240,6 +10249,8 @@ const fr = {
   "selection.select": "Sélectionner {name}",
   "selection.deselect": "Désélectionner {name}",
   "header.ask": "Demander",
+  "header.undo": "Annuler",
+  "header.redo": "Rétablir",
   "header.speakerCount": "{count} intervenant | {count} intervenants",
   "tabs.transcription": "Transcription",
   "tabs.verbatim": "Verbatim",
@@ -10248,6 +10259,7 @@ const fr = {
   "tabs.moreSelect": "Sélectionner…",
   "llmService.regenerate": "Régénérer",
   "llmService.download": "Télécharger",
+  "llmService.split": "Afficher le verbatim à côté",
   "llmService.generated": "Généré par IA",
   "llmService.processing": "Génération en cours…",
   "llmService.queued": "En file d'attente…",
@@ -10375,6 +10387,8 @@ const en = {
   "selection.select": "Select {name}",
   "selection.deselect": "Deselect {name}",
   "header.ask": "Ask",
+  "header.undo": "Undo",
+  "header.redo": "Redo",
   "header.speakerCount": "{count} speaker | {count} speakers",
   "tabs.transcription": "Transcription",
   "tabs.verbatim": "Verbatim",
@@ -10383,6 +10397,7 @@ const en = {
   "tabs.moreSelect": "Select…",
   "llmService.regenerate": "Regenerate",
   "llmService.download": "Download",
+  "llmService.split": "Show verbatim alongside",
   "llmService.generated": "AI-generated",
   "llmService.processing": "Generating…",
   "llmService.queued": "Queued…",
@@ -10479,7 +10494,7 @@ function useI18n() {
 }
 const _hoisted_1$E = { class: "code-block" };
 const _hoisted_2$u = ["innerHTML"];
-const _hoisted_3$o = { key: 1 };
+const _hoisted_3$n = { key: 1 };
 const _sfc_main$K = /* @__PURE__ */ defineComponent({
   __name: "CodeBlock",
   props: {
@@ -10503,7 +10518,7 @@ const _sfc_main$K = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-BdgMaRcP.js");
+        const { highlightCode } = await import("./highlight-CJMoAPSe.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -10522,7 +10537,7 @@ const _sfc_main$K = /* @__PURE__ */ defineComponent({
           highlighted.value ? (openBlock(), createElementBlock("code", {
             key: 0,
             innerHTML: highlighted.value
-          }, null, 8, _hoisted_2$u)) : (openBlock(), createElementBlock("code", _hoisted_3$o, toDisplayString(__props.code), 1))
+          }, null, 8, _hoisted_2$u)) : (openBlock(), createElementBlock("code", _hoisted_3$n, toDisplayString(__props.code), 1))
         ])
       ]);
     };
@@ -10660,7 +10675,7 @@ const _hoisted_1$D = {
   class: "form-field__header"
 };
 const _hoisted_2$t = ["for"];
-const _hoisted_3$n = {
+const _hoisted_3$m = {
   key: 0,
   class: "form-field__required",
   "aria-hidden": "true"
@@ -10703,7 +10718,7 @@ const _sfc_main$J = /* @__PURE__ */ defineComponent({
     const props = __props;
     const emit2 = __emit;
     const { t: t2 } = useI18n();
-    const autoId = useId$2();
+    const autoId = useId$1();
     const id = computed(() => props.inputId ?? autoId);
     const inputRef = useTemplateRef("input");
     const initialValue = props.modelValue ?? props.field.value ?? "";
@@ -10796,7 +10811,7 @@ const _sfc_main$J = /* @__PURE__ */ defineComponent({
             for: id.value
           }, [
             createTextVNode(toDisplayString(__props.field.label) + " ", 1),
-            isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$n, "*")) : createCommentVNode("", true)
+            isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$m, "*")) : createCommentVNode("", true)
           ], 8, _hoisted_2$t),
           renderSlot(_ctx.$slots, "content-after-label", {}, void 0, true)
         ])) : createCommentVNode("", true),
@@ -10968,8 +10983,8 @@ const _sfc_main$I = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$A = "\n.editable-text-display[data-v-3930b39d] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.editable-text-display[data-v-3930b39d]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.editable-text-display[data-v-3930b39d]:disabled {\n  cursor: default;\n}\n";
-const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["styles", [_style_0$A]], ["__scopeId", "data-v-3930b39d"]]);
+const _style_0$A = "\n.transcript-ui-root .editable-text-display[data-v-ff6456c8] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.transcript-ui-root .editable-text-display[data-v-ff6456c8]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.transcript-ui-root .editable-text-display[data-v-ff6456c8]:disabled {\n  cursor: default;\n}\n";
+const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["styles", [_style_0$A]], ["__scopeId", "data-v-ff6456c8"]]);
 function serialize(input) {
   if (typeof input === "string") return `'${input}'`;
   return new Serializer().serialize(input);
@@ -11125,7 +11140,7 @@ function isEqual(object1, object2) {
   if (serialize(object1) === serialize(object2)) return true;
   return false;
 }
-function createContext$1(providerComponentName, contextName) {
+function createContext(providerComponentName, contextName) {
   const symbolDescription = typeof providerComponentName === "string" && !contextName ? `${providerComponentName}Context` : contextName;
   const injectionKey = Symbol(symbolDescription);
   const injectContext = (fallback) => {
@@ -11140,13 +11155,13 @@ function createContext$1(providerComponentName, contextName) {
   };
   return [injectContext, provideContext];
 }
-function getActiveElement$1() {
+function getActiveElement() {
   let activeElement = document.activeElement;
   if (activeElement == null) return null;
   while (activeElement != null && activeElement.shadowRoot != null && activeElement.shadowRoot.activeElement != null) activeElement = activeElement.shadowRoot.activeElement;
   return activeElement;
 }
-function handleAndDispatchCustomEvent$1(name, handler, detail) {
+function handleAndDispatchCustomEvent(name, handler, detail) {
   const target = detail.originalEvent.target;
   const event = new CustomEvent(name, {
     bubbles: false,
@@ -11156,15 +11171,15 @@ function handleAndDispatchCustomEvent$1(name, handler, detail) {
   if (handler) target.addEventListener(name, handler, { once: true });
   target.dispatchEvent(event);
 }
-function isNullish$1(value) {
+function isNullish(value) {
   return value === null || value === void 0;
 }
 function isValueEqualOrExist(base, current) {
-  if (isNullish$1(base)) return false;
+  if (isNullish(base)) return false;
   if (Array.isArray(base)) return base.some((val) => isEqual(val, current));
   else return isEqual(base, current);
 }
-function tryOnScopeDispose$1(fn, failSilently) {
+function tryOnScopeDispose(fn, failSilently) {
   if (getCurrentScope()) {
     onScopeDispose(fn, failSilently);
     return true;
@@ -11172,7 +11187,7 @@ function tryOnScopeDispose$1(fn, failSilently) {
   return false;
 }
 // @__NO_SIDE_EFFECTS__
-function createGlobalState$1(stateFactory) {
+function createGlobalState(stateFactory) {
   let initialized = false;
   let state;
   const scope = effectScope(true);
@@ -11184,20 +11199,20 @@ function createGlobalState$1(stateFactory) {
     return state;
   });
 }
-const isClient$1 = typeof window !== "undefined" && typeof document !== "undefined";
+const isClient = typeof window !== "undefined" && typeof document !== "undefined";
 typeof WorkerGlobalScope !== "undefined" && globalThis instanceof WorkerGlobalScope;
-const isDef$1 = (val) => typeof val !== "undefined";
-const toString$1 = Object.prototype.toString;
-const isObject$1 = (val) => toString$1.call(val) === "[object Object]";
-function toArray$1(value) {
+const isDef = (val) => typeof val !== "undefined";
+const toString = Object.prototype.toString;
+const isObject = (val) => toString.call(val) === "[object Object]";
+function toArray(value) {
   return Array.isArray(value) ? value : [value];
 }
-function getLifeCycleTarget$1(target) {
+function getLifeCycleTarget(target) {
   return getCurrentInstance();
 }
 // @__NO_SIDE_EFFECTS__
-function createSharedComposable$1(composable) {
-  if (!isClient$1) return composable;
+function createSharedComposable(composable) {
+  if (!isClient) return composable;
   let subscribers = 0;
   let state;
   let scope;
@@ -11215,7 +11230,7 @@ function createSharedComposable$1(composable) {
       scope = effectScope(true);
       state = scope.run(() => composable(...args));
     }
-    tryOnScopeDispose$1(dispose);
+    tryOnScopeDispose(dispose);
     return state;
   });
 }
@@ -11227,7 +11242,7 @@ function refAutoReset(defaultValue, afterMs = 1e4) {
       value = toValue$1(defaultValue);
       trigger2();
     }, toValue$1(afterMs));
-    tryOnScopeDispose$1(() => {
+    tryOnScopeDispose(() => {
       clearTimeout(timer);
     });
     return {
@@ -11244,41 +11259,41 @@ function refAutoReset(defaultValue, afterMs = 1e4) {
     };
   });
 }
-function tryOnBeforeUnmount$1(fn, target) {
-  if (getLifeCycleTarget$1()) onBeforeUnmount(fn, target);
+function tryOnBeforeUnmount(fn, target) {
+  if (getLifeCycleTarget()) onBeforeUnmount(fn, target);
 }
-function watchImmediate$1(source, cb, options) {
+function watchImmediate(source, cb, options) {
   return watch(source, cb, {
     ...options,
     immediate: true
   });
 }
-const defaultWindow$1 = isClient$1 ? window : void 0;
-function unrefElement$1(elRef) {
+const defaultWindow = isClient ? window : void 0;
+function unrefElement(elRef) {
   var _$el;
   const plain = toValue$1(elRef);
   return (_$el = plain === null || plain === void 0 ? void 0 : plain.$el) !== null && _$el !== void 0 ? _$el : plain;
 }
-function useEventListener$1(...args) {
+function useEventListener(...args) {
   const register2 = (el, event, listener, options) => {
     el.addEventListener(event, listener, options);
     return () => el.removeEventListener(event, listener, options);
   };
   const firstParamTargets = computed(() => {
-    const test = toArray$1(toValue$1(args[0])).filter((e3) => e3 != null);
+    const test = toArray(toValue$1(args[0])).filter((e3) => e3 != null);
     return test.every((e3) => typeof e3 !== "string") ? test : void 0;
   });
-  return watchImmediate$1(() => {
+  return watchImmediate(() => {
     var _firstParamTargets$va, _firstParamTargets$va2;
     return [
-      (_firstParamTargets$va = (_firstParamTargets$va2 = firstParamTargets.value) === null || _firstParamTargets$va2 === void 0 ? void 0 : _firstParamTargets$va2.map((e3) => unrefElement$1(e3))) !== null && _firstParamTargets$va !== void 0 ? _firstParamTargets$va : [defaultWindow$1].filter((e3) => e3 != null),
-      toArray$1(toValue$1(firstParamTargets.value ? args[1] : args[0])),
-      toArray$1(unref(firstParamTargets.value ? args[2] : args[1])),
+      (_firstParamTargets$va = (_firstParamTargets$va2 = firstParamTargets.value) === null || _firstParamTargets$va2 === void 0 ? void 0 : _firstParamTargets$va2.map((e3) => unrefElement(e3))) !== null && _firstParamTargets$va !== void 0 ? _firstParamTargets$va : [defaultWindow].filter((e3) => e3 != null),
+      toArray(toValue$1(firstParamTargets.value ? args[1] : args[0])),
+      toArray(unref(firstParamTargets.value ? args[2] : args[1])),
       toValue$1(firstParamTargets.value ? args[3] : args[2])
     ];
   }, ([raw_targets, raw_events, raw_listeners, raw_options], _2, onCleanup) => {
     if (!(raw_targets === null || raw_targets === void 0 ? void 0 : raw_targets.length) || !(raw_events === null || raw_events === void 0 ? void 0 : raw_events.length) || !(raw_listeners === null || raw_listeners === void 0 ? void 0 : raw_listeners.length)) return;
-    const optionsClone = isObject$1(raw_options) ? { ...raw_options } : raw_options;
+    const optionsClone = isObject(raw_options) ? { ...raw_options } : raw_options;
     const cleanups = raw_targets.flatMap((el) => raw_events.flatMap((event) => raw_listeners.map((listener) => register2(el, event, listener, optionsClone))));
     onCleanup(() => {
       cleanups.forEach((fn) => fn());
@@ -11286,7 +11301,7 @@ function useEventListener$1(...args) {
   }, { flush: "post" });
 }
 // @__NO_SIDE_EFFECTS__
-function useMounted$1() {
+function useMounted() {
   const isMounted = /* @__PURE__ */ shallowRef(false);
   const instance = getCurrentInstance();
   if (instance) onMounted(() => {
@@ -11294,13 +11309,13 @@ function useMounted$1() {
   }, instance);
   return isMounted;
 }
-function createKeyPredicate$1(keyFilter) {
+function createKeyPredicate(keyFilter) {
   if (typeof keyFilter === "function") return keyFilter;
   else if (typeof keyFilter === "string") return (event) => event.key === keyFilter;
   else if (Array.isArray(keyFilter)) return (event) => keyFilter.includes(event.key);
   return () => true;
 }
-function onKeyStroke$1(...args) {
+function onKeyStroke(...args) {
   let key;
   let handler;
   let options = {};
@@ -11320,19 +11335,19 @@ function onKeyStroke$1(...args) {
     key = true;
     handler = args[0];
   }
-  const { target = defaultWindow$1, eventName = "keydown", passive = false, dedupe = false } = options;
-  const predicate = createKeyPredicate$1(key);
+  const { target = defaultWindow, eventName = "keydown", passive = false, dedupe = false } = options;
+  const predicate = createKeyPredicate(key);
   const listener = (e3) => {
     if (e3.repeat && toValue$1(dedupe)) return;
     if (predicate(e3)) handler(e3);
   };
-  return useEventListener$1(target, eventName, listener, passive);
+  return useEventListener(target, eventName, listener, passive);
 }
-function cloneFnJSON$1(source) {
+function cloneFnJSON(source) {
   return JSON.parse(JSON.stringify(source));
 }
 // @__NO_SIDE_EFFECTS__
-function useVModel$1(props, key, emit2, options = {}) {
+function useVModel(props, key, emit2, options = {}) {
   var _vm$$emit, _vm$proxy;
   const { clone: clone2 = false, passive = false, eventName, deep = false, defaultValue, shouldEmit } = options;
   const vm = getCurrentInstance();
@@ -11340,8 +11355,8 @@ function useVModel$1(props, key, emit2, options = {}) {
   let event = eventName;
   if (!key) key = "modelValue";
   event = event || `update:${key.toString()}`;
-  const cloneFn = (val) => !clone2 ? val : typeof clone2 === "function" ? clone2(val) : cloneFnJSON$1(val);
-  const getValue2 = () => isDef$1(props[key]) ? cloneFn(props[key]) : defaultValue;
+  const cloneFn = (val) => !clone2 ? val : typeof clone2 === "function" ? clone2(val) : cloneFnJSON(val);
+  const getValue2 = () => isDef(props[key]) ? cloneFn(props[key]) : defaultValue;
   const triggerEmit = (value) => {
     if (shouldEmit) {
       if (shouldEmit(value)) _emit(event, value);
@@ -11370,10 +11385,10 @@ function useVModel$1(props, key, emit2, options = {}) {
     }
   });
 }
-function renderSlotFragments$1(children) {
+function renderSlotFragments(children) {
   if (!children) return [];
   return children.flatMap((child) => {
-    if (child.type === Fragment) return renderSlotFragments$1(child.children);
+    if (child.type === Fragment) return renderSlotFragments(child.children);
     return [child];
   });
 }
@@ -11421,14 +11436,14 @@ function findNextFocusableElement(elements, currentElement, options, iterations 
   if (isDisabled) return findNextFocusableElement(elements, candidate, options, iterations);
   return candidate;
 }
-const [injectConfigProviderContext$1] = /* @__PURE__ */ createContext$1("ConfigProvider");
-const context$1 = /* @__PURE__ */ reactive({
+const [injectConfigProviderContext] = /* @__PURE__ */ createContext("ConfigProvider");
+const context = /* @__PURE__ */ reactive({
   layersRoot: /* @__PURE__ */ new Set(),
   layersWithOutsidePointerEventsDisabled: /* @__PURE__ */ new Set(),
   originalBodyPointerEvents: void 0,
   branches: /* @__PURE__ */ new Set()
 });
-function isPlainObject$1(value) {
+function isPlainObject(value) {
   if (value === null || typeof value !== "object") {
     return false;
   }
@@ -11444,9 +11459,9 @@ function isPlainObject$1(value) {
   }
   return true;
 }
-function _defu$1(baseObject, defaults, namespace = ".", merger) {
-  if (!isPlainObject$1(defaults)) {
-    return _defu$1(baseObject, {}, namespace, merger);
+function _defu(baseObject, defaults, namespace = ".", merger) {
+  if (!isPlainObject(defaults)) {
+    return _defu(baseObject, {}, namespace, merger);
   }
   const object = { ...defaults };
   for (const key of Object.keys(baseObject)) {
@@ -11462,8 +11477,8 @@ function _defu$1(baseObject, defaults, namespace = ".", merger) {
     }
     if (Array.isArray(value) && Array.isArray(object[key])) {
       object[key] = [...value, ...object[key]];
-    } else if (isPlainObject$1(value) && isPlainObject$1(object[key])) {
-      object[key] = _defu$1(
+    } else if (isPlainObject(value) && isPlainObject(object[key])) {
+      object[key] = _defu(
         value,
         object[key],
         (namespace ? `${namespace}.` : "") + key.toString(),
@@ -11475,31 +11490,31 @@ function _defu$1(baseObject, defaults, namespace = ".", merger) {
   }
   return object;
 }
-function createDefu$1(merger) {
+function createDefu(merger) {
   return (...arguments_) => (
     // eslint-disable-next-line unicorn/no-array-reduce
-    arguments_.reduce((p2, c2) => _defu$1(p2, c2, "", merger), {})
+    arguments_.reduce((p2, c2) => _defu(p2, c2, "", merger), {})
   );
 }
-const defu$1 = createDefu$1();
-const useBodyLockStackCount$1 = /* @__PURE__ */ createSharedComposable$1(() => {
+const defu = createDefu();
+const useBodyLockStackCount = /* @__PURE__ */ createSharedComposable(() => {
   const map = /* @__PURE__ */ ref(/* @__PURE__ */ new Map());
   const initialOverflow = /* @__PURE__ */ ref();
   const locked = computed(() => {
     for (const value of map.value.values()) if (value) return true;
     return false;
   });
-  const context$1$1 = injectConfigProviderContext$1({ scrollBody: /* @__PURE__ */ ref(true) });
+  const context$1 = injectConfigProviderContext({ scrollBody: /* @__PURE__ */ ref(true) });
   const resetBodyStyle = () => {
     document.body.style.paddingRight = "";
     document.body.style.marginRight = "";
-    if (context$1.layersWithOutsidePointerEventsDisabled.size === 0) document.body.style.pointerEvents = "";
+    if (context.layersWithOutsidePointerEventsDisabled.size === 0) document.body.style.pointerEvents = "";
     document.documentElement.style.removeProperty("--scrollbar-width");
     document.body.style.overflow = initialOverflow.value ?? "";
     initialOverflow.value = void 0;
   };
   watch(locked, (val, oldVal) => {
-    if (!isClient$1) return;
+    if (!isClient) return;
     if (!val) {
       if (oldVal) resetBodyStyle();
       return;
@@ -11510,9 +11525,9 @@ const useBodyLockStackCount$1 = /* @__PURE__ */ createSharedComposable$1(() => {
       padding: verticalScrollbarWidth,
       margin: 0
     };
-    const config = context$1$1.scrollBody?.value ? typeof context$1$1.scrollBody.value === "object" ? defu$1({
-      padding: context$1$1.scrollBody.value.padding === true ? verticalScrollbarWidth : context$1$1.scrollBody.value.padding,
-      margin: context$1$1.scrollBody.value.margin === true ? verticalScrollbarWidth : context$1$1.scrollBody.value.margin
+    const config = context$1.scrollBody?.value ? typeof context$1.scrollBody.value === "object" ? defu({
+      padding: context$1.scrollBody.value.padding === true ? verticalScrollbarWidth : context$1.scrollBody.value.padding,
+      margin: context$1.scrollBody.value.margin === true ? verticalScrollbarWidth : context$1.scrollBody.value.margin
     }, defaultConfig) : defaultConfig : {
       padding: 0,
       margin: 0
@@ -11534,24 +11549,24 @@ const useBodyLockStackCount$1 = /* @__PURE__ */ createSharedComposable$1(() => {
   });
   return map;
 });
-function useBodyScrollLock$1(initialState) {
+function useBodyScrollLock(initialState) {
   const id = Math.random().toString(36).substring(2, 7);
-  const map = useBodyLockStackCount$1();
+  const map = useBodyLockStackCount();
   map.value.set(id, initialState ?? false);
   const locked = computed({
     get: () => map.value.get(id) ?? false,
     set: (value) => map.value.set(id, value)
   });
-  tryOnBeforeUnmount$1(() => {
+  tryOnBeforeUnmount(() => {
     map.value.delete(id);
   });
   return locked;
 }
 function useDirection(dir) {
-  const context2 = injectConfigProviderContext$1({ dir: /* @__PURE__ */ ref("ltr") });
+  const context2 = injectConfigProviderContext({ dir: /* @__PURE__ */ ref("ltr") });
   return computed(() => dir?.value || context2.dir?.value || "ltr");
 }
-function useEmitAsProps$1(emit2) {
+function useEmitAsProps(emit2) {
   const vm = getCurrentInstance();
   const events = vm?.type.emits;
   const result = {};
@@ -11564,7 +11579,7 @@ function useEmitAsProps$1(emit2) {
 let count = 0;
 function useFocusGuards() {
   watchEffect((cleanupFn) => {
-    if (!isClient$1) return;
+    if (!isClient) return;
     const edgeGuards = document.querySelectorAll("[data-reka-focus-guard]");
     document.body.insertAdjacentElement("afterbegin", edgeGuards[0] ?? createFocusGuard());
     document.body.insertAdjacentElement("beforeend", edgeGuards[1] ?? createFocusGuard());
@@ -11586,9 +11601,9 @@ function createFocusGuard() {
   return element;
 }
 function useFormControl(el) {
-  return computed(() => toValue$1(el) ? Boolean(unrefElement$1(el)?.closest("form")) : true);
+  return computed(() => toValue$1(el) ? Boolean(unrefElement(el)?.closest("form")) : true);
 }
-function useForwardExpose$1() {
+function useForwardExpose() {
   const instance = getCurrentInstance();
   const currentRef = /* @__PURE__ */ ref();
   const currentElement = computed(() => resolveCurrentElement());
@@ -11596,7 +11611,7 @@ function useForwardExpose$1() {
     if (currentElement.value !== resolveCurrentElement()) triggerRef(currentRef);
   });
   function resolveCurrentElement() {
-    return currentRef.value && "$el" in currentRef.value && ["#text", "#comment"].includes(currentRef.value.$el.nodeName) ? currentRef.value.$el.nextElementSibling : unrefElement$1(currentRef);
+    return currentRef.value && "$el" in currentRef.value && ["#text", "#comment"].includes(currentRef.value.$el.nodeName) ? currentRef.value.$el.nextElementSibling : unrefElement(currentRef);
   }
   const localExpose = Object.assign({}, instance.exposed);
   const ret = {};
@@ -11666,7 +11681,7 @@ function useForwardProps(props) {
 }
 function useForwardPropsEmits(props, emit2) {
   const parsedProps = useForwardProps(props);
-  const emitsAsProps = emit2 ? useEmitAsProps$1(emit2) : {};
+  const emitsAsProps = emit2 ? useEmitAsProps(emit2) : {};
   return computed(() => ({
     ...parsedProps.value,
     ...emitsAsProps
@@ -11795,26 +11810,26 @@ var hideOthers = function(originalTarget, parentNode, markerName) {
   targets.push.apply(targets, Array.from(activeParentNode.querySelectorAll("[aria-live], script")));
   return applyAttributeToOthers(targets, activeParentNode, markerName, "aria-hidden");
 };
-function useHideOthers$1(target) {
-  let undo;
-  watch(() => unrefElement$1(target), (el) => {
+function useHideOthers(target) {
+  let undo2;
+  watch(() => unrefElement(target), (el) => {
     let isInsideClosedPopover = false;
     try {
       isInsideClosedPopover = !!el?.closest("[popover]:not(:popover-open)");
     } catch {
     }
-    if (el && !isInsideClosedPopover) undo = hideOthers(el);
-    else if (undo) undo();
+    if (el && !isInsideClosedPopover) undo2 = hideOthers(el);
+    else if (undo2) undo2();
   });
   onUnmounted(() => {
-    if (undo) undo();
+    if (undo2) undo2();
   });
 }
-function useId$1(deterministicId, prefix = "reka") {
+function useId(deterministicId, prefix = "reka") {
   let id;
-  const configProviderContext = injectConfigProviderContext$1({ useId: void 0 });
+  const configProviderContext = injectConfigProviderContext({ useId: void 0 });
   if (configProviderContext.useId) id = configProviderContext.useId();
-  else id = useId$2?.();
+  else id = useId$1?.();
   return prefix ? `${prefix}-${id}` : id;
 }
 function useSize(element) {
@@ -11823,7 +11838,7 @@ function useSize(element) {
   const height = computed(() => size2.value?.height ?? 0);
   let resizeObserver;
   onMounted(() => {
-    const el = unrefElement$1(element);
+    const el = unrefElement(element);
     if (el) {
       size2.value = {
         width: el.offsetWidth,
@@ -11861,7 +11876,7 @@ function useSize(element) {
     height
   };
 }
-function useStateMachine$1(initialState, machine) {
+function useStateMachine(initialState, machine) {
   const state = /* @__PURE__ */ ref(initialState);
   function reducer(event) {
     const nextState = machine[state.value][event];
@@ -11880,7 +11895,7 @@ function useTypeahead(callback) {
   const handleTypeaheadSearch = (key, items) => {
     search.value = search.value + key;
     {
-      const currentItem = getActiveElement$1();
+      const currentItem = getActiveElement();
       const itemsWithTextValue = items.map((item) => ({
         ...item,
         textValue: item.value?.textValue ?? item.ref.textContent?.trim() ?? ""
@@ -11915,14 +11930,14 @@ function getNextMatch(values, search, currentMatch) {
   const nextMatch = wrappedValues.find((value) => value.toLowerCase().startsWith(normalizedSearch.toLowerCase()));
   return nextMatch !== currentMatch ? nextMatch : void 0;
 }
-function usePresence$1(present, node) {
+function usePresence(present, node) {
   const stylesRef = /* @__PURE__ */ ref({});
   const prevAnimationNameRef = /* @__PURE__ */ ref("none");
   const prevPresentRef = /* @__PURE__ */ ref(present);
   const initialState = present.value ? "mounted" : "unmounted";
   let timeoutId;
-  const ownerWindow = node.value?.ownerDocument.defaultView ?? defaultWindow$1;
-  const { state, dispatch } = useStateMachine$1(initialState, {
+  const ownerWindow = node.value?.ownerDocument.defaultView ?? defaultWindow;
+  const { state, dispatch } = useStateMachine(initialState, {
     mounted: {
       UNMOUNT: "unmounted",
       ANIMATION_OUT: "unmountSuspended"
@@ -11934,7 +11949,7 @@ function usePresence$1(present, node) {
     unmounted: { MOUNT: "mounted" }
   });
   const dispatchCustomEvent = (name) => {
-    if (isClient$1) {
+    if (isClient) {
       const customEvent = new CustomEvent(name, {
         bubbles: false,
         cancelable: false
@@ -11947,7 +11962,7 @@ function usePresence$1(present, node) {
     await nextTick();
     if (hasPresentChanged) {
       const prevAnimationName = prevAnimationNameRef.value;
-      const currentAnimationName = getAnimationName$1(node.value);
+      const currentAnimationName = getAnimationName(node.value);
       if (currentPresent) {
         dispatch("MOUNT");
         dispatchCustomEvent("enter");
@@ -11970,7 +11985,7 @@ function usePresence$1(present, node) {
   }, { immediate: true });
   const handleAnimationEnd = (event) => {
     if (event.target !== node.value) return;
-    const currentAnimationName = getAnimationName$1(node.value);
+    const currentAnimationName = getAnimationName(node.value);
     const isCurrentAnimation = currentAnimationName.includes(CSS.escape(event.animationName));
     const directionName = state.value === "mounted" ? "enter" : "leave";
     if (isCurrentAnimation) {
@@ -11987,7 +12002,7 @@ function usePresence$1(present, node) {
     if (currentAnimationName === "none") dispatch("ANIMATION_END");
   };
   const handleAnimationStart = (event) => {
-    if (event.target === node.value) prevAnimationNameRef.value = getAnimationName$1(node.value);
+    if (event.target === node.value) prevAnimationNameRef.value = getAnimationName(node.value);
   };
   const watcher = watch(node, (newNode, oldNode) => {
     if (newNode) {
@@ -12004,7 +12019,7 @@ function usePresence$1(present, node) {
     }
   }, { immediate: true });
   const stateWatcher = watch(state, () => {
-    const currentAnimationName = getAnimationName$1(node.value);
+    const currentAnimationName = getAnimationName(node.value);
     prevAnimationNameRef.value = state.value === "mounted" ? currentAnimationName : "none";
   });
   onUnmounted(() => {
@@ -12020,10 +12035,10 @@ function usePresence$1(present, node) {
   const isPresent = computed(() => ["mounted", "unmountSuspended"].includes(state.value));
   return { isPresent };
 }
-function getAnimationName$1(node) {
+function getAnimationName(node) {
   return node ? getComputedStyle(node).animationName || "none" : "none";
 }
-var Presence_default$1 = /* @__PURE__ */ defineComponent({
+var Presence_default = /* @__PURE__ */ defineComponent({
   name: "Presence",
   props: {
     present: {
@@ -12036,10 +12051,10 @@ var Presence_default$1 = /* @__PURE__ */ defineComponent({
   setup(props, { slots, expose }) {
     const { present, forceMount } = /* @__PURE__ */ toRefs(props);
     const node = /* @__PURE__ */ ref();
-    const { isPresent } = usePresence$1(present, node);
+    const { isPresent } = usePresence(present, node);
     expose({ present: isPresent });
     let children = slots.default({ present: isPresent.value });
-    children = renderSlotFragments$1(children || []);
+    children = renderSlotFragments(children || []);
     const instance = getCurrentInstance();
     if (children && children?.length > 1) {
       const componentName = instance?.parent?.type.name ? `<${instance.parent.type.name} />` : "component";
@@ -12053,7 +12068,7 @@ var Presence_default$1 = /* @__PURE__ */ defineComponent({
     }
     return () => {
       if (forceMount.value || present.value || isPresent.value) return h$2(slots.default({ present: isPresent.value })[0], { ref: (v2) => {
-        const el = unrefElement$1(v2);
+        const el = unrefElement(v2);
         if (typeof el?.hasAttribute === "undefined") return el;
         if (el?.hasAttribute("data-reka-popper-content-wrapper")) node.value = el.firstElementChild;
         else node.value = el;
@@ -12063,13 +12078,13 @@ var Presence_default$1 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const Slot$1 = /* @__PURE__ */ defineComponent({
+const Slot = /* @__PURE__ */ defineComponent({
   name: "PrimitiveSlot",
   inheritAttrs: false,
   setup(_2, { attrs, slots }) {
     return () => {
       if (!slots.default) return null;
-      const children = renderSlotFragments$1(slots.default());
+      const children = renderSlotFragments(slots.default());
       const firstNonCommentChildrenIndex = children.findIndex((child) => child.type !== Comment);
       if (firstNonCommentChildrenIndex === -1) return children;
       const firstNonCommentChildren = children[firstNonCommentChildrenIndex];
@@ -12085,12 +12100,12 @@ const Slot$1 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const SELF_CLOSING_TAGS$1 = [
+const SELF_CLOSING_TAGS = [
   "area",
   "img",
   "input"
 ];
-const Primitive$1 = /* @__PURE__ */ defineComponent({
+const Primitive = /* @__PURE__ */ defineComponent({
   name: "Primitive",
   inheritAttrs: false,
   props: {
@@ -12105,22 +12120,116 @@ const Primitive$1 = /* @__PURE__ */ defineComponent({
   },
   setup(props, { attrs, slots }) {
     const asTag = props.asChild ? "template" : props.as;
-    if (typeof asTag === "string" && SELF_CLOSING_TAGS$1.includes(asTag)) return () => h$2(asTag, attrs);
+    if (typeof asTag === "string" && SELF_CLOSING_TAGS.includes(asTag)) return () => h$2(asTag, attrs);
     if (asTag !== "template") return () => h$2(props.as, attrs, { default: slots.default });
-    return () => h$2(Slot$1, attrs, { default: slots.default });
+    return () => h$2(Slot, attrs, { default: slots.default });
   }
 });
 function usePrimitiveElement() {
   const primitiveElement = /* @__PURE__ */ ref();
-  const currentElement = computed(() => ["#text", "#comment"].includes(primitiveElement.value?.$el.nodeName) ? primitiveElement.value?.$el.nextElementSibling : unrefElement$1(primitiveElement));
+  const currentElement = computed(() => ["#text", "#comment"].includes(primitiveElement.value?.$el.nodeName) ? primitiveElement.value?.$el.nextElementSibling : unrefElement(primitiveElement));
   return {
     primitiveElement,
     currentElement
   };
 }
-const POINTER_DOWN_OUTSIDE$1 = "dismissableLayer.pointerDownOutside";
-const FOCUS_OUTSIDE$1 = "dismissableLayer.focusOutside";
-function isLayerExist$1(layerElement, targetElement) {
+const [injectDialogRootContext, provideDialogRootContext] = /* @__PURE__ */ createContext("DialogRoot");
+var DialogRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  inheritAttrs: false,
+  __name: "DialogRoot",
+  props: {
+    open: {
+      type: Boolean,
+      required: false,
+      default: void 0
+    },
+    defaultOpen: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    modal: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    unmountOnHide: {
+      type: Boolean,
+      required: false,
+      default: true
+    }
+  },
+  emits: ["update:open"],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emit2 = __emit;
+    const open = /* @__PURE__ */ useVModel(props, "open", emit2, {
+      defaultValue: props.defaultOpen,
+      passive: props.open === void 0
+    });
+    const triggerElement = /* @__PURE__ */ ref();
+    const contentElement = /* @__PURE__ */ ref();
+    const { modal, unmountOnHide } = /* @__PURE__ */ toRefs(props);
+    provideDialogRootContext({
+      open,
+      modal,
+      unmountOnHide,
+      openModal: () => {
+        open.value = true;
+      },
+      onOpenChange: (value) => {
+        open.value = value;
+      },
+      onOpenToggle: () => {
+        open.value = !open.value;
+      },
+      contentId: "",
+      titleId: "",
+      descriptionId: "",
+      triggerElement,
+      contentElement
+    });
+    return (_ctx, _cache) => {
+      return renderSlot(_ctx.$slots, "default", {
+        open: unref(open),
+        close: () => open.value = false
+      });
+    };
+  }
+});
+var DialogRoot_default = DialogRoot_vue_vue_type_script_setup_true_lang_default;
+var DialogClose_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "DialogClose",
+  props: {
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false,
+      default: "button"
+    }
+  },
+  setup(__props) {
+    const props = __props;
+    useForwardExpose();
+    const rootContext = injectDialogRootContext();
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(Primitive), mergeProps(props, {
+        type: _ctx.as === "button" ? "button" : void 0,
+        onClick: _cache[0] || (_cache[0] = ($event) => unref(rootContext).onOpenChange(false))
+      }), {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+        _: 3
+      }, 16, ["type"]);
+    };
+  }
+});
+var DialogClose_default = DialogClose_vue_vue_type_script_setup_true_lang_default;
+const POINTER_DOWN_OUTSIDE = "dismissableLayer.pointerDownOutside";
+const FOCUS_OUTSIDE = "dismissableLayer.focusOutside";
+function isLayerExist(layerElement, targetElement) {
   if (!(targetElement instanceof Element)) return false;
   const targetLayer = targetElement.closest("[data-dismissable-layer]");
   const mainLayer = layerElement.dataset.dismissableLayer === "" ? layerElement : layerElement.querySelector("[data-dismissable-layer]");
@@ -12128,23 +12237,23 @@ function isLayerExist$1(layerElement, targetElement) {
   if (targetLayer && (mainLayer === targetLayer || nodeList.indexOf(mainLayer) < nodeList.indexOf(targetLayer))) return true;
   else return false;
 }
-function usePointerDownOutside$1(onPointerDownOutside, element, enabled = true) {
+function usePointerDownOutside(onPointerDownOutside, element, enabled = true) {
   const ownerDocument = element?.value?.ownerDocument ?? globalThis?.document;
   const isPointerInsideDOMTree = /* @__PURE__ */ ref(false);
   const handleClickRef = /* @__PURE__ */ ref(() => {
   });
   watchEffect((cleanupFn) => {
-    if (!isClient$1 || !toValue$1(enabled)) return;
+    if (!isClient || !toValue$1(enabled)) return;
     const handlePointerDown = async (event) => {
       const target = event.target;
       if (!element?.value || !target) return;
-      if (isLayerExist$1(element.value, target)) {
+      if (isLayerExist(element.value, target)) {
         isPointerInsideDOMTree.value = false;
         return;
       }
       if (event.target && !isPointerInsideDOMTree.value) {
         let handleAndDispatchPointerDownOutsideEvent = function() {
-          handleAndDispatchCustomEvent$1(POINTER_DOWN_OUTSIDE$1, onPointerDownOutside, eventDetail);
+          handleAndDispatchCustomEvent(POINTER_DOWN_OUTSIDE, onPointerDownOutside, eventDetail);
         };
         const eventDetail = { originalEvent: event };
         if (event.pointerType === "touch") {
@@ -12169,20 +12278,20 @@ function usePointerDownOutside$1(onPointerDownOutside, element, enabled = true) 
     isPointerInsideDOMTree.value = true;
   } };
 }
-function useFocusOutside$1(onFocusOutside, element, enabled = true) {
+function useFocusOutside(onFocusOutside, element, enabled = true) {
   const ownerDocument = element?.value?.ownerDocument ?? globalThis?.document;
   const isFocusInsideDOMTree = /* @__PURE__ */ ref(false);
   watchEffect((cleanupFn) => {
-    if (!isClient$1 || !toValue$1(enabled)) return;
+    if (!isClient || !toValue$1(enabled)) return;
     const handleFocus = async (event) => {
       if (!element?.value) return;
       await nextTick();
       await nextTick();
       const target = event.target;
-      if (!element.value || !target || isLayerExist$1(element.value, target)) return;
+      if (!element.value || !target || isLayerExist(element.value, target)) return;
       if (event.target && !isFocusInsideDOMTree.value) {
         const eventDetail = { originalEvent: event };
-        handleAndDispatchCustomEvent$1(FOCUS_OUTSIDE$1, onFocusOutside, eventDetail);
+        handleAndDispatchCustomEvent(FOCUS_OUTSIDE, onFocusOutside, eventDetail);
       }
     };
     ownerDocument.addEventListener("focusin", handleFocus);
@@ -12199,7 +12308,7 @@ function useFocusOutside$1(onFocusOutside, element, enabled = true) {
     }
   };
 }
-var DismissableLayer_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE__ */ defineComponent({
+var DismissableLayer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
   __name: "DismissableLayer",
   props: {
     disableOutsidePointerEvents: {
@@ -12231,37 +12340,37 @@ var DismissableLayer_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE_
   setup(__props, { emit: __emit }) {
     const props = __props;
     const emits = __emit;
-    const { forwardRef, currentElement: layerElement } = useForwardExpose$1();
+    const { forwardRef, currentElement: layerElement } = useForwardExpose();
     const ownerDocument = computed(() => layerElement.value?.ownerDocument ?? globalThis.document);
-    const layers = computed(() => context$1.layersRoot);
+    const layers = computed(() => context.layersRoot);
     const index = computed(() => {
       return layerElement.value ? Array.from(layers.value).indexOf(layerElement.value) : -1;
     });
     const isBodyPointerEventsDisabled = computed(() => {
-      return context$1.layersWithOutsidePointerEventsDisabled.size > 0;
+      return context.layersWithOutsidePointerEventsDisabled.size > 0;
     });
     const isPointerEventsEnabled = computed(() => {
       const localLayers = Array.from(layers.value);
-      const [highestLayerWithOutsidePointerEventsDisabled] = [...context$1.layersWithOutsidePointerEventsDisabled].slice(-1);
+      const [highestLayerWithOutsidePointerEventsDisabled] = [...context.layersWithOutsidePointerEventsDisabled].slice(-1);
       const highestLayerWithOutsidePointerEventsDisabledIndex = localLayers.indexOf(highestLayerWithOutsidePointerEventsDisabled);
       return index.value >= highestLayerWithOutsidePointerEventsDisabledIndex;
     });
-    const pointerDownOutside = usePointerDownOutside$1(async (event) => {
-      const isPointerDownOnBranch = [...context$1.branches].some((branch) => branch?.contains(event.target));
+    const pointerDownOutside = usePointerDownOutside(async (event) => {
+      const isPointerDownOnBranch = [...context.branches].some((branch) => branch?.contains(event.target));
       if (!props.present || !isPointerEventsEnabled.value || isPointerDownOnBranch) return;
       emits("pointerDownOutside", event);
       emits("interactOutside", event);
       await nextTick();
       if (!event.defaultPrevented) emits("dismiss");
     }, layerElement, () => props.present);
-    const focusOutside = useFocusOutside$1((event) => {
-      const isFocusInBranch = [...context$1.branches].some((branch) => branch?.contains(event.target));
+    const focusOutside = useFocusOutside((event) => {
+      const isFocusInBranch = [...context.branches].some((branch) => branch?.contains(event.target));
       if (!props.present || isFocusInBranch) return;
       emits("focusOutside", event);
       emits("interactOutside", event);
       if (!event.defaultPrevented) emits("dismiss");
     }, layerElement);
-    onKeyStroke$1("Escape", (event) => {
+    onKeyStroke("Escape", (event) => {
       if (!props.present) return;
       const isHighestLayer = index.value === layers.value.size - 1;
       if (!isHighestLayer) return;
@@ -12275,14 +12384,14 @@ var DismissableLayer_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE_
     ], ([element, disableOutsidePointerEvents, present], _2, onCleanup) => {
       if (!element || !present) return;
       if (disableOutsidePointerEvents) {
-        if (context$1.layersWithOutsidePointerEventsDisabled.size === 0) {
-          context$1.originalBodyPointerEvents = ownerDocument.value.body.style.pointerEvents;
+        if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
+          context.originalBodyPointerEvents = ownerDocument.value.body.style.pointerEvents;
           ownerDocument.value.body.style.pointerEvents = "none";
         }
-        context$1.layersWithOutsidePointerEventsDisabled.add(element);
+        context.layersWithOutsidePointerEventsDisabled.add(element);
         onCleanup(() => {
-          context$1.layersWithOutsidePointerEventsDisabled.delete(element);
-          if (context$1.layersWithOutsidePointerEventsDisabled.size === 0 && !isNullish$1(context$1.originalBodyPointerEvents)) ownerDocument.value.body.style.pointerEvents = context$1.originalBodyPointerEvents;
+          context.layersWithOutsidePointerEventsDisabled.delete(element);
+          if (context.layersWithOutsidePointerEventsDisabled.size === 0 && !isNullish(context.originalBodyPointerEvents)) ownerDocument.value.body.style.pointerEvents = context.originalBodyPointerEvents;
         });
       }
     }, { immediate: true });
@@ -12297,11 +12406,11 @@ var DismissableLayer_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE_
       cleanupFn(() => {
         if (!layerElement.value) return;
         layers.value.delete(layerElement.value);
-        context$1.layersWithOutsidePointerEventsDisabled.delete(layerElement.value);
+        context.layersWithOutsidePointerEventsDisabled.delete(layerElement.value);
       });
     });
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Primitive$1), {
+      return openBlock(), createBlock(unref(Primitive), {
         ref: unref(forwardRef),
         "as-child": _ctx.asChild,
         as: _ctx.as,
@@ -12324,52 +12433,52 @@ var DismissableLayer_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE_
     };
   }
 });
-var DismissableLayer_default$1 = DismissableLayer_vue_vue_type_script_setup_true_lang_default$1;
-const useFocusStackState$1 = /* @__PURE__ */ createGlobalState$1(() => {
+var DismissableLayer_default = DismissableLayer_vue_vue_type_script_setup_true_lang_default;
+const useFocusStackState = /* @__PURE__ */ createGlobalState(() => {
   const stack2 = /* @__PURE__ */ ref([]);
   return stack2;
 });
-function createFocusScopesStack$1() {
-  const stack2 = useFocusStackState$1();
+function createFocusScopesStack() {
+  const stack2 = useFocusStackState();
   return {
     add(focusScope) {
       const activeFocusScope = stack2.value[0];
       if (focusScope !== activeFocusScope) activeFocusScope?.pause();
-      stack2.value = arrayRemove$1(stack2.value, focusScope);
+      stack2.value = arrayRemove(stack2.value, focusScope);
       stack2.value.unshift(focusScope);
     },
     remove(focusScope) {
-      stack2.value = arrayRemove$1(stack2.value, focusScope);
+      stack2.value = arrayRemove(stack2.value, focusScope);
       stack2.value[0]?.resume();
     }
   };
 }
-function arrayRemove$1(array, item) {
+function arrayRemove(array, item) {
   const updatedArray = [...array];
   const index = updatedArray.indexOf(item);
   if (index !== -1) updatedArray.splice(index, 1);
   return updatedArray;
 }
-const AUTOFOCUS_ON_MOUNT$1 = "focusScope.autoFocusOnMount";
-const AUTOFOCUS_ON_UNMOUNT$1 = "focusScope.autoFocusOnUnmount";
-const EVENT_OPTIONS$2 = {
+const AUTOFOCUS_ON_MOUNT = "focusScope.autoFocusOnMount";
+const AUTOFOCUS_ON_UNMOUNT = "focusScope.autoFocusOnUnmount";
+const EVENT_OPTIONS$1 = {
   bubbles: false,
   cancelable: true
 };
-function focusFirst$3(candidates, { select = false } = {}) {
-  const previouslyFocusedElement = getActiveElement$1();
+function focusFirst$2(candidates, { select = false } = {}) {
+  const previouslyFocusedElement = getActiveElement();
   for (const candidate of candidates) {
-    focus$1(candidate, { select });
-    if (getActiveElement$1() !== previouslyFocusedElement) return true;
+    focus(candidate, { select });
+    if (getActiveElement() !== previouslyFocusedElement) return true;
   }
 }
-function getTabbableEdges$1(container) {
-  const candidates = getTabbableCandidates$1(container);
-  const first = findVisible$1(candidates, container);
-  const last = findVisible$1(candidates.reverse(), container);
+function getTabbableEdges(container) {
+  const candidates = getTabbableCandidates(container);
+  const first = findVisible(candidates, container);
+  const last = findVisible(candidates.reverse(), container);
   return [first, last];
 }
-function getTabbableCandidates$1(container) {
+function getTabbableCandidates(container) {
   const nodes = [];
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, { acceptNode: (node) => {
     const isHiddenInput = node.tagName === "INPUT" && node.type === "hidden";
@@ -12379,10 +12488,10 @@ function getTabbableCandidates$1(container) {
   while (walker.nextNode()) nodes.push(walker.currentNode);
   return nodes;
 }
-function findVisible$1(elements, container) {
-  for (const element of elements) if (!isHidden$1(element, { upTo: container })) return element;
+function findVisible(elements, container) {
+  for (const element of elements) if (!isHidden(element, { upTo: container })) return element;
 }
-function isHidden$1(node, { upTo }) {
+function isHidden(node, { upTo }) {
   if (getComputedStyle(node).visibility === "hidden") return true;
   while (node) {
     if (upTo !== void 0 && node === upTo) return false;
@@ -12391,17 +12500,17 @@ function isHidden$1(node, { upTo }) {
   }
   return false;
 }
-function isSelectableInput$1(element) {
+function isSelectableInput(element) {
   return element instanceof HTMLInputElement && "select" in element;
 }
-function focus$1(element, { select = false } = {}) {
+function focus(element, { select = false } = {}) {
   if (element && element.focus) {
-    const previouslyFocusedElement = getActiveElement$1();
+    const previouslyFocusedElement = getActiveElement();
     element.focus({ preventScroll: true });
-    if (element !== previouslyFocusedElement && isSelectableInput$1(element) && select) element.select();
+    if (element !== previouslyFocusedElement && isSelectableInput(element) && select) element.select();
   }
 }
-var FocusScope_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE__ */ defineComponent({
+var FocusScope_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
   __name: "FocusScope",
   props: {
     loop: {
@@ -12432,9 +12541,9 @@ var FocusScope_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE__ */ d
   setup(__props, { emit: __emit }) {
     const props = __props;
     const emits = __emit;
-    const { currentRef, currentElement } = useForwardExpose$1();
+    const { currentRef, currentElement } = useForwardExpose();
     const lastFocusedElementRef = /* @__PURE__ */ ref(null);
-    const focusScopesStack = createFocusScopesStack$1();
+    const focusScopesStack = createFocusScopesStack();
     const focusScope = /* @__PURE__ */ reactive({
       paused: false,
       pause() {
@@ -12445,30 +12554,30 @@ var FocusScope_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE__ */ d
       }
     });
     watchEffect((cleanupFn) => {
-      if (!isClient$1) return;
+      if (!isClient) return;
       const container = currentElement.value;
       if (!props.trapped) return;
       function handleFocusIn(event) {
         if (focusScope.paused || !container) return;
         const target = event.target;
         if (container.contains(target)) lastFocusedElementRef.value = target;
-        else focus$1(lastFocusedElementRef.value, { select: true });
+        else focus(lastFocusedElementRef.value, { select: true });
       }
       function handleFocusOut(event) {
         if (focusScope.paused || !container) return;
         const relatedTarget = event.relatedTarget;
         if (relatedTarget === null) return;
-        if (!container.contains(relatedTarget)) focus$1(lastFocusedElementRef.value, { select: true });
+        if (!container.contains(relatedTarget)) focus(lastFocusedElementRef.value, { select: true });
       }
       function handleMutations(mutations) {
         const lastFocusedElement = lastFocusedElementRef.value;
         if (lastFocusedElement === null) return;
         const anyNodesRemoved = mutations.some((m2) => m2.removedNodes.length > 0);
         if (!anyNodesRemoved) return;
-        const activeElement = getActiveElement$1();
+        const activeElement = getActiveElement();
         if (activeElement && container.contains(activeElement)) return;
         const isLastFocusedElementExist = container.contains(lastFocusedElement);
-        if (!isLastFocusedElementExist) focus$1(container);
+        if (!isLastFocusedElementExist) focus(container);
       }
       document.addEventListener("focusin", handleFocusIn);
       document.addEventListener("focusout", handleFocusOut);
@@ -12484,14 +12593,14 @@ var FocusScope_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE__ */ d
       });
     });
     function dispatchMountAutoFocus(container, previouslyFocusedElement) {
-      const mountEvent = new CustomEvent(AUTOFOCUS_ON_MOUNT$1, EVENT_OPTIONS$2);
+      const mountEvent = new CustomEvent(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS$1);
       const handleMountAutoFocus = (ev) => emits("mountAutoFocus", ev);
-      container.addEventListener(AUTOFOCUS_ON_MOUNT$1, handleMountAutoFocus);
+      container.addEventListener(AUTOFOCUS_ON_MOUNT, handleMountAutoFocus);
       container.dispatchEvent(mountEvent);
-      container.removeEventListener(AUTOFOCUS_ON_MOUNT$1, handleMountAutoFocus);
+      container.removeEventListener(AUTOFOCUS_ON_MOUNT, handleMountAutoFocus);
       if (!mountEvent.defaultPrevented) {
-        focusFirst$3(getTabbableCandidates$1(container), { select: true });
-        if (getActiveElement$1() === previouslyFocusedElement) focus$1(container);
+        focusFirst$2(getTabbableCandidates(container), { select: true });
+        if (getActiveElement() === previouslyFocusedElement) focus(container);
       }
     }
     watchEffect(async (cleanupFn) => {
@@ -12499,27 +12608,27 @@ var FocusScope_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE__ */ d
       await nextTick();
       if (!container) return;
       if (props.present !== false) focusScopesStack.add(focusScope);
-      const previouslyFocusedElement = getActiveElement$1();
+      const previouslyFocusedElement = getActiveElement();
       const hasFocusedCandidate = container.contains(previouslyFocusedElement);
       if (!hasFocusedCandidate && props.present !== false) dispatchMountAutoFocus(container, previouslyFocusedElement);
       cleanupFn(() => {
-        const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT$1, EVENT_OPTIONS$2);
+        const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS$1);
         const unmountEventHandler = (ev) => {
           emits("unmountAutoFocus", ev);
         };
-        container.addEventListener(AUTOFOCUS_ON_UNMOUNT$1, unmountEventHandler);
+        container.addEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler);
         container.dispatchEvent(unmountEvent);
         container.setAttribute("data-focus-scope-unmounting", "");
         setTimeout(() => {
-          if (!unmountEvent.defaultPrevented) focus$1(previouslyFocusedElement ?? document.body, { select: true });
-          container.removeEventListener(AUTOFOCUS_ON_UNMOUNT$1, unmountEventHandler);
+          if (!unmountEvent.defaultPrevented) focus(previouslyFocusedElement ?? document.body, { select: true });
+          container.removeEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler);
           focusScopesStack.remove(focusScope);
           container.removeAttribute("data-focus-scope-unmounting");
         }, 0);
       });
     });
     watch(() => props.present, async (present, prevPresent) => {
-      if (!isClient$1) return;
+      if (!isClient) return;
       if (present === false && prevPresent === true) {
         focusScopesStack.remove(focusScope);
         return;
@@ -12529,31 +12638,31 @@ var FocusScope_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE__ */ d
       await nextTick();
       const container = currentElement.value;
       if (!container) return;
-      const previouslyFocusedElement = getActiveElement$1();
+      const previouslyFocusedElement = getActiveElement();
       if (!container.contains(previouslyFocusedElement)) dispatchMountAutoFocus(container, previouslyFocusedElement);
     });
     function handleKeyDown(event) {
       if (!props.loop && !props.trapped) return;
       if (focusScope.paused) return;
       const isTabKey = event.key === "Tab" && !event.altKey && !event.ctrlKey && !event.metaKey;
-      const focusedElement = getActiveElement$1();
+      const focusedElement = getActiveElement();
       if (isTabKey && focusedElement) {
         const container = event.currentTarget;
-        const [first, last] = getTabbableEdges$1(container);
+        const [first, last] = getTabbableEdges(container);
         const hasTabbableElementsInside = first && last;
         if (!hasTabbableElementsInside) {
           if (focusedElement === container) event.preventDefault();
         } else if (!event.shiftKey && focusedElement === last) {
           event.preventDefault();
-          if (props.loop) focus$1(first, { select: true });
+          if (props.loop) focus(first, { select: true });
         } else if (event.shiftKey && focusedElement === first) {
           event.preventDefault();
-          if (props.loop) focus$1(last, { select: true });
+          if (props.loop) focus(last, { select: true });
         }
       }
     }
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Primitive$1), {
+      return openBlock(), createBlock(unref(Primitive), {
         ref_key: "currentRef",
         ref: currentRef,
         tabindex: "-1",
@@ -12567,7 +12676,7 @@ var FocusScope_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE__ */ d
     };
   }
 });
-var FocusScope_default$1 = FocusScope_vue_vue_type_script_setup_true_lang_default$1;
+var FocusScope_default = FocusScope_vue_vue_type_script_setup_true_lang_default;
 const ITEM_SELECT = "menu.itemSelect";
 const SELECTION_KEYS = ["Enter", " "];
 const FIRST_KEYS = [
@@ -12585,15 +12694,15 @@ const FIRST_LAST_KEYS = [...FIRST_KEYS, ...LAST_KEYS];
   ltr: [...SELECTION_KEYS, "ArrowRight"],
   rtl: [...SELECTION_KEYS, "ArrowLeft"]
 });
-function getOpenState$1(open) {
+function getOpenState(open) {
   return open ? "open" : "closed";
 }
-function focusFirst$2(candidates) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = getActiveElement$1();
+function focusFirst$1(candidates) {
+  const PREVIOUSLY_FOCUSED_ELEMENT = getActiveElement();
   for (const candidate of candidates) {
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus();
-    if (getActiveElement$1() !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (getActiveElement() !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 function isPointInPolygon(point, polygon) {
@@ -12620,7 +12729,436 @@ function isPointerInGraceArea(event, area) {
 function isMouseEvent(event) {
   return event.pointerType === "mouse";
 }
-var Teleport_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE__ */ defineComponent({
+var DialogContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "DialogContentImpl",
+  props: {
+    forceMount: {
+      type: Boolean,
+      required: false
+    },
+    trapFocus: {
+      type: Boolean,
+      required: false
+    },
+    disableOutsidePointerEvents: {
+      type: Boolean,
+      required: false
+    },
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    },
+    present: {
+      type: Boolean,
+      required: false
+    }
+  },
+  emits: [
+    "escapeKeyDown",
+    "pointerDownOutside",
+    "focusOutside",
+    "interactOutside",
+    "openAutoFocus",
+    "closeAutoFocus"
+  ],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emits = __emit;
+    const rootContext = injectDialogRootContext();
+    const { forwardRef, currentElement: contentElement } = useForwardExpose();
+    rootContext.titleId ||= useId(void 0, "reka-dialog-title");
+    rootContext.descriptionId ||= useId(void 0, "reka-dialog-description");
+    onMounted(() => {
+      rootContext.contentElement = contentElement;
+      if (getActiveElement() !== document.body) rootContext.triggerElement.value = getActiveElement();
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(FocusScope_default), {
+        "as-child": "",
+        loop: "",
+        trapped: props.trapFocus,
+        present: props.present,
+        onMountAutoFocus: _cache[5] || (_cache[5] = ($event) => emits("openAutoFocus", $event)),
+        onUnmountAutoFocus: _cache[6] || (_cache[6] = ($event) => emits("closeAutoFocus", $event))
+      }, {
+        default: withCtx(() => [createVNode(unref(DismissableLayer_default), mergeProps({
+          id: unref(rootContext).contentId,
+          ref: unref(forwardRef),
+          as: _ctx.as,
+          "as-child": _ctx.asChild,
+          present: props.present,
+          "disable-outside-pointer-events": _ctx.disableOutsidePointerEvents,
+          role: "dialog",
+          "aria-describedby": unref(rootContext).descriptionId,
+          "aria-labelledby": unref(rootContext).titleId,
+          "data-state": unref(getOpenState)(unref(rootContext).open.value)
+        }, _ctx.$attrs, {
+          onDismiss: _cache[0] || (_cache[0] = ($event) => unref(rootContext).onOpenChange(false)),
+          onEscapeKeyDown: _cache[1] || (_cache[1] = ($event) => emits("escapeKeyDown", $event)),
+          onFocusOutside: _cache[2] || (_cache[2] = ($event) => emits("focusOutside", $event)),
+          onInteractOutside: _cache[3] || (_cache[3] = ($event) => emits("interactOutside", $event)),
+          onPointerDownOutside: _cache[4] || (_cache[4] = ($event) => emits("pointerDownOutside", $event))
+        }), {
+          default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+          _: 3
+        }, 16, [
+          "id",
+          "as",
+          "as-child",
+          "present",
+          "disable-outside-pointer-events",
+          "aria-describedby",
+          "aria-labelledby",
+          "data-state"
+        ])]),
+        _: 3
+      }, 8, ["trapped", "present"]);
+    };
+  }
+});
+var DialogContentImpl_default = DialogContentImpl_vue_vue_type_script_setup_true_lang_default;
+var DialogContentModal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "DialogContentModal",
+  props: {
+    forceMount: {
+      type: Boolean,
+      required: false
+    },
+    trapFocus: {
+      type: Boolean,
+      required: false
+    },
+    disableOutsidePointerEvents: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    },
+    present: {
+      type: Boolean,
+      required: true
+    }
+  },
+  emits: [
+    "escapeKeyDown",
+    "pointerDownOutside",
+    "focusOutside",
+    "interactOutside",
+    "openAutoFocus",
+    "closeAutoFocus"
+  ],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emits = __emit;
+    const rootContext = injectDialogRootContext();
+    const emitsAsProps = useEmitAsProps(emits);
+    const { forwardRef, currentElement } = useForwardExpose();
+    const ariaHiddenTarget = computed(() => props.present ? currentElement.value : void 0);
+    useHideOthers(ariaHiddenTarget);
+    const forwardedProps = computed(() => {
+      const { present: _2, ...rest } = props;
+      return rest;
+    });
+    watch(() => props.present, (isPresent, wasPresent) => {
+      if (!isPresent && wasPresent) rootContext.triggerElement.value?.focus();
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(DialogContentImpl_default, mergeProps({
+        ...forwardedProps.value,
+        ...unref(emitsAsProps)
+      }, {
+        ref: unref(forwardRef),
+        present: _ctx.present,
+        "trap-focus": unref(rootContext).open.value,
+        "disable-outside-pointer-events": props.disableOutsidePointerEvents,
+        onCloseAutoFocus: _cache[0] || (_cache[0] = (event) => {
+          if (!event.defaultPrevented) {
+            event.preventDefault();
+            unref(rootContext).triggerElement.value?.focus();
+          }
+        }),
+        onPointerDownOutside: _cache[1] || (_cache[1] = (event) => {
+          const originalEvent = event.detail.originalEvent;
+          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
+          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
+          if (isRightClick) event.preventDefault();
+        }),
+        onFocusOutside: _cache[2] || (_cache[2] = (event) => {
+          event.preventDefault();
+        })
+      }), {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+        _: 3
+      }, 16, [
+        "present",
+        "trap-focus",
+        "disable-outside-pointer-events"
+      ]);
+    };
+  }
+});
+var DialogContentModal_default = DialogContentModal_vue_vue_type_script_setup_true_lang_default;
+var DialogContentNonModal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "DialogContentNonModal",
+  props: {
+    forceMount: {
+      type: Boolean,
+      required: false
+    },
+    trapFocus: {
+      type: Boolean,
+      required: false
+    },
+    disableOutsidePointerEvents: {
+      type: Boolean,
+      required: false
+    },
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    },
+    present: {
+      type: Boolean,
+      required: true
+    }
+  },
+  emits: [
+    "escapeKeyDown",
+    "pointerDownOutside",
+    "focusOutside",
+    "interactOutside",
+    "openAutoFocus",
+    "closeAutoFocus"
+  ],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emits = __emit;
+    const emitsAsProps = useEmitAsProps(emits);
+    useForwardExpose();
+    const rootContext = injectDialogRootContext();
+    const hasInteractedOutsideRef = /* @__PURE__ */ ref(false);
+    const hasPointerDownOutsideRef = /* @__PURE__ */ ref(false);
+    const forwardedProps = computed(() => {
+      const { present: _2, ...rest } = props;
+      return rest;
+    });
+    watch(() => props.present, (isPresent, wasPresent) => {
+      if (!isPresent && wasPresent) {
+        if (!hasInteractedOutsideRef.value) rootContext.triggerElement.value?.focus();
+        hasInteractedOutsideRef.value = false;
+        hasPointerDownOutsideRef.value = false;
+      }
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(DialogContentImpl_default, mergeProps({
+        ...forwardedProps.value,
+        ...unref(emitsAsProps)
+      }, {
+        present: _ctx.present,
+        "trap-focus": false,
+        "disable-outside-pointer-events": false,
+        onCloseAutoFocus: _cache[0] || (_cache[0] = (event) => {
+          if (!event.defaultPrevented) {
+            if (!hasInteractedOutsideRef.value) unref(rootContext).triggerElement.value?.focus();
+            event.preventDefault();
+          }
+          hasInteractedOutsideRef.value = false;
+          hasPointerDownOutsideRef.value = false;
+        }),
+        onInteractOutside: _cache[1] || (_cache[1] = (event) => {
+          if (!event.defaultPrevented) {
+            hasInteractedOutsideRef.value = true;
+            if (event.detail.originalEvent.type === "pointerdown") hasPointerDownOutsideRef.value = true;
+          }
+          const target = event.target;
+          const targetIsTrigger = unref(rootContext).triggerElement.value?.contains(target);
+          if (targetIsTrigger) event.preventDefault();
+          if (event.detail.originalEvent.type === "focusin" && hasPointerDownOutsideRef.value) event.preventDefault();
+        })
+      }), {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+        _: 3
+      }, 16, ["present"]);
+    };
+  }
+});
+var DialogContentNonModal_default = DialogContentNonModal_vue_vue_type_script_setup_true_lang_default;
+var DialogContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "DialogContent",
+  props: {
+    forceMount: {
+      type: Boolean,
+      required: false
+    },
+    disableOutsidePointerEvents: {
+      type: Boolean,
+      required: false,
+      default: void 0
+    },
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    }
+  },
+  emits: [
+    "escapeKeyDown",
+    "pointerDownOutside",
+    "focusOutside",
+    "interactOutside",
+    "openAutoFocus",
+    "closeAutoFocus"
+  ],
+  setup(__props, { emit: __emit }) {
+    const props = __props;
+    const emits = __emit;
+    const rootContext = injectDialogRootContext();
+    const emitsAsProps = useEmitAsProps(emits);
+    const { forwardRef } = useForwardExpose();
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(Presence_default), {
+        present: _ctx.forceMount || unref(rootContext).open.value,
+        "force-mount": _ctx.forceMount || !unref(rootContext).unmountOnHide.value
+      }, {
+        default: withCtx(({ present }) => [unref(rootContext).modal.value ? withDirectives((openBlock(), createBlock(DialogContentModal_default, mergeProps({
+          key: 0,
+          ref: unref(forwardRef),
+          present: unref(rootContext).unmountOnHide.value || present
+        }, {
+          ...props,
+          ...unref(emitsAsProps),
+          ..._ctx.$attrs
+        }), {
+          default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+          _: 2
+        }, 1040, ["present"])), [[vShow, unref(rootContext).unmountOnHide.value || present]]) : withDirectives((openBlock(), createBlock(DialogContentNonModal_default, mergeProps({
+          key: 1,
+          ref: unref(forwardRef),
+          present: unref(rootContext).unmountOnHide.value || present
+        }, {
+          ...props,
+          ...unref(emitsAsProps),
+          ..._ctx.$attrs
+        }), {
+          default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+          _: 2
+        }, 1040, ["present"])), [[vShow, unref(rootContext).unmountOnHide.value || present]])]),
+        _: 3
+      }, 8, ["present", "force-mount"]);
+    };
+  }
+});
+var DialogContent_default = DialogContent_vue_vue_type_script_setup_true_lang_default;
+var DialogOverlayImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "DialogOverlayImpl",
+  props: {
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    },
+    present: {
+      type: Boolean,
+      required: false,
+      default: true
+    }
+  },
+  setup(__props) {
+    const props = __props;
+    const rootContext = injectDialogRootContext();
+    const scrollLocked = useBodyScrollLock(props.present);
+    watch(() => props.present, (val) => scrollLocked.value = val);
+    useForwardExpose();
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(Primitive), {
+        as: _ctx.as,
+        "as-child": _ctx.asChild,
+        "data-state": unref(rootContext).open.value ? "open" : "closed",
+        style: { "pointer-events": "auto" },
+        onPointerdown: _cache[0] || (_cache[0] = withModifiers(() => {
+        }, [
+          "left",
+          "self",
+          "prevent"
+        ]))
+      }, {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+        _: 3
+      }, 8, [
+        "as",
+        "as-child",
+        "data-state"
+      ]);
+    };
+  }
+});
+var DialogOverlayImpl_default = DialogOverlayImpl_vue_vue_type_script_setup_true_lang_default;
+var DialogOverlay_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "DialogOverlay",
+  props: {
+    forceMount: {
+      type: Boolean,
+      required: false
+    },
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false
+    }
+  },
+  setup(__props) {
+    const rootContext = injectDialogRootContext();
+    const { forwardRef } = useForwardExpose();
+    return (_ctx, _cache) => {
+      return unref(rootContext)?.modal.value ? (openBlock(), createBlock(unref(Presence_default), {
+        key: 0,
+        present: _ctx.forceMount || unref(rootContext).open.value,
+        "force-mount": _ctx.forceMount || !unref(rootContext).unmountOnHide.value
+      }, {
+        default: withCtx(({ present }) => [withDirectives(createVNode(DialogOverlayImpl_default, mergeProps(_ctx.$attrs, {
+          ref: unref(forwardRef),
+          as: _ctx.as,
+          "as-child": _ctx.asChild,
+          present: unref(rootContext).unmountOnHide.value || present
+        }), {
+          default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+          _: 2
+        }, 1040, [
+          "as",
+          "as-child",
+          "present"
+        ]), [[vShow, unref(rootContext).unmountOnHide.value || present]])]),
+        _: 3
+      }, 8, ["present", "force-mount"])) : createCommentVNode("v-if", true);
+    };
+  }
+});
+var DialogOverlay_default = DialogOverlay_vue_vue_type_script_setup_true_lang_default;
+var Teleport_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
   __name: "Teleport",
   props: {
     to: {
@@ -12642,9 +13180,9 @@ var Teleport_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE__ */ def
   },
   setup(__props) {
     const props = __props;
-    const configContext = injectConfigProviderContext$1({});
+    const configContext = injectConfigProviderContext({});
     const target = computed(() => props.to ?? configContext.teleportTo?.value ?? "body");
-    const isMounted = /* @__PURE__ */ useMounted$1();
+    const isMounted = /* @__PURE__ */ useMounted();
     return (_ctx, _cache) => {
       return unref(isMounted) || _ctx.forceMount ? (openBlock(), createBlock(Teleport, {
         key: 0,
@@ -12659,7 +13197,64 @@ var Teleport_vue_vue_type_script_setup_true_lang_default$1 = /* @__PURE__ */ def
     };
   }
 });
-var Teleport_default$1 = Teleport_vue_vue_type_script_setup_true_lang_default$1;
+var Teleport_default = Teleport_vue_vue_type_script_setup_true_lang_default;
+var DialogPortal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "DialogPortal",
+  props: {
+    to: {
+      type: null,
+      required: false
+    },
+    disabled: {
+      type: Boolean,
+      required: false
+    },
+    defer: {
+      type: Boolean,
+      required: false
+    },
+    forceMount: {
+      type: Boolean,
+      required: false
+    }
+  },
+  setup(__props) {
+    const props = __props;
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(Teleport_default), normalizeProps(guardReactiveProps(props)), {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+        _: 3
+      }, 16);
+    };
+  }
+});
+var DialogPortal_default = DialogPortal_vue_vue_type_script_setup_true_lang_default;
+var DialogTitle_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+  __name: "DialogTitle",
+  props: {
+    asChild: {
+      type: Boolean,
+      required: false
+    },
+    as: {
+      type: null,
+      required: false,
+      default: "h2"
+    }
+  },
+  setup(__props) {
+    const props = __props;
+    const rootContext = injectDialogRootContext();
+    useForwardExpose();
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(Primitive), mergeProps(props, { id: unref(rootContext).titleId }), {
+        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+        _: 3
+      }, 16, ["id"]);
+    };
+  }
+});
+var DialogTitle_default = DialogTitle_vue_vue_type_script_setup_true_lang_default;
 const ITEM_DATA_ATTR = "data-reka-collection-item";
 function useCollection(options = {}) {
   const { key = "", isProvider = false } = options;
@@ -12692,7 +13287,7 @@ function useCollection(options = {}) {
       watch(currentElement, () => {
         context2.collectionRef.value = currentElement.value;
       });
-      return () => h$2(Slot$1, {
+      return () => h$2(Slot, {
         ref: primitiveElement,
         ...attrs
       }, slots);
@@ -12714,7 +13309,7 @@ function useCollection(options = {}) {
           cleanupFn(() => context2.itemMap.value.delete(key$1));
         }
       });
-      return () => h$2(Slot$1, {
+      return () => h$2(Slot, {
         ...attrs,
         [ITEM_DATA_ATTR]: "",
         ref: primitiveElement
@@ -12751,7 +13346,7 @@ var VisuallyHidden_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
   },
   setup(__props) {
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Primitive$1), {
+      return openBlock(), createBlock(unref(Primitive), {
         as: _ctx.as,
         "as-child": _ctx.asChild,
         "aria-hidden": _ctx.feature === "focusable" || _ctx.feature === "fully-hidden" ? "true" : void 0,
@@ -12923,7 +13518,7 @@ var VisuallyHiddenInput_vue_vue_type_script_setup_true_lang_default = /* @__PURE
 });
 var VisuallyHiddenInput_default = VisuallyHiddenInput_vue_vue_type_script_setup_true_lang_default;
 const ENTRY_FOCUS = "rovingFocusGroup.onEntryFocus";
-const EVENT_OPTIONS$1 = {
+const EVENT_OPTIONS = {
   bubbles: false,
   cancelable: true
 };
@@ -12947,18 +13542,18 @@ function getFocusIntent(event, orientation, dir) {
   if (orientation === "horizontal" && ["ArrowUp", "ArrowDown"].includes(key)) return void 0;
   return MAP_KEY_TO_FOCUS_INTENT[key];
 }
-function focusFirst$1(candidates, preventScroll = false) {
-  const PREVIOUSLY_FOCUSED_ELEMENT = getActiveElement$1();
+function focusFirst(candidates, preventScroll = false) {
+  const PREVIOUSLY_FOCUSED_ELEMENT = getActiveElement();
   for (const candidate of candidates) {
     if (candidate === PREVIOUSLY_FOCUSED_ELEMENT) return;
     candidate.focus({ preventScroll });
-    if (getActiveElement$1() !== PREVIOUSLY_FOCUSED_ELEMENT) return;
+    if (getActiveElement() !== PREVIOUSLY_FOCUSED_ELEMENT) return;
   }
 }
 function wrapArray(array, startIndex) {
   return array.map((_2, index) => array[(startIndex + index) % array.length]);
 }
-const [injectPopperRootContext, providePopperRootContext] = /* @__PURE__ */ createContext$1("PopperRoot");
+const [injectPopperRootContext, providePopperRootContext] = /* @__PURE__ */ createContext("PopperRoot");
 var PopperRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
   inheritAttrs: false,
   __name: "PopperRoot",
@@ -12992,13 +13587,13 @@ var PopperAnchor_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
   },
   setup(__props) {
     const props = __props;
-    const { forwardRef, currentElement } = useForwardExpose$1();
+    const { forwardRef, currentElement } = useForwardExpose();
     const rootContext = injectPopperRootContext();
     watchPostEffect(() => {
       rootContext.onAnchorChange(props.reference ?? currentElement.value);
     });
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Primitive$1), {
+      return openBlock(), createBlock(unref(Primitive), {
         ref: unref(forwardRef),
         as: _ctx.as,
         "as-child": _ctx.asChild
@@ -14825,7 +15420,7 @@ const PopperContentPropsDefaultValue = {
   updatePositionStrategy: "optimized",
   prioritizePosition: false
 };
-const [injectPopperContentContext, providePopperContentContext] = /* @__PURE__ */ createContext$1("PopperContent");
+const [injectPopperContentContext, providePopperContentContext] = /* @__PURE__ */ createContext("PopperContent");
 var PopperContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
   inheritAttrs: false,
   __name: "PopperContent",
@@ -14924,7 +15519,7 @@ var PopperContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     const props = __props;
     const emits = __emit;
     const rootContext = injectPopperRootContext();
-    const { forwardRef, currentElement: contentElement } = useForwardExpose$1();
+    const { forwardRef, currentElement: contentElement } = useForwardExpose();
     const dir = useDirection(computed(() => props.dir));
     const floatingRef = /* @__PURE__ */ ref();
     const arrow$12 = /* @__PURE__ */ ref();
@@ -15061,7 +15656,7 @@ var PopperContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
         unref(isPositioned),
         ...Object.values(_ctx.$attrs),
         ...props.memoDependencies
-      ], () => (openBlock(), createBlock(unref(Primitive$1), mergeProps({
+      ], () => (openBlock(), createBlock(unref(Primitive), mergeProps({
         key: 0,
         ref: unref(forwardRef)
       }, _ctx.$attrs, {
@@ -15079,7 +15674,7 @@ var PopperContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
         "data-side",
         "data-align",
         "style"
-      ])), _cache, 0) : (openBlock(), createBlock(unref(Primitive$1), mergeProps({
+      ])), _cache, 0) : (openBlock(), createBlock(unref(Primitive), mergeProps({
         key: 1,
         ref: unref(forwardRef)
       }, _ctx.$attrs, {
@@ -15104,7 +15699,7 @@ var PopperContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
   }
 });
 var PopperContent_default = PopperContent_vue_vue_type_script_setup_true_lang_default;
-const [injectRovingFocusGroupContext, provideRovingFocusGroupContext] = /* @__PURE__ */ createContext$1("RovingFocusGroup");
+const [injectRovingFocusGroupContext, provideRovingFocusGroupContext] = /* @__PURE__ */ createContext("RovingFocusGroup");
 var RovingFocusGroup_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
   __name: "RovingFocusGroup",
   props: {
@@ -15150,7 +15745,7 @@ var RovingFocusGroup_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ 
     const emits = __emit;
     const { loop, orientation, dir: propDir } = /* @__PURE__ */ toRefs(props);
     const dir = useDirection(propDir);
-    const currentTabStopId = /* @__PURE__ */ useVModel$1(props, "currentTabStopId", emits, {
+    const currentTabStopId = /* @__PURE__ */ useVModel(props, "currentTabStopId", emits, {
       defaultValue: props.defaultCurrentTabStopId,
       passive: props.currentTabStopId === void 0
     });
@@ -15161,7 +15756,7 @@ var RovingFocusGroup_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ 
     function handleFocus(event) {
       const isKeyboardFocus = !isClickFocus.value;
       if (event.currentTarget && event.target === event.currentTarget && isKeyboardFocus && !isTabbingBackOut.value) {
-        const entryFocusEvent = new CustomEvent(ENTRY_FOCUS, EVENT_OPTIONS$1);
+        const entryFocusEvent = new CustomEvent(ENTRY_FOCUS, EVENT_OPTIONS);
         event.currentTarget.dispatchEvent(entryFocusEvent);
         emits("entryFocus", entryFocusEvent);
         if (!entryFocusEvent.defaultPrevented) {
@@ -15175,7 +15770,7 @@ var RovingFocusGroup_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ 
             currentItem,
             ...items
           ].filter(Boolean);
-          focusFirst$1(candidateItems, props.preventScrollOnEntryFocus);
+          focusFirst(candidateItems, props.preventScrollOnEntryFocus);
         }
       }
       isClickFocus.value = false;
@@ -15206,7 +15801,7 @@ var RovingFocusGroup_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ 
     });
     return (_ctx, _cache) => {
       return openBlock(), createBlock(unref(CollectionSlot), null, {
-        default: withCtx(() => [createVNode(unref(Primitive$1), {
+        default: withCtx(() => [createVNode(unref(Primitive), {
           tabindex: isTabbingBackOut.value || focusableItemsCount.value === 0 ? -1 : 0,
           "data-orientation": unref(orientation),
           as: _ctx.as,
@@ -15266,7 +15861,7 @@ var RovingFocusItem_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
   setup(__props) {
     const props = __props;
     const context2 = injectRovingFocusGroupContext();
-    const randomId = useId$1();
+    const randomId = useId();
     const id = computed(() => props.tabStopId || randomId);
     const isCurrentTabStop = computed(() => context2.currentTabStopId.value === id.value);
     const { getItems, CollectionItem } = useCollection();
@@ -15298,12 +15893,12 @@ var RovingFocusItem_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
           const currentIndex = candidateNodes.indexOf(event.currentTarget);
           candidateNodes = context2.loop.value ? wrapArray(candidateNodes, currentIndex + 1) : candidateNodes.slice(currentIndex + 1);
         }
-        nextTick(() => focusFirst$1(candidateNodes));
+        nextTick(() => focusFirst(candidateNodes));
       }
     }
     return (_ctx, _cache) => {
       return openBlock(), createBlock(unref(CollectionItem), null, {
-        default: withCtx(() => [createVNode(unref(Primitive$1), {
+        default: withCtx(() => [createVNode(unref(Primitive), {
           tabindex: isCurrentTabStop.value ? 0 : -1,
           "data-orientation": unref(context2).orientation.value,
           "data-active": _ctx.active ? "" : void 0,
@@ -15333,14 +15928,14 @@ var RovingFocusItem_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
   }
 });
 var RovingFocusItem_default = RovingFocusItem_vue_vue_type_script_setup_true_lang_default;
-const [injectCheckboxGroupRootContext] = /* @__PURE__ */ createContext$1("CheckboxGroupRoot");
+const [injectCheckboxGroupRootContext] = /* @__PURE__ */ createContext("CheckboxGroupRoot");
 function isIndeterminate(checked) {
   return checked === "indeterminate";
 }
 function getState(checked) {
   return isIndeterminate(checked) ? "indeterminate" : checked ? "checked" : "unchecked";
 }
-const [injectCheckboxRootContext, provideCheckboxRootContext] = /* @__PURE__ */ createContext$1("CheckboxRoot");
+const [injectCheckboxRootContext, provideCheckboxRootContext] = /* @__PURE__ */ createContext("CheckboxRoot");
 var CheckboxRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
   inheritAttrs: false,
   __name: "CheckboxRoot",
@@ -15399,23 +15994,23 @@ var CheckboxRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
   setup(__props, { emit: __emit }) {
     const props = __props;
     const emits = __emit;
-    const { forwardRef, currentElement } = useForwardExpose$1();
+    const { forwardRef, currentElement } = useForwardExpose();
     const checkboxGroupContext = injectCheckboxGroupRootContext(null);
-    const modelValue = /* @__PURE__ */ useVModel$1(props, "modelValue", emits, {
+    const modelValue = /* @__PURE__ */ useVModel(props, "modelValue", emits, {
       defaultValue: props.defaultValue ?? props.falseValue,
       passive: props.modelValue === void 0
     });
     const disabled = computed(() => checkboxGroupContext?.disabled.value || props.disabled);
     const isChecked = computed(() => isEqual(modelValue.value, props.trueValue));
     const checkboxState = computed(() => {
-      if (!isNullish$1(checkboxGroupContext?.modelValue.value)) return isValueEqualOrExist(checkboxGroupContext.modelValue.value, props.value);
+      if (!isNullish(checkboxGroupContext?.modelValue.value)) return isValueEqualOrExist(checkboxGroupContext.modelValue.value, props.value);
       else {
         if (modelValue.value === "indeterminate") return "indeterminate";
         return isChecked.value;
       }
     });
     function handleClick() {
-      if (!isNullish$1(checkboxGroupContext?.modelValue.value)) {
+      if (!isNullish(checkboxGroupContext?.modelValue.value)) {
         const modelValueArray = [...checkboxGroupContext.modelValue.value || []];
         if (isValueEqualOrExist(modelValueArray, props.value)) {
           const index = modelValueArray.findIndex((i2) => isEqual(i2, props.value));
@@ -15437,7 +16032,7 @@ var CheckboxRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
       state: checkboxState
     });
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock(Fragment, null, [(openBlock(), createBlock(resolveDynamicComponent(unref(checkboxGroupContext)?.rovingFocus.value ? unref(RovingFocusItem_default) : unref(Primitive$1)), mergeProps({
+      return openBlock(), createElementBlock(Fragment, null, [(openBlock(), createBlock(resolveDynamicComponent(unref(checkboxGroupContext)?.rovingFocus.value ? unref(RovingFocusItem_default) : unref(Primitive)), mergeProps({
         ..._ctx.$attrs,
         ...unref(scopeIdAttrs)
       }, {
@@ -15513,11 +16108,11 @@ var CheckboxIndicator_vue_vue_type_script_setup_true_lang_default = /* @__PURE__
     }
   },
   setup(__props) {
-    const { forwardRef } = useForwardExpose$1();
+    const { forwardRef } = useForwardExpose();
     const rootContext = injectCheckboxRootContext();
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Presence_default$1), { present: _ctx.forceMount || unref(isIndeterminate)(unref(rootContext).state.value) || unref(rootContext).state.value === true }, {
-        default: withCtx(() => [createVNode(unref(Primitive$1), mergeProps({
+      return openBlock(), createBlock(unref(Presence_default), { present: _ctx.forceMount || unref(isIndeterminate)(unref(rootContext).state.value) || unref(rootContext).state.value === true }, {
+        default: withCtx(() => [createVNode(unref(Primitive), mergeProps({
           ref: unref(forwardRef),
           "data-state": unref(getState)(unref(rootContext).state.value),
           "data-disabled": unref(rootContext).disabled.value ? "" : void 0,
@@ -15569,13 +16164,13 @@ var MenuAnchor_default = MenuAnchor_vue_vue_type_script_setup_true_lang_default;
 function useIsUsingKeyboardImpl() {
   const isUsingKeyboard = /* @__PURE__ */ ref(false);
   onMounted(() => {
-    useEventListener$1("keydown", () => {
+    useEventListener("keydown", () => {
       isUsingKeyboard.value = true;
     }, {
       capture: true,
       passive: true
     });
-    useEventListener$1(["pointerdown", "pointermove"], () => {
+    useEventListener(["pointerdown", "pointermove"], () => {
       isUsingKeyboard.value = false;
     }, {
       capture: true,
@@ -15584,9 +16179,9 @@ function useIsUsingKeyboardImpl() {
   });
   return isUsingKeyboard;
 }
-const useIsUsingKeyboard = /* @__PURE__ */ createSharedComposable$1(useIsUsingKeyboardImpl);
-const [injectMenuContext, provideMenuContext] = /* @__PURE__ */ createContext$1(["MenuRoot", "MenuSub"], "MenuContext");
-const [injectMenuRootContext, provideMenuRootContext] = /* @__PURE__ */ createContext$1("MenuRoot");
+const useIsUsingKeyboard = /* @__PURE__ */ createSharedComposable(useIsUsingKeyboardImpl);
+const [injectMenuContext, provideMenuContext] = /* @__PURE__ */ createContext(["MenuRoot", "MenuSub"], "MenuContext");
+const [injectMenuRootContext, provideMenuRootContext] = /* @__PURE__ */ createContext("MenuRoot");
 var MenuRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
   __name: "MenuRoot",
   props: {
@@ -15611,7 +16206,7 @@ var MenuRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     const emits = __emit;
     const { modal, dir: propDir } = /* @__PURE__ */ toRefs(props);
     const dir = useDirection(propDir);
-    const open = /* @__PURE__ */ useVModel$1(props, "open", emits);
+    const open = /* @__PURE__ */ useVModel(props, "open", emits);
     const content = /* @__PURE__ */ ref();
     const isUsingKeyboardRef = useIsUsingKeyboard();
     provideMenuContext({
@@ -15641,7 +16236,7 @@ var MenuRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
   }
 });
 var MenuRoot_default = MenuRoot_vue_vue_type_script_setup_true_lang_default;
-const [injectMenuContentContext, provideMenuContentContext] = /* @__PURE__ */ createContext$1("MenuContent");
+const [injectMenuContentContext, provideMenuContentContext] = /* @__PURE__ */ createContext("MenuContent");
 var MenuContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
   __name: "MenuContentImpl",
   props: /* @__PURE__ */ mergeDefaults({
@@ -15763,7 +16358,7 @@ var MenuContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     const rootContext = injectMenuRootContext();
     const { trapFocus, disableOutsidePointerEvents, loop } = /* @__PURE__ */ toRefs(props);
     useFocusGuards();
-    useBodyScrollLock$1(disableOutsidePointerEvents.value);
+    useBodyScrollLock(disableOutsidePointerEvents.value);
     const searchRef = /* @__PURE__ */ ref("");
     const timerRef = /* @__PURE__ */ ref(0);
     const pointerGraceTimerRef = /* @__PURE__ */ ref(0);
@@ -15772,11 +16367,11 @@ var MenuContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     const lastPointerXRef = /* @__PURE__ */ ref(0);
     const currentItemId = /* @__PURE__ */ ref(null);
     const rovingFocusGroupRef = /* @__PURE__ */ ref();
-    const { forwardRef, currentElement: contentElement } = useForwardExpose$1();
+    const { forwardRef, currentElement: contentElement } = useForwardExpose();
     const { handleTypeaheadSearch } = useTypeahead();
     const highlightedElement = /* @__PURE__ */ ref();
     function onKeydownNavigation(event) {
-      const el = useArrowNavigation(event, highlightedElement.value || getActiveElement$1(), contentElement.value, {
+      const el = useArrowNavigation(event, highlightedElement.value || getActiveElement(), contentElement.value, {
         loop: loop.value,
         arrowKeyOptions: "vertical",
         dir: rootContext?.dir.value,
@@ -15823,7 +16418,7 @@ var MenuContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
       const isKeyDownInTextField = ["input", "textarea"].includes(target.tagName.toLowerCase());
       const isModifierKey = event.ctrlKey || event.altKey || event.metaKey;
       const isCharacterKey = event.key.length === 1;
-      const el = useArrowNavigation(event, getActiveElement$1(), contentElement.value, {
+      const el = useArrowNavigation(event, getActiveElement(), contentElement.value, {
         loop: loop.value,
         arrowKeyOptions: "vertical",
         dir: rootContext?.dir.value,
@@ -15842,7 +16437,7 @@ var MenuContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
       event.preventDefault();
       const candidateNodes = [...collectionItems.map((item) => item.ref)];
       if (LAST_KEYS.includes(event.key)) candidateNodes.reverse();
-      focusFirst$2(candidateNodes);
+      focusFirst$1(candidateNodes);
     }
     function handleBlur(event) {
       if (!event?.currentTarget?.contains?.(event.target)) {
@@ -15871,7 +16466,7 @@ var MenuContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
       },
       onItemLeave: (event) => {
         if (isPointerMovingToSubmenu(event)) return true;
-        const isInputFocused = ["INPUT", "TEXTAREA"].includes(getActiveElement$1()?.tagName || "");
+        const isInputFocused = ["INPUT", "TEXTAREA"].includes(getActiveElement()?.tagName || "");
         if (!isInputFocused) contentElement.value?.focus();
         currentItemId.value = null;
         return false;
@@ -15895,13 +16490,13 @@ var MenuContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
       }
     });
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(FocusScope_default$1), {
+      return openBlock(), createBlock(unref(FocusScope_default), {
         "as-child": "",
         trapped: unref(trapFocus),
         onMountAutoFocus: handleMountAutoFocus,
         onUnmountAutoFocus: _cache[7] || (_cache[7] = ($event) => emits("closeAutoFocus", $event))
       }, {
-        default: withCtx(() => [createVNode(unref(DismissableLayer_default$1), {
+        default: withCtx(() => [createVNode(unref(DismissableLayer_default), {
           "as-child": "",
           "disable-outside-pointer-events": unref(disableOutsidePointerEvents),
           onEscapeKeyDown: _cache[2] || (_cache[2] = ($event) => emits("escapeKeyDown", $event)),
@@ -15931,7 +16526,7 @@ var MenuContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
               "as-child": _ctx.asChild,
               "aria-orientation": "vertical",
               "data-reka-menu-content": "",
-              "data-state": unref(getOpenState$1)(unref(menuContext).open.value),
+              "data-state": unref(getOpenState)(unref(menuContext).open.value),
               dir: unref(rootContext).dir.value,
               side: _ctx.side,
               "side-offset": _ctx.sideOffset,
@@ -16012,7 +16607,7 @@ var MenuItemImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
   setup(__props) {
     const props = __props;
     const contentContext = injectMenuContentContext();
-    const { forwardRef, currentElement } = useForwardExpose$1();
+    const { forwardRef, currentElement } = useForwardExpose();
     const { CollectionItem } = useCollection();
     const isFocused = /* @__PURE__ */ ref(false);
     const isHighlighted = computed(() => isFocused.value || currentElement.value != null && contentContext.highlightedElement.value === currentElement.value);
@@ -16024,7 +16619,7 @@ var MenuItemImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
         if (!defaultPrevented) {
           const item = event.currentTarget;
           contentContext.highlightedElement.value = item;
-          const isInputFocused = ["INPUT", "TEXTAREA"].includes(getActiveElement$1()?.tagName || "");
+          const isInputFocused = ["INPUT", "TEXTAREA"].includes(getActiveElement()?.tagName || "");
           if (!isInputFocused) item.focus({ preventScroll: true });
         }
       }
@@ -16039,7 +16634,7 @@ var MenuItemImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     }
     return (_ctx, _cache) => {
       return openBlock(), createBlock(unref(CollectionItem), { value: { textValue: _ctx.textValue } }, {
-        default: withCtx(() => [createVNode(unref(Primitive$1), mergeProps({
+        default: withCtx(() => [createVNode(unref(Primitive), mergeProps({
           ref: unref(forwardRef),
           role: "menuitem",
           tabindex: "-1"
@@ -16102,7 +16697,7 @@ var MenuItem_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
   setup(__props, { emit: __emit }) {
     const props = __props;
     const emits = __emit;
-    const { forwardRef, currentElement } = useForwardExpose$1();
+    const { forwardRef, currentElement } = useForwardExpose();
     const rootContext = injectMenuRootContext();
     const contentContext = injectMenuContentContext();
     const isPointerDownRef = /* @__PURE__ */ ref(false);
@@ -16253,8 +16848,8 @@ var MenuRootContentModal_vue_vue_type_script_setup_true_lang_default = /* @__PUR
     const emits = __emit;
     const forwarded = useForwardPropsEmits(props, emits);
     const menuContext = injectMenuContext();
-    const { forwardRef, currentElement } = useForwardExpose$1();
-    useHideOthers$1(currentElement);
+    const { forwardRef, currentElement } = useForwardExpose();
+    useHideOthers(currentElement);
     return (_ctx, _cache) => {
       return openBlock(), createBlock(MenuContentImpl_default, mergeProps(unref(forwarded), {
         ref: unref(forwardRef),
@@ -16503,7 +17098,7 @@ var MenuContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     const menuContext = injectMenuContext();
     const rootContext = injectMenuRootContext();
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Presence_default$1), { present: _ctx.forceMount || unref(menuContext).open.value }, {
+      return openBlock(), createBlock(unref(Presence_default), { present: _ctx.forceMount || unref(menuContext).open.value }, {
         default: withCtx(() => [unref(rootContext).modal.value ? (openBlock(), createBlock(MenuRootContentModal_default, normalizeProps(mergeProps({ key: 0 }, {
           ..._ctx.$attrs,
           ...unref(forwarded)
@@ -16546,7 +17141,7 @@ var MenuPortal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
   setup(__props) {
     const props = __props;
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Teleport_default$1), normalizeProps(guardReactiveProps(props)), {
+      return openBlock(), createBlock(unref(Teleport_default), normalizeProps(guardReactiveProps(props)), {
         default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
         _: 3
       }, 16);
@@ -16554,7 +17149,7 @@ var MenuPortal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
   }
 });
 var MenuPortal_default = MenuPortal_vue_vue_type_script_setup_true_lang_default;
-const [injectDropdownMenuRootContext, provideDropdownMenuRootContext] = /* @__PURE__ */ createContext$1("DropdownMenuRoot");
+const [injectDropdownMenuRootContext, provideDropdownMenuRootContext] = /* @__PURE__ */ createContext("DropdownMenuRoot");
 var DropdownMenuRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
   __name: "DropdownMenuRoot",
   props: {
@@ -16581,8 +17176,8 @@ var DropdownMenuRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ 
   setup(__props, { emit: __emit }) {
     const props = __props;
     const emit2 = __emit;
-    useForwardExpose$1();
-    const open = /* @__PURE__ */ useVModel$1(props, "open", emit2, {
+    useForwardExpose();
+    const open = /* @__PURE__ */ useVModel(props, "open", emit2, {
       defaultValue: props.defaultOpen,
       passive: props.open === void 0
     });
@@ -16728,7 +17323,7 @@ var DropdownMenuContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE
     const props = __props;
     const emits = __emit;
     const forwarded = useForwardPropsEmits(props, emits);
-    useForwardExpose$1();
+    useForwardExpose();
     const rootContext = injectDropdownMenuRootContext();
     const hasInteractedOutsideRef = /* @__PURE__ */ ref(false);
     function handleCloseAutoFocus(event) {
@@ -16739,7 +17334,7 @@ var DropdownMenuContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE
       hasInteractedOutsideRef.value = false;
       event.preventDefault();
     }
-    rootContext.contentId ||= useId$1(void 0, "reka-dropdown-menu-content");
+    rootContext.contentId ||= useId(void 0, "reka-dropdown-menu-content");
     return (_ctx, _cache) => {
       return openBlock(), createBlock(unref(MenuContent_default), mergeProps(unref(forwarded), {
         id: unref(rootContext).contentId,
@@ -16792,8 +17387,8 @@ var DropdownMenuItem_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ 
   setup(__props, { emit: __emit }) {
     const props = __props;
     const emits = __emit;
-    const emitsAsProps = useEmitAsProps$1(emits);
-    useForwardExpose$1();
+    const emitsAsProps = useEmitAsProps(emits);
+    useForwardExpose();
     return (_ctx, _cache) => {
       return openBlock(), createBlock(unref(MenuItem_default), normalizeProps(guardReactiveProps({
         ...props,
@@ -16857,14 +17452,14 @@ var DropdownMenuTrigger_vue_vue_type_script_setup_true_lang_default = /* @__PURE
   setup(__props) {
     const props = __props;
     const rootContext = injectDropdownMenuRootContext();
-    const { forwardRef, currentElement: triggerElement } = useForwardExpose$1();
+    const { forwardRef, currentElement: triggerElement } = useForwardExpose();
     onMounted(() => {
       rootContext.triggerElement = triggerElement;
     });
-    rootContext.triggerId ||= useId$1(void 0, "reka-dropdown-menu-trigger");
+    rootContext.triggerId ||= useId(void 0, "reka-dropdown-menu-trigger");
     return (_ctx, _cache) => {
       return openBlock(), createBlock(unref(MenuAnchor_default), { "as-child": "" }, {
-        default: withCtx(() => [createVNode(unref(Primitive$1), {
+        default: withCtx(() => [createVNode(unref(Primitive), {
           id: unref(rootContext).triggerId,
           ref: unref(forwardRef),
           type: _ctx.as === "button" ? "button" : void 0,
@@ -16950,8 +17545,8 @@ const _sfc_main$H = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$z = '\n.checkbox[data-v-744a7fa9] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.checkbox[data-v-744a7fa9]:hover {\n  border-color: var(--color-primary);\n}\n.checkbox[data-v-744a7fa9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.checkbox[data-state="checked"][data-v-744a7fa9] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-744a7fa9] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
-const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["styles", [_style_0$z]], ["__scopeId", "data-v-744a7fa9"]]);
+const _style_0$z = '\n.transcript-ui-root .checkbox[data-v-ed0978f7] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .checkbox[data-v-ed0978f7]:hover {\n  border-color: var(--color-primary);\n}\n.transcript-ui-root .checkbox[data-v-ed0978f7]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.transcript-ui-root .checkbox[data-state="checked"][data-v-ed0978f7] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-ed0978f7] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
+const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["styles", [_style_0$z]], ["__scopeId", "data-v-ed0978f7"]]);
 function extend(destination) {
   for (var i2 = 1; i2 < arguments.length; i2++) {
     var source = arguments[i2];
@@ -17744,8 +18339,8 @@ var Oe = ((l4 = "") => {
   } catch {
     return false;
   }
-})(), m$1 = { codeRemoveIndent: /^(?: {1,4}| {0,3}\t)/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (l4) => new RegExp(`^( {0,3}${l4})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: I((l4) => new RegExp(`^ {0,${l4}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`)), hrRegex: I((l4) => new RegExp(`^ {0,${l4}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`)), fencesBeginRegex: I((l4) => new RegExp(`^ {0,${l4}}(?:\`\`\`|~~~)`)), headingBeginRegex: I((l4) => new RegExp(`^ {0,${l4}}#`)), htmlBeginRegex: I((l4) => new RegExp(`^ {0,${l4}}<(?:[a-z].*>|!--)`, "i")), blockquoteBeginRegex: I((l4) => new RegExp(`^ {0,${l4}}>`)) }, Te = /^(?:[ \t]*(?:\n|$))+/, we = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, ye = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, q = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, Pe = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, U = / {0,3}(?:[*+-]|\d{1,9}[.)])/, oe = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, ae = k(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Se = k(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), K = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table|[ \t]+\n)[^\n]+)*)/, _e = /^[^\n]+/, W = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, $e = k(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", W).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), Le = k(/^(bull)([ \t][^\n]*?)?(?:\n|$)/).replace(/bull/g, U).getRegex(), Q = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", X$1 = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, Ee = k("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n*|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>[^\\n]*\\n*|$)|<![A-Z][\\s\\S]*?(?:>[^\\n]*\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>[^\\n]*\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", X$1).replace("tag", Q).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), le = (l4) => k(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", l4).replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), ze = le(/ {0,3}(?:[*+-]|1[.)])[ \t]+[^ \t\n]/), Me = le(/ {0,3}(?:[*+-]|\d{1,9}[.)])(?:[ \t]|\n|$)/), Ae = k(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", Me).getRegex(), J = { blockquote: Ae, code: we, def: $e, fences: ye, heading: Pe, hr: q, html: Ee, lheading: ae, list: Le, newline: Te, paragraph: ze, table: z, text: _e }, se = k("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), Ie = { ...J, lheading: Se, table: se, paragraph: k(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", se).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]+[^ \\t\\n]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex() }, Ce = { ...J, html: k(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", X$1).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: z, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: k(K).replace("hr", q).replace("heading", ` *#{1,6} *[^
-]`).replace("lheading", ae).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Be = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, De = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, ue = /^( {2,}|\\)\n(?!\s*$)/, qe = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, _ = /[\p{P}\p{S}]/u, C$1 = /[\s\p{P}\p{S}]/u, v$1 = /[^\s\p{P}\p{S}]/u, ve = k(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, C$1).getRegex(), He = /[\p{Pi}\p{Ps}"']/u, pe = /(?!~)[\p{P}\p{S}]/u, Ze = /(?!~)[\s\p{P}\p{S}]/u, Ge = /(?:[^\s\p{P}\p{S}]|~)/u, Qe = k(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", Oe ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), ce = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, Ne = k(ce, "u").replace(/punct/g, _).getRegex(), je = k(ce, "u").replace(/punct/g, pe).getRegex(), Fe = /^(?:\*+(?:((?!\*)(?!openQuote)punct)|([^\s*]))?)|^_+(?:((?!_)(?!openQuote)punct)|([^\s_]))?/, Ue = k(Fe, "u").replace(/openQuote/g, He).replace(/punct/g, _).getRegex(), he = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", Ke = k(he, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), We = k(he, "gu").replace(/notPunctSpace/g, Ge).replace(/punctSpace/g, Ze).replace(/punct/g, pe).getRegex(), Xe = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)[\\s](\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|(?:(?!\\*)punct|notPunctSpace)(\\*+)(?!\\*)(?=notPunctSpace)", Je = k(Xe, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), Ve = k("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), Ye = "^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)[\\s](_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)|(?:(?!_)punct|notPunctSpace)(_+)(?!_)(?=notPunctSpace)", et = k(Ye, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), tt = k(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, _).getRegex(), nt = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", rt = k(nt, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), st = k(/\\(punct)/, "gu").replace(/punct/g, _).getRegex(), it = k(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), ot = k(X$1).replace("(?:-->|$)", "-->").getRegex(), at = k("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", ot).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), G = /(?:\[(?:\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/, lt = k(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", G).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]+|(?=\))/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), ke = k(/^!?\[(label)\]\[(ref)\]/).replace("label", G).replace("ref", W).getRegex(), de = k(/^!?\[(ref)\](?:\[\])?/).replace("ref", W).getRegex(), ut = k("reflink|nolink(?!\\()", "g").replace("reflink", ke).replace("nolink", de).getRegex(), ie = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, V = { _backpedal: z, anyPunctuation: st, autolink: it, blockSkip: Qe, br: ue, code: De, del: z, delLDelim: z, delRDelim: z, emStrongLDelim: Ne, emStrongRDelimAst: Ke, emStrongRDelimUnd: Ve, escape: Be, link: lt, nolink: de, punctuation: ve, reflink: ke, reflinkSearch: ut, tag: at, text: qe, url: z }, pt = { ...V, emStrongLDelim: Ue, emStrongRDelimAst: Je, emStrongRDelimUnd: et, link: k(/^!?\[(label)\]\((.*?)\)/).replace("label", G).getRegex(), reflink: k(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", G).getRegex() }, F = { ...V, emStrongRDelimAst: We, emStrongLDelim: je, delLDelim: tt, delRDelim: rt, url: k(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("protocol", ie).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: k(/^(`+|~+|[^`~])(?:(?=[`~])|(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace("protocol", ie).getRegex() }, ct = { ...F, br: k(ue).replace("{2,}", "*").getRegex(), text: k(F.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, H = { normal: J, gfm: Ie, pedantic: Ce }, B = { normal: V, gfm: F, breaks: ct, pedantic: pt };
+})(), m$1 = { codeRemoveIndent: /^(?: {1,4}| {0,3}\t)/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (l4) => new RegExp(`^( {0,3}${l4})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: I((l4) => new RegExp(`^ {0,${l4}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`)), hrRegex: I((l4) => new RegExp(`^ {0,${l4}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`)), fencesBeginRegex: I((l4) => new RegExp(`^ {0,${l4}}(?:\`\`\`|~~~)`)), headingBeginRegex: I((l4) => new RegExp(`^ {0,${l4}}#`)), htmlBeginRegex: I((l4) => new RegExp(`^ {0,${l4}}<(?:[a-z].*>|!--)`, "i")), blockquoteBeginRegex: I((l4) => new RegExp(`^ {0,${l4}}>`)) }, Te = /^(?:[ \t]*(?:\n|$))+/, we = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, ye = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, q = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, Pe = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, U = / {0,3}(?:[*+-]|\d{1,9}[.)])/, oe = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, ae = k(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Se = k(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), K = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table|[ \t]+\n)[^\n]+)*)/, _e = /^[^\n]+/, W = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, $e = k(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", W).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), Le = k(/^(bull)([ \t][^\n]*?)?(?:\n|$)/).replace(/bull/g, U).getRegex(), Q = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", X = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, Ee = k("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n*|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>[^\\n]*\\n*|$)|<![A-Z][\\s\\S]*?(?:>[^\\n]*\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>[^\\n]*\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", X).replace("tag", Q).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), le = (l4) => k(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", l4).replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), ze = le(/ {0,3}(?:[*+-]|1[.)])[ \t]+[^ \t\n]/), Me = le(/ {0,3}(?:[*+-]|\d{1,9}[.)])(?:[ \t]|\n|$)/), Ae = k(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", Me).getRegex(), J = { blockquote: Ae, code: we, def: $e, fences: ye, heading: Pe, hr: q, html: Ee, lheading: ae, list: Le, newline: Te, paragraph: ze, table: z, text: _e }, se = k("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), Ie = { ...J, lheading: Se, table: se, paragraph: k(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", se).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]+[^ \\t\\n]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex() }, Ce = { ...J, html: k(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", X).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: z, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: k(K).replace("hr", q).replace("heading", ` *#{1,6} *[^
+]`).replace("lheading", ae).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Be = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, De = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, ue = /^( {2,}|\\)\n(?!\s*$)/, qe = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, _ = /[\p{P}\p{S}]/u, C$1 = /[\s\p{P}\p{S}]/u, v$1 = /[^\s\p{P}\p{S}]/u, ve = k(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, C$1).getRegex(), He = /[\p{Pi}\p{Ps}"']/u, pe = /(?!~)[\p{P}\p{S}]/u, Ze = /(?!~)[\s\p{P}\p{S}]/u, Ge = /(?:[^\s\p{P}\p{S}]|~)/u, Qe = k(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", Oe ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), ce = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, Ne = k(ce, "u").replace(/punct/g, _).getRegex(), je = k(ce, "u").replace(/punct/g, pe).getRegex(), Fe = /^(?:\*+(?:((?!\*)(?!openQuote)punct)|([^\s*]))?)|^_+(?:((?!_)(?!openQuote)punct)|([^\s_]))?/, Ue = k(Fe, "u").replace(/openQuote/g, He).replace(/punct/g, _).getRegex(), he = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", Ke = k(he, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), We = k(he, "gu").replace(/notPunctSpace/g, Ge).replace(/punctSpace/g, Ze).replace(/punct/g, pe).getRegex(), Xe = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)[\\s](\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|(?:(?!\\*)punct|notPunctSpace)(\\*+)(?!\\*)(?=notPunctSpace)", Je = k(Xe, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), Ve = k("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), Ye = "^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)[\\s](_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)|(?:(?!_)punct|notPunctSpace)(_+)(?!_)(?=notPunctSpace)", et = k(Ye, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), tt = k(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, _).getRegex(), nt = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", rt = k(nt, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), st = k(/\\(punct)/, "gu").replace(/punct/g, _).getRegex(), it = k(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), ot = k(X).replace("(?:-->|$)", "-->").getRegex(), at = k("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", ot).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), G = /(?:\[(?:\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/, lt = k(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", G).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]+|(?=\))/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), ke = k(/^!?\[(label)\]\[(ref)\]/).replace("label", G).replace("ref", W).getRegex(), de = k(/^!?\[(ref)\](?:\[\])?/).replace("ref", W).getRegex(), ut = k("reflink|nolink(?!\\()", "g").replace("reflink", ke).replace("nolink", de).getRegex(), ie = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, V = { _backpedal: z, anyPunctuation: st, autolink: it, blockSkip: Qe, br: ue, code: De, del: z, delLDelim: z, delRDelim: z, emStrongLDelim: Ne, emStrongRDelimAst: Ke, emStrongRDelimUnd: Ve, escape: Be, link: lt, nolink: de, punctuation: ve, reflink: ke, reflinkSearch: ut, tag: at, text: qe, url: z }, pt = { ...V, emStrongLDelim: Ue, emStrongRDelimAst: Je, emStrongRDelimUnd: et, link: k(/^!?\[(label)\]\((.*?)\)/).replace("label", G).getRegex(), reflink: k(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", G).getRegex() }, F = { ...V, emStrongRDelimAst: We, emStrongLDelim: je, delLDelim: tt, delRDelim: rt, url: k(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("protocol", ie).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: k(/^(`+|~+|[^`~])(?:(?=[`~])|(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace("protocol", ie).getRegex() }, ct = { ...F, br: k(ue).replace("{2,}", "*").getRegex(), text: k(F.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, H = { normal: J, gfm: Ie, pedantic: Ce }, B = { normal: V, gfm: F, breaks: ct, pedantic: pt };
 var ht = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }, ge = (l4) => ht[l4];
 function T(l4, e3) {
   if (e3) {
@@ -20553,7 +21148,7 @@ function getShadowRootSelection(root2) {
 }
 const _hoisted_1$A = { class: "markdown-editor" };
 const _hoisted_2$s = ["aria-label"];
-const _hoisted_3$m = ["contenteditable"];
+const _hoisted_3$l = ["contenteditable"];
 const _sfc_main$G = /* @__PURE__ */ defineComponent({
   __name: "MarkdownEditor",
   props: {
@@ -20896,13 +21491,13 @@ const _sfc_main$G = /* @__PURE__ */ defineComponent({
           onPaste,
           onFocus: startSelectionListener,
           onBlur: stopSelectionListener
-        }, null, 40, _hoisted_3$m)
+        }, null, 40, _hoisted_3$l)
       ]);
     };
   }
 });
-const _style_0$y = "\n.markdown-editor[data-v-e5fdd0e6] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-e5fdd0e6] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 0;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-e5fdd0e6] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-e5fdd0e6] {\n  padding: var(--spacing-md) var(--spacing-md);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-e5fdd0e6] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-e5fdd0e6] h1,\n.markdown-editor__content[data-v-e5fdd0e6] h2,\n.markdown-editor__content[data-v-e5fdd0e6] h3,\n.markdown-editor__content[data-v-e5fdd0e6] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-e5fdd0e6] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-e5fdd0e6] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-e5fdd0e6] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-e5fdd0e6] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-e5fdd0e6] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-e5fdd0e6] ul,\n.markdown-editor__content[data-v-e5fdd0e6] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-e5fdd0e6] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-e5fdd0e6] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-e5fdd0e6] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-e5fdd0e6] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-e5fdd0e6] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-e5fdd0e6] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-e5fdd0e6] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-e5fdd0e6] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-e5fdd0e6] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-e5fdd0e6] th,\n.markdown-editor__content[data-v-e5fdd0e6] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-e5fdd0e6] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$y]], ["__scopeId", "data-v-e5fdd0e6"]]);
+const _style_0$y = "\n.markdown-editor[data-v-b3d64419] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-b3d64419] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 49px;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-b3d64419] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-b3d64419] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-b3d64419] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-b3d64419] h1,\n.markdown-editor__content[data-v-b3d64419] h2,\n.markdown-editor__content[data-v-b3d64419] h3,\n.markdown-editor__content[data-v-b3d64419] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-b3d64419] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-b3d64419] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-b3d64419] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-b3d64419] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-b3d64419] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-b3d64419] ul,\n.markdown-editor__content[data-v-b3d64419] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-b3d64419] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-b3d64419] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-b3d64419] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-b3d64419] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-b3d64419] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-b3d64419] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-b3d64419] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-b3d64419] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-b3d64419] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-b3d64419] th,\n.markdown-editor__content[data-v-b3d64419] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-b3d64419] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$y]], ["__scopeId", "data-v-b3d64419"]]);
 const _hoisted_1$z = { class: "markdown-view" };
 const _hoisted_2$r = ["innerHTML"];
 const _sfc_main$F = /* @__PURE__ */ defineComponent({
@@ -20944,7 +21539,7 @@ const _hoisted_2$q = {
   key: 0,
   class: "transcript-ui-popover-list__divider"
 };
-const _hoisted_3$l = { class: "transcript-ui-popover-list__footer" };
+const _hoisted_3$k = { class: "transcript-ui-popover-list__footer" };
 const _sfc_main$E = /* @__PURE__ */ defineComponent({
   __name: "PopoverList",
   props: {
@@ -21015,7 +21610,7 @@ const _sfc_main$E = /* @__PURE__ */ defineComponent({
                   ])) : createCommentVNode("", true),
                   _ctx.$slots.footer ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
                     __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$q)) : createCommentVNode("", true),
-                    createBaseVNode("div", _hoisted_3$l, [
+                    createBaseVNode("div", _hoisted_3$k, [
                       renderSlot(_ctx.$slots, "footer")
                     ])
                   ], 64)) : createCommentVNode("", true)
@@ -21036,7 +21631,7 @@ const _hoisted_2$p = {
   key: 0,
   class: "selectable-list-item__leading"
 };
-const _hoisted_3$k = { class: "selectable-list-item__label" };
+const _hoisted_3$j = { class: "selectable-list-item__label" };
 const _hoisted_4$b = {
   key: 1,
   class: "selectable-list-item__trailing"
@@ -21073,7 +21668,7 @@ const _sfc_main$D = /* @__PURE__ */ defineComponent({
           _ctx.$slots.leading ? (openBlock(), createElementBlock("span", _hoisted_2$p, [
             renderSlot(_ctx.$slots, "leading", {}, void 0, true)
           ])) : createCommentVNode("", true),
-          createBaseVNode("span", _hoisted_3$k, [
+          createBaseVNode("span", _hoisted_3$j, [
             renderSlot(_ctx.$slots, "default", {}, () => [
               createTextVNode(toDisplayString(__props.label), 1)
             ], true)
@@ -21089,8 +21684,8 @@ const _sfc_main$D = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$w = "\n.selectable-list-item[data-v-d9f3a3f0] {\n  position: relative;\n  display: flex;\n  border: 1px solid transparent;\n  transition:\n    background-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.selectable-list-item--md[data-v-d9f3a3f0] {\n  font-size: var(--font-size-sm);\n}\n.selectable-list-item--sm[data-v-d9f3a3f0] {\n  font-size: var(--font-size-xs);\n}\n.selectable-list-item[data-v-d9f3a3f0]:hover {\n  background-color: var(--color-surface-hover);\n}\n.selectable-list-item--current[data-v-d9f3a3f0],\n.selectable-list-item--current[data-v-d9f3a3f0]:hover {\n  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);\n  box-shadow: inset 2px 0 0 var(--color-primary);\n}\n\n/* ── The selectable button ── */\n.selectable-list-item__main[data-v-d9f3a3f0] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (background/border/font only) left margin,\n     padding, and appearance to whatever the host page's UA/global styles\n     happened to set. */\n  all: unset;\n  box-sizing: border-box;\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font: inherit;\n  color: var(--color-text-primary);\n  text-align: left;\n  cursor: pointer;\n}\n.selectable-list-item--md .selectable-list-item__main[data-v-d9f3a3f0] {\n  padding: var(--spacing-sm);\n}\n.selectable-list-item--sm .selectable-list-item__main[data-v-d9f3a3f0] {\n  padding: var(--spacing-xs) var(--spacing-sm);\n  color: var(--color-text-secondary);\n}\n.selectable-list-item__main[data-v-d9f3a3f0]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.selectable-list-item__main[data-v-d9f3a3f0]:disabled {\n  cursor: not-allowed;\n}\n.selectable-list-item--current .selectable-list-item__main[data-v-d9f3a3f0] {\n  color: var(--color-primary);\n  font-weight: 600;\n}\n.selectable-list-item__label[data-v-d9f3a3f0] {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.selectable-list-item__leading[data-v-d9f3a3f0],\n.selectable-list-item__trailing[data-v-d9f3a3f0] {\n  display: inline-flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n/* Trailing content (hints, dates) stays muted even on the active row. */\n.selectable-list-item__trailing[data-v-d9f3a3f0] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n\n/* ── Trailing actions (hover / focus reveal, overlaying the row) ── */\n.selectable-list-item__actions[data-v-d9f3a3f0] {\n  position: absolute;\n  inset-block: 0;\n  inset-inline-end: 0;\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding-inline: var(--spacing-md) var(--spacing-xs);\n  /* Fade the label out behind the actions, matching the row surface. */\n  background: linear-gradient(\n    to right,\n    transparent,\n    var(--color-surface-hover) var(--spacing-md)\n  );\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity var(--transition-duration);\n}\n.selectable-list-item:hover .selectable-list-item__actions[data-v-d9f3a3f0],\n.selectable-list-item:focus-within .selectable-list-item__actions[data-v-d9f3a3f0] {\n  opacity: 1;\n  pointer-events: auto;\n}\n\n/* Match the fade to the selected surface on the active row. */\n.selectable-list-item--current .selectable-list-item__actions[data-v-d9f3a3f0] {\n  background: linear-gradient(\n    to right,\n    transparent,\n    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-hover))\n      var(--spacing-md)\n  );\n}\n@media (prefers-reduced-motion: reduce) {\n.selectable-list-item[data-v-d9f3a3f0],\n  .selectable-list-item__actions[data-v-d9f3a3f0] {\n    transition: none;\n}\n}\n";
-const SelectableListItem = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$w]], ["__scopeId", "data-v-d9f3a3f0"]]);
+const _style_0$w = "\n.selectable-list-item[data-v-46747619] {\n  position: relative;\n  display: flex;\n  border: 1px solid transparent;\n  transition:\n    background-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.selectable-list-item--md[data-v-46747619] {\n  font-size: var(--font-size-sm);\n}\n.selectable-list-item--sm[data-v-46747619] {\n  font-size: var(--font-size-xs);\n}\n.selectable-list-item[data-v-46747619]:hover {\n  background-color: var(--color-surface-hover);\n}\n.selectable-list-item--current[data-v-46747619],\n.selectable-list-item--current[data-v-46747619]:hover {\n  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);\n  box-shadow: inset 2px 0 0 var(--color-primary);\n}\n\n/* ── The selectable button ── */\n.transcript-ui-root .selectable-list-item__main[data-v-46747619] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (background/border/font only) left margin,\n     padding, and appearance to whatever the host page's UA/global styles\n     happened to set. */\n  all: unset;\n  box-sizing: border-box;\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font: inherit;\n  color: var(--color-text-primary);\n  text-align: left;\n  cursor: pointer;\n}\n.transcript-ui-root .selectable-list-item--md .selectable-list-item__main[data-v-46747619] {\n  padding: var(--spacing-sm);\n}\n.transcript-ui-root .selectable-list-item--sm .selectable-list-item__main[data-v-46747619] {\n  padding: var(--spacing-xs) var(--spacing-sm);\n  color: var(--color-text-secondary);\n}\n.transcript-ui-root .selectable-list-item__main[data-v-46747619]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.transcript-ui-root .selectable-list-item__main[data-v-46747619]:disabled {\n  cursor: not-allowed;\n}\n.transcript-ui-root .selectable-list-item--current .selectable-list-item__main[data-v-46747619] {\n  color: var(--color-primary);\n  font-weight: 600;\n}\n.selectable-list-item__label[data-v-46747619] {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.selectable-list-item__leading[data-v-46747619],\n.selectable-list-item__trailing[data-v-46747619] {\n  display: inline-flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n/* Trailing content (hints, dates) stays muted even on the active row. */\n.selectable-list-item__trailing[data-v-46747619] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n\n/* ── Trailing actions (hover / focus reveal, overlaying the row) ── */\n.selectable-list-item__actions[data-v-46747619] {\n  position: absolute;\n  inset-block: 0;\n  inset-inline-end: 0;\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding-inline: var(--spacing-md) var(--spacing-xs);\n  /* Fade the label out behind the actions, matching the row surface. */\n  background: linear-gradient(\n    to right,\n    transparent,\n    var(--color-surface-hover) var(--spacing-md)\n  );\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity var(--transition-duration);\n}\n.selectable-list-item:hover .selectable-list-item__actions[data-v-46747619],\n.selectable-list-item:focus-within .selectable-list-item__actions[data-v-46747619] {\n  opacity: 1;\n  pointer-events: auto;\n}\n\n/* Match the fade to the selected surface on the active row. */\n.selectable-list-item--current .selectable-list-item__actions[data-v-46747619] {\n  background: linear-gradient(\n    to right,\n    transparent,\n    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-hover))\n      var(--spacing-md)\n  );\n}\n@media (prefers-reduced-motion: reduce) {\n.selectable-list-item[data-v-46747619],\n  .selectable-list-item__actions[data-v-46747619] {\n    transition: none;\n}\n}\n";
+const SelectableListItem = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$w]], ["__scopeId", "data-v-46747619"]]);
 const _sfc_main$C = /* @__PURE__ */ defineComponent({
   __name: "SpeakerIndicator",
   props: {
@@ -21110,7 +21705,7 @@ const _style_0$v = "\n.speaker-indicator[data-v-324978c0] {\n  display: inline-b
 const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-324978c0"]]);
 const _hoisted_1$w = { class: "switch" };
 const _hoisted_2$o = ["id", "checked", "disabled"];
-const _hoisted_3$j = ["for"];
+const _hoisted_3$i = ["for"];
 const _sfc_main$B = /* @__PURE__ */ defineComponent({
   __name: "SwitchToggle",
   props: {
@@ -21122,7 +21717,7 @@ const _sfc_main$B = /* @__PURE__ */ defineComponent({
   setup(__props, { emit: __emit }) {
     const props = __props;
     const emit2 = __emit;
-    const inputId = props.id ?? useId$2();
+    const inputId = props.id ?? useId$1();
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", _hoisted_1$w, [
         createBaseVNode("input", {
@@ -21134,7 +21729,7 @@ const _sfc_main$B = /* @__PURE__ */ defineComponent({
         }, null, 40, _hoisted_2$o),
         createBaseVNode("label", { for: unref(inputId) }, [..._cache[1] || (_cache[1] = [
           createBaseVNode("div", { class: "switch-slider" }, null, -1)
-        ])], 8, _hoisted_3$j)
+        ])], 8, _hoisted_3$i)
       ]);
     };
   }
@@ -21175,7 +21770,7 @@ const _hoisted_2$n = {
   class: "document-article__toolbar",
   role: "toolbar"
 };
-const _hoisted_3$i = { class: "document-article__toolbar-left" };
+const _hoisted_3$h = { class: "document-article__toolbar-left" };
 const _hoisted_4$a = { class: "document-article__toolbar-center" };
 const _hoisted_5$9 = { class: "document-article__toolbar-right" };
 const _hoisted_6$8 = { class: "document-article__body" };
@@ -21222,7 +21817,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         "data-status": props.status
       }, [
         _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", _hoisted_2$n, [
-          createBaseVNode("div", _hoisted_3$i, [
+          createBaseVNode("div", _hoisted_3$h, [
             renderSlot(_ctx.$slots, "toolbar-left", {}, void 0, true)
           ]),
           createBaseVNode("div", _hoisted_4$a, [
@@ -21263,8 +21858,8 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$s = "\n.document-article[data-v-c606ad2f] {\n  width: 100%;\n  max-width: 760px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-c606ad2f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-c606ad2f],\n.document-article__toolbar-right[data-v-c606ad2f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-c606ad2f] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-c606ad2f] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-c606ad2f] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-c606ad2f] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-c606ad2f] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-c606ad2f] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-c606ad2f] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-c606ad2f] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
-const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$s]], ["__scopeId", "data-v-c606ad2f"]]);
+const _style_0$s = "\n.document-article[data-v-e3f4ca33] {\n  width: min(1088px, calc(100% - 16px));\n  max-width: 1088px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-e3f4ca33] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-e3f4ca33],\n.document-article__toolbar-right[data-v-e3f4ca33] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-e3f4ca33] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-e3f4ca33] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-e3f4ca33] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-e3f4ca33] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-e3f4ca33] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-e3f4ca33] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-e3f4ca33] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-e3f4ca33] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
+const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$s]], ["__scopeId", "data-v-e3f4ca33"]]);
 const _sfc_main$y = /* @__PURE__ */ defineComponent({
   __name: "DownloadMenu",
   props: {
@@ -21345,7 +21940,7 @@ const _sfc_main$x = /* @__PURE__ */ defineComponent({
 });
 const _hoisted_1$t = ["aria-label"];
 const _hoisted_2$m = ["aria-selected", "aria-disabled", "disabled", "onClick"];
-const _hoisted_3$h = { class: "tab__label" };
+const _hoisted_3$g = { class: "tab__label" };
 const _sfc_main$w = /* @__PURE__ */ defineComponent({
   __name: "Tabs",
   props: {
@@ -21385,7 +21980,7 @@ const _sfc_main$w = /* @__PURE__ */ defineComponent({
               size: 16,
               class: "tab__icon"
             }, null, 8, ["name"])) : createCommentVNode("", true),
-            createBaseVNode("span", _hoisted_3$h, toDisplayString(tab.label), 1),
+            createBaseVNode("span", _hoisted_3$g, toDisplayString(tab.label), 1),
             tab.badge ? (openBlock(), createBlock(Badge, {
               key: 1,
               class: "tab__badge"
@@ -21401,8 +21996,8 @@ const _sfc_main$w = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$r = "\n.tabs[data-v-c55448d6] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.tab[data-v-c55448d6] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.tab[data-v-c55448d6]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.tab[data-v-c55448d6]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.tab--active[data-v-c55448d6] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.tab[disabled][data-v-c55448d6] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-c55448d6] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-c55448d6] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-c55448d6] {\n  margin-left: var(--spacing-xs);\n}\n";
-const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$r]], ["__scopeId", "data-v-c55448d6"]]);
+const _style_0$r = "\n.tabs[data-v-b17b8689] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.transcript-ui-root .tab[data-v-b17b8689] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .tab[data-v-b17b8689]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.transcript-ui-root .tab[data-v-b17b8689]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .tab--active[data-v-b17b8689] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.transcript-ui-root .tab[disabled][data-v-b17b8689] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-b17b8689] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-b17b8689] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-b17b8689] {\n  margin-left: var(--spacing-xs);\n}\n";
+const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$r]], ["__scopeId", "data-v-b17b8689"]]);
 const TEXT_NODE$1 = 3;
 function placeCaretAt(element, offset2) {
   element.focus({ preventScroll: true });
@@ -21522,7 +22117,7 @@ const _style_0$q = "\n.turn-text-editor[data-v-597e2575] {\n  margin: 0;\n  whit
 const TurnTextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$q]], ["__scopeId", "data-v-597e2575"]]);
 const _hoisted_1$r = { class: "editor-header" };
 const _hoisted_2$l = { class: "header-main" };
-const _hoisted_3$g = { class: "document-title" };
+const _hoisted_3$f = { class: "document-title" };
 const _hoisted_4$9 = {
   key: 0,
   class: "document-meta"
@@ -21537,9 +22132,11 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
     duration: { type: Number },
     speakerCount: { type: Number },
     isMobile: { type: Boolean },
-    canAsk: { type: Boolean }
+    canAsk: { type: Boolean },
+    canUndo: { type: Boolean },
+    canRedo: { type: Boolean }
   },
-  emits: ["toggleSidebar", "openChat"],
+  emits: ["toggleSidebar", "openChat", "undo", "redo"],
   setup(__props) {
     const props = __props;
     const { t: t2, locale } = useI18n();
@@ -21563,7 +22160,7 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("header", _hoisted_1$r, [
         createBaseVNode("div", _hoisted_2$l, [
-          createBaseVNode("h1", _hoisted_3$g, toDisplayString(formattedTitle.value), 1),
+          createBaseVNode("h1", _hoisted_3$f, toDisplayString(formattedTitle.value), 1),
           metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$9, [
             (openBlock(true), createElementBlock(Fragment, null, renderList(metaParts.value, (part, i2) => {
               return openBlock(), createElementBlock("span", {
@@ -21589,10 +22186,38 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
             _: 1
           }, 8, ["aria-label"])) : createCommentVNode("", true),
           createVNode(unref(Button), {
+            variant: "secondary",
+            "aria-label": unref(t2)("header.undo"),
+            disabled: !props.canUndo,
+            onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("undo"))
+          }, {
+            icon: withCtx(() => [
+              createVNode(unref(EditorIcon), {
+                name: "undo",
+                size: 16
+              })
+            ]),
+            _: 1
+          }, 8, ["aria-label", "disabled"]),
+          createVNode(unref(Button), {
+            variant: "secondary",
+            "aria-label": unref(t2)("header.redo"),
+            disabled: !props.canRedo,
+            onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("redo"))
+          }, {
+            icon: withCtx(() => [
+              createVNode(unref(EditorIcon), {
+                name: "redo",
+                size: 16
+              })
+            ]),
+            _: 1
+          }, 8, ["aria-label", "disabled"]),
+          createVNode(unref(Button), {
             variant: "primary",
             "aria-label": unref(t2)("header.ask"),
             disabled: !props.canAsk,
-            onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("openChat"))
+            onClick: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("openChat"))
           }, {
             icon: withCtx(() => [
               createVNode(unref(EditorIcon), {
@@ -21610,14 +22235,15 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$p = '\n.editor-header[data-v-faaef325] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-faaef325] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-faaef325] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-faaef325] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-faaef325] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-faaef325]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-faaef325] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-faaef325] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-faaef325] {\n    font-size: var(--font-size-base);\n}\n}\n';
-const Header = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-faaef325"]]);
+const _style_0$p = '\n.editor-header[data-v-6464a453] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-6464a453] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-6464a453] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-6464a453] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-6464a453] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-6464a453]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-6464a453] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-6464a453] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-6464a453] {\n    font-size: var(--font-size-base);\n}\n}\n';
+const Header = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-6464a453"]]);
 const TRANSCRIPTION_TAB = "__transcription__";
 const VERBATIM_TAB = "__verbatim__";
 const _sfc_main$t = /* @__PURE__ */ defineComponent({
   __name: "TabBar",
   props: {
-    modelValue: { type: String }
+    modelValue: { type: String },
+    showVerbatim: { type: Boolean, default: true }
   },
   emits: ["update:modelValue"],
   setup(__props, { emit: __emit }) {
@@ -21633,11 +22259,13 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
           label: t2("tabs.transcription"),
           icon: "message-circle"
         },
-        {
-          value: VERBATIM_TAB,
-          label: t2("tabs.verbatim"),
-          icon: "file-text"
-        },
+        ...props.showVerbatim ? [
+          {
+            value: VERBATIM_TAB,
+            label: t2("tabs.verbatim"),
+            icon: "file-text"
+          }
+        ] : [],
         ...services.map((service) => ({
           value: service.id,
           label: service.label.value,
@@ -21650,11 +22278,12 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
       if (value !== props.modelValue) emit2("update:modelValue", value);
     }
     return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Tabs), {
+      return tabs.value.length > 1 ? (openBlock(), createBlock(unref(Tabs), {
+        key: 0,
         tabs: tabs.value,
         "model-value": __props.modelValue,
         "onUpdate:modelValue": onSelect
-      }, null, 8, ["tabs", "model-value"]);
+      }, null, 8, ["tabs", "model-value"])) : createCommentVNode("", true);
     };
   }
 });
@@ -22394,8 +23023,8 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$m = "\n.speaker-popover-trigger[data-v-7ecb5756] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.speaker-popover-trigger[data-v-7ecb5756]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.speaker-popover-name[data-v-7ecb5756] {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
-const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$m]], ["__scopeId", "data-v-7ecb5756"]]);
+const _style_0$m = "\n.transcript-ui-root .speaker-popover-trigger[data-v-0679fde9] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-popover-trigger[data-v-0679fde9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.speaker-popover-name[data-v-0679fde9] {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
+const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$m]], ["__scopeId", "data-v-0679fde9"]]);
 const turnSelectionKey = /* @__PURE__ */ Symbol("turnSelection");
 function getTurnText(turn) {
   if (turn.words.length > 0) {
@@ -22546,7 +23175,7 @@ const _hoisted_2$i = {
   key: 4,
   class: "turn-edit-actions"
 };
-const _hoisted_3$f = ["role", "tabindex", "aria-label", "aria-disabled"];
+const _hoisted_3$e = ["role", "tabindex", "aria-label", "aria-disabled"];
 const _hoisted_4$8 = ["data-word-active"];
 const _sfc_main$p = /* @__PURE__ */ defineComponent({
   __name: "TranscriptionTurn",
@@ -22790,13 +23419,13 @@ const _sfc_main$p = /* @__PURE__ */ defineComponent({
           }), 128)) : __props.turn.text ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
             createTextVNode(toDisplayString(__props.turn.text), 1)
           ], 64)) : createCommentVNode("", true)
-        ], 42, _hoisted_3$f))
+        ], 42, _hoisted_3$e))
       ], 14, _hoisted_1$m);
     };
   }
 });
-const _style_0$l = "\n.turn[data-v-ea751fdf] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-ea751fdf] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n  /* Reserve the edit-actions height (Button sm) so entering/leaving edit\n     mode never shifts the layout. */\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-ea751fdf] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n\n/* Same reset as the popover's own trigger: the label IS the button. */\n.speaker-trigger[data-v-ea751fdf] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.speaker-trigger[data-v-ea751fdf]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.turn[data-v-ea751fdf]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-ea751fdf] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-ea751fdf] {\n  cursor: text;\n}\n.turn-text--editable[data-v-ea751fdf]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-ea751fdf] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-ea751fdf]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-ea751fdf] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-ea751fdf] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-ea751fdf 200ms ease;\n}\n@keyframes partial-fade-in-ea751fdf {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-ea751fdf] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-ea751fdf] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-ea751fdf],\n  .turn--active[data-v-ea751fdf]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
-const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$l]], ["__scopeId", "data-v-ea751fdf"]]);
+const _style_0$l = "\n.turn[data-v-5a13b85e] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-5a13b85e] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n  /* Reserve the edit-actions height (Button sm) so entering/leaving edit\n     mode never shifts the layout. */\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-5a13b85e] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n\n/* Same reset as the popover's own trigger: the label IS the button. */\n.transcript-ui-root .speaker-trigger[data-v-5a13b85e] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-trigger[data-v-5a13b85e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.turn[data-v-5a13b85e]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-5a13b85e] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-5a13b85e] {\n  cursor: text;\n}\n.turn-text--editable[data-v-5a13b85e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-5a13b85e] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-5a13b85e]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-5a13b85e] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-5a13b85e] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-5a13b85e 200ms ease;\n}\n@keyframes partial-fade-in-5a13b85e {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-5a13b85e] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-5a13b85e] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-5a13b85e],\n  .turn--active[data-v-5a13b85e]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
+const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$l]], ["__scopeId", "data-v-5a13b85e"]]);
 const _sfc_main$o = {};
 const _hoisted_1$l = {
   viewBox: "0 0 938 604",
@@ -22965,7 +23594,7 @@ const _hoisted_2$g = {
   ref: "scrollContainer",
   class: "scroll-container"
 };
-const _hoisted_3$e = { class: "turns-container" };
+const _hoisted_3$d = { class: "turns-container" };
 const _hoisted_4$7 = {
   key: 0,
   class: "history-loading",
@@ -23074,7 +23703,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("article", _hoisted_1$j, [
         createBaseVNode("div", _hoisted_2$g, [
-          createBaseVNode("div", _hoisted_3$e, [
+          createBaseVNode("div", _hoisted_3$d, [
             isLoadingHistory.value ? (openBlock(), createElementBlock("div", _hoisted_4$7, [..._cache[2] || (_cache[2] = [
               createBaseVNode("progress", null, null, -1)
             ])])) : createCommentVNode("", true),
@@ -23135,7 +23764,7 @@ const _style_0$j = "\n.transcription-panel[data-v-7f4303ed] {\n  min-height: 0;\
 const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["styles", [_style_0$j]], ["__scopeId", "data-v-7f4303ed"]]);
 const _hoisted_1$i = { class: "verbatim-panel" };
 const _hoisted_2$f = { class: "verbatim-panel__content" };
-const _hoisted_3$d = { class: "verbatim-panel__header" };
+const _hoisted_3$c = { class: "verbatim-panel__header" };
 const _hoisted_4$6 = { class: "verbatim-panel__doc-title" };
 const _hoisted_5$6 = { class: "verbatim-panel__turns" };
 const _hoisted_6$6 = { class: "verbatim-panel__turn-header" };
@@ -23188,7 +23817,7 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
     }
     function onExport(format2) {
       if (!format2) return;
-      if (format2 === "txt" && core.verbatimFormatsAreDefault) {
+      if (format2 === "txt" && core.verbatimFormatsAreDefault.value) {
         exportAsText();
         return;
       }
@@ -23199,13 +23828,13 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
         createVNode(unref(DocumentArticle), null, {
           "toolbar-right": withCtx(() => [
             createVNode(unref(_sfc_main$y), {
-              formats: unref(core).verbatimFormats,
+              formats: unref(core).verbatimFormats.value,
               onSelect: onExport
             }, null, 8, ["formats"])
           ]),
           default: withCtx(() => [
             createBaseVNode("article", _hoisted_2$f, [
-              createBaseVNode("header", _hoisted_3$d, [
+              createBaseVNode("header", _hoisted_3$c, [
                 createBaseVNode("h1", _hoisted_4$6, toDisplayString(title.value), 1)
               ]),
               createBaseVNode("ul", _hoisted_5$6, [
@@ -23243,8 +23872,8 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$i = "\n.verbatim-panel[data-v-15fe68f9] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__content[data-v-15fe68f9] {\n  padding: var(--spacing-md) var(--spacing-lg);\n}\n.verbatim-panel__header[data-v-15fe68f9] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-15fe68f9] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-15fe68f9] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-15fe68f9] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-15fe68f9] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-15fe68f9] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-15fe68f9] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-15fe68f9] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-15fe68f9] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n@media (max-width: 767px) {\n.verbatim-panel[data-v-15fe68f9] {\n    padding: var(--spacing-md);\n}\n}\n";
-const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-15fe68f9"]]);
+const _style_0$i = "\n.verbatim-panel[data-v-4bbe16ed] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__content[data-v-4bbe16ed] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n}\n.verbatim-panel__header[data-v-4bbe16ed] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-4bbe16ed] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-4bbe16ed] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-4bbe16ed] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-4bbe16ed] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-4bbe16ed] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-4bbe16ed] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-4bbe16ed] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-4bbe16ed] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n\n";
+const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-4bbe16ed"]]);
 const _sfc_main$k = /* @__PURE__ */ defineComponent({
   __name: "ChannelSelector",
   props: {
@@ -23305,7 +23934,7 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
 });
 const _hoisted_1$h = { class: "merge-dialog-title" };
 const _hoisted_2$e = { class: "merge-dialog-description" };
-const _hoisted_3$c = { class: "merge-dialog-actions" };
+const _hoisted_3$b = { class: "merge-dialog-actions" };
 const _sfc_main$i = /* @__PURE__ */ defineComponent({
   __name: "MergeDialog",
   props: {
@@ -23386,7 +24015,7 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
             modelValue: targetId.value,
             "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => targetId.value = $event)
           }, null, 8, ["field", "options", "modelValue"]),
-          createBaseVNode("div", _hoisted_3$c, [
+          createBaseVNode("div", _hoisted_3$b, [
             createVNode(unref(Button), {
               variant: "tertiary",
               type: "button",
@@ -23420,7 +24049,7 @@ const _hoisted_2$d = {
   key: 0,
   class: "sidebar-section sidebar-section--selector"
 };
-const _hoisted_3$b = { class: "sidebar-title" };
+const _hoisted_3$a = { class: "sidebar-title" };
 const _hoisted_4$5 = {
   key: 1,
   class: "sidebar-section sidebar-section--selector"
@@ -23555,7 +24184,7 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("aside", _hoisted_1$g, [
         __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$d, [
-          createBaseVNode("h2", _hoisted_3$b, toDisplayString(unref(t2)("sidebar.channel")), 1),
+          createBaseVNode("h2", _hoisted_3$a, toDisplayString(unref(t2)("sidebar.channel")), 1),
           createVNode(_sfc_main$k, {
             channels: __props.channels,
             "selected-channel-id": __props.selectedChannelId,
@@ -23730,1734 +24359,6 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
 });
 const _style_0$g = '\n.speaker-sidebar[data-v-3b1e278f] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-3b1e278f] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-3b1e278f] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-3b1e278f] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-3b1e278f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-3b1e278f]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-3b1e278f] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-3b1e278f] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-3b1e278f] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.voice-playback-hint[data-v-3b1e278f] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-3b1e278f] {\n  color: var(--color-danger);\n}\n.subtitle-slider[data-v-3b1e278f] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.subtitle-slider-label[data-v-3b1e278f] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider-value[data-v-3b1e278f] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.subtitle-slider input[type="range"][data-v-3b1e278f] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.subtitle-slider input[type="range"][data-v-3b1e278f]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-3b1e278f] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-3b1e278f] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-3b1e278f] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-3b1e278f] {\n  color: var(--color-success, #2e7d32);\n}\n.history-generation__status--error[data-v-3b1e278f] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-3b1e278f],\n.history-generation__status--queued[data-v-3b1e278f] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-3b1e278f] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-3b1e278f] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-3b1e278f] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-3b1e278f] {\n    display: none;\n}\n}\n';
 const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$g]], ["__scopeId", "data-v-3b1e278f"]]);
-function createContext(providerComponentName, contextName) {
-  const symbolDescription = typeof providerComponentName === "string" && !contextName ? `${providerComponentName}Context` : contextName;
-  const injectionKey = Symbol(symbolDescription);
-  const injectContext = (fallback) => {
-    const context2 = inject(injectionKey, fallback);
-    if (context2) return context2;
-    if (context2 === null) return context2;
-    throw new Error(`Injection \`${injectionKey.toString()}\` not found. Component must be used within ${Array.isArray(providerComponentName) ? `one of the following components: ${providerComponentName.join(", ")}` : `\`${providerComponentName}\``}`);
-  };
-  const provideContext = (contextValue) => {
-    provide(injectionKey, contextValue);
-    return contextValue;
-  };
-  return [injectContext, provideContext];
-}
-function getActiveElement() {
-  let activeElement = document.activeElement;
-  if (activeElement == null) return null;
-  while (activeElement != null && activeElement.shadowRoot != null && activeElement.shadowRoot.activeElement != null) activeElement = activeElement.shadowRoot.activeElement;
-  return activeElement;
-}
-function handleAndDispatchCustomEvent(name, handler, detail) {
-  const target = detail.originalEvent.target;
-  const event = new CustomEvent(name, {
-    bubbles: false,
-    cancelable: true,
-    detail
-  });
-  if (handler) target.addEventListener(name, handler, { once: true });
-  target.dispatchEvent(event);
-}
-function isNullish(value) {
-  return value === null || value === void 0;
-}
-function renderSlotFragments(children) {
-  if (!children) return [];
-  return children.flatMap((child) => {
-    if (child.type === Fragment) return renderSlotFragments(child.children);
-    return [child];
-  });
-}
-const [injectConfigProviderContext] = createContext("ConfigProvider");
-function tryOnScopeDispose(fn, failSilently) {
-  if (getCurrentScope()) {
-    onScopeDispose(fn, failSilently);
-    return true;
-  }
-  return false;
-}
-// @__NO_SIDE_EFFECTS__
-function createGlobalState(stateFactory) {
-  let initialized = false;
-  let state;
-  const scope = effectScope(true);
-  return ((...args) => {
-    if (!initialized) {
-      state = scope.run(() => stateFactory(...args));
-      initialized = true;
-    }
-    return state;
-  });
-}
-const isClient = typeof window !== "undefined" && typeof document !== "undefined";
-typeof WorkerGlobalScope !== "undefined" && globalThis instanceof WorkerGlobalScope;
-const isDef = (val) => typeof val !== "undefined";
-const toString = Object.prototype.toString;
-const isObject = (val) => toString.call(val) === "[object Object]";
-const isIOS = /* @__PURE__ */ getIsIOS();
-function getIsIOS() {
-  var _window, _window2, _window3;
-  return isClient && !!((_window = window) === null || _window === void 0 || (_window = _window.navigator) === null || _window === void 0 ? void 0 : _window.userAgent) && (/iP(?:ad|hone|od)/.test(window.navigator.userAgent) || ((_window2 = window) === null || _window2 === void 0 || (_window2 = _window2.navigator) === null || _window2 === void 0 ? void 0 : _window2.maxTouchPoints) > 2 && /iPad|Macintosh/.test((_window3 = window) === null || _window3 === void 0 ? void 0 : _window3.navigator.userAgent));
-}
-function toArray(value) {
-  return Array.isArray(value) ? value : [value];
-}
-function getLifeCycleTarget(target) {
-  return getCurrentInstance();
-}
-// @__NO_SIDE_EFFECTS__
-function createSharedComposable(composable) {
-  if (!isClient) return composable;
-  let subscribers = 0;
-  let state;
-  let scope;
-  const dispose = () => {
-    subscribers -= 1;
-    if (scope && subscribers <= 0) {
-      scope.stop();
-      state = void 0;
-      scope = void 0;
-    }
-  };
-  return ((...args) => {
-    subscribers += 1;
-    if (!scope) {
-      scope = effectScope(true);
-      state = scope.run(() => composable(...args));
-    }
-    tryOnScopeDispose(dispose);
-    return state;
-  });
-}
-function tryOnBeforeUnmount(fn, target) {
-  if (getLifeCycleTarget()) onBeforeUnmount(fn, target);
-}
-function watchImmediate(source, cb, options) {
-  return watch(source, cb, {
-    ...options,
-    immediate: true
-  });
-}
-const defaultWindow = isClient ? window : void 0;
-function unrefElement(elRef) {
-  var _$el;
-  const plain = toValue$1(elRef);
-  return (_$el = plain === null || plain === void 0 ? void 0 : plain.$el) !== null && _$el !== void 0 ? _$el : plain;
-}
-function useEventListener(...args) {
-  const register2 = (el, event, listener, options) => {
-    el.addEventListener(event, listener, options);
-    return () => el.removeEventListener(event, listener, options);
-  };
-  const firstParamTargets = computed(() => {
-    const test = toArray(toValue$1(args[0])).filter((e3) => e3 != null);
-    return test.every((e3) => typeof e3 !== "string") ? test : void 0;
-  });
-  return watchImmediate(() => {
-    var _firstParamTargets$va, _firstParamTargets$va2;
-    return [
-      (_firstParamTargets$va = (_firstParamTargets$va2 = firstParamTargets.value) === null || _firstParamTargets$va2 === void 0 ? void 0 : _firstParamTargets$va2.map((e3) => unrefElement(e3))) !== null && _firstParamTargets$va !== void 0 ? _firstParamTargets$va : [defaultWindow].filter((e3) => e3 != null),
-      toArray(toValue$1(firstParamTargets.value ? args[1] : args[0])),
-      toArray(unref(firstParamTargets.value ? args[2] : args[1])),
-      toValue$1(firstParamTargets.value ? args[3] : args[2])
-    ];
-  }, ([raw_targets, raw_events, raw_listeners, raw_options], _2, onCleanup) => {
-    if (!(raw_targets === null || raw_targets === void 0 ? void 0 : raw_targets.length) || !(raw_events === null || raw_events === void 0 ? void 0 : raw_events.length) || !(raw_listeners === null || raw_listeners === void 0 ? void 0 : raw_listeners.length)) return;
-    const optionsClone = isObject(raw_options) ? { ...raw_options } : raw_options;
-    const cleanups = raw_targets.flatMap((el) => raw_events.flatMap((event) => raw_listeners.map((listener) => register2(el, event, listener, optionsClone))));
-    onCleanup(() => {
-      cleanups.forEach((fn) => fn());
-    });
-  }, { flush: "post" });
-}
-// @__NO_SIDE_EFFECTS__
-function useMounted() {
-  const isMounted = /* @__PURE__ */ shallowRef(false);
-  const instance = getCurrentInstance();
-  if (instance) onMounted(() => {
-    isMounted.value = true;
-  }, instance);
-  return isMounted;
-}
-function createKeyPredicate(keyFilter) {
-  if (typeof keyFilter === "function") return keyFilter;
-  else if (typeof keyFilter === "string") return (event) => event.key === keyFilter;
-  else if (Array.isArray(keyFilter)) return (event) => keyFilter.includes(event.key);
-  return () => true;
-}
-function onKeyStroke(...args) {
-  let key;
-  let handler;
-  let options = {};
-  if (args.length === 3) {
-    key = args[0];
-    handler = args[1];
-    options = args[2];
-  } else if (args.length === 2) if (typeof args[1] === "object") {
-    key = true;
-    handler = args[0];
-    options = args[1];
-  } else {
-    key = args[0];
-    handler = args[1];
-  }
-  else {
-    key = true;
-    handler = args[0];
-  }
-  const { target = defaultWindow, eventName = "keydown", passive = false, dedupe = false } = options;
-  const predicate = createKeyPredicate(key);
-  const listener = (e3) => {
-    if (e3.repeat && toValue$1(dedupe)) return;
-    if (predicate(e3)) handler(e3);
-  };
-  return useEventListener(target, eventName, listener, passive);
-}
-function cloneFnJSON(source) {
-  return JSON.parse(JSON.stringify(source));
-}
-// @__NO_SIDE_EFFECTS__
-function useVModel(props, key, emit2, options = {}) {
-  var _vm$$emit, _vm$proxy;
-  const { clone: clone2 = false, passive = false, eventName, deep = false, defaultValue, shouldEmit } = options;
-  const vm = getCurrentInstance();
-  const _emit = emit2 || (vm === null || vm === void 0 ? void 0 : vm.emit) || (vm === null || vm === void 0 || (_vm$$emit = vm.$emit) === null || _vm$$emit === void 0 ? void 0 : _vm$$emit.bind(vm)) || (vm === null || vm === void 0 || (_vm$proxy = vm.proxy) === null || _vm$proxy === void 0 || (_vm$proxy = _vm$proxy.$emit) === null || _vm$proxy === void 0 ? void 0 : _vm$proxy.bind(vm === null || vm === void 0 ? void 0 : vm.proxy));
-  let event = eventName;
-  event = event || `update:${key.toString()}`;
-  const cloneFn = (val) => !clone2 ? val : typeof clone2 === "function" ? clone2(val) : cloneFnJSON(val);
-  const getValue$1 = () => isDef(props[key]) ? cloneFn(props[key]) : defaultValue;
-  const triggerEmit = (value) => {
-    if (shouldEmit) {
-      if (shouldEmit(value)) _emit(event, value);
-    } else _emit(event, value);
-  };
-  if (passive) {
-    const proxy = /* @__PURE__ */ ref(getValue$1());
-    let isUpdating = false;
-    watch(() => props[key], (v2) => {
-      if (!isUpdating) {
-        isUpdating = true;
-        proxy.value = cloneFn(v2);
-        nextTick(() => isUpdating = false);
-      }
-    });
-    watch(proxy, (v2) => {
-      if (!isUpdating && (v2 !== props[key] || deep)) triggerEmit(v2);
-    }, { deep });
-    return proxy;
-  } else return computed({
-    get() {
-      return getValue$1();
-    },
-    set(value) {
-      triggerEmit(value);
-    }
-  });
-}
-function isPlainObject(value) {
-  if (value === null || typeof value !== "object") {
-    return false;
-  }
-  const prototype = Object.getPrototypeOf(value);
-  if (prototype !== null && prototype !== Object.prototype && Object.getPrototypeOf(prototype) !== null) {
-    return false;
-  }
-  if (Symbol.iterator in value) {
-    return false;
-  }
-  if (Symbol.toStringTag in value) {
-    return Object.prototype.toString.call(value) === "[object Module]";
-  }
-  return true;
-}
-function _defu(baseObject, defaults, namespace = ".", merger) {
-  if (!isPlainObject(defaults)) {
-    return _defu(baseObject, {}, namespace, merger);
-  }
-  const object = Object.assign({}, defaults);
-  for (const key in baseObject) {
-    if (key === "__proto__" || key === "constructor") {
-      continue;
-    }
-    const value = baseObject[key];
-    if (value === null || value === void 0) {
-      continue;
-    }
-    if (merger && merger(object, key, value, namespace)) {
-      continue;
-    }
-    if (Array.isArray(value) && Array.isArray(object[key])) {
-      object[key] = [...value, ...object[key]];
-    } else if (isPlainObject(value) && isPlainObject(object[key])) {
-      object[key] = _defu(
-        value,
-        object[key],
-        (namespace ? `${namespace}.` : "") + key.toString(),
-        merger
-      );
-    } else {
-      object[key] = value;
-    }
-  }
-  return object;
-}
-function createDefu(merger) {
-  return (...arguments_) => (
-    // eslint-disable-next-line unicorn/no-array-reduce
-    arguments_.reduce((p2, c2) => _defu(p2, c2, "", merger), {})
-  );
-}
-const defu = createDefu();
-const useBodyLockStackCount = /* @__PURE__ */ createSharedComposable(() => {
-  const map = /* @__PURE__ */ ref(/* @__PURE__ */ new Map());
-  const initialOverflow = /* @__PURE__ */ ref();
-  const locked = computed(() => {
-    for (const value of map.value.values()) if (value) return true;
-    return false;
-  });
-  const context2 = injectConfigProviderContext({ scrollBody: /* @__PURE__ */ ref(true) });
-  let stopTouchMoveListener = null;
-  const resetBodyStyle = () => {
-    document.body.style.paddingRight = "";
-    document.body.style.marginRight = "";
-    document.body.style.pointerEvents = "";
-    document.documentElement.style.removeProperty("--scrollbar-width");
-    document.body.style.overflow = initialOverflow.value ?? "";
-    isIOS && stopTouchMoveListener?.();
-    initialOverflow.value = void 0;
-  };
-  watch(locked, (val, oldVal) => {
-    if (!isClient) return;
-    if (!val) {
-      if (oldVal) resetBodyStyle();
-      return;
-    }
-    if (initialOverflow.value === void 0) initialOverflow.value = document.body.style.overflow;
-    const verticalScrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    const defaultConfig = {
-      padding: verticalScrollbarWidth,
-      margin: 0
-    };
-    const config = context2.scrollBody?.value ? typeof context2.scrollBody.value === "object" ? defu({
-      padding: context2.scrollBody.value.padding === true ? verticalScrollbarWidth : context2.scrollBody.value.padding,
-      margin: context2.scrollBody.value.margin === true ? verticalScrollbarWidth : context2.scrollBody.value.margin
-    }, defaultConfig) : defaultConfig : {
-      padding: 0,
-      margin: 0
-    };
-    if (verticalScrollbarWidth > 0) {
-      document.body.style.paddingRight = typeof config.padding === "number" ? `${config.padding}px` : String(config.padding);
-      document.body.style.marginRight = typeof config.margin === "number" ? `${config.margin}px` : String(config.margin);
-      document.documentElement.style.setProperty("--scrollbar-width", `${verticalScrollbarWidth}px`);
-      document.body.style.overflow = "hidden";
-    }
-    if (isIOS) stopTouchMoveListener = useEventListener(document, "touchmove", (e3) => preventDefault(e3), { passive: false });
-    nextTick(() => {
-      document.body.style.pointerEvents = "none";
-      document.body.style.overflow = "hidden";
-    });
-  }, {
-    immediate: true,
-    flush: "sync"
-  });
-  return map;
-});
-function useBodyScrollLock(initialState) {
-  const id = Math.random().toString(36).substring(2, 7);
-  const map = useBodyLockStackCount();
-  map.value.set(id, initialState);
-  const locked = computed({
-    get: () => map.value.get(id) ?? false,
-    set: (value) => map.value.set(id, value)
-  });
-  tryOnBeforeUnmount(() => {
-    map.value.delete(id);
-  });
-  return locked;
-}
-function checkOverflowScroll(ele) {
-  const style = window.getComputedStyle(ele);
-  if (style.overflowX === "scroll" || style.overflowY === "scroll" || style.overflowX === "auto" && ele.clientWidth < ele.scrollWidth || style.overflowY === "auto" && ele.clientHeight < ele.scrollHeight) return true;
-  else {
-    const parent = ele.parentNode;
-    if (!(parent instanceof Element) || parent.tagName === "BODY") return false;
-    return checkOverflowScroll(parent);
-  }
-}
-function preventDefault(rawEvent) {
-  const e3 = rawEvent || window.event;
-  const _target = e3.target;
-  if (_target instanceof Element && checkOverflowScroll(_target)) return false;
-  if (e3.touches.length > 1) return true;
-  if (e3.preventDefault && e3.cancelable) e3.preventDefault();
-  return false;
-}
-function useEmitAsProps(emit2) {
-  const vm = getCurrentInstance();
-  const events = vm?.type.emits;
-  const result = {};
-  if (!events?.length) console.warn(`No emitted event found. Please check component: ${vm?.type.__name}`);
-  events?.forEach((ev) => {
-    result[toHandlerKey(camelize(ev))] = (...arg) => emit2(ev, ...arg);
-  });
-  return result;
-}
-function useForwardExpose() {
-  const instance = getCurrentInstance();
-  const currentRef = /* @__PURE__ */ ref();
-  const currentElement = computed(() => {
-    return ["#text", "#comment"].includes(currentRef.value?.$el.nodeName) ? currentRef.value?.$el.nextElementSibling : unrefElement(currentRef);
-  });
-  const localExpose = Object.assign({}, instance.exposed);
-  const ret = {};
-  for (const key in instance.props) Object.defineProperty(ret, key, {
-    enumerable: true,
-    configurable: true,
-    get: () => instance.props[key]
-  });
-  if (Object.keys(localExpose).length > 0) for (const key in localExpose) Object.defineProperty(ret, key, {
-    enumerable: true,
-    configurable: true,
-    get: () => localExpose[key]
-  });
-  Object.defineProperty(ret, "$el", {
-    enumerable: true,
-    configurable: true,
-    get: () => instance.vnode.el
-  });
-  instance.exposed = ret;
-  function forwardRef(ref$1) {
-    currentRef.value = ref$1;
-    if (!ref$1) return;
-    Object.defineProperty(ret, "$el", {
-      enumerable: true,
-      configurable: true,
-      get: () => ref$1 instanceof Element ? ref$1 : ref$1.$el
-    });
-    if (!(ref$1 instanceof Element) && !Object.hasOwn(ref$1, "$el")) {
-      const childExposed = ref$1.$.exposed;
-      const merged = Object.assign({}, ret);
-      for (const key in childExposed) Object.defineProperty(merged, key, {
-        enumerable: true,
-        configurable: true,
-        get: () => childExposed[key]
-      });
-      instance.exposed = merged;
-    }
-  }
-  return {
-    forwardRef,
-    currentRef,
-    currentElement
-  };
-}
-function useHideOthers(target) {
-  let undo;
-  watch(() => unrefElement(target), (el) => {
-    if (el) undo = hideOthers(el);
-    else if (undo) undo();
-  });
-  onUnmounted(() => {
-    if (undo) undo();
-  });
-}
-function useId(deterministicId, prefix = "reka") {
-  return `${prefix}-${useId$2?.()}`;
-}
-function useStateMachine(initialState, machine) {
-  const state = /* @__PURE__ */ ref(initialState);
-  function reducer(event) {
-    const nextState = machine[state.value][event];
-    return nextState ?? state.value;
-  }
-  const dispatch = (event) => {
-    state.value = reducer(event);
-  };
-  return {
-    state,
-    dispatch
-  };
-}
-function usePresence(present, node) {
-  const stylesRef = /* @__PURE__ */ ref({});
-  const prevAnimationNameRef = /* @__PURE__ */ ref("none");
-  const prevPresentRef = /* @__PURE__ */ ref(present);
-  const initialState = present.value ? "mounted" : "unmounted";
-  let timeoutId;
-  const ownerWindow = node.value?.ownerDocument.defaultView ?? defaultWindow;
-  const { state, dispatch } = useStateMachine(initialState, {
-    mounted: {
-      UNMOUNT: "unmounted",
-      ANIMATION_OUT: "unmountSuspended"
-    },
-    unmountSuspended: {
-      MOUNT: "mounted",
-      ANIMATION_END: "unmounted"
-    },
-    unmounted: { MOUNT: "mounted" }
-  });
-  const dispatchCustomEvent = (name) => {
-    if (isClient) {
-      const customEvent = new CustomEvent(name, {
-        bubbles: false,
-        cancelable: false
-      });
-      node.value?.dispatchEvent(customEvent);
-    }
-  };
-  watch(present, async (currentPresent, prevPresent) => {
-    const hasPresentChanged = prevPresent !== currentPresent;
-    await nextTick();
-    if (hasPresentChanged) {
-      const prevAnimationName = prevAnimationNameRef.value;
-      const currentAnimationName = getAnimationName(node.value);
-      if (currentPresent) {
-        dispatch("MOUNT");
-        dispatchCustomEvent("enter");
-        if (currentAnimationName === "none") dispatchCustomEvent("after-enter");
-      } else if (currentAnimationName === "none" || currentAnimationName === "undefined" || stylesRef.value?.display === "none") {
-        dispatch("UNMOUNT");
-        dispatchCustomEvent("leave");
-        dispatchCustomEvent("after-leave");
-      } else {
-        const isAnimating = prevAnimationName !== currentAnimationName;
-        if (prevPresent && isAnimating) {
-          dispatch("ANIMATION_OUT");
-          dispatchCustomEvent("leave");
-        } else {
-          dispatch("UNMOUNT");
-          dispatchCustomEvent("after-leave");
-        }
-      }
-    }
-  }, { immediate: true });
-  const handleAnimationEnd = (event) => {
-    const currentAnimationName = getAnimationName(node.value);
-    const isCurrentAnimation = currentAnimationName.includes(CSS.escape(event.animationName));
-    const directionName = state.value === "mounted" ? "enter" : "leave";
-    if (event.target === node.value && isCurrentAnimation) {
-      dispatchCustomEvent(`after-${directionName}`);
-      dispatch("ANIMATION_END");
-      if (!prevPresentRef.value) {
-        const currentFillMode = node.value.style.animationFillMode;
-        node.value.style.animationFillMode = "forwards";
-        timeoutId = ownerWindow?.setTimeout(() => {
-          if (node.value?.style.animationFillMode === "forwards") node.value.style.animationFillMode = currentFillMode;
-        });
-      }
-    }
-    if (event.target === node.value && currentAnimationName === "none") dispatch("ANIMATION_END");
-  };
-  const handleAnimationStart = (event) => {
-    if (event.target === node.value) prevAnimationNameRef.value = getAnimationName(node.value);
-  };
-  const watcher = watch(node, (newNode, oldNode) => {
-    if (newNode) {
-      stylesRef.value = getComputedStyle(newNode);
-      newNode.addEventListener("animationstart", handleAnimationStart);
-      newNode.addEventListener("animationcancel", handleAnimationEnd);
-      newNode.addEventListener("animationend", handleAnimationEnd);
-    } else {
-      dispatch("ANIMATION_END");
-      if (timeoutId !== void 0) ownerWindow?.clearTimeout(timeoutId);
-      oldNode?.removeEventListener("animationstart", handleAnimationStart);
-      oldNode?.removeEventListener("animationcancel", handleAnimationEnd);
-      oldNode?.removeEventListener("animationend", handleAnimationEnd);
-    }
-  }, { immediate: true });
-  const stateWatcher = watch(state, () => {
-    const currentAnimationName = getAnimationName(node.value);
-    prevAnimationNameRef.value = state.value === "mounted" ? currentAnimationName : "none";
-  });
-  onUnmounted(() => {
-    watcher();
-    stateWatcher();
-  });
-  const isPresent = computed(() => ["mounted", "unmountSuspended"].includes(state.value));
-  return { isPresent };
-}
-function getAnimationName(node) {
-  return node ? getComputedStyle(node).animationName || "none" : "none";
-}
-var Presence_default = /* @__PURE__ */ defineComponent({
-  name: "Presence",
-  props: {
-    present: {
-      type: Boolean,
-      required: true
-    },
-    forceMount: { type: Boolean }
-  },
-  slots: {},
-  setup(props, { slots, expose }) {
-    const { present, forceMount } = /* @__PURE__ */ toRefs(props);
-    const node = /* @__PURE__ */ ref();
-    const { isPresent } = usePresence(present, node);
-    expose({ present: isPresent });
-    let children = slots.default({ present: isPresent.value });
-    children = renderSlotFragments(children || []);
-    const instance = getCurrentInstance();
-    if (children && children?.length > 1) {
-      const componentName = instance?.parent?.type.name ? `<${instance.parent.type.name} />` : "component";
-      throw new Error([
-        `Detected an invalid children for \`${componentName}\` for  \`Presence\` component.`,
-        "",
-        "Note: Presence works similarly to `v-if` directly, but it waits for animation/transition to finished before unmounting. So it expect only one direct child of valid VNode type.",
-        "You can apply a few solutions:",
-        ["Provide a single child element so that `presence` directive attach correctly.", "Ensure the first child is an actual element instead of a raw text node or comment node."].map((line) => `  - ${line}`).join("\n")
-      ].join("\n"));
-    }
-    return () => {
-      if (forceMount.value || present.value || isPresent.value) return h$2(slots.default({ present: isPresent.value })[0], { ref: (v2) => {
-        const el = unrefElement(v2);
-        if (typeof el?.hasAttribute === "undefined") return el;
-        if (el?.hasAttribute("data-reka-popper-content-wrapper")) node.value = el.firstElementChild;
-        else node.value = el;
-        return el;
-      } });
-      else return null;
-    };
-  }
-});
-const Slot = /* @__PURE__ */ defineComponent({
-  name: "PrimitiveSlot",
-  inheritAttrs: false,
-  setup(_2, { attrs, slots }) {
-    return () => {
-      if (!slots.default) return null;
-      const children = renderSlotFragments(slots.default());
-      const firstNonCommentChildrenIndex = children.findIndex((child) => child.type !== Comment);
-      if (firstNonCommentChildrenIndex === -1) return children;
-      const firstNonCommentChildren = children[firstNonCommentChildrenIndex];
-      delete firstNonCommentChildren.props?.ref;
-      const mergedProps = firstNonCommentChildren.props ? mergeProps(attrs, firstNonCommentChildren.props) : attrs;
-      const cloned = cloneVNode({
-        ...firstNonCommentChildren,
-        props: {}
-      }, mergedProps);
-      if (children.length === 1) return cloned;
-      children[firstNonCommentChildrenIndex] = cloned;
-      return children;
-    };
-  }
-});
-const SELF_CLOSING_TAGS = [
-  "area",
-  "img",
-  "input"
-];
-const Primitive = /* @__PURE__ */ defineComponent({
-  name: "Primitive",
-  inheritAttrs: false,
-  props: {
-    asChild: {
-      type: Boolean,
-      default: false
-    },
-    as: {
-      type: [String, Object],
-      default: "div"
-    }
-  },
-  setup(props, { attrs, slots }) {
-    const asTag = props.asChild ? "template" : props.as;
-    if (typeof asTag === "string" && SELF_CLOSING_TAGS.includes(asTag)) return () => h$2(asTag, attrs);
-    if (asTag !== "template") return () => h$2(props.as, attrs, { default: slots.default });
-    return () => h$2(Slot, attrs, { default: slots.default });
-  }
-});
-const [injectDialogRootContext, provideDialogRootContext] = createContext("DialogRoot");
-var DialogRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  inheritAttrs: false,
-  __name: "DialogRoot",
-  props: {
-    open: {
-      type: Boolean,
-      required: false,
-      default: void 0
-    },
-    defaultOpen: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    modal: {
-      type: Boolean,
-      required: false,
-      default: true
-    }
-  },
-  emits: ["update:open"],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emit2 = __emit;
-    const open = /* @__PURE__ */ useVModel(props, "open", emit2, {
-      defaultValue: props.defaultOpen,
-      passive: props.open === void 0
-    });
-    const triggerElement = /* @__PURE__ */ ref();
-    const contentElement = /* @__PURE__ */ ref();
-    const { modal } = /* @__PURE__ */ toRefs(props);
-    provideDialogRootContext({
-      open,
-      modal,
-      openModal: () => {
-        open.value = true;
-      },
-      onOpenChange: (value) => {
-        open.value = value;
-      },
-      onOpenToggle: () => {
-        open.value = !open.value;
-      },
-      contentId: "",
-      titleId: "",
-      descriptionId: "",
-      triggerElement,
-      contentElement
-    });
-    return (_ctx, _cache) => {
-      return renderSlot(_ctx.$slots, "default", {
-        open: unref(open),
-        close: () => open.value = false
-      });
-    };
-  }
-});
-var DialogRoot_default = DialogRoot_vue_vue_type_script_setup_true_lang_default;
-var DialogClose_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "DialogClose",
-  props: {
-    asChild: {
-      type: Boolean,
-      required: false
-    },
-    as: {
-      type: null,
-      required: false,
-      default: "button"
-    }
-  },
-  setup(__props) {
-    const props = __props;
-    useForwardExpose();
-    const rootContext = injectDialogRootContext();
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Primitive), mergeProps(props, {
-        type: _ctx.as === "button" ? "button" : void 0,
-        onClick: _cache[0] || (_cache[0] = ($event) => unref(rootContext).onOpenChange(false))
-      }), {
-        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-        _: 3
-      }, 16, ["type"]);
-    };
-  }
-});
-var DialogClose_default = DialogClose_vue_vue_type_script_setup_true_lang_default;
-const POINTER_DOWN_OUTSIDE = "dismissableLayer.pointerDownOutside";
-const FOCUS_OUTSIDE = "dismissableLayer.focusOutside";
-function isLayerExist(layerElement, targetElement) {
-  const targetLayer = targetElement.closest("[data-dismissable-layer]");
-  const mainLayer = layerElement.dataset.dismissableLayer === "" ? layerElement : layerElement.querySelector("[data-dismissable-layer]");
-  const nodeList = Array.from(layerElement.ownerDocument.querySelectorAll("[data-dismissable-layer]"));
-  if (targetLayer && (mainLayer === targetLayer || nodeList.indexOf(mainLayer) < nodeList.indexOf(targetLayer))) return true;
-  else return false;
-}
-function usePointerDownOutside(onPointerDownOutside, element, enabled = true) {
-  const ownerDocument = element?.value?.ownerDocument ?? globalThis?.document;
-  const isPointerInsideDOMTree = /* @__PURE__ */ ref(false);
-  const handleClickRef = /* @__PURE__ */ ref(() => {
-  });
-  watchEffect((cleanupFn) => {
-    if (!isClient || !toValue$1(enabled)) return;
-    const handlePointerDown = async (event) => {
-      const target = event.target;
-      if (!element?.value || !target) return;
-      if (isLayerExist(element.value, target)) {
-        isPointerInsideDOMTree.value = false;
-        return;
-      }
-      if (event.target && !isPointerInsideDOMTree.value) {
-        let handleAndDispatchPointerDownOutsideEvent = function() {
-          handleAndDispatchCustomEvent(POINTER_DOWN_OUTSIDE, onPointerDownOutside, eventDetail);
-        };
-        const eventDetail = { originalEvent: event };
-        if (event.pointerType === "touch") {
-          ownerDocument.removeEventListener("click", handleClickRef.value);
-          handleClickRef.value = handleAndDispatchPointerDownOutsideEvent;
-          ownerDocument.addEventListener("click", handleClickRef.value, { once: true });
-        } else handleAndDispatchPointerDownOutsideEvent();
-      } else ownerDocument.removeEventListener("click", handleClickRef.value);
-      isPointerInsideDOMTree.value = false;
-    };
-    const timerId = window.setTimeout(() => {
-      ownerDocument.addEventListener("pointerdown", handlePointerDown);
-    }, 0);
-    cleanupFn(() => {
-      window.clearTimeout(timerId);
-      ownerDocument.removeEventListener("pointerdown", handlePointerDown);
-      ownerDocument.removeEventListener("click", handleClickRef.value);
-    });
-  });
-  return { onPointerDownCapture: () => {
-    if (!toValue$1(enabled)) return;
-    isPointerInsideDOMTree.value = true;
-  } };
-}
-function useFocusOutside(onFocusOutside, element, enabled = true) {
-  const ownerDocument = element?.value?.ownerDocument ?? globalThis?.document;
-  const isFocusInsideDOMTree = /* @__PURE__ */ ref(false);
-  watchEffect((cleanupFn) => {
-    if (!isClient || !toValue$1(enabled)) return;
-    const handleFocus = async (event) => {
-      if (!element?.value) return;
-      await nextTick();
-      await nextTick();
-      const target = event.target;
-      if (!element.value || !target || isLayerExist(element.value, target)) return;
-      if (event.target && !isFocusInsideDOMTree.value) {
-        const eventDetail = { originalEvent: event };
-        handleAndDispatchCustomEvent(FOCUS_OUTSIDE, onFocusOutside, eventDetail);
-      }
-    };
-    ownerDocument.addEventListener("focusin", handleFocus);
-    cleanupFn(() => ownerDocument.removeEventListener("focusin", handleFocus));
-  });
-  return {
-    onFocusCapture: () => {
-      if (!toValue$1(enabled)) return;
-      isFocusInsideDOMTree.value = true;
-    },
-    onBlurCapture: () => {
-      if (!toValue$1(enabled)) return;
-      isFocusInsideDOMTree.value = false;
-    }
-  };
-}
-const context = /* @__PURE__ */ reactive({
-  layersRoot: /* @__PURE__ */ new Set(),
-  layersWithOutsidePointerEventsDisabled: /* @__PURE__ */ new Set(),
-  originalBodyPointerEvents: void 0,
-  branches: /* @__PURE__ */ new Set()
-});
-var DismissableLayer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "DismissableLayer",
-  props: {
-    disableOutsidePointerEvents: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    asChild: {
-      type: Boolean,
-      required: false
-    },
-    as: {
-      type: null,
-      required: false
-    }
-  },
-  emits: [
-    "escapeKeyDown",
-    "pointerDownOutside",
-    "focusOutside",
-    "interactOutside",
-    "dismiss"
-  ],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emits = __emit;
-    const { forwardRef, currentElement: layerElement } = useForwardExpose();
-    const ownerDocument = computed(() => layerElement.value?.ownerDocument ?? globalThis.document);
-    const layers = computed(() => context.layersRoot);
-    const index = computed(() => {
-      return layerElement.value ? Array.from(layers.value).indexOf(layerElement.value) : -1;
-    });
-    const isBodyPointerEventsDisabled = computed(() => {
-      return context.layersWithOutsidePointerEventsDisabled.size > 0;
-    });
-    const isPointerEventsEnabled = computed(() => {
-      const localLayers = Array.from(layers.value);
-      const [highestLayerWithOutsidePointerEventsDisabled] = [...context.layersWithOutsidePointerEventsDisabled].slice(-1);
-      const highestLayerWithOutsidePointerEventsDisabledIndex = localLayers.indexOf(highestLayerWithOutsidePointerEventsDisabled);
-      return index.value >= highestLayerWithOutsidePointerEventsDisabledIndex;
-    });
-    const pointerDownOutside = usePointerDownOutside(async (event) => {
-      const isPointerDownOnBranch = [...context.branches].some((branch) => branch?.contains(event.target));
-      if (!isPointerEventsEnabled.value || isPointerDownOnBranch) return;
-      emits("pointerDownOutside", event);
-      emits("interactOutside", event);
-      await nextTick();
-      if (!event.defaultPrevented) emits("dismiss");
-    }, layerElement);
-    const focusOutside = useFocusOutside((event) => {
-      const isFocusInBranch = [...context.branches].some((branch) => branch?.contains(event.target));
-      if (isFocusInBranch) return;
-      emits("focusOutside", event);
-      emits("interactOutside", event);
-      if (!event.defaultPrevented) emits("dismiss");
-    }, layerElement);
-    onKeyStroke("Escape", (event) => {
-      const isHighestLayer = index.value === layers.value.size - 1;
-      if (!isHighestLayer) return;
-      emits("escapeKeyDown", event);
-      if (!event.defaultPrevented) emits("dismiss");
-    });
-    watchEffect((cleanupFn) => {
-      if (!layerElement.value) return;
-      if (props.disableOutsidePointerEvents) {
-        if (context.layersWithOutsidePointerEventsDisabled.size === 0) {
-          context.originalBodyPointerEvents = ownerDocument.value.body.style.pointerEvents;
-          ownerDocument.value.body.style.pointerEvents = "none";
-        }
-        context.layersWithOutsidePointerEventsDisabled.add(layerElement.value);
-      }
-      layers.value.add(layerElement.value);
-      cleanupFn(() => {
-        if (props.disableOutsidePointerEvents && context.layersWithOutsidePointerEventsDisabled.size === 1 && !isNullish(context.originalBodyPointerEvents)) ownerDocument.value.body.style.pointerEvents = context.originalBodyPointerEvents;
-      });
-    });
-    watchEffect((cleanupFn) => {
-      cleanupFn(() => {
-        if (!layerElement.value) return;
-        layers.value.delete(layerElement.value);
-        context.layersWithOutsidePointerEventsDisabled.delete(layerElement.value);
-      });
-    });
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Primitive), {
-        ref: unref(forwardRef),
-        "as-child": _ctx.asChild,
-        as: _ctx.as,
-        "data-dismissable-layer": "",
-        style: normalizeStyle({ pointerEvents: isBodyPointerEventsDisabled.value ? isPointerEventsEnabled.value ? "auto" : "none" : void 0 }),
-        onFocusCapture: unref(focusOutside).onFocusCapture,
-        onBlurCapture: unref(focusOutside).onBlurCapture,
-        onPointerdownCapture: unref(pointerDownOutside).onPointerDownCapture
-      }, {
-        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-        _: 3
-      }, 8, [
-        "as-child",
-        "as",
-        "style",
-        "onFocusCapture",
-        "onBlurCapture",
-        "onPointerdownCapture"
-      ]);
-    };
-  }
-});
-var DismissableLayer_default = DismissableLayer_vue_vue_type_script_setup_true_lang_default;
-const useFocusStackState = /* @__PURE__ */ createGlobalState(() => {
-  const stack2 = /* @__PURE__ */ ref([]);
-  return stack2;
-});
-function createFocusScopesStack() {
-  const stack2 = useFocusStackState();
-  return {
-    add(focusScope) {
-      const activeFocusScope = stack2.value[0];
-      if (focusScope !== activeFocusScope) activeFocusScope?.pause();
-      stack2.value = arrayRemove(stack2.value, focusScope);
-      stack2.value.unshift(focusScope);
-    },
-    remove(focusScope) {
-      stack2.value = arrayRemove(stack2.value, focusScope);
-      stack2.value[0]?.resume();
-    }
-  };
-}
-function arrayRemove(array, item) {
-  const updatedArray = [...array];
-  const index = updatedArray.indexOf(item);
-  if (index !== -1) updatedArray.splice(index, 1);
-  return updatedArray;
-}
-const AUTOFOCUS_ON_MOUNT = "focusScope.autoFocusOnMount";
-const AUTOFOCUS_ON_UNMOUNT = "focusScope.autoFocusOnUnmount";
-const EVENT_OPTIONS = {
-  bubbles: false,
-  cancelable: true
-};
-function focusFirst(candidates, { select = false } = {}) {
-  const previouslyFocusedElement = getActiveElement();
-  for (const candidate of candidates) {
-    focus(candidate, { select });
-    if (getActiveElement() !== previouslyFocusedElement) return true;
-  }
-}
-function getTabbableEdges(container) {
-  const candidates = getTabbableCandidates(container);
-  const first = findVisible(candidates, container);
-  const last = findVisible(candidates.reverse(), container);
-  return [first, last];
-}
-function getTabbableCandidates(container) {
-  const nodes = [];
-  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, { acceptNode: (node) => {
-    const isHiddenInput = node.tagName === "INPUT" && node.type === "hidden";
-    if (node.disabled || node.hidden || isHiddenInput) return NodeFilter.FILTER_SKIP;
-    return node.tabIndex >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-  } });
-  while (walker.nextNode()) nodes.push(walker.currentNode);
-  return nodes;
-}
-function findVisible(elements, container) {
-  for (const element of elements) if (!isHidden(element, { upTo: container })) return element;
-}
-function isHidden(node, { upTo }) {
-  if (getComputedStyle(node).visibility === "hidden") return true;
-  while (node) {
-    if (upTo !== void 0 && node === upTo) return false;
-    if (getComputedStyle(node).display === "none") return true;
-    node = node.parentElement;
-  }
-  return false;
-}
-function isSelectableInput(element) {
-  return element instanceof HTMLInputElement && "select" in element;
-}
-function focus(element, { select = false } = {}) {
-  if (element && element.focus) {
-    const previouslyFocusedElement = getActiveElement();
-    element.focus({ preventScroll: true });
-    if (element !== previouslyFocusedElement && isSelectableInput(element) && select) element.select();
-  }
-}
-var FocusScope_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "FocusScope",
-  props: {
-    loop: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    trapped: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    asChild: {
-      type: Boolean,
-      required: false
-    },
-    as: {
-      type: null,
-      required: false
-    }
-  },
-  emits: ["mountAutoFocus", "unmountAutoFocus"],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emits = __emit;
-    const { currentRef, currentElement } = useForwardExpose();
-    const lastFocusedElementRef = /* @__PURE__ */ ref(null);
-    const focusScopesStack = createFocusScopesStack();
-    const focusScope = /* @__PURE__ */ reactive({
-      paused: false,
-      pause() {
-        this.paused = true;
-      },
-      resume() {
-        this.paused = false;
-      }
-    });
-    watchEffect((cleanupFn) => {
-      if (!isClient) return;
-      const container = currentElement.value;
-      if (!props.trapped) return;
-      function handleFocusIn(event) {
-        if (focusScope.paused || !container) return;
-        const target = event.target;
-        if (container.contains(target)) lastFocusedElementRef.value = target;
-        else focus(lastFocusedElementRef.value, { select: true });
-      }
-      function handleFocusOut(event) {
-        if (focusScope.paused || !container) return;
-        const relatedTarget = event.relatedTarget;
-        if (relatedTarget === null) return;
-        if (!container.contains(relatedTarget)) focus(lastFocusedElementRef.value, { select: true });
-      }
-      function handleMutations(mutations) {
-        const isLastFocusedElementExist = container.contains(lastFocusedElementRef.value);
-        if (!isLastFocusedElementExist) focus(container);
-      }
-      document.addEventListener("focusin", handleFocusIn);
-      document.addEventListener("focusout", handleFocusOut);
-      const mutationObserver = new MutationObserver(handleMutations);
-      if (container) mutationObserver.observe(container, {
-        childList: true,
-        subtree: true
-      });
-      cleanupFn(() => {
-        document.removeEventListener("focusin", handleFocusIn);
-        document.removeEventListener("focusout", handleFocusOut);
-        mutationObserver.disconnect();
-      });
-    });
-    watchEffect(async (cleanupFn) => {
-      const container = currentElement.value;
-      await nextTick();
-      if (!container) return;
-      focusScopesStack.add(focusScope);
-      const previouslyFocusedElement = getActiveElement();
-      const hasFocusedCandidate = container.contains(previouslyFocusedElement);
-      if (!hasFocusedCandidate) {
-        const mountEvent = new CustomEvent(AUTOFOCUS_ON_MOUNT, EVENT_OPTIONS);
-        container.addEventListener(AUTOFOCUS_ON_MOUNT, (ev) => emits("mountAutoFocus", ev));
-        container.dispatchEvent(mountEvent);
-        if (!mountEvent.defaultPrevented) {
-          focusFirst(getTabbableCandidates(container), { select: true });
-          if (getActiveElement() === previouslyFocusedElement) focus(container);
-        }
-      }
-      cleanupFn(() => {
-        container.removeEventListener(AUTOFOCUS_ON_MOUNT, (ev) => emits("mountAutoFocus", ev));
-        const unmountEvent = new CustomEvent(AUTOFOCUS_ON_UNMOUNT, EVENT_OPTIONS);
-        const unmountEventHandler = (ev) => {
-          emits("unmountAutoFocus", ev);
-        };
-        container.addEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler);
-        container.dispatchEvent(unmountEvent);
-        setTimeout(() => {
-          if (!unmountEvent.defaultPrevented) focus(previouslyFocusedElement ?? document.body, { select: true });
-          container.removeEventListener(AUTOFOCUS_ON_UNMOUNT, unmountEventHandler);
-          focusScopesStack.remove(focusScope);
-        }, 0);
-      });
-    });
-    function handleKeyDown(event) {
-      if (!props.loop && !props.trapped) return;
-      if (focusScope.paused) return;
-      const isTabKey = event.key === "Tab" && !event.altKey && !event.ctrlKey && !event.metaKey;
-      const focusedElement = getActiveElement();
-      if (isTabKey && focusedElement) {
-        const container = event.currentTarget;
-        const [first, last] = getTabbableEdges(container);
-        const hasTabbableElementsInside = first && last;
-        if (!hasTabbableElementsInside) {
-          if (focusedElement === container) event.preventDefault();
-        } else if (!event.shiftKey && focusedElement === last) {
-          event.preventDefault();
-          if (props.loop) focus(first, { select: true });
-        } else if (event.shiftKey && focusedElement === first) {
-          event.preventDefault();
-          if (props.loop) focus(last, { select: true });
-        }
-      }
-    }
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Primitive), {
-        ref_key: "currentRef",
-        ref: currentRef,
-        tabindex: "-1",
-        "as-child": _ctx.asChild,
-        as: _ctx.as,
-        onKeydown: handleKeyDown
-      }, {
-        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-        _: 3
-      }, 8, ["as-child", "as"]);
-    };
-  }
-});
-var FocusScope_default = FocusScope_vue_vue_type_script_setup_true_lang_default;
-function getOpenState(open) {
-  return open ? "open" : "closed";
-}
-var DialogContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "DialogContentImpl",
-  props: {
-    forceMount: {
-      type: Boolean,
-      required: false
-    },
-    trapFocus: {
-      type: Boolean,
-      required: false
-    },
-    disableOutsidePointerEvents: {
-      type: Boolean,
-      required: false
-    },
-    asChild: {
-      type: Boolean,
-      required: false
-    },
-    as: {
-      type: null,
-      required: false
-    }
-  },
-  emits: [
-    "escapeKeyDown",
-    "pointerDownOutside",
-    "focusOutside",
-    "interactOutside",
-    "openAutoFocus",
-    "closeAutoFocus"
-  ],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emits = __emit;
-    const rootContext = injectDialogRootContext();
-    const { forwardRef, currentElement: contentElement } = useForwardExpose();
-    rootContext.titleId ||= useId(void 0, "reka-dialog-title");
-    rootContext.descriptionId ||= useId(void 0, "reka-dialog-description");
-    onMounted(() => {
-      rootContext.contentElement = contentElement;
-      if (getActiveElement() !== document.body) rootContext.triggerElement.value = getActiveElement();
-    });
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(FocusScope_default), {
-        "as-child": "",
-        loop: "",
-        trapped: props.trapFocus,
-        onMountAutoFocus: _cache[5] || (_cache[5] = ($event) => emits("openAutoFocus", $event)),
-        onUnmountAutoFocus: _cache[6] || (_cache[6] = ($event) => emits("closeAutoFocus", $event))
-      }, {
-        default: withCtx(() => [createVNode(unref(DismissableLayer_default), mergeProps({
-          id: unref(rootContext).contentId,
-          ref: unref(forwardRef),
-          as: _ctx.as,
-          "as-child": _ctx.asChild,
-          "disable-outside-pointer-events": _ctx.disableOutsidePointerEvents,
-          role: "dialog",
-          "aria-describedby": unref(rootContext).descriptionId,
-          "aria-labelledby": unref(rootContext).titleId,
-          "data-state": unref(getOpenState)(unref(rootContext).open.value)
-        }, _ctx.$attrs, {
-          onDismiss: _cache[0] || (_cache[0] = ($event) => unref(rootContext).onOpenChange(false)),
-          onEscapeKeyDown: _cache[1] || (_cache[1] = ($event) => emits("escapeKeyDown", $event)),
-          onFocusOutside: _cache[2] || (_cache[2] = ($event) => emits("focusOutside", $event)),
-          onInteractOutside: _cache[3] || (_cache[3] = ($event) => emits("interactOutside", $event)),
-          onPointerDownOutside: _cache[4] || (_cache[4] = ($event) => emits("pointerDownOutside", $event))
-        }), {
-          default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-          _: 3
-        }, 16, [
-          "id",
-          "as",
-          "as-child",
-          "disable-outside-pointer-events",
-          "aria-describedby",
-          "aria-labelledby",
-          "data-state"
-        ])]),
-        _: 3
-      }, 8, ["trapped"]);
-    };
-  }
-});
-var DialogContentImpl_default = DialogContentImpl_vue_vue_type_script_setup_true_lang_default;
-var DialogContentModal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "DialogContentModal",
-  props: {
-    forceMount: {
-      type: Boolean,
-      required: false
-    },
-    trapFocus: {
-      type: Boolean,
-      required: false
-    },
-    disableOutsidePointerEvents: {
-      type: Boolean,
-      required: false
-    },
-    asChild: {
-      type: Boolean,
-      required: false
-    },
-    as: {
-      type: null,
-      required: false
-    }
-  },
-  emits: [
-    "escapeKeyDown",
-    "pointerDownOutside",
-    "focusOutside",
-    "interactOutside",
-    "openAutoFocus",
-    "closeAutoFocus"
-  ],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emits = __emit;
-    const rootContext = injectDialogRootContext();
-    const emitsAsProps = useEmitAsProps(emits);
-    const { forwardRef, currentElement } = useForwardExpose();
-    useHideOthers(currentElement);
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(DialogContentImpl_default, mergeProps({
-        ...props,
-        ...unref(emitsAsProps)
-      }, {
-        ref: unref(forwardRef),
-        "trap-focus": unref(rootContext).open.value,
-        "disable-outside-pointer-events": true,
-        onCloseAutoFocus: _cache[0] || (_cache[0] = (event) => {
-          if (!event.defaultPrevented) {
-            event.preventDefault();
-            unref(rootContext).triggerElement.value?.focus();
-          }
-        }),
-        onPointerDownOutside: _cache[1] || (_cache[1] = (event) => {
-          const originalEvent = event.detail.originalEvent;
-          const ctrlLeftClick = originalEvent.button === 0 && originalEvent.ctrlKey === true;
-          const isRightClick = originalEvent.button === 2 || ctrlLeftClick;
-          if (isRightClick) event.preventDefault();
-        }),
-        onFocusOutside: _cache[2] || (_cache[2] = (event) => {
-          event.preventDefault();
-        })
-      }), {
-        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-        _: 3
-      }, 16, ["trap-focus"]);
-    };
-  }
-});
-var DialogContentModal_default = DialogContentModal_vue_vue_type_script_setup_true_lang_default;
-var DialogContentNonModal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "DialogContentNonModal",
-  props: {
-    forceMount: {
-      type: Boolean,
-      required: false
-    },
-    trapFocus: {
-      type: Boolean,
-      required: false
-    },
-    disableOutsidePointerEvents: {
-      type: Boolean,
-      required: false
-    },
-    asChild: {
-      type: Boolean,
-      required: false
-    },
-    as: {
-      type: null,
-      required: false
-    }
-  },
-  emits: [
-    "escapeKeyDown",
-    "pointerDownOutside",
-    "focusOutside",
-    "interactOutside",
-    "openAutoFocus",
-    "closeAutoFocus"
-  ],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emits = __emit;
-    const emitsAsProps = useEmitAsProps(emits);
-    useForwardExpose();
-    const rootContext = injectDialogRootContext();
-    const hasInteractedOutsideRef = /* @__PURE__ */ ref(false);
-    const hasPointerDownOutsideRef = /* @__PURE__ */ ref(false);
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(DialogContentImpl_default, mergeProps({
-        ...props,
-        ...unref(emitsAsProps)
-      }, {
-        "trap-focus": false,
-        "disable-outside-pointer-events": false,
-        onCloseAutoFocus: _cache[0] || (_cache[0] = (event) => {
-          if (!event.defaultPrevented) {
-            if (!hasInteractedOutsideRef.value) unref(rootContext).triggerElement.value?.focus();
-            event.preventDefault();
-          }
-          hasInteractedOutsideRef.value = false;
-          hasPointerDownOutsideRef.value = false;
-        }),
-        onInteractOutside: _cache[1] || (_cache[1] = (event) => {
-          if (!event.defaultPrevented) {
-            hasInteractedOutsideRef.value = true;
-            if (event.detail.originalEvent.type === "pointerdown") hasPointerDownOutsideRef.value = true;
-          }
-          const target = event.target;
-          const targetIsTrigger = unref(rootContext).triggerElement.value?.contains(target);
-          if (targetIsTrigger) event.preventDefault();
-          if (event.detail.originalEvent.type === "focusin" && hasPointerDownOutsideRef.value) event.preventDefault();
-        })
-      }), {
-        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-        _: 3
-      }, 16);
-    };
-  }
-});
-var DialogContentNonModal_default = DialogContentNonModal_vue_vue_type_script_setup_true_lang_default;
-var DialogContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "DialogContent",
-  props: {
-    forceMount: {
-      type: Boolean,
-      required: false
-    },
-    disableOutsidePointerEvents: {
-      type: Boolean,
-      required: false
-    },
-    asChild: {
-      type: Boolean,
-      required: false
-    },
-    as: {
-      type: null,
-      required: false
-    }
-  },
-  emits: [
-    "escapeKeyDown",
-    "pointerDownOutside",
-    "focusOutside",
-    "interactOutside",
-    "openAutoFocus",
-    "closeAutoFocus"
-  ],
-  setup(__props, { emit: __emit }) {
-    const props = __props;
-    const emits = __emit;
-    const rootContext = injectDialogRootContext();
-    const emitsAsProps = useEmitAsProps(emits);
-    const { forwardRef } = useForwardExpose();
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Presence_default), { present: _ctx.forceMount || unref(rootContext).open.value }, {
-        default: withCtx(() => [unref(rootContext).modal.value ? (openBlock(), createBlock(DialogContentModal_default, mergeProps({
-          key: 0,
-          ref: unref(forwardRef)
-        }, {
-          ...props,
-          ...unref(emitsAsProps),
-          ..._ctx.$attrs
-        }), {
-          default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-          _: 3
-        }, 16)) : (openBlock(), createBlock(DialogContentNonModal_default, mergeProps({
-          key: 1,
-          ref: unref(forwardRef)
-        }, {
-          ...props,
-          ...unref(emitsAsProps),
-          ..._ctx.$attrs
-        }), {
-          default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-          _: 3
-        }, 16))]),
-        _: 3
-      }, 8, ["present"]);
-    };
-  }
-});
-var DialogContent_default = DialogContent_vue_vue_type_script_setup_true_lang_default;
-var DialogOverlayImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "DialogOverlayImpl",
-  props: {
-    asChild: {
-      type: Boolean,
-      required: false
-    },
-    as: {
-      type: null,
-      required: false
-    }
-  },
-  setup(__props) {
-    const rootContext = injectDialogRootContext();
-    useBodyScrollLock(true);
-    useForwardExpose();
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Primitive), {
-        as: _ctx.as,
-        "as-child": _ctx.asChild,
-        "data-state": unref(rootContext).open.value ? "open" : "closed",
-        style: { "pointer-events": "auto" }
-      }, {
-        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-        _: 3
-      }, 8, [
-        "as",
-        "as-child",
-        "data-state"
-      ]);
-    };
-  }
-});
-var DialogOverlayImpl_default = DialogOverlayImpl_vue_vue_type_script_setup_true_lang_default;
-var DialogOverlay_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "DialogOverlay",
-  props: {
-    forceMount: {
-      type: Boolean,
-      required: false
-    },
-    asChild: {
-      type: Boolean,
-      required: false
-    },
-    as: {
-      type: null,
-      required: false
-    }
-  },
-  setup(__props) {
-    const rootContext = injectDialogRootContext();
-    const { forwardRef } = useForwardExpose();
-    return (_ctx, _cache) => {
-      return unref(rootContext)?.modal.value ? (openBlock(), createBlock(unref(Presence_default), {
-        key: 0,
-        present: _ctx.forceMount || unref(rootContext).open.value
-      }, {
-        default: withCtx(() => [createVNode(DialogOverlayImpl_default, mergeProps(_ctx.$attrs, {
-          ref: unref(forwardRef),
-          as: _ctx.as,
-          "as-child": _ctx.asChild
-        }), {
-          default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-          _: 3
-        }, 16, ["as", "as-child"])]),
-        _: 3
-      }, 8, ["present"])) : createCommentVNode("v-if", true);
-    };
-  }
-});
-var DialogOverlay_default = DialogOverlay_vue_vue_type_script_setup_true_lang_default;
-var Teleport_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "Teleport",
-  props: {
-    to: {
-      type: null,
-      required: false,
-      default: "body"
-    },
-    disabled: {
-      type: Boolean,
-      required: false
-    },
-    defer: {
-      type: Boolean,
-      required: false
-    },
-    forceMount: {
-      type: Boolean,
-      required: false
-    }
-  },
-  setup(__props) {
-    const isMounted = /* @__PURE__ */ useMounted();
-    return (_ctx, _cache) => {
-      return unref(isMounted) || _ctx.forceMount ? (openBlock(), createBlock(Teleport, {
-        key: 0,
-        to: _ctx.to,
-        disabled: _ctx.disabled,
-        defer: _ctx.defer
-      }, [renderSlot(_ctx.$slots, "default")], 8, [
-        "to",
-        "disabled",
-        "defer"
-      ])) : createCommentVNode("v-if", true);
-    };
-  }
-});
-var Teleport_default = Teleport_vue_vue_type_script_setup_true_lang_default;
-var DialogPortal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "DialogPortal",
-  props: {
-    to: {
-      type: null,
-      required: false
-    },
-    disabled: {
-      type: Boolean,
-      required: false
-    },
-    defer: {
-      type: Boolean,
-      required: false
-    },
-    forceMount: {
-      type: Boolean,
-      required: false
-    }
-  },
-  setup(__props) {
-    const props = __props;
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Teleport_default), normalizeProps(guardReactiveProps(props)), {
-        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-        _: 3
-      }, 16);
-    };
-  }
-});
-var DialogPortal_default = DialogPortal_vue_vue_type_script_setup_true_lang_default;
-var DialogTitle_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
-  __name: "DialogTitle",
-  props: {
-    asChild: {
-      type: Boolean,
-      required: false
-    },
-    as: {
-      type: null,
-      required: false,
-      default: "h2"
-    }
-  },
-  setup(__props) {
-    const props = __props;
-    const rootContext = injectDialogRootContext();
-    useForwardExpose();
-    return (_ctx, _cache) => {
-      return openBlock(), createBlock(unref(Primitive), mergeProps(props, { id: unref(rootContext).titleId }), {
-        default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
-        _: 3
-      }, 16, ["id"]);
-    };
-  }
-});
-var DialogTitle_default = DialogTitle_vue_vue_type_script_setup_true_lang_default;
-const hasA11yProp = (props) => {
-  for (const prop in props) {
-    if (prop.startsWith("aria-") || prop === "role" || prop === "title") {
-      return true;
-    }
-  }
-  return false;
-};
-const isEmptyString = (value) => value === "";
-const mergeClasses = (...classes) => classes.filter((className, index, array) => {
-  return Boolean(className) && className.trim() !== "" && array.indexOf(className) === index;
-}).join(" ").trim();
-const toKebabCase = (string) => string.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
-const toCamelCase = (string) => string.replace(
-  /^([A-Z])|[\s-_]+(\w)/g,
-  (match, p1, p2) => p2 ? p2.toUpperCase() : p1.toLowerCase()
-);
-const toPascalCase = (string) => {
-  const camelCase = toCamelCase(string);
-  return camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
-};
-var defaultAttributes = {
-  xmlns: "http://www.w3.org/2000/svg",
-  width: 24,
-  height: 24,
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  "stroke-width": 2,
-  "stroke-linecap": "round",
-  "stroke-linejoin": "round"
-};
-const Icon = ({
-  name,
-  iconNode,
-  absoluteStrokeWidth,
-  "absolute-stroke-width": absoluteStrokeWidthKebabCase,
-  strokeWidth,
-  "stroke-width": strokeWidthKebabCase,
-  size: size2 = defaultAttributes.width,
-  color = defaultAttributes.stroke,
-  ...props
-}, { slots }) => {
-  return h$2(
-    "svg",
-    {
-      ...defaultAttributes,
-      ...props,
-      width: size2,
-      height: size2,
-      stroke: color,
-      "stroke-width": isEmptyString(absoluteStrokeWidth) || isEmptyString(absoluteStrokeWidthKebabCase) || absoluteStrokeWidth === true || absoluteStrokeWidthKebabCase === true ? Number(strokeWidth || strokeWidthKebabCase || defaultAttributes["stroke-width"]) * 24 / Number(size2) : strokeWidth || strokeWidthKebabCase || defaultAttributes["stroke-width"],
-      class: mergeClasses(
-        "lucide",
-        props.class,
-        ...name ? [`lucide-${toKebabCase(toPascalCase(name))}-icon`, `lucide-${toKebabCase(name)}`] : ["lucide-icon"]
-      ),
-      ...!slots.default && !hasA11yProp(props) && { "aria-hidden": "true" }
-    },
-    [...iconNode.map((child) => h$2(...child)), ...slots.default ? [slots.default()] : []]
-  );
-};
-const createLucideIcon = (iconName, iconNode) => (props, { slots, attrs }) => h$2(
-  Icon,
-  {
-    ...attrs,
-    ...props,
-    iconNode,
-    name: iconName
-  },
-  slots
-);
-const Pause = createLucideIcon("pause", [
-  ["rect", { x: "14", y: "3", width: "5", height: "18", rx: "1", key: "kaeet6" }],
-  ["rect", { x: "5", y: "3", width: "5", height: "18", rx: "1", key: "1wsw3u" }]
-]);
-const Play = createLucideIcon("play", [
-  [
-    "path",
-    {
-      d: "M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z",
-      key: "10ikf1"
-    }
-  ]
-]);
-const SkipBack = createLucideIcon("skip-back", [
-  [
-    "path",
-    {
-      d: "M17.971 4.285A2 2 0 0 1 21 6v12a2 2 0 0 1-3.029 1.715l-9.997-5.998a2 2 0 0 1-.003-3.432z",
-      key: "15892j"
-    }
-  ],
-  ["path", { d: "M3 20V4", key: "1ptbpl" }]
-]);
-const SkipForward = createLucideIcon("skip-forward", [
-  ["path", { d: "M21 4v16", key: "7j8fe9" }],
-  [
-    "path",
-    {
-      d: "M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z",
-      key: "zs4d6"
-    }
-  ]
-]);
-const Volume2 = createLucideIcon("volume-2", [
-  [
-    "path",
-    {
-      d: "M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z",
-      key: "uqj9uw"
-    }
-  ],
-  ["path", { d: "M16 9a5 5 0 0 1 0 6", key: "1q6k2b" }],
-  ["path", { d: "M19.364 18.364a9 9 0 0 0 0-12.728", key: "ijwkga" }]
-]);
-const VolumeX = createLucideIcon("volume-x", [
-  [
-    "path",
-    {
-      d: "M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z",
-      key: "uqj9uw"
-    }
-  ],
-  ["line", { x1: "22", x2: "16", y1: "9", y2: "15", key: "1ewh16" }],
-  ["line", { x1: "16", x2: "22", y1: "9", y2: "15", key: "5ykzw1" }]
-]);
-const X = createLucideIcon("x", [
-  ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
-  ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
-]);
 const _sfc_main$g = /* @__PURE__ */ defineComponent({
   __name: "SidebarDrawer",
   props: {
@@ -25490,7 +24391,7 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
                     "aria-label": unref(t2)("header.closeSidebar")
                   }, {
                     default: withCtx(() => [
-                      createVNode(unref(X), { size: 20 })
+                      createVNode(unref(X$1), { size: 20 })
                     ]),
                     _: 1
                   }, 8, ["aria-label"]),
@@ -25509,7 +24410,7 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
 });
 const _hoisted_1$f = ["aria-label"];
 const _hoisted_2$c = { class: "selection-count" };
-const _hoisted_3$a = { class: "selection-actions" };
+const _hoisted_3$9 = { class: "selection-actions" };
 const _sfc_main$f = /* @__PURE__ */ defineComponent({
   __name: "SelectionActionBar",
   setup(__props) {
@@ -25523,7 +24424,7 @@ const _sfc_main$f = /* @__PURE__ */ defineComponent({
         "aria-label": unref(t2)("selection.count")
       }, [
         createBaseVNode("span", _hoisted_2$c, toDisplayString(unref(selection).count.value) + " " + toDisplayString(unref(t2)("selection.count")), 1),
-        createBaseVNode("div", _hoisted_3$a, [
+        createBaseVNode("div", _hoisted_3$9, [
           createVNode(unref(CopyButton), {
             icon: "clipboard-type",
             "copy-fn": unref(selection).copyText,
@@ -25578,22 +24479,38 @@ function useIsMobile() {
   return { isMobile };
 }
 const _hoisted_1$e = { class: "editor-layout" };
-const _hoisted_2$b = { class: "editor-body" };
-const _hoisted_3$9 = {
+const _hoisted_2$b = {
   key: 6,
   class: "mobile-selectors"
 };
 const _sfc_main$e = /* @__PURE__ */ defineComponent({
   __name: "Layout",
   props: {
-    showHeader: { type: Boolean, default: true }
+    showHeader: { type: Boolean, default: true },
+    showVerbatim: { type: Boolean, default: true }
   },
   setup(__props) {
     const props = __props;
     const core = useCore();
     const { isMobile } = useIsMobile();
     const isSidebarOpen = /* @__PURE__ */ ref(false);
-    const activeTab = /* @__PURE__ */ ref(TRANSCRIPTION_TAB);
+    const shownPanels = /* @__PURE__ */ ref([TRANSCRIPTION_TAB]);
+    const activeTab = computed(() => shownPanels.value[0] ?? TRANSCRIPTION_TAB);
+    const isSplit = computed({
+      get: () => props.showVerbatim && shownPanels.value.length > 1,
+      set: (value) => {
+        if (!props.showVerbatim) return;
+        shownPanels.value = value ? [...shownPanels.value, VERBATIM_TAB] : shownPanels.value.filter((id) => id !== VERBATIM_TAB);
+      }
+    });
+    const panels = computed(
+      () => shownPanels.value.map((id) => {
+        if (id === TRANSCRIPTION_TAB) return { id, kind: "transcription" };
+        if (id === VERBATIM_TAB) return { id, kind: "verbatim" };
+        const service = core.llmServices?.get(id);
+        return service ? { id, kind: "service", service } : { id, kind: "transcription" };
+      })
+    );
     const activeTurns = computed(
       () => core.activeChannel.value?.activeTranslation.value.turns.value ?? []
     );
@@ -25608,11 +24525,6 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
     );
     const speakerList = computed(() => Array.from(speakers.values()));
     const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB);
-    const showVerbatim = computed(() => activeTab.value === VERBATIM_TAB);
-    const activeService = computed(() => {
-      if (showTranscription.value || showVerbatim.value) return null;
-      return core.llmServices?.get(activeTab.value) ?? null;
-    });
     watch(activeTab, (id) => {
       if (!core.llmServices) return;
       if (id === TRANSCRIPTION_TAB || id === VERBATIM_TAB) {
@@ -25625,8 +24537,16 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
       () => core.llmServices?.list.value.map((s2) => s2.id).join("|"),
       () => {
         if (activeTab.value !== TRANSCRIPTION_TAB && activeTab.value !== VERBATIM_TAB && !core.llmServices?.get(activeTab.value)) {
-          activeTab.value = TRANSCRIPTION_TAB;
+          shownPanels.value = [TRANSCRIPTION_TAB];
         }
+      }
+    );
+    watch(
+      () => props.showVerbatim,
+      (canShow) => {
+        if (canShow) return;
+        const withoutVerbatim = shownPanels.value.filter((id) => id !== VERBATIM_TAB);
+        shownPanels.value = withoutVerbatim.length > 0 ? withoutVerbatim : [TRANSCRIPTION_TAB];
       }
     );
     watch(
@@ -25659,29 +24579,44 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
           "speaker-count": unref(speakers).size,
           "is-mobile": unref(isMobile),
           "can-ask": !!unref(core).chat,
+          "can-undo": unref(core).transcriptionEditor?.canUndo.value ?? false,
+          "can-redo": unref(core).transcriptionEditor?.canRedo.value ?? false,
           onToggleSidebar: _cache[0] || (_cache[0] = ($event) => isSidebarOpen.value = !isSidebarOpen.value),
-          onOpenChat: _cache[1] || (_cache[1] = ($event) => unref(core).chat?.setDrawerOpen(true))
-        }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask"])) : createCommentVNode("", true),
+          onOpenChat: _cache[1] || (_cache[1] = ($event) => unref(core).chat?.setDrawerOpen(true)),
+          onUndo: _cache[2] || (_cache[2] = ($event) => unref(core).transcriptionEditor?.undo()),
+          onRedo: _cache[3] || (_cache[3] = ($event) => unref(core).transcriptionEditor?.redo())
+        }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask", "can-undo", "can-redo"])) : createCommentVNode("", true),
         createVNode(_sfc_main$t, {
-          modelValue: activeTab.value,
-          "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => activeTab.value = $event)
-        }, null, 8, ["modelValue"]),
+          "model-value": activeTab.value,
+          "show-verbatim": props.showVerbatim,
+          "onUpdate:modelValue": _cache[4] || (_cache[4] = (tab) => shownPanels.value = [tab])
+        }, null, 8, ["model-value", "show-verbatim"]),
         showTranscription.value ? (openBlock(), createBlock(SelectionActionBar, { key: 1 })) : createCommentVNode("", true),
-        createBaseVNode("main", _hoisted_2$b, [
-          showTranscription.value ? (openBlock(), createBlock(TranscriptionPanel, {
+        createBaseVNode("main", {
+          class: normalizeClass(["editor-body", { "editor-body--no-sidebar": panels.value.length > 1 }])
+        }, [
+          createBaseVNode("div", {
+            class: normalizeClass(["editor-body__panels", { "editor-body__panels--split": panels.value.length > 1 }])
+          }, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList(panels.value, (panel) => {
+              return openBlock(), createElementBlock(Fragment, {
+                key: panel.id
+              }, [
+                panel.kind === "transcription" ? (openBlock(), createBlock(TranscriptionPanel, {
+                  key: 0,
+                  turns: activeTurns.value,
+                  speakers: unref(speakers)
+                }, null, 8, ["turns", "speakers"])) : panel.kind === "verbatim" ? (openBlock(), createBlock(VerbatimPanel, { key: 1 })) : (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.llmServicePanel), {
+                  key: 2,
+                  service: panel.service,
+                  split: isSplit.value,
+                  "onUpdate:split": _cache[5] || (_cache[5] = ($event) => isSplit.value = $event)
+                }, null, 40, ["service", "split"]))
+              ], 64);
+            }), 128))
+          ], 2),
+          !unref(isMobile) && panels.value.length === 1 ? (openBlock(), createBlock(SpeakerSidebar, {
             key: 0,
-            turns: activeTurns.value,
-            speakers: unref(speakers)
-          }, null, 8, ["turns", "speakers"])) : showVerbatim.value ? (openBlock(), createBlock(VerbatimPanel, { key: 1 })) : activeService.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.llmServicePanel), {
-            key: activeService.value.id,
-            service: activeService.value
-          }, null, 8, ["service"])) : (openBlock(), createBlock(TranscriptionPanel, {
-            key: 3,
-            turns: activeTurns.value,
-            speakers: unref(speakers)
-          }, null, 8, ["turns", "speakers"])),
-          !unref(isMobile) ? (openBlock(), createBlock(SpeakerSidebar, {
-            key: 4,
             speakers: speakerList.value,
             channels: channels.value,
             "selected-channel-id": unref(core).activeChannelId.value,
@@ -25691,10 +24626,10 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
             "onUpdate:selectedChannelId": onChannelChange,
             "onUpdate:selectedTranslationId": onTranslationChange
           }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])) : createCommentVNode("", true),
-          unref(isMobile) ? (openBlock(), createBlock(_sfc_main$g, {
-            key: 5,
+          unref(isMobile) && panels.value.length === 1 ? (openBlock(), createBlock(_sfc_main$g, {
+            key: 1,
             open: isSidebarOpen.value,
-            "onUpdate:open": _cache[3] || (_cache[3] = ($event) => isSidebarOpen.value = $event)
+            "onUpdate:open": _cache[6] || (_cache[6] = ($event) => isSidebarOpen.value = $event)
           }, {
             default: withCtx(() => [
               createVNode(SpeakerSidebar, {
@@ -25710,7 +24645,7 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
             ]),
             _: 1
           }, 8, ["open"])) : createCommentVNode("", true)
-        ]),
+        ], 2),
         unref(core).audio?.src.value ? withDirectives((openBlock(), createBlock(resolveDynamicComponent(unref(core).components.player), {
           key: 2,
           "audio-src": unref(core).audio.src.value
@@ -25720,7 +24655,7 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
         unref(core).subtitle?.isVisible.value && !unref(isMobile) && !unref(core).subtitle.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleBanner), { key: 3 })) : createCommentVNode("", true),
         unref(core).subtitle?.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleFullscreen), { key: 4 })) : createCommentVNode("", true),
         unref(core).chat ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.chatDrawer), { key: 5 })) : createCommentVNode("", true),
-        unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_3$9, [
+        unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_2$b, [
           channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$k, {
             key: 0,
             channels: channels.value,
@@ -25738,8 +24673,8 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$e = "\n.editor-layout[data-v-81526b7d] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-81526b7d] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n.mobile-selectors[data-v-81526b7d] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-81526b7d] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-81526b7d] {\n    grid-template-columns: 1fr;\n}\n}\n";
-const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-81526b7d"]]);
+const _style_0$e = "\n.editor-layout[data-v-540cad68] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-540cad68] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-540cad68] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-540cad68] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-540cad68] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-540cad68] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-540cad68] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-540cad68] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-540cad68] {\n    grid-template-columns: 1fr;\n}\n}\n";
+const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-540cad68"]]);
 const _hoisted_1$d = {
   class: "editor-loading",
   role: "status",
@@ -25832,7 +24767,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
   __name: "TranscriptUI",
   props: {
     locale: { default: "fr", type: String },
-    noHeader: { type: Boolean, default: false }
+    noHeader: { type: Boolean, default: false },
+    noVerbatim: { type: Boolean, default: false }
   },
   setup(__props, { expose: __expose }) {
     const props = __props;
@@ -25853,8 +24789,9 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
       return openBlock(), createElementBlock("div", _hoisted_1$b, [
         unref(core).channels.size ? (openBlock(), createBlock(Layout, {
           key: 0,
-          "show-header": !props.noHeader
-        }, null, 8, ["show-header"])) : createCommentVNode("", true),
+          "show-header": !props.noHeader,
+          "show-verbatim": !props.noVerbatim
+        }, null, 8, ["show-header", "show-verbatim"])) : createCommentVNode("", true),
         unref(error) ? (openBlock(), createBlock(EditorErrorOverlay, {
           key: 1,
           message: unref(error)
@@ -25863,7 +24800,333 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$b = '/* Atkinson Hyperlegible Next — main font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Medium.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 600;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-SemiBold.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Bold.woff2") format("woff2");\n}\n\n/* Atkinson Hyperlegible Mono — monospace font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Medium.woff2") format("woff2");\n}\n/*\n * Design tokens\n *\n * Public theming API — these CSS custom properties can be overridden from\n * outside the web component by setting them on the <linto-editor> element:\n *\n *   linto-editor {\n *     --color-primary: #e63946;\n *     --color-background: #fafafa;\n *   }\n *\n * Colors:\n *   --color-primary          Accent / brand color\n *   --color-primary-hover    Primary hover state\n *   --color-background       Page background\n *   --color-surface          Cards, panels, player\n *   --color-surface-hover    Hover on surfaces\n *   --color-text-primary     Main text\n *   --color-text-secondary   Secondary text (timestamps…)\n *   --color-text-muted       Muted text (labels)\n *   --color-border           Borders\n *   --color-border-light     Light borders\n *\n * Typography, spacing, radius, and shadows are also overridable.\n *\n * Scoped to .transcript-ui-root (the embedder\'s root element) instead of\n * :root — until the web-component wrapper puts this behind a real Shadow\n * DOM, `:root`/`body`/`*` here would leak straight onto the host app\'s own\n * page (its tokens, its font, its box-sizing reset on every element). :host\n * stays for that future shadow-root case.\n */\n.transcript-ui-root,\n:host {\n  /* Colors — light theme */\n  --color-background: #f8f9fa;\n  --color-surface: #ffffff;\n  --color-surface-hover: #f1f3f5;\n  --color-text-primary: #1a1d21;\n  --color-text-secondary: #495057;\n  --color-text-muted: #6c757d;\n  --color-primary: #4263eb;\n  --color-primary-hover: #3b5bdb;\n  --color-border: #dee2e6;\n  --color-border-light: #e9ecef;\n  --color-white: #ffffff;\n  --color-black: #000000;\n  --color-danger: #e53935;\n  --color-danger-hover: #c62828;\n  --color-danger-soft: #fdecea;\n\n  /* Typography */\n  --font-family:\n    "Atkinson Hyperlegible Next", system-ui, -apple-system, sans-serif;\n  --font-family-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;\n  --font-size-xs: 0.875rem;\n  --font-size-sm: 1rem;\n  --font-size-base: 1.125rem;\n  --font-size-lg: 1.25rem;\n  --font-size-xl: 1.75rem;\n  --line-height: 1.6;\n\n  /* Spacing */\n  --spacing-xxs: 0.125rem;\n  --spacing-xs: 0.25rem;\n  --spacing-sm: 0.5rem;\n  --spacing-md: 1rem;\n  --spacing-lg: 1.5rem;\n  --spacing-xl: 2rem;\n\n  /* Radius */\n  --radius-sm: 4px;\n  --radius-md: 8px;\n  --radius-lg: 12px;\n\n  /* Layout */\n  --sidebar-width: 300px;\n  --header-height: 56px;\n\n  /* Shadows */\n  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);\n  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);\n\n  /* Transitions */\n  --transition-duration: 150ms;\n\n  /* Z-index scale */\n  --z-sticky: 10;\n  --z-overlay: 50;\n  --z-drawer: 1000;\n  --z-dropdown: 1100;\n\n  /* Glass effect — backdrop blur intentionally removed: each backdrop-filter\n     forces a WebRender render target, which on long transcripts (one waveform\n     region per turn, tall scroll container) balloons GPU memory to several GB\n     and freezes weaker machines. Keep the semi-opaque background only. */\n  --glass-background: rgba(255, 255, 255, 0.8);\n  --glass-border: rgba(255, 255, 255, 0.3);\n}\n.transcript-ui-root,\n:host {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n:host {\n  display: block;\n  height: 100%;\n  overflow: hidden;\n}\n\n/* Reset, scoped to our own subtree so the host app\'s elements outside\n   .transcript-ui-root keep their own margin/padding/box-sizing. */\n.transcript-ui-root,\n.transcript-ui-root *,\n.transcript-ui-root *::before,\n.transcript-ui-root *::after {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\n/* Dev mode SPA (ignored in Shadow DOM — these elements don\'t exist) */\nhtml,\nbody {\n  height: 100%;\n  overflow: hidden;\n}\n#app {\n  height: 100%;\n  overflow: hidden;\n}\n/* Utility */\n.transcript-ui-sr-only {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  white-space: nowrap;\n  border-width: 0;\n}\n\n/* Overlay (shared by sidebar drawer + sheet select) */\n.transcript-ui-overlay {\n  position: fixed;\n  inset: 0;\n  background-color: rgba(0, 0, 0, 0.4);\n  z-index: var(--z-overlay);\n  animation: transcript-ui-overlay-fade-in 200ms ease;\n}\n\n/* Drawer mobile (sidebar) */\n.transcript-ui-sidebar-drawer {\n  position: fixed;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  width: min(320px, 85vw);\n  z-index: var(--z-drawer);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n  animation: transcript-ui-drawer-slide-in 250ms ease;\n  overflow-y: auto;\n  display: flex;\n  flex-direction: column;\n}\n.transcript-ui-sidebar-close {\n  position: absolute;\n  top: var(--spacing-sm);\n  right: var(--spacing-sm);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 32px;\n  height: 32px;\n  border: none;\n  background: none;\n  color: var(--color-text-muted);\n  border-radius: var(--radius-md);\n  cursor: pointer;\n  z-index: 1;\n}\n.transcript-ui-sidebar-close:hover {\n  background-color: var(--color-surface-hover);\n  color: var(--color-text-primary);\n}\n\n/* Keyframes */\n@keyframes transcript-ui-overlay-fade-in {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@keyframes transcript-ui-drawer-slide-in {\nfrom {\n    translate: 100% 0;\n}\nto {\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.transcript-ui-overlay,\n  .transcript-ui-sidebar-drawer {\n    animation: none;\n}\n}\n\n/* Wavesurfer ::part (cannot work in scoped styles) */\n/* No backdrop-filter: there is one region per turn (hundreds on a long\n   transcript), and each backdrop-filter forces a separate WebRender backdrop\n   render target — on a multi-hour document this balloons GPU/GTT memory to\n   several GB and freezes weaker machines. The border/shadow alone read fine. */\n.transcript-ui-waveform-container ::part(region) {\n  border-top: 2px solid var(--region-color, rgba(255, 255, 255, 0.4));\n  border-bottom: 1px solid var(--region-color, rgba(255, 255, 255, 0.4));\n  box-shadow:\n    inset 0 1px 0 rgba(255, 255, 255, 0.2),\n    0 1px 4px rgba(0, 0, 0, 0.1);\n}\n\n/* Turn nodes use `content-visibility: auto` for long-document perf, which\n   implies paint containment and clips any overflow to the turn\'s box. The\n   speaker popover floats out of the turn, so it gets cut off at the turn\'s\n   bottom edge. While its trigger is open (Reka sets data-state="open"), drop\n   the containment on that turn so the popover can overflow freely. The turn is\n   on-screen when open, so lifting content-visibility causes no layout shift.\n   Global (not scoped) because the open trigger is rendered by another\n   component, so a scoped :has() selector would not match it. */\nsection.turn:has([data-state="open"]) {\n  content-visibility: visible;\n}\n/* Shared surface and row styles for PopoverList and similar anchored panels.\n   Kept global because Reka portals render outside the component\'s scoped\n   CSS boundary. */\n.transcript-ui-popover-list {\n  min-width: 180px;\n  padding: var(--spacing-xs);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  box-shadow: 0 8px 24px\n    color-mix(in srgb, var(--color-text-primary) 15%, transparent);\n  z-index: 50;\n}\n.transcript-ui-popover-list__items {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: 0;\n  padding: 0;\n  max-height: 280px;\n  overflow-y: auto;\n}\n.transcript-ui-popover-list__item {\n  all: unset;\n  box-sizing: border-box;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  width: 100%;\n  padding: var(--spacing-xs) var(--spacing-sm);\n  border-radius: var(--radius-sm);\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n  cursor: pointer;\n}\n.transcript-ui-popover-list__item:hover,\n.transcript-ui-popover-list__item[data-highlighted] {\n  background-color: var(--color-surface-hover);\n}\n.transcript-ui-popover-list__item:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.transcript-ui-popover-list__item--current {\n  background-color: color-mix(\n    in srgb,\n    var(--color-primary) 10%,\n    transparent\n  );\n}\n.transcript-ui-popover-list__divider {\n  height: 1px;\n  background-color: var(--color-border);\n  margin: var(--spacing-xs) 0;\n}\n.transcript-ui-popover-list__footer {\n  padding: var(--spacing-xs);\n}\n\n/* Positioning context for the absolute loading overlay. */\n.transcript-ui-root {\n  position: relative;\n  height: 100%;\n}\n';
+const _style_0$b = `
+/* NOT fonts.css: a @font-face declared inside a shadow root isn't reliably
+ * applied by browsers (document.fonts never registers it) — dead weight in
+ * the webcomponent bundle specifically, which always runs shadow-DOM'd. The
+ * host declares --font-family's actual font at document level instead (see
+ * variables.css's token doc). A direct, non-shadow-DOM Vue embedder of this
+ * package (no such limitation) can still opt in: \`@import
+ * "@linto-ai/transcript-ui-ui/styles/fonts.css"\` themselves. */
+/*
+ * Design tokens
+ *
+ * Public theming API — these CSS custom properties can be overridden from
+ * outside the web component by setting them on the <linto-editor> element:
+ *
+ *   linto-editor {
+ *     --color-primary: #e63946;
+ *     --color-background: #fafafa;
+ *   }
+ *
+ * Colors:
+ *   --color-primary          Accent / brand color
+ *   --color-primary-hover    Primary hover state
+ *   --color-background       Page background
+ *   --color-surface          Cards, panels, player
+ *   --color-surface-hover    Hover on surfaces
+ *   --color-text-primary     Main text
+ *   --color-text-secondary   Secondary text (timestamps…)
+ *   --color-text-muted       Muted text (labels)
+ *   --color-border           Borders
+ *   --color-border-light     Light borders
+ *
+ * Typography, spacing, radius, and shadows are also overridable.
+ *
+ * --font-family names "Atkinson Hyperlegible Next" as the design's actual
+ * font, but this package does NOT ship or load it (see fonts.css, an opt-in
+ * file for a direct — non-shadow-DOM — Vue embedder; the webcomponent
+ * doesn't import it at all). A @font-face declared inside a shadow root
+ * isn't reliably applied by browsers, so shipping it there was dead weight.
+ * A host that wants the exact intended look declares the @font-face itself,
+ * at document level (outside any shadow root) — see fonts.css for the
+ * ready-made rules to copy, and studio-frontend's public/fonts/atkinson.css
+ * for a real example. Without it, --font-family's own fallback chain
+ * (system-ui, -apple-system, sans-serif) applies — never broken, just not
+ * the exact intended type.
+ *
+ * Scoped to .transcript-ui-root (the embedder's root element) instead of
+ * :root — until the web-component wrapper puts this behind a real Shadow
+ * DOM, \`:root\`/\`body\`/\`*\` here would leak straight onto the host app's own
+ * page (its tokens, its font, its box-sizing reset on every element). :host
+ * stays for that future shadow-root case.
+ */
+.transcript-ui-root,
+:host {
+  /* Colors — light theme */
+  --color-background: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f3f5;
+  --color-text-primary: #1a1d21;
+  --color-text-secondary: #495057;
+  --color-text-muted: #6c757d;
+  --color-primary: #4263eb;
+  --color-primary-hover: #3b5bdb;
+  --color-border: #dee2e6;
+  --color-border-light: #e9ecef;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-danger: #e53935;
+  --color-danger-hover: #c62828;
+  --color-danger-soft: #fdecea;
+
+  /* Typography */
+  --font-family:
+    "Atkinson Hyperlegible Next", system-ui, -apple-system, sans-serif;
+  --font-family-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+  --font-size-xs: 0.875rem;
+  --font-size-sm: 1rem;
+  --font-size-base: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.75rem;
+  --line-height: 1.6;
+
+  /* Spacing */
+  --spacing-xxs: 0.125rem;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Layout */
+  --sidebar-width: 300px;
+  --header-height: 56px;
+
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  /* Transitions */
+  --transition-duration: 150ms;
+
+  /* Z-index scale */
+  --z-sticky: 10;
+  --z-overlay: 50;
+  --z-drawer: 1000;
+  --z-dropdown: 1100;
+
+  /* Glass effect — backdrop blur intentionally removed: each backdrop-filter
+     forces a WebRender render target, which on long transcripts (one waveform
+     region per turn, tall scroll container) balloons GPU memory to several GB
+     and freezes weaker machines. Keep the semi-opaque background only. */
+  --glass-background: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.3);
+}
+.transcript-ui-root,
+:host {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Reset, scoped to our own subtree so the host app's elements outside
+   .transcript-ui-root keep their own margin/padding/box-sizing. */
+.transcript-ui-root,
+.transcript-ui-root *,
+.transcript-ui-root *::before,
+.transcript-ui-root *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Dev mode SPA (ignored in Shadow DOM — these elements don't exist) */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+/* Utility */
+.transcript-ui-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Overlay (shared by sidebar drawer + sheet select) */
+.transcript-ui-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: var(--z-overlay);
+  animation: transcript-ui-overlay-fade-in 200ms ease;
+}
+
+/* Drawer mobile (sidebar) */
+.transcript-ui-sidebar-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(320px, 85vw);
+  z-index: var(--z-drawer);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  animation: transcript-ui-drawer-slide-in 250ms ease;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.transcript-ui-sidebar-close {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  z-index: 1;
+}
+.transcript-ui-sidebar-close:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+/* Keyframes */
+@keyframes transcript-ui-overlay-fade-in {
+from {
+    opacity: 0;
+}
+to {
+    opacity: 1;
+}
+}
+@keyframes transcript-ui-drawer-slide-in {
+from {
+    translate: 100% 0;
+}
+to {
+    translate: 0 0;
+}
+}
+@media (prefers-reduced-motion: reduce) {
+.transcript-ui-overlay,
+  .transcript-ui-sidebar-drawer {
+    animation: none;
+}
+}
+
+/* Wavesurfer ::part (cannot work in scoped styles) */
+/* No backdrop-filter: there is one region per turn (hundreds on a long
+   transcript), and each backdrop-filter forces a separate WebRender backdrop
+   render target — on a multi-hour document this balloons GPU/GTT memory to
+   several GB and freezes weaker machines. The border/shadow alone read fine. */
+.transcript-ui-waveform-container ::part(region) {
+  border-top: 2px solid var(--region-color, rgba(255, 255, 255, 0.4));
+  border-bottom: 1px solid var(--region-color, rgba(255, 255, 255, 0.4));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Turn nodes use \`content-visibility: auto\` for long-document perf, which
+   implies paint containment and clips any overflow to the turn's box. The
+   speaker popover floats out of the turn, so it gets cut off at the turn's
+   bottom edge. While its trigger is open (Reka sets data-state="open"), drop
+   the containment on that turn so the popover can overflow freely. The turn is
+   on-screen when open, so lifting content-visibility causes no layout shift.
+   Global (not scoped) because the open trigger is rendered by another
+   component, so a scoped :has() selector would not match it. */
+section.turn:has([data-state="open"]) {
+  content-visibility: visible;
+}
+/* Shared surface and row styles for PopoverList and similar anchored panels.
+   Kept global because Reka portals render outside the component's scoped
+   CSS boundary. */
+.transcript-ui-root .transcript-ui-popover-list {
+  min-width: 180px;
+  padding: var(--spacing-xs);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px
+    color-mix(in srgb, var(--color-text-primary) 15%, transparent);
+  z-index: 50;
+}
+.transcript-ui-root .transcript-ui-popover-list__items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.transcript-ui-root .transcript-ui-popover-list__item {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+.transcript-ui-root .transcript-ui-popover-list__item:hover,
+.transcript-ui-root .transcript-ui-popover-list__item[data-highlighted] {
+  background-color: var(--color-surface-hover);
+}
+.transcript-ui-root .transcript-ui-popover-list__item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+.transcript-ui-root .transcript-ui-popover-list__item--current {
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary) 10%,
+    transparent
+  );
+}
+.transcript-ui-root .transcript-ui-popover-list__divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: var(--spacing-xs) 0;
+}
+.transcript-ui-root .transcript-ui-popover-list__footer {
+  padding: var(--spacing-xs);
+}
+
+/* Positioning context for the absolute loading overlay. */
+.transcript-ui-root {
+  position: relative;
+  height: 100%;
+}
+`;
 const TranscriptUI = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$b]]]);
 function mapApiTurns(apiTurns) {
   return apiTurns.map((t2) => {
@@ -29259,7 +28522,7 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
           "aria-label": unref(t2)("subtitle.exitFullscreen"),
           onClick: close
         }, [
-          createVNode(unref(X), { size: 24 })
+          createVNode(unref(X$1), { size: 24 })
         ], 8, _hoisted_2$6),
         createBaseVNode("canvas", {
           ref: "canvas",
@@ -29270,8 +28533,8 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$6 = "\n.subtitle-fullscreen[data-v-677b1194] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.subtitle-fullscreen__close[data-v-677b1194] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (border/background only) left margin, padding,\n     and appearance to whatever the host page's UA/global styles set. */\n  all: unset;\n  box-sizing: border-box;\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.subtitle-fullscreen__close[data-v-677b1194]:hover,\n.subtitle-fullscreen__close[data-v-677b1194]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-677b1194] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-677b1194] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-677b1194],\n  .subtitle-fullscreen__canvas[data-v-677b1194] {\n    transition: none;\n}\n}\n";
-const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$6]], ["__scopeId", "data-v-677b1194"]]);
+const _style_0$6 = "\n.subtitle-fullscreen[data-v-4dac7247] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (border/background only) left margin, padding,\n     and appearance to whatever the host page's UA/global styles set. */\n  all: unset;\n  box-sizing: border-box;\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247]:hover,\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-4dac7247] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-4dac7247] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-4dac7247],\n  .subtitle-fullscreen__canvas[data-v-4dac7247] {\n    transition: none;\n}\n}\n";
+const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$6]], ["__scopeId", "data-v-4dac7247"]]);
 function createSubtitlePlugin(options = {}) {
   return {
     name: "subtitle",
@@ -29343,13 +28606,13 @@ class LockHeartbeat {
     }
   }
 }
-function computeLockKey(translationId, turnId) {
-  return `${translationId}/${turnId}`;
-}
 function getActiveTranslationStore(core) {
   const channel = core.activeChannel.value;
   if (!channel) return void 0;
   return channel.translations.get(channel.activeTranslation.value.id);
+}
+function computeLockKey(translationId, turnId) {
+  return `${translationId}/${turnId}`;
 }
 function getTurnLock(state, turnId) {
   const channel = state.core.activeChannel.value;
@@ -29834,6 +29097,34 @@ function replaceSpeaker(state, fromSpeakerId, toSpeakerId) {
     })
   );
 }
+function undo(state) {
+  if (state.core.capabilities.value.speakers !== "edit") return;
+  const store = getActiveTranslationStore(state.core);
+  if (!state.options.undo || !store) return;
+  const revisionId = state.undoHeads.get(store.id);
+  if (!revisionId) return;
+  void pushEditorCommand(
+    "undo",
+    state.options.undo({ translationId: store.id, revisionId })
+  );
+}
+function redo(state) {
+  if (state.core.capabilities.value.speakers !== "edit") return;
+  const store = getActiveTranslationStore(state.core);
+  if (!state.options.redo || !store) return;
+  if (!state.redoHeads.get(store.id)) return;
+  const revisionId = state.undoHeads.get(store.id) ?? null;
+  void pushEditorCommand(
+    "redo",
+    state.options.redo({ translationId: store.id, revisionId })
+  );
+}
+function trackUndoRedoHeads(state, translationId, revisionId, redoRevisionId) {
+  if (revisionId !== void 0) state.undoHeads.set(translationId, revisionId);
+  if (redoRevisionId !== void 0) {
+    state.redoHeads.set(translationId, redoRevisionId);
+  }
+}
 function applyTurnSpeakerUpdated(state, update) {
   if (!trackBroadcastVersion(state, update.translationId, update.version)) return;
   const { speakers } = state.core;
@@ -29846,10 +29137,22 @@ function applyTurnSpeakerUpdated(state, update) {
   if (update.removedSpeakerId) {
     removeSpeakerIfUnused(state.core, update.removedSpeakerId);
   }
+  trackUndoRedoHeads(
+    state,
+    update.translationId,
+    update.revisionId,
+    update.redoRevisionId
+  );
 }
 function applySpeakerRenamed(state, renamed) {
   if (!trackBroadcastVersion(state, renamed.translationId, renamed.version)) return;
   state.core.speakers.update(renamed.speakerId, { name: renamed.name });
+  trackUndoRedoHeads(
+    state,
+    renamed.translationId,
+    renamed.revisionId,
+    renamed.redoRevisionId
+  );
 }
 function applySpeakerReplaced(state, replaced) {
   if (!trackBroadcastVersion(state, replaced.translationId, replaced.version)) return;
@@ -29863,6 +29166,36 @@ function applySpeakerReplaced(state, replaced) {
     }
   }
   removeSpeakerIfUnused(state.core, replaced.fromSpeakerId);
+  trackUndoRedoHeads(
+    state,
+    replaced.translationId,
+    replaced.revisionId,
+    replaced.redoRevisionId
+  );
+}
+function applySpeakerRestored(state, restored) {
+  if (!trackBroadcastVersion(state, restored.translationId, restored.version)) {
+    return;
+  }
+  state.core.speakers.ensure(
+    restored.fromSpeaker.speaker_id,
+    restored.fromSpeaker.speaker_name
+  );
+  const store = findTranslationStore(state.core, restored.translationId);
+  if (store) {
+    const turnIds = new Set(restored.turnIds);
+    for (const turn of store.turns.value) {
+      if (turnIds.has(turn.id)) {
+        store.updateTurn(turn.id, { speakerId: restored.fromSpeaker.speaker_id });
+      }
+    }
+  }
+  trackUndoRedoHeads(
+    state,
+    restored.translationId,
+    restored.revisionId,
+    restored.redoRevisionId
+  );
 }
 function setTranslationVersion(state, translationId, version2) {
   state.versions.set(translationId, version2);
@@ -29887,10 +29220,20 @@ class EditorSession {
   heartbeat = new LockHeartbeat(HEARTBEAT_INTERVAL_MS);
   versions = /* @__PURE__ */ new Map();
   pendingRefetches = /* @__PURE__ */ new Set();
+  undoHeads = /* @__PURE__ */ shallowReactive(/* @__PURE__ */ new Map());
+  redoHeads = /* @__PURE__ */ shallowReactive(/* @__PURE__ */ new Map());
   constructor(core, options) {
     this.core = core;
     this.options = options;
   }
+  canUndo = computed(() => {
+    const store = getActiveTranslationStore(this.core);
+    return !!store && !!this.undoHeads.get(store.id);
+  });
+  canRedo = computed(() => {
+    const store = getActiveTranslationStore(this.core);
+    return !!store && !!this.redoHeads.get(store.id);
+  });
   beginEdit(turnId, caretOffset) {
     return beginEdit(this, turnId, caretOffset);
   }
@@ -29933,6 +29276,12 @@ class EditorSession {
   replaceSpeaker(fromSpeakerId, toSpeakerId) {
     replaceSpeaker(this, fromSpeakerId, toSpeakerId);
   }
+  undo() {
+    undo(this);
+  }
+  redo() {
+    redo(this);
+  }
   applyTurnSpeakerUpdated(update) {
     applyTurnSpeakerUpdated(this, update);
   }
@@ -29941,6 +29290,9 @@ class EditorSession {
   }
   applySpeakerReplaced(replaced) {
     applySpeakerReplaced(this, replaced);
+  }
+  applySpeakerRestored(restored) {
+    applySpeakerRestored(this, restored);
   }
   getTurnLock(turnId) {
     return getTurnLock(this, turnId);
@@ -29963,6 +29315,8 @@ class EditorSession {
     this.locks.clear();
     this.versions.clear();
     this.pendingRefetches.clear();
+    this.undoHeads.clear();
+    this.redoHeads.clear();
   }
   destroy() {
     this.heartbeat.stop();
@@ -29992,12 +29346,18 @@ const _hoisted_3$5 = { class: "llm-service-panel__empty-text" };
 const _sfc_main$5 = /* @__PURE__ */ defineComponent({
   __name: "LLMServicePanel",
   props: {
-    service: { type: Object }
+    service: { type: Object },
+    split: { type: Boolean }
   },
-  setup(__props) {
+  emits: ["update:split"],
+  setup(__props, { emit: __emit }) {
     const props = __props;
+    const emit2 = __emit;
     const core = useCore();
     const { t: t2 } = useI18n();
+    function toggleSplit() {
+      emit2("update:split", !props.split);
+    }
     const articleStatus = computed(() => {
       const s2 = props.service.status.value;
       if (s2 === "queued" || s2 === "processing") return "processing";
@@ -30012,9 +29372,12 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
     const activeVersionNumber = computed(
       () => props.service.activeVersionNumber.value
     );
+    const hasContent = computed(
+      () => !!content.value || versions.value.length > 0
+    );
     const isEmpty = computed(() => {
       if (articleStatus.value !== "done") return false;
-      return !content.value && versions.value.length === 0;
+      return !hasContent.value;
     });
     const isUpdated = computed(() => {
       const channel = core.activeChannel.value;
@@ -30095,7 +29458,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
             createVNode(unref(Button), {
               variant: "primary",
               icon: "download",
-              disabled: articleStatus.value === "processing",
+              disabled: articleStatus.value === "processing" || !hasContent.value,
               "aria-label": unref(t2)("llmService.download"),
               title: unref(t2)("llmService.download"),
               onClick: onExport
@@ -30104,7 +29467,15 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
                 createTextVNode(toDisplayString(unref(t2)("llmService.download")), 1)
               ]),
               _: 1
-            }, 8, ["disabled", "aria-label", "title"])
+            }, 8, ["disabled", "aria-label", "title"]),
+            createVNode(unref(Button), {
+              variant: __props.split ? "primary" : "secondary",
+              icon: "panel-right",
+              "aria-pressed": !!__props.split,
+              "aria-label": unref(t2)("llmService.split"),
+              title: unref(t2)("llmService.split"),
+              onClick: toggleSplit
+            }, null, 8, ["variant", "aria-pressed", "aria-label", "title"])
           ]),
           default: withCtx(() => [
             isEmpty.value ? (openBlock(), createElementBlock("div", _hoisted_2$5, [
@@ -30133,8 +29504,8 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$5 = "\n.llm-service-panel[data-v-85d1396e] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-85d1396e] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-85d1396e] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-85d1396e] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-85d1396e] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-85d1396e] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-85d1396e] {\n    padding: var(--spacing-md);\n}\n}\n";
-const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-85d1396e"]]);
+const _style_0$5 = "\n.llm-service-panel[data-v-0222a168] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-0222a168] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-0222a168] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-0222a168] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-0222a168] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-0222a168] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-0222a168] {\n    padding: var(--spacing-md);\n}\n}\n";
+const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-0222a168"]]);
 function createService(init) {
   return {
     id: init.id,
@@ -30620,7 +29991,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     const textarea = useTemplateRef("chat-composer__textarea");
     const { t: t2 } = useI18n();
     const text2 = /* @__PURE__ */ ref("");
-    const textareaId = useId$2();
+    const textareaId = useId$1();
     function submit() {
       const content = text2.value.trim();
       if (!content || props.disabled) return;
@@ -30682,7 +30053,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const core = useCore();
     const { t: t2 } = useI18n();
     const chat = core.chat;
-    const titleId = useId$2();
+    const titleId = useId$1();
     const expanded = /* @__PURE__ */ ref(false);
     function close() {
       chat.setDrawerOpen(false);
@@ -30923,4 +30294,4 @@ export {
   purify as p,
   register as r
 };
-//# sourceMappingURL=index-BR8cOUtw.js.map
+//# sourceMappingURL=index-CB7gHC-N.js.map

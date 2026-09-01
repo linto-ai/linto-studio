@@ -823,6 +823,152 @@ describe("createTranscriptionEditorPlugin — speaker applies", () => {
   })
 })
 
+describe("createTranscriptionEditorPlugin — undo/redo", () => {
+  it("tracks the undo cursor and redo target from any speaker mutation broadcast — server truth, not a client guess", () => {
+    const core = makeEditorCore()
+    expect(core.transcriptionEditor!.canUndo.value).toBe(false)
+    expect(core.transcriptionEditor!.canRedo.value).toBe(false)
+
+    core.transcriptionEditor!.applySpeakerRenamed({
+      translationId: "tr-1",
+      speakerId: "spk-1",
+      name: "Marie D.",
+      version: 1,
+      revisionId: "rev-1",
+      redoRevisionId: null,
+    })
+    expect(core.transcriptionEditor!.canUndo.value).toBe(true)
+    expect(core.transcriptionEditor!.canRedo.value).toBe(false)
+
+    // The server says there's something to redo — canRedo just reflects it,
+    // no local bookkeeping.
+    core.transcriptionEditor!.applySpeakerRenamed({
+      translationId: "tr-1",
+      speakerId: "spk-1",
+      name: "Marie D.2",
+      version: 2,
+      revisionId: "rev-2",
+      redoRevisionId: "rev-1",
+    })
+    expect(core.transcriptionEditor!.canRedo.value).toBe(true)
+  })
+
+  it("undo sends the current cursor; the resulting broadcast (not the call) moves canUndo/canRedo", async () => {
+    let payload: unknown
+    const core = makeEditorCore({
+      undo: async (p) => {
+        payload = p
+        return { ok: true }
+      },
+    })
+    core.transcriptionEditor!.applySpeakerRenamed({
+      translationId: "tr-1",
+      speakerId: "spk-1",
+      name: "Marie D.",
+      version: 1,
+      revisionId: "rev-1",
+      redoRevisionId: null,
+    })
+
+    core.transcriptionEditor!.undo()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(payload).toEqual({ translationId: "tr-1", revisionId: "rev-1" })
+    // Nothing changes from the call alone — only the broadcast does.
+    expect(core.transcriptionEditor!.canRedo.value).toBe(false)
+
+    // The undo's own broadcast: cursor rewound, redo target = what got undone.
+    core.transcriptionEditor!.applySpeakerRenamed({
+      translationId: "tr-1",
+      speakerId: "spk-1",
+      name: "Marie",
+      version: 2,
+      revisionId: null,
+      redoRevisionId: "rev-1",
+    })
+    expect(core.transcriptionEditor!.canUndo.value).toBe(false)
+    expect(core.transcriptionEditor!.canRedo.value).toBe(true)
+  })
+
+  it("redo sends the current cursor, not the target; a fresh mutation's broadcast clears the redo target server-side", async () => {
+    const calls: Array<[string, unknown]> = []
+    const core = makeEditorCore({
+      redo: async (p) => {
+        calls.push(["redo", p])
+        return { ok: true }
+      },
+      renameSpeaker: async (p) => {
+        calls.push(["rename", p])
+        return { ok: true }
+      },
+    })
+    // As if a rename had already been undone: cursor at the start of
+    // history, redo target = the rename.
+    core.transcriptionEditor!.applySpeakerRenamed({
+      translationId: "tr-1",
+      speakerId: "spk-1",
+      name: "Marie",
+      version: 2,
+      revisionId: null,
+      redoRevisionId: "rev-1",
+    })
+
+    core.transcriptionEditor!.redo()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(calls).toEqual([["redo", { translationId: "tr-1", revisionId: null }]])
+    // Still true: the call alone doesn't move it, only the broadcast does.
+    expect(core.transcriptionEditor!.canRedo.value).toBe(true)
+
+    // A fresh mutation from here — no undo/redo involved — its own
+    // broadcast always carries redoRevisionId: null (nothing could already
+    // be chained onto a revision that didn't exist a moment ago).
+    core.transcriptionEditor!.renameSpeaker("spk-1", "Someone else")
+    core.transcriptionEditor!.applySpeakerRenamed({
+      translationId: "tr-1",
+      speakerId: "spk-1",
+      name: "Someone else",
+      version: 3,
+      revisionId: "rev-2",
+      redoRevisionId: null,
+    })
+
+    expect(calls).toEqual([
+      ["redo", { translationId: "tr-1", revisionId: null }],
+      ["rename", { translationId: "tr-1", speakerId: "spk-1", name: "Someone else" }],
+    ])
+    expect(core.transcriptionEditor!.canRedo.value).toBe(false)
+  })
+
+  it("applySpeakerRestored resurrects fromSpeaker and moves back exactly turnIds", () => {
+    const core = makeEditorCore()
+    // Set up as if replace_speaker(spk-1 -> spk-2) had already run: spk-1
+    // gone, its former turns (turn-1, turn-3) now on spk-2.
+    core.transcriptionEditor!.applySpeakerReplaced({
+      translationId: "tr-1",
+      fromSpeakerId: "spk-1",
+      toSpeakerId: "spk-2",
+      version: 1,
+    })
+    expect(core.speakers.all.has("spk-1")).toBe(false)
+
+    core.transcriptionEditor!.applySpeakerRestored({
+      translationId: "tr-1",
+      fromSpeaker: { speaker_id: "spk-1", speaker_name: "Marie" },
+      toSpeakerId: "spk-2",
+      turnIds: ["turn-1", "turn-3"],
+      version: 2,
+      revisionId: null,
+    })
+
+    expect(core.speakers.all.get("spk-1")?.name).toBe("Marie")
+    const source = core.activeChannel.value!.sourceTranslation
+    expect(source.getTurn("turn-1")?.speakerId).toBe("spk-1")
+    expect(source.getTurn("turn-3")?.speakerId).toBe("spk-1")
+    expect(source.getTurn("turn-2")?.speakerId).toBe("spk-2")
+    expect(core.transcriptionEditor!.canUndo.value).toBe(false)
+  })
+})
+
 describe("createTranscriptionEditorPlugin — version safety net", () => {
   function makeUpdate(version: number) {
     return {

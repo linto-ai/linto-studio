@@ -48,6 +48,20 @@ export interface TranscriptionEditorMergePayload {
   secondTurnId: string
 }
 
+export interface TranscriptionEditorUndoPayload {
+  translationId: string
+  /** The revision to undo — the track's current undo cursor. */
+  revisionId: string
+}
+
+export interface TranscriptionEditorRedoPayload {
+  translationId: string
+  /** The track's current undo cursor (what would be sent to undo further),
+   *  not the target — the server looks up what comes next. Null is the
+   *  legitimate "everything has been undone" case. */
+  revisionId: string | null
+}
+
 export interface TranscriptionEditorOptions {
   /**
    * Host-provided commit: push a saved turn to the backend. The edit is
@@ -105,6 +119,19 @@ export interface TranscriptionEditorOptions {
     payload: TranscriptionEditorReplaceSpeakerPayload,
   ) => Promise<{ ok: boolean; reason?: string }>
   /**
+   * Undo the track's last (still current) speaker mutation. Fire-and-forget
+   * like the other speaker ops: the ack only reports refusals, the actual
+   * rewind is applied at the resulting broadcast (same events as a normal
+   * mutation — see SpeakerRenamed/TurnSpeakerUpdated/SpeakerRestored).
+   */
+  undo?: (
+    payload: TranscriptionEditorUndoPayload,
+  ) => Promise<{ ok: boolean; reason?: string }>
+  /** Redo the mutation last undone. @see undo */
+  redo?: (
+    payload: TranscriptionEditorRedoPayload,
+  ) => Promise<{ ok: boolean; reason?: string }>
+  /**
    * Reload a track's content from the backend — called when a version gap
    * is detected (missed broadcasts) or when the reconnection re-ack says
    * the track went stale. Must re-push the fetched content AND its version
@@ -144,4 +171,15 @@ export interface EditorPluginState {
   /** Tracks with a refetch in flight — a burst of gapped broadcasts must
    *  trigger one reload, not one per broadcast. */
   pendingRefetches: Set<string>
+  /** Per-track undo cursor (revisionId) and redo target (redoRevisionId),
+   *  both server-computed and kept in sync from every speaker mutation
+   *  broadcast — self-initiated or a collaborator's, undo/redo replay or a
+   *  fresh edit, all indistinguishable on the wire and all meaning the same
+   *  thing here: "here's where the cursor is, and here's what redo would
+   *  target from it" (see tools/trackUndoRedoHeads.ts). Reactive:
+   *  canUndo/canRedo read them directly — server truth, not a client-side
+   *  guess, so they stay correct across collaborators with no staleness
+   *  caveat. */
+  undoHeads: Map<string, string | null>
+  redoHeads: Map<string, string | null>
 }

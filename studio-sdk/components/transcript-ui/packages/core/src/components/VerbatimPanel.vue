@@ -56,7 +56,7 @@ function exportAsText(): void {
 
 function onExport(format?: string): void {
   if (!format) return
-  if (format === "txt" && core.verbatimFormatsAreDefault) {
+  if (format === "txt" && core.verbatimFormatsAreDefault.value) {
     exportAsText()
     return
   }
@@ -68,7 +68,9 @@ function onExport(format?: string): void {
   <section class="verbatim-panel">
     <DocumentArticle>
       <template #toolbar-right>
-        <DownloadMenu :formats="core.verbatimFormats" @select="onExport" />
+        <DownloadMenu
+          :formats="core.verbatimFormats.value"
+          @select="onExport" />
       </template>
 
       <article class="verbatim-panel__content">
@@ -109,7 +111,7 @@ function onExport(format?: string): void {
 }
 
 .verbatim-panel__content {
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: 4rem clamp(1.5rem, 6rem, 8%);
 }
 
 .verbatim-panel__header {
@@ -165,9 +167,4 @@ function onExport(format?: string): void {
   color: var(--color-text-primary);
 }
 
-@media (max-width: 767px) {
-  .verbatim-panel {
-    padding: var(--spacing-md);
-  }
-}
 </style>

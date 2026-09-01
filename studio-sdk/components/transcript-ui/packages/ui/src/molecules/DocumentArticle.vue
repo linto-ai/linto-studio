@@ -86,8 +86,8 @@ const progressValue = computed(() => {
 
 <style scoped>
 .document-article {
-  width: 100%;
-  max-width: 760px;
+  width: min(1088px, calc(100% - 16px));
+  max-width: 1088px;
   margin: var(--spacing-lg) auto;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);

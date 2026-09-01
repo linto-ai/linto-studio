@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui-plugin-live",
-  "version": "0.9.11",
+  "version": "0.9.18",
   "description": "Live transcription plugin for @linto-ai/transcript-ui — ingests a real-time partial/final feed",
   "keywords": [
     "vue",

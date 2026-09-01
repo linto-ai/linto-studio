@@ -237,6 +237,8 @@ export default class ApiEventWebSocket {
         this.editorHandlers?.onSpeakerRenamed?.(renamed)
       this._editorSpeakerReplaced = (replaced) =>
         this.editorHandlers?.onSpeakerReplaced?.(replaced)
+      this._editorSpeakerRestored = (restored) =>
+        this.editorHandlers?.onSpeakerRestored?.(restored)
     }
     // off before on: joinEditorRoom re-runs on reconnection.
     this.socket.off("editor:turn_locked", this._editorTurnLocked)
@@ -251,6 +253,7 @@ export default class ApiEventWebSocket {
     )
     this.socket.off("editor:speaker_renamed", this._editorSpeakerRenamed)
     this.socket.off("editor:speaker_replaced", this._editorSpeakerReplaced)
+    this.socket.off("editor:speaker_restored", this._editorSpeakerRestored)
     this.socket.on("editor:turn_locked", this._editorTurnLocked)
     this.socket.on("editor:turn_unlocked", this._editorTurnUnlocked)
     this.socket.on("editor:turn_updated", this._editorTurnUpdated)
@@ -263,6 +266,7 @@ export default class ApiEventWebSocket {
     )
     this.socket.on("editor:speaker_renamed", this._editorSpeakerRenamed)
     this.socket.on("editor:speaker_replaced", this._editorSpeakerReplaced)
+    this.socket.on("editor:speaker_restored", this._editorSpeakerRestored)
 
     this.socket.emit("editor:join", conversationId, (ack) => {
       debugWSEditor("editor:join ack", ack)
@@ -284,6 +288,7 @@ export default class ApiEventWebSocket {
     )
     this.socket.off("editor:speaker_renamed", this._editorSpeakerRenamed)
     this.socket.off("editor:speaker_replaced", this._editorSpeakerReplaced)
+    this.socket.off("editor:speaker_restored", this._editorSpeakerRestored)
     this.socket.emit("editor:leave", this.currentEditorConversationId)
     this.currentEditorConversationId = null
     this.editorHandlers = null
@@ -340,6 +345,20 @@ export default class ApiEventWebSocket {
       translationId,
       fromSpeakerId,
       toSpeakerId,
+    })
+  }
+
+  undoEditor({ translationId, revisionId }) {
+    return this._emitEditorCommand("editor:undo", {
+      translationId,
+      revisionId,
+    })
+  }
+
+  redoEditor({ translationId, revisionId }) {
+    return this._emitEditorCommand("editor:redo", {
+      translationId,
+      revisionId,
     })
   }
 

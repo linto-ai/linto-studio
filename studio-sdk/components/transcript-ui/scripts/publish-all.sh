@@ -85,15 +85,32 @@ echo "Regenerating the lockfile..."
 rm -f "$root_dir/bun.lock"
 (cd "$root_dir" && bun install)
 
+# build_cmd, when given, runs (from root_dir) before packing/publishing —
+# for the two packages that ship a "dist" build artifact (root and
+# webcomponent; everything else in `order` publishes raw "src", nothing to
+# build). `bun publish` packs whatever is ALREADY in dist/: with no
+# prepublishOnly hook wired up, an edit made after the last manual build
+# ships silently stale — exactly how webcomponent@0.9.13 went out with a
+# Header.vue variant one edit behind its own source.
 publish_dir() {
   local dir="$1"
+  local build_cmd="${2:-}"
+  if [ -n "$build_cmd" ]; then
+    echo
+    echo "--- building $(basename "$dir") ---"
+    (cd "$root_dir" && eval "$build_cmd")
+  fi
   echo
   echo "--- publishing $(basename "$dir") ---"
   (cd "$dir" && NODE_OPTIONS="--dns-result-order=ipv4first --no-network-family-autoselection" bun publish $publish_flag)
 }
 
 for name in "${order[@]}"; do
-  publish_dir "$root_dir/packages/$name"
+  if [ "$name" = "webcomponent" ]; then
+    publish_dir "$root_dir/packages/$name" "bun run build:wc"
+  else
+    publish_dir "$root_dir/packages/$name"
+  fi
 done
 
 # Guard against the exact bug this script once shipped: root's
@@ -108,7 +125,7 @@ for name in i18n ui core; do
   fi
 done
 
-publish_dir "$root_dir"
+publish_dir "$root_dir" "bun run build"
 
 echo
 echo "done."

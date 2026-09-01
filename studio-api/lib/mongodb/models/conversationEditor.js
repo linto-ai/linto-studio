@@ -210,9 +210,18 @@ class ConversationEditorModel extends MongoModel {
    * the speakers array (added when new, dropped when no longer referenced)
    * and bumps editorVersion. Returns null when the conversation or turn no
    * longer exists.
+   *
+   * returnDocument "before" (not "after"): the pre-image gives us the
+   * turn's previous speaker and the current undo head in the SAME atomic
+   * op as the mutation — same reasoning as renameEditorSpeaker /
+   * replaceEditorSpeaker (see EditorHandler/handlers/onUpdateTurnSpeaker.js).
+   * Reading undoHead separately, before this write, left a race window
+   * spanning the whole handler where a concurrent mutation could move the
+   * head first and silently strand the recorded revision unreachable.
+   * @returns {Promise<{version:number, previousSpeaker:object|undefined, undoHead:import("mongodb").ObjectId|null}|null>}
    */
   async updateEditorTurnSpeaker(conversationId, turnId, speaker) {
-    const result = await MongoDriver.constructor.db
+    const before = await MongoDriver.constructor.db
       .collection(this.collection)
       .findOneAndUpdate(
         { _id: this.getObjectId(conversationId), "text.turn_id": turnId },
@@ -279,12 +288,22 @@ class ConversationEditorModel extends MongoModel {
           },
         ],
         {
-          returnDocument: "after",
-          projection: { editorVersion: 1 },
+          returnDocument: "before",
+          projection: { editorVersion: 1, text: 1, speakers: 1, undoHead: 1 },
           includeResultMetadata: false,
         },
       )
-    return result ? { version: result.editorVersion } : null
+    if (!before) return null
+    const previousSpeakerId = (before.text || []).find(
+      (t) => t.turn_id === turnId,
+    )?.speaker_id
+    return {
+      version: (before.editorVersion ?? 0) + 1,
+      previousSpeaker: (before.speakers || []).find(
+        (s) => s.speaker_id === previousSpeakerId,
+      ),
+      undoHead: before.undoHead ?? null,
+    }
   }
 
   /**
@@ -344,11 +363,16 @@ class ConversationEditorModel extends MongoModel {
   /**
    * Rename a speaker of ONE conversation (track). editorVersion bumped in
    * the same write. Throws on DB error.
-   * @returns {Promise<{version: number}|null>} null when the conversation or
-   *   the speaker no longer exists.
+   *
+   * returnDocument "before" (not "after"): the pre-image gives us the
+   * previous name and the current undo head in the SAME atomic op — the
+   * new version is then just before+1, no extra read needed (see
+   * recordSpeakerRevision, EditorHandler/handlers/onRenameSpeaker.js).
+   * @returns {Promise<{version: number, previousName: string, undoHead: import("mongodb").ObjectId|null}|null>}
+   *   null when the conversation or the speaker no longer exists.
    */
   async renameEditorSpeaker(conversationId, speakerId, name) {
-    const result = await MongoDriver.constructor.db
+    const before = await MongoDriver.constructor.db
       .collection(this.collection)
       .findOneAndUpdate(
         {
@@ -363,21 +387,58 @@ class ConversationEditorModel extends MongoModel {
           $inc: { editorVersion: 1 },
         },
         {
-          returnDocument: "after",
-          projection: { editorVersion: 1 },
+          returnDocument: "before",
+          // Positional projection: "speakers.$" resolves against the query
+          // filter above, so it still targets the matched element in the
+          // pre-image even though we're asking for "before".
+          projection: { editorVersion: 1, "speakers.$": 1, undoHead: 1 },
           includeResultMetadata: false,
         },
       )
-    return result ? { version: result.editorVersion } : null
+    if (!before) return null
+    return {
+      version: (before.editorVersion ?? 0) + 1,
+      previousName: before.speakers[0].speaker_name,
+      undoHead: before.undoHead ?? null,
+    }
+  }
+
+  /**
+   * Swap the track's undo head to `newHead`, but only if it is STILL
+   * `currentHead` — the single atomic check that makes this safe against ANY
+   * concurrent write racing it: undo(revisionId) against a second undo of the
+   * same revision or a fresher mutation (one wins, the other gets no match),
+   * redo the same way, and a plain new mutation appending onto the chain
+   * (recordSpeakerRevision) against a concurrent undo/redo/mutation moving
+   * the head out from under it. There is no separate unconditional
+   * "advance" — every write to undoHead goes through this one gate.
+   * @returns {Promise<boolean>} true when the swap happened.
+   */
+  async swapConversationUndoHead(conversationId, currentHead, newHead) {
+    const result = await MongoDriver.constructor.db
+      .collection(this.collection)
+      .updateOne(
+        { _id: this.getObjectId(conversationId), undoHead: currentHead },
+        { $set: { undoHead: newHead } },
+      )
+    return result.matchedCount === 1
   }
 
   /**
    * Reassign every turn of a speaker to another and drop the replaced
    * speaker, in one atomic pipeline that also bumps editorVersion. Returns
    * null when the conversation or either speaker no longer exists.
+   *
+   * returnDocument "before": the pre-image gives us fromSpeaker's own record
+   * and the EXACT turn ids this write is about to move, in the same atomic
+   * op the mutation runs in — no separate pre-read, so no race window where
+   * a turn reassigned onto fromSpeakerId in between would be moved by this
+   * pipeline (it operates on live data) but missing from the undo snapshot
+   * (see recordSpeakerRevision, EditorHandler/handlers/onReplaceSpeaker.js).
+   * @returns {Promise<{version:number, fromSpeaker:object, turnIds:string[], undoHead:import("mongodb").ObjectId|null}|null>}
    */
   async replaceEditorSpeaker(conversationId, fromSpeakerId, toSpeakerId) {
-    const result = await MongoDriver.constructor.db
+    const before = await MongoDriver.constructor.db
       .collection(this.collection)
       .findOneAndUpdate(
         {
@@ -419,6 +480,88 @@ class ConversationEditorModel extends MongoModel {
                   as: "s",
                   cond: { $ne: ["$$s.speaker_id", fromSpeakerId] },
                 },
+              },
+            },
+          },
+          {
+            $set: {
+              editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
+              last_update: moment().format(),
+            },
+          },
+        ],
+        {
+          returnDocument: "before",
+          projection: { editorVersion: 1, text: 1, speakers: 1, undoHead: 1 },
+          includeResultMetadata: false,
+        },
+      )
+    if (!before) return null
+    return {
+      version: (before.editorVersion ?? 0) + 1,
+      fromSpeaker: (before.speakers || []).find((s) => s.speaker_id === fromSpeakerId),
+      turnIds: (before.text || [])
+        .filter((t) => t.speaker_id === fromSpeakerId)
+        .map((t) => t.turn_id),
+      undoHead: before.undoHead ?? null,
+    }
+  }
+
+  /**
+   * Undo of replaceEditorSpeaker: resurrect `fromSpeaker` and reassign back
+   * exactly `turnIds` (captured by the caller BEFORE the original replace
+   * ran — not "every turn currently on toSpeakerId", which would also grab
+   * turns toSpeakerId already had of its own). Only turns still pointing at
+   * toSpeakerId move — a defense-in-depth check, since the undo head swap
+   * already guarantees nothing else touched this pair since.
+   * Returns null when the conversation is gone or fromSpeaker already exists
+   * (defensive no-op against a duplicate apply).
+   */
+  async restoreReplacedSpeaker(conversationId, fromSpeaker, toSpeakerId, turnIds) {
+    const result = await MongoDriver.constructor.db
+      .collection(this.collection)
+      .findOneAndUpdate(
+        {
+          _id: this.getObjectId(conversationId),
+          "speakers.speaker_id": { $ne: fromSpeaker.speaker_id },
+        },
+        [
+          {
+            $set: {
+              text: {
+                $map: {
+                  input: "$text",
+                  as: "t",
+                  in: {
+                    $cond: [
+                      {
+                        $and: [
+                          { $eq: ["$$t.speaker_id", toSpeakerId] },
+                          { $in: ["$$t.turn_id", turnIds] },
+                        ],
+                      },
+                      {
+                        $mergeObjects: [
+                          "$$t",
+                          // $literal: never evaluate the injected id.
+                          { $literal: { speaker_id: fromSpeaker.speaker_id } },
+                        ],
+                      },
+                      "$$t",
+                    ],
+                  },
+                },
+              },
+            },
+          },
+          {
+            $set: {
+              speakers: {
+                $concatArrays: [
+                  { $ifNull: ["$speakers", []] },
+                  // $literal: speaker_name is user input, store it verbatim.
+                  { $literal: [fromSpeaker] },
+                ],
               },
             },
           },
