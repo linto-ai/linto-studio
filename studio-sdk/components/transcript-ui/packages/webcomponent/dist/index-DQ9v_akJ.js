@@ -9758,6 +9758,10 @@ const Minimize = createLucideIcon("minimize", [
   ["path", { d: "M3 16h3a2 2 0 0 1 2 2v3", key: "198tvr" }],
   ["path", { d: "M16 21v-3a2 2 0 0 1 2-2h3", key: "ph8mxp" }]
 ]);
+const PanelRight = createLucideIcon("panel-right", [
+  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", key: "afitv7" }],
+  ["path", { d: "M15 3v18", key: "14nvp0" }]
+]);
 const Pause = createLucideIcon("pause", [
   ["rect", { x: "14", y: "3", width: "5", height: "18", rx: "1", key: "kaeet6" }],
   ["rect", { x: "5", y: "3", width: "5", height: "18", rx: "1", key: "1wsw3u" }]
@@ -9986,7 +9990,8 @@ const iconMap = {
   "file-text": FileText,
   "message-circle": MessageCircle,
   "refresh-cw": RefreshCw,
-  sparkles: Sparkles
+  sparkles: Sparkles,
+  "panel-right": PanelRight
 };
 function resolveIcon(name) {
   if (!name) return void 0;
@@ -10254,6 +10259,7 @@ const fr = {
   "tabs.moreSelect": "Sélectionner…",
   "llmService.regenerate": "Régénérer",
   "llmService.download": "Télécharger",
+  "llmService.split": "Afficher le verbatim à côté",
   "llmService.generated": "Généré par IA",
   "llmService.processing": "Génération en cours…",
   "llmService.queued": "En file d'attente…",
@@ -10391,6 +10397,7 @@ const en = {
   "tabs.moreSelect": "Select…",
   "llmService.regenerate": "Regenerate",
   "llmService.download": "Download",
+  "llmService.split": "Show verbatim alongside",
   "llmService.generated": "AI-generated",
   "llmService.processing": "Generating…",
   "llmService.queued": "Queued…",
@@ -10487,7 +10494,7 @@ function useI18n() {
 }
 const _hoisted_1$E = { class: "code-block" };
 const _hoisted_2$u = ["innerHTML"];
-const _hoisted_3$o = { key: 1 };
+const _hoisted_3$n = { key: 1 };
 const _sfc_main$K = /* @__PURE__ */ defineComponent({
   __name: "CodeBlock",
   props: {
@@ -10511,7 +10518,7 @@ const _sfc_main$K = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-BWR22PHo.js");
+        const { highlightCode } = await import("./highlight-DcaGiZlF.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -10530,7 +10537,7 @@ const _sfc_main$K = /* @__PURE__ */ defineComponent({
           highlighted.value ? (openBlock(), createElementBlock("code", {
             key: 0,
             innerHTML: highlighted.value
-          }, null, 8, _hoisted_2$u)) : (openBlock(), createElementBlock("code", _hoisted_3$o, toDisplayString(__props.code), 1))
+          }, null, 8, _hoisted_2$u)) : (openBlock(), createElementBlock("code", _hoisted_3$n, toDisplayString(__props.code), 1))
         ])
       ]);
     };
@@ -10668,7 +10675,7 @@ const _hoisted_1$D = {
   class: "form-field__header"
 };
 const _hoisted_2$t = ["for"];
-const _hoisted_3$n = {
+const _hoisted_3$m = {
   key: 0,
   class: "form-field__required",
   "aria-hidden": "true"
@@ -10804,7 +10811,7 @@ const _sfc_main$J = /* @__PURE__ */ defineComponent({
             for: id.value
           }, [
             createTextVNode(toDisplayString(__props.field.label) + " ", 1),
-            isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$n, "*")) : createCommentVNode("", true)
+            isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$m, "*")) : createCommentVNode("", true)
           ], 8, _hoisted_2$t),
           renderSlot(_ctx.$slots, "content-after-label", {}, void 0, true)
         ])) : createCommentVNode("", true),
@@ -21141,7 +21148,7 @@ function getShadowRootSelection(root2) {
 }
 const _hoisted_1$A = { class: "markdown-editor" };
 const _hoisted_2$s = ["aria-label"];
-const _hoisted_3$m = ["contenteditable"];
+const _hoisted_3$l = ["contenteditable"];
 const _sfc_main$G = /* @__PURE__ */ defineComponent({
   __name: "MarkdownEditor",
   props: {
@@ -21484,13 +21491,13 @@ const _sfc_main$G = /* @__PURE__ */ defineComponent({
           onPaste,
           onFocus: startSelectionListener,
           onBlur: stopSelectionListener
-        }, null, 40, _hoisted_3$m)
+        }, null, 40, _hoisted_3$l)
       ]);
     };
   }
 });
-const _style_0$y = "\n.markdown-editor[data-v-e5fdd0e6] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-e5fdd0e6] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 0;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-e5fdd0e6] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-e5fdd0e6] {\n  padding: var(--spacing-md) var(--spacing-md);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-e5fdd0e6] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-e5fdd0e6] h1,\n.markdown-editor__content[data-v-e5fdd0e6] h2,\n.markdown-editor__content[data-v-e5fdd0e6] h3,\n.markdown-editor__content[data-v-e5fdd0e6] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-e5fdd0e6] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-e5fdd0e6] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-e5fdd0e6] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-e5fdd0e6] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-e5fdd0e6] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-e5fdd0e6] ul,\n.markdown-editor__content[data-v-e5fdd0e6] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-e5fdd0e6] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-e5fdd0e6] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-e5fdd0e6] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-e5fdd0e6] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-e5fdd0e6] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-e5fdd0e6] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-e5fdd0e6] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-e5fdd0e6] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-e5fdd0e6] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-e5fdd0e6] th,\n.markdown-editor__content[data-v-e5fdd0e6] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-e5fdd0e6] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$y]], ["__scopeId", "data-v-e5fdd0e6"]]);
+const _style_0$y = "\n.markdown-editor[data-v-b3d64419] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-b3d64419] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 49px;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-b3d64419] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-b3d64419] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-b3d64419] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-b3d64419] h1,\n.markdown-editor__content[data-v-b3d64419] h2,\n.markdown-editor__content[data-v-b3d64419] h3,\n.markdown-editor__content[data-v-b3d64419] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-b3d64419] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-b3d64419] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-b3d64419] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-b3d64419] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-b3d64419] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-b3d64419] ul,\n.markdown-editor__content[data-v-b3d64419] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-b3d64419] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-b3d64419] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-b3d64419] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-b3d64419] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-b3d64419] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-b3d64419] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-b3d64419] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-b3d64419] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-b3d64419] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-b3d64419] th,\n.markdown-editor__content[data-v-b3d64419] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-b3d64419] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$y]], ["__scopeId", "data-v-b3d64419"]]);
 const _hoisted_1$z = { class: "markdown-view" };
 const _hoisted_2$r = ["innerHTML"];
 const _sfc_main$F = /* @__PURE__ */ defineComponent({
@@ -21532,7 +21539,7 @@ const _hoisted_2$q = {
   key: 0,
   class: "transcript-ui-popover-list__divider"
 };
-const _hoisted_3$l = { class: "transcript-ui-popover-list__footer" };
+const _hoisted_3$k = { class: "transcript-ui-popover-list__footer" };
 const _sfc_main$E = /* @__PURE__ */ defineComponent({
   __name: "PopoverList",
   props: {
@@ -21603,7 +21610,7 @@ const _sfc_main$E = /* @__PURE__ */ defineComponent({
                   ])) : createCommentVNode("", true),
                   _ctx.$slots.footer ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
                     __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$q)) : createCommentVNode("", true),
-                    createBaseVNode("div", _hoisted_3$l, [
+                    createBaseVNode("div", _hoisted_3$k, [
                       renderSlot(_ctx.$slots, "footer")
                     ])
                   ], 64)) : createCommentVNode("", true)
@@ -21624,7 +21631,7 @@ const _hoisted_2$p = {
   key: 0,
   class: "selectable-list-item__leading"
 };
-const _hoisted_3$k = { class: "selectable-list-item__label" };
+const _hoisted_3$j = { class: "selectable-list-item__label" };
 const _hoisted_4$b = {
   key: 1,
   class: "selectable-list-item__trailing"
@@ -21661,7 +21668,7 @@ const _sfc_main$D = /* @__PURE__ */ defineComponent({
           _ctx.$slots.leading ? (openBlock(), createElementBlock("span", _hoisted_2$p, [
             renderSlot(_ctx.$slots, "leading", {}, void 0, true)
           ])) : createCommentVNode("", true),
-          createBaseVNode("span", _hoisted_3$k, [
+          createBaseVNode("span", _hoisted_3$j, [
             renderSlot(_ctx.$slots, "default", {}, () => [
               createTextVNode(toDisplayString(__props.label), 1)
             ], true)
@@ -21698,7 +21705,7 @@ const _style_0$v = "\n.speaker-indicator[data-v-324978c0] {\n  display: inline-b
 const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-324978c0"]]);
 const _hoisted_1$w = { class: "switch" };
 const _hoisted_2$o = ["id", "checked", "disabled"];
-const _hoisted_3$j = ["for"];
+const _hoisted_3$i = ["for"];
 const _sfc_main$B = /* @__PURE__ */ defineComponent({
   __name: "SwitchToggle",
   props: {
@@ -21722,7 +21729,7 @@ const _sfc_main$B = /* @__PURE__ */ defineComponent({
         }, null, 40, _hoisted_2$o),
         createBaseVNode("label", { for: unref(inputId) }, [..._cache[1] || (_cache[1] = [
           createBaseVNode("div", { class: "switch-slider" }, null, -1)
-        ])], 8, _hoisted_3$j)
+        ])], 8, _hoisted_3$i)
       ]);
     };
   }
@@ -21763,7 +21770,7 @@ const _hoisted_2$n = {
   class: "document-article__toolbar",
   role: "toolbar"
 };
-const _hoisted_3$i = { class: "document-article__toolbar-left" };
+const _hoisted_3$h = { class: "document-article__toolbar-left" };
 const _hoisted_4$a = { class: "document-article__toolbar-center" };
 const _hoisted_5$9 = { class: "document-article__toolbar-right" };
 const _hoisted_6$8 = { class: "document-article__body" };
@@ -21810,7 +21817,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         "data-status": props.status
       }, [
         _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", _hoisted_2$n, [
-          createBaseVNode("div", _hoisted_3$i, [
+          createBaseVNode("div", _hoisted_3$h, [
             renderSlot(_ctx.$slots, "toolbar-left", {}, void 0, true)
           ]),
           createBaseVNode("div", _hoisted_4$a, [
@@ -21851,8 +21858,8 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$s = "\n.document-article[data-v-c606ad2f] {\n  width: 100%;\n  max-width: 760px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-c606ad2f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-c606ad2f],\n.document-article__toolbar-right[data-v-c606ad2f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-c606ad2f] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-c606ad2f] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-c606ad2f] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-c606ad2f] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-c606ad2f] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-c606ad2f] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-c606ad2f] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-c606ad2f] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
-const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$s]], ["__scopeId", "data-v-c606ad2f"]]);
+const _style_0$s = "\n.document-article[data-v-e3f4ca33] {\n  width: min(1088px, calc(100% - 16px));\n  max-width: 1088px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-e3f4ca33] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-e3f4ca33],\n.document-article__toolbar-right[data-v-e3f4ca33] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-e3f4ca33] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-e3f4ca33] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-e3f4ca33] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-e3f4ca33] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-e3f4ca33] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-e3f4ca33] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-e3f4ca33] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-e3f4ca33] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
+const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$s]], ["__scopeId", "data-v-e3f4ca33"]]);
 const _sfc_main$y = /* @__PURE__ */ defineComponent({
   __name: "DownloadMenu",
   props: {
@@ -21933,7 +21940,7 @@ const _sfc_main$x = /* @__PURE__ */ defineComponent({
 });
 const _hoisted_1$t = ["aria-label"];
 const _hoisted_2$m = ["aria-selected", "aria-disabled", "disabled", "onClick"];
-const _hoisted_3$h = { class: "tab__label" };
+const _hoisted_3$g = { class: "tab__label" };
 const _sfc_main$w = /* @__PURE__ */ defineComponent({
   __name: "Tabs",
   props: {
@@ -21973,7 +21980,7 @@ const _sfc_main$w = /* @__PURE__ */ defineComponent({
               size: 16,
               class: "tab__icon"
             }, null, 8, ["name"])) : createCommentVNode("", true),
-            createBaseVNode("span", _hoisted_3$h, toDisplayString(tab.label), 1),
+            createBaseVNode("span", _hoisted_3$g, toDisplayString(tab.label), 1),
             tab.badge ? (openBlock(), createBlock(Badge, {
               key: 1,
               class: "tab__badge"
@@ -22110,7 +22117,7 @@ const _style_0$q = "\n.turn-text-editor[data-v-597e2575] {\n  margin: 0;\n  whit
 const TurnTextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$q]], ["__scopeId", "data-v-597e2575"]]);
 const _hoisted_1$r = { class: "editor-header" };
 const _hoisted_2$l = { class: "header-main" };
-const _hoisted_3$g = { class: "document-title" };
+const _hoisted_3$f = { class: "document-title" };
 const _hoisted_4$9 = {
   key: 0,
   class: "document-meta"
@@ -22153,7 +22160,7 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("header", _hoisted_1$r, [
         createBaseVNode("div", _hoisted_2$l, [
-          createBaseVNode("h1", _hoisted_3$g, toDisplayString(formattedTitle.value), 1),
+          createBaseVNode("h1", _hoisted_3$f, toDisplayString(formattedTitle.value), 1),
           metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$9, [
             (openBlock(true), createElementBlock(Fragment, null, renderList(metaParts.value, (part, i2) => {
               return openBlock(), createElementBlock("span", {
@@ -23164,7 +23171,7 @@ const _hoisted_2$i = {
   key: 4,
   class: "turn-edit-actions"
 };
-const _hoisted_3$f = ["role", "tabindex", "aria-label", "aria-disabled"];
+const _hoisted_3$e = ["role", "tabindex", "aria-label", "aria-disabled"];
 const _hoisted_4$8 = ["data-word-active"];
 const _sfc_main$p = /* @__PURE__ */ defineComponent({
   __name: "TranscriptionTurn",
@@ -23408,7 +23415,7 @@ const _sfc_main$p = /* @__PURE__ */ defineComponent({
           }), 128)) : __props.turn.text ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
             createTextVNode(toDisplayString(__props.turn.text), 1)
           ], 64)) : createCommentVNode("", true)
-        ], 42, _hoisted_3$f))
+        ], 42, _hoisted_3$e))
       ], 14, _hoisted_1$m);
     };
   }
@@ -23583,7 +23590,7 @@ const _hoisted_2$g = {
   ref: "scrollContainer",
   class: "scroll-container"
 };
-const _hoisted_3$e = { class: "turns-container" };
+const _hoisted_3$d = { class: "turns-container" };
 const _hoisted_4$7 = {
   key: 0,
   class: "history-loading",
@@ -23692,7 +23699,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("article", _hoisted_1$j, [
         createBaseVNode("div", _hoisted_2$g, [
-          createBaseVNode("div", _hoisted_3$e, [
+          createBaseVNode("div", _hoisted_3$d, [
             isLoadingHistory.value ? (openBlock(), createElementBlock("div", _hoisted_4$7, [..._cache[2] || (_cache[2] = [
               createBaseVNode("progress", null, null, -1)
             ])])) : createCommentVNode("", true),
@@ -23753,7 +23760,7 @@ const _style_0$j = "\n.transcription-panel[data-v-7f4303ed] {\n  min-height: 0;\
 const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["styles", [_style_0$j]], ["__scopeId", "data-v-7f4303ed"]]);
 const _hoisted_1$i = { class: "verbatim-panel" };
 const _hoisted_2$f = { class: "verbatim-panel__content" };
-const _hoisted_3$d = { class: "verbatim-panel__header" };
+const _hoisted_3$c = { class: "verbatim-panel__header" };
 const _hoisted_4$6 = { class: "verbatim-panel__doc-title" };
 const _hoisted_5$6 = { class: "verbatim-panel__turns" };
 const _hoisted_6$6 = { class: "verbatim-panel__turn-header" };
@@ -23823,7 +23830,7 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
           ]),
           default: withCtx(() => [
             createBaseVNode("article", _hoisted_2$f, [
-              createBaseVNode("header", _hoisted_3$d, [
+              createBaseVNode("header", _hoisted_3$c, [
                 createBaseVNode("h1", _hoisted_4$6, toDisplayString(title.value), 1)
               ]),
               createBaseVNode("ul", _hoisted_5$6, [
@@ -23861,8 +23868,8 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$i = "\n.verbatim-panel[data-v-86e548c0] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__content[data-v-86e548c0] {\n  padding: var(--spacing-md) var(--spacing-lg);\n}\n.verbatim-panel__header[data-v-86e548c0] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-86e548c0] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-86e548c0] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-86e548c0] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-86e548c0] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-86e548c0] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-86e548c0] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-86e548c0] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-86e548c0] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n@media (max-width: 767px) {\n.verbatim-panel[data-v-86e548c0] {\n    padding: var(--spacing-md);\n}\n}\n";
-const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-86e548c0"]]);
+const _style_0$i = "\n.verbatim-panel[data-v-4bbe16ed] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__content[data-v-4bbe16ed] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n}\n.verbatim-panel__header[data-v-4bbe16ed] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-4bbe16ed] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-4bbe16ed] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-4bbe16ed] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-4bbe16ed] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-4bbe16ed] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-4bbe16ed] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-4bbe16ed] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-4bbe16ed] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n\n";
+const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-4bbe16ed"]]);
 const _sfc_main$k = /* @__PURE__ */ defineComponent({
   __name: "ChannelSelector",
   props: {
@@ -23923,7 +23930,7 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
 });
 const _hoisted_1$h = { class: "merge-dialog-title" };
 const _hoisted_2$e = { class: "merge-dialog-description" };
-const _hoisted_3$c = { class: "merge-dialog-actions" };
+const _hoisted_3$b = { class: "merge-dialog-actions" };
 const _sfc_main$i = /* @__PURE__ */ defineComponent({
   __name: "MergeDialog",
   props: {
@@ -24004,7 +24011,7 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
             modelValue: targetId.value,
             "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => targetId.value = $event)
           }, null, 8, ["field", "options", "modelValue"]),
-          createBaseVNode("div", _hoisted_3$c, [
+          createBaseVNode("div", _hoisted_3$b, [
             createVNode(unref(Button), {
               variant: "tertiary",
               type: "button",
@@ -24038,7 +24045,7 @@ const _hoisted_2$d = {
   key: 0,
   class: "sidebar-section sidebar-section--selector"
 };
-const _hoisted_3$b = { class: "sidebar-title" };
+const _hoisted_3$a = { class: "sidebar-title" };
 const _hoisted_4$5 = {
   key: 1,
   class: "sidebar-section sidebar-section--selector"
@@ -24173,7 +24180,7 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("aside", _hoisted_1$g, [
         __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$d, [
-          createBaseVNode("h2", _hoisted_3$b, toDisplayString(unref(t2)("sidebar.channel")), 1),
+          createBaseVNode("h2", _hoisted_3$a, toDisplayString(unref(t2)("sidebar.channel")), 1),
           createVNode(_sfc_main$k, {
             channels: __props.channels,
             "selected-channel-id": __props.selectedChannelId,
@@ -24399,7 +24406,7 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
 });
 const _hoisted_1$f = ["aria-label"];
 const _hoisted_2$c = { class: "selection-count" };
-const _hoisted_3$a = { class: "selection-actions" };
+const _hoisted_3$9 = { class: "selection-actions" };
 const _sfc_main$f = /* @__PURE__ */ defineComponent({
   __name: "SelectionActionBar",
   setup(__props) {
@@ -24413,7 +24420,7 @@ const _sfc_main$f = /* @__PURE__ */ defineComponent({
         "aria-label": unref(t2)("selection.count")
       }, [
         createBaseVNode("span", _hoisted_2$c, toDisplayString(unref(selection).count.value) + " " + toDisplayString(unref(t2)("selection.count")), 1),
-        createBaseVNode("div", _hoisted_3$a, [
+        createBaseVNode("div", _hoisted_3$9, [
           createVNode(unref(CopyButton), {
             icon: "clipboard-type",
             "copy-fn": unref(selection).copyText,
@@ -24468,8 +24475,7 @@ function useIsMobile() {
   return { isMobile };
 }
 const _hoisted_1$e = { class: "editor-layout" };
-const _hoisted_2$b = { class: "editor-body" };
-const _hoisted_3$9 = {
+const _hoisted_2$b = {
   key: 6,
   class: "mobile-selectors"
 };
@@ -24483,7 +24489,22 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
     const core = useCore();
     const { isMobile } = useIsMobile();
     const isSidebarOpen = /* @__PURE__ */ ref(false);
-    const activeTab = /* @__PURE__ */ ref(TRANSCRIPTION_TAB);
+    const shownPanels = /* @__PURE__ */ ref([TRANSCRIPTION_TAB]);
+    const activeTab = computed(() => shownPanels.value[0] ?? TRANSCRIPTION_TAB);
+    const isSplit = computed({
+      get: () => shownPanels.value.length > 1,
+      set: (value) => {
+        shownPanels.value = value ? [...shownPanels.value, VERBATIM_TAB] : shownPanels.value.filter((id) => id !== VERBATIM_TAB);
+      }
+    });
+    const panels = computed(
+      () => shownPanels.value.map((id) => {
+        if (id === TRANSCRIPTION_TAB) return { id, kind: "transcription" };
+        if (id === VERBATIM_TAB) return { id, kind: "verbatim" };
+        const service = core.llmServices?.get(id);
+        return service ? { id, kind: "service", service } : { id, kind: "transcription" };
+      })
+    );
     const activeTurns = computed(
       () => core.activeChannel.value?.activeTranslation.value.turns.value ?? []
     );
@@ -24498,11 +24519,6 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
     );
     const speakerList = computed(() => Array.from(speakers.values()));
     const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB);
-    const showVerbatim = computed(() => activeTab.value === VERBATIM_TAB);
-    const activeService = computed(() => {
-      if (showTranscription.value || showVerbatim.value) return null;
-      return core.llmServices?.get(activeTab.value) ?? null;
-    });
     watch(activeTab, (id) => {
       if (!core.llmServices) return;
       if (id === TRANSCRIPTION_TAB || id === VERBATIM_TAB) {
@@ -24515,7 +24531,7 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
       () => core.llmServices?.list.value.map((s2) => s2.id).join("|"),
       () => {
         if (activeTab.value !== TRANSCRIPTION_TAB && activeTab.value !== VERBATIM_TAB && !core.llmServices?.get(activeTab.value)) {
-          activeTab.value = TRANSCRIPTION_TAB;
+          shownPanels.value = [TRANSCRIPTION_TAB];
         }
       }
     );
@@ -24557,25 +24573,35 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
           onRedo: _cache[3] || (_cache[3] = ($event) => unref(core).transcriptionEditor?.redo())
         }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask", "can-undo", "can-redo"])) : createCommentVNode("", true),
         createVNode(_sfc_main$t, {
-          modelValue: activeTab.value,
-          "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => activeTab.value = $event)
-        }, null, 8, ["modelValue"]),
+          "model-value": activeTab.value,
+          "onUpdate:modelValue": _cache[4] || (_cache[4] = (tab) => shownPanels.value = [tab])
+        }, null, 8, ["model-value"]),
         showTranscription.value ? (openBlock(), createBlock(SelectionActionBar, { key: 1 })) : createCommentVNode("", true),
-        createBaseVNode("main", _hoisted_2$b, [
-          showTranscription.value ? (openBlock(), createBlock(TranscriptionPanel, {
+        createBaseVNode("main", {
+          class: normalizeClass(["editor-body", { "editor-body--no-sidebar": panels.value.length > 1 }])
+        }, [
+          createBaseVNode("div", {
+            class: normalizeClass(["editor-body__panels", { "editor-body__panels--split": panels.value.length > 1 }])
+          }, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList(panels.value, (panel) => {
+              return openBlock(), createElementBlock(Fragment, {
+                key: panel.id
+              }, [
+                panel.kind === "transcription" ? (openBlock(), createBlock(TranscriptionPanel, {
+                  key: 0,
+                  turns: activeTurns.value,
+                  speakers: unref(speakers)
+                }, null, 8, ["turns", "speakers"])) : panel.kind === "verbatim" ? (openBlock(), createBlock(VerbatimPanel, { key: 1 })) : (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.llmServicePanel), {
+                  key: 2,
+                  service: panel.service,
+                  split: isSplit.value,
+                  "onUpdate:split": _cache[5] || (_cache[5] = ($event) => isSplit.value = $event)
+                }, null, 40, ["service", "split"]))
+              ], 64);
+            }), 128))
+          ], 2),
+          !unref(isMobile) && panels.value.length === 1 ? (openBlock(), createBlock(SpeakerSidebar, {
             key: 0,
-            turns: activeTurns.value,
-            speakers: unref(speakers)
-          }, null, 8, ["turns", "speakers"])) : showVerbatim.value ? (openBlock(), createBlock(VerbatimPanel, { key: 1 })) : activeService.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.llmServicePanel), {
-            key: activeService.value.id,
-            service: activeService.value
-          }, null, 8, ["service"])) : (openBlock(), createBlock(TranscriptionPanel, {
-            key: 3,
-            turns: activeTurns.value,
-            speakers: unref(speakers)
-          }, null, 8, ["turns", "speakers"])),
-          !unref(isMobile) ? (openBlock(), createBlock(SpeakerSidebar, {
-            key: 4,
             speakers: speakerList.value,
             channels: channels.value,
             "selected-channel-id": unref(core).activeChannelId.value,
@@ -24585,10 +24611,10 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
             "onUpdate:selectedChannelId": onChannelChange,
             "onUpdate:selectedTranslationId": onTranslationChange
           }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])) : createCommentVNode("", true),
-          unref(isMobile) ? (openBlock(), createBlock(_sfc_main$g, {
-            key: 5,
+          unref(isMobile) && panels.value.length === 1 ? (openBlock(), createBlock(_sfc_main$g, {
+            key: 1,
             open: isSidebarOpen.value,
-            "onUpdate:open": _cache[5] || (_cache[5] = ($event) => isSidebarOpen.value = $event)
+            "onUpdate:open": _cache[6] || (_cache[6] = ($event) => isSidebarOpen.value = $event)
           }, {
             default: withCtx(() => [
               createVNode(SpeakerSidebar, {
@@ -24604,7 +24630,7 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
             ]),
             _: 1
           }, 8, ["open"])) : createCommentVNode("", true)
-        ]),
+        ], 2),
         unref(core).audio?.src.value ? withDirectives((openBlock(), createBlock(resolveDynamicComponent(unref(core).components.player), {
           key: 2,
           "audio-src": unref(core).audio.src.value
@@ -24614,7 +24640,7 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
         unref(core).subtitle?.isVisible.value && !unref(isMobile) && !unref(core).subtitle.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleBanner), { key: 3 })) : createCommentVNode("", true),
         unref(core).subtitle?.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleFullscreen), { key: 4 })) : createCommentVNode("", true),
         unref(core).chat ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.chatDrawer), { key: 5 })) : createCommentVNode("", true),
-        unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_3$9, [
+        unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_2$b, [
           channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$k, {
             key: 0,
             channels: channels.value,
@@ -24632,8 +24658,8 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$e = "\n.editor-layout[data-v-70777145] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-70777145] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n.mobile-selectors[data-v-70777145] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-70777145] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-70777145] {\n    grid-template-columns: 1fr;\n}\n}\n";
-const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-70777145"]]);
+const _style_0$e = "\n.editor-layout[data-v-ca7b1d66] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-ca7b1d66] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-ca7b1d66] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-ca7b1d66] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-ca7b1d66] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-ca7b1d66] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-ca7b1d66] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-ca7b1d66] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-ca7b1d66] {\n    grid-template-columns: 1fr;\n}\n}\n";
+const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-ca7b1d66"]]);
 const _hoisted_1$d = {
   class: "editor-loading",
   role: "status",
@@ -24757,7 +24783,333 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$b = '/* Atkinson Hyperlegible Next — main font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Medium.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 600;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-SemiBold.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Next";\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleNext-Bold.woff2") format("woff2");\n}\n\n/* Atkinson Hyperlegible Mono — monospace font */\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Regular.woff2") format("woff2");\n}\n@font-face {\n  font-family: "Atkinson Hyperlegible Mono";\n  font-style: normal;\n  font-weight: 500;\n  font-display: swap;\n  src: url("/fonts/AtkinsonHyperlegibleMono-Medium.woff2") format("woff2");\n}\n/*\n * Design tokens\n *\n * Public theming API — these CSS custom properties can be overridden from\n * outside the web component by setting them on the <linto-editor> element:\n *\n *   linto-editor {\n *     --color-primary: #e63946;\n *     --color-background: #fafafa;\n *   }\n *\n * Colors:\n *   --color-primary          Accent / brand color\n *   --color-primary-hover    Primary hover state\n *   --color-background       Page background\n *   --color-surface          Cards, panels, player\n *   --color-surface-hover    Hover on surfaces\n *   --color-text-primary     Main text\n *   --color-text-secondary   Secondary text (timestamps…)\n *   --color-text-muted       Muted text (labels)\n *   --color-border           Borders\n *   --color-border-light     Light borders\n *\n * Typography, spacing, radius, and shadows are also overridable.\n *\n * Scoped to .transcript-ui-root (the embedder\'s root element) instead of\n * :root — until the web-component wrapper puts this behind a real Shadow\n * DOM, `:root`/`body`/`*` here would leak straight onto the host app\'s own\n * page (its tokens, its font, its box-sizing reset on every element). :host\n * stays for that future shadow-root case.\n */\n.transcript-ui-root,\n:host {\n  /* Colors — light theme */\n  --color-background: #f8f9fa;\n  --color-surface: #ffffff;\n  --color-surface-hover: #f1f3f5;\n  --color-text-primary: #1a1d21;\n  --color-text-secondary: #495057;\n  --color-text-muted: #6c757d;\n  --color-primary: #4263eb;\n  --color-primary-hover: #3b5bdb;\n  --color-border: #dee2e6;\n  --color-border-light: #e9ecef;\n  --color-white: #ffffff;\n  --color-black: #000000;\n  --color-danger: #e53935;\n  --color-danger-hover: #c62828;\n  --color-danger-soft: #fdecea;\n\n  /* Typography */\n  --font-family:\n    "Atkinson Hyperlegible Next", system-ui, -apple-system, sans-serif;\n  --font-family-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;\n  --font-size-xs: 0.875rem;\n  --font-size-sm: 1rem;\n  --font-size-base: 1.125rem;\n  --font-size-lg: 1.25rem;\n  --font-size-xl: 1.75rem;\n  --line-height: 1.6;\n\n  /* Spacing */\n  --spacing-xxs: 0.125rem;\n  --spacing-xs: 0.25rem;\n  --spacing-sm: 0.5rem;\n  --spacing-md: 1rem;\n  --spacing-lg: 1.5rem;\n  --spacing-xl: 2rem;\n\n  /* Radius */\n  --radius-sm: 4px;\n  --radius-md: 8px;\n  --radius-lg: 12px;\n\n  /* Layout */\n  --sidebar-width: 300px;\n  --header-height: 56px;\n\n  /* Shadows */\n  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);\n  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);\n\n  /* Transitions */\n  --transition-duration: 150ms;\n\n  /* Z-index scale */\n  --z-sticky: 10;\n  --z-overlay: 50;\n  --z-drawer: 1000;\n  --z-dropdown: 1100;\n\n  /* Glass effect — backdrop blur intentionally removed: each backdrop-filter\n     forces a WebRender render target, which on long transcripts (one waveform\n     region per turn, tall scroll container) balloons GPU memory to several GB\n     and freezes weaker machines. Keep the semi-opaque background only. */\n  --glass-background: rgba(255, 255, 255, 0.8);\n  --glass-border: rgba(255, 255, 255, 0.3);\n}\n.transcript-ui-root,\n:host {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n:host {\n  display: block;\n  height: 100%;\n  overflow: hidden;\n}\n\n/* Reset, scoped to our own subtree so the host app\'s elements outside\n   .transcript-ui-root keep their own margin/padding/box-sizing. */\n.transcript-ui-root,\n.transcript-ui-root *,\n.transcript-ui-root *::before,\n.transcript-ui-root *::after {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\n/* Dev mode SPA (ignored in Shadow DOM — these elements don\'t exist) */\nhtml,\nbody {\n  height: 100%;\n  overflow: hidden;\n}\n#app {\n  height: 100%;\n  overflow: hidden;\n}\n/* Utility */\n.transcript-ui-sr-only {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  white-space: nowrap;\n  border-width: 0;\n}\n\n/* Overlay (shared by sidebar drawer + sheet select) */\n.transcript-ui-overlay {\n  position: fixed;\n  inset: 0;\n  background-color: rgba(0, 0, 0, 0.4);\n  z-index: var(--z-overlay);\n  animation: transcript-ui-overlay-fade-in 200ms ease;\n}\n\n/* Drawer mobile (sidebar) */\n.transcript-ui-sidebar-drawer {\n  position: fixed;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  width: min(320px, 85vw);\n  z-index: var(--z-drawer);\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n  animation: transcript-ui-drawer-slide-in 250ms ease;\n  overflow-y: auto;\n  display: flex;\n  flex-direction: column;\n}\n.transcript-ui-sidebar-close {\n  position: absolute;\n  top: var(--spacing-sm);\n  right: var(--spacing-sm);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 32px;\n  height: 32px;\n  border: none;\n  background: none;\n  color: var(--color-text-muted);\n  border-radius: var(--radius-md);\n  cursor: pointer;\n  z-index: 1;\n}\n.transcript-ui-sidebar-close:hover {\n  background-color: var(--color-surface-hover);\n  color: var(--color-text-primary);\n}\n\n/* Keyframes */\n@keyframes transcript-ui-overlay-fade-in {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@keyframes transcript-ui-drawer-slide-in {\nfrom {\n    translate: 100% 0;\n}\nto {\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.transcript-ui-overlay,\n  .transcript-ui-sidebar-drawer {\n    animation: none;\n}\n}\n\n/* Wavesurfer ::part (cannot work in scoped styles) */\n/* No backdrop-filter: there is one region per turn (hundreds on a long\n   transcript), and each backdrop-filter forces a separate WebRender backdrop\n   render target — on a multi-hour document this balloons GPU/GTT memory to\n   several GB and freezes weaker machines. The border/shadow alone read fine. */\n.transcript-ui-waveform-container ::part(region) {\n  border-top: 2px solid var(--region-color, rgba(255, 255, 255, 0.4));\n  border-bottom: 1px solid var(--region-color, rgba(255, 255, 255, 0.4));\n  box-shadow:\n    inset 0 1px 0 rgba(255, 255, 255, 0.2),\n    0 1px 4px rgba(0, 0, 0, 0.1);\n}\n\n/* Turn nodes use `content-visibility: auto` for long-document perf, which\n   implies paint containment and clips any overflow to the turn\'s box. The\n   speaker popover floats out of the turn, so it gets cut off at the turn\'s\n   bottom edge. While its trigger is open (Reka sets data-state="open"), drop\n   the containment on that turn so the popover can overflow freely. The turn is\n   on-screen when open, so lifting content-visibility causes no layout shift.\n   Global (not scoped) because the open trigger is rendered by another\n   component, so a scoped :has() selector would not match it. */\nsection.turn:has([data-state="open"]) {\n  content-visibility: visible;\n}\n/* Shared surface and row styles for PopoverList and similar anchored panels.\n   Kept global because Reka portals render outside the component\'s scoped\n   CSS boundary. */\n.transcript-ui-root .transcript-ui-popover-list {\n  min-width: 180px;\n  padding: var(--spacing-xs);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  box-shadow: 0 8px 24px\n    color-mix(in srgb, var(--color-text-primary) 15%, transparent);\n  z-index: 50;\n}\n.transcript-ui-root .transcript-ui-popover-list__items {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: 0;\n  padding: 0;\n  max-height: 280px;\n  overflow-y: auto;\n}\n.transcript-ui-root .transcript-ui-popover-list__item {\n  all: unset;\n  box-sizing: border-box;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  width: 100%;\n  padding: var(--spacing-xs) var(--spacing-sm);\n  border-radius: var(--radius-sm);\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n  cursor: pointer;\n}\n.transcript-ui-root .transcript-ui-popover-list__item:hover,\n.transcript-ui-root .transcript-ui-popover-list__item[data-highlighted] {\n  background-color: var(--color-surface-hover);\n}\n.transcript-ui-root .transcript-ui-popover-list__item:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.transcript-ui-root .transcript-ui-popover-list__item--current {\n  background-color: color-mix(\n    in srgb,\n    var(--color-primary) 10%,\n    transparent\n  );\n}\n.transcript-ui-root .transcript-ui-popover-list__divider {\n  height: 1px;\n  background-color: var(--color-border);\n  margin: var(--spacing-xs) 0;\n}\n.transcript-ui-root .transcript-ui-popover-list__footer {\n  padding: var(--spacing-xs);\n}\n\n/* Positioning context for the absolute loading overlay. */\n.transcript-ui-root {\n  position: relative;\n  height: 100%;\n}\n';
+const _style_0$b = `
+/* NOT fonts.css: a @font-face declared inside a shadow root isn't reliably
+ * applied by browsers (document.fonts never registers it) — dead weight in
+ * the webcomponent bundle specifically, which always runs shadow-DOM'd. The
+ * host declares --font-family's actual font at document level instead (see
+ * variables.css's token doc). A direct, non-shadow-DOM Vue embedder of this
+ * package (no such limitation) can still opt in: \`@import
+ * "@linto-ai/transcript-ui-ui/styles/fonts.css"\` themselves. */
+/*
+ * Design tokens
+ *
+ * Public theming API — these CSS custom properties can be overridden from
+ * outside the web component by setting them on the <linto-editor> element:
+ *
+ *   linto-editor {
+ *     --color-primary: #e63946;
+ *     --color-background: #fafafa;
+ *   }
+ *
+ * Colors:
+ *   --color-primary          Accent / brand color
+ *   --color-primary-hover    Primary hover state
+ *   --color-background       Page background
+ *   --color-surface          Cards, panels, player
+ *   --color-surface-hover    Hover on surfaces
+ *   --color-text-primary     Main text
+ *   --color-text-secondary   Secondary text (timestamps…)
+ *   --color-text-muted       Muted text (labels)
+ *   --color-border           Borders
+ *   --color-border-light     Light borders
+ *
+ * Typography, spacing, radius, and shadows are also overridable.
+ *
+ * --font-family names "Atkinson Hyperlegible Next" as the design's actual
+ * font, but this package does NOT ship or load it (see fonts.css, an opt-in
+ * file for a direct — non-shadow-DOM — Vue embedder; the webcomponent
+ * doesn't import it at all). A @font-face declared inside a shadow root
+ * isn't reliably applied by browsers, so shipping it there was dead weight.
+ * A host that wants the exact intended look declares the @font-face itself,
+ * at document level (outside any shadow root) — see fonts.css for the
+ * ready-made rules to copy, and studio-frontend's public/fonts/atkinson.css
+ * for a real example. Without it, --font-family's own fallback chain
+ * (system-ui, -apple-system, sans-serif) applies — never broken, just not
+ * the exact intended type.
+ *
+ * Scoped to .transcript-ui-root (the embedder's root element) instead of
+ * :root — until the web-component wrapper puts this behind a real Shadow
+ * DOM, \`:root\`/\`body\`/\`*\` here would leak straight onto the host app's own
+ * page (its tokens, its font, its box-sizing reset on every element). :host
+ * stays for that future shadow-root case.
+ */
+.transcript-ui-root,
+:host {
+  /* Colors — light theme */
+  --color-background: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f3f5;
+  --color-text-primary: #1a1d21;
+  --color-text-secondary: #495057;
+  --color-text-muted: #6c757d;
+  --color-primary: #4263eb;
+  --color-primary-hover: #3b5bdb;
+  --color-border: #dee2e6;
+  --color-border-light: #e9ecef;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-danger: #e53935;
+  --color-danger-hover: #c62828;
+  --color-danger-soft: #fdecea;
+
+  /* Typography */
+  --font-family:
+    "Atkinson Hyperlegible Next", system-ui, -apple-system, sans-serif;
+  --font-family-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+  --font-size-xs: 0.875rem;
+  --font-size-sm: 1rem;
+  --font-size-base: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.75rem;
+  --line-height: 1.6;
+
+  /* Spacing */
+  --spacing-xxs: 0.125rem;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Layout */
+  --sidebar-width: 300px;
+  --header-height: 56px;
+
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  /* Transitions */
+  --transition-duration: 150ms;
+
+  /* Z-index scale */
+  --z-sticky: 10;
+  --z-overlay: 50;
+  --z-drawer: 1000;
+  --z-dropdown: 1100;
+
+  /* Glass effect — backdrop blur intentionally removed: each backdrop-filter
+     forces a WebRender render target, which on long transcripts (one waveform
+     region per turn, tall scroll container) balloons GPU memory to several GB
+     and freezes weaker machines. Keep the semi-opaque background only. */
+  --glass-background: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.3);
+}
+.transcript-ui-root,
+:host {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Reset, scoped to our own subtree so the host app's elements outside
+   .transcript-ui-root keep their own margin/padding/box-sizing. */
+.transcript-ui-root,
+.transcript-ui-root *,
+.transcript-ui-root *::before,
+.transcript-ui-root *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Dev mode SPA (ignored in Shadow DOM — these elements don't exist) */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+/* Utility */
+.transcript-ui-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Overlay (shared by sidebar drawer + sheet select) */
+.transcript-ui-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: var(--z-overlay);
+  animation: transcript-ui-overlay-fade-in 200ms ease;
+}
+
+/* Drawer mobile (sidebar) */
+.transcript-ui-sidebar-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(320px, 85vw);
+  z-index: var(--z-drawer);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  animation: transcript-ui-drawer-slide-in 250ms ease;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.transcript-ui-sidebar-close {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  z-index: 1;
+}
+.transcript-ui-sidebar-close:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+/* Keyframes */
+@keyframes transcript-ui-overlay-fade-in {
+from {
+    opacity: 0;
+}
+to {
+    opacity: 1;
+}
+}
+@keyframes transcript-ui-drawer-slide-in {
+from {
+    translate: 100% 0;
+}
+to {
+    translate: 0 0;
+}
+}
+@media (prefers-reduced-motion: reduce) {
+.transcript-ui-overlay,
+  .transcript-ui-sidebar-drawer {
+    animation: none;
+}
+}
+
+/* Wavesurfer ::part (cannot work in scoped styles) */
+/* No backdrop-filter: there is one region per turn (hundreds on a long
+   transcript), and each backdrop-filter forces a separate WebRender backdrop
+   render target — on a multi-hour document this balloons GPU/GTT memory to
+   several GB and freezes weaker machines. The border/shadow alone read fine. */
+.transcript-ui-waveform-container ::part(region) {
+  border-top: 2px solid var(--region-color, rgba(255, 255, 255, 0.4));
+  border-bottom: 1px solid var(--region-color, rgba(255, 255, 255, 0.4));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Turn nodes use \`content-visibility: auto\` for long-document perf, which
+   implies paint containment and clips any overflow to the turn's box. The
+   speaker popover floats out of the turn, so it gets cut off at the turn's
+   bottom edge. While its trigger is open (Reka sets data-state="open"), drop
+   the containment on that turn so the popover can overflow freely. The turn is
+   on-screen when open, so lifting content-visibility causes no layout shift.
+   Global (not scoped) because the open trigger is rendered by another
+   component, so a scoped :has() selector would not match it. */
+section.turn:has([data-state="open"]) {
+  content-visibility: visible;
+}
+/* Shared surface and row styles for PopoverList and similar anchored panels.
+   Kept global because Reka portals render outside the component's scoped
+   CSS boundary. */
+.transcript-ui-root .transcript-ui-popover-list {
+  min-width: 180px;
+  padding: var(--spacing-xs);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px
+    color-mix(in srgb, var(--color-text-primary) 15%, transparent);
+  z-index: 50;
+}
+.transcript-ui-root .transcript-ui-popover-list__items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.transcript-ui-root .transcript-ui-popover-list__item {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+.transcript-ui-root .transcript-ui-popover-list__item:hover,
+.transcript-ui-root .transcript-ui-popover-list__item[data-highlighted] {
+  background-color: var(--color-surface-hover);
+}
+.transcript-ui-root .transcript-ui-popover-list__item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+.transcript-ui-root .transcript-ui-popover-list__item--current {
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary) 10%,
+    transparent
+  );
+}
+.transcript-ui-root .transcript-ui-popover-list__divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: var(--spacing-xs) 0;
+}
+.transcript-ui-root .transcript-ui-popover-list__footer {
+  padding: var(--spacing-xs);
+}
+
+/* Positioning context for the absolute loading overlay. */
+.transcript-ui-root {
+  position: relative;
+  height: 100%;
+}
+`;
 const TranscriptUI = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$b]]]);
 function mapApiTurns(apiTurns) {
   return apiTurns.map((t2) => {
@@ -28977,12 +29329,18 @@ const _hoisted_3$5 = { class: "llm-service-panel__empty-text" };
 const _sfc_main$5 = /* @__PURE__ */ defineComponent({
   __name: "LLMServicePanel",
   props: {
-    service: { type: Object }
+    service: { type: Object },
+    split: { type: Boolean }
   },
-  setup(__props) {
+  emits: ["update:split"],
+  setup(__props, { emit: __emit }) {
     const props = __props;
+    const emit2 = __emit;
     const core = useCore();
     const { t: t2 } = useI18n();
+    function toggleSplit() {
+      emit2("update:split", !props.split);
+    }
     const articleStatus = computed(() => {
       const s2 = props.service.status.value;
       if (s2 === "queued" || s2 === "processing") return "processing";
@@ -29089,7 +29447,15 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
                 createTextVNode(toDisplayString(unref(t2)("llmService.download")), 1)
               ]),
               _: 1
-            }, 8, ["disabled", "aria-label", "title"])
+            }, 8, ["disabled", "aria-label", "title"]),
+            createVNode(unref(Button), {
+              variant: __props.split ? "primary" : "secondary",
+              icon: "panel-right",
+              "aria-pressed": !!__props.split,
+              "aria-label": unref(t2)("llmService.split"),
+              title: unref(t2)("llmService.split"),
+              onClick: toggleSplit
+            }, null, 8, ["variant", "aria-pressed", "aria-label", "title"])
           ]),
           default: withCtx(() => [
             isEmpty.value ? (openBlock(), createElementBlock("div", _hoisted_2$5, [
@@ -29118,8 +29484,8 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$5 = "\n.llm-service-panel[data-v-85d1396e] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-85d1396e] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-85d1396e] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-85d1396e] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-85d1396e] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-85d1396e] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-85d1396e] {\n    padding: var(--spacing-md);\n}\n}\n";
-const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-85d1396e"]]);
+const _style_0$5 = "\n.llm-service-panel[data-v-b3e9aba7] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-b3e9aba7] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-b3e9aba7] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-b3e9aba7] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-b3e9aba7] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-b3e9aba7] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-b3e9aba7] {\n    padding: var(--spacing-md);\n}\n}\n";
+const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-b3e9aba7"]]);
 function createService(init) {
   return {
     id: init.id,
@@ -29908,4 +30274,4 @@ export {
   purify as p,
   register as r
 };
-//# sourceMappingURL=index--DNvC8BA.js.map
+//# sourceMappingURL=index-DQ9v_akJ.js.map

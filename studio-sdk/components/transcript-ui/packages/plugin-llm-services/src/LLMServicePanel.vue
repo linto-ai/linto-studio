@@ -13,10 +13,19 @@ import type { LLMService } from "@linto-ai/transcript-ui-core"
 
 const props = defineProps<{
   service: LLMService
+  split?: boolean
+}>()
+
+const emit = defineEmits<{
+  "update:split": [value: boolean]
 }>()
 
 const core = useCore()
 const { t } = useI18n()
+
+function toggleSplit(): void {
+  emit("update:split", !props.split)
+}
 
 const articleStatus = computed<DocumentArticleStatus>(() => {
   const s = props.service.status.value
@@ -141,6 +150,13 @@ function onSave(): void {
           @click="onExport">
           {{ t("llmService.download") }}
         </Button>
+        <Button
+          :variant="split ? 'primary' : 'secondary'"
+          icon="panel-right"
+          :aria-pressed="!!split"
+          :aria-label="t('llmService.split')"
+          :title="t('llmService.split')"
+          @click="toggleSplit" />
       </template>
 
       <div v-if="isEmpty" class="llm-service-panel__empty" role="status">

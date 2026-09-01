@@ -420,7 +420,7 @@ watch(
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-surface);
   position: sticky;
-  top: 0;
+  top: 49px;
   z-index: 1;
 }
 
@@ -432,7 +432,7 @@ watch(
 }
 
 .markdown-editor__content {
-  padding: var(--spacing-md) var(--spacing-md);
+  padding: 4rem clamp(1.5rem, 6rem, 8%);
   outline: none;
   min-height: 200px;
 }

@@ -83,6 +83,7 @@ const fr = {
   "tabs.moreSelect": "Sélectionner…",
   "llmService.regenerate": "Régénérer",
   "llmService.download": "Télécharger",
+  "llmService.split": "Afficher le verbatim à côté",
   "llmService.generated": "Généré par IA",
   "llmService.processing": "Génération en cours…",
   "llmService.queued": "En file d'attente…",

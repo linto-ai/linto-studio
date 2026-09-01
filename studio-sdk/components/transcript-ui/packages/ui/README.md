@@ -8,7 +8,7 @@ Design-system components and CSS tokens for [@linto-ai/transcript-ui](https://gi
 
 - **Atoms** — `Button`, `EditorIcon`, `Badge`, `CopyButton`, `EditableText`, `EditorCheckbox`, `MarkdownEditor`, `MarkdownView`, `CodeBlock`, `PopoverList`, `SelectableListItem`, `SpeakerIndicator`, `SwitchToggle`, `UserAvatar`.
 - **Molecules** — `DocumentArticle`, `DownloadMenu`, `FormInput`, `SpeakerMenu`, `Tabs`, `TurnTextEditor`.
-- **Styles** — the design tokens (`./styles/variables.css`, `./styles/base.css`, `./styles/popover-list.css`, `./styles/fonts.css`), importable individually via subpath (`@linto-ai/transcript-ui-ui/styles/variables.css`). In practice you rarely need to import these yourself — `TranscriptUI` (from `@linto-ai/transcript-ui-core`) already pulls them in.
+- **Styles** — the design tokens (`./styles/variables.css`, `./styles/base.css`, `./styles/popover-list.css`), importable individually via subpath (`@linto-ai/transcript-ui-ui/styles/variables.css`). In practice you rarely need to import these yourself — `TranscriptUI` (from `@linto-ai/transcript-ui-core`) already pulls them in. `./styles/fonts.css` is the one exception: NOT auto-imported (a `@font-face` inside a shadow root — the webcomponent's case — isn't reliably applied by browsers), opt in yourself only for a direct, non-shadow-DOM Vue embed.
 
 ## Usage
 

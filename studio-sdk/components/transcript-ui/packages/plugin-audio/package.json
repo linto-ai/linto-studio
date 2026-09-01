@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui-plugin-audio",
-  "version": "0.9.14",
+  "version": "0.9.16",
   "description": "Audio playback plugin for @linto-ai/transcript-ui — waveform, active-word highlighting, seek",
   "keywords": [
     "vue",

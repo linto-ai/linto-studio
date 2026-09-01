@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui-plugin-chat",
-  "version": "0.9.14",
+  "version": "0.9.16",
   "description": "Chat panel plugin for @linto-ai/transcript-ui — talk with an LLM assistant about the transcript",
   "keywords": [
     "vue",

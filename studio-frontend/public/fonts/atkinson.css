@@ -1,0 +1,52 @@
+/* Atkinson Hyperlegible — the transcript-ui editor's font. Declared here,
+ * at document level (light DOM), not left to the SDK's own @font-face rule:
+ * a @font-face declared inside a shadow root (where transcript-ui's own
+ * styles live, in <linto-editor>) isn't reliably applied by browsers —
+ * document.fonts never registers it. A font registered at document level
+ * IS visible from inside any shadow root, so this is the fix. */
+
+/* Atkinson Hyperlegible Next — main font */
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(AtkinsonHyperlegibleNext-Regular.woff2) format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(AtkinsonHyperlegibleNext-Medium.woff2) format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(AtkinsonHyperlegibleNext-SemiBold.woff2) format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(AtkinsonHyperlegibleNext-Bold.woff2) format("woff2");
+}
+
+/* Atkinson Hyperlegible Mono — monospace font */
+@font-face {
+  font-family: "Atkinson Hyperlegible Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(AtkinsonHyperlegibleMono-Regular.woff2) format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(AtkinsonHyperlegibleMono-Medium.woff2) format("woff2");
+}

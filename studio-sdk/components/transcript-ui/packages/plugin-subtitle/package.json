@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui-plugin-subtitle",
-  "version": "0.9.14",
+  "version": "0.9.16",
   "description": "Subtitle display plugin for @linto-ai/transcript-ui — fullscreen/banner captions with an optional watermark",
   "keywords": [
     "vue",

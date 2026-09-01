@@ -23,6 +23,18 @@
  *
  * Typography, spacing, radius, and shadows are also overridable.
  *
+ * --font-family names "Atkinson Hyperlegible Next" as the design's actual
+ * font, but this package does NOT ship or load it (see fonts.css, an opt-in
+ * file for a direct — non-shadow-DOM — Vue embedder; the webcomponent
+ * doesn't import it at all). A @font-face declared inside a shadow root
+ * isn't reliably applied by browsers, so shipping it there was dead weight.
+ * A host that wants the exact intended look declares the @font-face itself,
+ * at document level (outside any shadow root) — see fonts.css for the
+ * ready-made rules to copy, and studio-frontend's public/fonts/atkinson.css
+ * for a real example. Without it, --font-family's own fallback chain
+ * (system-ui, -apple-system, sans-serif) applies — never broken, just not
+ * the exact intended type.
+ *
  * Scoped to .transcript-ui-root (the embedder's root element) instead of
  * :root — until the web-component wrapper puts this behind a real Shadow
  * DOM, `:root`/`body`/`*` here would leak straight onto the host app's own

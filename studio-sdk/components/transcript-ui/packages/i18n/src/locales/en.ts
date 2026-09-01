@@ -84,6 +84,7 @@ const en: Record<keyof typeof fr, string> = {
   'tabs.moreSelect': 'Select…',
   'llmService.regenerate': 'Regenerate',
   'llmService.download': 'Download',
+  'llmService.split': 'Show verbatim alongside',
   'llmService.generated': 'AI-generated',
   'llmService.processing': 'Generating…',
   'llmService.queued': 'Queued…',

@@ -2,7 +2,9 @@
 
 Part of [**@linto-ai/transcript-ui**](https://www.npmjs.com/package/@linto-ai/transcript-ui) — see there for the full package list and quick start.
 
-[@linto-ai/transcript-ui](https://github.com/linto-ai/linto-studio/tree/master/studio-sdk/components/transcript-ui) packaged as a `<linto-editor>` [Web Component](https://developer.mozilla.org/en-US/docs/Web/API/Web_components), for hosts that aren't Vue. Self-contained: Vue itself, every official plugin, fonts, and styles are all bundled in — nothing else to install.
+[@linto-ai/transcript-ui](https://github.com/linto-ai/linto-studio/tree/master/studio-sdk/components/transcript-ui) packaged as a `<linto-editor>` [Web Component](https://developer.mozilla.org/en-US/docs/Web/API/Web_components), for hosts that aren't Vue. Self-contained: Vue itself, every official plugin, and styles are all bundled in — nothing else to install.
+
+One exception: the font. `--font-family` names "Atkinson Hyperlegible Next" as the design's intended font, but a `@font-face` declared inside this component's shadow root isn't reliably applied by browsers, so it isn't bundled — without it, the token's own fallback chain (`system-ui, -apple-system, sans-serif`) applies. For the exact intended look, declare the `@font-face` yourself at document level (outside any shadow root) — see [`fonts.css`](../ui/src/styles/fonts.css) for the ready-made rules.
 
 ## Usage
 

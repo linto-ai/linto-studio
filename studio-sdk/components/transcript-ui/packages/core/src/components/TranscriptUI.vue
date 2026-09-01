@@ -55,7 +55,13 @@ defineExpose({ core })
 </template>
 
 <style lang="css">
-@import "@linto-ai/transcript-ui-ui/styles/fonts.css";
+/* NOT fonts.css: a @font-face declared inside a shadow root isn't reliably
+ * applied by browsers (document.fonts never registers it) — dead weight in
+ * the webcomponent bundle specifically, which always runs shadow-DOM'd. The
+ * host declares --font-family's actual font at document level instead (see
+ * variables.css's token doc). A direct, non-shadow-DOM Vue embedder of this
+ * package (no such limitation) can still opt in: `@import
+ * "@linto-ai/transcript-ui-ui/styles/fonts.css"` themselves. */
 @import "@linto-ai/transcript-ui-ui/styles/variables.css";
 @import "@linto-ai/transcript-ui-ui/styles/base.css";
 @import "@linto-ai/transcript-ui-ui/styles/popover-list.css";
