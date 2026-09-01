@@ -5,9 +5,15 @@ import { TRANSCRIPTION_TAB, VERBATIM_TAB } from "./TabBar.constants"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useCore } from "../core"
 
-const props = defineProps<{
-  modelValue: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    modelValue: string
+    showVerbatim?: boolean
+  }>(),
+  {
+    showVerbatim: true,
+  },
+)
 
 const emit = defineEmits<{
   "update:modelValue": [value: string]
@@ -24,11 +30,15 @@ const tabs = computed<TabItem[]>(() => {
       label: t("tabs.transcription"),
       icon: "message-circle",
     },
-    {
-      value: VERBATIM_TAB,
-      label: t("tabs.verbatim"),
-      icon: "file-text",
-    },
+    ...(props.showVerbatim
+      ? [
+          {
+            value: VERBATIM_TAB,
+            label: t("tabs.verbatim"),
+            icon: "file-text",
+          },
+        ]
+      : []),
     ...services.map<TabItem>((service) => ({
       value: service.id,
       label: service.label.value,
@@ -44,7 +54,10 @@ function onSelect(value: string): void {
 </script>
 
 <template>
+  <!-- Nothing to switch between with a single tab (e.g. a live session with
+       verbatim hidden and no summaries) — no point showing the bar. -->
   <Tabs
+    v-if="tabs.length > 1"
     :tabs="tabs"
     :model-value="modelValue"
     @update:model-value="onSelect" />

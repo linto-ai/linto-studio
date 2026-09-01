@@ -17,9 +17,11 @@ import { useCore, type LLMService } from "../core"
 const props = withDefaults(
   defineProps<{
     showHeader?: boolean
+    showVerbatim?: boolean
   }>(),
   {
     showHeader: true,
+    showVerbatim: true,
   },
 )
 
@@ -31,9 +33,13 @@ const shownPanels = ref<string[]>([TRANSCRIPTION_TAB])
 // The ?? never actually triggers — every shownPanels mutation keeps at least one entry — it's just satisfying noUncheckedIndexedAccess.
 const activeTab = computed(() => shownPanels.value[0] ?? TRANSCRIPTION_TAB)
 
+// Guarded by showVerbatim: split shows verbatim alongside a service, so it
+// makes no sense (and shouldn't be reachable) wherever verbatim itself is
+// turned off.
 const isSplit = computed({
-  get: () => shownPanels.value.length > 1,
+  get: () => props.showVerbatim && shownPanels.value.length > 1,
   set: (value: boolean) => {
+    if (!props.showVerbatim) return
     shownPanels.value = value
       ? [...shownPanels.value, VERBATIM_TAB]
       : shownPanels.value.filter((id) => id !== VERBATIM_TAB)
@@ -103,6 +109,19 @@ watch(
   },
 )
 
+// showVerbatim is a prop, not user-driven state, so this fires rarely (a
+// host re-rendering with a different noVerbatim) — but if it flips to false
+// while verbatim is showing (primary or split), drop it rather than leave
+// a panel the host just said it doesn't want reachable.
+watch(
+  () => props.showVerbatim,
+  (canShow) => {
+    if (canShow) return
+    const withoutVerbatim = shownPanels.value.filter((id) => id !== VERBATIM_TAB)
+    shownPanels.value = withoutVerbatim.length > 0 ? withoutVerbatim : [TRANSCRIPTION_TAB]
+  },
+)
+
 watch(
   () => core.activeChannelId.value,
   () => {
@@ -146,6 +165,7 @@ function onTranslationChange(translationId: string) {
       @redo="core.transcriptionEditor?.redo()" />
     <TabBar
       :model-value="activeTab"
+      :show-verbatim="props.showVerbatim"
       @update:model-value="(tab) => (shownPanels = [tab])" />
     <SelectionActionBar v-if="showTranscription" />
     <main

@@ -22244,7 +22244,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   const _sfc_main$t = /* @__PURE__ */ defineComponent({
     __name: "TabBar",
     props: {
-      modelValue: { type: String }
+      modelValue: { type: String },
+      showVerbatim: { type: Boolean, default: true }
     },
     emits: ["update:modelValue"],
     setup(__props, { emit: __emit }) {
@@ -22260,11 +22261,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             label: t2("tabs.transcription"),
             icon: "message-circle"
           },
-          {
-            value: VERBATIM_TAB,
-            label: t2("tabs.verbatim"),
-            icon: "file-text"
-          },
+          ...props.showVerbatim ? [
+            {
+              value: VERBATIM_TAB,
+              label: t2("tabs.verbatim"),
+              icon: "file-text"
+            }
+          ] : [],
           ...services.map((service) => ({
             value: service.id,
             label: service.label.value,
@@ -22277,11 +22280,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         if (value !== props.modelValue) emit2("update:modelValue", value);
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(unref(Tabs), {
+        return tabs.value.length > 1 ? (openBlock(), createBlock(unref(Tabs), {
+          key: 0,
           tabs: tabs.value,
           "model-value": __props.modelValue,
           "onUpdate:modelValue": onSelect
-        }, null, 8, ["tabs", "model-value"]);
+        }, null, 8, ["tabs", "model-value"])) : createCommentVNode("", true);
       };
     }
   });
@@ -24484,7 +24488,8 @@ ${text2}` : text2;
   const _sfc_main$e = /* @__PURE__ */ defineComponent({
     __name: "Layout",
     props: {
-      showHeader: { type: Boolean, default: true }
+      showHeader: { type: Boolean, default: true },
+      showVerbatim: { type: Boolean, default: true }
     },
     setup(__props) {
       const props = __props;
@@ -24494,8 +24499,9 @@ ${text2}` : text2;
       const shownPanels = /* @__PURE__ */ ref([TRANSCRIPTION_TAB]);
       const activeTab = computed(() => shownPanels.value[0] ?? TRANSCRIPTION_TAB);
       const isSplit = computed({
-        get: () => shownPanels.value.length > 1,
+        get: () => props.showVerbatim && shownPanels.value.length > 1,
         set: (value) => {
+          if (!props.showVerbatim) return;
           shownPanels.value = value ? [...shownPanels.value, VERBATIM_TAB] : shownPanels.value.filter((id) => id !== VERBATIM_TAB);
         }
       });
@@ -24538,6 +24544,14 @@ ${text2}` : text2;
         }
       );
       watch(
+        () => props.showVerbatim,
+        (canShow) => {
+          if (canShow) return;
+          const withoutVerbatim = shownPanels.value.filter((id) => id !== VERBATIM_TAB);
+          shownPanels.value = withoutVerbatim.length > 0 ? withoutVerbatim : [TRANSCRIPTION_TAB];
+        }
+      );
+      watch(
         () => core.activeChannelId.value,
         () => {
           core.audio?.pause();
@@ -24576,8 +24590,9 @@ ${text2}` : text2;
           }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask", "can-undo", "can-redo"])) : createCommentVNode("", true),
           createVNode(_sfc_main$t, {
             "model-value": activeTab.value,
+            "show-verbatim": props.showVerbatim,
             "onUpdate:modelValue": _cache[4] || (_cache[4] = (tab) => shownPanels.value = [tab])
-          }, null, 8, ["model-value"]),
+          }, null, 8, ["model-value", "show-verbatim"]),
           showTranscription.value ? (openBlock(), createBlock(SelectionActionBar, { key: 1 })) : createCommentVNode("", true),
           createBaseVNode("main", {
             class: normalizeClass(["editor-body", { "editor-body--no-sidebar": panels.value.length > 1 }])
@@ -24660,8 +24675,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$e = "\n.editor-layout[data-v-ca7b1d66] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-ca7b1d66] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-ca7b1d66] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-ca7b1d66] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-ca7b1d66] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-ca7b1d66] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-ca7b1d66] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-ca7b1d66] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-ca7b1d66] {\n    grid-template-columns: 1fr;\n}\n}\n";
-  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-ca7b1d66"]]);
+  const _style_0$e = "\n.editor-layout[data-v-540cad68] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-540cad68] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-540cad68] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-540cad68] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-540cad68] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-540cad68] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-540cad68] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-540cad68] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-540cad68] {\n    grid-template-columns: 1fr;\n}\n}\n";
+  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-540cad68"]]);
   const _hoisted_1$d = {
     class: "editor-loading",
     role: "status",
@@ -24754,7 +24769,8 @@ ${text2}` : text2;
     __name: "TranscriptUI",
     props: {
       locale: { default: "fr", type: String },
-      noHeader: { type: Boolean, default: false }
+      noHeader: { type: Boolean, default: false },
+      noVerbatim: { type: Boolean, default: false }
     },
     setup(__props, { expose: __expose }) {
       const props = __props;
@@ -24775,8 +24791,9 @@ ${text2}` : text2;
         return openBlock(), createElementBlock("div", _hoisted_1$b, [
           unref(core).channels.size ? (openBlock(), createBlock(Layout, {
             key: 0,
-            "show-header": !props.noHeader
-          }, null, 8, ["show-header"])) : createCommentVNode("", true),
+            "show-header": !props.noHeader,
+            "show-verbatim": !props.noVerbatim
+          }, null, 8, ["show-header", "show-verbatim"])) : createCommentVNode("", true),
           unref(error) ? (openBlock(), createBlock(EditorErrorOverlay, {
             key: 1,
             message: unref(error)

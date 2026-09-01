@@ -12,10 +12,15 @@ const props = withDefaults(
   defineProps<{
     locale?: string
     noHeader?: boolean
+    // Hides the Verbatim tab (and the tab bar entirely once that's the only
+    // tab left — see TabBar.vue) — a live session has no finished verbatim
+    // to show, see SessionLiveNG.vue.
+    noVerbatim?: boolean
   }>(),
   {
     locale: "fr",
     noHeader: false,
+    noVerbatim: false,
   },
 )
 
@@ -48,7 +53,8 @@ defineExpose({ core })
   <div class="transcript-ui-root">
     <Layout
       v-if="core.channels.size"
-      :show-header="!props.noHeader" />
+      :show-header="!props.noHeader"
+      :show-verbatim="!props.noVerbatim" />
     <EditorErrorOverlay v-if="error" :message="error" />
     <EditorLoadingOverlay v-else-if="isLoading" />
   </div>
