@@ -129,10 +129,11 @@ const SAAS_ACTION_KEY = {
   "payment.succeeded": "payment_succeeded",
   "payment.failed": "payment_failed",
   "seats.changed": "seats_changed",
-  "billing.exempt.enabled": "exempt_enabled",
-  "billing.exempt.disabled": "exempt_disabled",
+  "org.mode.changed": "mode_changed",
+  "credits.granted": "credits_granted",
   "quota.exceeded": "quota_exceeded",
   "feature.denied": "feature_denied",
+  "credit.exhausted": "credit_exhausted",
   "subscription.suspended": "subscription_suspended",
   "billing.user.purged": "user_purged",
 }
@@ -415,6 +416,7 @@ export default {
       if (
         action === "quota.exceeded" ||
         action === "feature.denied" ||
+        action === "credit.exhausted" ||
         action === "subscription.suspended" ||
         action === "billing.user.purged"
       )
@@ -422,7 +424,7 @@ export default {
       if (
         action === "subscription.canceled" ||
         action === "subscription.ended" ||
-        action === "billing.exempt.disabled"
+        action === "org.mode.changed"
       )
         return "neutral"
       return "success"
@@ -450,13 +452,23 @@ export default {
         case "subscription.created":
         case "subscription.canceled":
         case "subscription.ended":
-        case "billing.exempt.enabled":
-        case "billing.exempt.disabled":
           return d.planKey || ""
+        case "org.mode.changed":
+          return `${d.fromMode || "?"} → ${d.toMode || "?"}${
+            d.reason ? ` · ${d.reason}` : ""
+          }`
+        case "credits.granted":
+          return `${d.minutes ?? "?"} ${this.$t(
+            "activity_list.saas.minutes_unit",
+          )}${d.reason ? ` · ${d.reason}` : ""}`
+        case "credit.exhausted":
+          return `${d.balance ?? 0}/${d.requested ?? "?"} ${this.$t(
+            "activity_list.saas.minutes_unit",
+          )}`
         case "quota.exceeded":
           return `${d.capability || ""}: ${Math.round(d.used || 0)}/${
             d.limit ?? "∞"
-          }${d.unit === "seconds" ? "s" : ""}`
+          }`
         case "feature.denied":
           return d.capability || ""
         case "subscription.suspended":

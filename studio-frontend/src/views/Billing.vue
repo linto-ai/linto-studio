@@ -11,9 +11,9 @@
 </template>
 
 <script>
-// Standalone /billing route. Subscription management primarily lives in the
-// organization settings page (OrganizationsUpdate) — this page is a direct alias
-// rendering the same panel.
+// Standalone /billing route. Subscription management lives in the organization
+// settings page (OrganizationsUpdate); this page renders the same panel and
+// becomes the Checkout / Portal return page in J2.
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import IsCloud from "@/components/atoms/IsCloud.vue"
 import SubscriptionPanel from "@/components-cloud/SubscriptionPanel.vue"

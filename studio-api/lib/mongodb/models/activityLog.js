@@ -222,16 +222,6 @@ class ActivityLog extends MongoModel {
     }
   }
 
-  // RGPD: drop every activity row attributed to a deleted user (hard delete).
-  async deleteByUser(userId) {
-    try {
-      return await this.mongoDeleteMany({ "user.id": String(userId) })
-    } catch (error) {
-      console.error("deleteByUser error:", error)
-      return error
-    }
-  }
-
   // RGPD: anonymize a deleted user's rows in place — strip the id + personal info
   // but keep the row so org-level KPIs (counts/durations) stay intact.
   async anonymizeByUser(userId) {

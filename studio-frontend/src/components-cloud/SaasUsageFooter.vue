@@ -1,6 +1,7 @@
 <template>
-  <!-- A compact usage REMINDER only. Subscription management lives in the org
-       settings page; clicking the footer takes you there. -->
+  <!-- A compact usage reminder. Subscription management lives in the org
+       settings page; clicking the footer takes you there. Loads only what any
+       member may read (catalog + usage summary). -->
   <button
     type="button"
     class="saas-usage-footer"
@@ -9,11 +10,13 @@
     <div class="saas-usage-footer__title">
       <span>{{ $t("billing.page.usage") }}</span>
       <span class="saas-usage-footer__plan" :class="{ paid: isPaid }">{{
-        planLabel || $t("billing.page.free_plan")
+        isUnmetered
+          ? $t("billing.mode." + mode)
+          : planLabel || $t("billing.page.free_plan")
       }}</span>
     </div>
 
-    <div class="saas-usage-footer__meter" v-if="isFree && primaryMeter">
+    <div class="saas-usage-footer__meter" v-if="!isUnmetered && primaryMeter">
       <div class="saas-usage-footer__meter-head">
         <span class="saas-usage-footer__meter-label">{{
           $t(primaryMeter.label)
@@ -25,16 +28,23 @@
       <div class="saas-usage-footer__bar">
         <div
           class="saas-usage-footer__bar-fill"
-          :class="{ full: primaryMeter.remaining <= 0 }"
-          :style="{ width: primaryMeter.percent + '%' }"></div>
+          :class="{ full: !primaryMeter.unlimited && primaryMeter.remaining <= 0 }"
+          :style="{
+            width: (primaryMeter.unlimited ? 100 : primaryMeter.percent) + '%',
+          }"></div>
       </div>
-      <div class="saas-usage-footer__reset" v-if="primaryMeter.resetAt">
+      <div
+        class="saas-usage-footer__reset"
+        v-if="primaryMeter.resetAt && !primaryMeter.unlimited">
         {{ $t("billing.reset_on", { date: formatDate(primaryMeter.resetAt) }) }}
       </div>
     </div>
 
-    <div v-else-if="!isFree" class="saas-usage-footer__premium">
-      ★ {{ $t("billing.feature.unlimited") }}
+    <div
+      v-if="live && !live.unmetered"
+      class="saas-usage-footer__live"
+      :class="{ low: live.lowBalance }">
+      {{ $t("billing.live.balance") }} : {{ fmtMinutes(live.balance) }}
     </div>
   </button>
 </template>
@@ -45,7 +55,14 @@ import { mapGetters, mapActions } from "vuex"
 export default {
   name: "SaasUsageFooter",
   computed: {
-    ...mapGetters("billing", ["isFree", "isPaid", "planLabel", "primaryMeter"]),
+    ...mapGetters("billing", [
+      "isPaid",
+      "isUnmetered",
+      "mode",
+      "planLabel",
+      "primaryMeter",
+      "live",
+    ]),
     ...mapGetters("organizations", {
       currentOrgScope: "getCurrentOrganizationScope",
     }),
@@ -63,7 +80,6 @@ export default {
     loadBilling() {
       if (this.currentOrgScope) this.refresh(this.currentOrgScope)
     },
-    // Subscription management lives in the org settings page.
     goToOrgSettings() {
       if (!this.currentOrgScope) return
       const target = {
@@ -81,12 +97,12 @@ export default {
       })
     },
     fmt(m, v) {
-      return m.kind === "duration" ? this.fmtDuration(v) : v
+      return m.unit === "minutes" ? this.fmtMinutes(v) : v
     },
-    fmtDuration(sec) {
-      sec = Math.round(sec || 0)
-      const h = Math.floor(sec / 3600)
-      const mn = Math.round((sec % 3600) / 60)
+    fmtMinutes(min) {
+      min = Math.round(min || 0)
+      const h = Math.floor(min / 60)
+      const mn = min % 60
       if (h > 0) return `${h}h${mn > 0 ? mn + "min" : ""}`
       return `${mn}min`
     },
@@ -106,7 +122,7 @@ export default {
 
 <style lang="scss" scoped>
 .saas-usage-footer {
-  // reset <button> defaults — this is a full-width clickable reminder card
+  // reset <button> defaults: this is a full-width clickable reminder card
   width: 100%;
   text-align: left;
   font: inherit;
@@ -140,7 +156,7 @@ export default {
     text-transform: none;
     letter-spacing: 0;
     color: var(--neutral-70);
-    &.premium {
+    &.paid {
       color: var(--primary-color);
     }
   }
@@ -174,9 +190,13 @@ export default {
     color: var(--neutral-60);
     margin-top: 0.25em;
   }
-  &__premium {
-    font-size: 0.78rem;
-    color: var(--neutral-70);
+  &__live {
+    font-size: 0.74rem;
+    color: var(--neutral-80);
+    &.low {
+      color: var(--error-color, #e5484d);
+      font-weight: 600;
+    }
   }
 }
 </style>

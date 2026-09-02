@@ -8,13 +8,11 @@
         <span class="bo-billing__v">
           <strong>{{ billing.planKey }}</strong>
           <span
-            v-if="isManaged"
-            class="bo-billing__tag bo-billing__tag--managed"
-            >{{ $t("billing.backoffice.managed") }}</span
+            v-if="billing.mode !== 'normal'"
+            class="bo-billing__tag"
+            :class="`bo-billing__tag--${billing.mode}`"
+            >{{ $t("billing.mode." + billing.mode) }}</span
           >
-          <span v-if="billing.billingExempt" class="bo-billing__tag">{{
-            $t("billing.page.comp")
-          }}</span>
         </span>
       </div>
       <div class="bo-billing__row">
@@ -27,58 +25,100 @@
           {{ fmt(m, m.used) }} / {{ m.limit == null ? "∞" : fmt(m, m.limit) }}
         </span>
       </div>
-    </div>
-
-    <!-- Managed mode: hosted customer, every gate bypassed. Deliberately shown
-         above the comp toggle: it answers a different question (do we host this
-         org?) and it overrides everything below it. -->
-    <div class="bo-billing__exempt">
-      <div class="bo-billing__exempt-text">
-        <strong>{{ $t("billing.backoffice.managed") }}</strong>
-        <p>{{ $t("billing.backoffice.managed_hint") }}</p>
+      <div class="bo-billing__row" v-if="live">
+        <span class="bo-billing__k">{{
+          $t("billing.backoffice.live_balance")
+        }}</span>
+        <span class="bo-billing__v">
+          {{ live.unmetered ? "∞" : fmtMinutes(live.balance) }}
+        </span>
       </div>
-      <Button
-        :variant="isManaged ? 'secondary' : 'primary'"
-        :loading="busy"
-        @click="toggleManaged">
-        {{
-          isManaged
-            ? $t("billing.backoffice.disable_managed")
-            : $t("billing.backoffice.enable_managed")
-        }}
-      </Button>
     </div>
 
-    <!-- Complete-free toggle: full Premium, unlimited (incl. API key), no billing -->
-    <div class="bo-billing__exempt">
-      <div class="bo-billing__exempt-text">
-        <strong>{{ $t("billing.backoffice.complete_free") }}</strong>
-        <p>{{ $t("billing.backoffice.complete_free_hint") }}</p>
+    <!-- Mode: normal (SaaS org), comp (offered access), managed (hosted customer) -->
+    <div class="bo-billing__block">
+      <div class="bo-billing__block-text">
+        <strong>{{ $t("billing.backoffice.mode") }}</strong>
+        <p>{{ $t("billing.backoffice.mode_hint") }}</p>
       </div>
-      <Button
-        :variant="isExempt ? 'secondary' : 'primary'"
-        :loading="busy"
-        @click="toggleExempt">
-        {{
-          isExempt
-            ? $t("billing.backoffice.disable_free")
-            : $t("billing.backoffice.enable_free")
-        }}
-      </Button>
+      <div class="bo-billing__inline">
+        <select v-model="modeInput" class="bo-billing__select">
+          <option v-for="m in MODES" :key="m" :value="m">
+            {{ $t("billing.mode." + m) }}
+          </option>
+        </select>
+        <Button
+          variant="primary"
+          :loading="busy"
+          :disabled="!billing || modeInput === billing.mode"
+          @click="saveMode">
+          {{ $t("apply") }}
+        </Button>
+      </div>
     </div>
 
-    <!-- Manual seat override (normally derived from membership). Meaningless on
-         a managed org, which is not billed per seat. -->
-    <div class="bo-billing__seats" v-if="!isExempt && !isManaged">
-      <span>{{ $t("billing.backoffice.set_seats") }}</span>
-      <input
-        type="number"
-        min="1"
-        v-model.number="seatsInput"
-        class="bo-billing__seats-input" />
-      <Button variant="secondary" :loading="busy" @click="saveSeats">{{
-        $t("apply")
-      }}</Button>
+    <!-- Live minutes grant, with a mandatory reason (traced in the activity log) -->
+    <div class="bo-billing__block">
+      <div class="bo-billing__block-text">
+        <strong>{{ $t("billing.backoffice.credits_title") }}</strong>
+        <p>{{ $t("billing.backoffice.credits_hint") }}</p>
+      </div>
+      <div class="bo-billing__inline">
+        <input
+          type="number"
+          min="1"
+          v-model.number="creditMinutes"
+          class="bo-billing__input bo-billing__input--num"
+          :placeholder="$t('billing.backoffice.credits_minutes')" />
+        <input
+          type="text"
+          v-model.trim="creditReason"
+          class="bo-billing__input"
+          :placeholder="$t('billing.backoffice.credits_reason')" />
+        <Button
+          variant="primary"
+          :loading="busy"
+          :disabled="!(creditMinutes > 0) || creditReason.length < 3"
+          @click="grantCredits">
+          {{ $t("billing.backoffice.credits_grant") }}
+        </Button>
+      </div>
+      <table v-if="lots.length" class="bo-billing__lots">
+        <thead>
+          <tr>
+            <th>{{ $t("billing.backoffice.lot_source") }}</th>
+            <th>{{ $t("billing.backoffice.lot_minutes") }}</th>
+            <th>{{ $t("billing.backoffice.lot_remaining") }}</th>
+            <th>{{ $t("billing.backoffice.lot_expires") }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="lot in lots" :key="lot._id">
+            <td>{{ lot.source }}<span v-if="lot.reason"> · {{ lot.reason }}</span></td>
+            <td>{{ fmtMinutes(lot.minutes) }}</td>
+            <td>{{ fmtMinutes(lot.remaining) }}</td>
+            <td>{{ formatDate(lot.expiresAt) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Manual seat override (normally derived from membership). Only a normal
+         org is billed per seat. -->
+    <div class="bo-billing__block" v-if="billing && billing.mode === 'normal'">
+      <div class="bo-billing__block-text">
+        <strong>{{ $t("billing.backoffice.set_seats") }}</strong>
+      </div>
+      <div class="bo-billing__inline">
+        <input
+          type="number"
+          min="1"
+          v-model.number="seatsInput"
+          class="bo-billing__input bo-billing__input--num" />
+        <Button variant="secondary" :loading="busy" @click="saveSeats">{{
+          $t("apply")
+        }}</Button>
+      </div>
     </div>
   </section>
 </template>
@@ -86,16 +126,19 @@
 <script>
 import {
   apiAdminGetOrgBilling,
-  apiAdminSetExempt,
   apiAdminSetSeats,
   apiAdminSetOrgMode,
+  apiAdminGrantCredits,
 } from "@/api/cloud"
 import Button from "@/components/atoms/Button.vue"
 
+const MODES = ["normal", "comp", "managed"]
+
 const METER_LABEL = {
-  "media.import.duration": "billing.meter.import",
-  "ai.insights.count": "billing.meter.ai",
-  "live.duration": "billing.meter.live",
+  "import.minutes": "billing.meter.import",
+  "ai.generations": "billing.meter.ai",
+  "ai.chat": "billing.meter.chat",
+  "api.calls": "billing.meter.api",
 }
 
 export default {
@@ -105,24 +148,34 @@ export default {
     organizationId: { type: String, required: true },
   },
   data() {
-    return { billing: null, busy: false, seatsInput: 1 }
+    return {
+      MODES,
+      billing: null,
+      busy: false,
+      seatsInput: 1,
+      modeInput: "normal",
+      creditMinutes: null,
+      creditReason: "",
+    }
   },
   computed: {
-    isExempt() {
-      return !!this.billing?.billingExempt
-    },
-    isManaged() {
-      return this.billing?.orgMode === "managed"
-    },
     meters() {
       const caps = this.billing?.usage?.capabilities || {}
-      return Object.entries(caps).map(([key, c]) => ({
-        key,
-        label: METER_LABEL[key] || key,
-        used: c.used,
-        limit: c.limit,
-        kind: (c.unit || "").includes("second") ? "duration" : "count",
-      }))
+      return Object.entries(caps)
+        .filter(([, c]) => c && c.type === "quota")
+        .map(([key, c]) => ({
+          key,
+          label: METER_LABEL[key] || key,
+          used: c.used,
+          limit: c.limit,
+          unit: c.unit,
+        }))
+    },
+    live() {
+      return this.billing?.usage?.live || null
+    },
+    lots() {
+      return this.billing?.lots || []
     },
   },
   mounted() {
@@ -131,29 +184,35 @@ export default {
   methods: {
     async load() {
       this.billing = await apiAdminGetOrgBilling(this.organizationId)
-      if (this.billing && typeof this.billing.seats === "number") {
-        this.seatsInput = this.billing.seats
+      if (this.billing) {
+        if (typeof this.billing.seats === "number")
+          this.seatsInput = this.billing.seats
+        this.modeInput = this.billing.mode || "normal"
       }
     },
-    async toggleManaged() {
+    async saveMode() {
       this.busy = true
       try {
-        await apiAdminSetOrgMode(
-          this.organizationId,
-          this.isManaged ? "saas" : "managed",
-          { message: this.$t("billing.backoffice.saved") },
-        )
+        await apiAdminSetOrgMode(this.organizationId, this.modeInput, {
+          message: this.$t("billing.backoffice.saved"),
+        })
         await this.load()
       } finally {
         this.busy = false
       }
     },
-    async toggleExempt() {
+    async grantCredits() {
       this.busy = true
       try {
-        await apiAdminSetExempt(this.organizationId, !this.isExempt, {
-          message: this.$t("billing.backoffice.saved"),
-        })
+        const res = await apiAdminGrantCredits(
+          this.organizationId,
+          { minutes: this.creditMinutes, reason: this.creditReason },
+          { message: this.$t("billing.backoffice.saved") },
+        )
+        if (res && res.granted) {
+          this.creditMinutes = null
+          this.creditReason = ""
+        }
         await this.load()
       } finally {
         this.busy = false
@@ -165,9 +224,7 @@ export default {
         await apiAdminSetSeats(
           this.organizationId,
           Math.max(1, this.seatsInput || 1),
-          {
-            message: this.$t("billing.backoffice.saved"),
-          },
+          { message: this.$t("billing.backoffice.saved") },
         )
         await this.load()
       } finally {
@@ -175,11 +232,27 @@ export default {
       }
     },
     fmt(m, v) {
-      if (m.kind !== "duration") return v
-      const sec = Math.round(v || 0)
-      const h = Math.floor(sec / 3600)
-      const mn = Math.round((sec % 3600) / 60)
-      return h > 0 ? `${h}h${mn > 0 ? mn + "min" : ""}` : `${mn}min`
+      return m.unit === "minutes" ? this.fmtMinutes(v) : v
+    },
+    fmtMinutes(min) {
+      min = Math.round(min || 0)
+      const neg = min < 0
+      min = Math.abs(min)
+      const h = Math.floor(min / 60)
+      const mn = min % 60
+      const s = h > 0 ? `${h}h${mn > 0 ? mn + "min" : ""}` : `${mn}min`
+      return neg ? `-${s}` : s
+    },
+    formatDate(iso) {
+      try {
+        return new Date(iso).toLocaleDateString(this.$i18n?.locale || "fr-FR", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+      } catch (e) {
+        return ""
+      }
     },
   },
 }
@@ -220,41 +293,64 @@ export default {
     border-radius: 999px;
     padding: 0.05em 0.5em;
     font-size: 0.72rem;
-
-    // managed reads as a deployment fact, not a commercial one: keep it
-    // visually distinct from the green "comp" tag.
+    // managed is a deployment fact, comp a commercial one: keep them apart.
     &--managed {
       background: var(--primary-color, #4a5fd9);
     }
   }
-  &__exempt {
-    display: flex;
-    align-items: center;
-    gap: 1em;
-    justify-content: space-between;
+  &__block {
     background: var(--neutral-10);
     border: 1px solid var(--neutral-30);
     border-radius: 8px;
     padding: 0.75em 1em;
     margin-bottom: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
     p {
       margin: 0.2em 0 0;
       font-size: 0.82rem;
       color: var(--neutral-60);
-      max-width: 520px;
+      max-width: 620px;
     }
   }
-  &__seats {
+  &__inline {
     display: flex;
     align-items: center;
     gap: 0.6em;
+    flex-wrap: wrap;
     font-size: 0.9rem;
   }
-  &__seats-input {
-    width: 80px;
+  &__select,
+  &__input {
     padding: 0.35em 0.5em;
     border: 1px solid var(--neutral-40);
     border-radius: 6px;
+    font: inherit;
+    background: var(--neutral-0, #fff);
+  }
+  &__input {
+    min-width: 220px;
+    &--num {
+      min-width: 0;
+      width: 100px;
+    }
+  }
+  &__lots {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    th,
+    td {
+      text-align: left;
+      padding: 0.35em 0.5em;
+      border-bottom: 1px solid var(--neutral-20);
+    }
+    th {
+      color: var(--neutral-60);
+      font-weight: 600;
+      font-size: 0.76rem;
+    }
   }
 }
 </style>

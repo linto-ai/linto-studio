@@ -62,8 +62,11 @@
             </div>
           </div>
         </router-link>
-        <!-- Creating an EXTRA organization is a paid capability in cloud mode
-             (the API returns 403 otherwise). Always rendered in OSS builds. -->
+        <!-- Creating an extra organization is a team-plan capability in cloud
+             mode. The backend gates it on the caller's PERSONAL org (the billing
+             subject); the front shows the lock from the CURRENT org's plan, which
+             is the same org for the common case and only a hint otherwise. Always
+             rendered in OSS builds. -->
         <HasEntitlement capability="organization.create">
           <div class="modal-switch-org__list__item new-org">
             <Button

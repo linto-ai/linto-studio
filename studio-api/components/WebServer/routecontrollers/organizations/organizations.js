@@ -20,12 +20,9 @@ async function createOrganization(req, res, next) {
   try {
     requireParam(req.body.name, OrganizationUnsupportedMediaType)
 
-    // PAID GATE (SaaS only): creating an EXTRA organization (a "workspace") is a
-    // paid-plan feature, layered on top of the route's requireOrganizationInitiatorAccess
-    // right. We bill against the caller's personal/master org (the subscription
-    // subject), since the new org has no plan yet. FAIL-CLOSED: when SaaS is on
-    // and we cannot resolve a billing subject, deny — a billing gate must never
-    // fail open. No-op in the OSS build (saas.enabled() === false). See lib/saas.
+    // SaaS gate: creating another organization is a Business capability. The
+    // subject is the caller's personal org (the new org has no plan yet).
+    // Fail-closed when SaaS is on and no personal org resolves. No-op in OSS.
     if (saas.enabled()) {
       let personalOrg = null
       try {

@@ -5,8 +5,6 @@ import {
   apiGetSubscriptions,
   apiCreateSubscription,
   apiCancelSubscription,
-  apiGetInvoices,
-  apiSetBillingProfile,
 } from "@/api/cloud"
 
 function currentOrg(rootGetters, orgId) {
@@ -36,14 +34,8 @@ export default {
     return data
   },
 
-  async fetchInvoices({ commit, rootGetters }, orgId) {
-    const organizationId = currentOrg(rootGetters, orgId)
-    if (!organizationId) return []
-    const invoices = await apiGetInvoices(organizationId)
-    commit("setInvoices", invoices || [])
-    return invoices
-  },
-
+  // Org admin only (the route is admin-guarded): dispatched by the subscription
+  // panel, never by the shared footer.
   async fetchSubscriptions({ commit, rootGetters }, orgId) {
     const organizationId = currentOrg(rootGetters, orgId)
     if (!organizationId) return null
@@ -55,44 +47,30 @@ export default {
     return subs
   },
 
+  // What every member may load: the catalog and the org's usage summary.
   async refresh({ commit, dispatch }, orgId) {
     commit("setLoading", true)
     try {
-      await Promise.all([
-        dispatch("fetchPlans"),
-        dispatch("fetchUsage", orgId),
-        dispatch("fetchSubscriptions", orgId),
-      ])
+      await Promise.all([dispatch("fetchPlans"), dispatch("fetchUsage", orgId)])
     } finally {
       commit("setLoading", false)
     }
   },
 
-  // Persist the org's legal billing profile (company name, address, VAT) on the
-  // Stripe customer so invoices are compliant. Called before upgrade in live mode.
-  async saveBillingProfile({ rootGetters }, payload = {}) {
-    const { orgId, ...profile } = payload
-    const organizationId = currentOrg(rootGetters, orgId)
-    if (!organizationId) return null
-    return apiSetBillingProfile(organizationId, profile)
-  },
-
-  // Subscribe the org to a paid plan. Returns { subscription, clientSecret };
-  // clientSecret is only set with real Stripe. No default planKey: with two paid
-  // plans in the grid, guessing one here would silently bill the wrong thing.
-  // Seats are derived server-side from membership, so `seats` is only a hint.
-  async upgrade({ dispatch, rootGetters }, payload = {}) {
-    const { planKey, seats = 1, orgId } = payload
+  // Subscribe the org to a paid plan. Returns { subscription, clientSecret }.
+  // Seats are derived server-side from membership. Checkout replaces this in J2.
+  async subscribe({ dispatch, rootGetters }, payload = {}) {
+    const { planKey, orgId } = payload
     if (!planKey) return null
     const organizationId = currentOrg(rootGetters, orgId)
     if (!organizationId) return null
-    const result = await apiCreateSubscription(organizationId, planKey, seats)
+    const result = await apiCreateSubscription(organizationId, planKey, 1)
     await dispatch("refresh", organizationId)
     return result
   },
 
-  // Cancel the org's current subscription (back to free). immediate=false ->
-  // cancel at period end (keeps premium until the period ends).
+  // Cancel at period end. Kept for the API; the UI hands this to the Stripe
+  // Customer Portal in J2.
   async cancel({ dispatch, state, rootGetters }, payload = {}) {
     const { immediate = false, orgId } = payload
     const sub = state.subscription

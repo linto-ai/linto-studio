@@ -4,8 +4,8 @@
       <h2 class="sub-panel__title">{{ $t("billing.page.title") }}</h2>
       <div
         class="sub-panel__badge"
-        :class="{ paid: isPaid, comp: billingExempt }">
-        <span v-if="billingExempt">★ {{ $t("billing.page.comp") }}</span>
+        :class="{ paid: isPaid, unmetered: isUnmetered }">
+        <span v-if="isUnmetered">★ {{ $t("billing.mode." + mode) }}</span>
         <span v-else-if="isPaid">★ {{ planLabel }}</span>
         <span v-else>{{ $t("billing.page.free_plan") }}</span>
       </div>
@@ -29,31 +29,6 @@
               }"
               :style="{ width: (m.unlimited ? 100 : m.percent) + '%' }"></div>
           </div>
-          <!-- Live (direct) breakdown: per-profile minutes + translation languages -->
-          <div
-            v-if="m.key === 'live.duration' && liveDetail"
-            class="billing-meter__detail">
-            <span v-if="liveDetail.channels != null">{{
-              $t("billing.live.channels", { n: liveDetail.channels })
-            }}</span>
-            <span
-              v-if="
-                liveDetail.translationLangs &&
-                liveDetail.translationLangs.length
-              "
-              >{{
-                $t("billing.live.translations", {
-                  langs: liveDetail.translationLangs.join(", "),
-                })
-              }}</span
-            >
-            <span
-              v-for="(secs, cat) in liveDetail.byProfile"
-              :key="cat"
-              class="billing-meter__chip">
-              {{ $t("billing.live.profile." + cat) }}: {{ fmtDuration(secs) }}
-            </span>
-          </div>
           <div class="billing-meter__reset" v-if="m.resetAt && !m.unlimited">
             {{ $t("billing.reset_on", { date: formatDate(m.resetAt) }) }}
           </div>
@@ -62,25 +37,51 @@
       <p v-else class="sub-panel__empty">{{ $t("billing.page.no_usage") }}</p>
     </div>
 
+    <!-- Live balance (prepaid minutes) -->
+    <div class="sub-panel__section" v-if="live">
+      <h3 class="sub-panel__h3">{{ $t("billing.live.title") }}</h3>
+      <p v-if="live.unmetered" class="sub-panel__empty">
+        {{ $t("billing.live.unmetered") }}
+      </p>
+      <template v-else>
+        <dl class="billing-detail">
+          <div class="billing-detail__row">
+            <dt>{{ $t("billing.live.balance") }}</dt>
+            <dd :class="{ 'billing-detail__warn': live.lowBalance }">
+              {{ fmtMinutes(live.balance) }}
+            </dd>
+          </div>
+          <div class="billing-detail__row" v-if="live.expiresAt">
+            <dt>{{ $t("billing.live.expires") }}</dt>
+            <dd>{{ formatDate(live.expiresAt) }}</dd>
+          </div>
+        </dl>
+        <p v-if="live.lowBalance" class="billing-plan__note">
+          {{ $t("billing.live.low") }}
+        </p>
+        <div class="billing-plan__row">
+          <Button
+            v-if="isOrgAdmin"
+            variant="primary"
+            :disabled="!live.purchasable"
+            :title="live.purchasable ? null : $t('billing.live.not_purchasable')"
+            @click="buyMinutes">
+            {{ $t("billing.live.buy") }}
+          </Button>
+        </div>
+      </template>
+    </div>
+
     <!-- Plan & management -->
     <div class="sub-panel__section">
       <h3 class="sub-panel__h3">{{ $t("billing.page.your_plan") }}</h3>
 
-      <!-- Comp / complete-free org: managed from the backoffice -->
-      <p v-if="billingExempt" class="sub-panel__comp">
-        {{ $t("billing.page.comp_hint") }}
+      <p v-if="isUnmetered" class="sub-panel__empty">
+        {{ $t("billing.page.unmetered_hint") }}
       </p>
 
-      <!-- FREE -->
       <div v-else-if="isFree" class="billing-plan">
         <p class="billing-plan__pitch">{{ $t("billing.upgrade_subtitle") }}</p>
-        <ul class="billing-features">
-          <li>{{ $t("billing.feature.unlimited") }}</li>
-          <li>{{ $t("billing.feature.collaboration") }}</li>
-          <li>{{ $t("billing.feature.speaker_id") }}</li>
-          <li>{{ $t("billing.feature.no_watermark") }}</li>
-          <li>{{ $t("billing.feature.api") }}</li>
-        </ul>
         <div class="billing-plan__row">
           <Button
             v-if="isOrgAdmin"
@@ -94,8 +95,10 @@
         </div>
       </div>
 
-      <!-- PAID (flat solo or per-seat team) -->
       <div v-else class="billing-plan">
+        <p class="billing-plan__pitch" v-if="currentPlan">
+          {{ currentPlan.description }}
+        </p>
         <dl class="billing-detail">
           <div class="billing-detail__row" v-if="isPerSeat">
             <dt>{{ $t("billing.page.seats") }}</dt>
@@ -114,63 +117,12 @@
             </dd>
           </div>
         </dl>
-        <div
-          class="billing-plan__row"
-          v-if="isOrgAdmin && subscription && !subscription.cancelAtPeriodEnd">
-          <Button
-            v-if="!confirmingCancel"
-            variant="secondary"
-            @click="confirmingCancel = true">
-            {{ $t("billing.page.cancel_sub") }}
+        <div class="billing-plan__row" v-if="isOrgAdmin">
+          <Button variant="secondary" @click="managePortal">
+            {{ $t("billing.page.manage") }}
           </Button>
-          <template v-else>
-            <span class="billing-plan__confirm">{{
-              $t("billing.page.cancel_confirm")
-            }}</span>
-            <Button variant="secondary" @click="confirmingCancel = false">{{
-              $t("billing.cancel")
-            }}</Button>
-            <Button
-              variant="secondary"
-              intent="destructive"
-              :loading="busy"
-              @click="doCancel">
-              {{ $t("billing.page.cancel_yes") }}
-            </Button>
-          </template>
         </div>
       </div>
-    </div>
-
-    <!-- Invoices -->
-    <div class="sub-panel__section" v-if="isOrgAdmin && invoices.length">
-      <h3 class="sub-panel__h3">{{ $t("billing.invoices.title") }}</h3>
-      <table class="sub-panel__invoices">
-        <thead>
-          <tr>
-            <th>{{ $t("billing.invoices.date") }}</th>
-            <th>{{ $t("billing.invoices.amount") }}</th>
-            <th>{{ $t("billing.invoices.status") }}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="inv in invoices" :key="inv.id">
-            <td>{{ formatDate(inv.created) }}</td>
-            <td>{{ fmtAmount(inv.amount, inv.currency) }}</td>
-            <td>{{ inv.status }}</td>
-            <td class="sub-panel__invoice-dl">
-              <a
-                v-if="inv.pdf || inv.url"
-                :href="inv.pdf || inv.url"
-                target="_blank"
-                rel="noopener">
-                {{ $t("billing.invoices.download") }}
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
     </div>
 
     <UpgradeModal v-if="showUpgrade" @close="onUpgradeClose" />
@@ -179,41 +131,40 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex"
+import { bus } from "@/main.js"
 import Button from "@/components/atoms/Button.vue"
 import UpgradeModal from "@/components-cloud/UpgradeModal.vue"
-
-const ADMIN = 6 // lib/dao/organization/roles: ADMIN
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 
 export default {
   name: "SubscriptionPanel",
   components: { Button, UpgradeModal },
   data() {
-    return { showUpgrade: false, busy: false, confirmingCancel: false }
+    return { showUpgrade: false }
   },
   computed: {
     ...mapGetters("billing", [
       "isFree",
       "isPaid",
       "isPerSeat",
+      "isUnmetered",
+      "mode",
       "planLabel",
+      "currentPlan",
       "meters",
       "subscription",
       "usage",
-      "invoices",
-      "liveDetail",
+      "live",
     ]),
     ...mapGetters("organizations", {
       currentOrgScope: "getCurrentOrganizationScope",
       userRoleInOrg: "getUserRoleInOrganization",
     }),
     isOrgAdmin() {
-      return (this.userRoleInOrg || 0) >= ADMIN
+      return (this.userRoleInOrg || 0) >= ORGANIZATION_ROLES.ADMINISTRATOR
     },
     seats() {
       return this.subscription?.seats || this.usage?.seats || 1
-    },
-    billingExempt() {
-      return !!this.subscription?.billingExempt || !!this.usage?.billingExempt
     },
     renewalDate() {
       return this.subscription?.currentPeriodEnd || null
@@ -228,24 +179,32 @@ export default {
     this.load()
   },
   methods: {
-    ...mapActions("billing", ["refresh", "cancel", "fetchInvoices"]),
+    ...mapActions("billing", ["refresh", "fetchSubscriptions"]),
     load() {
       if (!this.currentOrgScope) return
       this.refresh(this.currentOrgScope)
-      this.fetchInvoices(this.currentOrgScope)
-    },
-    async doCancel() {
-      this.busy = true
-      try {
-        await this.cancel({ immediate: false })
-        this.confirmingCancel = false
-      } finally {
-        this.busy = false
-      }
+      // Admin-guarded route: only ask for it when the caller can read it.
+      if (this.isOrgAdmin) this.fetchSubscriptions(this.currentOrgScope)
     },
     onUpgradeClose() {
       this.showUpgrade = false
       this.load()
+    },
+    // Stripe Customer Portal (invoices, card, cancellation) arrives in J2.
+    managePortal() {
+      bus.$emit("app_notif", {
+        status: "info",
+        message: this.$t("billing.page.portal_soon"),
+        timeout: 4000,
+      })
+    },
+    // Pack purchase through Stripe Checkout arrives in J2.
+    buyMinutes() {
+      bus.$emit("app_notif", {
+        status: "info",
+        message: this.$t("billing.live.buy_soon"),
+        timeout: 4000,
+      })
     },
     usedOfLimit(m) {
       return this.$t("billing.used_of", {
@@ -254,25 +213,14 @@ export default {
       })
     },
     fmt(m, v) {
-      return m.kind === "duration" ? this.fmtDuration(v) : v
+      return m.unit === "minutes" ? this.fmtMinutes(v) : v
     },
-    fmtDuration(sec) {
-      sec = Math.round(sec || 0)
-      const h = Math.floor(sec / 3600)
-      const mn = Math.round((sec % 3600) / 60)
+    fmtMinutes(min) {
+      min = Math.round(min || 0)
+      const h = Math.floor(min / 60)
+      const mn = min % 60
       if (h > 0) return `${h}h${mn > 0 ? mn + "min" : ""}`
       return `${mn}min`
-    },
-    fmtAmount(cents, currency) {
-      const v = (cents || 0) / 100
-      try {
-        return new Intl.NumberFormat(this.$i18n?.locale || "fr-FR", {
-          style: "currency",
-          currency: (currency || "eur").toUpperCase(),
-        }).format(v)
-      } catch (e) {
-        return `${v.toFixed(2)} ${(currency || "eur").toUpperCase()}`
-      }
     },
     formatDate(iso) {
       try {
@@ -312,11 +260,11 @@ export default {
     color: var(--neutral-80);
     font-weight: 600;
     font-size: 0.82rem;
-    &.premium {
+    &.paid {
       background: var(--primary-color);
       color: #fff;
     }
-    &.comp {
+    &.unmetered {
       background: var(--success-color, #30a46c);
       color: #fff;
     }
@@ -331,34 +279,10 @@ export default {
     margin: 0 0 0.75em;
     font-size: 1rem;
   }
-  &__empty,
-  &__comp {
+  &__empty {
     color: var(--neutral-60);
     font-size: 0.9rem;
     margin: 0;
-  }
-  &__invoices {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.88rem;
-    th,
-    td {
-      text-align: left;
-      padding: 0.45em 0.6em;
-      border-bottom: 1px solid var(--neutral-20);
-    }
-    th {
-      color: var(--neutral-60);
-      font-weight: 600;
-      font-size: 0.78rem;
-    }
-  }
-  &__invoice-dl {
-    text-align: right;
-    a {
-      color: var(--primary-color);
-      text-decoration: underline;
-    }
   }
 }
 
@@ -396,19 +320,6 @@ export default {
       opacity: 0.5;
     }
   }
-  &__detail {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4em;
-    margin-top: 0.35em;
-    font-size: 0.72rem;
-    color: var(--neutral-70);
-  }
-  &__chip {
-    background: var(--neutral-20);
-    border-radius: 4px;
-    padding: 0.05em 0.4em;
-  }
   &__reset {
     font-size: 0.72rem;
     color: var(--neutral-60);
@@ -429,31 +340,9 @@ export default {
     margin-top: 1em;
     flex-wrap: wrap;
   }
-  &__price {
-    font-weight: 600;
-    flex: 1;
-  }
-  &__note,
-  &__confirm {
+  &__note {
     color: var(--neutral-60);
     font-size: 0.85rem;
-  }
-}
-.billing-features {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  li {
-    position: relative;
-    padding: 0.25em 0 0.25em 1.5em;
-    font-size: 0.9rem;
-    &::before {
-      content: "✓";
-      position: absolute;
-      left: 0;
-      color: var(--success-color, #30a46c);
-      font-weight: 700;
-    }
   }
 }
 .billing-detail {

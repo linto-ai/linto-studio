@@ -1,79 +1,78 @@
-const logger = require(`${process.cwd()}/lib/logger/logger`)
 const saas = require(`${process.cwd()}/lib/saas`)
+const { SaasFeatureLocked } = require(
+  `${process.cwd()}/components/WebServer/error/exception/saas`,
+)
 
-// Resolve a value from `req` either by a dot-path string ("body.channels") or a
-// function (req) => value.
-function resolve(spec, req) {
+// Resolve a value from `req`: a dot-path string ("body.channels"), or a function
+// (req) => value, possibly async.
+async function resolve(spec, req) {
   if (typeof spec === "function") return spec(req)
   if (typeof spec === "string")
     return spec.split(".").reduce((acc, k) => (acc == null ? acc : acc[k]), req)
   return undefined
 }
 
-// Default org resolution: ONLY the URL org param, which the org-access
-// middleware has already authorized. We deliberately do NOT fall back to
-// req.body/req.query organizationId: that is attacker-controlled input the auth
-// chain never validated, so trusting it would let a caller gate against (and
-// pass on) a different org's plan. Conversation-/session-scoped routes that
-// don't carry organizationId in the URL MUST supply an explicit `orgFrom` that
-// derives the org from a server-validated source.
+// Only the URL org param, which the org-access middleware already authorized.
+// Never body or query: a caller could gate against another org's plan.
 function defaultOrg(req) {
   return (req.params && req.params.organizationId) || null
 }
 
 /**
- * Declarative entitlement guard. Add to a route definition:
+ * Declarative SaaS gate on a route:
  *
- *   requireEntitlement: "collaboration"                       // boolean cap
- *   requireEntitlement: { capability: "audio.quality",
- *                         valueFrom: "body.quality" }         // enum cap (value)
- *   requireEntitlement: { capability: "live.profiles",
- *                         valueFrom: (req) => <category> }    // computed value
- *   requireEntitlement: [ ...specs ]                          // all must pass
+ *   requireEntitlement: "collaboration"                                   boolean
+ *   requireEntitlement: { capability: "import.minutes", valueFrom: (req) => n }
+ *   requireEntitlement: { capability: "ai.chat", orgFrom: async (req) => orgId }
+ *   requireEntitlement: { liveAdmit: true, languagesFrom: (req) => n }    live balance
+ *   requireEntitlement: { capability: "x", methods: ["post"] }             only these verbs
+ *   requireEntitlement: [ ...specs ]                                      all must pass
  *
- * orgFrom / valueFrom / profileFrom = dot-path string into req, or (req)=>value.
- * Runs AFTER auth + org-access middlewares (router.js order), so
- * req.params.organizationId / req.payload.data.userId are populated.
- *
- * Gating a feature behind a plan is therefore: (1) add/flip the capability rule
- * in the plugin catalog + re-seed, (2) add this one flag on the route. The check
- * is fail-closed in the engine; this middleware is a NO-OP when the SaaS plugin
- * is absent (saas.enforce returns null), so the OSS build is unaffected.
+ * Runs after auth and org-access middlewares. Gating a feature is a rule in the
+ * plugin catalog plus this flag. No-op when the plugin is absent.
  */
 function build(spec) {
   const specs = Array.isArray(spec) ? spec : [spec]
   const normalized = specs
     .map((s) => (typeof s === "string" ? { capability: s } : s))
-    .filter((s) => s && s.capability)
+    .filter((s) => s && (s.capability || s.liveAdmit))
 
   return async (req, res, next) => {
     try {
+      if (!saas.enabled()) return next()
       for (const cfg of normalized) {
-        const orgId = cfg.orgFrom ? resolve(cfg.orgFrom, req) : defaultOrg(req)
+        if (
+          cfg.methods &&
+          !cfg.methods
+            .map((m) => m.toLowerCase())
+            .includes(req.method.toLowerCase())
+        )
+          continue
+        const orgId = cfg.orgFrom
+          ? await resolve(cfg.orgFrom, req)
+          : defaultOrg(req)
         if (!orgId) {
-          // No org to scope the plan against. This means the route declared
-          // requireEntitlement without a URL :organizationId and without an
-          // orgFrom -> a misconfiguration. We skip (don't 500 the request) but
-          // WARN loudly so the misdeclared gate is caught in prod logs rather
-          // than silently letting a paid feature through.
-          logger.warn(
-            `requireEntitlement(${cfg.capability}): no org resolved on ${req.method} ${req.originalUrl || req.url} — gate skipped (declare an orgFrom)`,
-          )
+          // A gate that cannot find its org is a misdeclared route. Fail closed.
+          throw new SaasFeatureLocked("No organization to gate against", {
+            reason: "no_org",
+            capability: cfg.capability || "live.minutes",
+          })
+        }
+        if (cfg.liveAdmit) {
+          const languages = cfg.languagesFrom
+            ? await resolve(cfg.languagesFrom, req)
+            : 1
+          await saas.liveAdmit({ orgId: String(orgId), languages })
           continue
         }
         const value =
-          cfg.valueFrom !== undefined ? resolve(cfg.valueFrom, req) : cfg.value
-        const profile =
-          cfg.profileFrom !== undefined
-            ? resolve(cfg.profileFrom, req)
-            : cfg.profile
-        // Throws SaasQuotaExceeded(402) / SaasFeatureLocked(403) on deny; no-op
-        // (returns null) when the plugin is absent.
+          cfg.valueFrom !== undefined
+            ? await resolve(cfg.valueFrom, req)
+            : cfg.value
         await saas.enforce({
           orgId: String(orgId),
           capability: cfg.capability,
           value,
-          profile,
         })
       }
       next()

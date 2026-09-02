@@ -14,6 +14,8 @@ import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
 import { isAtLeastSystemAdministrator } from "@/tools/platformRoles.js"
 
+const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
+
 const defaultComponents = {}
 
 const componentsWithoutHeader = {}
@@ -966,9 +968,10 @@ router.beforeEach(async (to, from, next) => {
       }
     }
 
-    // New accounts must finish onboarding (name their organization) before
-    // they can use the app. Backoffice stays reachable for platform admins.
+    // Cloud mode only: new accounts name their organization before using the
+    // app. Backoffice stays reachable for platform admins. Never on OSS.
     if (
+      IS_MODE_CLOUD &&
       store.getters["user/needsOnboarding"] &&
       to.name !== "onboarding" &&
       !to.meta?.backoffice
@@ -976,7 +979,10 @@ router.beforeEach(async (to, from, next) => {
       routerDebug("Redirect to onboarding wizard")
       return next({ name: "onboarding" })
     }
-    if (to.name === "onboarding" && !store.getters["user/needsOnboarding"]) {
+    if (
+      to.name === "onboarding" &&
+      (!IS_MODE_CLOUD || !store.getters["user/needsOnboarding"])
+    ) {
       return next({ name: "explore" })
     }
 

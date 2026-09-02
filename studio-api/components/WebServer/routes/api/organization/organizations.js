@@ -121,6 +121,8 @@ module.exports = (webserver) => {
       method: "post",
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
+      // SaaS: inviting a member is a Business capability. No-op in OSS.
+      requireEntitlement: "collaboration",
       controller: addUserInOrganization,
     },
     {
@@ -175,9 +177,6 @@ module.exports = (webserver) => {
       method: "post",
       requireAuth: true,
       requireOrganizationAdminAccess: true,
-      // SaaS: API access is a paid capability (catalog `api` = false on free).
-      // Declarative gate -> 403 SAAS_FEATURE_LOCKED on free; no-op in OSS.
-      requireEntitlement: "api",
       controller: createApiKey,
     },
     {

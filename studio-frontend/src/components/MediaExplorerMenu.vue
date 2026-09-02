@@ -28,13 +28,25 @@
           :selectedFolderId="isInboxActive ? 'inbox' : null"
           @select="handleInboxClick"
           @drop-media="handleInboxDrop" />
-        <FolderTreeNode
-          v-if="sessionEnable"
-          :folder="sessionsFolder"
-          :virtual="true"
-          icon="broadcast"
-          :selectedFolderId="isSessionsActive ? 'sessions' : null"
-          @select="handleSessionsClick" />
+        <!-- Session mode (SRT/RTMP streams, scheduling) is not part of the SaaS
+             plans: in cloud mode the entry stays visible with a lock and leads to
+             the live product page. Transparent in OSS builds. -->
+        <HasEntitlement v-if="sessionEnable" capability="live.sessions">
+          <FolderTreeNode
+            :folder="sessionsFolder"
+            :virtual="true"
+            icon="broadcast"
+            :selectedFolderId="isSessionsActive ? 'sessions' : null"
+            @select="handleSessionsClick" />
+          <template #locked>
+            <FolderTreeNode
+              :folder="sessionsFolder"
+              :virtual="true"
+              icon="lock"
+              :selectedFolderId="null"
+              @select="openLiveProduct" />
+          </template>
+        </HasEntitlement>
         <FolderTreeNode
           v-if="processingCount > 0"
           :folder="processingFolder"
@@ -86,6 +98,7 @@ import FolderTree from "@/components/FolderTree.vue"
 import FolderTreeNode from "@/components/FolderTreeNode.vue"
 import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
+import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
 
 export default {
   name: "MediaExplorerMenu",
@@ -95,6 +108,7 @@ export default {
     FolderTreeNode,
     ModalSwitchOrg,
     MediaExplorerMenuLabels,
+    HasEntitlement,
   },
   data() {
     return {
@@ -203,6 +217,9 @@ export default {
         .catch(() => {
           this.leavingExplore = false
         })
+    },
+    openLiveProduct() {
+      window.open(getEnv("VUE_APP_SAAS_LIVE_PRODUCT_URL"), "_blank", "noopener")
     },
     handleFavoritesClick() {
       this.clearSearch()

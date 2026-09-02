@@ -12,6 +12,7 @@ const docx = require(
 const llm = require(
   `${process.cwd()}/components/WebServer/controllers/llm/index`,
 )
+const saas = require(`${process.cwd()}/lib/saas`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 const { execFile } = require("child_process")
 const path = require("path")
@@ -318,10 +319,20 @@ async function handleLLMService(req, res, query, conversation, metadata) {
         isCurrent: true,
       }
 
+      // SaaS gate: one AI generation against the org's quota. No-op in OSS.
+      await saas.enforce({ orgId: organizationId, capability: "ai.generations", value: 1 })
+
       // V2: Call LLM API with generation payload (awaited for proper error handling)
       const result = await callLlmAPI(req, query, conversation, metadata, conversationExport, generationPayload)
 
       if (result.success) {
+        await saas.record({
+          orgId: organizationId,
+          userId: req.payload?.data?.userId,
+          capability: "ai.generations",
+          value: 1,
+          ref: { conversationId: conversation._id.toString(), jobId: result.jobId, serviceId },
+        })
         res.status(200).send({ status: "processing", processing: 0, organizationId: organizationId })
       } else {
         // Return error immediately so frontend can show notification

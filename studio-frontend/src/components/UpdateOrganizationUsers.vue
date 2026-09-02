@@ -2,15 +2,29 @@
   <section>
     <div class="flex row gap-medium">
       <h2 style="width: auto">{{ $t("organisation.organization_users") }}</h2>
-      <UserInvite
+      <!-- Inviting a member is a team-plan capability in cloud mode. Locked:
+           the button stays visible and opens the upgrade flow. -->
+      <HasEntitlement
         v-if="
           isAtLeastMaintainer || (isSystemAdministrator && isBackofficePage)
         "
-        @inviteUser="addToMembers"
-        @removeUser="removeFromMembers"
-        :currentUsers="orgaMembers"
-        :usersEmailPending="usersEmailPending"
-        :includeSelf="isBackofficePage"></UserInvite>
+        capability="collaboration">
+        <UserInvite
+          @inviteUser="addToMembers"
+          @removeUser="removeFromMembers"
+          :currentUsers="orgaMembers"
+          :usersEmailPending="usersEmailPending"
+          :includeSelf="isBackofficePage"></UserInvite>
+        <template #locked>
+          <Button
+            :label="$t('invite_user.button')"
+            icon="lock"
+            variant="secondary"
+            size="sm"
+            :title="$t('billing.feature_locked')"
+            @click="lockedInvite" />
+        </template>
+      </HasEntitlement>
     </div>
 
     <!--Organization Members -->
@@ -121,7 +135,7 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
 const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
-const UPLOADER = 2 // lib/dao/organization/roles: a billable seat starts at uploader
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 
 import { sortArray } from "@/tools/sortList.js"
 
@@ -138,6 +152,7 @@ import ModalRemoveUserFromOrganization from "@/components/ModalRemoveUserFromOrg
 import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
 import IsCloud from "@/components/atoms/IsCloud.vue"
 import MemberUsageTable from "@/components-cloud/MemberUsageTable.vue"
+import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
 
 export default {
   mixins: [orgaRoleMixin, platformRoleMixin],
@@ -179,11 +194,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("billing", ["isPerSeat", "currentPlan", "billingExempt"]),
-    // Only a PER-SEAT plan bills an extra seat on promotion. The flat solo plan
-    // has no seats at all, and a complimentary org is never billed.
+    ...mapGetters("billing", ["isPerSeat", "currentPlan", "isUnmetered"]),
+    // Only a per-seat plan bills an extra seat on promotion. The flat solo plan
+    // has no seats at all, and a comp or managed org is never billed.
     seatBilled() {
-      return IS_MODE_CLOUD && this.isPerSeat && !this.billingExempt
+      return IS_MODE_CLOUD && this.isPerSeat && !this.isUnmetered
     },
     seatPriceLabel() {
       const cents = this.currentPlan?.pricing?.amountCents
@@ -311,7 +326,11 @@ export default {
       const newRole = user.role
       // Premium org: promoting a member to a contributor role (>= uploader) adds
       // a billable seat. Make it explicit (prorated) before applying.
-      if (this.seatBilled && oldRole < UPLOADER && newRole >= UPLOADER) {
+      if (
+        this.seatBilled &&
+        oldRole < ORGANIZATION_ROLES.UPLOADER &&
+        newRole >= ORGANIZATION_ROLES.UPLOADER
+      ) {
         this.pendingPromo = { user, oldRole }
         return
       }
@@ -365,6 +384,15 @@ export default {
     async dispatchOrganization() {
       bus.$emit("user_orga_update")
     },
+    // Same event sendRequest emits on a 403 SAAS_FEATURE_LOCKED: opens the
+    // upgrade modal in v2-layout.
+    lockedInvite() {
+      bus.$emit("saas-upgrade-needed", {
+        code: "SAAS_FEATURE_LOCKED",
+        reason: "feature_disabled",
+        capability: "collaboration",
+      })
+    },
   },
   components: {
     UserInvite,
@@ -375,6 +403,7 @@ export default {
     OrgaRoleSelector,
     IsCloud,
     MemberUsageTable,
+    HasEntitlement,
   },
 }
 </script>

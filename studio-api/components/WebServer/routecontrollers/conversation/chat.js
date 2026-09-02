@@ -3,12 +3,11 @@ const debug = require("debug")(
 )
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const saas = require(`${process.cwd()}/lib/saas`)
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 
-const {
-  ConversationNotFound,
-} = require(
+const { ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
@@ -35,9 +34,8 @@ function buildTranscriptText(conversation) {
  * Load the latest completed summary for a conversation from LLM Gateway
  */
 async function loadLatestSummary(conversationId) {
-  const exports = await model.conversationExport.getByConvAndFormat(
-    conversationId,
-  )
+  const exports =
+    await model.conversationExport.getByConvAndFormat(conversationId)
   for (const exp of exports) {
     if (exp.status === "complete" && exp.jobId) {
       try {
@@ -145,9 +143,7 @@ async function listSessions(req, res, next) {
     // Enrich with message count via aggregation
     const enriched = await Promise.all(
       sessions.map(async (s) => {
-        const messages = await model.chatMessages.getBySession(
-          s._id.toString(),
-        )
+        const messages = await model.chatMessages.getBySession(s._id.toString())
         return {
           _id: s._id.toString(),
           title: s.title,
@@ -329,7 +325,9 @@ async function sendMessage(req, res, next) {
       return res.status(403).json({ error: "Not authorized" })
     }
     if (session.conversationId !== conversationId) {
-      return res.status(403).json({ error: "Session does not belong to this conversation" })
+      return res
+        .status(403)
+        .json({ error: "Session does not belong to this conversation" })
     }
 
     // 6. Guard: reject if session has no flavor configured
@@ -389,9 +387,7 @@ async function sendMessage(req, res, next) {
       } catch (e) {
         /* ignore */
       }
-      res.write(
-        `event: error\ndata: ${JSON.stringify({ error: errMsg })}\n\n`,
-      )
+      res.write(`event: error\ndata: ${JSON.stringify({ error: errMsg })}\n\n`)
       res.end()
       return
     }
@@ -448,6 +444,15 @@ async function sendMessage(req, res, next) {
 
       // Update session timestamp
       await model.chatSessions.updateTitle(sessionId, session.title)
+
+      // SaaS metering: one chat message answered. No-op in OSS.
+      await saas.record({
+        orgId: session.organizationId,
+        userId: req.payload.data.userId,
+        capability: "ai.chat",
+        value: 1,
+        ref: { conversationId, sessionId },
+      })
     }
 
     res.end()

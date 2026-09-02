@@ -1,11 +1,8 @@
 const Component = require(`../component.js`)
 
-// The private SaaS plugin is NOT a declared dependency: it is installed into the
-// image at deploy time (npm install <path-or-tarball> linto-saas). Declaring it
-// would put a machine-local `file:` path in the public lockfile and break CI.
-// This module is only ever required when "CloudService" is in COMPONENTS, so a
-// missing plugin means the operator asked for the SaaS build without shipping
-// it — fail loudly with something actionable rather than a bare MODULE_NOT_FOUND.
+// The private SaaS plugin is not a declared dependency: it is installed into the
+// image at deploy time. This module is only required when "CloudService" is in
+// COMPONENTS, so a missing package is an operator error, reported as such.
 let createPaymentProcessor
 try {
   ;({ createPaymentProcessor } = require("linto-saas"))
@@ -18,7 +15,6 @@ try {
   )
 }
 
-// Studio auth model, reused to secure the /cloud API (see buildGuards).
 const auth_middlewares = require(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )
@@ -29,8 +25,10 @@ const platform_access = require(
   `${process.cwd()}/components/WebServer/middlewares/access/platform`,
 )
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 const ROLE_MAP = {
   member: ROLES.MEMBER,
@@ -39,25 +37,24 @@ const ROLE_MAP = {
   admin: ROLES.ADMIN,
 }
 
-// Authorization guards injected into the plugin's /cloud router. The plugin sets
-// req.saasOrgId per route; these decide access using studio's identity model.
-// Without these, /cloud would be wide open (IDOR + unauthenticated billing ops).
+// Studio's identity model, injected into the plugin's /cloud router. The plugin
+// sets req.saasOrgId per route; these decide.
 function buildGuards() {
   return {
-    // express-jwt + payload population (array of middlewares). Denies invalid /
-    // missing tokens with 401 (surfaced by the plugin error handler via .status).
     authenticate: auth_middlewares.isAuthenticate,
 
-    // Caller must hold >= roleName in req.saasOrgId. Mirrors asAdminAccess: a
-    // backoffice platform sys-admin bypasses, otherwise the org membership/role
-    // check decides. access() calls next(err) on denial -> proper 403.
+    // Caller holds >= roleName in req.saasOrgId, or is a platform sys-admin.
     authorizeOrg: (roleName) => async (req, res, next) => {
       try {
+        const right = ROLE_MAP[roleName]
+        if (!right)
+          throw new Error(
+            `CloudService: unknown role "${roleName}" in authorizeOrg`,
+          )
         if (await platform_access.isSystemAdministrator(req)) {
           req.userRole = ROLES.ADMIN
           return next()
         }
-        const right = ROLE_MAP[roleName] || ROLES.ADMIN
         await organization_access.access(
           req,
           next,
@@ -70,18 +67,12 @@ function buildGuards() {
       }
     },
 
-    // Backoffice operations (comp/exempt, forced seat sync) -> platform sys-admin.
-    // NOTE: studio's isPlatformSystemAdministrator only grants when the request
-    // carries ?userScope=backoffice (see middlewares/access/platform.js). This is
-    // the studio convention for backoffice actions — the frontend's sendRequest
-    // adds userScope=backoffice automatically on /backoffice pages. Any caller of
-    // /cloud/admin/* MUST therefore run in backoffice scope, exactly like studio's
-    // own backoffice routes.
+    // Backoffice routes: platform sys-admin, which studio only grants with
+    // ?userScope=backoffice (the front adds it on /backoffice pages).
     authorizePlatformAdmin: platform_access.isPlatformSystemAdministrator,
 
-    // Billable seats are derived from org membership (members with role >=
-    // uploader, floored at 1). Returns null on any failure so the plugin falls
-    // back to the request-supplied seats rather than mis-billing.
+    // Billable seats = members with role >= uploader, floored at 1. null on
+    // failure so the plugin falls back to the request instead of mis-billing.
     resolveSeats: async (orgId) => {
       try {
         const orgs = await model.organizations.getById(orgId)
@@ -97,50 +88,56 @@ function buildGuards() {
   }
 }
 
+// "machine" for an API-key user, "user" otherwise. Cached by the plugin.
+async function resolveUserType(userId) {
+  const users = await model.users.getById(userId, true)
+  const type = users && users[0] && users[0].type
+  return type === USER_TYPE.M2M ? "machine" : "user"
+}
+
 /**
- * @description
- * Loads the private linto-saas plugin (entitlements engine, usage ledger,
- * Stripe billing) and mounts its routers. Enabled only when "CloudService" is
- * in process.env.COMPONENTS, so the open-source build is unaffected.
+ * Loads the private linto-saas plugin and mounts its routers. Enabled only when
+ * "CloudService" is in COMPONENTS, so the open-source build never loads it.
  *
- * The plugin connects mongoose to the SAME Mongo DB as studio (via the shared
- * DB_HOST/DB_PORT/DB_NAME env), storing its data in the saas_* collections.
- *
- * The /cloud JSON API is mounted BEHIND studio's auth guards (buildGuards) so
- * every org-scoped / backoffice route is authenticated and authorized. The
- * Stripe webhook router is mounted separately (raw body, Stripe-signature
- * verified) and is intentionally NOT behind JWT auth.
+ * The plugin opens its own mongoose connection to studio's Mongo (same env)
+ * and keeps its data in saas_* collections. /cloud runs behind studio's guards;
+ * /cloud/webhook is raw-body, Stripe-signed, outside JWT auth.
  */
 class CloudService extends Component {
   constructor(app) {
-    super(app, "WebServer") // Relies on a WebServer component to be registered
+    super(app, "WebServer")
 
     this.id = this.constructor.name
     this.app = app
 
-    // manageConnection:true (default) -> own mongoose connection to studio's DB.
-    // seedOnStart -> upsert the plan catalog on boot.
-    // SAAS_DEFAULT_PLAN_KEY is the plan an organization WITHOUT a subscription
-    // row falls back to. It defaults to the free plan, which is right in steady
-    // state and dangerous on the very first activation: every pre-existing
-    // organization on the deployment — including customers we host — would be
-    // downgraded to free quotas by a config change alone, silently, with users
-    // simply starting to get 402s. Point it at a permissive plan while
-    // migrating existing orgs, then set it back.
+    // SAAS_DEFAULT_PLAN_KEY is the plan an org WITHOUT a subscription row falls
+    // back to. Point it at a permissive plan on the first activation while the
+    // existing orgs are classified, then set it back (SPEC-SAAS.md §6).
     this.paymentProcessor = createPaymentProcessor({
       seedOnStart: true,
       defaultPlanKey: process.env.SAAS_DEFAULT_PLAN_KEY || undefined,
-      stripe: {}, // mode resolved from STRIPE_MODE / STRIPE_SECRET_KEY (fake by default)
+      stripe: {},
     })
 
-    // Product-life events (subscription lifecycle, payments, seats, comp toggle,
-    // quota/plan denials) -> studio's activity log. The plugin stays studio-
-    // agnostic: it only emits structured data; we enrich (org/user) and persist.
+    // Init runs in the background. A failure leaves the plugin loaded and every
+    // gate fail-closed (402/403 everywhere); make it impossible to miss.
+    this.paymentProcessor.on("error", (err) => {
+      logger.error(
+        `[saas] plugin init failed, every SaaS gate now denies: ${err && err.message}`,
+      )
+    })
+
+    // Billing events -> studio's activity log (backoffice "Facturation" tab).
     this.paymentProcessor.on("saas-event", (event) => {
       LogManager.logSaasEvent(event)
     })
 
-    // JSON API (behind studio auth guards) + Stripe webhook (raw body) routers.
+    // Machine-token API calls are counted by the plugin; studio only offers the
+    // slot after authentication (lib/saas.afterAuth).
+    this.paymentProcessor.hostAfterAuth = this.paymentProcessor.apiCallMeter({
+      resolveUserType,
+    })
+
     this.app.components.WebServer.express.use(
       "/cloud",
       this.paymentProcessor.apiRouter(buildGuards()),

@@ -13,6 +13,14 @@ const {
   `${process.cwd()}/components/WebServer/routecontrollers/conversation/chat.js`,
 )
 
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+
+// SaaS: the chat session carries the organization the message is billed to.
+const chatOrg = async (req) => {
+  const sessions = await model.chatSessions.getById(req.params.sessionId)
+  return sessions && sessions[0] ? sessions[0].organizationId : null
+}
+
 module.exports = (webserver) => {
   return [
     {
@@ -55,6 +63,7 @@ module.exports = (webserver) => {
       method: "post",
       requireAuth: true,
       requireConversationReadAccess: true,
+      requireEntitlement: { capability: "ai.chat", value: 1, orgFrom: chatOrg },
       controller: sendMessage,
     },
   ]

@@ -1,23 +1,38 @@
 {
   "billing": {
-    "beta": "Public Beta",
-    "premium": "Premium",
     "price_flat": "{price} / mois",
     "price_per_seat": "{price} / siège / mois",
     "used_of": "{used} sur {total}",
     "reset_on": "Reset le {date}",
     "upgrade_cta": "Passer pro",
-    "upgrade_title": "Passer à Premium",
-    "upgrade_subtitle": "Toute la valeur IA : résumés riches, identification des locuteurs et sorties éditables sans watermark.",
+    "upgrade_title": "Choisir une offre",
+    "upgrade_subtitle": "Des plafonds plus hauts, le travail en équipe et des minutes de live prépayées.",
+    "upgrade_pending_payment": "Abonnement créé, paiement à finaliser. Stripe Checkout arrive au prochain jalon.",
     "cancel": "Annuler",
-    "confirm_upgrade": "Passer pro",
-    "upgrade_done": "Bienvenue dans Premium !",
-    "limit_reached": "Vous avez atteint la limite de votre offre gratuite.",
-    "feature_locked": "Cette fonctionnalité est incluse dans une offre payante.",
+    "confirm_upgrade": "Souscrire",
+    "upgrade_done": "Bienvenue dans {plan} !",
+    "limit_reached": "Vous avez atteint la limite de votre offre.",
+    "feature_locked": "Cette fonctionnalité est incluse dans une offre équipe.",
+    "mode": {
+      "normal": "SaaS",
+      "comp": "Offert",
+      "managed": "Hébergement managé"
+    },
     "meter": {
       "import": "Imports",
-      "ai": "Analyses IA",
-      "live": "Direct"
+      "ai": "Générations IA",
+      "chat": "Messages chat",
+      "api": "Appels API"
+    },
+    "live": {
+      "title": "Minutes de live",
+      "balance": "Solde",
+      "expires": "Prochaine expiration",
+      "low": "Solde faible : un live demande au moins 10 minutes par langue pour démarrer.",
+      "buy": "Acheter des minutes",
+      "buy_soon": "Les packs de live s'achètent via Stripe Checkout (prochain jalon).",
+      "not_purchasable": "Les packs de live sont réservés aux offres payantes.",
+      "unmetered": "Les minutes de live ne sont pas comptées pour cette organisation."
     },
     "member_usage": {
       "title": "Usage par membre",
@@ -27,17 +42,9 @@
       "billable": "Siège facturé (rôle >= uploader)",
       "empty": "Aucun membre."
     },
-    "feature": {
-      "unlimited": "Usage mensuel généreux pour les imports & analyses IA",
-      "collaboration": "Catalogue d'analyses complet & qualité audio originale",
-      "speaker_id": "Identification des locuteurs",
-      "no_watermark": "Sans watermark, sorties éditables",
-      "api": "Accès API"
-    },
     "page": {
       "manage": "Gérer l'abonnement",
       "title": "Abonnement & usage",
-      "subtitle": "Votre offre, votre usage et les sièges de l'équipe.",
       "free_plan": "Gratuit",
       "usage": "Usage de la période",
       "your_plan": "Votre offre",
@@ -46,44 +53,9 @@
       "renews": "Renouvellement le",
       "status": "Statut",
       "cancels_at_period_end": "Résiliation en fin de période",
-      "comp": "Offert",
-      "comp_hint": "Cette organisation bénéficie d'un accès offert (complet, sans facturation). Géré depuis le backoffice.",
       "admin_only": "Seul un administrateur de l'organisation peut changer l'offre.",
-      "cancel_sub": "Résilier l'abonnement",
-      "cancel_confirm": "Résilier en fin de période ?",
-      "cancel_yes": "Confirmer la résiliation"
-    },
-    "card": {
-      "label": "Coordonnées de carte",
-      "pay": "Payer & passer pro",
-      "init_error": "Le formulaire de paiement n'a pas pu se charger. Fermez et réessayez."
-    },
-    "billing_profile": {
-      "label": "Coordonnées de facturation (affichées sur vos factures)",
-      "legal_name": "Raison sociale",
-      "address_line1": "Adresse",
-      "postal_code": "Code postal",
-      "city": "Ville",
-      "country": "Pays",
-      "vat_id": "N° de TVA (facultatif)",
-      "continue": "Continuer",
-      "error": "Impossible d'enregistrer les coordonnées de facturation"
-    },
-    "invoices": {
-      "title": "Factures",
-      "date": "Date",
-      "amount": "Montant",
-      "status": "Statut",
-      "download": "Télécharger"
-    },
-    "live": {
-      "channels": "{n} canal/canaux",
-      "translations": "Traduction : {langs}",
-      "profile": {
-        "external": "ASR externe",
-        "local-gpu": "GPU local",
-        "local-standard": "Local"
-      }
+      "unmetered_hint": "Cette organisation n'est pas comptée (offert ou managé). Géré depuis le backoffice.",
+      "portal_soon": "Factures, carte et résiliation passent par le portail client Stripe (prochain jalon)."
     },
     "seat_promo": {
       "seat": "1 siège",
@@ -97,16 +69,20 @@
       "title": "Abonnement (SaaS)",
       "plan": "Offre",
       "seats": "Sièges facturés",
-      "complete_free": "Accès offert (complete free)",
-      "complete_free_hint": "Business complet, tout illimité (imports, IA, direct) ET usage de la clé API illimité, sans facturation Stripe. Pour un usage interne ou des orgs partenaires qui connectent des services à ta plateforme.",
-      "enable_free": "Activer l'offert",
-      "disable_free": "Désactiver l'offert",
+      "live_balance": "Solde live",
+      "mode": "Mode de l'organisation",
+      "mode_hint": "SaaS : portes et facturation suivent l'offre. Offert : accès complet offert, rien de facturé. Hébergement managé : on héberge ce client, aucune porte, usage quand même mesuré.",
+      "credits_title": "Octroyer des minutes de live",
+      "credits_hint": "Ajoute un lot de minutes prépayées (expire dans 12 mois). Le motif est tracé dans le journal d'activité.",
+      "credits_minutes": "Minutes",
+      "credits_reason": "Motif",
+      "credits_grant": "Octroyer",
+      "lot_source": "Source",
+      "lot_minutes": "Octroyé",
+      "lot_remaining": "Restant",
+      "lot_expires": "Expire le",
       "set_seats": "Forcer les sièges",
-      "saved": "Enregistré",
-      "managed": "Hébergement managé",
-      "managed_hint": "On héberge ce client sur notre infra. Toutes les portes sont ouvertes : aucun quota, aucune fonctionnalité verrouillée, y compris celles ajoutées plus tard. Ce qu'il peut réellement lancer dépend uniquement des profils de transcription partagés avec son organisation. L'usage reste mesuré. À ne pas confondre avec l'accès offert, qui est un geste commercial sur une org SaaS ordinaire.",
-      "enable_managed": "Passer en managé",
-      "disable_managed": "Repasser en SaaS"
+      "saved": "Enregistré"
     }
   },
   "apply": "Appliquer",
@@ -149,13 +125,15 @@
         "payment_succeeded": "Paiement réussi",
         "payment_failed": "Échec de paiement",
         "seats_changed": "Sièges modifiés",
-        "exempt_enabled": "Mode offert activé",
-        "exempt_disabled": "Mode offert désactivé",
+        "mode_changed": "Mode de l'organisation modifié",
+        "credits_granted": "Minutes de live octroyées",
         "quota_exceeded": "Quota dépassé",
         "feature_denied": "Fonctionnalité bloquée",
+        "credit_exhausted": "Solde live épuisé",
         "subscription_suspended": "Abonnement suspendu",
         "user_purged": "Données utilisateur anonymisées"
-      }
+      },
+      "minutes_unit": "min"
     }
   },
   "session_list": {

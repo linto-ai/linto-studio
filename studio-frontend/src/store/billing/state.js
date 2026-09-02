@@ -1,8 +1,7 @@
 export default {
   plans: [],
-  subscription: null, // current org subscription doc (null => implicit free)
-  usage: null, // { planKey, seats, capabilities: {...} }
+  subscription: null, // current org subscription doc (org admin only)
+  usage: null, // { planKey, mode, seats, capabilities: {...}, live: {...} }
   usageByMember: null, // { planKey, seats, members: { userId: {cap:{used,events}} } }
-  invoices: [], // [{ id, created, amount, currency, status, pdf, url }]
   loading: false,
 }

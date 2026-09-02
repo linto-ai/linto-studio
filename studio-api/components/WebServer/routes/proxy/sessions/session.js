@@ -25,7 +25,6 @@ const {
   checkSessionMatchingOrganization,
   checkTemplateMatchingOrganization,
   checkChannelsSecurityLevel,
-  withLiveProfileGate,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -34,6 +33,22 @@ const { Unauthorized, UnauthorizedProxy } = require(
 )
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
+
+// Language-minutes a live will consume per minute: one per channel plus one per
+// translation on that channel. Drives the SaaS admission check.
+const liveLanguages = (req) => {
+  const channels = Array.isArray(req.body && req.body.channels)
+    ? req.body.channels
+    : []
+  const n = channels.reduce(
+    (sum, c) =>
+      sum +
+      1 +
+      (Array.isArray(c && c.translations) ? c.translations.length : 0),
+    0,
+  )
+  return n || 1
+}
 
 module.exports = (webServer) => {
   return {
@@ -190,6 +205,12 @@ module.exports = (webServer) => {
       {
         //quick meeting access (microphone)
         scrapPath: /^\/organizations\/[^/]+/,
+        // SaaS: a live needs prepaid minutes (admission on POST only). No-op in OSS.
+        requireEntitlement: {
+          liveAdmit: true,
+          methods: ["post"],
+          languagesFrom: liveLanguages,
+        },
         paths: [
           {
             path: "/organizations/:organizationId/quickMeeting/",
@@ -201,9 +222,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/quickMeeting/",
             method: ["post"],
             forwardParams: proxyForwardParams,
-            // SaaS gate on the chosen transcriber profile category
-            // (live.profiles), then the usual handler. NO-OP in OSS.
-            executeBeforeResult: withLiveProfileGate(createQuickMeeting),
+            executeBeforeResult: createQuickMeeting,
           },
           {
             path: "/organizations/:organizationId/quickMeeting/:id",
@@ -242,16 +261,14 @@ module.exports = (webServer) => {
       {
         // Meeting Manager access
         scrapPath: /^\/organizations\/[^/]+/,
+        // SaaS: the Sessions mode is not part of the plans (managed orgs only).
+        requireEntitlement: { capability: "live.sessions", methods: ["post"] },
         paths: [
           {
             path: "/organizations/:organizationId/sessions/",
             method: ["post"],
             forwardParams: proxyForwardParams,
-            // SaaS gate on the chosen transcriber profile category
-            // (live.profiles) before the session is created. NO-OP in OSS.
-            executeBeforeResult: withLiveProfileGate(
-              checkChannelsSecurityLevel,
-            ),
+            executeBeforeResult: checkChannelsSecurityLevel,
           },
           {
             path: "/organizations/:organizationId/sessions/:id",

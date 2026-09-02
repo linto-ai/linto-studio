@@ -19,7 +19,7 @@
           <th>{{ $t("billing.member_usage.seat") }}</th>
           <th>{{ $t("billing.meter.import") }}</th>
           <th>{{ $t("billing.meter.ai") }}</th>
-          <th>{{ $t("billing.meter.live") }}</th>
+          <th>{{ $t("billing.meter.chat") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -41,9 +41,9 @@
             >
             <span v-else class="member-usage__free">—</span>
           </td>
-          <td>{{ fmtDuration(m.import) }}</td>
+          <td>{{ fmtMinutes(m.import) }}</td>
           <td>{{ m.ai }}</td>
-          <td>{{ fmtDuration(m.live) }}</td>
+          <td>{{ m.chat }}</td>
         </tr>
       </tbody>
     </table>
@@ -56,9 +56,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
-
-// Org role threshold for a billable seat (lib/dao/organization/roles: UPLOADER).
-const UPLOADER = 2
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 
 export default {
   name: "MemberUsageTable",
@@ -84,10 +82,10 @@ export default {
           // UserInfoInline caller; undefined until allUsers loads (guarded in template).
           user: all.find((x) => x._id === m.userId),
           role: m.role,
-          isSeat: m.role >= UPLOADER,
-          import: (u["media.import.duration"] || {}).used || 0,
-          ai: (u["ai.insights.count"] || {}).used || 0,
-          live: (u["live.duration"] || {}).used || 0,
+          isSeat: m.role >= ORGANIZATION_ROLES.UPLOADER,
+          import: (u["import.minutes"] || {}).used || 0,
+          ai: (u["ai.generations"] || {}).used || 0,
+          chat: (u["ai.chat"] || {}).used || 0,
         }
       })
     },
@@ -113,10 +111,10 @@ export default {
       this.fetchUsageByMember(this.currentOrgScope)
       this.loadCurrentOrganizationAllUsers()
     },
-    fmtDuration(sec) {
-      sec = Math.round(sec || 0)
-      const h = Math.floor(sec / 3600)
-      const mn = Math.round((sec % 3600) / 60)
+    fmtMinutes(min) {
+      min = Math.round(min || 0)
+      const h = Math.floor(min / 60)
+      const mn = min % 60
       if (h > 0) return `${h}h${mn > 0 ? mn + "min" : ""}`
       return `${mn}min`
     },

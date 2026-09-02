@@ -1,23 +1,38 @@
 {
   "billing": {
-    "beta": "Public Beta",
-    "premium": "Premium",
     "price_flat": "{price} / month",
     "price_per_seat": "{price} / seat / month",
     "used_of": "{used} of {total}",
     "reset_on": "Resets on {date}",
     "upgrade_cta": "Go Pro",
-    "upgrade_title": "Upgrade to Premium",
-    "upgrade_subtitle": "Get the full AI value: rich summaries, speaker ID and clean, editable output.",
+    "upgrade_title": "Choose a plan",
+    "upgrade_subtitle": "Higher fair-use limits, team features and prepaid live minutes.",
+    "upgrade_pending_payment": "Subscription created, payment to complete. Stripe Checkout arrives with the next milestone.",
     "cancel": "Cancel",
-    "confirm_upgrade": "Upgrade",
-    "upgrade_done": "Welcome to Premium!",
-    "limit_reached": "You've reached your free plan limit.",
-    "feature_locked": "This feature is included in a paid plan.",
+    "confirm_upgrade": "Subscribe",
+    "upgrade_done": "Welcome to {plan}!",
+    "limit_reached": "You've reached the limit of your plan.",
+    "feature_locked": "This feature is included in a team plan.",
+    "mode": {
+      "normal": "SaaS",
+      "comp": "Complimentary",
+      "managed": "Managed hosting"
+    },
     "meter": {
       "import": "Imports",
-      "ai": "AI insights",
-      "live": "Live"
+      "ai": "AI generations",
+      "chat": "Chat messages",
+      "api": "API calls"
+    },
+    "live": {
+      "title": "Live minutes",
+      "balance": "Balance",
+      "expires": "Next expiry",
+      "low": "Low balance: a live needs at least 10 minutes per language to start.",
+      "buy": "Buy minutes",
+      "buy_soon": "Live packs are bought through Stripe Checkout (next milestone).",
+      "not_purchasable": "Live packs are available on paid plans.",
+      "unmetered": "Live minutes are not metered for this organization."
     },
     "member_usage": {
       "title": "Usage per member",
@@ -27,17 +42,9 @@
       "billable": "Billable seat (role >= uploader)",
       "empty": "No members yet."
     },
-    "feature": {
-      "unlimited": "Generous monthly fair-use for imports & AI insights",
-      "collaboration": "Full insight catalog & original audio quality",
-      "speaker_id": "Speaker identification",
-      "no_watermark": "No watermark, editable output",
-      "api": "API access"
-    },
     "page": {
       "manage": "Manage subscription",
       "title": "Subscription & usage",
-      "subtitle": "Your plan, usage and team seats.",
       "free_plan": "Free",
       "usage": "Usage this period",
       "your_plan": "Your plan",
@@ -47,43 +54,8 @@
       "status": "Status",
       "cancels_at_period_end": "Cancels at period end",
       "admin_only": "Only an organization admin can change the plan.",
-      "cancel_sub": "Cancel subscription",
-      "cancel_confirm": "Cancel at period end?",
-      "cancel_yes": "Confirm cancel",
-      "comp": "Complimentary",
-      "comp_hint": "This organization is on a complimentary plan (full access, no billing). Managed from the backoffice."
-    },
-    "card": {
-      "label": "Card details",
-      "pay": "Pay & upgrade",
-      "init_error": "Payment form could not be loaded. Please close and try again."
-    },
-    "billing_profile": {
-      "label": "Billing details (shown on your invoices)",
-      "legal_name": "Company / legal name",
-      "address_line1": "Address",
-      "postal_code": "Postal code",
-      "city": "City",
-      "country": "Country",
-      "vat_id": "VAT number (optional)",
-      "continue": "Continue",
-      "error": "Could not save billing details"
-    },
-    "invoices": {
-      "title": "Invoices",
-      "date": "Date",
-      "amount": "Amount",
-      "status": "Status",
-      "download": "Download"
-    },
-    "live": {
-      "channels": "{n} channel(s)",
-      "translations": "Translation: {langs}",
-      "profile": {
-        "external": "External ASR",
-        "local-gpu": "Local GPU",
-        "local-standard": "Local"
-      }
+      "unmetered_hint": "This organization is not metered (complimentary or managed). Managed from the backoffice.",
+      "portal_soon": "Invoices, card and cancellation move to the Stripe customer portal (next milestone)."
     },
     "seat_promo": {
       "seat": "1 seat",
@@ -97,16 +69,20 @@
       "title": "Subscription (SaaS)",
       "plan": "Plan",
       "seats": "Billable seats",
-      "complete_free": "Complimentary access (complete free)",
-      "complete_free_hint": "Full Business, unlimited everything (imports, AI, live) AND unlimited API-key usage, with no Stripe billing. For internal use or partner orgs connecting services to your platform.",
-      "enable_free": "Enable complimentary",
-      "disable_free": "Disable complimentary",
+      "live_balance": "Live balance",
+      "mode": "Organization mode",
+      "mode_hint": "SaaS: gates and billing follow the plan. Complimentary: full access offered, nothing billed. Managed hosting: we host this customer, no gate at all, usage still measured.",
+      "credits_title": "Grant live minutes",
+      "credits_hint": "Adds a lot of prepaid live minutes (12-month expiry). The reason is recorded in the activity log.",
+      "credits_minutes": "Minutes",
+      "credits_reason": "Reason",
+      "credits_grant": "Grant",
+      "lot_source": "Source",
+      "lot_minutes": "Granted",
+      "lot_remaining": "Remaining",
+      "lot_expires": "Expires",
       "set_seats": "Override seats",
-      "saved": "Saved",
-      "managed": "Managed hosting",
-      "managed_hint": "We host this customer on our own infrastructure. Every gate is open: no quotas, no locked features, including ones added later. What it can actually run depends only on the transcriber profiles shared with its organization. Usage is still measured. Not to be confused with complimentary access, which is a commercial gesture on an ordinary SaaS org.",
-      "enable_managed": "Switch to managed",
-      "disable_managed": "Back to SaaS"
+      "saved": "Saved"
     }
   },
   "apply": "Apply",
@@ -148,13 +124,15 @@
         "payment_succeeded": "Payment succeeded",
         "payment_failed": "Payment failed",
         "seats_changed": "Seats changed",
-        "exempt_enabled": "Complete-free enabled",
-        "exempt_disabled": "Complete-free disabled",
+        "mode_changed": "Organization mode changed",
+        "credits_granted": "Live minutes granted",
         "quota_exceeded": "Quota exceeded",
         "feature_denied": "Feature blocked",
+        "credit_exhausted": "Live balance exhausted",
         "subscription_suspended": "Subscription suspended",
         "user_purged": "User data anonymized"
-      }
+      },
+      "minutes_unit": "min"
     }
   },
   "session_list": {

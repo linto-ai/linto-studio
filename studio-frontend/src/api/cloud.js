@@ -7,7 +7,7 @@ import { getEnv } from "@/tools/getEnv"
 const CLOUD_API =
   getEnv("VUE_APP_CONVO_API").replace(/\/api\/?$/, "") + "/cloud"
 
-// GET /cloud/plans -> [{ planKey, displayName, pricing, entitlements }]
+// GET /cloud/plans -> [{ planKey, displayName, description, pricing, entitlements }]
 export async function apiGetPlans(notif = null) {
   const res = await sendRequest(
     `${CLOUD_API}/plans`,
@@ -18,7 +18,7 @@ export async function apiGetPlans(notif = null) {
   return res?.data
 }
 
-// GET /cloud/usage/:orgId -> { planKey, seats, capabilities: {...} }
+// GET /cloud/usage/:orgId -> { planKey, mode, seats, capabilities, live }
 export async function apiGetUsage(organizationId, notif = null) {
   const res = await sendRequest(
     `${CLOUD_API}/usage/${organizationId}`,
@@ -40,7 +40,18 @@ export async function apiGetUsageByMember(organizationId, notif = null) {
   return res?.data
 }
 
-// GET /cloud/subscriptions?organizationId=... -> [subscription]
+// GET /cloud/credits/:orgId -> { balance, expiresAt, lowBalance, lots }
+export async function apiGetCredits(organizationId, notif = null) {
+  const res = await sendRequest(
+    `${CLOUD_API}/credits/${organizationId}`,
+    { method: "get" },
+    {},
+    notif,
+  )
+  return res?.data
+}
+
+// GET /cloud/subscriptions?organizationId=... -> [subscription] (org admin)
 export async function apiGetSubscriptions(organizationId, notif = null) {
   const res = await sendRequest(
     `${CLOUD_API}/subscriptions`,
@@ -52,7 +63,7 @@ export async function apiGetSubscriptions(organizationId, notif = null) {
 }
 
 // POST /cloud/subscriptions { organizationId, planKey, seats }
-// -> { subscription, clientSecret }
+// -> { subscription, clientSecret }. Replaced by Checkout in J2.
 export async function apiCreateSubscription(
   organizationId,
   planKey,
@@ -63,22 +74,6 @@ export async function apiCreateSubscription(
     `${CLOUD_API}/subscriptions`,
     { method: "post" },
     { organizationId, planKey, seats },
-    notif,
-  )
-  return res?.data
-}
-
-// PUT /cloud/subscriptions/billing-profile { organizationId, legalName, email?, address, vatId? }
-// Persist legal billing details on the Stripe customer (compliant invoices).
-export async function apiSetBillingProfile(
-  organizationId,
-  profile,
-  notif = null,
-) {
-  const res = await sendRequest(
-    `${CLOUD_API}/subscriptions/billing-profile`,
-    { method: "put" },
-    { organizationId, ...profile },
     notif,
   )
   return res?.data
@@ -95,21 +90,10 @@ export async function apiCancelSubscription(
   return res?.data
 }
 
-// GET /cloud/invoices/:orgId -> [{ id, created, amount, currency, status, pdf, url }]
-export async function apiGetInvoices(organizationId, notif = null) {
-  const res = await sendRequest(
-    `${CLOUD_API}/invoices/${organizationId}`,
-    { method: "get" },
-    {},
-    notif,
-  )
-  return res?.data
-}
-
 // --- Backoffice (platform sys-admin; sendRequest adds userScope=backoffice on
 // /backoffice pages) ---
 
-// GET /cloud/admin/orgs/:orgId -> { planKey, seats, billingExempt, subscription, usage }
+// GET /cloud/admin/orgs/:orgId -> { planKey, seats, mode, subscription, usage, lots }
 export async function apiAdminGetOrgBilling(organizationId, notif = null) {
   const res = await sendRequest(
     `${CLOUD_API}/admin/orgs/${organizationId}`,
@@ -120,18 +104,7 @@ export async function apiAdminGetOrgBilling(organizationId, notif = null) {
   return res?.data
 }
 
-// POST /cloud/admin/orgs/:orgId/exempt { exempt } -> updated subscription
-export async function apiAdminSetExempt(organizationId, exempt, notif = null) {
-  const res = await sendRequest(
-    `${CLOUD_API}/admin/orgs/${organizationId}/exempt`,
-    { method: "post" },
-    { exempt },
-    notif,
-  )
-  return res?.data
-}
-
-// POST /cloud/admin/orgs/:orgId/seats { seats } -> { updated, seats }
+// POST /cloud/admin/orgs/:orgId/mode { mode: normal|comp|managed } -> { subscription }
 export async function apiAdminSetOrgMode(organizationId, mode, notif = null) {
   const res = await sendRequest(
     `${CLOUD_API}/admin/orgs/${organizationId}/mode`,
@@ -142,6 +115,22 @@ export async function apiAdminSetOrgMode(organizationId, mode, notif = null) {
   return res?.data
 }
 
+// POST /cloud/admin/orgs/:orgId/credits { minutes, reason } -> { granted, balance }
+export async function apiAdminGrantCredits(
+  organizationId,
+  { minutes, reason },
+  notif = null,
+) {
+  const res = await sendRequest(
+    `${CLOUD_API}/admin/orgs/${organizationId}/credits`,
+    { method: "post" },
+    { minutes, reason },
+    notif,
+  )
+  return res?.data
+}
+
+// POST /cloud/admin/orgs/:orgId/seats { seats } -> { updated, seats }
 export async function apiAdminSetSeats(organizationId, seats, notif = null) {
   const res = await sendRequest(
     `${CLOUD_API}/admin/orgs/${organizationId}/seats`,

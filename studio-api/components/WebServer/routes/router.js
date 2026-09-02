@@ -31,6 +31,7 @@ const platform_middlewares = require(
 const entitlement_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/entitlement.js`,
 )
+const saas = require(`${process.cwd()}/lib/saas`)
 
 const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
@@ -83,7 +84,11 @@ const disableAuthIfDev = (route) => {
 const loadMiddlewares = (route) => {
   const middlewares = []
 
-  if (route.requireAuth) middlewares.push(auth_middlewares.isAuthenticate)
+  if (route.requireAuth) {
+    middlewares.push(auth_middlewares.isAuthenticate)
+    // SaaS slot right after authentication (API call metering). No-op in OSS.
+    middlewares.push(saas.afterAuth())
+  }
   if (route.requireRefresh) middlewares.push(auth_middlewares.refresh_token)
 
   if (route.requireSuperAdmin)
@@ -146,9 +151,8 @@ const loadMiddlewares = (route) => {
   if (route.requireUserVisibility)
     middlewares.push(user_middlewares.isVisibility)
 
-  // SaaS plan gate (declarative). Appended LAST so auth + org-access middlewares
-  // have already set req.payload.data.userId / req.params.organizationId / role.
-  // NO-OP when the linto-saas plugin is absent (OSS build).
+  // SaaS plan gate (declarative), last so auth and org access already ran.
+  // No-op when the linto-saas plugin is absent.
   if (route.requireEntitlement !== undefined)
     middlewares.push(entitlement_middlewares.build(route.requireEntitlement))
 

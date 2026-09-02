@@ -1,26 +1,24 @@
-// Thin, guarded bridge to the private `linto-saas` plugin. Every call is a
-// NO-OP when the plugin is absent (open-source build) or not yet loaded, so the
-// OSS core behaves exactly as before. SaaS mode = the CloudService component is
-// in COMPONENTS and the `linto-saas` package is installed.
+// Bridge to the private `linto-saas` plugin. Every function is a no-op when the
+// plugin is absent (open-source build) so the core behaves exactly as before.
+// SaaS mode = CloudService in COMPONENTS and the `linto-saas` package installed.
 const { SaasQuotaExceeded, SaasFeatureLocked } = require(
   `${process.cwd()}/components/WebServer/error/exception/saas`,
 )
 
 let mod = null
 try {
-  // Optional dependency: require may legitimately fail in the OSS build.
   mod = require("linto-saas")
 } catch (e) {
   mod = null
 }
 
-// The running PaymentProcessor instance, or null if SaaS is off.
+// The running PaymentProcessor, or null when SaaS is off.
 function plugin() {
   if (!mod) return null
   try {
     return mod.getInstance()
   } catch (e) {
-    return null // created lazily by CloudService; not ready yet
+    return null
   }
 }
 
@@ -28,54 +26,63 @@ function enabled() {
   return plugin() != null
 }
 
-// Gate a call site. Throws a studio error (402/403) on deny, mapped to the
-// upgrade CTA by the front-end. No-op when SaaS is off.
-async function enforce({ orgId, capability, value, profile }) {
+const PAYMENT_REQUIRED = new Set(["quota_exceeded", "credit_exhausted"])
+
+function throwDenied(verdict, capability) {
+  const extras = {
+    reason: verdict.reason,
+    capability: verdict.capability || capability,
+    remaining: verdict.remaining != null ? verdict.remaining : null,
+  }
+  if (PAYMENT_REQUIRED.has(verdict.reason)) {
+    throw new SaasQuotaExceeded(`Quota exceeded: ${capability}`, extras)
+  }
+  throw new SaasFeatureLocked(`Not on your plan: ${capability}`, extras)
+}
+
+// Gate a call site. Throws 402 (quota, credit) or 403 (feature) on deny.
+// Fail-closed inside the plugin: an internal error denies.
+async function enforce({ orgId, capability, value }) {
   const pp = plugin()
   if (!pp) return null
-  const v = await pp.entitlements.checkEntitlement({
-    orgId,
-    capability,
-    value,
-    profile,
-  })
-  if (!v.allowed) {
-    const extras = {
-      reason: v.reason,
-      capability: v.capability,
-      remaining: v.remaining,
-    }
-    if (v.reason === "quota_exceeded") {
-      throw new SaasQuotaExceeded(`Quota exceeded: ${capability}`, extras)
-    }
-    throw new SaasFeatureLocked(`Not on your plan: ${capability}`, extras)
-  }
+  const v = await pp.entitlements.check({ orgId, capability, value })
+  if (!v.allowed) throwDenied(v, capability)
   return v
 }
 
-// Record usage. FAIL-SOFT: never throws, never blocks a request that passed.
+// Admission of a live (microphone, bot): balance >= admission x languages.
+// Throws 402 on an empty balance.
+async function liveAdmit({ orgId, languages }) {
+  const pp = plugin()
+  if (!pp) return null
+  const v = await pp.entitlements.liveAdmit({ orgId, languages })
+  if (!v.allowed) throwDenied(v, "live.minutes")
+  return v
+}
+
+// Record usage. Fail-soft: never throws, never blocks a request that passed.
 async function record(args) {
   const pp = plugin()
   if (!pp) return
   try {
-    await pp.entitlements.recordUsage(args)
+    await pp.entitlements.record(args)
   } catch (e) {
     /* fail-soft */
   }
 }
 
-// Record a finished live session (idempotent by sessionId). FAIL-SOFT.
-async function recordLive(args) {
-  const pp = plugin()
-  if (!pp) return
-  try {
-    await pp.entitlements.recordLiveSession(args)
-  } catch (e) {
-    /* fail-soft */
+// Express middleware slot after authentication: counts machine-token API calls.
+// Returns a pass-through when SaaS is off or the plugin did not build one.
+function afterAuth() {
+  // Resolved per request: routes load before CloudService creates the plugin.
+  return (req, res, next) => {
+    const pp = plugin()
+    if (!pp || typeof pp.hostAfterAuth !== "function") return next()
+    return pp.hostAfterAuth(req, res, next)
   }
 }
 
-// Sync the org's seat count (derived from membership) into billing. FAIL-SOFT.
+// Seats derived from membership (role >= uploader) -> subscription + Stripe. Fail-soft.
 async function syncSeats(orgId, seatCount) {
   const pp = plugin()
   if (!pp) return
@@ -86,36 +93,8 @@ async function syncSeats(orgId, seatCount) {
   }
 }
 
-// Backoffice: flag/unflag an org as comp (fullest plan, no billing). FAIL-SOFT.
-// Backoffice: switch an org between the ordinary SaaS mode and MANAGED (we
-// host this customer; every gate is bypassed plugin-side). NO-OP in OSS.
-async function setOrgMode(orgId, mode) {
-  const pp = plugin()
-  if (!pp) return
-  try {
-    return await pp.setOrgMode(orgId, mode)
-  } catch (e) {
-    /* fail-soft */
-  }
-}
-
-async function setBillingExempt(orgId, exempt) {
-  const pp = plugin()
-  if (!pp) return
-  try {
-    return await pp.setBillingExempt(orgId, exempt)
-  } catch (e) {
-    /* fail-soft */
-  }
-}
-
-// RGPD: erase an org's billing/usage footprint (cancel its Stripe subscription,
-// drop saas_subscriptions + saas_usage_ledger rows). FAIL-SOFT, NO-OP in OSS.
-// NB: the Stripe CUSTOMER is intentionally RETAINED here (invoices have a ~10y
-// legal accounting-retention obligation). The hard-erase of the customer is an
-// INTENTIONALLY out-of-band operator action run after the retention window via
-// pp.purgeOrganization(orgId, { deleteStripeCustomer: true }) — not wired to org
-// deletion on purpose. See docs/saas/legal/RETENTION-ET-EFFACEMENT.md.
+// RGPD: erase an org's billing footprint (Stripe subscription canceled, local
+// rows dropped). The Stripe customer is kept for the legal retention of invoices.
 async function purgeOrganization(orgId) {
   const pp = plugin()
   if (!pp) return
@@ -126,8 +105,7 @@ async function purgeOrganization(orgId) {
   }
 }
 
-// RGPD: anonymize a user's footprint across the billing plugin (usage-ledger
-// userId attribution). FAIL-SOFT, NO-OP in OSS.
+// RGPD: anonymize a departing user in the ledger.
 async function purgeUser(userId) {
   const pp = plugin()
   if (!pp) return
@@ -138,42 +116,14 @@ async function purgeUser(userId) {
   }
 }
 
-// Resolve an ASR backend / transcriber profile to its billing CATEGORY
-// (local-standard | local-gpu | external). Needed to gate `live.profiles`
-// (an enum keyed on category, NOT on the raw backend). Returns null in OSS.
-function categoryOf(profile) {
-  const pp = plugin()
-  if (!pp || !pp.utils || !pp.utils.profiles) return null
-  try {
-    return pp.utils.profiles.categoryOf(profile)
-  } catch (e) {
-    return null
-  }
-}
-
-// Strict: returns the category only for a recognized backend, else null (used
-// by the live-access gate to avoid treating an unknown backend as free tier).
-function categoryOfStrict(profile) {
-  const pp = plugin()
-  if (!pp || !pp.utils || !pp.utils.profiles) return null
-  try {
-    return pp.utils.profiles.categoryOfStrict(profile)
-  } catch (e) {
-    return null
-  }
-}
-
 module.exports = {
   plugin,
   enabled,
   enforce,
+  liveAdmit,
   record,
-  recordLive,
+  afterAuth,
   syncSeats,
-  setBillingExempt,
-  setOrgMode,
   purgeOrganization,
   purgeUser,
-  categoryOf,
-  categoryOfStrict,
 }

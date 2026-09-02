@@ -15,6 +15,7 @@ COMPONENTS=WebServer,IoHandler,MongoMigration,EditorHandler
 # STRIPE_MODE=fake
 # STRIPE_SECRET_KEY=
 # STRIPE_WEBHOOK_SECRET=
+# SAAS_FRONT_URL=https://studio.example.org
 WEBSERVER_HTTP_PORT=80
 WEBSERVER_SESSION_SECRET=secret
 
