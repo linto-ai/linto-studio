@@ -29,7 +29,9 @@ function defaultOrg(req) {
  *   requireEntitlement: [ ...specs ]                                      all must pass
  *
  * Runs after auth and org-access middlewares. Gating a feature is a rule in the
- * plugin catalog plus this flag. No-op when the plugin is absent.
+ * plugin catalog plus this flag. The authenticated user goes with every
+ * verdict: the plugin refuses an unverified email. No-op when the plugin is
+ * absent.
  */
 function build(spec) {
   const specs = Array.isArray(spec) ? spec : [spec]
@@ -40,6 +42,7 @@ function build(spec) {
   return async (req, res, next) => {
     try {
       if (!saas.enabled()) return next()
+      const userId = req.payload && req.payload.data && req.payload.data.userId
       for (const cfg of normalized) {
         if (
           cfg.methods &&
@@ -62,7 +65,7 @@ function build(spec) {
           const languages = cfg.languagesFrom
             ? await resolve(cfg.languagesFrom, req)
             : 1
-          await saas.liveAdmit({ orgId: String(orgId), languages })
+          await saas.liveAdmit({ orgId: String(orgId), languages, userId })
           continue
         }
         const value =
@@ -73,6 +76,7 @@ function build(spec) {
           orgId: String(orgId),
           capability: cfg.capability,
           value,
+          userId,
         })
       }
       next()

@@ -44,6 +44,7 @@ async function createOrganization(req, res, next) {
       await saas.enforce({
         orgId: String(personalOrg._id),
         capability: "organization.create",
+        userId: req.payload.data.userId,
       })
     }
 

@@ -88,11 +88,19 @@ function buildGuards() {
   }
 }
 
-// "machine" for an API-key user, "user" otherwise. Cached by the plugin.
-async function resolveUserType(userId) {
-  const users = await model.users.getById(userId, true)
-  const type = users && users[0] && users[0].type
-  return type === USER_TYPE.M2M ? "machine" : "user"
+// The plugin's view of a caller, read by the engine on gated requests and,
+// cached, by the API-call meter. Null when the user does not exist.
+async function resolveRequester(userId) {
+  const rows = await model.users.getByIdFilter(userId, {
+    type: 1,
+    emailIsVerified: 1,
+  })
+  const user = Array.isArray(rows) ? rows[0] : null
+  if (!user) return null
+  return {
+    type: user.type === USER_TYPE.M2M ? "machine" : "user",
+    emailVerified: user.emailIsVerified === true,
+  }
 }
 
 /**
@@ -117,6 +125,7 @@ class CloudService extends Component {
       seedOnStart: true,
       defaultPlanKey: process.env.SAAS_DEFAULT_PLAN_KEY || undefined,
       stripe: {},
+      resolveRequester,
     })
 
     // Init runs in the background. A failure leaves the plugin loaded and every
@@ -134,9 +143,7 @@ class CloudService extends Component {
 
     // Machine-token API calls are counted by the plugin; studio only offers the
     // slot after authentication (lib/saas.afterAuth).
-    this.paymentProcessor.hostAfterAuth = this.paymentProcessor.apiCallMeter({
-      resolveUserType,
-    })
+    this.paymentProcessor.hostAfterAuth = this.paymentProcessor.apiCallMeter()
 
     this.app.components.WebServer.express.use(
       "/cloud",

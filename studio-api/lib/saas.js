@@ -40,22 +40,23 @@ function throwDenied(verdict, capability) {
   throw new SaasFeatureLocked(`Not on your plan: ${capability}`, extras)
 }
 
-// Gate a call site. Throws 402 (quota, credit) or 403 (feature) on deny.
-// Fail-closed inside the plugin: an internal error denies.
-async function enforce({ orgId, capability, value }) {
+// Gate a call site. The plugin resolves userId (resolver injected by
+// CloudService) and refuses an unverified email or a missing userId. Throws 402
+// (quota, credit) or 403 (feature, caller) on deny; fail-closed inside the plugin.
+async function enforce({ orgId, capability, value, userId }) {
   const pp = plugin()
   if (!pp) return null
-  const v = await pp.entitlements.check({ orgId, capability, value })
+  const v = await pp.entitlements.check({ orgId, capability, value, userId })
   if (!v.allowed) throwDenied(v, capability)
   return v
 }
 
 // Admission of a live (microphone, bot): balance >= admission x languages.
-// Throws 402 on an empty balance.
-async function liveAdmit({ orgId, languages }) {
+// Throws 402 on an empty balance, 403 on an unverified caller.
+async function liveAdmit({ orgId, languages, userId }) {
   const pp = plugin()
   if (!pp) return null
-  const v = await pp.entitlements.liveAdmit({ orgId, languages })
+  const v = await pp.entitlements.liveAdmit({ orgId, languages, userId })
   if (!v.allowed) throwDenied(v, "live.minutes")
   return v
 }
