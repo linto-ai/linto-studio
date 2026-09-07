@@ -320,7 +320,12 @@ async function handleLLMService(req, res, query, conversation, metadata) {
       }
 
       // SaaS gate: one AI generation against the org's quota. No-op in OSS.
-      await saas.enforce({ orgId: organizationId, capability: "ai.generations", value: 1 })
+      await saas.enforce({
+        orgId: organizationId,
+        capability: "ai.generations",
+        value: 1,
+        userId: req.payload?.data?.userId,
+      })
 
       // V2: Call LLM API with generation payload (awaited for proper error handling)
       const result = await callLlmAPI(req, query, conversation, metadata, conversationExport, generationPayload)

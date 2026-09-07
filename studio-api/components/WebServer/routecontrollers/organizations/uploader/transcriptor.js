@@ -194,6 +194,7 @@ async function transcribe(isSingleFile, req, res, next) {
         orgId: req.params.organizationId,
         capability: "import.minutes",
         value: importMinutes,
+        userId: req.payload?.data?.userId,
       })
     }
 
