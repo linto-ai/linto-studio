@@ -830,7 +830,7 @@
   "folders": {
     "uncategorized": "Médias",
     "select_this_folder": "Choisir « {name} »",
-    "create": "Créer un dossier",
+    "create": "Nouveau dossier",
     "create_placeholder": "Nom du dossier...",
     "name_required": "Le nom du dossier est requis",
     "create_subfolder": "Créer un sous-dossier",
@@ -1074,7 +1074,8 @@
       "avatar_title": "Avatar utilisateur",
       "logout": "Déconnexion",
       "title": "Menu utilisateur"
-    }
+    },
+    "toggle_sidebar": "Replier le menu"
   },
   "no_orga": {
     "can_create": {

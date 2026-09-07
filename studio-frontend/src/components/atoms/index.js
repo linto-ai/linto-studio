@@ -1,4 +1,5 @@
 import Avatar from "./Avatar.vue"
+import AppName from "./AppName.vue"
 import PhIcon from "./PhIcon.vue"
 import TimeDuration from "./TimeDuration.vue"
 import SwitchInput from "./SwitchInput.vue"
@@ -36,6 +37,7 @@ import FavoriteStar from "./FavoriteStar.vue"
 
 const components = [
   Avatar,
+  AppName,
   PhIcon,
   TimeDuration,
   SwitchInput,

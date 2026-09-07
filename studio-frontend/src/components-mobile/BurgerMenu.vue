@@ -1,7 +1,8 @@
 <template>
   <nav class="burger-menu">
-    <div class="burger-menu__header flex" v-if="isAuthenticated">
-      <UserAccountSelector :backoffice="backoffice" />
+    <MenuBrandHeader v-if="isAuthenticated" />
+    <div class="burger-menu__header flex" v-if="isAuthenticated && !backoffice">
+      <MenuOrgSwitcher />
     </div>
 
     <div class="burger-menu__body">
@@ -27,45 +28,6 @@
         :label="$t('navigation.conversation.start')"
         variant="primary"
         class="start-button" />
-      <IsCloud>
-        <SaasUsageFooter />
-      </IsCloud>
-      <div class="main-footer-container">
-        <footer class="main-footer" v-if="!logo">
-          <div class="main-footer__powered-by">
-            <i18n path="footer.powered_by">
-              <template v-slot:linto_logo>
-                <a
-                  href="https://linto.ai"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-logo-link">
-                  <img src="/img/linto.svg" alt="LinTO" />
-                </a>
-              </template>
-              <template v-slot:linagora_logo>
-                <a
-                  href="https://linagora.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="footer-logo-link">
-                  <img src="/img/linagora.png" alt="Linagora" />
-                </a>
-              </template>
-            </i18n>
-          </div>
-          <div class="main-footer__links">
-            <a href="mailto:contact@linto.ai" class="footer-link">{{
-              $t("footer.contact")
-            }}</a>
-            <span class="footer-version">v{{ appVersion }}</span>
-          </div>
-        </footer>
-        <footer class="footer-logo" v-else>
-          <img :src="logo" :alt="logoAlt" class="footer-logo__logo" />
-          <div class="footer-logo__title">{{ title }}</div>
-        </footer>
-      </div>
     </div>
   </nav>
 </template>
@@ -73,8 +35,8 @@
 import { mapGetters } from "vuex"
 
 import { getEnv } from "@/tools/getEnv"
-import { getLogoAltName } from "@/tools/getLogoAltName"
-import UserAccountSelector from "@/components/UserAccountSelector.vue"
+import MenuBrandHeader from "@/components/MenuBrandHeader.vue"
+import MenuOrgSwitcher from "@/components/MenuOrgSwitcher.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import { userName } from "@/tools/userName.js"
@@ -83,8 +45,6 @@ import { logout } from "@/tools/logout"
 import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
 import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
 import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
-import IsCloud from "@/components/atoms/IsCloud.vue"
-import SaasUsageFooter from "@/components-cloud/SaasUsageFooter.vue"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
@@ -125,17 +85,8 @@ export default {
       userInfo: "getUserInfos",
       isAuthenticated: "isAuthenticated",
     }),
-    logo() {
-      return getEnv("VUE_APP_LOGO") ? `/img/${getEnv("VUE_APP_LOGO")}` : false
-    },
-    logoAlt() {
-      return getLogoAltName()
-    },
     organizationsList() {
       return Object.values(this.organizations)
-    },
-    title() {
-      return getEnv("VUE_APP_NAME")
     },
     sessionEnable() {
       return getEnv("VUE_APP_ENABLE_SESSION") === "true"
@@ -160,17 +111,13 @@ export default {
     sessionListingPage() {
       return this.$route.meta?.sessionListingPage
     },
-    appVersion() {
-      return typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "dev"
-    },
   },
   components: {
-    UserAccountSelector,
+    MenuBrandHeader,
+    MenuOrgSwitcher,
     MediaExplorerMenu,
     BackofficeSidebar,
     MediaExplorerMenuLabels,
-    IsCloud,
-    SaasUsageFooter,
   },
 }
 </script>
@@ -189,24 +136,24 @@ export default {
     overflow-y: auto;
   }
 
-  .burger-menu__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 0.5em;
-    background-color: white;
-    height: 64px;
-    box-shadow: var(--shadow-block);
-    border-bottom: var(--border-block);
-    overflow: visible;
-    position: relative;
-    z-index: 10;
-    flex-shrink: 0;
+  // .burger-menu__header {
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: space-between;
+  //   padding: 0 0.5em;
+  //   background-color: white;
+  //   height: 64px;
+  //   box-shadow: var(--shadow-block);
+  //   border-bottom: var(--border-block);
+  //   overflow: visible;
+  //   position: relative;
+  //   z-index: 10;
+  //   flex-shrink: 0;
 
-    & > * {
-      flex: 1;
-    }
-  }
+  //   & > * {
+  //     flex: 1;
+  //   }
+  // }
 
   .user-account-selector-container {
     padding: 0 0.5em;
@@ -256,117 +203,6 @@ export default {
   .start-button {
     align-self: stretch;
     margin: 1rem;
-  }
-
-  .main-footer {
-    padding: 0.75rem;
-    border-top: var(--border-block);
-    background-color: var(--primary-soft);
-
-    &__powered-by {
-      text-align: center;
-      margin-bottom: 0.5rem;
-      font-size: 0.8rem;
-      color: var(--neutral-80);
-      line-height: 1.4;
-
-      * {
-        display: inline-block;
-        vertical-align: middle;
-        margin: 0 0.2rem;
-      }
-
-      img {
-        height: 1.2em;
-        transition: transform 0.2s ease;
-      }
-    }
-
-    &__links {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-  }
-
-  .footer-logo-link {
-    display: inline-block;
-    transition:
-      transform 0.2s ease,
-      opacity 0.2s ease;
-
-    &:hover {
-      transform: scale(1.1);
-      opacity: 0.8;
-    }
-
-    &:focus {
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
-      border-radius: 4px;
-    }
-  }
-
-  .footer-link {
-    color: var(--neutral-80);
-    text-decoration: none;
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.2rem 0.4rem;
-    border-radius: 3px;
-    transition: all 0.2s ease;
-
-    &:hover {
-      color: var(--primary);
-      background-color: rgba(var(--primary-rgb), 0.08);
-      text-decoration: none;
-    }
-
-    &:focus {
-      outline: 2px solid var(--primary);
-      outline-offset: 1px;
-      color: var(--primary);
-    }
-
-    &:active {
-      transform: translateY(0.5px);
-    }
-  }
-
-  .footer-version {
-    font-size: 0.7rem;
-    font-weight: 400;
-    padding: 0.2rem 0.4rem;
-    display: inline-block;
-    margin-left: 0.25rem;
-    color: var(--neutral-90);
-    background-color: rgba(var(--neutral-90), 0.05);
-    border-radius: 2px;
-  }
-
-  .main-footer__logo {
-    height: 20px;
-  }
-}
-
-.footer-logo {
-  display: flex;
-  flex-direction: column;
-  border-top: var(--border-block);
-  background-color: var(--primary-soft);
-  padding: 0.5rem;
-  gap: 0.25rem;
-
-  .footer-logo__logo {
-    height: 40px;
-  }
-
-  .footer-logo__title {
-    text-align: center;
-    color: var(--primary-color);
-    font-weight: bold;
   }
 }
 </style>

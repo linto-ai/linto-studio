@@ -836,7 +836,7 @@
   "folders": {
     "uncategorized": "Inbox",
     "select_this_folder": "Choose “{name}”",
-    "create": "Create folder",
+    "create": "New folder",
     "create_placeholder": "Folder name...",
     "name_required": "Folder name is required",
     "create_subfolder": "Create subfolder",
@@ -1064,6 +1064,7 @@
       "logout": "Logout",
       "title": "User menu"
     },
+    "toggle_sidebar": "Collapse menu",
     "conversation": {
       "start": "Transcribe"
     },

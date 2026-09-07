@@ -1,18 +1,5 @@
 <template>
   <div class="folder-tree">
-    <div class="folder-tree__create" v-if="showCreateInput">
-      <FormInput
-        :field="createField"
-        v-model="newFolderName"
-        :focus="showCreateInput"
-        inputFullWidth
-        withConfirmation
-        @on-confirm="handleCreate"
-        @on-cancel="cancelCreate"
-        @keyup.esc.native="cancelCreate"
-        @keyup.enter.native="handleCreate" />
-    </div>
-
     <nav>
       <ul class="folder-tree__list">
         <FolderTreeNode
@@ -29,8 +16,27 @@
           @create-child="handleCreateChild"
           @manage-access="handleManageAccess"
           @drop-media="handleDropMedia" />
+        <FolderTreeNode
+          v-if="isAtLeastMaintainer && !showCreateInput"
+          :folder="createFolderEntry"
+          :virtual="true"
+          icon="plus"
+          @select="toggleCreate" />
       </ul>
     </nav>
+
+    <div class="folder-tree__create" v-if="showCreateInput">
+      <FormInput
+        :field="createField"
+        v-model="newFolderName"
+        :focus="showCreateInput"
+        inputFullWidth
+        withConfirmation
+        @on-confirm="handleCreate"
+        @on-cancel="cancelCreate"
+        @keyup.esc.native="cancelCreate"
+        @keyup.enter.native="handleCreate" />
+    </div>
 
     <FolderAccessModal
       v-if="accessFolder"
@@ -43,12 +49,15 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex"
+import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import FolderTreeNode from "./FolderTreeNode.vue"
 import FolderAccessModal from "./FolderAccessModal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
+// Button is registered globally by the atoms plugin (components/atoms/index.js).
 
 export default {
   name: "FolderTree",
+  mixins: [orgaRoleMixin],
   components: { FolderTreeNode, FolderAccessModal, FormInput },
   data() {
     return {
@@ -82,6 +91,12 @@ export default {
       foldersLoading: "getLoading",
     }),
     ...mapGetters("organizations", ["getCurrentOrganizationScope"]),
+    // Fake folder for the trailing "+" row (rendered via FolderTreeNode,
+    // virtual mode) — _id never matches a real selectedFolderId, so it's
+    // never shown as active.
+    createFolderEntry() {
+      return { _id: "__create__", name: this.$t("folders.create") }
+    },
     selectedFolderId() {
       const storeScope = this.$store.getters["organizations/getStoreScope"]
       if (storeScope) {
@@ -209,7 +224,7 @@ export default {
   overflow-x: hidden;
 
   &__create {
-    padding: 0.25rem 1rem 0.25rem 2.5rem;
+    padding: 0.25rem 1rem;
 
     :deep(.form-field) {
       gap: 0;
