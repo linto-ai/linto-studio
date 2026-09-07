@@ -706,19 +706,15 @@
     }
   },
   "createaccount": {
-    "create_account_button": "Créer mon compte",
     "email_label": "Adresse e-mail",
     "email_verification_text": "Un e-mail de validation vient de vous être envoyé. Cliquez sur le lien de vérification pour commencer à utiliser LinTO Studio.",
     "email_verification_title": "Votre compte LinTO Studio a été créé avec succès.",
     "first_name_label": "Prénom",
     "image_label": "Image (.png, .jpg) : ",
     "last_name_label": "Nom",
-    "organization_description": "Réalisez et partagez vos transcriptions, et invitez vos collaborateurs au sein d'un espace commun grâce aux organisations.",
-    "organization_name_label": "Nommez votre première organisation, vous pourrez en créer d'autres par la suite",
-    "organization_title": "Bienvenue sur LinTO Studio",
     "password_confirmation_label": "Confirmation du mot de passe",
     "password_label": "Mot de passe",
-    "personal_button": "Suivant",
+    "personal_button": "Créer mon compte",
     "personal_title": "Créez votre compte",
     "picture_selected": "Une image sélectionnée",
     "picture_upload_label": "Téléverser une image",
@@ -1101,12 +1097,55 @@
   },
   "onboarding": {
     "welcome_title": "Bienvenue sur LinTO Studio",
-    "name_org_help": "Pour commencer, donnez un nom à votre organisation. C'est votre espace de travail : vous y réaliserez vos transcriptions et pourrez y inviter des collaborateurs.",
-    "org_name_label": "Nom de l'organisation",
-    "org_name_placeholder": "Ex : Mon équipe, Service communication…",
-    "org_name_required": "Veuillez saisir un nom.",
-    "continue": "Continuer",
-    "generic_error": "Une erreur est survenue. Veuillez réessayer."
+    "kicker": "Bienvenue sur LinTO Studio",
+    "title": "Choisissez votre formule",
+    "subtitle": "Sélectionnez une formule pour ouvrir votre organisation. Vous pourrez en changer à tout moment depuis les réglages ; les compteurs sont remis à zéro à chaque période.",
+    "billing_period": {
+      "label": "Période de facturation",
+      "monthly": "Mensuel",
+      "annual": "Annuel"
+    },
+    "most_popular": "Le plus populaire",
+    "price_note_free": "Sans carte bancaire",
+    "price_note_billed_yearly": "Facturé {price} par an ({freeMonths} mois offerts)",
+    "price_note_annual_hint": "ou {price} par an ({freeMonths} mois offerts)",
+    "price_note_seats_minimum": "à partir de {seats} sièges",
+    "price_suffix_monthly": "/ mois",
+    "price_suffix_per_seat": "/ siège / mois",
+    "price_suffix_annual": "/ mois, facturé annuellement",
+    "price_suffix_per_seat_annual": "/ siège / mois, facturé annuellement",
+    "fair_use_note": "* Dans la limite d'un usage raisonnable, non partagé publiquement.",
+    "plans": {
+      "free": {
+        "tagline": "Pour découvrir, ou pour un usage occasionnel."
+      },
+      "premium": {
+        "tagline": "Indépendants, professions libérales, journalistes, chercheurs, petites associations."
+      },
+      "business": {
+        "tagline": "Équipes et organisations : cabinets, collectivités, entreprises, fédérations."
+      }
+    },
+    "features": {
+      "transcription_hours": "{hours} h de transcription par mois",
+      "transcription_hours_per_seat": "{hours} h de transcription par mois et par siège",
+      "transcription_unlimited": "Transcription illimitée* par mois",
+      "transcription_unlimited_per_seat": "Transcription illimitée* par siège",
+      "usage_all_unlimited": "Transcription, résumés et chat illimités* par mois",
+      "usage_all_unlimited_per_seat": "Transcription, résumés et chat illimités* par siège",
+      "ai_and_chat_unlimited": "Résumés et chat illimités*",
+      "ai_and_chat_unlimited_per_seat": "Résumés et chat illimités* par siège",
+      "ai_and_chat_count": "{generations} résumés IA et {chat} messages de chat par mois",
+      "api_calls_unlimited": "Appels API illimités*",
+      "api_calls_count": "{count} appels API par mois",
+      "live_welcome": "{minutes} minutes-langue de live offertes, une seule fois",
+      "live_packs": "Bots de réunion et micro en direct, avec des minutes prépayées",
+      "editor_suite": "Locuteurs reconnus, éditeur collaboratif, exports et modèles de documents",
+      "invitations": "Invitations de membres, lecteurs gratuits",
+      "multi_orga": "Organisations multiples"
+    },
+    "payment_note": "Paiement à l'étape suivante. Résiliable à tout moment.",
+    "continue": "Continuer avec {plan}"
   },
   "organisation": {
     "add_member_description": "Recherchez des utilisateurs par prénom, nom ou adresse électronique",

@@ -705,19 +705,15 @@
     }
   },
   "createaccount": {
-    "create_account_button": "Create an account",
     "email_label": "Email",
     "email_verification_text": "You have just received an email to validate your account. Click on the verification link to start using Linto Studio.",
     "email_verification_title": "Congratulations, a Linto Studio account has been associated with your email address !",
     "first_name_label": "First name",
     "image_label": "Image (.png, .jpg) :",
     "last_name_label": "Last name",
-    "organization_description": "Create and share your transcripts, invite collaborators within organisations.",
-    "organization_name_label": "One last step : please name your first organisation, you can create others later",
-    "organization_title": "Name your organisation",
     "password_confirmation_label": "Password confirmation",
     "password_label": "Password",
-    "personal_button": "Next",
+    "personal_button": "Create an account",
     "personal_title": "Create an account",
     "picture_selected": "One picture selected",
     "picture_upload_label": "Upload a picture",
@@ -1107,12 +1103,55 @@
   },
   "onboarding": {
     "welcome_title": "Welcome to LinTO Studio",
-    "name_org_help": "To get started, give your organisation a name. This is your workspace: it's where you create transcriptions and can invite collaborators.",
-    "org_name_label": "Organisation name",
-    "org_name_placeholder": "e.g. My team, Comms department…",
-    "org_name_required": "Please enter a name.",
-    "continue": "Continue",
-    "generic_error": "Something went wrong. Please try again."
+    "kicker": "Welcome to LinTO Studio",
+    "title": "Choose your plan",
+    "subtitle": "Pick a plan to open your organization. You can change it at any time from settings; counters reset at the start of every period.",
+    "billing_period": {
+      "label": "Billing period",
+      "monthly": "Monthly",
+      "annual": "Annual"
+    },
+    "most_popular": "Most popular",
+    "price_note_free": "No credit card required",
+    "price_note_billed_yearly": "Billed {price} per year ({freeMonths} months free)",
+    "price_note_annual_hint": "or {price} per year ({freeMonths} months free)",
+    "price_note_seats_minimum": "from {seats} seats",
+    "price_suffix_monthly": "/ month",
+    "price_suffix_per_seat": "/ seat / month",
+    "price_suffix_annual": "/ month, billed annually",
+    "price_suffix_per_seat_annual": "/ seat / month, billed annually",
+    "fair_use_note": "* Within reasonable use limits, not shared publicly.",
+    "plans": {
+      "free": {
+        "tagline": "To try it out, or for occasional use."
+      },
+      "premium": {
+        "tagline": "Freelancers, independent professionals, journalists, researchers, small associations."
+      },
+      "business": {
+        "tagline": "Teams and organizations: firms, local government, companies, federations."
+      }
+    },
+    "features": {
+      "transcription_hours": "{hours} h of transcription per month",
+      "transcription_hours_per_seat": "{hours} h of transcription per month and per seat",
+      "transcription_unlimited": "Unlimited* transcription per month",
+      "transcription_unlimited_per_seat": "Unlimited* transcription per seat",
+      "usage_all_unlimited": "Unlimited* transcription, summaries and chat per month",
+      "usage_all_unlimited_per_seat": "Unlimited* transcription, summaries and chat per seat",
+      "ai_and_chat_unlimited": "Unlimited* summaries and chat",
+      "ai_and_chat_unlimited_per_seat": "Unlimited* summaries and chat per seat",
+      "ai_and_chat_count": "{generations} AI summaries and {chat} chat messages per month",
+      "api_calls_unlimited": "Unlimited* API calls",
+      "api_calls_count": "{count} API calls per month",
+      "live_welcome": "{minutes} language-minutes of live offered, one time",
+      "live_packs": "Meeting bots and live microphone, with prepaid minutes",
+      "editor_suite": "Speaker recognition, collaborative editor, exports and document templates",
+      "invitations": "Free member and reader invitations",
+      "multi_orga": "Multiple organizations"
+    },
+    "payment_note": "Payment at the next step. Cancel anytime.",
+    "continue": "Continue with {plan}"
   },
   "organisation": {
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",

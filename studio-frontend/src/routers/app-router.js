@@ -14,8 +14,6 @@ import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
 import { isAtLeastSystemAdministrator } from "@/tools/platformRoles.js"
 
-const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
-
 const defaultComponents = {}
 
 const componentsWithoutHeader = {}
@@ -472,20 +470,6 @@ let router = new Router({
       meta: {
         public: true,
         authRoute: true,
-        breadcrumb: {
-          showInBreadcrumb: false,
-        },
-      },
-    },
-    {
-      path: "/onboarding",
-      name: "onboarding",
-      components: {
-        default: () => import("../views/OnboardingWizard.vue"),
-        ...componentsWithoutHeader,
-      },
-      defaultProps,
-      meta: {
         breadcrumb: {
           showInBreadcrumb: false,
         },
@@ -966,24 +950,6 @@ router.beforeEach(async (to, from, next) => {
 
         return next({ name: "backoffice" })
       }
-    }
-
-    // Cloud mode only: new accounts name their organization before using the
-    // app. Backoffice stays reachable for platform admins. Never on OSS.
-    if (
-      IS_MODE_CLOUD &&
-      store.getters["user/needsOnboarding"] &&
-      to.name !== "onboarding" &&
-      !to.meta?.backoffice
-    ) {
-      routerDebug("Redirect to onboarding wizard")
-      return next({ name: "onboarding" })
-    }
-    if (
-      to.name === "onboarding" &&
-      (!IS_MODE_CLOUD || !store.getters["user/needsOnboarding"])
-    ) {
-      return next({ name: "explore" })
     }
 
     // Handle direct "next" query parameter
