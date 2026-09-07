@@ -19,14 +19,11 @@ const {
 
 /**
  * Get all publication templates from LLM Gateway
- * GET /publication/templates
- *
- * Query params:
- *   - organization_id: Filter by organization scope (optional)
+ * GET /publication/organizations/:organizationId/templates
  *
  * Returns templates visible to the current user:
  * - System templates (always included)
- * - Organization templates (if organization_id provided)
+ * - Organization templates (organization taken from the path, enforced by middleware)
  * - User templates (for authenticated user within organization)
  */
 async function getTemplates(req, res, next) {
@@ -38,6 +35,8 @@ async function getTemplates(req, res, next) {
 
     // Get authenticated user's ID from JWT payload
     const authenticatedUserId = req.payload?.data?.userId
+    // Organization comes from the path param, membership enforced by the route middleware
+    const organizationId = req.params.organizationId
 
     // When a service_id is provided, return only the templates the admin made
     // available for that service (falls back to the global default if none are
@@ -45,9 +44,7 @@ async function getTemplates(req, res, next) {
     let url
     if (req.query.service_id) {
       const params = new URLSearchParams()
-      if (req.query.organization_id) {
-        params.append("organization_id", req.query.organization_id)
-      }
+      params.append("organization_id", organizationId)
       if (authenticatedUserId) {
         params.append("user_id", authenticatedUserId)
       }
@@ -58,11 +55,7 @@ async function getTemplates(req, res, next) {
       // Build query params for hierarchical visibility
       const params = new URLSearchParams()
       params.append("include_system", "true")
-
-      // Add organization_id if provided (to get org-scoped templates)
-      if (req.query.organization_id) {
-        params.append("organization_id", req.query.organization_id)
-      }
+      params.append("organization_id", organizationId)
 
       // Add user_id for authenticated user (to get user-scoped templates)
       if (authenticatedUserId) {
@@ -87,7 +80,7 @@ async function getTemplates(req, res, next) {
 
 /**
  * Get template placeholders
- * GET /publication/templates/:templateId/placeholders
+ * GET /publication/organizations/:organizationId/templates/:templateId/placeholders
  *
  * Returns the list of placeholder fields that need to be filled for the template
  */
@@ -123,13 +116,14 @@ async function getTemplatePlaceholders(req, res, next) {
 
 /**
  * Export a document using a template
- * GET /publication/:jobId/export/:format
+ * GET /publication/conversations/:conversationId/jobs/:jobId/export/:format
  *
  * Query params:
  *   - templateId: Template ID to use for export (optional, uses job's template if not provided)
  *   - placeholders: JSON string of placeholder values (optional)
  *
  * Path params:
+ *   - conversationId: Conversation the export relates to (read access enforced by middleware)
  *   - jobId: The LLM Gateway job ID
  *   - format: Export format (pdf, docx, html)
  */
@@ -230,7 +224,7 @@ async function exportWithTemplate(req, res, next) {
 
 /**
  * Upload a new publication template (DOCX file)
- * POST /publication/templates
+ * POST /publication/organizations/:organizationId/templates
  *
  * Form data (multipart/form-data):
  *   - file: DOCX template file (required)
@@ -238,12 +232,11 @@ async function exportWithTemplate(req, res, next) {
  *   - name_en: English name (optional)
  *   - description_fr: French description (optional)
  *   - description_en: English description (optional)
- *   - organization_id: Organization ID for org-scoped template (optional)
  *   - scope: "personal" (default) or "organization" - determines template visibility
  *
  * Scope behavior:
  *   - "personal": Template is scoped to the authenticated user (user_id from JWT)
- *   - "organization": Template is scoped to the specified organization_id
+ *   - "organization": Template is scoped to the organization from the path
  *
  * Note: The template file should contain {{output}} placeholder for AI-generated content
  */
@@ -261,14 +254,9 @@ async function createTemplate(req, res, next) {
     }
 
     const file = req.files.file
-    const {
-      name_fr,
-      name_en,
-      description_fr,
-      description_en,
-      organization_id,
-      scope,
-    } = req.body
+    const { name_fr, name_en, description_fr, description_en, scope } = req.body
+    // Organization comes from the path param, membership enforced by the route middleware
+    const organization_id = req.params.organizationId
 
     // Validate required fields
     if (!name_fr || !name_fr.trim()) {
@@ -331,9 +319,7 @@ async function createTemplate(req, res, next) {
     const templateScope = scope || "personal"
 
     // Organization ID is required for all scoped templates (LLM Gateway enforces this)
-    if (organization_id) {
-      formData.append("organization_id", organization_id)
-    }
+    formData.append("organization_id", organization_id)
 
     if (templateScope === "organization") {
       // Organization-scoped template: org_id only, no user_id
@@ -385,7 +371,7 @@ async function createTemplate(req, res, next) {
 
 /**
  * Delete a publication template
- * DELETE /publication/templates/:templateId
+ * DELETE /publication/organizations/:organizationId/templates/:templateId
  *
  * Only allows deletion of non-system templates.
  * Users can only delete their own templates (user-scoped) or organization templates

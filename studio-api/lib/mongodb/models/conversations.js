@@ -1,4 +1,5 @@
 const MongoModel = require(`../model`)
+const MongoDriver = require(`../driver`)
 const debug = require("debug")("linto:lib:mongodb:models:conversations")
 const { calculateObjectSize } = require("bson")
 
@@ -6,6 +7,7 @@ const moment = require("moment")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const TYPE = require(`${process.cwd()}/lib/dao/conversation/types`)
+const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 const BSON_MAX_SIZE = 16 * 1024 * 1024
 class ConvoModel extends MongoModel {
@@ -46,8 +48,9 @@ class ConvoModel extends MongoModel {
   async update(payload) {
     try {
       const operator = "$set"
+      const conversationId = payload._id
       const query = {
-        _id: this.getObjectId(payload._id),
+        _id: this.getObjectId(conversationId),
       }
 
       if (payload.organizationId) delete payload.organizationId
@@ -194,17 +197,11 @@ class ConvoModel extends MongoModel {
       }
 
       if (filter?.name) {
-        query.name = {
-          $regex: filter.name,
-          $options: "i",
-        }
+        query.name = regexContains(filter.name)
       }
 
       if (filter?.description) {
-        query.description = {
-          $regex: filter.description,
-          $options: "i",
-        }
+        query.description = regexContains(filter.description)
       }
       if (filter?.tags) {
         filter.tags = filter.tags.split(",")
@@ -214,10 +211,7 @@ class ConvoModel extends MongoModel {
       }
 
       if (filter?.text) {
-        query["text.raw_segment"] = {
-          $regex: filter.text,
-          $options: "i",
-        }
+        query["text.raw_segment"] = regexContains(filter.text)
       }
 
       if (!filter) return await this.mongoRequest(query, projection)
@@ -383,17 +377,16 @@ class ConvoModel extends MongoModel {
 
   async updateTurn(_id, text) {
     try {
-      const operator = "$set"
       const query = {
         _id: this.getObjectId(_id),
       }
       const dateTime = moment().format()
-      let mutableElements = {
-        text: [...text],
-        last_update: dateTime,
-      }
 
-      return await this.mongoUpdateOne(query, operator, mutableElements)
+      return await MongoDriver.constructor.db
+        .collection(this.collection)
+        .updateOne(query, {
+          $set: { text: [...text], last_update: dateTime },
+        })
     } catch (error) {
       console.error(error)
       return error
@@ -462,7 +455,7 @@ class ConvoModel extends MongoModel {
         },
       }
       return await this.mongoUpdateMany(query, operator, values)
-    } catch (err) {
+    } catch (error) {
       console.error(error)
       return error
     }
@@ -582,13 +575,13 @@ class ConvoModel extends MongoModel {
 
       if (filter?.name) {
         searchConditions.push({
-          name: { $regex: filter.name, $options: "i" },
+          name: regexContains(filter.name),
         })
       }
 
       if (filter?.text) {
         searchConditions.push({
-          "text.raw_segment": { $regex: filter.text, $options: "i" },
+          "text.raw_segment": regexContains(filter.text),
         })
       }
 
@@ -608,8 +601,8 @@ class ConvoModel extends MongoModel {
         query.$and = [{ $or: searchConditions }]
       }
 
-      if (userRole === ROLES.MEMBER) {
-        // A member can only see conversation where he has access
+      if (userRole < ROLES.MAINTAINER) {
+        // Below maintainer, only conversations where the user has access
         query["$or"][1]["organization.membersRight"] = {
           $bitsAnySet: desiredAccess,
         }
@@ -673,8 +666,8 @@ class ConvoModel extends MongoModel {
         ],
       }
 
-      if (userRole === ROLES.MEMBER) {
-        // A member can only see conversation where he has access
+      if (userRole < ROLES.MAINTAINER) {
+        // Below maintainer, only conversations where the user has access
         query["$or"][1]["organization.membersRight"] = {
           $bitsAnySet: desiredAccess,
         }
@@ -689,15 +682,12 @@ class ConvoModel extends MongoModel {
       const searchConditions = []
       if (filter?.name) {
         searchConditions.push({
-          name: { $regex: filter.name, $options: "i" },
+          name: regexContains(filter.name),
         })
       }
       if (filter?.text) {
         searchConditions.push({
-          "text.raw_segment": {
-            $regex: filter.text,
-            $options: "i",
-          },
+          "text.raw_segment": regexContains(filter.text),
         })
       }
       if (searchConditions.length > 0) {
@@ -741,12 +731,12 @@ class ConvoModel extends MongoModel {
       const favSearch = []
       if (filter?.text) {
         favSearch.push({
-          "text.raw_segment": { $regex: filter.text, $options: "i" },
+          "text.raw_segment": regexContains(filter.text),
         })
       }
       if (filter?.name) {
         favSearch.push({
-          name: { $regex: filter.name, $options: "i" },
+          name: regexContains(filter.name),
         })
       }
       if (favSearch.length > 0) {
@@ -812,8 +802,8 @@ class ConvoModel extends MongoModel {
           },
         })
 
-        if (userRole === ROLES.MEMBER)
-          // A member can only see conversation where he has access
+        if (userRole < ROLES.MAINTAINER)
+          // Below maintainer, only conversations where the user has access
           query["$or"][2]["organization.membersRight"] = {
             $bitsAnySet: desiredAccess,
           }
@@ -826,10 +816,12 @@ class ConvoModel extends MongoModel {
 
       const accSearch = []
       if (filter?.name)
-        accSearch.push({ name: { $regex: filter.name, $options: "i" } })
+        accSearch.push({
+          name: regexContains(filter.name),
+        })
       if (filter?.text)
         accSearch.push({
-          "text.raw_segment": { $regex: filter.text, $options: "i" },
+          "text.raw_segment": regexContains(filter.text),
         })
       if (accSearch.length > 0) query.$and = [{ $or: accSearch }]
 

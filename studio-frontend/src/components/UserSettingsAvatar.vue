@@ -18,6 +18,7 @@
         class="hidden"
         id="file"
         ref="file"
+        accept="image/png, image/jpeg, image/webp"
         v-on:change="handleFileUpload()" />
       <label for="file" class="btn btn--secondary btn--sm">
         <span class="label">{{
@@ -70,13 +71,7 @@ export default {
     ...mapActions("user", ["updateUserImage"]),
     handleFileUpload() {
       this.picture.value = this.$refs.file.files[0]
-      const acceptedTypes = [
-        "image/gif",
-        "image/png",
-        "image/jpeg",
-        "image/bmp",
-        "image/webp",
-      ]
+      const acceptedTypes = ["image/png", "image/jpeg", "image/webp"]
       if (
         typeof this.picture.value !== "undefined" &&
         this.picture.value !== null &&
@@ -90,8 +85,13 @@ export default {
           this.picture.preview = URL.createObjectURL(this.picture.value)
         } else {
           this.picture.valid = false
-          this.picture.error =
-            "Invalid file type (accept jpg, png, gif, bmp, webp)"
+          this.picture.error = this.$t(
+            "user_settings.profile_avatar.notif_unsupported_type",
+          )
+          bus.$emit("app_notif", {
+            status: "error",
+            message: this.picture.error,
+          })
         }
       } else {
         this.picture.valid = false
@@ -115,9 +115,15 @@ export default {
               message: this.$t("user_settings.notif_success"),
             })
           } else {
+            let message = this.$t("user_settings.notif_error")
+            if (req.error?.response?.status === 415) {
+              message = this.$t(
+                "user_settings.profile_avatar.notif_unsupported_type",
+              )
+            }
             bus.$emit("app_notif", {
               status: "error",
-              message: this.$t("user_settings.notif_error"),
+              message,
             })
           }
         }

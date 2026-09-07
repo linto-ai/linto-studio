@@ -37,15 +37,14 @@
     </template>
     <div class="relative flex flex1 col">
       <template v-if="isFirstChannelLive">
-        <MicrophoneStatusBanner
-          :status="microphoneStatus"
-          @retry="retryAudioConnection"
-          @reconfigure="showMicrophoneSetup = true" />
         <SessionLiveNG
           ref="sessionLiveNG"
           :currentOrganizationScope="currentOrganizationScope"
           :session="session"
-          :websocketInstance="$apiEventWS" />
+          :websocketInstance="$apiEventWS"
+          :microphoneStatus="microphoneStatus"
+          @retry-microphone="retryAudioConnection"
+          @reconfigure-microphone="showMicrophoneSetup = true" />
       </template>
       <MicrophonePlaceholder
         v-else-if="microphoneStatus !== 'idle'"
@@ -74,7 +73,6 @@ import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 import SessionLiveNG from "@/components/SessionLiveNG.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import MicrophoneStatus from "@/components/molecules/MicrophoneStatus.vue"
-import MicrophoneStatusBanner from "@/components/molecules/MicrophoneStatusBanner.vue"
 import MicrophonePlaceholder from "@/components/molecules/MicrophonePlaceholder.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveActions from "@/components/SessionLiveActions.vue"
@@ -137,7 +135,6 @@ export default {
     V2Layout,
     Modal,
     MicrophoneStatus,
-    MicrophoneStatusBanner,
     MicrophonePlaceholder,
     SessionSetupMicrophone,
     SessionLiveActions,

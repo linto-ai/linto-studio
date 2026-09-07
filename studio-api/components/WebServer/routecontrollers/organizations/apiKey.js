@@ -93,7 +93,7 @@ async function createApiKey(req, res, next) {
 
     let token = await TokenHandler.createApiKey(req)
     if (!token) throw new UserError("API key not created")
-    addM2mUserToOrganization(
+    await addM2mUserToOrganization(
       req.params.organizationId,
       token.user_id.toString(),
       role,

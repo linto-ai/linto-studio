@@ -43,12 +43,33 @@ async function getTags(req, res, next) {
   }
 }
 
+async function assertTagNameAvailable(
+  organizationId,
+  categoryId,
+  name,
+  excludeTagId,
+) {
+  const tags = await model.tags.getTagByCategoryAndProperties({
+    organizationId,
+    categoryId,
+    name,
+  })
+  const conflict = excludeTagId
+    ? tags.find((t) => t._id.toString() !== excludeTagId)
+    : tags[0]
+  if (conflict)
+    throw new TagConflict(
+      `Conflict with tag name ${name} already exists. Tag id : ${conflict._id}`,
+    )
+}
+
 async function createTag(req, res, next) {
   try {
-    const tag = await model.tags.getTagByCategoryAndProperties(req.body)
-    if (tag.length > 0)
-      throw new TagConflict(
-        `Conflict with tag name ${req.body.name} already exists. Tag id : ${tag[0]._id}`,
+    if (req.body.name)
+      await assertTagNameAvailable(
+        req.body.organizationId,
+        req.body.categoryId,
+        req.body.name,
       )
 
     let category = await model.categories.getById(req.body.categoryId)
@@ -73,11 +94,15 @@ async function updateTag(req, res, next) {
     const tag = await model.tags.getById(req.params.tagId)
     if (tag.length === 0) throw new TagError("Tag not found")
 
-    const tag_search = await model.tags.getTagByCategoryAndProperties(req.body)
-    if (tag_search.length === 1 && tag[0]._id !== tag_search[0]._id)
-      throw new TagConflict()
-
-    if (req.body.name) tag[0].name = req.body.name
+    if (req.body.name) {
+      await assertTagNameAvailable(
+        tag[0].organizationId.toString(),
+        (req.body.categoryId || tag[0].categoryId).toString(),
+        req.body.name,
+        req.params.tagId,
+      )
+      tag[0].name = req.body.name
+    }
     if (req.body.categoryId) {
       const category = await model.categories.getById(req.body.categoryId)
       if (category.length === 0) throw new TagError("categoryId not found")

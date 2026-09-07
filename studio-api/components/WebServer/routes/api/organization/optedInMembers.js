@@ -3,7 +3,7 @@ const {
   getOptedInMemberSamples,
   getOptedInMemberSampleAudio,
 } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organization/optedInMembers.js`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/speaker/optedInMembers.js`,
 )
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)

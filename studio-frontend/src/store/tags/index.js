@@ -228,7 +228,10 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: i18n.t("manage_tags.error_creating_tag"),
+            message:
+              error.status === 409
+                ? i18n.t("manage_tags.error_tag_name_exists")
+                : i18n.t("manage_tags.error_creating_tag"),
             type: "error",
           },
           { root: true },
@@ -269,7 +272,10 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: i18n.t("manage_tags.error_updating_tag"),
+            message:
+              error.status === 409
+                ? i18n.t("manage_tags.error_tag_name_exists")
+                : i18n.t("manage_tags.error_updating_tag"),
             type: "error",
           },
           { root: true },
@@ -305,7 +311,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: "Error deleting tag",
+            message: i18n.t("manage_tags.error_deleting_tag"),
             type: "error",
           },
           { root: true },
@@ -350,7 +356,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: "Error adding tag to media",
+            message: i18n.t("manage_tags.error_adding_tag_to_media"),
             type: "error",
           },
           { root: true },
@@ -387,7 +393,7 @@ export default {
         commit(
           "system/addNotification",
           {
-            message: "Error removing tag from media",
+            message: i18n.t("manage_tags.error_removing_tag_from_media"),
             type: "error",
           },
           { root: true },

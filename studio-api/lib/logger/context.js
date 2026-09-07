@@ -186,6 +186,15 @@ class LoggerContext {
           },
           info: cache.users[userId],
         }
+
+        const adminId = req.payload.data.adminId
+        if (adminId) {
+          await storeCacheUser(adminId)
+          context.user.impersonatedBy = {
+            id: adminId,
+            info: cache.users[adminId],
+          }
+        }
       }
       if (req?.params?.organizationId) {
         const organizationId = req.params.organizationId
@@ -254,6 +263,9 @@ class LoggerContext {
         case SOCKET_EVENTS.LEAVE:
         case SOCKET_EVENTS.DISCONNECT:
           context.socket.lastLeftAt = context.timestamp
+          if (socketEvent.reason) {
+            context.socket.disconnectReason = socketEvent.reason
+          }
           break
       }
 

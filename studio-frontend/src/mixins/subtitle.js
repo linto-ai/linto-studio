@@ -1,7 +1,6 @@
-import CONVERSATION_FORMATS from "../const/conversationFormat.js"
 import { bus } from "@/main.js"
 import { ScreenList } from "../models/screenList.js"
-import { workerConnect } from "../tools/worker-message.js"
+import { apiGetSubtitle, apiListSubtitleVersions } from "../api/subtitle.js"
 import { genericConversationMixin } from "./genericConversation.js"
 
 export const subtitleMixin = {
@@ -24,74 +23,40 @@ export const subtitleMixin = {
       }
     },
   },
+  created() {
+    bus.$on("subtitle_versions_refresh", this.refreshVersions)
+    bus.$on("subtitle_versions_deleted", this.onVersionsDeleted)
+  },
+  beforeDestroy() {
+    bus.$off("subtitle_versions_refresh", this.refreshVersions)
+    bus.$off("subtitle_versions_deleted", this.onVersionsDeleted)
+  },
   methods: {
-    async workerConnect(conversationId, token, userId) {
-      workerConnect(
-        conversationId,
-        token,
-        userId,
-        CONVERSATION_FORMATS.subtitles,
+    // Loads the version list alongside the conversation (see genericConversationMixin)
+    async initConversationHook() {
+      await this.refreshVersions()
+    },
+    async refreshVersions() {
+      const res = await apiListSubtitleVersions(this.conversationId)
+      this.$set(
+        this.conversation,
+        "subtitleVersions",
+        res?.status === "success" ? res.data : [],
       )
     },
-    async specificWorkerOnMessage(event) {
-      switch (event.data.action) {
-        case "api_error":
-          bus.$emit("app_notif", {
-            status: "error",
-            message: event.data.params,
-            timeout: null,
-            redirect: false,
-          })
-          break
-        case "subtitles_loaded":
-          this.subtitleObj = event.data.params.subtitles
-          this.subtitleLoaded = true
-          break
-        case "new_version":
-          this.conversation.subtitleVersions.push(event.data.params)
-          break
-        case "version_deleted":
-          this.deleteVersions(event.data.params)
-          break
-        case "screen_update":
-          this.screenUpdateFromWebsocket(
-            event.data.params.screenId,
-            event.data.params.changes,
-          )
-          break
-        case "add_screen":
-          this.screenAddFromWebsocket(event.data.params)
-          break
-        case "screen_delete":
-          this.screenDeleteFromWebsocket(event.data.params)
-          break
-        case "merge_screen":
-          this.screenMergeFromWebsocket(event.data.params)
-          break
-        default:
-          break
+    async loadSubtitle(subtitleId) {
+      // Reset so the subtitleLoaded watcher rebuilds screens on every load
+      this.subtitleLoaded = false
+      const res = await apiGetSubtitle(this.conversationId, subtitleId)
+      if (res?.status === "success") {
+        this.subtitleObj = res.data
+        this.subtitleLoaded = true
+      } else {
+        this.error = true
       }
     },
-    screenUpdateFromWebsocket(screenId, changes) {
-      let screenObj = this.screens.get(screenId)
-      if (screenObj) {
-        bus.$emit("refresh_screen", { screenId, changes })
-        let screen = screenObj.screen
-        for (const [key, value] of Object.entries(changes)) {
-          screen[key] = value
-        }
-      }
-    },
-    screenDeleteFromWebsocket({ delta }) {
-      this.screens.applyDelta(delta)
-    },
-    screenMergeFromWebsocket({ screenId, deleteAfter }) {
-      let deletedId = this.screens.merge(screenId, deleteAfter)
-      bus.$emit("merge_screen", { screenId, deletedId })
-    },
-    screenAddFromWebsocket({ after, screenId, newScreen }) {
-      this.screens.add(screenId, newScreen, after)
-      bus.$emit("add_screen", { newScreen })
+    onVersionsDeleted(versionIds) {
+      this.deleteVersions(versionIds)
     },
     deleteFromArray(elem, array) {
       let index = array.findIndex((e) => e === elem)
@@ -109,22 +74,6 @@ export const subtitleMixin = {
         }
         this.deleteFromArray(versionId, this.selectedVersions)
       }
-    },
-    updateConversationTurns(events) {
-      this.conversation.text = events.value
-      setTimeout(() => {
-        bus.$emit("refresh_spk_timebox", {})
-      }, 200)
-    },
-    updateSpeakerName(speakerId, speakerName) {
-      this.conversation.speakers.find(
-        (spk) => spk.speaker_id === speakerId,
-      ).speaker_name = speakerName
-    },
-    updateSpeakerTurn(turnId, speakerId) {
-      this.conversation.text.find(
-        (turn) => turn.turn_id === turnId,
-      ).speaker_id = speakerId
     },
   },
 }

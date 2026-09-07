@@ -1,0 +1,17 @@
+module.exports = {
+  ...require("./onJoin"),
+  ...require("./onLeave"),
+  ...require("./onUpdateTurn"),
+  ...require("./onLockTurn"),
+  ...require("./onUnlockTurn"),
+  ...require("./onSplitTurn"),
+  ...require("./onDeleteTurn"),
+  ...require("./onMergeTurns"),
+  ...require("./onUpdateTurnSpeaker"),
+  ...require("./onRenameSpeaker"),
+  ...require("./onReplaceSpeaker"),
+  ...require("./onUndo"),
+  ...require("./onRedo"),
+  ...require("./onDisconnect"),
+  ...require("./releaseSocketLocks"),
+}

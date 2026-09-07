@@ -116,9 +116,16 @@ function resetPlayedFiles(db) {
 
 async function doMigration(versionStep, db, step, resetPlayed = false) {
   try {
-    const migrationFiles = await fsPromises.readdir(
-      `${process.cwd()}/components/MongoMigration/version/${versionStep}`,
-    )
+    const migrationFiles = (
+      await fsPromises.readdir(
+        `${process.cwd()}/components/MongoMigration/version/${versionStep}`,
+      )
+    ).sort((a, b) => {
+      // Assure that version.js is always played last
+      if (a === "version.js") return 1
+      if (b === "version.js") return -1
+      return a.localeCompare(b)
+    })
     if (step === "up")
       logger.info(`Migration ${step} to version ${versionStep}`)
     else logger.info(`Migration ${step} from version ${versionStep}`)

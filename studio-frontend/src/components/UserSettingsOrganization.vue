@@ -43,7 +43,7 @@
     </GenericTable>
     <div v-else>
       <div>{{ error }}</div>
-      <Button @click="retry" variant="secondary" label="Retry" />
+      <Button @click="retry" variant="secondary" :label="$t('common.retry')" />
     </div>
   </section>
 </template>

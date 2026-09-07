@@ -3,7 +3,7 @@ APPLICATION_NAME=LinTO Studio
 LOG_LEVEL=debug
 LOG_FORMAT=text
 
-COMPONENTS=WebServer,MongoMigration
+COMPONENTS=WebServer,IoHandler,MongoMigration,EditorHandler
 WEBSERVER_HTTP_PORT=80
 WEBSERVER_SESSION_SECRET=secret
 
@@ -23,10 +23,14 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.8.5
+DB_MIGRATION_TARGET=1.8.6
 
 # STT Config
 GATEWAY_SERVICES=https://<domain>
+
+# Default segment resize for transcription results, request values take precedence
+DEFAULT_SEGMENT_CHAR_SIZE=2000
+DEFAULT_SEGMENT_WORD_SIZE=
 
 # LLM Gateway V2 Config
 # HTTP API endpoint (e.g., http://localhost:8010)
@@ -134,6 +138,7 @@ BROKER_PROTOCOL=mqtt
 TOKEN_DAYS_TIME=7d
 EXTENDED_TOKEN_DAYS_TIME=14d
 REFRESH_TOKEN_DAYS_TIME=14d
+IMPERSONATION_TOKEN_DAYS_TIME=1h
 
 # Authentification settings
 JWT_ALGORITHM=HS256

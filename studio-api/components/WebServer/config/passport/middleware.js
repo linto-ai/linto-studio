@@ -25,8 +25,6 @@ const {
 } = require(`${process.cwd()}/components/WebServer/error/exception/auth`)
 const refreshToken = require("./token/refresh")
 
-const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
-
 PROVIDER.loadEnabledStrategies()
 
 const authenticateUser = (strategy, req, res, next) => {
@@ -129,13 +127,8 @@ module.exports = {
         },
       }
 
-      if (req.query.impersonateUser) {
-        const user = await model.users.getById(tokenData.data.userId, true)
-        // We need to check if the user is a super admin
-        if (user[0].role >= ROLE.SYSTEM_ADMINISTRATOR) {
-          req.payload.data.adminId = tokenData.data.userId
-          req.payload.data.userId = req.query.impersonateUser
-        }
+      if (tokenData.data.impersonatedBy) {
+        req.payload.data.adminId = tokenData.data.impersonatedBy
       }
       next()
     },
@@ -162,6 +155,10 @@ module.exports = {
   ],
 
   // Socket middleware need to return an expcetion in case of error
+  generateSecretFromHeaders,
+
+  verifyAuthToken,
+
   isAuthenticateSocket: async (socket, next) => {
     try {
       const token = socket?.handshake?.auth?.token
@@ -179,19 +176,9 @@ module.exports = {
       } else if (!tokenData?.data?.userId || !tokenData?.data?.tokenId) {
         return next(new Error("Malformed token"))
       } else {
-        const secret = await generateSecretFromHeaders(undefined, {
-          payload: tokenData,
-        })
-
-        verifyJwt.verify(
-          token,
-          secret,
-          { algorithms: [algorithm] },
-          (err, decoded) => {
-            if (err) return next(new Error("Invalid or expired token"))
-            next() // Authentication successful
-          },
-        )
+        const userData = await verifyAuthToken(token)
+        if (!userData) return next(new Error("Invalid or expired token"))
+        next() // Authentication successful
       }
     } catch (err) {
       next(new Error("Authentication failed"))
@@ -220,26 +207,9 @@ module.exports = {
         throw new Error("Malformed token")
       }
 
-      const secret = await generateSecretFromHeaders(undefined, {
-        payload: tokenData,
-      })
-
-      const isValid = await new Promise((resolve) => {
-        verifyJwt.verify(
-          token,
-          secret,
-          { algorithms: [algorithm] },
-          (err, decoded) => {
-            if (err) {
-              resolve(false)
-            } else {
-              resolve(true)
-            }
-          },
-        )
-      })
+      const userData = await verifyAuthToken(token)
       return {
-        isAuth: isValid,
+        isAuth: !!userData,
         userId: tokenData.data.userId,
       }
     } catch (err) {
@@ -269,4 +239,38 @@ async function generateSecretFromHeaders(req, token) {
 
 async function generateRefreshSecretFromHeaders(req, token) {
   return generateSecret(req, token, "CM_REFRESH_SECRET")
+}
+
+/**
+ * Verify a user JWT without socket.io or Express context. Rejects public
+ * session tokens. Returns the verified token data or null.
+ */
+async function verifyAuthToken(token) {
+  if (!token) return null
+  try {
+    const tokenData = jwtDecode(token + "")
+
+    if (tokenData?.data?.fromPublic && tokenData?.data?.fromSession) {
+      return null
+    }
+    if (!tokenData?.data?.userId || !tokenData?.data?.tokenId) return null
+
+    const secret = await generateSecretFromHeaders(undefined, {
+      payload: tokenData,
+    })
+
+    return new Promise((resolve) => {
+      verifyJwt.verify(
+        token,
+        secret,
+        { algorithms: [algorithm] },
+        (err, decoded) => {
+          if (err) resolve(null)
+          else resolve(decoded.data)
+        },
+      )
+    })
+  } catch (err) {
+    return null
+  }
 }

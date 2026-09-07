@@ -12,33 +12,8 @@ export async function apiGetOrganizationById(
   const url = includeM2m
     ? `${BASE_API}/organizations/${organizationId}?includeM2m=true`
     : `${BASE_API}/organizations/${organizationId}`
-  const getOrganization = await sendRequest(
-    url,
-    { method: "get" },
-    null,
-    notif,
-  )
+  const getOrganization = await sendRequest(url, { method: "get" }, null, notif)
   return getOrganization?.data
-}
-
-// export async function getPublicOrganizationById(organizationId, notif) {
-//   const getOrganization = await sendRequest(
-//     `${BASE_API}/organizations/${organizationId}/public`,
-//     { method: "get" },
-//     null,
-//     notif
-//   )
-//   return getOrganization?.data
-// }
-
-export async function apiGetOrganizationsFromUser(userId, notif) {
-  const getOrganizations = await sendRequest(
-    `${BASE_API}/organizations`,
-    { method: "get" },
-    { impersonateUser: userId },
-    notif,
-  )
-  return getOrganizations
 }
 
 export async function apiGetUserOrganizations(notif) {

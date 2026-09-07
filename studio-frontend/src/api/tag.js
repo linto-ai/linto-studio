@@ -1,4 +1,4 @@
-import { sendRequest } from "../tools/sendRequest"
+import { sendRequest, throwIfError } from "../tools/sendRequest"
 import COLORS from "../const/colors"
 
 import { getEnv } from "@/tools/getEnv"
@@ -317,7 +317,7 @@ export async function apiCreateOrganizationTag(
     { name, description, categoryId, color, emoji, organizationId },
     notif,
   )
-  if (requestRes.status == "error") throw new Error(requestRes.data)
+  throwIfError(requestRes)
   return requestRes.data
 }
 
@@ -366,7 +366,9 @@ export async function apiUpdateTag(orgaId, tagId, payload, notif) {
     payload,
     notif,
   )
-  return requestRes
+  // 304 (nothing to update) is a valid outcome, not an error
+  if (requestRes.error?.response?.status !== 304) throwIfError(requestRes)
+  return requestRes.data
 }
 
 export async function apiDeleteTag(orgaId, tagId, notif) {

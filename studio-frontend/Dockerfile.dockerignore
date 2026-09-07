@@ -1,10 +1,10 @@
 # Only send what's needed to the Docker daemon
 *
 !studio-frontend/
-!studio-sdk/components/editor/
+!studio-sdk/components/transcript-ui/
 studio-frontend/node_modules/
 studio-frontend/dist/
 studio-frontend/.env
 studio-frontend/.env.*
 studio-frontend/.git/
-studio-sdk/components/editor/node_modules/
+studio-sdk/components/transcript-ui/node_modules/

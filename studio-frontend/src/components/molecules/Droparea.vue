@@ -1,7 +1,7 @@
 <template>
   <label
     class="droparea flex1 flex col justify-center align-center"
-    for="fileInput"
+    :for="inputId"
     @dragenter.prevent
     @dragover.prevent
     @dragleave.prevent
@@ -9,13 +9,13 @@
     <div class="droparea__description">
       <slot></slot>
       <div class="defaultOption">
-        <div for="fileInput" class="droparea__label">
+        <div class="droparea__label">
           {{ $t("droparea.openFileExplorer") }}
         </div>
         <input
           type="file"
           class="hidden"
-          id="fileInput"
+          :id="inputId"
           ref="input"
           :accept="acceptString"
           :multiple="multiple"
@@ -25,11 +25,13 @@
   </label>
 </template>
 <script>
+import { generateId } from "@/tools/generateId"
+
 export default {
   props: {
     accepts: {
       type: Array,
-      default: [],
+      default: () => [],
     },
     multiple: {
       type: Boolean,
@@ -39,6 +41,11 @@ export default {
       type: Function,
       default: null,
     },
+  },
+  data() {
+    return {
+      inputId: `droparea-file-input-${generateId()}`,
+    }
   },
   computed: {
     acceptString() {
@@ -78,7 +85,7 @@ export default {
     },
     async handleInputChange(e) {
       e.stopPropagation()
-      let input = document.getElementById("fileInput")
+      let input = this.$refs.input
       if (input.files.length > 0) {
         if (await this.checkFilesValidity(input.files)) {
           this.$emit("drop", input.files)

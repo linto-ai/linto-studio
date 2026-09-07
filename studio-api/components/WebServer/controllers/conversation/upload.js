@@ -6,6 +6,15 @@ const { downloadAudio } = require(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
+const {
+  ConversationError,
+  ConversationNoFileUploaded,
+  ConversationMetadataRequire,
+  ConversationNotFound,
+} = require(
+  `${process.cwd()}/components/WebServer/error/exception/conversation`,
+)
+
 const FormData = require("form-data")
 
 const utf8 = require("utf8")

@@ -2,15 +2,13 @@ import {
   apiGetAudioFileFromConversation,
   apiGetUserRightFromConversation,
   apiGetConversationById,
+  apiGetConversationByIdExcluding,
   apiGetConversationChild,
 } from "@/api/conversation.js"
 import { apiGetUsersByConversationId } from "@/api/user.js"
 
 import USER_RIGHTS from "@/const/userRights.js"
-import { bus } from "@/main.js"
 import { getCookie } from "@/tools/getCookie.js"
-import { workerDisconnect } from "@/tools/worker-message.js"
-import EditorWorker from "@/workers/collaboration-worker"
 import { conversationModelMixin } from "./conversationModel.js"
 
 export const genericConversationMixin = {
@@ -23,8 +21,6 @@ export const genericConversationMixin = {
       audioFile: "",
       conversationLoaded: false,
       userId: getCookie("userId"),
-      usersConnected: [],
-      focusFields: {},
       conversationUsersLoaded: false,
       conversationUsers: [],
       conversation: null,
@@ -37,7 +33,6 @@ export const genericConversationMixin = {
       selectedTranslation: "",
       userRight: 0,
       error: false,
-      hightlightsCategories: [],
     }
   },
   async created() {
@@ -47,13 +42,7 @@ export const genericConversationMixin = {
 
     await this.setupConversationTree()
 
-    await this.connectToWorker(this.initConversation)
-  },
-  beforeRouteLeave(to, from, next) {
-    this.debug("Leaving conversation component")
-    // disconnect worker + socket
-    workerDisconnect()
-    next()
+    await this.loadConversation()
   },
   computed: {
     userRights() {
@@ -137,7 +126,7 @@ export const genericConversationMixin = {
         "locale",
       ])
       this.selectedTranslation = "original"
-      this.connectToWorker(this.initConversation)
+      await this.loadConversation()
     },
     async switchTranslation(id) {
       let nextId = id
@@ -145,80 +134,21 @@ export const genericConversationMixin = {
         nextId = this.conversation.type.from_parent_id
       }
       this.conversationId = nextId
-      this.connectToWorker(this.initConversation)
+      await this.loadConversation()
     },
-    async connectToWorker(onLoad) {
-      await this.workerConnect(
+    async loadConversation() {
+      this.conversationLoaded = false
+      // The subtitle pages never read the transcription text: skip it
+      const conversation = await apiGetConversationByIdExcluding(
         this.conversationId,
-        this.userInfo.token,
-        this.userInfo._id,
+        ["text"],
       )
-      // Load conversation by asking worker
-      EditorWorker.workerSingleton.getWorker().onmessage = async (event) => {
-        if (event.data.action !== "user_focus_field") {
-          this.debug("Message from worker: %s", event.data.action)
-        }
-        switch (event.data.action) {
-          case "error":
-            this.error = true
-          case "disconnected":
-            this.userRight = 0
-            bus.$emit("conversation_disconnected")
-            break
-          case "conversation_loaded":
-            this.conversation = event.data.params
-            await onLoad()
-            break
-          case "title_updated":
-            bus.$emit("update_field", {
-              ...event.data.params,
-              flag: "conversationName",
-            })
-            bus.$emit("update_conversation_name", {})
-            break
-          case "description_updated":
-            bus.$emit("update_field", {
-              ...event.data.params,
-              flag: "conversationDescription",
-            })
-            break
-          case "user_focus_field":
-            this.usersConnected = event.data.params.users
-            this.focusFields = event.data.params.focusFields
-            break
-          case "user_right_updated":
-            await this.dispatchConversationUsers()
-            await this.fetchUserRight()
-            break
-          case "conv_orga_updated":
-            this.organizationMemberAccess = event.data.params.value.membersRight
-            await this.dispatchConversationUsers()
-            await this.fetchUserRight()
-            break
-          case "job_transcription_update":
-            const transcriptionState = event.data.params?.state ?? "pending"
-            if (!this.conversation.jobs) this.conversation.jobs = {}
-            this.conversation.jobs.transcription = {
-              state: transcriptionState,
-              steps: event.data.params.steps,
-              job_logs: event.data.params.job_logs,
-            }
-            bus.$emit("job_transcription_update", {})
-
-            if (transcriptionState === "done" || transcriptionState === "error")
-              window.location.reload()
-            break
-          case "sibling_job_transcription_update":
-            this.updateChannelJobState(
-              event.data.params.conversationId,
-              event.data.params.state,
-            )
-            break
-          default:
-            this.specificWorkerOnMessage(event)
-            break
-        }
+      if (!conversation) {
+        this.error = true
+        return
       }
+      this.conversation = conversation
+      await this.initConversation()
     },
     async initConversation() {
       await this.dispatchConversationUsers()

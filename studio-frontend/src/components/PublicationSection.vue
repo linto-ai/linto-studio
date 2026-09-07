@@ -263,6 +263,11 @@ export default {
       required: false,
       default: null,
     },
+    conversationId: {
+      type: String,
+      required: false,
+      default: null,
+    },
     serviceId: {
       type: String,
       required: false,
@@ -369,6 +374,10 @@ export default {
   },
   methods: {
     async loadTemplates() {
+      // organizationId can be unset on mount; the watcher retries once it resolves
+      if (!this.organizationId) {
+        return
+      }
       this.loading = true
       this.error = null
       try {
@@ -419,10 +428,15 @@ export default {
 
       try {
         // Fetch PDF blob for preview
-        const blob = await apiExportWithTemplate(this.jobId, "pdf", {
-          templateId: this.previewTemplate.id,
-          versionNumber: this.versionNumber,
-        })
+        const blob = await apiExportWithTemplate(
+          this.conversationId,
+          this.jobId,
+          "pdf",
+          {
+            templateId: this.previewTemplate.id,
+            versionNumber: this.versionNumber,
+          },
+        )
 
         if (blob) {
           this.previewUrl = URL.createObjectURL(blob)
@@ -440,10 +454,15 @@ export default {
       if (!this.jobId || !this.previewTemplate) return
 
       try {
-        const blob = await apiExportWithTemplate(this.jobId, format, {
-          templateId: this.previewTemplate.id,
-          versionNumber: this.versionNumber,
-        })
+        const blob = await apiExportWithTemplate(
+          this.conversationId,
+          this.jobId,
+          format,
+          {
+            templateId: this.previewTemplate.id,
+            versionNumber: this.versionNumber,
+          },
+        )
         if (blob) {
           this.downloadBlob(blob, format)
         }
@@ -470,10 +489,15 @@ export default {
       this.$emit("export-start", { format, template: this.selectedTemplate })
 
       try {
-        const blob = await apiExportWithTemplate(this.jobId, format, {
-          templateId: this.selectedTemplate.id,
-          versionNumber: this.versionNumber,
-        })
+        const blob = await apiExportWithTemplate(
+          this.conversationId,
+          this.jobId,
+          format,
+          {
+            templateId: this.selectedTemplate.id,
+            versionNumber: this.versionNumber,
+          },
+        )
 
         if (blob) {
           this.downloadBlob(blob, format)
@@ -591,7 +615,10 @@ export default {
       }
 
       try {
-        const success = await apiDeletePublicationTemplate(template.id)
+        const success = await apiDeletePublicationTemplate(
+          this.organizationId,
+          template.id,
+        )
 
         if (success) {
           this.$store.dispatch("system/addNotification", {
@@ -633,7 +660,7 @@ export default {
       }
     },
     async uploadTemplate() {
-      if (!this.canUpload) return
+      if (!this.canUpload || !this.organizationId) return
 
       this.uploading = true
       try {
@@ -642,13 +669,8 @@ export default {
           name_fr: this.newTemplate.name_fr.trim(),
           description_fr: this.newTemplate.description_fr?.trim() || "",
           scope: this.newTemplate.scope, // "personal" or "organization"
-        }
-
-        // Always include organization_id when available (required by LLM Gateway for scoped templates)
-        // For personal scope: org_id + user_id identifies a user's templates within an org
-        // For organization scope: org_id alone identifies org-wide templates
-        if (this.organizationId) {
-          uploadData.organization_id = this.organizationId
+          // organization_id is a required path segment of the upload route
+          organization_id: this.organizationId,
         }
 
         const result = await apiUploadPublicationTemplate(uploadData)

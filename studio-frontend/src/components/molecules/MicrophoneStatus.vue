@@ -92,12 +92,12 @@ export default {
 
 .microphone-status--connection_lost,
 .microphone-status--mic_lost {
-  border-color: var(--danger-color);
-  background: var(--danger-soft);
+  border-color: var(--neutral-50);
+  background: var(--neutral-10);
 }
 .microphone-status--connection_lost .microphone-status__dot,
 .microphone-status--mic_lost .microphone-status__dot {
-  background: var(--danger-color);
+  /* background: var(--danger-color); */
 }
 
 @keyframes microphone-status-blink {

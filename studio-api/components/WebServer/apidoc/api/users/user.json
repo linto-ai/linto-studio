@@ -356,6 +356,46 @@
       }
     }
   },
+  "/api/users/{userId}/impersonate": {
+    "post": {
+      "tags": ["users"],
+      "summary": "Generate a short-lived impersonation token for the target user. Requires platform system administrator rights. The token payload carries the acting admin identity for audit. Platform administrators cannot be impersonated.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/UserId"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "auth_token": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/UserNotFound"
+        }
+      }
+    }
+  },
   "/api/users/{userId}/": {
     "get": {
       "tags": ["users"],

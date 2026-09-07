@@ -1,8 +1,6 @@
 const MongoModel = require(`../model`)
 const moment = require("moment")
-const { escapeRegex } = require(
-  `${process.cwd()}/lib/dao/speakerIdentification/naming`,
-)
+const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 const { SYNC_STATE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )

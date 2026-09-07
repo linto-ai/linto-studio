@@ -66,10 +66,12 @@
       v-if="copy"
       @on-close="closeCopyModal"
       :defaultName="version.version + ' - copy'"
+      :conversationId="conversation._id"
       :subtitleId="version._id"></ModalCopySubtitles>
     <ModalDeleteSubtitle
       v-if="deleteSub"
       @on-close="closeDeleteModal"
+      :conversationId="conversation._id"
       :subtitleIds="[version._id]"></ModalDeleteSubtitle>
   </div>
 </template>

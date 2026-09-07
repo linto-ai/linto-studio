@@ -5,7 +5,7 @@ const {
   createVoiceSample,
   deleteVoiceSample,
 } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organization/voiceSample.js`,
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/speaker/voiceSample.js`,
 )
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)

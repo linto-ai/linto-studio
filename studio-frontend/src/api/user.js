@@ -89,6 +89,15 @@ export async function apiRemoveUserFromOrganisation(
   )
 }
 
+export async function apiImpersonateUser(userId) {
+  return await sendRequest(
+    `${BASE_API}/users/${userId}/impersonate`,
+    { method: "post" },
+    {},
+    null,
+  )
+}
+
 export async function apiLoginUser(email, password) {
   return await sendRequest(
     `${BASE_AUTH}/login`,

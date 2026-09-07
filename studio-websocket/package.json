@@ -1,6 +1,6 @@
 {
   "name": "linto-studio-websocket",
-  "version": "1.8.5",
+  "version": "1.8.6",
   "description": "Websocker server for the conversation manager.",
   "main": "src/app.js",
   "type": "module",
@@ -38,7 +38,7 @@
     "dotenv": "^16.0.2",
     "ora": "^6.1.2",
     "socket.io": "^4.5.2",
-    "uuid": "^9.0.0",
+    "uuid": "^11.1.1",
     "yjs": "^13.5.41"
   },
   "devDependencies": {

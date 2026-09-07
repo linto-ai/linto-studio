@@ -260,17 +260,24 @@ async function checkChannelsSecurityLevel(req, next) {
   }
 }
 
-async function checkSessionMatchingOrganization(req, next) {
-  try {
-    const session = await axios.get(
-      process.env.SESSION_API_ENDPOINT + `/sessions/${req.params.id}`,
-    )
-    if (session?.organizationId === req.params.organizationId) return next()
-    throw new Unauthorized()
-  } catch (err) {
-    next(err)
+function checkResourceMatchingOrganization(resource) {
+  return async (req, next) => {
+    try {
+      const data = await axios.get(
+        `${process.env.SESSION_API_ENDPOINT}/${resource}/${req.params.id}`,
+      )
+      if (data?.organizationId === req.params.organizationId) return next()
+      throw new Unauthorized()
+    } catch (err) {
+      next(err)
+    }
   }
 }
+
+const checkSessionMatchingOrganization =
+  checkResourceMatchingOrganization("sessions")
+const checkTemplateMatchingOrganization =
+  checkResourceMatchingOrganization("templates")
 
 function cleanPublicSessionContent(jsonString) {
   try {
@@ -312,6 +319,7 @@ module.exports = {
   generatPublicToken,
   filterPrivateSessions,
   checkSessionMatchingOrganization,
+  checkTemplateMatchingOrganization,
   checkChannelsSecurityLevel,
   cleanPublicSessionContent,
   cleanPublicChannelContent,

@@ -847,7 +847,7 @@ export default {
         await apiCreateUserVoiceSample(audioFile, duration)
 
         this.$store.dispatch("system/addNotification", {
-          message: this.$t("speaker_diarization.upload_success", { count: 1 }),
+          message: this.$tc("speaker_diarization.upload_success", 1),
           type: "success",
           timeout: 5000,
         })

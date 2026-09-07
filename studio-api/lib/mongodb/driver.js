@@ -2,7 +2,6 @@ const mongoDb = require("mongodb")
 const { MongoClient } = require("mongodb")
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 
-const index = require("./index/init.js")
 const user = require("./populate/init.js")
 
 let urlMongo = "mongodb://"
@@ -62,8 +61,6 @@ class MongoDriver {
           logger.info("> MongoDb : Reconnected")
         })
 
-        // Optionally, create indexes
-        index.createIndex(MongoDriver)
         user.createSuperAdmin()
       } catch (err) {
         logger.error("> MongoDB ERROR unable to connect:", err)

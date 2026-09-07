@@ -4,6 +4,15 @@ const getters = {
   getOrganizations(state) {
     return state.organizations
   },
+  impersonatedOrganizationId(state) {
+    return state.impersonatedOrganizationId
+  },
+  isImpersonatingCurrentOrganization(state) {
+    return (
+      !!state.impersonatedOrganizationId &&
+      state.impersonatedOrganizationId === state.currentOrganizationScope
+    )
+  },
   getOrganizationById: (state) => (id) => {
     return state.organizations[id]
   },

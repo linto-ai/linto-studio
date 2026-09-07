@@ -53,16 +53,6 @@ function displayName(user) {
   )
 }
 
-/**
- * Escape a string for safe inclusion in a regular expression
- * (used for case-insensitive name uniqueness lookups).
- * @param {string} str
- * @returns {string}
- */
-function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-}
-
 module.exports = {
   SPEAKER_TYPE,
   OBJECT_ID_REGEX,
@@ -71,5 +61,4 @@ module.exports = {
   qdrantCollectionName,
   speakerRef,
   displayName,
-  escapeRegex,
 }

@@ -8,8 +8,8 @@ const {
   qdrantCollectionName,
   speakerRef,
   displayName,
-  escapeRegex,
 } = require(`${process.cwd()}/lib/dao/speakerIdentification/naming`)
+const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 const ORG_ID = "0123456789abcdef01234567"
 const COLL_ID = "89abcdef0123456789abcdef"

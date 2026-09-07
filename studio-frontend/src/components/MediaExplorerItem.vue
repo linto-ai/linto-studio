@@ -29,6 +29,7 @@
             class="media-explorer-item__checkbox" />
         </div>
         <FavoriteStar
+          v-if="!isImpersonatingCurrentOrganization"
           :value="isFavorite"
           :title="$t('media_explorer.favorite')"
           @input="toggleFavorite" />
@@ -226,6 +227,7 @@ export default {
       currentOrganizationAllUsers: "getCurrentOrganizationAllUsers",
       currentOrganization: "getCurrentOrganization",
     }),
+    ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
 
     enableSecurityLevel() {
       return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
@@ -249,22 +251,36 @@ export default {
     },
 
     actionsItems() {
-      return [
-        {
-          id: "edit",
-          name: this.$t("media_explorer.line.edit_transcription"),
-          icon: "pencil",
-          color: "primary",
-          to: {
-            name: "conversations transcription",
-            params: {
-              conversationId: this.reactiveMedia._id,
-              organizationId: this.organizationId,
-            },
-            query: this.searchValue ? { search: this.searchValue } : {},
+      const detailsItem = {
+        id: "details",
+        name: this.$t("media_explorer.line.details"),
+        icon: "info",
+        color: "primary",
+      }
+
+      const transcriptionItem = {
+        id: "edit",
+        name: this.$t("media_explorer.line.edit_transcription"),
+        icon: "pencil",
+        color: "primary",
+        to: {
+          name: "conversations transcription",
+          params: {
+            conversationId: this.reactiveMedia._id,
+            organizationId: this.organizationId,
           },
-          disabled: this.status !== "done",
+          query: this.searchValue ? { search: this.searchValue } : {},
         },
+        disabled: this.status !== "done",
+      }
+
+      if (this.isImpersonatingCurrentOrganization) {
+        return [detailsItem, transcriptionItem]
+      }
+
+      return [
+        detailsItem,
+        transcriptionItem,
         {
           id: "subtitles",
           name: this.$t("media_explorer.line.edit_subtitles"),
@@ -281,18 +297,10 @@ export default {
           disabled: this.status !== "done",
         },
         {
-          id: "export",
-          name: this.$t("media_explorer.line.export"),
-          icon: "export",
+          id: "share",
+          name: this.$t("share_menu.button"),
+          icon: "share-network",
           color: "primary",
-          to: {
-            name: "conversations publish",
-            params: {
-              conversationId: this.reactiveMedia._id,
-              organizationId: this.organizationId,
-            },
-          },
-          disabled: this.status !== "done",
         },
         {
           id: "duplicate",
@@ -409,6 +417,12 @@ export default {
 
     handleActionClick(action) {
       switch (action.id) {
+        case "details":
+          this.$emit("details", this.media._id)
+          break
+        case "share":
+          this.$emit("share", this.media._id)
+          break
         case "duplicate":
           this.handleDuplicate()
           break

@@ -16,6 +16,7 @@ const {
 } = docx
 
 const { createTextRun } = require("./documentComponents.js")
+const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 const { format, parseISO, addSeconds } = require("date-fns")
 
 const { en } = require("date-fns/locale")
@@ -51,7 +52,7 @@ function processTurn(paragraphs_content, data, options = {}) {
         children.push(new TextRun(turn))
       } else {
         const escapedSpeakers = data.speakers
-          .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+          .map((s) => escapeRegex(s))
           .join("|")
         const phrasePattern = new RegExp(`(${escapedSpeakers})`, "ig")
         const segments = turn.split(phrasePattern)

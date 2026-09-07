@@ -9,7 +9,9 @@
     sidebar>
     <ActionBar>
       <div class="flex flex1 align-center gap-small">
-        <GenerateSubtitleButton :canEdit="canEdit"></GenerateSubtitleButton>
+        <GenerateSubtitleButton
+          :canEdit="canEdit"
+          :conversationId="conversationId"></GenerateSubtitleButton>
         <Button
           size="sm"
           label="Delete versions"
@@ -36,6 +38,7 @@
       v-model="selectedVersions"></SubtitleMenu>
     <ModalDeleteSubtitle
       v-if="deleteModal"
+      :conversationId="conversationId"
       :subtitleIds="selectedVersions"
       @on-close="() => (deleteModal = false)"></ModalDeleteSubtitle>
   </MainContentConversation>

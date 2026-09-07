@@ -210,6 +210,13 @@ export default {
     }
   },
   methods: {
+    async fetchOrganizations() {
+      const res = await apiGetAllOrganizations(0, {
+        pageSize: 1000,
+        hidePersonal: false,
+      })
+      this.organizations = res.list || []
+    },
     async fetchTranscriberProfile() {
       const req = await apiAdminGetTranscriberProfilesById(
         this.transcriberProfileId,

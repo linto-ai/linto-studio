@@ -188,6 +188,18 @@ class MongoModel {
     }
   }
 
+  async mongoBulkWrite(operations, options = {}) {
+    try {
+      const result = await MongoDriver.constructor.db
+        .collection(this.collection)
+        .bulkWrite(operations, options)
+      return result
+    } catch (error) {
+      debug("mongoBulkWrite error:", error)
+      throw error
+    }
+  }
+
   async mongoUpdateMany(query, operatorOrValues, values) {
     try {
       const update =

@@ -156,7 +156,10 @@ export default {
     sidebarFilterTagIds: "reloadMedias",
     sortField: "reloadMedias",
     sortOrder: "reloadMedias",
-    "$apiEventWS.state.connexionRestored"() {
+    // Resubscribe after every (re)connection; both subscribe methods are
+    // idempotent (they unsubscribe first).
+    "$apiEventWS.state.isConnected"(connected) {
+      if (!connected) return
       if (this.getCurrentScope === "organization") {
         this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
         this.$apiEventWS.subscribeFolderUpdate(this.currentOrganizationScope)

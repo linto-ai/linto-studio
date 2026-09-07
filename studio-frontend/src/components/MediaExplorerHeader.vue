@@ -17,7 +17,9 @@
               {{ totalCount }}
             </span>
 
-            <span v-else class="no-media"> No media </span>
+            <span v-else class="no-media">
+              {{ $t("media_explorer.no_media") }}
+            </span>
           </label>
         </div>
 

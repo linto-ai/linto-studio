@@ -269,7 +269,6 @@ export async function apiCreateConversation(
     serviceName,
     transcriptionConfig,
     speakerIdentificationCollections,
-    segmentCharSize,
     lang,
     endpoint,
     tracks,
@@ -289,7 +288,6 @@ export async function apiCreateConversation(
     formData.append("securityLevel", securityLevel)
     formData.append("serviceName", serviceName)
     formData.append("transcriptionConfig", transcriptionConfig)
-    formData.append("segmentCharSize", segmentCharSize)
     formData.append("lang", lang)
     formData.append("endpoint", endpoint)
 
@@ -358,6 +356,22 @@ export async function apiGetConversationById(
     `${BASE_API}/conversations/${conversationId}`,
     { method: "get" },
     { projection },
+    notif,
+  )
+  return getConversation?.data
+}
+
+// The API only honors projections through `key` (comma-separated field
+// names) + `projection` (0 to exclude them, 1 to select them)
+export async function apiGetConversationByIdExcluding(
+  conversationId,
+  excludedFields,
+  notif,
+) {
+  const getConversation = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}`,
+    { method: "get" },
+    { key: excludedFields.toString(), projection: 0 },
     notif,
   )
   return getConversation?.data

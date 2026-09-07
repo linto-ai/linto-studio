@@ -1,6 +1,10 @@
 import { resetCookie } from "./resetCookie.js"
+import { clearOriginalAuth } from "./userImpersonation.js"
 
-export function logout() {
+export function logout({ redirect = true } = {}) {
+  clearOriginalAuth()
   resetCookie()
-  window.location.href = "/"
+  if (redirect) {
+    window.location.href = "/"
+  }
 }

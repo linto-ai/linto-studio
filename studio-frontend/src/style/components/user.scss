@@ -23,10 +23,15 @@
     width: 100%;
   }
 
-  .user-info-inline__role {
+  .user-info-inline__role,
+  .user-info-inline__impersonated-by {
     font-weight: 400;
     font-size: 0.75rem;
     color: var(--text-secondary);
+  }
+
+  .user-info-inline__impersonated-by {
+    width: 100%;
   }
 
   .user-list__title {

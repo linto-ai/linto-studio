@@ -1,4 +1,6 @@
-const debug = require("debug")("linto:components:WebServer:controllers:files:store")
+const debug = require("debug")(
+  "linto:components:WebServer:controllers:files:store",
+)
 
 const { v4: uuidv4 } = require("uuid")
 const fs = require("fs")
@@ -6,6 +8,9 @@ const path = require("path")
 
 const { transformAudio, mergeAudio, mergeChannel } = require(
   `${process.cwd()}/components/WebServer/controllers/files/transform`,
+)
+const { FileUnsupportedMediaType } = require(
+  `${process.cwd()}/components/WebServer/error/exception/file`,
 )
 
 /*
@@ -42,6 +47,27 @@ const SYNC_STATE = Object.freeze({
   ERROR: "error",
 })
 
+const IMAGE_MAGIC_NUMBERS = [
+  {
+    extension: ".png",
+    offset: 0,
+    bytes: Buffer.from([0x89, 0x50, 0x4e, 0x47]),
+  },
+  { extension: ".jpg", offset: 0, bytes: Buffer.from([0xff, 0xd8, 0xff]) },
+  { extension: ".webp", offset: 8, bytes: Buffer.from("WEBP") },
+]
+
+// Detect the image type from its content, the client file name cannot be trusted.
+function detectImageExtension(data) {
+  const match = IMAGE_MAGIC_NUMBERS.find(
+    (magic) =>
+      data.length >= magic.offset + magic.bytes.length &&
+      data
+        .subarray(magic.offset, magic.offset + magic.bytes.length)
+        .equals(magic.bytes),
+  )
+  return match?.extension
+}
 
 async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
   try {
@@ -49,7 +75,12 @@ async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
     if (name !== undefined) fileName = name
 
     if (type === STORE_TYPE.PICTURE) {
-      const fileExtension = path.extname(files.name)
+      const fileExtension = detectImageExtension(files.data)
+      if (!fileExtension) {
+        throw new FileUnsupportedMediaType(
+          "Picture must be a png, jpg or webp image",
+        )
+      }
 
       fs.writeFileSync(
         `${getStorageFolder()}/${getPictureFolder()}/${fileName}${fileExtension}`,
@@ -166,16 +197,17 @@ const ALLOWED_AUDIO_TYPES = [
   "audio/ogg",
   "audio/flac",
   "audio/mp4",
+  "audio/x-m4a",
+  "audio/m4a",
+  "audio/aac",
 ]
 const ALLOWED_AUDIO_TYPES_STR = ALLOWED_AUDIO_TYPES.join(", ")
 
-/**
- * Validate an audio file's mimetype and size.
- * @param {object} audioFile - express-fileupload file object
- * @param {Function} UnsupportedMediaTypeError - error class for unsupported format
- * @param {Function} ValidationError - error class for size/other validation errors
- */
-function validateAudioFile(audioFile, UnsupportedMediaTypeError, ValidationError) {
+function validateAudioFile(
+  audioFile,
+  UnsupportedMediaTypeError,
+  ValidationError,
+) {
   if (!ALLOWED_AUDIO_TYPES.includes(audioFile.mimetype)) {
     throw new UnsupportedMediaTypeError(
       `Unsupported audio format: ${audioFile.mimetype}. Allowed: ${ALLOWED_AUDIO_TYPES_STR}`,
@@ -189,11 +221,7 @@ function validateAudioFile(audioFile, UnsupportedMediaTypeError, ValidationError
   }
 }
 
-/**
- * Store a voice sample audio file to disk.
- * @param {object} audioFile - express-fileupload file object
- * @returns {string} relative path within storage folder
- */
+/** Store a voice sample to disk; returns the path relative to the storage folder. */
 async function storeVoiceSampleFile(audioFile) {
   const folder = getVoiceSamplesFolder()
   const storePath = `${getStorageFolder()}/${folder}`
@@ -209,12 +237,7 @@ async function storeVoiceSampleFile(audioFile) {
   return `${folder}/${fileName}${ext}`
 }
 
-/**
- * Resolve a relative audioFilePath to an absolute path within the storage directory.
- * Returns null if the resolved path escapes the storage directory (path traversal).
- * @param {string} audioFilePath - relative path within storage
- * @returns {string|null} absolute path or null if invalid
- */
+/** Resolve audioFilePath inside the storage directory; null if it escapes it (path traversal). */
 function resolveStoragePath(audioFilePath) {
   const filePath = path.resolve(getStorageFolder(), audioFilePath)
   const storageDir = path.resolve(getStorageFolder()) + path.sep
@@ -224,10 +247,6 @@ function resolveStoragePath(audioFilePath) {
   return filePath
 }
 
-/**
- * Delete a single sample's audio file from disk.
- * @param {object} sample - sample doc with audioFilePath field
- */
 function deleteSampleFile(sample) {
   if (sample && sample.audioFilePath) {
     const filePath = resolveStoragePath(sample.audioFilePath)
@@ -235,10 +254,6 @@ function deleteSampleFile(sample) {
   }
 }
 
-/**
- * Delete audio files from an array of sample documents.
- * @param {Array} samples - array of sample docs with audioFilePath field
- */
 function cascadeDeleteSampleFiles(samples) {
   if (Array.isArray(samples)) {
     for (const s of samples) {
@@ -247,11 +262,6 @@ function cascadeDeleteSampleFiles(samples) {
   }
 }
 
-/**
- * Parse and validate an audio duration value from request body.
- * @param {*} rawDuration - raw value from req.body.audioDuration
- * @returns {number|undefined} validated duration or undefined
- */
 function parseAudioDuration(rawDuration) {
   if (!rawDuration) return undefined
   const duration = parseFloat(rawDuration)
@@ -264,21 +274,23 @@ function parseAudioDuration(rawDuration) {
 async function deleteAudioFileIfOrphaned(filepath) {
   if (!filepath) return
   const model = require(`${process.cwd()}/lib/mongodb/models`)
+  const { waveformFilePath } = require(
+    `${process.cwd()}/components/WebServer/controllers/files/waveform`,
+  )
   const count = await model.conversations.countByAudioFilepath(filepath)
   if (count === 0) {
     deleteFile(`${getStorageFolder()}/${filepath}`)
+    deleteFile(waveformFilePath(`${getStorageFolder()}/${filepath}`))
   }
 }
 
-/**
- * Store an audio file, create a voice sample document, and rollback on failure.
- * @param {object} audioFile - express-fileupload file object
- * @param {object} payload - fields to merge into the sample document
- * @param {object} sampleModel - the voiceSamples model instance
- * @param {Function} ErrorClass - error class to throw on creation failure
- * @returns {object} the created sample document
- */
-async function storeAndCreateSample(audioFile, payload, sampleModel, ErrorClass) {
+/** Store the audio file and create the sample document; deletes the file if creation fails. */
+async function storeAndCreateSample(
+  audioFile,
+  payload,
+  sampleModel,
+  ErrorClass,
+) {
   const audioFilePath = await storeVoiceSampleFile(audioFile)
   const fullPayload = { ...payload, audioFilePath, filename: audioFile.name }
 

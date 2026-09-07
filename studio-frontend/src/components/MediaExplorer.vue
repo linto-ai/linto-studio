@@ -16,7 +16,11 @@
         :selected-media-ids.sync="selectedMediaIds">
         <template #actions>
           <IsMobile>
-            <div class="flex gap-small" v-if="selectedMedias.length > 0">
+            <div
+              class="flex gap-small"
+              v-if="
+                selectedMedias.length > 0 && !isImpersonatingCurrentOrganization
+              ">
               <ConversationShareMultiple
                 :selectedConversations="selectedMedias"
                 :currentOrganizationScope="currentOrganizationScope"
@@ -49,7 +53,7 @@
             <div v-if="medias.length === 0" class="media-explorer__body__empty">
               <slot name="empty">
                 <div class="empty-state">
-                  <p>Aucun média trouvé</p>
+                  <p>{{ $t("media_explorer.no_media_found") }}</p>
                 </div>
               </slot>
             </div>
@@ -60,6 +64,8 @@
               :media="media"
               :selected-media-ids.sync="selectedMediaIds"
               :ref="'mediaItem' + index"
+              @share="handleShareAction"
+              @details="handleDetailsAction"
               class="media-explorer__body__item" />
           </div>
           <div v-if="loadingNextPage" class="loading-next-page">
@@ -75,6 +81,7 @@
               :currentOrganizationScope="currentOrganizationScope"
               :selected-medias="selectedMedias"
               :selected-media-ids.sync="selectedMediaIds"
+              :active-tab.sync="panelActiveTab"
               @resize="handleRightPanelResize" />
           </template>
         </IsMobile>
@@ -141,6 +148,7 @@ export default {
       currentOrganizationScope: "getCurrentOrganizationScope",
     }),
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
+    ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
     selectedMedias() {
       return this.medias.filter((m) => this.selectedMediaIds.includes(m._id))
     },
@@ -177,6 +185,10 @@ export default {
       showDeleteModal: false,
       rightPanelWidth: 500,
       selectedMediaIds: [],
+      panelActiveTab: "overview",
+      // Tab requested by a media action for the next selection change,
+      // instead of the default reset to "overview"
+      panelTabOverride: null,
     }
   },
   mounted() {
@@ -190,6 +202,10 @@ export default {
     this.cleanupObserver()
   },
   watch: {
+    selectedMediaIds() {
+      this.panelActiveTab = this.panelTabOverride ?? "overview"
+      this.panelTabOverride = null
+    },
     medias(newMedias) {
       // Clean up selectedMediaIds that no longer exist in the list
       const mediaIdSet = new Set(newMedias.map((m) => m._id))
@@ -231,6 +247,14 @@ export default {
     },
   },
   methods: {
+    handleShareAction(mediaId) {
+      this.panelTabOverride = "share"
+      this.selectedMediaIds = [mediaId]
+    },
+    handleDetailsAction(mediaId) {
+      // The selection watcher lands on the default "overview" tab
+      this.selectedMediaIds = [mediaId]
+    },
     reset() {
       this.selectedMediaIds = []
     },

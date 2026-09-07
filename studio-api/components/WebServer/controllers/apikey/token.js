@@ -6,7 +6,7 @@ const ms = require("ms")
 const TokenGenerator = require(
   `${process.cwd()}/components/WebServer/config/passport/token/generator`,
 )
-const { UserError } = require(
+const { UserError, UserNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 const PLATFORM_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)

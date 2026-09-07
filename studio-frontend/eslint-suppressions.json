@@ -1,0 +1,1429 @@
+{
+  "src/App.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/api/chat.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/api/conversation.d/apiGetConversationAsDoc.js": {
+    "no-unreachable": {
+      "count": 1
+    },
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/api/conversation.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/api/kpi.js": {
+    "no-undef": {
+      "count": 10
+    }
+  },
+  "src/api/plan.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/api/service.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/api/session.js": {
+    "no-undef": {
+      "count": 1
+    }
+  },
+  "src/components-mobile/BurgerMenu.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    },
+    "vue/return-in-computed-property": {
+      "count": 1
+    }
+  },
+  "src/components-mobile/MediaExplorerItem.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    },
+    "vue/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components-mobile/SessionDropdownChannelSelector.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components-mobile/SubtitleFullscreen.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/ApiTokenSettings.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/AppSettingsModal.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/ChatDrawer.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/ConversationCreateAudio.vue": {
+    "no-unused-vars": {
+      "count": 4
+    },
+    "vue/no-mutating-props": {
+      "count": 1
+    }
+  },
+  "src/components/ConversationCreateFileLine.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-mutating-props": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/ConversationShareMultiple.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/ConversationStatus.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/ConversationStatusError.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/DiarizationCollectionCard.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/ErrorPage.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/FolderSelector.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/FolderTreeNode.vue": {
+    "vue/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/KpiExportDropdown.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/MainContent.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/MainContentConversation.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/MainContentPublic.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/MediaExplorer.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/MediaExplorerChipStatus.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/MediaExplorerItem.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/MediaExplorerRightPanel.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    },
+    "vue/return-in-computed-property": {
+      "count": 1
+    }
+  },
+  "src/components/MediaExplorerRightPanelItem.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/MediaTranscriptionInfo.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/MetadataEditor.vue": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "src/components/MetadataEditorLine.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/MetadataList.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/ModalAddSessionChannels.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/ModalCreateOrganization.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/ModalCreateSystemToken.vue": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "src/components/ModalCreateToken.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/ModalCreateUser.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/ModalDeleteOrganization.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/ModalEditMetadata.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/ModalEditToken.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/ModalLeaveOrganization.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/ModalRemoveUserFromOrganization.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/ModalRenewSystemToken.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/ModalRenewToken.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/ModalSessionStats.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/ModalTranscriberProfile.vue": {
+    "no-undef": {
+      "count": 1
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/ModalViewToken.vue": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "src/components/ModalWatermarkSettings.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/OidcLoginButton.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/OrganizationStats.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/PdfViewer.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/PublicationSection.vue": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "src/components/QuickSessionNotif.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/QuickSessionSettings.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/ScreenEditorBox.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-textarea-mustache": {
+      "count": 1
+    },
+    "vue/require-v-for-key": {
+      "count": 1
+    }
+  },
+  "src/components/SearchResultPaginator.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SearchUsersList.vue": {
+    "vue/no-mutating-props": {
+      "count": 2
+    },
+    "vue/no-use-v-if-with-v-for": {
+      "count": 2
+    }
+  },
+  "src/components/SessionActiveList.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/SessionCard.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SessionChannelTurn.vue": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/components/SessionChannelTurnPartial.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SessionChannelsEndpoints.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SessionChannelsEndpointsLine.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SessionChannelsSelector.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SessionChannelsTable.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/SessionCreateContent.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "src/components/SessionEnded.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SessionListLine.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SessionLiveActions.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/SessionLiveNG.vue": {
+    "no-undef": {
+      "count": 2
+    },
+    "vue/no-mutating-props": {
+      "count": 1
+    }
+  },
+  "src/components/SessionLiveToolbar.vue": {
+    "no-dupe-keys": {
+      "count": 1
+    },
+    "vue/no-dupe-keys": {
+      "count": 1
+    }
+  },
+  "src/components/SessionNotStarted.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SessionSetupMicrophone.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/require-v-for-key": {
+      "count": 1
+    }
+  },
+  "src/components/SessionSubtitle.vue": {
+    "no-unused-vars": {
+      "count": 10
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SessionTranslationSelection.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    },
+    "vue/require-v-for-key": {
+      "count": 1
+    }
+  },
+  "src/components/SessionWeekList.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/SessionsKpi.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/SpeakerIdentificationSettings.vue": {
+    "no-unused-vars": {
+      "count": 3
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SpeakerLabelCollectionDetail.vue": {
+    "no-unused-vars": {
+      "count": 3
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/SpeakerLabelDetail.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/SubtitleEditor.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/SubtitleEditorBlock.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/require-v-for-key": {
+      "count": 1
+    }
+  },
+  "src/components/SubtitleMenu.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/SubtitlePlayer.vue": {
+    "no-unused-vars": {
+      "count": 5
+    }
+  },
+  "src/components/TabsVertical.vue": {
+    "vue/require-v-for-key": {
+      "count": 1
+    }
+  },
+  "src/components/TagManagement.vue": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/components/TagManagementDescriptionLine.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/TranscriberProfileConfigGoogle.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/TranscriberProfileEditor.vue": {
+    "no-undef": {
+      "count": 1
+    }
+  },
+  "src/components/TranscriberProfileEditorPlain.vue": {
+    "no-empty": {
+      "count": 1
+    },
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/components/UpdateOrganizationDeletion.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/UpdateOrganizationForm.vue": {
+    "vue/no-unused-components": {
+      "count": 2
+    }
+  },
+  "src/components/UpdateOrganizationPermissions.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/UpdateOrganizationSecurityLevel.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/UserInvite.vue": {
+    "no-unused-vars": {
+      "count": 3
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/UserSettingsAvatar.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/UserSettingsNotifications.vue": {
+    "no-undef": {
+      "count": 1
+    },
+    "no-unused-vars": {
+      "count": 1
+    },
+    "no-useless-assignment": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/UserSettingsOrganization.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/UserSettingsPassword.vue": {
+    "no-useless-assignment": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/UserSettingsPersonal.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "no-useless-assignment": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/UserSettingsPreferences.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/UserSettingsRights.vue": {
+    "vue/no-unused-components": {
+      "count": 2
+    }
+  },
+  "src/components/UserSettingsVisibility.vue": {
+    "no-undef": {
+      "count": 1
+    },
+    "no-unused-vars": {
+      "count": 2
+    },
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "src/components/UserSettingsVoiceOptIn.vue": {
+    "no-unused-vars": {
+      "count": 3
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/VisioCreateContent.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/VoiceSignatureUploadModal.vue": {
+    "no-useless-assignment": {
+      "count": 1
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/WeekSelector.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Alert.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Avatar.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Badge.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Box.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Breadcrumb.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "no-useless-assignment": {
+      "count": 1
+    },
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Button.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Checkbox.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Chip.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/ChipTag.vue": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/components/atoms/ContextMenu.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Emoji.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/FormatedUrl.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/InputSelector.vue": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/components/atoms/Loading.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Panel.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Popover.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Qrcode.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Radio.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/SwitchInput.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Tag.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/TextInput.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/atoms/Tooltip.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/multi-word-component-names": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/components/backoffice/DashboardFilters.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/conversationShare/ShareExternalSection.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/conversationShare/ShareOrgSection.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/conversationShare/ShareSearchResults.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/CustomSelect.vue": {
+    "vue/no-unused-components": {
+      "count": 5
+    },
+    "vue/require-v-for-key": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/Droparea.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/DurationInput.vue": {
+    "vue/require-v-for-key": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/EmojiPicker.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/FormCheckbox.vue": {
+    "vue/no-unused-components": {
+      "count": 2
+    }
+  },
+  "src/components/molecules/FormInput.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/FormRadio.vue": {
+    "vue/require-v-for-key": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/GenericTableHeader.vue": {
+    "vue/require-v-for-key": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/LanguageEndpointEditor.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/Modal.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/Pagination.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/PlatformRoleSelector.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    },
+    "vue/no-use-v-if-with-v-for": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/SelectorDescription.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/SelectorDescriptionContent.vue": {
+    "vue/require-v-for-key": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/Tabs.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/components/serviceSelector/ServiceEditor.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/require-v-for-key": {
+      "count": 1
+    }
+  },
+  "src/i18n.js": {
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "src/layouts/ActionBar.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/layouts/v2-layout.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 3
+    }
+  },
+  "src/lib/syllabic/syllabic.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/lib/syllabic/syllabicFR.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/mixins/conversationCreate.js": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "src/mixins/genericConversation.js": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "src/mixins/genericSessionList.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/mixins/orgaRole.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/mixins/platformRole.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/mixins/player.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/mixins/session.js": {
+    "no-unused-vars": {
+      "count": 5
+    }
+  },
+  "src/mixins/sessionMicrophone.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/mixins/voiceSignaturePlayback.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/models/SubtitleDrawer.js": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "no-useless-assignment": {
+      "count": 2
+    }
+  },
+  "src/models/screenList.js": {
+    "no-undef": {
+      "count": 1
+    }
+  },
+  "src/routers/app-router.js": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "src/services/llmServicesIntegration/actions/loadServices.js": {
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "src/services/llmServicesIntegration/actions/onLlmJobComplete.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/services/llmServicesIntegration/actions/onRegenerate.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/services/llmServicesIntegration/index.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/services/llmServicesIntegration/loadGenerations.js": {
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "src/services/websocket/ApiEventWebSocket.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/store/chat.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/store/folders/index.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/store/modules/mediaModuleFactory.js": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "src/store/organizations/actions.js": {
+    "no-unused-vars": {
+      "count": 5
+    }
+  },
+  "src/store/quickSession/index.js": {
+    "no-unused-vars": {
+      "count": 4
+    }
+  },
+  "src/store/settings/index.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/store/system/index.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/store/tags/index.js": {
+    "no-unused-vars": {
+      "count": 12
+    }
+  },
+  "src/store/user/actions.js": {
+    "no-unused-vars": {
+      "count": 6
+    }
+  },
+  "src/store/user/getters.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/svg/Desert.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/svg/Drawing.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/svg/Favorite.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/multi-word-component-names": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/svg/Microphone.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/svg/Raining.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/multi-word-component-names": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/svg/videoConf.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/tools/customDebug.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/tools/date/getStartOfWeek.js": {
+    "no-useless-assignment": {
+      "count": 1
+    }
+  },
+  "src/tools/divideTurn.js": {
+    "no-useless-assignment": {
+      "count": 2
+    }
+  },
+  "src/tools/formatCollaborativeText.js": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "src/tools/formatLanguage.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/tools/getUserRoleInOrganization.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/tools/test/mergeSession.js": {
+    "no-dupe-keys": {
+      "count": 2
+    }
+  },
+  "src/tools/test/mergeTurns.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/tools/throttle.js": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "src/views/404.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/views/ConversationsCreate.vue": {
+    "no-fallthrough": {
+      "count": 1
+    },
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "src/views/ConversationsSubtitle.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/views/ConversationsSubtitlesMenu.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/views/CreateAccount.vue": {
+    "no-empty": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/views/Error.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/views/Login.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/multi-word-component-names": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/views/NoOrganization.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/views/OrganizationsUpdate.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/views/QuickSession.vue": {
+    "no-unused-vars": {
+      "count": 8
+    }
+  },
+  "src/views/ResetPassword.vue": {
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/views/SessionLive.vue": {
+    "no-unused-vars": {
+      "count": 4
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/views/SessionSettings.vue": {
+    "no-empty": {
+      "count": 1
+    },
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "src/views/SessionsList.vue": {
+    "no-unused-vars": {
+      "count": 2
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    }
+  },
+  "src/views/UserSettings.vue": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/views/backoffice/ActivityList.vue": {
+    "no-unreachable": {
+      "count": 1
+    },
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/return-in-computed-property": {
+      "count": 2
+    },
+    "vue/valid-v-model": {
+      "count": 2
+    }
+  },
+  "src/views/backoffice/Home.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  },
+  "src/views/backoffice/OrganizationDetail.vue": {
+    "vue/no-reserved-component-names": {
+      "count": 1
+    }
+  },
+  "src/views/backoffice/TokenList.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-unused-components": {
+      "count": 1
+    },
+    "vue/no-unused-vars": {
+      "count": 1
+    },
+    "vue/no-useless-template-attributes": {
+      "count": 1
+    },
+    "vue/valid-v-model": {
+      "count": 1
+    }
+  },
+  "src/views/components.vue": {
+    "no-unused-vars": {
+      "count": 1
+    },
+    "vue/multi-word-component-names": {
+      "count": 1
+    },
+    "vue/no-unused-vars": {
+      "count": 1
+    },
+    "vue/valid-v-model": {
+      "count": 1
+    }
+  },
+  "src/views/oidc.vue": {
+    "vue/multi-word-component-names": {
+      "count": 1
+    }
+  }
+}

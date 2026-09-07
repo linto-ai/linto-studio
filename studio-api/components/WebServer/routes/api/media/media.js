@@ -4,6 +4,10 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const fs = require("fs")
 
+const { getOrCreateWaveform } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/waveform`,
+)
+
 module.exports = (webserver) => {
   return [
     {
@@ -27,6 +31,10 @@ module.exports = (webserver) => {
               res
                 .status(404)
                 .send({ message: "Error on fetching the audio file" })
+            } else if (req.query.mediatype === "json") {
+              const waveformPath = await getOrCreateWaveform(filePath)
+              res.setHeader("Content-Type", "application/json")
+              res.sendFile(waveformPath)
             } else {
               res.setHeader("Content-Type", "audio/mpeg")
               res.sendFile(filePath)

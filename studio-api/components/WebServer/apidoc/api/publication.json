@@ -1,14 +1,17 @@
 {
-  "/api/publication/templates": {
+  "/api/publication/organizations/{organizationId}/templates": {
     "get": {
       "tags": ["publication"],
-      "summary": "List the available publication templates",
+      "summary": "List the publication templates of an organization",
       "parameters": [
         {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
           "in": "query",
-          "name": "organization_id",
+          "name": "service_id",
           "required": false,
-          "description": "Also include the templates scoped to this organization",
+          "description": "Restrict to the templates linked to this service",
           "schema": {
             "type": "string"
           }
@@ -24,6 +27,9 @@
         "401": {
           "$ref": "#/components/responses/Unauthorized"
         },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
         "503": {
           "description": "LLM gateway unreachable"
         }
@@ -32,6 +38,11 @@
     "post": {
       "tags": ["publication"],
       "summary": "Upload a new publication template",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        }
+      ],
       "requestBody": {
         "content": {
           "multipart/form-data": {
@@ -59,10 +70,6 @@
                   "type": "string",
                   "description": "English description"
                 },
-                "organization_id": {
-                  "type": "string",
-                  "description": "Organization owning the template"
-                },
                 "scope": {
                   "type": "string",
                   "enum": ["personal", "organization"],
@@ -88,17 +95,23 @@
         "401": {
           "$ref": "#/components/responses/Unauthorized"
         },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
         "503": {
           "description": "LLM gateway unreachable"
         }
       }
     }
   },
-  "/api/publication/templates/{templateId}": {
+  "/api/publication/organizations/{organizationId}/templates/{templateId}": {
     "delete": {
       "tags": ["publication"],
       "summary": "Delete a publication template",
       "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
         {
           "in": "path",
           "name": "templateId",
@@ -117,6 +130,9 @@
         "401": {
           "$ref": "#/components/responses/Unauthorized"
         },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
         "404": {
           "$ref": "#/components/responses/NotFound"
         },
@@ -126,11 +142,14 @@
       }
     }
   },
-  "/api/publication/templates/{templateId}/placeholders": {
+  "/api/publication/organizations/{organizationId}/templates/{templateId}/placeholders": {
     "get": {
       "tags": ["publication"],
       "summary": "List the placeholders of a publication template",
       "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
         {
           "in": "path",
           "name": "templateId",
@@ -149,6 +168,9 @@
         "401": {
           "$ref": "#/components/responses/Unauthorized"
         },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
         "404": {
           "$ref": "#/components/responses/NotFound"
         },
@@ -158,11 +180,14 @@
       }
     }
   },
-  "/api/publication/{jobId}/export/{format}": {
+  "/api/publication/conversations/{conversationId}/jobs/{jobId}/export/{format}": {
     "get": {
       "tags": ["publication"],
       "summary": "Export an LLM job result with a publication template",
       "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        },
         {
           "$ref": "#/components/parameters/JobId"
         },
@@ -224,6 +249,9 @@
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
         },
         "404": {
           "$ref": "#/components/responses/NotFound"

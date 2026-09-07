@@ -12,6 +12,7 @@ const {
   deleteUser,
   recoveryAuth,
   sendVerificationEmail,
+  impersonateUser,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,
 )
@@ -71,6 +72,13 @@ module.exports = (webserver) => {
       method: "get",
       requireAuth: true,
       controller: searchUser,
+    },
+    {
+      path: "/:userId/impersonate",
+      method: "post",
+      requireAuth: true,
+      requireSystemAdministrator: true,
+      controller: impersonateUser,
     },
     {
       path: "/:userId",
