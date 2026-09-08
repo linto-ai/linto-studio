@@ -6,10 +6,13 @@ const ms = require("ms")
 const TokenGenerator = require(
   `${process.cwd()}/components/WebServer/config/passport/token/generator`,
 )
-const { UserError, UserNotFound } = require(
+const { UserError, UserNotFound, UserConflict } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 const PLATFORM_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+const { normalizeApiKeyMetadata } = require(
+  `${process.cwd()}/lib/utility/externalIdentity`,
+)
 
 function getExpiresIn(value, defaultValue = "14d") {
   defaultValue = process.env.EXTENDED_TOKEN_DAYS_TIME || defaultValue
@@ -65,19 +68,50 @@ async function generateApiKeyToken(
   }
 }
 
+// Client metadata comes as a JSON string (multipart form) or as an object
+// (JSON body). `externalIdentity` / `quickMeeting` are validated + normalised
+// (lowercase email); an invalid shape is a 400.
+function parseClientMetadata(raw) {
+  let parsed = raw
+  if (typeof raw === "string") {
+    try {
+      parsed = JSON.parse(raw)
+    } catch {
+      parsed = {}
+    }
+  }
+  try {
+    return normalizeApiKeyMetadata(parsed)
+  } catch (err) {
+    throw new UserError(`Invalid metadata: ${err.message}`)
+  }
+}
+
+// One key per (provider, subject) in an organization: the identity bridge
+// must resolve a person to exactly one key.
+async function assertExternalIdentityIsFree(identity, organizationId) {
+  if (!identity) return
+  const existing = await model.users.findApiKeyByExternalIdentity({
+    provider: identity.provider,
+    subject: identity.subject,
+    organizationId,
+  })
+  if (Array.isArray(existing) && existing.length > 0) {
+    throw new UserConflict(
+      `An API key already stands for ${identity.provider}:${identity.subject} in this organization`,
+      { code: "external_identity_conflict", userId: existing[0]._id },
+    )
+  }
+}
+
 async function createApiKey(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
   try {
     const { body, payload, params } = reqPayload
-    let clientMetadata = {}
-    if (body.metadata) {
-      try {
-        const parsed = JSON.parse(body.metadata)
-
-        if (typeof parsed === "object" && parsed !== null) {
-          clientMetadata = parsed
-        }
-      } catch {}
-    }
+    const clientMetadata = parseClientMetadata(body.metadata)
+    await assertExternalIdentityIsFree(
+      clientMetadata.externalIdentity,
+      params.organizationId,
+    )
 
     const metadata = {
       ...clientMetadata,
@@ -214,6 +248,7 @@ async function deleteApiKey(tokenId, revoke = false) {
 
 module.exports = {
   createApiKey,
+  parseClientMetadata,
   generateApiKeyToken,
   getApiKey,
   refreshApiKey,

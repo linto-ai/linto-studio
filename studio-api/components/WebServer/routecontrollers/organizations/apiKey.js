@@ -5,7 +5,7 @@ const ms = require("ms")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { OrganizationUnsupportedMediaType } = require(
+const { OrganizationError, OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
@@ -23,6 +23,12 @@ const TokenHandler = require(
   `${process.cwd()}/components/WebServer/controllers/apikey/token`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const {
+  normalizeEmail,
+  parseExternalSubject,
+  identityMatches,
+  parseBoolean,
+} = require(`${process.cwd()}/lib/utility/externalIdentity`)
 
 const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
@@ -50,8 +56,10 @@ function deletePictureIfCustom(img) {
 
 async function checkTokenBelongsToOrganization(params) {
   try {
-    const user = await model.users.getById(params.tokenId)
-    if (user.length !== 1 || user[0].type === USER_TYPE.M2M) {
+    // Full document: the public projection has no `type`, which used to turn
+    // this check into a no-op (and the condition was inverted).
+    const user = await model.users.getById(params.tokenId, true)
+    if (user.length !== 1 || user[0].type !== USER_TYPE.M2M) {
       throw new UserError("Requested API key not found")
     }
 
@@ -120,15 +128,42 @@ async function listApiKeyFromOrga(req, res, next) {
       .filter((u) => u.type === USER_TYPE.M2M)
       .map((u) => u.userId)
 
-    const apiKeyList = await TokenHandler.listApiKey(
+    let apiKeyList = await TokenHandler.listApiKey(
       apiKeyUsers,
       organization[0].users,
     )
+
+    // ?externalSubject=<provider>:<subject> / ?externalEmail=<email>: the
+    // keys standing for that external identity (used by provisioning systems
+    // to make their upserts idempotent).
+    const filter = externalIdentityFilter(req.query)
+    if (filter) {
+      apiKeyList = apiKeyList.filter((key) =>
+        identityMatches(key.metadata?.externalIdentity, filter),
+      )
+    }
 
     res.status(200).send(apiKeyList)
   } catch (err) {
     next(err)
   }
+}
+
+function externalIdentityFilter(query = {}) {
+  const filter = {}
+  if (query.externalSubject !== undefined) {
+    const parsed = parseExternalSubject(query.externalSubject)
+    if (!parsed) {
+      throw new UserError("externalSubject must be <provider>:<subject>")
+    }
+    Object.assign(filter, parsed)
+  }
+  if (query.externalEmail !== undefined) {
+    const email = normalizeEmail(query.externalEmail)
+    if (!email) throw new UserError("externalEmail is not a valid email")
+    filter.email = email
+  }
+  return Object.keys(filter).length ? filter : null
 }
 
 async function refreshApiKey(req, res, next) {
@@ -161,15 +196,22 @@ async function deleteApiKey(req, res, next) {
       req.params,
     )
 
-    // Clean up the custom picture file (if any) before deleting the user
-    // so we do not leak orphan files on disk.
-    deletePictureIfCustom(user.img)
+    // ?revoke=true only drops the key's tokens: the machine user stays a
+    // member of the organization (listed as expired), so it can be refreshed
+    // (PUT) later and past usage keeps its attribution. A plain DELETE
+    // removes the membership and the user.
+    const revokeOnly = req.query.revoke === "true"
+    if (!revokeOnly) {
+      // Clean up the custom picture file (if any) before deleting the user
+      // so we do not leak orphan files on disk.
+      deletePictureIfCustom(user.img)
 
-    organization.users = organization.users.filter(
-      (oUser) => oUser.userId !== req.params.tokenId,
-    )
-    const result = await model.organizations.update(organization)
-    if (result.matchedCount === 0) throw new OrganizationError()
+      organization.users = organization.users.filter(
+        (oUser) => oUser.userId !== req.params.tokenId,
+      )
+      const result = await model.organizations.update(organization)
+      if (result.matchedCount === 0) throw new OrganizationError()
+    }
 
     const tokens = await TokenHandler.deleteApiKey(
       req.params.tokenId,
@@ -219,20 +261,42 @@ async function updateApiKeyPicture(req, res, next) {
   }
 }
 
+// Metadata keys a client may change after creation. The external identity is
+// immutable (it IS the key's meaning), and the server-owned keys stay.
+const IMMUTABLE_METADATA_KEYS = ["externalIdentity", "createdBy", "organizationId"]
+
 async function updateApiKey(req, res, next) {
   try {
     const name = typeof req.body.name === "string" ? req.body.name.trim() : ""
-    if (!name) throw new UserError("Name is required")
+    const hasMetadata =
+      req.body.metadata !== undefined && req.body.metadata !== null
+    if (!name && !hasMetadata) throw new UserError("Name or metadata is required")
 
-    await checkTokenBelongsToOrganization(req.params)
+    const { user } = await checkTokenBelongsToOrganization(req.params)
 
-    const result = await model.users.update({
-      _id: req.params.tokenId,
-      firstname: name,
-    })
+    const values = { _id: req.params.tokenId }
+    if (name) values.firstname = name
+    if (hasMetadata) {
+      const patch = TokenHandler.parseClientMetadata(req.body.metadata)
+      for (const key of IMMUTABLE_METADATA_KEYS) {
+        if (patch[key] !== undefined) {
+          throw new UserError(`metadata.${key} cannot be changed`)
+        }
+      }
+      if (patch.quickMeeting !== undefined) {
+        patch.quickMeeting = parseBoolean(patch.quickMeeting)
+      }
+      values.metadata = { ...(user.metadata || {}), ...patch }
+    }
+
+    const result = await model.users.update(values)
     if (result.matchedCount === 0) throw new UserError("API key not updated")
 
-    res.status(200).send({ message: "API key updated", name })
+    res.status(200).send({
+      message: "API key updated",
+      ...(name ? { name } : {}),
+      ...(values.metadata ? { metadata: values.metadata } : {}),
+    })
   } catch (err) {
     next(err)
   }

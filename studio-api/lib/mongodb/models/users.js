@@ -268,6 +268,47 @@ class UsersModel extends MongoModel {
     }
   }
 
+  /**
+   * API keys standing for an external identity (`metadata.externalIdentity`),
+   * newest first. `organizationId` narrows to the keys created in that org
+   * (`metadata.organizationId`, set by the org-level token route).
+   */
+  async findApiKeyByExternalIdentity({ provider, subject, organizationId }) {
+    try {
+      const query = {
+        type: USER_TYPE.M2M,
+        "metadata.externalIdentity.provider": provider,
+        "metadata.externalIdentity.subject": subject,
+      }
+      if (organizationId) query["metadata.organizationId"] = organizationId
+      return await this.mongoRequest(query, {
+        projection: personal_projection,
+        sort: { created: -1 },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  /** Same, by the (lowercase) email of the external identity, any provider. */
+  async findApiKeyByExternalEmail({ email, organizationId }) {
+    try {
+      const query = {
+        type: USER_TYPE.M2M,
+        "metadata.externalIdentity.email": email,
+      }
+      if (organizationId) query["metadata.organizationId"] = organizationId
+      return await this.mongoRequest(query, {
+        projection: personal_projection,
+        sort: { created: -1 },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async listApiKeyList(ids, projection = {}) {
     try {
       const objectIdArray = ids.map((id) => {

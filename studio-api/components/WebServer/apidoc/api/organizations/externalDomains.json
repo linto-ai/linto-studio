@@ -1,0 +1,350 @@
+{
+  "/api/organizations/{organizationId}/external-domains/": {
+    "get": {
+      "tags": ["organizations admin"],
+      "summary": "List the external domains of the organization",
+      "description": "External domains: the paying / AI-transcription state of an email domain, pushed by an external billing system (Twake B2B) or set by hand. Org admin only.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "domain": {
+                      "type": "string",
+                      "example": "collectivite.fr"
+                    },
+                    "organizationId": {
+                      "type": "string"
+                    },
+                    "paying": {
+                      "type": "boolean"
+                    },
+                    "ai": {
+                      "type": "object",
+                      "properties": {
+                        "transcription": {
+                          "type": "boolean"
+                        },
+                        "liveMinutesPerMonth": {
+                          "type": "integer",
+                          "description": "-1 = unlimited (informative)"
+                        }
+                      }
+                    },
+                    "plan": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "active": {
+                      "type": "boolean",
+                      "description": "paying && ai.transcription — the identity bridge creates keys just-in-time for emails of an active domain"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/external-domains/{domain}": {
+    "get": {
+      "tags": ["organizations admin"],
+      "summary": "Get one external domain",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "domain",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Email domain (lowercase)"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "domain": {
+                    "type": "string",
+                    "example": "collectivite.fr"
+                  },
+                  "organizationId": {
+                    "type": "string"
+                  },
+                  "paying": {
+                    "type": "boolean"
+                  },
+                  "ai": {
+                    "type": "object",
+                    "properties": {
+                      "transcription": {
+                        "type": "boolean"
+                      },
+                      "liveMinutesPerMonth": {
+                        "type": "integer",
+                        "description": "-1 = unlimited (informative)"
+                      }
+                    }
+                  },
+                  "plan": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "paying && ai.transcription — the identity bridge creates keys just-in-time for emails of an active domain"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "put": {
+      "tags": ["organizations admin"],
+      "summary": "Create or update an external domain (idempotent upsert)",
+      "description": "A domain is ACTIVE when `paying` and `ai.transcription` are both true: the identity bridge (POST /api/auth/external/token) then creates an API key just-in-time for any email of that domain.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "domain",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Email domain (lowercase)"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "paying": {
+                  "type": "boolean"
+                },
+                "ai": {
+                  "type": "object",
+                  "properties": {
+                    "transcription": {
+                      "type": "boolean"
+                    },
+                    "liveMinutesPerMonth": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "plan": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "example": {
+                "paying": true,
+                "ai": {
+                  "transcription": true,
+                  "liveMinutesPerMonth": -1
+                },
+                "plan": "78acf033-0613-4d20-aecd-1b9adb4ad2a2",
+                "updatedAt": "2026-09-08T10:00:00Z"
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "domain": {
+                    "type": "string",
+                    "example": "collectivite.fr"
+                  },
+                  "organizationId": {
+                    "type": "string"
+                  },
+                  "paying": {
+                    "type": "boolean"
+                  },
+                  "ai": {
+                    "type": "object",
+                    "properties": {
+                      "transcription": {
+                        "type": "boolean"
+                      },
+                      "liveMinutesPerMonth": {
+                        "type": "integer",
+                        "description": "-1 = unlimited (informative)"
+                      }
+                    }
+                  },
+                  "plan": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "paying && ai.transcription — the identity bridge creates keys just-in-time for emails of an active domain"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "201": {
+          "description": "Created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "domain": {
+                    "type": "string",
+                    "example": "collectivite.fr"
+                  },
+                  "organizationId": {
+                    "type": "string"
+                  },
+                  "paying": {
+                    "type": "boolean"
+                  },
+                  "ai": {
+                    "type": "object",
+                    "properties": {
+                      "transcription": {
+                        "type": "boolean"
+                      },
+                      "liveMinutesPerMonth": {
+                        "type": "integer",
+                        "description": "-1 = unlimited (informative)"
+                      }
+                    }
+                  },
+                  "plan": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "paying && ai.transcription — the identity bridge creates keys just-in-time for emails of an active domain"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["organizations admin"],
+      "summary": "Remove an external domain",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "domain",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Email domain (lowercase)"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "domain": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

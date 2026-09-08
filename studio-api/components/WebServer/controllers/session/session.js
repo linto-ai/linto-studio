@@ -22,6 +22,7 @@ const PublicToken = require(
 )
 
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const crypto = require("crypto")
@@ -90,7 +91,30 @@ async function forceQueryParams(req, next) {
 
 const QUICK_MEETING_LIVE_STATUSES = ["ready", "active", "paused", "on_schedule"]
 
+// An API key provisioned with `metadata.quickMeeting: false` may not run a
+// quick meeting (the panel hides Start on the same flag; this is the server
+// side of that rule). Humans and keys without the flag are unaffected.
+async function assertQuickMeetingAllowedForKey(userId) {
+  const users = await model.users.getById(userId, true)
+  const user = Array.isArray(users) ? users[0] : undefined
+  if (
+    user &&
+    user.type === USER_TYPE.M2M &&
+    user.metadata?.quickMeeting === false
+  ) {
+    throw new SessionForbidden(
+      "This API key is not allowed to start a quick meeting",
+      { code: "quick_meeting_disabled" },
+    )
+  }
+}
+
 async function createQuickMeeting(req, next) {
+  try {
+    await assertQuickMeetingAllowedForKey(req.payload.data.userId)
+  } catch (err) {
+    return next(err)
+  }
   const name = quickMeetingName(req.payload.data.userId)
   const url =
     `${process.env.SESSION_API_ENDPOINT}/sessions` +

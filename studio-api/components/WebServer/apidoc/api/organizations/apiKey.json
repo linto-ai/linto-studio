@@ -27,7 +27,30 @@
                 },
                 "metadata": {
                   "type": "string",
-                  "description": "A JSON string representing metadata associated with the token"
+                  "description": "Metadata of the key: a JSON string (multipart) or a JSON object (application/json body). Recognised keys: `externalIdentity` {provider, subject, email} — the external person the key stands for (unique per (provider, subject) in the organization, email lowercased); `quickMeeting` (boolean, default true) — whether the key may start a quick meeting; anything else (e.g. `plan`) is stored as is.",
+                  "example": "{\"externalIdentity\":{\"provider\":\"twake\",\"subject\":\"jdoe\",\"email\":\"jdoe@twake.app\"},\"quickMeeting\":true,\"plan\":{\"isPaying\":true}}"
+                }
+              },
+              "required": ["role"]
+            }
+          },
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "integer"
+                },
+                "expires_in": {
+                  "type": "string",
+                  "default": "14d"
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Same keys as the multipart form, as an object"
                 }
               },
               "required": ["role"]
@@ -52,8 +75,12 @@
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
         }
-      }
+      },
+      "description": "`409 external_identity_conflict` when a key already stands for the same `externalIdentity` (provider, subject) in this organization."
     },
     "get": {
       "tags": ["organizations admin"],
@@ -61,6 +88,24 @@
       "parameters": [
         {
           "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "query",
+          "name": "externalSubject",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Only the keys standing for this external identity, as `<provider>:<subject>` (e.g. `twake:jdoe`)"
+        },
+        {
+          "in": "query",
+          "name": "externalEmail",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Only the keys whose external identity carries this email (case-insensitive)"
         }
       ],
       "responses": {
@@ -213,7 +258,7 @@
     },
     "patch": {
       "tags": ["organizations admin"],
-      "summary": "Update an API key name",
+      "summary": "Update an API key name and/or metadata",
       "parameters": [
         {
           "$ref": "#/components/parameters/OrganizationId"
@@ -231,9 +276,14 @@
                 "name": {
                   "type": "string",
                   "description": "New display name of the API key"
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Metadata keys to merge into the key's metadata (e.g. `plan`, `quickMeeting`). `externalIdentity`, `createdBy` and `organizationId` are immutable."
                 }
               },
-              "required": ["name"]
+              "required": [],
+              "description": "At least one of name / metadata"
             }
           }
         }

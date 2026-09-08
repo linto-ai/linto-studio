@@ -12,18 +12,28 @@ function getExpiresIn(defaultValue = "14d") {
   }
 }
 
+// Rows minted by the identity bridge (POST /api/auth/external/token): short
+// lived tokens of an API-key user, distinct from the key's own row so that the
+// key listing / refresh never picks one up, and revocable on their own.
+const KIND_EXCHANGE = "exchange"
+
 class TokenModel extends MongoModel {
   constructor() {
     super("tokens") // define name of 'users' collection elsewhere?
   }
 
-  async insert(user_id, salt, expires_in) {
+  static get KIND_EXCHANGE() {
+    return KIND_EXCHANGE
+  }
+
+  async insert(user_id, salt, expires_in, extra = undefined) {
     try {
       let payload = {
         userId: user_id.toString(),
         salt: salt,
         createdAt: new Date(Date.now()),
       }
+      if (extra && typeof extra === "object") Object.assign(payload, extra)
       if (expires_in) {
         payload.expiresIn = expires_in
         payload.expiresAt = new Date(Date.now() + expires_in)
@@ -52,10 +62,12 @@ class TokenModel extends MongoModel {
     }
   }
 
+  // The user's own tokens (never the bridge-minted exchange rows).
   async getTokenByUser(userId) {
     try {
       const query = {
         userId: userId,
+        kind: { $ne: KIND_EXCHANGE },
       }
       return await this.mongoRequest(query)
     } catch (error) {
@@ -89,11 +101,23 @@ class TokenModel extends MongoModel {
     }
   }
 
+  // Only the bridge-minted exchange rows of a user (immediate revocation of
+  // the short tokens while the key itself stays valid).
+  async deleteExchangeTokens(userId) {
+    try {
+      return await this.mongoDeleteMany({ userId, kind: KIND_EXCHANGE })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   // Should only return the createdAt and expiresAt fields
   async getTokenByList(ids) {
     try {
       const query = {
         userId: { $in: ids },
+        kind: { $ne: KIND_EXCHANGE },
       }
       return await this.mongoRequest(query, {
         userId: 1,

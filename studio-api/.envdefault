@@ -144,6 +144,13 @@ TOKEN_DAYS_TIME=7d
 EXTENDED_TOKEN_DAYS_TIME=14d
 REFRESH_TOKEN_DAYS_TIME=14d
 IMPERSONATION_TOKEN_DAYS_TIME=1h
+# Lifetime of the short tokens minted by the identity bridge
+# (POST /api/auth/external/token) for a user's linked API key
+EXTERNAL_EXCHANGE_TOKEN_TTL=1h
+# Organization role given to API keys created just-in-time by the identity
+# bridge for an active external domain (4 = MEETING_MANAGER, the full live flow)
+EXTERNAL_JIT_KEY_ROLE=4
+EXTERNAL_JIT_KEY_EXPIRES_IN=3650d
 
 # Authentification settings
 JWT_ALGORITHM=HS256

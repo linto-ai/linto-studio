@@ -19,6 +19,10 @@ module.exports = (webServer) => {
       require("./api/organization/tag")(webServer),
     "/api/organizations/:organizationId/folders":
       require("./api/organization/folders")(webServer),
+    "/api/organizations/:organizationId/external-domains":
+      require("./api/organization/externalDomains")(webServer),
+    // Identity bridge: external identity → short token of the linked API key.
+    "/api/auth/external": require("./api/auth/external")(webServer),
     "/api/conversations": [
       ...require("./api/conversation/share")(webServer),
       ...require("./api/conversation/conversations")(webServer),

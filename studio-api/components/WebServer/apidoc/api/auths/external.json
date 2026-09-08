@@ -1,0 +1,107 @@
+{
+  "/api/auth/external/token": {
+    "post": {
+      "tags": ["auth"],
+      "summary": "Identity bridge: exchange an external identity for a short token of the linked API key",
+      "description": "For integrations (an INTEGRATION credential, or a SYSTEM_ADMINISTRATOR with `?userScope=backoffice`). The caller proves who the person is; Studio finds the API key standing for that identity — by (provider, subject), then by email — or creates one just-in-time when the email's domain is active in an organization's external domains, and mints a token that expires after `EXTERNAL_EXCHANGE_TOKEN_TTL` (default 1h). The token inherits the key's organization role. The long-lived key is never returned.",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "`backoffice` — required only when the caller is a SYSTEM_ADMINISTRATOR rather than an INTEGRATION credential"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "example": "meet:linagora"
+                },
+                "subject": {
+                  "type": "string",
+                  "description": "Stable id of the person at the provider (e.g. the OIDC sub)"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "Email of the person (lowercased server-side); the pivot between systems and the input of the just-in-time creation"
+                }
+              },
+              "required": ["provider"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  },
+                  "expiresIn": {
+                    "type": "integer",
+                    "description": "seconds"
+                  },
+                  "expiresAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "userId": {
+                    "type": "string",
+                    "description": "id of the API key (a machine user)"
+                  },
+                  "organizationId": {
+                    "type": "string"
+                  },
+                  "capabilities": {
+                    "type": "object",
+                    "properties": {
+                      "quickMeeting": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  "externalIdentity": {
+                    "type": "object"
+                  },
+                  "created": {
+                    "type": "boolean",
+                    "description": "true when the key was created just-in-time by this call"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid identity (`code: invalid_external_identity`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "Caller is not an integration credential; the linked key has been revoked (`code: revoked`); or the key was provisioned for a domain that is no longer active (`code: domain_inactive`)"
+        },
+        "404": {
+          "description": "No key is linked to this identity and its domain is not active (`code: no_linked_key`)"
+        },
+        "429": {
+          "description": "Rate limited"
+        }
+      }
+    }
+  }
+}

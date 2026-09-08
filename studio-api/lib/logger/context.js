@@ -20,13 +20,16 @@ const cache = {
 async function storeCacheUser(userId) {
   if (cache.users[userId]) return cache.users[userId]
 
-  const user = (await model.users.getById(userId))[0]
+  const user = (await model.users.getById(userId, true))[0]
   if (!user) return null
 
   return (cache.users[userId] = {
     lastname: user.lastname,
     firstname: user.firstname,
     email: user.email,
+    // "machine" for an API key, "user" for a human: lets the activity log
+    // tell keys from people without a join on `users`.
+    type: user.type,
   })
 }
 
@@ -180,6 +183,10 @@ class LoggerContext {
         await storeCacheUser(userId) // Ensure user is cached
         context.user = {
           id: userId || null,
+          // Which credential acted (an API key's own token, an exchange token
+          // minted for it by the identity bridge, a human session…).
+          tokenId: req.payload.data.tokenId || null,
+          type: cache.users[userId]?.type || null,
           role: {
             value: roleValue || null,
             name: P_ROLE.print(roleValue || null),

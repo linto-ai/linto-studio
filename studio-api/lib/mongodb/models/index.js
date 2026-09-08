@@ -9,6 +9,7 @@ module.exports = {
   conversationSubtitles: require("./conversationSubtitles.js"),
   conversations: require("./conversations.js"),
   editorLocks: require("./editorLocks.js"),
+  externalDomains: require("./externalDomains.js"),
   favorites: require("./favorites.js"),
   folders: require("./folders.js"),
   kpi: {
