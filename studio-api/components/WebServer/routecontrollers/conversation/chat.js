@@ -14,8 +14,13 @@ const {
 
 /**
  * Build plain text transcript from conversation turns
+ *
+ * @param {Object} conversation - conversation-shaped object ({ text, speakers })
+ * @param {string} [separator=": "] - inserted between the speaker and the text.
+ *   The live catch-up route (routecontrollers/session/catchup.js) passes " : "
+ *   to match the "<locutor> : <text>" shape the gateway prompts expect.
  */
-function buildTranscriptText(conversation) {
+function buildTranscriptText(conversation, separator = ": ") {
   if (!conversation.text) return ""
   const speakerMap = {}
   if (conversation.speakers) {
@@ -26,7 +31,7 @@ function buildTranscriptText(conversation) {
   return conversation.text
     .map((turn) => {
       const name = speakerMap[turn.speaker_id] || "Unknown"
-      return `${name}: ${turn.segment}`
+      return `${name}${separator}${turn.segment}`
     })
     .join("\n")
 }
@@ -493,6 +498,7 @@ async function chatStatus(req, res) {
 }
 
 module.exports = {
+  buildTranscriptText,
   createSession,
   listSessions,
   getSession,

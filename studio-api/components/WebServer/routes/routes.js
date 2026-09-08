@@ -86,6 +86,10 @@ module.exports = (webServer) => {
     /* Alias are api only on the studio side */
     api_routes["/api/organizations/:organizationId/sessions"] =
       require("./api/sessions/data.js")(webServer)
+    /* Live "catch-up" for late joiners: dual-auth (publicSessionToken or an
+       org-member JWT) routes served by studio-api itself, not proxied. */
+    api_routes["/api/sessions"] =
+      require("./api/sessions/catchup.js")(webServer)
     api_routes["/api/administration"] = [
       ...api_routes["/api/administration"],
       ...require("./api/administration/sessions")(webServer),

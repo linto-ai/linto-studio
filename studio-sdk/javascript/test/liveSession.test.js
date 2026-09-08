@@ -123,9 +123,37 @@ describe("LinTO live meeting-bot flow", () => {
     expect(patches).toContainEqual({
       meta: { native: { "visio-native": { livekitUrl: "ws://lk", room: "r1", token: "jwt" } } },
     })
-    // The bot POST used the visio provider.
+    // The bot POST used the visio provider and asked for in-meeting captions
+    // (the native bot's in-room republish; an explicit false would opt out).
     const botCall = captured.find((c) => c.url.endsWith("/bots"))
     expect(JSON.parse(botCall.body).provider).toBe("visio")
+    expect(JSON.parse(botCall.body).enableDisplaySub).toBe(true)
+  })
+
+  test("launchVisioBot forwards an explicit enableDisplaySub:false to the bot", async () => {
+    const { mock, captured } = makeFetchMock([
+      {
+        match: (r) =>
+          r.method === "POST" && r.url.endsWith(`/organizations/${ORG}/quickMeeting/`),
+        payload: { id: "sess-2", channels: [{ id: "chan-2" }] },
+        status: 201,
+      },
+      {
+        match: (r) => r.method === "POST" && r.url.endsWith(`/organizations/${ORG}/bots`),
+        payload: { id: "bot-2" },
+        status: 201,
+      },
+    ])
+    global.fetch = mock
+
+    await linto.launchVisioBot({
+      organizationId: ORG,
+      channel: { name: "Main", transcriberProfileId: "p-1" },
+      botUrl: "https://meet.test/r2",
+      enableDisplaySub: false,
+    })
+    const botCall = captured.find((c) => c.url.endsWith("/bots"))
+    expect(JSON.parse(botCall.body).enableDisplaySub).toBe(false)
   })
 
   test("launchVisioBot rolls back the session when the bot fails", async () => {

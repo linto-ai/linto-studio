@@ -543,6 +543,10 @@ async function registerBroadcastCallback(organizationId, conversationId, jobId, 
 module.exports = {
   generateText,
   request,
+  // Exposed for the live catch-up route (routecontrollers/session/catchup.js),
+  // which resolves its own gateway service/flavor with the same helpers.
+  resolveServiceId,
+  resolveFlavorId,
   requestAPIV2,
   pollingLlm: processJobWithWebSocket,
   initWebSocketConnection,

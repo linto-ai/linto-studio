@@ -252,6 +252,126 @@ export class StudioApiService {
     )(args)
   }
 
+  // -- Live catch-up for late joiners (public session routes) ---------------
+  //
+  // These three hit `/api/sessions/public/{id}...`, which accept EITHER the
+  // `publicSessionToken` minted by GET /api/sessions/public/{id} (so an
+  // anonymous meeting guest can use them) or a user JWT of an org member. The
+  // token is therefore explicit and optional here: it falls back to the SDK's
+  // own auth token, and `getPublicSession` works with no token at all.
+
+  async getPublicSession({ sessionId, token } = {}) {
+    if (!sessionId) throw new Error("sessionId is required")
+    const res = await fetch(
+      `${this.baseApiUrl}/sessions/public/${sessionId}`,
+      { method: "GET", headers: this.#authHeaders(token) }
+    )
+    if (!res.ok) {
+      throw catchUpError(res.status, `Request failed with status ${res.status}`)
+    }
+    return await res.json()
+  }
+
+  async catchUpStatus({ sessionId, token } = {}) {
+    if (!sessionId) throw new Error("sessionId is required")
+    const res = await fetch(
+      `${this.baseApiUrl}/sessions/public/${sessionId}/catchup/status`,
+      { method: "GET", headers: this.#authHeaders(token) }
+    )
+    if (!res.ok) {
+      throw catchUpError(res.status, `Request failed with status ${res.status}`)
+    }
+    return await res.json()
+  }
+
+  /**
+   * POST the catch-up request and consume the `text/event-stream` answer with a
+   * ReadableStream: `event: token` chunks are appended (and handed to
+   * `onToken`), `event: done` carries `{cached}`, `event: error` rejects.
+   */
+  async catchUp({
+    sessionId,
+    token,
+    before,
+    channelIndex = 0,
+    maxChars,
+    onToken,
+    signal,
+  } = {}) {
+    if (!sessionId) throw new Error("sessionId is required")
+    const body = { channelIndex }
+    if (before !== undefined && before !== null) body.before = before
+    if (maxChars !== undefined && maxChars !== null) body.maxChars = maxChars
+
+    const res = await fetch(
+      `${this.baseApiUrl}/sessions/public/${sessionId}/catchup`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...this.#authHeaders(token),
+        },
+        body: JSON.stringify(body),
+        ...(signal ? { signal } : {}),
+      }
+    )
+
+    if (res.status === 204) {
+      throw catchUpError(204, "Nothing to catch up on yet")
+    }
+    if (!res.ok) {
+      throw catchUpError(res.status, `Request failed with status ${res.status}`)
+    }
+    if (!res.body || typeof res.body.getReader !== "function") {
+      throw new Error("Catch-up response is not streamable")
+    }
+
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ""
+    let eventType = null
+    let text = ""
+    let cached = false
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split("\n")
+      buffer = lines.pop()
+      for (const line of lines) {
+        if (line.startsWith("event: ")) {
+          eventType = line.slice(7).trim()
+          continue
+        }
+        if (!line.startsWith("data: ")) continue
+        let data = null
+        try {
+          data = JSON.parse(line.slice(6))
+        } catch (e) {
+          continue
+        }
+        if (eventType === "token" && data?.content) {
+          text += data.content
+          if (typeof onToken === "function") onToken(data.content, text)
+        } else if (eventType === "done") {
+          cached = !!data?.cached
+        } else if (eventType === "error") {
+          const err = new Error(data?.message || "Catch-up failed")
+          err.code = "catchup_error"
+          throw err
+        }
+      }
+    }
+
+    return { text, cached }
+  }
+
+  #authHeaders(token) {
+    const authToken = token || this.token
+    return authToken ? { Authorization: `Bearer ${authToken}` } : {}
+  }
+
   // -- Decorators --
 
   #withOrganizationId(method) {
@@ -772,6 +892,22 @@ export function generateServiceConfig(
 
 function removeLeadingSlash(str) {
   return str.replace(/^\/+/, "")
+}
+
+// Map a catch-up HTTP status to a typed error (VISIO-CATCHUP-PLAN.md §7.4).
+const CATCHUP_ERROR_CODES = {
+  204: "catchup_too_short",
+  401: "catchup_unauthorized",
+  403: "catchup_forbidden",
+  429: "catchup_rate_limited",
+  503: "catchup_unavailable",
+}
+
+export function catchUpError(status, message) {
+  const err = new Error(message)
+  err.status = status
+  err.code = CATCHUP_ERROR_CODES[status] || "catchup_error"
+  return err
 }
 
 // Build a `?a=1&b=2` query string, skipping null/undefined/empty values.

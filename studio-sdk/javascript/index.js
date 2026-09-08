@@ -572,6 +572,81 @@ class LinTO {
     return null
   }
 
+  // ── Live catch-up for late joiners ────────────────────────────────────────
+  // A participant who joins while the transcription is already running reads
+  // the history through `getPublicSession` and asks studio-api for an LLM
+  // summary of it with `catchUp`. Both accept the `publicSessionToken` minted
+  // by `getPublicSession` (so an anonymous guest works) or the SDK's own user
+  // token when it belongs to an org member.
+
+  /**
+   * Fetch a PUBLIC live session: its channels with `closedCaptions` /
+   * `translatedCaptions` (the whole history so far) plus the
+   * `publicSessionToken` to reuse for the catch-up calls and the live socket.
+   * Works without any token — the session must be `visibility: "public"`.
+   *
+   * @param {string} sessionId
+   * @param {Object} [options]
+   * @param {string} [options.token] - override the SDK token (rarely needed).
+   * @returns {Promise<Object>} the public session body.
+   */
+  async getPublicSession(sessionId, { token } = {}) {
+    return await this.apiService.getPublicSession({ sessionId, token })
+  }
+
+  /**
+   * Whether the deployment can produce a catch-up summary (an LLM gateway and a
+   * catch-up service are configured). Lets a panel hide the block entirely.
+   *
+   * @param {string} sessionId
+   * @param {Object} [options]
+   * @param {string} [options.token] - `publicSessionToken`; defaults to the SDK token.
+   * @returns {Promise<{enabled: boolean}>}
+   */
+  async catchUpStatus(sessionId, { token } = {}) {
+    return await this.apiService.catchUpStatus({ sessionId, token })
+  }
+
+  /**
+   * Stream the "what did I miss" summary of everything said BEFORE `before`.
+   *
+   * The answer is a `text/event-stream` consumed with a `ReadableStream`:
+   * every `token` event is appended and handed to `onToken`, and the promise
+   * resolves once the `done` event arrives.
+   *
+   * @param {string} sessionId
+   * @param {Object} [options]
+   * @param {string} [options.token] - `publicSessionToken`; defaults to the SDK token.
+   * @param {string} [options.before] - ISO-8601 join time; captions started
+   *   after it are excluded. Omitted = the whole transcript so far.
+   * @param {number} [options.channelIndex=0] - channel to summarize.
+   * @param {number} [options.maxChars] - cap on the transcript sent to the LLM
+   *   (studio-api keeps the LAST characters, dropping the oldest lines).
+   * @param {(chunk: string, fullText: string) => void} [options.onToken]
+   * @param {AbortSignal} [options.signal] - aborts the underlying fetch.
+   * @returns {Promise<{text: string, cached: boolean}>} `cached` is true when
+   *   the summary was replayed from studio-api's 60 s cache.
+   * @throws {Error} with a typed `err.code`: `catchup_too_short` (nothing to
+   *   summarize yet, HTTP 204), `catchup_forbidden` (403),
+   *   `catchup_unauthorized` (401), `catchup_rate_limited` (429),
+   *   `catchup_unavailable` (503, no LLM configured or gateway down), or
+   *   `catchup_error` carrying the gateway message as `err.message`.
+   */
+  async catchUp(
+    sessionId,
+    { token, before, channelIndex = 0, maxChars, onToken, signal } = {}
+  ) {
+    return await this.apiService.catchUp({
+      sessionId,
+      token,
+      before,
+      channelIndex,
+      maxChars,
+      onToken,
+      signal,
+    })
+  }
+
   /**
    * One-shot orchestration: create the quick-meeting, optionally patch its meta
    * (e.g. inject a native bot join token), make it public, then launch the bot.
@@ -585,6 +660,8 @@ class LinTO {
    * @param {string} opts.botUrl - the room URL the bot navigates to.
    * @param {string} [opts.provider="visio"]
    * @param {boolean} [opts.makePublic=false] - PATCH visibility:"public".
+   * @param {boolean} [opts.enableDisplaySub=true] - have the bot show the captions
+   *   in the meeting (native visio bot: republish them into the LiveKit room).
    * @param {(sessionId:string, channelId:string) => Promise<Object>} [opts.metaWithToken]
    *   - async hook returning the FULL meta to persist once the channel id is
    *   known (used to add a Meet-minted native join token before the bot starts).
@@ -597,6 +674,7 @@ class LinTO {
     provider = "visio",
     makePublic = false,
     metaWithToken,
+    enableDisplaySub = true,
   } = {}) {
     const session = await this.createQuickMeeting({
       organizationId,
@@ -643,6 +721,10 @@ class LinTO {
         url: botUrl,
         channelId,
         provider,
+        // Ask the bot to render the captions INSIDE the meeting: for the native
+        // visio bot this is the in-room republish (LiveKit transcription segments)
+        // that feeds the Meet overlay/panel, and an explicit `false` opts it out.
+        enableDisplaySub,
       })
       botId = getId(bot) || bot.id
     } catch (err) {
