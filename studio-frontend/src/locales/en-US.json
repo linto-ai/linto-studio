@@ -13,6 +13,10 @@
     "upgrade_done": "Welcome to {plan}!",
     "limit_reached": "You've reached the limit of your plan.",
     "feature_locked": "This feature is included in a team plan.",
+    "footer": {
+      "usage": "{used} / {total}",
+      "upgrade_cta": "Upgrade"
+    },
     "mode": {
       "normal": "SaaS",
       "comp": "Complimentary",
@@ -1105,8 +1109,6 @@
   "onboarding": {
     "welcome_title": "Welcome to LinTO Studio",
     "kicker": "Welcome to LinTO Studio",
-    "title": "Choose your plan",
-    "subtitle": "Pick a plan to open your organization. You can change it at any time from settings; counters reset at the start of every period.",
     "billing_period": {
       "label": "Billing period",
       "monthly": "Monthly",

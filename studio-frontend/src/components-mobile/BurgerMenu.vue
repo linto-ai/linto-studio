@@ -28,6 +28,10 @@
         :label="$t('navigation.conversation.start')"
         variant="primary"
         class="start-button" />
+
+      <IsCloud v-if="isAuthenticated && !backoffice">
+        <SaasUsageFooter />
+      </IsCloud>
     </div>
   </nav>
 </template>
@@ -37,6 +41,7 @@ import { mapGetters } from "vuex"
 import { getEnv } from "@/tools/getEnv"
 import MenuBrandHeader from "@/components/MenuBrandHeader.vue"
 import MenuOrgSwitcher from "@/components/MenuOrgSwitcher.vue"
+import IsCloud from "@/components/atoms/IsCloud.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import { userName } from "@/tools/userName.js"
@@ -45,6 +50,7 @@ import { logout } from "@/tools/logout"
 import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
 import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
 import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
+import SaasUsageFooter from "@/components-cloud/SaasUsageFooter.vue"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
@@ -118,6 +124,8 @@ export default {
     MediaExplorerMenu,
     BackofficeSidebar,
     MediaExplorerMenuLabels,
+    IsCloud,
+    SaasUsageFooter,
   },
 }
 </script>

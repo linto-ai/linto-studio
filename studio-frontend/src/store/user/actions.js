@@ -48,6 +48,12 @@ const actions = {
     )
   },
   async register({ commit }, payload) {},
+  // Closing OnboardingWizard.vue (any trigger: plan picked, Cancel, overlay,
+  // Escape) calls this — client-side only for now, so it resets on reload
+  // until this commits the API call marking onboarding done server-side.
+  dismissOnboarding({ commit, state }) {
+    commit("setUserInfos", { ...state.userInfos, onboarded: true })
+  },
   async updateUser({ commit }, payload) {
     const req = await apiUpdateUserInfo(payload, null)
 

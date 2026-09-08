@@ -1,17 +1,21 @@
 <template>
   <IsCloud>
     <BareModal
-      v-if="needsOnboarding"
       v-model="isOpen"
       size="xl"
       :aria-label="$t('onboarding.welcome_title')"
-      :overlay-close="false"
-      :cancel-on-escape="false">
+      :overlay-close="!needsOnboarding"
+      :cancel-on-escape="!needsOnboarding">
       <div class="onboarding">
         <div class="onboarding__intro">
-          <p class="onboarding__kicker">{{ $t("onboarding.kicker") }}</p>
-          <h1 class="onboarding__title">{{ $t("onboarding.title") }}</h1>
-          <p class="onboarding__subtitle">{{ $t("onboarding.subtitle") }}</p>
+          <p v-if="needsOnboarding" class="onboarding__kicker">
+            {{ $t("onboarding.kicker") }}
+          </p>
+          <h1 class="onboarding__title">{{ titleText }}</h1>
+          <p v-if="subtitle" class="onboarding__subtitle">{{ subtitle }}</p>
+          <p v-if="contextMessage" class="onboarding__context">
+            {{ contextMessage }}
+          </p>
 
           <SegmentedControl
             class="onboarding__period"
@@ -49,13 +53,21 @@
             <ph-icon name="info" size="sm" />
             <span>{{ $t("onboarding.payment_note") }}</span>
           </p>
-          <Button
-            variant="primary"
-            icon-right="arrow-right"
-            :disabled="plansLoading"
-            @click="confirmPlan">
-            {{ $t("onboarding.continue", { plan: selectedPlanName }) }}
-          </Button>
+          <div class="onboarding__actions">
+            <Button
+              v-if="!needsOnboarding"
+              variant="secondary"
+              @click="isOpen = false">
+              {{ $t("billing.cancel") }}
+            </Button>
+            <Button
+              variant="primary"
+              icon-right="arrow-right"
+              :disabled="plansLoading"
+              @click="confirmPlan">
+              {{ $t("onboarding.continue", { plan: selectedPlanName }) }}
+            </Button>
+          </div>
         </footer>
       </div>
     </BareModal>
@@ -82,20 +94,64 @@ const PLAN_LOCALE_KEY = { free_payg: "free", premium: "premium", business: "busi
 export default {
   name: "OnboardingWizard",
   components: { IsCloud, BareModal, SegmentedControl, PlanCard },
+  props: {
+    // Both optional: unset elsewhere for now (mounted without props in
+    // App.vue), so title falls back to billing.upgrade_title and the
+    // subtitle line doesn't render at all rather than show filler text.
+    title: { type: String, default: null },
+    subtitle: { type: String, default: null },
+  },
   data() {
     return {
       billingPeriod: "monthly",
       selectedPlan: "premium",
       plansLoading: true,
-      // BareModal's own open state (v-model). needsOnboarding (server) still
-      // gates whether the wizard mounts at all; this only lets confirmPlan()
-      // close it locally for the free plan, without touching the server flag.
-      isOpen: true,
     }
   },
   computed: {
     ...mapGetters("user", ["needsOnboarding"]),
-    ...mapGetters("billing", ["plans"]),
+    ...mapGetters("billing", ["plans", "upgradeModalOpen", "upgradeReason"]),
+    // Shown for a brand-new account (server truth, can't be dismissed) or
+    // whenever something asks to upgrade (footer button, quota/feature gate,
+    // subscription page) — see store/billing openUpgradeModal.
+    showWizard() {
+      return this.needsOnboarding || this.upgradeModalOpen
+    },
+    // BareModal's v-model, permanently mounted (see molecules/BareModal.vue:
+    // it registers/unregisters its content into the popup stack purely off
+    // this value, no v-if needed on top). Derived, never a local flag: get
+    // reflects the store, set writes back to it so closing — by whichever
+    // path (Cancel, overlay, Escape, confirmPlan's free-plan branch) — can
+    // never get the two out of sync.
+    isOpen: {
+      get() {
+        return this.showWizard
+      },
+      set(value) {
+        if (value) return
+        this.closeUpgradeModal()
+        this.dismissOnboarding()
+      },
+    },
+    titleText() {
+      return this.title || this.$t("billing.upgrade_title")
+    },
+    // Why the wizard opened itself for an upgrade (quota exceeded / feature
+    // locked) — set on store/billing.upgradeReason, mirrors the old
+    // UpgradeModal's context line.
+    contextMessage() {
+      if (!this.upgradeReason) return ""
+      if (
+        this.upgradeReason.reason === "quota_exceeded" ||
+        this.upgradeReason.reason === "credit_exhausted"
+      ) {
+        return this.$t("billing.limit_reached")
+      }
+      if (this.upgradeReason.reason === "feature_disabled") {
+        return this.$t("billing.feature_locked")
+      }
+      return ""
+    },
     periodOptions() {
       return [
         {
@@ -124,7 +180,7 @@ export default {
   },
   watch: {
     // Fetch the catalog once, the first time the wizard is actually shown.
-    needsOnboarding: {
+    showWizard: {
       immediate: true,
       handler(value) {
         if (value) this.loadPlans()
@@ -132,7 +188,8 @@ export default {
     },
   },
   methods: {
-    ...mapActions("billing", ["fetchPlans"]),
+    ...mapActions("billing", ["fetchPlans", "closeUpgradeModal"]),
+    ...mapActions("user", ["dismissOnboarding"]),
     async loadPlans() {
       // The catalog may already be cached in store (e.g. the billing settings
       // page was visited earlier this session) — nothing to fetch then.
@@ -348,10 +405,9 @@ export default {
         this.isOpen = false
         return
       }
-      // TODO: wire to billing/subscribe (see components-cloud/UpgradeModal.vue)
-      // once the onboarding flow decides where the organization it subscribes
-      // gets created. Paid plans do nothing yet — subscription + payment land
-      // in a later sprint.
+      // TODO: wire to billing/subscribe once the onboarding flow decides
+      // where the organization it subscribes gets created. Paid plans do
+      // nothing yet — subscription + payment land in a later sprint.
     },
   },
 }
@@ -390,6 +446,13 @@ export default {
   margin: 0;
   max-width: 640px;
   color: var(--text-secondary);
+}
+
+.onboarding__context {
+  margin: 0;
+  max-width: 640px;
+  color: var(--warning-color);
+  font-weight: 600;
 }
 
 .onboarding__period {
@@ -436,5 +499,11 @@ export default {
   gap: 0.4em;
   font-size: var(--text-sm);
   color: var(--text-secondary);
+}
+
+.onboarding__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--small-gap);
 }
 </style>

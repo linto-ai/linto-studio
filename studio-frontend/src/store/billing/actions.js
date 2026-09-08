@@ -47,6 +47,16 @@ export default {
     return subs
   },
 
+  // Opens the onboarding/upgrade wizard (OnboardingWizard.vue). `reason` is
+  // the optional { code, reason, capability, remaining } gating detail from
+  // a 402/403 SaaS response, shown as a contextual hint.
+  openUpgradeModal({ commit }, reason = null) {
+    commit("openUpgradeModal", reason)
+  },
+  closeUpgradeModal({ commit }) {
+    commit("closeUpgradeModal")
+  },
+
   // What every member may load: the catalog and the org's usage summary.
   async refresh({ commit, dispatch }, orgId) {
     commit("setLoading", true)

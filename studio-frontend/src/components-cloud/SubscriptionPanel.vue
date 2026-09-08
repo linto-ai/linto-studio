@@ -86,7 +86,7 @@
           <Button
             v-if="isOrgAdmin"
             variant="primary"
-            @click="showUpgrade = true">
+            @click="openUpgradeModal()">
             {{ $t("billing.upgrade_cta") }}
           </Button>
           <span v-else class="billing-plan__note">{{
@@ -124,8 +124,6 @@
         </div>
       </div>
     </div>
-
-    <UpgradeModal v-if="showUpgrade" @close="onUpgradeClose" />
   </div>
 </template>
 
@@ -133,15 +131,11 @@
 import { mapGetters, mapActions } from "vuex"
 import { bus } from "@/main.js"
 import Button from "@/components/atoms/Button.vue"
-import UpgradeModal from "@/components-cloud/UpgradeModal.vue"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 
 export default {
   name: "SubscriptionPanel",
-  components: { Button, UpgradeModal },
-  data() {
-    return { showUpgrade: false }
-  },
+  components: { Button },
   computed: {
     ...mapGetters("billing", [
       "isFree",
@@ -155,6 +149,7 @@ export default {
       "subscription",
       "usage",
       "live",
+      "upgradeModalOpen",
     ]),
     ...mapGetters("organizations", {
       currentOrgScope: "getCurrentOrganizationScope",
@@ -174,21 +169,26 @@ export default {
     currentOrgScope() {
       this.load()
     },
+    // The wizard (OnboardingWizard.vue) may have just subscribed the org:
+    // refresh once it closes.
+    upgradeModalOpen(isOpen) {
+      if (!isOpen) this.load()
+    },
   },
   mounted() {
     this.load()
   },
   methods: {
-    ...mapActions("billing", ["refresh", "fetchSubscriptions"]),
+    ...mapActions("billing", [
+      "refresh",
+      "fetchSubscriptions",
+      "openUpgradeModal",
+    ]),
     load() {
       if (!this.currentOrgScope) return
       this.refresh(this.currentOrgScope)
       // Admin-guarded route: only ask for it when the caller can read it.
       if (this.isOrgAdmin) this.fetchSubscriptions(this.currentOrgScope)
-    },
-    onUpgradeClose() {
-      this.showUpgrade = false
-      this.load()
     },
     // Stripe Customer Portal (invoices, card, cancellation) arrives in J2.
     managePortal() {

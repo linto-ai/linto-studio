@@ -13,6 +13,10 @@
     "upgrade_done": "Bienvenue dans {plan} !",
     "limit_reached": "Vous avez atteint la limite de votre offre.",
     "feature_locked": "Cette fonctionnalité est incluse dans une offre équipe.",
+    "footer": {
+      "usage": "{used} / {total}",
+      "upgrade_cta": "Améliorer"
+    },
     "mode": {
       "normal": "SaaS",
       "comp": "Offert",
@@ -1099,8 +1103,6 @@
   "onboarding": {
     "welcome_title": "Bienvenue sur LinTO Studio",
     "kicker": "Bienvenue sur LinTO Studio",
-    "title": "Choisissez votre formule",
-    "subtitle": "Sélectionnez une formule pour ouvrir votre organisation. Vous pourrez en changer à tout moment depuis les réglages ; les compteurs sont remis à zéro à chaque période.",
     "billing_period": {
       "label": "Période de facturation",
       "monthly": "Mensuel",

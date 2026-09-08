@@ -1,120 +1,78 @@
 <template>
-  <!-- A compact usage reminder. Subscription management lives in the org
-       settings page; clicking the footer takes you there. Loads only what any
-       member may read (catalog + usage summary). -->
-  <button
-    type="button"
-    class="saas-usage-footer"
-    :title="$t('billing.page.manage')"
-    @click="goToOrgSettings">
-    <div class="saas-usage-footer__title">
-      <span>{{ $t("billing.page.usage") }}</span>
-      <span class="saas-usage-footer__plan" :class="{ paid: isPaid }">{{
-        isUnmetered
-          ? $t("billing.mode." + mode)
-          : planLabel || $t("billing.page.free_plan")
-      }}</span>
-    </div>
-
-    <div class="saas-usage-footer__meter" v-if="!isUnmetered && primaryMeter">
-      <div class="saas-usage-footer__meter-head">
-        <span class="saas-usage-footer__meter-label">{{
-          $t(primaryMeter.label)
-        }}</span>
-        <span class="saas-usage-footer__meter-value">{{
-          usedOfLimit(primaryMeter)
-        }}</span>
-      </div>
-      <div class="saas-usage-footer__bar">
-        <div
-          class="saas-usage-footer__bar-fill"
-          :class="{ full: !primaryMeter.unlimited && primaryMeter.remaining <= 0 }"
-          :style="{
-            width: (primaryMeter.unlimited ? 100 : primaryMeter.percent) + '%',
-          }"></div>
-      </div>
-      <div
-        class="saas-usage-footer__reset"
-        v-if="primaryMeter.resetAt && !primaryMeter.unlimited">
-        {{ $t("billing.reset_on", { date: formatDate(primaryMeter.resetAt) }) }}
-      </div>
-    </div>
-
+  <div class="saas-usage-footer flex col" v-if="!isUnmetered && primaryMeter">
     <div
-      v-if="live && !live.unmetered"
-      class="saas-usage-footer__live"
-      :class="{ low: live.lowBalance }">
-      {{ $t("billing.live.balance") }} : {{ fmtMinutes(live.balance) }}
+      class="saas-usage-footer__summary flex row align-center justify-between gap-small">
+      <p class="saas-usage-footer__label">
+        <span class="saas-usage-footer__plan">{{ planLabel }}</span>
+        <span aria-hidden="true"> · </span>
+        <span>{{ usageLabel }}</span>
+      </p>
+      <button
+        v-if="!isPaid"
+        type="button"
+        class="saas-usage-footer__upgrade"
+        @click="openUpgradeModal()">
+        {{ $t("billing.footer.upgrade_cta") }}
+      </button>
     </div>
-  </button>
+
+    <progress
+      class="saas-usage-footer__bar"
+      :value="progressValue"
+      :max="progressMax"></progress>
+
+    <button
+      type="button"
+      class="saas-usage-footer__details flex row align-center justify-between custom"
+      @click="$emit('open-details')">
+      <time v-if="primaryMeter.resetAt" :datetime="primaryMeter.resetAt">
+        {{ $t("billing.reset_on", { date: resetDateLabel }) }}
+      </time>
+      <PhIcon name="caret-right" size="xs" color="neutral" />
+    </button>
+  </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex"
 
+import PhIcon from "@/components/atoms/PhIcon.vue"
+import { formatMinutesDuration } from "@/tools/formatMinutesDuration.js"
+import { formatDateDayMonth } from "@/tools/formatDateDayMonth.js"
+
 export default {
   name: "SaasUsageFooter",
+  components: { PhIcon },
   computed: {
     ...mapGetters("billing", [
       "isPaid",
       "isUnmetered",
-      "mode",
       "planLabel",
       "primaryMeter",
-      "live",
     ]),
-    ...mapGetters("organizations", {
-      currentOrgScope: "getCurrentOrganizationScope",
-    }),
-  },
-  watch: {
-    currentOrgScope() {
-      this.loadBilling()
-    },
-  },
-  mounted() {
-    this.loadBilling()
-  },
-  methods: {
-    ...mapActions("billing", ["refresh"]),
-    loadBilling() {
-      if (this.currentOrgScope) this.refresh(this.currentOrgScope)
-    },
-    goToOrgSettings() {
-      if (!this.currentOrgScope) return
-      const target = {
-        name: "organizations update",
-        params: { organizationId: this.currentOrgScope },
-      }
-      if (this.$route.name !== "organizations update") {
-        this.$router.push(target).catch(() => {})
-      }
-    },
-    usedOfLimit(m) {
-      return this.$t("billing.used_of", {
-        used: this.fmt(m, m.used),
-        total: m.unlimited ? "∞" : this.fmt(m, m.limit),
+    usageLabel() {
+      const meter = this.primaryMeter
+      return this.$t("billing.footer.usage", {
+        used: this.formatMeterAmount(meter.used),
+        total: meter.unlimited ? "∞" : this.formatMeterAmount(meter.limit),
       })
     },
-    fmt(m, v) {
-      return m.unit === "minutes" ? this.fmtMinutes(v) : v
+    progressValue() {
+      return this.primaryMeter.unlimited ? 1 : this.primaryMeter.used
     },
-    fmtMinutes(min) {
-      min = Math.round(min || 0)
-      const h = Math.floor(min / 60)
-      const mn = min % 60
-      if (h > 0) return `${h}h${mn > 0 ? mn + "min" : ""}`
-      return `${mn}min`
+    progressMax() {
+      return this.primaryMeter.unlimited ? 1 : this.primaryMeter.limit
     },
-    formatDate(iso) {
-      try {
-        return new Date(iso).toLocaleDateString(this.$i18n?.locale || "fr-FR", {
-          day: "numeric",
-          month: "short",
-        })
-      } catch (e) {
-        return ""
-      }
+    resetDateLabel() {
+      return formatDateDayMonth(this.primaryMeter.resetAt)
+    },
+  },
+  methods: {
+    ...mapActions("billing", ["openUpgradeModal"]),
+    formatMeterAmount(amount) {
+      return this.primaryMeter.unit === "minutes"
+        ? formatMinutesDuration(amount)
+        : amount
     },
   },
 }
@@ -122,80 +80,68 @@ export default {
 
 <style lang="scss" scoped>
 .saas-usage-footer {
-  // reset <button> defaults: this is a full-width clickable reminder card
-  width: 100%;
-  text-align: left;
-  font: inherit;
-  cursor: pointer;
-  padding: 0.75em 1em;
-  border: none;
-  border-top: 1px solid var(--neutral-40);
-  background-color: var(--neutral-10);
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
+  gap: var(--tiny-gap);
+  padding: 0.75em 1em 1em;
 
-  &:hover {
-    background-color: var(--neutral-20);
+  &__label {
+    margin: 0;
+    color: var(--text-secondary);
   }
 
-  &__title {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.5em;
-    flex-wrap: wrap;
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--neutral-60);
-  }
   &__plan {
     font-weight: 700;
-    text-transform: none;
-    letter-spacing: 0;
-    color: var(--neutral-70);
-    &.paid {
-      color: var(--primary-color);
+    color: var(--text-primary);
+  }
+
+  &__upgrade {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-weight: 600;
+    color: var(--primary-color);
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
     }
   }
 
-  &__meter-head {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.74rem;
-    color: var(--neutral-80);
-    margin-bottom: 0.25em;
-  }
-  &__meter-value {
-    font-weight: 600;
-  }
   &__bar {
+    width: 100%;
     height: 6px;
+    border: none;
     border-radius: 3px;
-    background: var(--neutral-30);
     overflow: hidden;
-  }
-  &__bar-fill {
-    height: 100%;
-    background: var(--primary-color);
-    transition: width 0.3s ease;
-    &.full {
-      background: var(--error-color, #e5484d);
+
+    &::-webkit-progress-bar {
+      background: var(--neutral-30);
+      border-radius: 3px;
+    }
+    &::-moz-progress-bar {
+      border-radius: 3px;
     }
   }
-  &__reset {
-    font-size: 0.68rem;
-    color: var(--neutral-60);
-    margin-top: 0.25em;
-  }
-  &__live {
-    font-size: 0.74rem;
-    color: var(--neutral-80);
-    &.low {
-      color: var(--error-color, #e5484d);
-      font-weight: 600;
+
+  &__details {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: var(--text-secondary);
+    cursor: pointer;
+    align-self: stretch;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--text-primary);
+
+      time {
+        text-decoration: underline;
+      }
     }
   }
 }
