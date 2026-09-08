@@ -1,0 +1,71 @@
+{
+  "/auth/oidc/organization/resolve": {
+    "post": {
+      "tags": ["auth"],
+      "summary": "Find the organization SSO attached to an email domain",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email"],
+              "properties": {
+                "email": { "type": "string", "example": "alice@acme.com" }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "organizationId": { "type": "string" },
+                  "name": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "No enabled SSO claims this email domain"
+        }
+      }
+    }
+  },
+  "/auth/oidc/organization/login": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Redirect the browser to the organization identity provider matching the email domain",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "email",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "responses": {
+        "302": {
+          "description": "Redirect to the identity provider, or to the login page with error=organization_sso"
+        }
+      }
+    }
+  },
+  "/auth/oidc/organization/cb": {
+    "get": {
+      "tags": ["auth"],
+      "summary": "Identity provider callback. Signs the user in, adds them to the organization and redirects to the front with the token",
+      "responses": {
+        "302": {
+          "description": "Redirect to /login/oidc?token=... or to /login?error=organization_sso&reason=..."
+        }
+      }
+    }
+  }
+}

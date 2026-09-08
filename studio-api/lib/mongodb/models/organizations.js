@@ -17,7 +17,8 @@ const tagsModel = require(`./tags`)
 
 const moment = require("moment")
 
-const public_projection = { token: 0 }
+// sso holds the client secret: only the dedicated admin route exposes it
+const public_projection = { token: 0, sso: 0 }
 
 class OrganizationModel extends MongoModel {
   constructor() {
@@ -286,6 +287,30 @@ class OrganizationModel extends MongoModel {
 
       let mutableElements = payload
       return await this.mongoUpdateOne(query, operator, mutableElements)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // Login routing: the organization whose enabled SSO claims the email domain.
+  // Oldest wins when several do. Re-throws on DB error (an auth gate must not
+  // fail open).
+  async getBySsoEmailDomain(domain) {
+    const rows = await this.mongoRequest({
+      "sso.enabled": true,
+      "sso.emailDomains": domain,
+    })
+    if (!Array.isArray(rows) || rows.length === 0) return null
+    rows.sort((a, b) => new Date(a.created) - new Date(b.created))
+    return rows[0]
+  }
+
+  // matchedCount 0 when the organization has no sso to remove
+  async deleteSso(id) {
+    try {
+      const query = { _id: this.getObjectId(id), sso: { $exists: true } }
+      return await this.mongoUpdateOne(query, "$unset", { sso: "" })
     } catch (error) {
       console.error(error)
       return error

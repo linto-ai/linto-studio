@@ -87,3 +87,34 @@ export async function apiInviteUsersMachingEmail(organizationId, notif) {
     notif,
   )
 }
+
+// null data when the organization has no SSO yet
+export async function apiGetOrganisationSso(organizationId) {
+  const requestRes = await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/sso`,
+    { method: "get" },
+  )
+  const code = requestRes?.error?.response?.data?.code
+  if (code === "ORGANIZATION_SSO_NOT_FOUND") {
+    return { status: "success", data: null }
+  }
+  return requestRes
+}
+
+export async function apiUpdateOrganisationSso(organizationId, payload, notif) {
+  return await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/sso`,
+    { method: "put" },
+    payload,
+    notif,
+  )
+}
+
+export async function apiDeleteOrganisationSso(organizationId, notif) {
+  return await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/sso`,
+    { method: "delete" },
+    {},
+    notif,
+  )
+}

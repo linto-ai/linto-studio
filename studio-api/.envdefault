@@ -6,16 +6,27 @@ LOG_FORMAT=text
 COMPONENTS=WebServer,IoHandler,MongoMigration,EditorHandler
 
 # SaaS mode (private linto-saas plugin). Add CloudService to COMPONENTS above to
+
 # turn metered billing on; leave it out for the plain open-source build.
+
 # SAAS_DEFAULT_PLAN_KEY is the plan an org WITHOUT a subscription row falls back
+
 # to. Default = the free plan. On a FIRST activation, every pre-existing org on
+
 # the deployment falls into it at once, so point it at a permissive plan while
+
 # you migrate existing orgs, then set it back.
+
 # SAAS_DEFAULT_PLAN_KEY=free_payg
+
 # STRIPE_MODE=fake
+
 # STRIPE_SECRET_KEY=
+
 # STRIPE_WEBHOOK_SECRET=
+
 # SAAS_FRONT_URL=https://studio.example.org
+
 WEBSERVER_HTTP_PORT=80
 WEBSERVER_SESSION_SECRET=secret
 
@@ -23,10 +34,12 @@ FRONTEND_DOMAIN=
 DEFAULT_USER_ROLE=1
 
 # Optional for swagger
+
 WEBSERVER_SWAGGER_HTTP_HOST=localhost
 WEBSERVER_SWAGGER_API_PATH=cm-api
 
 # Mongo
+
 DB_HOST=localhost
 DB_PORT=27017
 DB_REQUIRE_LOGIN=true
@@ -35,46 +48,62 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
+
 DB_MIGRATION_TARGET=1.8.7
 
 # STT Config
+
 GATEWAY_SERVICES=https://<domain>
 
 # Default segment resize for transcription results, request values take precedence
+
 DEFAULT_SEGMENT_CHAR_SIZE=2000
 DEFAULT_SEGMENT_WORD_SIZE=
 
 # LLM Gateway V2 Config
+
 # HTTP API endpoint (e.g., http://localhost:8010)
+
 LLM_GATEWAY_SERVICES=
+
 # Chat service ID from LLM Gateway (required for chat feature)
+
 LLM_CHAT_SERVICE_ID=
+
 # WebSocket URL is automatically derived from LLM_GATEWAY_SERVICES
+
 # (http://localhost:8010 -> ws://localhost:8010)
+
 # V2 WebSocket endpoints:
-#   /ws/jobs/{job_id} - Single job monitoring
-#   /ws/jobs - Global jobs monitoring
+
+# /ws/jobs/{job_id} - Single job monitoring
+
+# /ws/jobs - Global jobs monitoring
 
 # NLP Service
+
 NLP_SERVICES=<nlp_service_host>
 NLP_METHOD=frequencies,textrank
 
 # Cross domain accessibility
+
 CORS_ENABLED=false
 CORS_API_WHITELIST=
 
 # Express settings
+
 EXPRESS_SIZE_FILE_MAX=500mb
 AXIOS_SIZE_FILE_MAX=500000000
 MAX_SUBTITLE_VERSION=5
 
-
 # JWT SECRET
+
 CM_JWT_SECRET=jwt_secret
 CM_REFRESH_SECRET=jwt_refresh_secret
 CM_API_URL=
 
 # SMTP
+
 SMTP_HOST=
 SMTP_PORT=
 SMTP_SECURE=
@@ -89,21 +118,37 @@ VOLUME_PROFILE_PICTURE_PATH=pictures
 VOLUME_VOICE_SIGNATURES_PATH=voice_signatures
 
 # --- Speaker identification ---
+
 # Master switch: mounts the speaker identification routes, starts the Qdrant
+
 # reconciliation worker and enables the transcription injection.
+
 ENABLE_SPEAKER_IDENTIFICATION=false
-# Gateway endpoint of the transcription service exposing /speaker-identification/*.
+
+# Gateway endpoint of the transcription service exposing /speaker-identification/\*.
+
 # Leave empty to auto-discover the first diarization service advertising the
+
 # speaker_identification capability via GATEWAY_SERVICES/gateway/services.
+
 SPEAKER_ID_SERVICE_ENDPOINT=
+
 # Optional shared token; when set it is sent as X-Speaker-Id-Token and must
+
 # match SPEAKER_ID_API_TOKEN on the transcription service.
+
 SPEAKER_ID_API_TOKEN=
+
 # Version of the consent text the user validated (bump to force re-consent).
+
 SPEAKER_ID_CONSENT_VERSION=1
+
 # Reconciliation worker interval (seconds) for retrying failed Qdrant writes.
+
 SPEAKER_ID_SYNC_RETRY_INTERVAL=60
+
 # Quantitative limits (cf. docs/speaker-identification 05 §5)
+
 SPEAKER_ID_MAX_COLLECTIONS_PER_ORG=20
 SPEAKER_ID_MAX_LABELS_PER_COLLECTION=100
 SPEAKER_ID_MAX_SAMPLES_PER_LABEL=10
@@ -116,25 +161,33 @@ DEFAULT_TAGS=
 
 EXPORT_TEMPLATE=default
 EXPORT_DISCLAIMER=
+
 # Export timeout in milliseconds (default: 10 minutes)
+
 EXPORT_TIMEOUT_MS=600000
 
 # ORGANIZATION_DEFAULT_PERMISSIONS supported values are "upload,summary,session,microphone,bot"
-ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session,microphone,bot
 
+ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session,microphone,bot
 
 SUPER_ADMIN_EMAIL=
 SUPER_ADMIN_PWD=
 
 # Bellow are the settings require for the session service
+
 SESSION_API_ENDPOINT=
 SESSION_PSW_SALT=secret_salt
+
 # Max time studio-api waits for the stop drain barrier (keep above the
+
 # Session API's SESSION_STOP_FLUSH_TIMEOUT_MS, 10s)
+
 SESSION_STOP_TIMEOUT_MS=15000
 
 # Socket.IO Redis Adapter (optional, for multi-instance scaling)
+
 # Leave SOCKETIO_REDIS_HOST empty to use default in-memory adapter
+
 SOCKETIO_REDIS_HOST=
 SOCKETIO_REDIS_PORT=
 SOCKETIO_REDIS_PASSWORD=
@@ -147,16 +200,19 @@ BROKER_KEEPALIVE=60
 BROKER_PROTOCOL=mqtt
 
 # Token duration settings possible in m, h, d
+
 TOKEN_DAYS_TIME=7d
 EXTENDED_TOKEN_DAYS_TIME=14d
 REFRESH_TOKEN_DAYS_TIME=14d
 IMPERSONATION_TOKEN_DAYS_TIME=1h
 
 # Authentification settings
+
 JWT_ALGORITHM=HS256
 LOCAL_AUTH_ENABLED=true
 
 # OIDC Type supported are : linagora
+
 SSO_ENCRYPTION_KEY=defaultEncryptionKeyChangeMe
 
 OIDC_TYPE=
@@ -166,6 +222,19 @@ OIDC_CLIENT_ID=
 OIDC_CLIENT_SECRET=
 OIDC_CALLBACK_URI=https://<domain>/auth/oidc/cb
 OIDC_SCOPE=openid,email,profile
+
+# Bring your own SSO: organizations configure their own OIDC provider in their
+
+# settings. The callback must be registered on their provider; it defaults to
+
+# <api origin>/auth/oidc/organization/cb.
+
+ORGANIZATION_SSO_ENABLED=true
+ORGANIZATION_SSO_CALLBACK_URI=
+
+# PEM file of an extra CA to trust for identity providers (dev, self-signed IdP)
+
+ORGANIZATION_SSO_CA_FILE=
 
 OIDC_GOOGLE_ENABLED=false
 GOOGLE_CLIENT_ID=

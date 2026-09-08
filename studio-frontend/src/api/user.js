@@ -255,3 +255,21 @@ export async function getOidcToken() {
     true,
   )
 }
+
+// 404 with code ORGANIZATION_SSO_NOT_FOUND when no organization claims the domain
+export async function apiResolveOrganizationSso(email) {
+  return await sendRequest(
+    `${BASE_AUTH}/oidc/organization/resolve`,
+    { method: "post" },
+    { email },
+  )
+}
+
+export function organizationSsoLoginUrl(email) {
+  return `${BASE_AUTH}/oidc/organization/login?email=${encodeURIComponent(email)}`
+}
+
+// Redirect URI the organization must register on its identity provider
+export function organizationSsoCallbackUrl() {
+  return `${BASE_AUTH}/oidc/organization/cb`
+}

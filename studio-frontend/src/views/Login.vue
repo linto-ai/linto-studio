@@ -70,11 +70,22 @@
         </div>
         <div class="flex justify-center oidc-form__buttons">
           <OidcLoginButton
-            v-for="oidcInfo of oidcList"
+            v-for="oidcInfo of oidcButtons"
             :key="oidcInfo.name"
             :path="oidcInfo.path"
             :name="oidcInfo.name"></OidcLoginButton>
+          <button
+            v-if="hasOrganizationSso"
+            type="button"
+            class="sso-btn organization"
+            :title="$t('login.organization_sso.button_title')"
+            :aria-label="$t('login.organization_sso.button_title')"
+            :aria-expanded="showOrganizationSso"
+            @click="showOrganizationSso = !showOrganizationSso">
+            <ph-icon name="plus" size="lg" />
+          </button>
         </div>
+        <OrganizationSsoForm v-if="showOrganizationSso" />
       </div>
     </template>
   </MainContentPublic>
@@ -105,6 +116,9 @@ import { testEmail } from "@/tools/fields/testEmail"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"
 import FormInput from "@/components/molecules/FormInput.vue"
 import OidcLoginButton from "@/components/OidcLoginButton.vue"
+import OrganizationSsoForm from "@/components/OrganizationSsoForm.vue"
+
+const ORGANIZATION_SSO = "organization"
 
 export default {
   data() {
@@ -127,11 +141,13 @@ export default {
       emailNotVerified: false,
       resendingVerification: false,
       loginMethodsIndexedByPath: {},
+      showOrganizationSso: false,
       BASE_AUTH: getEnv("VUE_APP_CONVO_AUTH"),
     }
   },
   mounted() {
     this.fetchLoginMethods()
+    this.notifyOrganizationSsoError()
   },
   computed: {
     formValid() {
@@ -171,6 +187,12 @@ export default {
     },
     oidcList() {
       return this.loginMethodsIndexedByPath?.oidc
+    },
+    oidcButtons() {
+      return (this.oidcList ?? []).filter((p) => p.name !== ORGANIZATION_SSO)
+    },
+    hasOrganizationSso() {
+      return (this.oidcList ?? []).some((p) => p.name === ORGANIZATION_SSO)
     },
   },
   methods: {
@@ -239,6 +261,18 @@ export default {
         this.resendingVerification = false
       }
     },
+    notifyOrganizationSsoError() {
+      if (this.$route?.query?.error !== "organization_sso") return
+      const reason = this.$route.query.reason
+      const key = `login.organization_sso.errors.${reason}`
+      this.$store.dispatch("system/addNotification", {
+        message: this.$te(key)
+          ? this.$t(key)
+          : this.$t("login.organization_sso.errors.idp_error"),
+        type: "error",
+      })
+      this.showOrganizationSso = true
+    },
     async fetchLoginMethods() {
       const loginList = await getLoginMethods()
       const indexedByPath = { local: [], oidc: [] }
@@ -252,7 +286,13 @@ export default {
       this.loginMethodsIndexedByPath = indexedByPath
     },
   },
-  components: { LocalSwitcher, MainContentPublic, FormInput, OidcLoginButton },
+  components: {
+    LocalSwitcher,
+    MainContentPublic,
+    FormInput,
+    OidcLoginButton,
+    OrganizationSsoForm,
+  },
 }
 </script>
 
@@ -300,6 +340,11 @@ export default {
 
 .oidc-form__buttons {
   gap: 1.5rem;
+}
+
+.sso-btn.organization {
+  background: none;
+  color: var(--text-primary);
 }
 
 .no-access-notice {
