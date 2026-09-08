@@ -1,3 +1,5 @@
+import i18n from "../i18n.js"
+
 const RANGES = [
   [60, "second", 1],
   [3600, "minute", 60],
@@ -10,8 +12,7 @@ const RANGES = [
 
 export function timeAgo(date) {
   const seconds = Math.round((Date.now() - new Date(date).getTime()) / 1000)
-  const lang = document.documentElement.lang || "en"
-  const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" })
+  const rtf = new Intl.RelativeTimeFormat(i18n.locale, { numeric: "auto" })
 
   for (const [max, unit, divisor] of RANGES) {
     if (Math.abs(seconds) < max) {
@@ -47,8 +48,7 @@ export function formatDateLocale(dateString, fallback = "–") {
 
 export function formatDateShort(dateString) {
   if (!dateString) return ""
-  const lang = document.documentElement.lang || "en"
-  return new Date(dateString).toLocaleString(lang, {
+  return new Date(dateString).toLocaleString(i18n.locale, {
     day: "numeric",
     month: "short",
     year: "numeric",
