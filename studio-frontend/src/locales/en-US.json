@@ -259,6 +259,7 @@
     "logout": "Logout",
     "email_not_verified": "Your email is not verified. Please verify your email to access all features.",
     "speaker_identification": "Speaker identification",
+    "sso": "SSO",
     "speaker_recognition": "My voice signature"
   },
   "backoffice": {
@@ -795,6 +796,18 @@
     "not_registered": "Not registered yet? ",
     "create_account_button": "Create an account",
     "or_continue_with": "Or continue with",
+    "organization_sso": {
+      "button_title": "Sign in with my organisation SSO",
+      "email_label": "Work email address",
+      "submit": "Continue with my organisation SSO",
+      "errors": {
+        "no_sso": "No SSO is configured for this email domain",
+        "email_not_allowed": "This email address is not attached to the SSO organisation",
+        "missing_email": "The identity provider did not return an email address",
+        "session_expired": "The sign-in session has expired, please try again",
+        "idp_error": "The connection to the identity provider failed"
+      }
+    },
     "email_label": "Email :",
     "error": "Error while logging in",
     "login_button": "Login",
@@ -1232,6 +1245,34 @@
       },
       "update_button": "Update matching criteria",
       "apply_button": "Invite all users matching criteria"
+    },
+    "sso": {
+      "title": "Organisation SSO",
+      "enabled_label": "Enable SSO",
+      "issuer_url_label": "Issuer URL",
+      "client_id_label": "Client ID",
+      "client_secret_label": "Client secret",
+      "client_secret_kept_placeholder": "Leave empty to keep the stored secret",
+      "scope_label": "Scopes (comma separated)",
+      "email_domains_label": "Email domains (comma separated)",
+      "callback_url_label": "Redirect URL to register on your identity provider",
+      "advanced_title": "Advanced endpoints (optional, override the automatic discovery)",
+      "authorization_url_label": "Authorization URL",
+      "token_url_label": "Token URL",
+      "user_info_url_label": "Userinfo URL",
+      "save_button": "Save SSO",
+      "delete_button": "Remove SSO",
+      "delete_modal": {
+        "title": "Remove the SSO configuration",
+        "content": "Members of the organisation will no longer be able to sign in through this SSO. Confirm the removal?"
+      },
+      "save_success": "The SSO configuration has been saved",
+      "delete_success": "The SSO configuration has been removed",
+      "errors": {
+        "invalid_https_url": "Please enter a valid https URL",
+        "invalid_domain": "\"{domain}\" is not a valid email domain",
+        "scope_openid": "Scopes must include openid"
+      }
     },
     "organization_stats": {
       "title": "Organisation statistics",

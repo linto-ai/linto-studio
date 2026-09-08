@@ -99,6 +99,12 @@ export default {
   padding: 0;
 }
 
+/* "+" button of the organization SSO, a <button> next to the provider links */
+.sso-btn.organization {
+  background: none;
+  color: var(--text-primary);
+}
+
 .sso-btn img {
   width: 100%;
   height: 100%;

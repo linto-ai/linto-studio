@@ -87,3 +87,28 @@ export async function apiInviteUsersMachingEmail(organizationId, notif) {
     notif,
   )
 }
+
+// data: { callbackUrl, sso } with sso null when none is configured yet
+export async function apiGetOrganisationSso(organizationId) {
+  return await sendRequest(`${BASE_API}/organizations/${organizationId}/sso`, {
+    method: "get",
+  })
+}
+
+export async function apiUpdateOrganisationSso(organizationId, payload, notif) {
+  return await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/sso`,
+    { method: "put" },
+    payload,
+    notif,
+  )
+}
+
+export async function apiDeleteOrganisationSso(organizationId, notif) {
+  return await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/sso`,
+    { method: "delete" },
+    {},
+    notif,
+  )
+}

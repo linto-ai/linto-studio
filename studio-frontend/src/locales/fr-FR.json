@@ -260,6 +260,7 @@
     "logout": "Déconnexion",
     "email_not_verified": "Votre adresse e-mail n'est pas vérifiée. Veuillez la vérifier pour accéder à l'ensemble des fonctionnalités.",
     "speaker_identification": "Identification des locuteurs",
+    "sso": "Connexion SSO",
     "speaker_recognition": "Ma signature vocale"
   },
   "backoffice": {
@@ -789,6 +790,18 @@
     "not_registered": "Pas encore inscrit ? ",
     "create_account_button": "Créer un compte",
     "or_continue_with": "Ou continuer avec",
+    "organization_sso": {
+      "button_title": "Se connecter avec le SSO de mon organisation",
+      "email_label": "Adresse e-mail professionnelle",
+      "submit": "Continuer avec le SSO de mon organisation",
+      "errors": {
+        "no_sso": "Aucun SSO n'est configuré pour ce domaine e-mail",
+        "email_not_allowed": "Cette adresse e-mail n'est pas rattachée à l'organisation du SSO",
+        "missing_email": "Le fournisseur d'identité n'a pas transmis d'adresse e-mail",
+        "session_expired": "La session de connexion a expiré, veuillez réessayer",
+        "idp_error": "La connexion au fournisseur d'identité a échoué"
+      }
+    },
     "email_label": "Adresse e-mail : ",
     "error": "Les identifiants sont incorrects",
     "login_button": "Se connecter",
@@ -1226,6 +1239,34 @@
       },
       "update_button": "Mettre à jour les critères d'appartenance",
       "apply_button": "Inviter les utilisateurs correspondant aux critères"
+    },
+    "sso": {
+      "title": "Connexion SSO de l'organisation",
+      "enabled_label": "Activer le SSO",
+      "issuer_url_label": "URL de l'émetteur (issuer)",
+      "client_id_label": "Identifiant client (client ID)",
+      "client_secret_label": "Secret client",
+      "client_secret_kept_placeholder": "Laisser vide pour conserver le secret enregistré",
+      "scope_label": "Scopes (séparés par des virgules)",
+      "email_domains_label": "Domaines e-mail rattachés (séparés par des virgules)",
+      "callback_url_label": "URL de redirection à déclarer chez votre fournisseur d'identité",
+      "advanced_title": "Points de terminaison avancés (optionnels, remplacent la découverte automatique)",
+      "authorization_url_label": "URL d'autorisation",
+      "token_url_label": "URL du jeton (token)",
+      "user_info_url_label": "URL des informations utilisateur (userinfo)",
+      "save_button": "Enregistrer le SSO",
+      "delete_button": "Supprimer le SSO",
+      "delete_modal": {
+        "title": "Supprimer la configuration SSO",
+        "content": "Les utilisateurs de l'organisation ne pourront plus se connecter par ce SSO. Confirmer la suppression ?"
+      },
+      "save_success": "La configuration SSO a été enregistrée",
+      "delete_success": "La configuration SSO a été supprimée",
+      "errors": {
+        "invalid_https_url": "Veuillez saisir une URL https valide",
+        "invalid_domain": "\"{domain}\" n'est pas un domaine e-mail valide",
+        "scope_openid": "Les scopes doivent contenir openid"
+      }
     },
     "transcriber_profiles": {
       "title": "Profils de transcription",

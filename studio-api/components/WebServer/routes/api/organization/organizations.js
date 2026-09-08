@@ -25,6 +25,10 @@ const { updateOrganization, deleteOrganization } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/admin.js`,
 )
 
+const { getSso, upsertSso, deleteSso } = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/sso.js`,
+)
+
 const {
   createApiKey,
   listApiKeyFromOrga,
@@ -168,6 +172,32 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationAdminAccess: true,
       controller: deleteOrganization,
+    },
+
+    /* Admin right: bring your own SSO. SaaS: Business only, no-op in OSS. */
+    {
+      path: "/:organizationId/sso",
+      method: "get",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      requireEntitlement: "sso.custom",
+      controller: getSso,
+    },
+    {
+      path: "/:organizationId/sso",
+      method: "put",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      requireEntitlement: "sso.custom",
+      controller: upsertSso,
+    },
+    {
+      path: "/:organizationId/sso",
+      method: "delete",
+      requireAuth: true,
+      requireOrganizationAdminAccess: true,
+      requireEntitlement: "sso.custom",
+      controller: deleteSso,
     },
 
     /* Admin right M2M function*/

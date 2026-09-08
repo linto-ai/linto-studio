@@ -31,6 +31,10 @@
         :currentOrganization="currentOrganization"
         :userInfo="userInfo" />
 
+      <UpdateOrganizationSso
+        v-if="isAdmin"
+        :currentOrganization="currentOrganization" />
+
       <IsCloud>
         <SubscriptionPanel />
       </IsCloud>
@@ -56,6 +60,7 @@ import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
 import MainContent from "@/components/MainContent.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
+import UpdateOrganizationSso from "@/components/UpdateOrganizationSso.vue"
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import IsCloud from "@/components/atoms/IsCloud.vue"
 import SubscriptionPanel from "@/components-cloud/SubscriptionPanel.vue"
@@ -123,6 +128,7 @@ export default {
     MainContent,
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
+    UpdateOrganizationSso,
     LayoutV2,
     IsCloud,
     SubscriptionPanel,
