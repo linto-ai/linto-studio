@@ -85,7 +85,9 @@
             <ph-icon name="plus" size="lg" />
           </button>
         </div>
-        <OrganizationSsoForm v-if="showOrganizationSso" />
+        <OrganizationSsoForm
+          v-if="showOrganizationSso"
+          :path="organizationSsoProvider.path" />
       </div>
     </template>
   </MainContentPublic>
@@ -191,8 +193,11 @@ export default {
     oidcButtons() {
       return (this.oidcList ?? []).filter((p) => p.name !== ORGANIZATION_SSO)
     },
+    organizationSsoProvider() {
+      return (this.oidcList ?? []).find((p) => p.name === ORGANIZATION_SSO)
+    },
     hasOrganizationSso() {
-      return (this.oidcList ?? []).some((p) => p.name === ORGANIZATION_SSO)
+      return this.organizationSsoProvider !== undefined
     },
   },
   methods: {

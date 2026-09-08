@@ -13,6 +13,15 @@ const {
 const { buildSsoConfig, toPublic } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/sso`,
 )
+const { callbackUrl } = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/ssoLogin`,
+)
+
+// The redirect URI to register on the identity provider comes with the config,
+// so the admin sees the one the API will actually send.
+function ssoResponse(req, sso) {
+  return { callbackUrl: callbackUrl(req), sso: sso ? toPublic(sso) : null }
+}
 
 async function loadOrganization(organizationId) {
   const organization = await model.organizations.getById(organizationId)
@@ -24,9 +33,8 @@ async function loadOrganization(organizationId) {
 async function getSso(req, res, next) {
   try {
     const organization = await loadOrganization(req.params.organizationId)
-    if (!organization.sso) throw new OrganizationSsoNotFound()
 
-    res.status(200).send(toPublic(organization.sso))
+    res.status(200).send(ssoResponse(req, organization.sso))
   } catch (err) {
     next(err)
   }
@@ -48,7 +56,7 @@ async function upsertSso(req, res, next) {
     )
     if (result.matchedCount === 0) throw new OrganizationError()
 
-    res.status(200).send(toPublic(sso))
+    res.status(200).send(ssoResponse(req, sso))
   } catch (err) {
     next(err)
   }

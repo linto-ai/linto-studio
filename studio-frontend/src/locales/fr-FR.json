@@ -794,7 +794,6 @@
       "button_title": "Se connecter avec le SSO de mon organisation",
       "email_label": "Adresse e-mail professionnelle",
       "submit": "Continuer avec le SSO de mon organisation",
-      "not_found": "Aucun SSO n'est configuré pour ce domaine e-mail",
       "errors": {
         "no_sso": "Aucun SSO n'est configuré pour ce domaine e-mail",
         "email_not_allowed": "Cette adresse e-mail n'est pas rattachée à l'organisation du SSO",

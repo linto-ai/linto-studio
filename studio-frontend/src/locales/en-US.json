@@ -800,7 +800,6 @@
       "button_title": "Sign in with my organisation SSO",
       "email_label": "Work email address",
       "submit": "Continue with my organisation SSO",
-      "not_found": "No SSO is configured for this email domain",
       "errors": {
         "no_sso": "No SSO is configured for this email domain",
         "email_not_allowed": "This email address is not attached to the SSO organisation",

@@ -4,7 +4,7 @@ const mockModel = {
   organizations: {
     getBySsoEmailDomain: jest.fn(),
     getById: jest.fn(),
-    update: jest.fn(),
+    addMember: jest.fn(),
     getPersonalByOwner: jest.fn(),
     createDefault: jest.fn(),
   },
@@ -92,6 +92,13 @@ const SSO = {
   emailDomains: ["acme.test"],
 }
 const ORG = { _id: ORG_ID, name: "Acme", users: [], sso: SSO }
+const MANUAL_SSO = {
+  ...SSO,
+  issuerUrl: "https://manual.test",
+  authorizationUrl: "https://manual.test/a",
+  tokenUrl: "https://manual.test/t",
+  userInfoUrl: "https://manual.test/u",
+}
 const DISCOVERED = {
   issuer: "https://login.acme.test",
   authorization_endpoint: "https://login.acme.test/authorize",
@@ -125,16 +132,10 @@ beforeEach(() => {
   process.env.FRONTEND_DOMAIN = "https://front.test"
   mockDiscover.mockResolvedValue({ metadata: DISCOVERED })
   mockAuthorizationUrl.mockReturnValue("https://login.acme.test/authorize?x")
+  mockModel.organizations.addMember.mockResolvedValue({ matchedCount: 1 })
 })
 
 describe("helpers", () => {
-  test("emailDomain normalizes and rejects malformed emails", () => {
-    expect(ssoLogin.emailDomain("Alice@Acme.TEST ")).toBe("acme.test")
-    expect(ssoLogin.emailDomain("nope")).toBeNull()
-    expect(ssoLogin.emailDomain("@acme.test")).toBeNull()
-    expect(ssoLogin.emailDomain(undefined)).toBeNull()
-  })
-
   test("callbackUrl prefers the env and falls back to the request origin", () => {
     expect(ssoLogin.callbackUrl(mockReq())).toBe(
       "https://studio.test/auth/oidc/organization/cb",
@@ -155,26 +156,21 @@ describe("helpers", () => {
     )
   })
 
-  test("ensureMembership adds a missing member once", async () => {
-    mockModel.organizations.getById.mockResolvedValue([
-      { ...ORG, users: [{ userId: "u1", role: 6 }] },
-    ])
-    mockModel.organizations.update.mockResolvedValue({ matchedCount: 1 })
-
+  test("ensureMembership adds the user as a member through the atomic model write", async () => {
     await ssoLogin.ensureMembership(ORG_ID, "u2")
-    expect(mockModel.organizations.update.mock.calls[0][0].users).toEqual([
-      { userId: "u1", role: 6 },
-      { userId: "u2", role: 1 },
-    ])
+    expect(mockModel.organizations.addMember).toHaveBeenCalledWith(
+      ORG_ID,
+      "u2",
+      1,
+    )
 
-    mockModel.organizations.update.mockClear()
-    await ssoLogin.ensureMembership(ORG_ID, "u1")
-    expect(mockModel.organizations.update).not.toHaveBeenCalled()
+    mockModel.organizations.addMember.mockResolvedValue(new Error("db down"))
+    await expect(ssoLogin.ensureMembership(ORG_ID, "u2")).rejects.toThrow(
+      "db down",
+    )
   })
 
   test("attachUserToOrganization sets the default organization and skips onboarding for a new user", async () => {
-    mockModel.organizations.getById.mockResolvedValue([{ ...ORG, users: [] }])
-    mockModel.organizations.update.mockResolvedValue({ matchedCount: 1 })
     mockModel.users.getById.mockResolvedValue([
       {
         _id: "u2",
@@ -204,9 +200,6 @@ describe("helpers", () => {
   })
 
   test("attachUserToOrganization leaves an existing user's default organization alone", async () => {
-    mockModel.organizations.getById.mockResolvedValue([
-      { ...ORG, users: [{ userId: "u1", role: 1 }] },
-    ])
     mockModel.users.getById.mockResolvedValue([
       { _id: "u1", defaultOrganization: "otherOrg", onboarded: true },
     ])
@@ -214,7 +207,11 @@ describe("helpers", () => {
 
     await ssoLogin.attachUserToOrganization("u1", ORG_ID)
 
-    expect(mockModel.organizations.update).not.toHaveBeenCalled()
+    expect(mockModel.organizations.addMember).toHaveBeenCalledWith(
+      ORG_ID,
+      "u1",
+      1,
+    )
     expect(mockModel.organizations.createDefault).not.toHaveBeenCalled()
     expect(mockModel.users.update).not.toHaveBeenCalled()
   })
@@ -240,18 +237,11 @@ describe("helpers", () => {
       ),
     ).rejects.toThrow("no discovery")
 
-    const client = await ssoLogin.buildClient(
-      {
-        ...SSO,
-        issuerUrl: "https://b.test",
-        authorizationUrl: "https://b.test/a",
-        tokenUrl: "https://b.test/t",
-        userInfoUrl: "https://b.test/u",
-      },
-      "https://s/cb",
-    )
+    const client = await ssoLogin.buildClient(MANUAL_SSO, "https://s/cb")
     expect(client.issuer.metadata.jwks_uri).toBeUndefined()
-    expect(client.issuer.metadata.userinfo_endpoint).toBe("https://b.test/u")
+    expect(client.issuer.metadata.userinfo_endpoint).toBe(
+      "https://manual.test/u",
+    )
   })
 
   test("fetchClaims validates the id_token when keys are published, else userinfo", async () => {
@@ -271,16 +261,7 @@ describe("helpers", () => {
     expect(mockUserinfo).not.toHaveBeenCalled()
 
     mockDiscover.mockRejectedValue(new Error("no discovery"))
-    const manual = await ssoLogin.buildClient(
-      {
-        ...SSO,
-        issuerUrl: "https://c.test",
-        authorizationUrl: "https://c.test/a",
-        tokenUrl: "https://c.test/t",
-        userInfoUrl: "https://c.test/u",
-      },
-      "https://s/cb",
-    )
+    const manual = await ssoLogin.buildClient(MANUAL_SSO, "https://s/cb")
     mockOauthCallback.mockResolvedValue({ access_token: "at" })
     mockUserinfo.mockResolvedValue({ email: "bob@acme.test" })
     expect(
@@ -363,7 +344,6 @@ describe("route controllers", () => {
 
   test("callback signs the user in, joins the organization and hands the token to the front", async () => {
     mockModel.organizations.getById.mockResolvedValue([ORG])
-    mockModel.organizations.update.mockResolvedValue({ matchedCount: 1 })
     mockCallback.mockResolvedValue({
       claims: () => ({
         email: "alice@acme.test",
@@ -399,14 +379,11 @@ describe("route controllers", () => {
       "Martin",
       "Alice",
     )
-    expect(mockModel.organizations.update.mock.calls[0][0].users).toEqual([
-      { userId: "u9", role: 1 },
-    ])
-    expect(mockModel.users.update).toHaveBeenCalledWith({
-      _id: "u9",
-      defaultOrganization: ORG_ID,
-      onboarded: true,
-    })
+    expect(mockModel.organizations.addMember).toHaveBeenCalledWith(
+      ORG_ID,
+      "u9",
+      1,
+    )
     expect(req.session.organizationSso).toBeNull()
     expect(res.redirect).toHaveBeenCalledWith(
       "https://front.test/login/oidc?token=jwt",

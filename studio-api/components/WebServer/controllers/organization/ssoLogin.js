@@ -7,6 +7,7 @@ const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 const { decrypt } = require(
   `${process.cwd()}/components/WebServer/config/passport/token/encryption`,
 )
+const { emailDomain } = require(`${process.cwd()}/lib/utility/emailDomain`)
 
 const CALLBACK_PATH = "/auth/oidc/organization/cb"
 const DISCOVERY_TTL_MS = 10 * 60 * 1000
@@ -26,17 +27,6 @@ class OrganizationSsoLoginError extends Error {
     this.name = "OrganizationSsoLoginError"
     this.reason = reason
   }
-}
-
-function emailDomain(email) {
-  if (typeof email !== "string") return null
-  const at = email.lastIndexOf("@")
-  if (at < 1) return null
-  const domain = email
-    .slice(at + 1)
-    .trim()
-    .toLowerCase()
-  return domain || null
 }
 
 // The organization whose enabled SSO claims the email domain, or null.
@@ -65,12 +55,7 @@ function endpointOverrides(sso) {
 
 // Discovery first; explicit endpoints override it, or replace it when the
 // issuer has no discovery document.
-async function resolveIssuer(sso) {
-  const overrides = endpointOverrides(sso)
-  const key = JSON.stringify([sso.issuerUrl, overrides])
-  const cached = issuerCache.get(key)
-  if (cached && cached.expiresAt > Date.now()) return cached.issuer
-
+async function discoverIssuer(sso, overrides) {
   let metadata = null
   try {
     metadata = (await Issuer.discover(sso.issuerUrl)).metadata
@@ -78,10 +63,25 @@ async function resolveIssuer(sso) {
     if (!overrides.authorization_endpoint || !overrides.token_endpoint)
       throw err
   }
-  const issuer = new Issuer({
+  return new Issuer({
     issuer: sso.issuerUrl,
     ...(metadata || {}),
     ...overrides,
+  })
+}
+
+// The pending promise is cached so concurrent logins share one discovery;
+// a failed or expired entry is dropped.
+function resolveIssuer(sso) {
+  const overrides = endpointOverrides(sso)
+  const key = JSON.stringify([sso.issuerUrl, overrides])
+  const cached = issuerCache.get(key)
+  if (cached && cached.expiresAt > Date.now()) return cached.issuer
+  issuerCache.delete(key)
+
+  const issuer = discoverIssuer(sso, overrides).catch((err) => {
+    issuerCache.delete(key)
+    throw err
   })
   issuerCache.set(key, { issuer, expiresAt: Date.now() + DISCOVERY_TTL_MS })
   return issuer
@@ -152,14 +152,11 @@ function assertEmailAllowed(claims, sso) {
     )
 }
 
+// MEMBER sits below the billable roles, so no seat sync is needed here.
 async function ensureMembership(organizationId, userId) {
-  const rows = throwIfError(await model.organizations.getById(organizationId))
-  const organization = rows[0]
-  if (!organization) return
-  const id = userId.toString()
-  if (organization.users.some((u) => u.userId === id)) return
-  organization.users.push({ userId: id, role: ROLES.MEMBER })
-  throwIfError(await model.organizations.update(organization))
+  throwIfError(
+    await model.organizations.addMember(organizationId, userId, ROLES.MEMBER),
+  )
 }
 
 // Same personal organization as a regular signup, for users who predate it.
@@ -176,24 +173,28 @@ async function ensurePersonalOrganization(user) {
 // when they have none, and no onboarding wizard (the personal organization is
 // created here instead of by the wizard).
 async function attachUserToOrganization(userId, organizationId) {
-  await ensureMembership(organizationId, userId)
-
-  const rows = throwIfError(await model.users.getById(userId, true))
-  const user = rows[0]
+  const [, rows] = await Promise.all([
+    ensureMembership(organizationId, userId),
+    model.users.getById(userId, true),
+  ])
+  const user = throwIfError(rows)[0]
   if (!user) return
-  await ensurePersonalOrganization(user)
 
   const updates = {}
   if (!user.defaultOrganization)
     updates.defaultOrganization = organizationId.toString()
   if (user.onboarded === false) updates.onboarded = true
-  if (Object.keys(updates).length === 0) return
-  throwIfError(await model.users.update({ _id: userId, ...updates }))
+
+  await Promise.all([
+    ensurePersonalOrganization(user),
+    Object.keys(updates).length > 0
+      ? model.users.update({ _id: userId, ...updates }).then(throwIfError)
+      : null,
+  ])
 }
 
 module.exports = {
   OrganizationSsoLoginError,
-  emailDomain,
   findOrganizationForEmail,
   callbackUrl,
   buildClient,

@@ -20,12 +20,6 @@ function frontUrl(path) {
   return (process.env.FRONTEND_DOMAIN || "") + path
 }
 
-// The session cookie is flagged Secure only on https, so a plain-http dev
-// setup can still run the flow (cookie-session refuses Secure over http).
-function matchCookieSecurity(req) {
-  if (req.sessionOptions) req.sessionOptions.secure = req.secure === true
-}
-
 function redirectWithError(res, reason) {
   debug("organization sso login failed: %s", reason)
   res.redirect(frontUrl(`/login?error=organization_sso&reason=${reason}`))
@@ -34,9 +28,7 @@ function redirectWithError(res, reason) {
 // Tells the login page whether the email domain is attached to an SSO.
 async function resolveOrganizationSso(req, res, next) {
   try {
-    const organization = await ssoLogin.findOrganizationForEmail(
-      req.body && req.body.email,
-    )
+    const organization = await ssoLogin.findOrganizationForEmail(req.body.email)
     if (!organization) throw new OrganizationSsoNotFound()
 
     res.status(200).send({
@@ -63,7 +55,6 @@ async function loginWithOrganizationSso(req, res, next) {
       redirectUri,
     )
 
-    matchCookieSecurity(req)
     req.session[SESSION_KEY] = {
       organizationId: organization._id.toString(),
       state: request.state,
@@ -78,9 +69,8 @@ async function loginWithOrganizationSso(req, res, next) {
 }
 
 async function organizationSsoCallback(req, res, next) {
-  matchCookieSecurity(req)
-  const pending = req.session && req.session[SESSION_KEY]
-  if (req.session) req.session[SESSION_KEY] = null
+  const pending = req.session[SESSION_KEY]
+  req.session[SESSION_KEY] = null
   if (!pending) return redirectWithError(res, "session_expired")
 
   try {

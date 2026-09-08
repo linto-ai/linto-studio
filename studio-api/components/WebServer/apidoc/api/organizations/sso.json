@@ -2,7 +2,7 @@
   "/api/organizations/{organizationId}/sso": {
     "get": {
       "tags": ["organizations admin"],
-      "summary": "Get the organization custom SSO configuration (client secret never returned)",
+      "summary": "Get the organization custom SSO configuration and the callback URL (client secret never returned)",
       "parameters": [
         {
           "$ref": "#/components/parameters/OrganizationId"
@@ -16,45 +16,56 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "type": {
+                  "callbackUrl": {
                     "type": "string",
-                    "example": "oidc"
+                    "description": "Redirect URI to register on the identity provider"
                   },
-                  "enabled": {
-                    "type": "boolean"
-                  },
-                  "issuerUrl": {
-                    "type": "string"
-                  },
-                  "clientId": {
-                    "type": "string"
-                  },
-                  "scope": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "emailDomains": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "authorizationUrl": {
-                    "type": "string"
-                  },
-                  "tokenUrl": {
-                    "type": "string"
-                  },
-                  "userInfoUrl": {
-                    "type": "string"
-                  },
-                  "created": {
-                    "type": "string"
-                  },
-                  "last_update": {
-                    "type": "string"
+                  "sso": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "example": "oidc"
+                      },
+                      "enabled": {
+                        "type": "boolean"
+                      },
+                      "issuerUrl": {
+                        "type": "string"
+                      },
+                      "clientId": {
+                        "type": "string"
+                      },
+                      "scope": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "emailDomains": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "authorizationUrl": {
+                        "type": "string"
+                      },
+                      "tokenUrl": {
+                        "type": "string"
+                      },
+                      "userInfoUrl": {
+                        "type": "string"
+                      },
+                      "created": {
+                        "type": "string"
+                      },
+                      "last_update": {
+                        "type": "string"
+                      }
+                    },
+                    "nullable": true,
+                    "description": "null when no SSO is configured"
                   }
                 }
               }
@@ -66,9 +77,6 @@
         },
         "403": {
           "description": "Not an admin of the organization, or the plan does not include a custom SSO"
-        },
-        "404": {
-          "description": "No SSO configured for this organization"
         }
       }
     },
@@ -151,45 +159,56 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "type": {
+                  "callbackUrl": {
                     "type": "string",
-                    "example": "oidc"
+                    "description": "Redirect URI to register on the identity provider"
                   },
-                  "enabled": {
-                    "type": "boolean"
-                  },
-                  "issuerUrl": {
-                    "type": "string"
-                  },
-                  "clientId": {
-                    "type": "string"
-                  },
-                  "scope": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "emailDomains": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "authorizationUrl": {
-                    "type": "string"
-                  },
-                  "tokenUrl": {
-                    "type": "string"
-                  },
-                  "userInfoUrl": {
-                    "type": "string"
-                  },
-                  "created": {
-                    "type": "string"
-                  },
-                  "last_update": {
-                    "type": "string"
+                  "sso": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "example": "oidc"
+                      },
+                      "enabled": {
+                        "type": "boolean"
+                      },
+                      "issuerUrl": {
+                        "type": "string"
+                      },
+                      "clientId": {
+                        "type": "string"
+                      },
+                      "scope": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "emailDomains": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "authorizationUrl": {
+                        "type": "string"
+                      },
+                      "tokenUrl": {
+                        "type": "string"
+                      },
+                      "userInfoUrl": {
+                        "type": "string"
+                      },
+                      "created": {
+                        "type": "string"
+                      },
+                      "last_update": {
+                        "type": "string"
+                      }
+                    },
+                    "nullable": true,
+                    "description": "null when no SSO is configured"
                   }
                 }
               }

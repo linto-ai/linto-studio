@@ -24,6 +24,13 @@ import FormInput from "@/components/molecules/FormInput.vue"
 // attached to its domain.
 export default {
   mixins: [formsMixin],
+  props: {
+    // path of the organization provider from /auth/list ("oidc/organization")
+    path: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       fields: ["email"],
@@ -45,12 +52,15 @@ export default {
       this.resolving = true
       const req = await apiResolveOrganizationSso(this.email.value)
       if (req.status === "success") {
-        window.location.href = organizationSsoLoginUrl(this.email.value)
+        window.location.href = organizationSsoLoginUrl(
+          this.path,
+          this.email.value,
+        )
         return false
       }
       this.resolving = false
       if (req.error?.response?.data?.code === "ORGANIZATION_SSO_NOT_FOUND") {
-        this.email.error = this.$t("login.organization_sso.not_found")
+        this.email.error = this.$t("login.organization_sso.errors.no_sso")
       } else {
         this.$store.dispatch("system/addNotification", {
           message: this.$t("login.error"),

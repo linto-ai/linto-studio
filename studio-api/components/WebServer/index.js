@@ -67,6 +67,12 @@ class WebServer extends Component {
     })
 
     this.express.use("/auth/oidc", cookieMiddleware)
+    // Secure only over https (or a proxy forwarding the protocol), so the OIDC
+    // flows also run on a plain-http dev box.
+    this.express.use("/auth/oidc", (req, res, next) => {
+      req.sessionOptions.secure = req.secure
+      next()
+    })
 
     this.express.set("etag", false)
     this.express.set("trust proxy", true)

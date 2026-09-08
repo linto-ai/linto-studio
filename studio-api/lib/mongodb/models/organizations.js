@@ -297,13 +297,28 @@ class OrganizationModel extends MongoModel {
   // Oldest wins when several do. Re-throws on DB error (an auth gate must not
   // fail open).
   async getBySsoEmailDomain(domain) {
-    const rows = await this.mongoRequest({
-      "sso.enabled": true,
-      "sso.emailDomains": domain,
-    })
-    if (!Array.isArray(rows) || rows.length === 0) return null
-    rows.sort((a, b) => new Date(a.created) - new Date(b.created))
-    return rows[0]
+    const rows = await this.mongoRequest(
+      { "sso.enabled": true, "sso.emailDomains": domain },
+      { projection: { name: 1, sso: 1 }, sort: { created: 1 }, limit: 1 },
+    )
+    return rows[0] ?? null
+  }
+
+  // Idempotent: matchedCount 0 when the user is already a member (or the
+  // organization does not exist).
+  async addMember(id, userId, role) {
+    try {
+      const query = {
+        _id: this.getObjectId(id),
+        "users.userId": { $ne: userId.toString() },
+      }
+      return await this.mongoUpdateOne(query, "$addToSet", {
+        users: { userId: userId.toString(), role },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
   }
 
   // matchedCount 0 when the organization has no sso to remove

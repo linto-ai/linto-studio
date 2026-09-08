@@ -33,7 +33,6 @@ const AuthProviders = {
     from: "organization",
     name: "organization",
     isEnabled: () => process.env.ORGANIZATION_SSO_ENABLED !== "false",
-    loadStrategy: () => {},
     registerRoutes: () => `${API_PATH}/auth/oidc_organization.js`,
   },
 

@@ -15,6 +15,9 @@ const { decrypt } = require(
 const { buildSsoConfig, toPublic } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/sso`,
 )
+const { emailDomain, normalizeEmailDomain, isEmailDomain } = require(
+  `${process.cwd()}/lib/utility/emailDomain`,
+)
 const { getSso, upsertSso, deleteSso } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/sso`,
 )
@@ -36,8 +39,28 @@ function mockRes() {
 }
 
 function mockReq(body) {
-  return { params: { organizationId: ORG_ID }, body }
+  return {
+    params: { organizationId: ORG_ID },
+    body,
+    protocol: "https",
+    get: () => "studio.test",
+  }
 }
+
+const CALLBACK_URL = "https://studio.test/auth/oidc/organization/cb"
+
+describe("emailDomain helpers", () => {
+  test("normalize, extract and validate a domain", () => {
+    expect(normalizeEmailDomain(" @Acme.COM ")).toBe("acme.com")
+    expect(emailDomain("User@Acme.COM")).toBe("acme.com")
+    expect(emailDomain("@acme.com")).toBe("acme.com")
+    expect(emailDomain("nope")).toBeNull()
+    expect(emailDomain(undefined)).toBeNull()
+    expect(isEmailDomain("acme.co.uk")).toBe(true)
+    expect(isEmailDomain("acme")).toBe(false)
+    expect(isEmailDomain("acme.com/x")).toBe(false)
+  })
+})
 
 describe("buildSsoConfig", () => {
   test("applies defaults, trims and encrypts the secret", () => {
@@ -141,13 +164,17 @@ describe("sso route controllers", () => {
     jest.clearAllMocks()
   })
 
-  test("getSso returns 404 when the organization has no sso", async () => {
+  test("getSso answers the callback url and a null config when unset", async () => {
     mockModel.organizations.getById.mockResolvedValue([{ _id: ORG_ID }])
-    const next = jest.fn()
+    const res = mockRes()
 
-    await getSso(mockReq(), mockRes(), next)
+    await getSso(mockReq(), res, jest.fn())
 
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }))
+    expect(res.status).toHaveBeenCalledWith(200)
+    expect(res.send).toHaveBeenCalledWith({
+      callbackUrl: CALLBACK_URL,
+      sso: null,
+    })
   })
 
   test("getSso returns the public config", async () => {
@@ -157,8 +184,10 @@ describe("sso route controllers", () => {
 
     await getSso(mockReq(), res, jest.fn())
 
-    expect(res.status).toHaveBeenCalledWith(200)
-    expect(res.send.mock.calls[0][0].clientSecret).toBeUndefined()
+    const sent = res.send.mock.calls[0][0]
+    expect(sent.callbackUrl).toBe(CALLBACK_URL)
+    expect(sent.sso.clientId).toBe("studio")
+    expect(sent.sso.clientSecret).toBeUndefined()
   })
 
   test("upsertSso stores the config and answers without the secret", async () => {
@@ -181,7 +210,7 @@ describe("sso route controllers", () => {
     expect(stored.created).toBeDefined()
     expect(stored.last_update).toBeDefined()
     expect(res.status).toHaveBeenCalledWith(200)
-    expect(res.send.mock.calls[0][0].clientSecret).toBeUndefined()
+    expect(res.send.mock.calls[0][0].sso.clientSecret).toBeUndefined()
   })
 
   test("upsertSso keeps the creation date and the secret on update", async () => {

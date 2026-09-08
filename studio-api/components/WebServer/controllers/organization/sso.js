@@ -4,13 +4,16 @@ const { encrypt } = require(
 const { OrganizationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
+const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const { emailDomain, normalizeEmailDomain, isEmailDomain } = require(
+  `${process.cwd()}/lib/utility/emailDomain`,
+)
 
 const PROVIDER_TYPES = ["oidc"]
 const DEFAULT_TYPE = "oidc"
 const LIST_SEPARATOR = /[\s,]+/
 const DEFAULT_SCOPE = ["openid", "email", "profile"]
 const OPTIONAL_URLS = ["authorizationUrl", "tokenUrl", "userInfoUrl"]
-const DOMAIN_PATTERN = /^(?=.{1,253}$)([a-z0-9-]+\.)+[a-z]{2,}$/
 
 function isBlank(value) {
   return value === undefined || value === null || value === ""
@@ -55,8 +58,8 @@ function parseList(value, field) {
     throw new OrganizationError(
       `${field} must be a list or a comma separated string`,
     )
-  const cleaned = items.filter((s) => !isBlank(s)).map((s) => String(s).trim())
-  return [...new Set(cleaned)].filter((s) => s !== "")
+  const cleaned = items.map((s) => String(s ?? "").trim()).filter(Boolean)
+  return [...new Set(cleaned)]
 }
 
 function parseScope(value) {
@@ -67,26 +70,18 @@ function parseScope(value) {
   return scope
 }
 
-function normalizeDomain(value) {
-  return String(value).trim().toLowerCase().replace(/^@/, "")
-}
-
 // Domain of the org's matching email ("@acme.com" or "user@acme.com").
 function domainFromMatchingMail(matchingMail) {
-  if (typeof matchingMail !== "string" || !matchingMail.includes("@"))
-    return null
-  const domain = normalizeDomain(
-    matchingMail.slice(matchingMail.lastIndexOf("@")),
-  )
-  return DOMAIN_PATTERN.test(domain) ? domain : null
+  const domain = emailDomain(matchingMail)
+  return domain && isEmailDomain(domain) ? domain : null
 }
 
 // Routing key at login: users whose email domain matches go to this SSO.
 // Falls back to the matching email, required when the org has none.
 function parseEmailDomains(value, matchingMail) {
-  const domains = parseList(value, "emailDomains").map(normalizeDomain)
+  const domains = parseList(value, "emailDomains").map(normalizeEmailDomain)
   for (const domain of domains) {
-    if (!DOMAIN_PATTERN.test(domain))
+    if (!isEmailDomain(domain))
       throw new OrganizationError(`${domain} is not a valid email domain`)
   }
   if (domains.length > 0) return domains
@@ -106,7 +101,7 @@ function parseEnabled(value) {
 }
 
 function parseClientId(value) {
-  if (isBlank(value)) throw new OrganizationError("clientId is required")
+  requireParam(value, OrganizationError, "clientId is required")
   if (typeof value !== "string")
     throw new OrganizationError("clientId must be a string")
   return value.trim()
@@ -116,8 +111,12 @@ function parseClientId(value) {
 // updated without re-sending it.
 function parseClientSecret(value, current) {
   if (isBlank(value)) {
-    if (current && current.clientSecret) return current.clientSecret
-    throw new OrganizationError("clientSecret is required")
+    requireParam(
+      current && current.clientSecret,
+      OrganizationError,
+      "clientSecret is required",
+    )
+    return current.clientSecret
   }
   if (typeof value !== "string")
     throw new OrganizationError("clientSecret must be a string")

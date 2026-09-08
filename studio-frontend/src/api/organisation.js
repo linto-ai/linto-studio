@@ -88,17 +88,11 @@ export async function apiInviteUsersMachingEmail(organizationId, notif) {
   )
 }
 
-// null data when the organization has no SSO yet
+// data: { callbackUrl, sso } with sso null when none is configured yet
 export async function apiGetOrganisationSso(organizationId) {
-  const requestRes = await sendRequest(
-    `${BASE_API}/organizations/${organizationId}/sso`,
-    { method: "get" },
-  )
-  const code = requestRes?.error?.response?.data?.code
-  if (code === "ORGANIZATION_SSO_NOT_FOUND") {
-    return { status: "success", data: null }
-  }
-  return requestRes
+  return await sendRequest(`${BASE_API}/organizations/${organizationId}/sso`, {
+    method: "get",
+  })
 }
 
 export async function apiUpdateOrganisationSso(organizationId, payload, notif) {

@@ -265,11 +265,7 @@ export async function apiResolveOrganizationSso(email) {
   )
 }
 
-export function organizationSsoLoginUrl(email) {
-  return `${BASE_AUTH}/oidc/organization/login?email=${encodeURIComponent(email)}`
-}
-
-// Redirect URI the organization must register on its identity provider
-export function organizationSsoCallbackUrl() {
-  return `${BASE_AUTH}/oidc/organization/cb`
+// providerPath comes from the /auth/list entry of the organization provider
+export function organizationSsoLoginUrl(providerPath, email) {
+  return `${BASE_AUTH}/${providerPath}/login?email=${encodeURIComponent(email)}`
 }

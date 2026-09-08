@@ -77,7 +77,6 @@ import {
   apiUpdateOrganisationSso,
   apiDeleteOrganisationSso,
 } from "@/api/organisation.js"
-import { organizationSsoCallbackUrl } from "@/api/user.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
@@ -145,7 +144,6 @@ export default {
       },
       callbackUrl: {
         ...EMPTY_FIELD,
-        value: organizationSsoCallbackUrl(),
         label: this.$t("organisation.sso.callback_url_label"),
       },
       authorizationUrl: {
@@ -182,7 +180,9 @@ export default {
       const req = await apiGetOrganisationSso(this.organizationId)
       if (req.status === "success") this.applyConfig(req.data)
     },
-    applyConfig(config) {
+    applyConfig({ callbackUrl, sso }) {
+      if (callbackUrl) this.callbackUrl.value = callbackUrl
+      const config = sso ?? null
       this.isConfigured = config !== null
       this.clientSecret.required = !this.isConfigured
       this.clientSecret.value = ""
@@ -225,7 +225,7 @@ export default {
         redirect: false,
         message: this.$t("organisation.sso.delete_success"),
       })
-      if (req.status === "success") this.applyConfig(null)
+      if (req.status === "success") this.applyConfig({ sso: null })
     },
   },
   components: { FormInput, FormCheckbox, Alert },
