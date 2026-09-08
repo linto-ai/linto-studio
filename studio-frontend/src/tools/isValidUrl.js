@@ -1,4 +1,4 @@
-import { normalizeUrl } from "./normalizeUrl"
+import { normalizeUrl } from "./normalizeUrl.js"
 
 // A URL is considered valid when, after normalization (https:// prefixed), it
 // parses and its host looks like a real domain — i.e. it contains a dot and

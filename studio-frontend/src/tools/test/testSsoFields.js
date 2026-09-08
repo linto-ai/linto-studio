@@ -5,9 +5,12 @@ import { testOidcScope } from "../fields/testOidcScope.js"
 
 const translate = (key) => key
 
-test("testHttpsUrl accepts https and empty, refuses the rest", (t) => {
+test("testHttpsUrl normalizes like the other url fields and requires https", (t) => {
   t.true(testHttpsUrl({ value: " https://a.b/c " }, translate))
   t.true(testHttpsUrl({ value: "" }, translate))
+  const bare = { value: "login.example.com/realms/acme" }
+  t.true(testHttpsUrl(bare, translate))
+  t.is(bare.value, "https://login.example.com/realms/acme")
   const field = { value: "http://a.b" }
   t.false(testHttpsUrl(field, translate))
   t.is(field.error, "organisation.sso.errors.invalid_https_url")

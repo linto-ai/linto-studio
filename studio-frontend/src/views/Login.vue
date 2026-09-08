@@ -347,11 +347,6 @@ export default {
   gap: 1.5rem;
 }
 
-.sso-btn.organization {
-  background: none;
-  color: var(--text-primary);
-}
-
 .no-access-notice {
   gap: 1.2rem;
   padding: 1rem 0;

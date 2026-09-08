@@ -1,17 +1,17 @@
-// Empty is valid here: the required check belongs to formsMixin (field.required)
+import { normalizeUrl } from "../normalizeUrl.js"
+import { isValidUrl } from "../isValidUrl.js"
+
+// Same normalization as the other URL fields (https:// prepended when no
+// scheme), then https only. Empty is valid: required belongs to formsMixin.
 export function testHttpsUrl(field, t) {
   field.error = null
   field.valid = false
-  field.value = field.value.trim()
-  if (field.value.length === 0) {
+  field.value = normalizeUrl(field.value)
+  if (field.value === "") {
     field.valid = true
     return true
   }
-  try {
-    field.valid = new URL(field.value).protocol === "https:"
-  } catch {
-    field.valid = false
-  }
+  field.valid = isValidUrl(field.value) && field.value.startsWith("https://")
   if (!field.valid) field.error = t("organisation.sso.errors.invalid_https_url")
   return field.valid
 }
