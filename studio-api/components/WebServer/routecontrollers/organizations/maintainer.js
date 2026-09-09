@@ -249,8 +249,9 @@ async function deleteConversationFromOrganization(req, res, next) {
 
     let conversations = await model.conversations.listConvFromConvIds(
       convIds,
+      organization._id.toString(),
       userId,
-      ROLES.MAINTAINER,
+      req.userRole,
       RIGHTS.DELETE,
       req.query,
     )
