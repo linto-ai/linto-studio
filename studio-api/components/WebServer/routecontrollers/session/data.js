@@ -15,6 +15,20 @@ const {
   SessionConflict,
 } = require(`${process.cwd()}/components/WebServer/error/exception/session`)
 
+// The hash never leaves the API
+function withoutHash({ password, ...sessionData }) {
+  return { ...sessionData, hasPassword: Boolean(password) }
+}
+
+async function findInOrganization(organizationId, id) {
+  const [sessionData] = await model.sessionData.getByOrganizationAndId(
+    organizationId,
+    id,
+  )
+  if (!sessionData) throw new SessionNotFound()
+  return sessionData
+}
+
 function hashPassword(password) {
   const derivedKey = crypto
     .pbkdf2Sync(password, process.env.SESSION_PSW_SALT, 100000, 64, "sha512")
@@ -82,7 +96,7 @@ async function getSessionData(req, res, next) {
       req.query,
     )
 
-    res.status(200).json(sessionData)
+    res.status(200).json(sessionData.map(withoutHash))
   } catch (err) {
     next(err)
   }
@@ -91,12 +105,8 @@ async function getSessionData(req, res, next) {
 async function getSessionDataById(req, res, next) {
   try {
     const { id, organizationId } = req.params
-    const sessionData = await model.sessionData.getByOrganizationAndId(
-      organizationId,
-      id,
-    )
-    if (sessionData.length === 0) throw new SessionNotFound("Session not found")
-    res.status(200).json(sessionData[0])
+    const sessionData = await findInOrganization(organizationId, id)
+    res.status(200).json(withoutHash(sessionData))
   } catch (err) {
     next(new SessionNotFound("Session not found"))
   }
@@ -127,12 +137,8 @@ async function updateSessionData(req, res, next) {
     let { name, password } = req.body
     const updateData = {}
 
-    const sessionData = await model.sessionData.getByOrganizationAndId(
-      req.params.organizationId,
-      id,
-    )
+    await findInOrganization(req.params.organizationId, id)
 
-    if (sessionData.length === 0) throw new SessionNotFound()
     if (!name && !password) throw new SessionUnsupportedMediaType()
     if (name !== undefined) {
       name = getSlug(req.body.name, { lang: "en" })
@@ -159,7 +165,9 @@ async function updateSessionData(req, res, next) {
 
 async function removePasswordFromSessionData(req, res, next) {
   try {
-    const { id } = req.params
+    const { id, organizationId } = req.params
+    await findInOrganization(organizationId, id)
+
     await model.sessionData.unset(id, { password: "" })
     res.status(200).json({ message: "Password removed from session data" })
   } catch (err) {
