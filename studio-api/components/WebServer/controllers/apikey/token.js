@@ -10,6 +10,16 @@ const { UserError, UserNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 const PLATFORM_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
+
+// Token routes take a user id: only machine accounts may be handled here
+async function getApiKeyUser(userId) {
+  const user = await model.users.getById(userId, true)
+  if (user.length !== 1 || user[0].type !== USER_TYPE.M2M) {
+    throw new UserNotFound("API key not found")
+  }
+  return user[0]
+}
 
 function getExpiresIn(value, defaultValue = "14d") {
   defaultValue = process.env.EXTENDED_TOKEN_DAYS_TIME || defaultValue
@@ -29,8 +39,7 @@ async function generateApiKeyToken(
   expires_in = process.env.EXTENDED_TOKEN_DAYS_TIME,
 ) {
   try {
-    const user = await model.users.getById(userId, true)
-    if (user.length !== 1) throw new UserNotFound()
+    const user = [await getApiKeyUser(userId)]
 
     expires_in = getExpiresIn(expires_in)
     if (token === undefined) {
@@ -134,12 +143,7 @@ async function listApiKey(idList, orgaRoles = undefined) {
     const token = tokenMap.get(id)
     const roleData = roleMap.get(id)
 
-    const {
-      _id,
-      tokenCreatedAt,
-      tokenExpiresAt,
-      ...user
-    } = userDoc || {}
+    const { _id, tokenCreatedAt, tokenExpiresAt, ...user } = userDoc || {}
 
     const createdAt = token?.createdAt || tokenCreatedAt
     const expiresAt = token?.expiresAt || tokenExpiresAt
@@ -167,6 +171,7 @@ async function listApiKey(idList, orgaRoles = undefined) {
 
 async function getApiKeyData(tokenId, regenerate = false, expiresIn) {
   try {
+    await getApiKeyUser(tokenId)
     if (regenerate) {
       await model.tokens.deleteAllUserTokens(tokenId)
     }
@@ -202,6 +207,7 @@ async function refreshApiKey(tokenId, expiresIn) {
 }
 
 async function deleteApiKey(tokenId, revoke = false) {
+  await getApiKeyUser(tokenId)
   await model.tokens.deleteAllUserTokens(tokenId)
 
   if (revoke === "true") {
