@@ -29,6 +29,23 @@ const { ConversationNotFound, ConversationError } = require(
 const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
+
+// Accepted in the request but never written here, rights have their own routes
+const PROTECTED_FIELDS = [
+  "owner",
+  "organization",
+  "sharedWithUsers",
+  "securityLevel",
+]
+
+function stripProtectedFields(body) {
+  return Object.fromEntries(
+    Object.entries(body).filter(
+      ([key]) => !PROTECTED_FIELDS.includes(key.split(".")[0]),
+    ),
+  )
+}
+
 async function deleteConversation(req, res, next) {
   try {
     const conversation = await model.conversations.getById(
@@ -55,12 +72,9 @@ async function updateConversation(req, res, next) {
     )
     if (conversation.length !== 1) throw new ConversationNotFound()
 
-    // Ownership transfer is not part of a conversation update
-    const { owner, ...updatableFields } = req.body
-
     const conv = {
+      ...stripProtectedFields(req.body),
       _id: req.params.conversationId,
-      ...updatableFields,
     }
 
     const result = await model.conversations.update(conv)

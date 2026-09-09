@@ -1,10 +1,6 @@
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
-  users: { getById: jest.fn(), update: jest.fn(), delete: jest.fn() },
-  tokens: {
-    insert: jest.fn(),
-    getTokenByUser: jest.fn(),
-    deleteAllUserTokens: jest.fn(),
-  },
+  users: { listApiKeyList: jest.fn(), delete: jest.fn() },
+  tokens: { getTokenByUser: jest.fn(), deleteAllUserTokens: jest.fn() },
 }))
 
 jest.mock(
@@ -13,7 +9,6 @@ jest.mock(
 )
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const { UserNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
@@ -21,20 +16,18 @@ const TokenHandler = require(
   `${process.cwd()}/components/WebServer/controllers/apikey/token`,
 )
 
-const HUMAN = { _id: "human-1", role: 31, type: USER_TYPE.USER }
-const MACHINE = { _id: "machine-1", role: 9, type: USER_TYPE.M2M }
+const HUMAN = { _id: "human-1", role: 31 }
+const MACHINE = { _id: "machine-1", role: 9 }
 
 beforeEach(() => {
   jest.clearAllMocks()
-  model.users.getById.mockImplementation(async (id) => {
-    if (id === HUMAN._id) return [HUMAN]
-    if (id === MACHINE._id) return [MACHINE]
-    return []
-  })
+  // Same predicate as the model: only machine accounts come back
+  model.users.listApiKeyList.mockImplementation(async ([id]) =>
+    id === MACHINE._id ? [MACHINE] : [],
+  )
   model.tokens.getTokenByUser.mockResolvedValue([
     { _id: "tok-1", salt: "salt", expiresIn: 1000 },
   ])
-  model.tokens.insert.mockResolvedValue({ insertedId: "tok-2" })
 })
 
 describe("API key token handler", () => {

@@ -1,6 +1,5 @@
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
   organizations: { getById: jest.fn() },
-  conversations: {},
 }))
 
 jest.mock(
@@ -32,7 +31,10 @@ function buildReq({ userId, body = {} }) {
   }
 }
 
+let next
+
 beforeEach(() => {
+  next = jest.fn()
   model.organizations.getById.mockReset()
   model.organizations.getById.mockResolvedValue([
     {
@@ -47,7 +49,6 @@ beforeEach(() => {
 
 describe("organization access middleware", () => {
   test("a non-member is refused even when owning conversations", async () => {
-    const next = jest.fn()
     const req = buildReq({
       userId: "outsider",
       body: { conversationsId: "conv-owned-by-outsider" },
@@ -61,7 +62,6 @@ describe("organization access middleware", () => {
   })
 
   test("a member below the required role is refused even with conversationsId", async () => {
-    const next = jest.fn()
     const req = buildReq({
       userId: "member",
       body: { conversationsId: "conv-owned-by-member" },
@@ -74,7 +74,6 @@ describe("organization access middleware", () => {
   })
 
   test("a member with the required role passes and gets its role", async () => {
-    const next = jest.fn()
     const req = buildReq({ userId: "member" })
 
     await access.asMemberAccess(req, {}, next)
@@ -84,7 +83,6 @@ describe("organization access middleware", () => {
   })
 
   test("an admin passes the admin gate", async () => {
-    const next = jest.fn()
     const req = buildReq({ userId: "admin" })
 
     await access.asAdminAccess(req, {}, next)

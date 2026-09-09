@@ -249,7 +249,7 @@ async function deleteConversationFromOrganization(req, res, next) {
 
     let conversations = await model.conversations.listConvFromConvIds(
       convIds,
-      organization._id.toString(),
+      req.params.organizationId,
       userId,
       req.userRole,
       RIGHTS.DELETE,

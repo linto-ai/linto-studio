@@ -1,13 +1,7 @@
 jest.mock(`${process.cwd()}/lib/mongodb/driver`, () => ({
   constructor: {
     db: { collection: () => ({}) },
-    mongoDb: {
-      ObjectId: class {
-        constructor(id) {
-          this.id = id
-        }
-      },
-    },
+    mongoDb: { ObjectId: require("bson").ObjectId },
   },
 }))
 
