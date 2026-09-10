@@ -8,7 +8,6 @@ const { categoryBelongsToOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/taxonomy/organizationScope`,
 )
 
-// Category writes only reach categories of the organization in the URL
 async function getCategoryInOrganization(categoryId, organizationId) {
   const category = await model.categories.getById(categoryId)
   if (

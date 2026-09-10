@@ -1,7 +1,7 @@
 const dns = require("dns").promises
 const ipaddr = require("ipaddr.js")
 
-// "unicast" is the only publicly routable range, everything else stays inside
+// ipaddr.js reports publicly routable addresses as unicast
 function isPublicAddress(address) {
   let parsed = ipaddr.parse(address)
   if (parsed.kind() === "ipv6" && parsed.isIPv4MappedAddress()) {
@@ -10,7 +10,6 @@ function isPublicAddress(address) {
   return parsed.range() === "unicast"
 }
 
-// Only http(s) toward a publicly routable host may be fetched on behalf of a user
 async function assertPublicHttpUrl(raw) {
   let url
   try {

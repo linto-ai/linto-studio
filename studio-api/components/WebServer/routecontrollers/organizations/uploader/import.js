@@ -62,7 +62,7 @@ function requireValidAccess(membersRight, securityLevel) {
     )
 }
 
-// Only content comes from the imported file, ownership, access and storage are set here
+// Only content is taken from the import, access and storage are set server side
 async function importConv(req, res) {
   let imported
   try {

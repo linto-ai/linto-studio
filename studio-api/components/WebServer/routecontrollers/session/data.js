@@ -15,7 +15,6 @@ const {
   SessionConflict,
 } = require(`${process.cwd()}/components/WebServer/error/exception/session`)
 
-// The hash never leaves the API
 function withoutHash({ password, ...sessionData }) {
   return { ...sessionData, hasPassword: Boolean(password) }
 }

@@ -12,8 +12,7 @@ function normalizeEmail(email) {
   return email.trim().toLowerCase()
 }
 
-// An unverified address that replaced a verified one goes back to pending,
-// the last verified address becomes primary again
+// Unverified replacement addresses go back to pending, the last verified one becomes primary
 async function restorePendingEmail(users) {
   const cursor = users.find({
     type: { $ne: "machine" },
@@ -127,7 +126,7 @@ async function normalizeEmails(users) {
   )
 }
 
-// Every account creation looks up that address, only pending changes are indexed
+// Looked up on every account creation
 const PENDING_INDEX = { "pendingEmail.address": 1 }
 const PENDING_INDEX_OPTIONS = {
   partialFilterExpression: { "pendingEmail.address": { $exists: true } },

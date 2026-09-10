@@ -85,7 +85,6 @@ class UsersModel extends MongoModel {
         type: USER_TYPE.USER,
       }
 
-      // If SMTP is not configured, mark the email as verified
       if (!process.env.SMTP_HOST) {
         adminPayload.emailIsVerified = true
         adminPayload.verifiedEmail.push(adminPayload.email)
@@ -116,7 +115,6 @@ class UsersModel extends MongoModel {
         type: USER_TYPE.USER,
       }
 
-      // If SMTP is not configured, mark the email as verified
       if (!process.env.SMTP_HOST) {
         userPayload.emailIsVerified = true
         userPayload.verifiedEmail.push(userPayload.email)
@@ -131,8 +129,7 @@ class UsersModel extends MongoModel {
     }
   }
 
-  // The address now belongs to a real account, nobody else may claim it,
-  // and the link sent there must not open anyone else's account
+  // The address has a real owner now, pending claims and their links are void
   async releasePendingEmail(email) {
     try {
       await this.mongoUpdateMany(

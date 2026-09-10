@@ -122,7 +122,6 @@ module.exports = {
   ) => {
     return await access(next, convId, userId, restricted, right, rightException)
   },
-  // Every listed conversation must be readable, same rule as the single GET
   asReadBatchAccess: async (req, res, next) => {
     const conversations = req.body.conversations
     if (!conversations) return next(new ConversationIdRequire())

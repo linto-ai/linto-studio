@@ -1,7 +1,6 @@
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-// A category belongs to the organization of the URL directly, or through the
-// conversation it is scoped to. Anything else must be treated as not found.
+// Scoped to the organization itself or to one of its conversations
 async function categoryBelongsToOrganization(category, organizationId) {
   if (!category || !organizationId) return false
   const scopeId = category.scopeId?.toString()

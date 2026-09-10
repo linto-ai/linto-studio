@@ -92,7 +92,7 @@ async function generateResetUserToken(magicId, psw, done) {
 
     if (!user) return done(new InvalidCredential())
     else if (!moment().isBefore(user.authLink.validityDate))
-      return done(new ExpiredLink()) // expired token
+      return done(new ExpiredLink())
 
     const verified = verifiedFieldsFromLink(user)
     await model.users.update({ _id: user._id, ...verified })
@@ -100,7 +100,6 @@ async function generateResetUserToken(magicId, psw, done) {
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user._id, token_salt)
 
-    // Data stored in the token
     let tokenData = {
       salt: token_salt,
       tokenId: token.insertedId,
