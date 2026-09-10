@@ -17,18 +17,6 @@
         </template>
       </FormInput>
 
-      <p v-if="userInfo.pendingEmail">
-        {{
-          $t("user_settings.pending_email", { email: userInfo.pendingEmail })
-        }}
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          :label="$t('user_settings.send_verification_link')"
-          @click="sendVerificationEmail" />
-      </p>
-
       <Button
         type="submit"
         variant="primary"
@@ -44,7 +32,6 @@ import { mapActions } from "vuex"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import { apiSendVerificationLink } from "@/api/user.js"
 import { apiAdminUpdateUser } from "@/api/admin.js"
 
 import { testName } from "@/tools/fields/testName"
@@ -133,20 +120,6 @@ export default {
       }
 
       return false
-    },
-    async sendVerificationEmail() {
-      const req = await apiSendVerificationLink()
-      if (req?.status === "success") {
-        bus.$emit("app_notif", {
-          status: "success",
-          message: this.$t("user_settings.verification_link_sent"),
-        })
-      } else {
-        bus.$emit("app_notif", {
-          status: "error",
-          message: this.$t("user_settings.notif_error"),
-        })
-      }
     },
   },
   components: { Fragment, FormInput },

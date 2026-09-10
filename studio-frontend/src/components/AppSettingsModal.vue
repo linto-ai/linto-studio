@@ -4,9 +4,14 @@
     :with-actions="false"
     :title="$t('app_settings_modal.title')"
     :size="computedSize">
-    <div v-if="user.emailIsVerified === false">
+    <div v-if="user.emailIsVerified === false || user.pendingEmail">
       <div class="app-settings-verify-email">
-        <p>{{ $t("app_settings_modal.email_not_verified") }}</p>
+        <p v-if="user.pendingEmail">
+          {{
+            $t("app_settings_modal.pending_email", { email: user.pendingEmail })
+          }}
+        </p>
+        <p v-else>{{ $t("app_settings_modal.email_not_verified") }}</p>
 
         <Button size="sm" @click="sendVerificationEmail()">
           <ph-icon name="paper-plane-tilt" size="md" />
@@ -183,6 +188,7 @@
 
 <script>
 import { mapGetters } from "vuex"
+import { bus } from "@/main.js"
 import { apiSendVerificationLink } from "@/api/user.js"
 import { getEnv } from "@/tools/getEnv"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
@@ -289,15 +295,21 @@ export default {
       document.location.reload()
     },
     async sendVerificationEmail() {
-      this.sendingEmail = true
       const sendLink = await apiSendVerificationLink({
         timeout: 3000,
         redirect: false,
       })
 
-      if (sendLink.status === "success") {
-        this.sendingEmail = false
-        this.emailSent = true
+      if (sendLink?.status === "success") {
+        bus.$emit("app_notif", {
+          status: "success",
+          message: this.$t("user_settings.verification_link_sent"),
+        })
+      } else {
+        bus.$emit("app_notif", {
+          status: "error",
+          message: this.$t("user_settings.notif_error"),
+        })
       }
     },
   },
