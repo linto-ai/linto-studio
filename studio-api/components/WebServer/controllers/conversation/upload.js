@@ -1,6 +1,9 @@
 const { storeFile, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
+const { assertPublicHttpUrl } = require(
+  `${process.cwd()}/lib/utility/publicUrl`,
+)
 const { downloadAudio } = require(
   `${process.cwd()}/components/WebServer/controllers/files/urlExtractor`,
 )
@@ -27,7 +30,8 @@ async function prepareFileFormData(files, url) {
     let file_data = {}
 
     if (url) {
-      const ddlFileData = await downloadAudio(url, "all")
+      const safeUrl = await assertPublicHttpUrl(url)
+      const ddlFileData = await downloadAudio(safeUrl, "all")
       file_data = await storeFile(ddlFileData, STORE_TYPE.AUDIO)
       form.append("file", fs.readFileSync(file_data.storageFilePath), {
         filename: file_data.filename,

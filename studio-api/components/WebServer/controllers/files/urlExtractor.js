@@ -21,8 +21,8 @@ async function downloadAudio(url, domain) {
     const filePath = getStorageFolder() + "/" + getAudioFolder()
 
     if (domain === undefined) domain = "all"
+    // "--" keeps a user supplied value from being read as an option
     const args = [
-      url,
       "--use-extractors",
       domain,
       "--output",
@@ -32,6 +32,8 @@ async function downloadAudio(url, domain) {
       "--extract-audio",
       "--audio-format",
       "mp3",
+      "--",
+      url,
     ]
 
     let streamProcess = spawn(MODULE_NAME, args)
