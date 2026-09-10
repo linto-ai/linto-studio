@@ -27,6 +27,9 @@ const folder_middlewares = require(
 const platform_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/platform.js`,
 )
+const entitlement_middlewares = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/entitlement.js`,
+)
 
 const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
@@ -141,6 +144,15 @@ const loadMiddlewares = (route) => {
 
   if (route.requireUserVisibility)
     middlewares.push(user_middlewares.isVisibility)
+
+  // A key standing for an external identity must still be entitled to the
+  // feature this route serves (read live, never cached on the key).
+  if (route.requireExternalEntitlement)
+    middlewares.push(
+      entitlement_middlewares.requireExternalFeature(
+        route.requireExternalEntitlement,
+      ),
+    )
 
   return middlewares
 }

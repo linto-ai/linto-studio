@@ -8,7 +8,17 @@ process.env.CM_JWT_SECRET = "test-cm-secret"
 process.env.SESSION_API_ENDPOINT = "http://sessionapi:8005/v1"
 process.env.SESSION_PSW_SALT = "salt"
 
-const mockModel = { users: { getById: jest.fn() } }
+// The key of these tests carries no external identity, so the entitlement
+// gate lets it through without ever reading a record.
+const mockModel = {
+  users: { getById: jest.fn() },
+  externalEntitlements: {
+    findUserBySubject: jest.fn(),
+    findUserByEmail: jest.fn(),
+    findDomain: jest.fn(),
+    constructor: { KIND_USER: "user", KIND_DOMAIN: "domain" },
+  },
+}
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => mockModel)
 const mockAxios = { get: jest.fn(), post: jest.fn() }
 jest.mock(`${process.cwd()}/lib/utility/axios`, () => mockAxios)

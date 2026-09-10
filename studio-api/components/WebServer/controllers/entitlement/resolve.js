@@ -3,8 +3,11 @@ const debug = require("debug")(
 )
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const EntitlementModel = model.externalEntitlements.constructor
 const { emailDomain } = require(`${process.cwd()}/lib/utility/externalIdentity`)
+
+// Read lazily: this module is pulled in by route files whose tests mock the
+// model registry with only the collections they need.
+const entitlementModel = () => model.externalEntitlements.constructor
 
 /**
  * Resolution of an external identity to its entitlement — shared by the two
@@ -57,8 +60,8 @@ async function resolveEntitlement({ provider, subject, email }) {
   const effective = userRecord || domainRecord
   return {
     kind: userRecord
-      ? EntitlementModel.KIND_USER
-      : EntitlementModel.KIND_DOMAIN,
+      ? entitlementModel().KIND_USER
+      : entitlementModel().KIND_DOMAIN,
     features: effective.features || {},
     plan: effective.plan ?? null,
     provider: effective.provider,
@@ -99,7 +102,7 @@ function hasFeature(features, path) {
 }
 
 function hasActiveFeature(features) {
-  return EntitlementModel.hasActiveFeature(features)
+  return entitlementModel().hasActiveFeature(features)
 }
 
 module.exports = {

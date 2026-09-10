@@ -28,6 +28,9 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const crypto = require("crypto")
 
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const { assertExternalFeature } = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/entitlement`,
+)
 
 function verifyPublicSessionPassword(storedHash, inputPassword) {
   const inputKey = crypto.pbkdf2Sync(
@@ -111,6 +114,9 @@ async function assertQuickMeetingAllowedForKey(userId) {
 
 async function createQuickMeeting(req, next) {
   try {
+    // Live transcription is a paid feature: a key standing for an external
+    // identity has its entitlement re-read here, on every call.
+    await assertExternalFeature(req.payload.data.userId, "transcription.live")
     await assertQuickMeetingAllowedForKey(req.payload.data.userId)
   } catch (err) {
     return next(err)
@@ -132,6 +138,19 @@ async function createQuickMeeting(req, next) {
   }
 
   return forceQueryParams(req, next)
+}
+
+/**
+ * Launching a bot on a meeting is live transcription too: same gate as a quick
+ * meeting, on POST /organizations/{org}/bots.
+ */
+async function createBot(req, next) {
+  try {
+    await assertExternalFeature(req.payload.data.userId, "transcription.live")
+    return next()
+  } catch (err) {
+    return next(err)
+  }
 }
 
 async function forwardSessionAliasPublic(req, next, res) {
@@ -336,6 +355,7 @@ function cleanPublicChannelContent(jsonString) {
 module.exports = {
   forceQueryParams,
   createQuickMeeting,
+  createBot,
   forwardSessionAlias,
   forwardSessionAliasPublic,
   checkTranscriberProfileAccess,

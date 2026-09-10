@@ -96,6 +96,8 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationUploaderAccess: true,
       orgaPermissionAccess: PERMISSIONS.UPLOAD,
+      // Uploading a media for transcription is the "async" feature.
+      requireExternalEntitlement: "transcription.async",
       controller: transcribeReq.bind(webserver),
     },
     {
