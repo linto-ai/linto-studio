@@ -10,6 +10,7 @@ module.exports = {
   conversations: require("./conversations.js"),
   editorLocks: require("./editorLocks.js"),
   externalDomains: require("./externalDomains.js"),
+  externalEntitlements: require("./externalEntitlements.js"),
   favorites: require("./favorites.js"),
   folders: require("./folders.js"),
   kpi: {

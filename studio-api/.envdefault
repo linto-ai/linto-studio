@@ -23,7 +23,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.8.6
+DB_MIGRATION_TARGET=1.8.7
 
 # STT Config
 GATEWAY_SERVICES=https://<domain>
@@ -151,6 +151,9 @@ EXTERNAL_EXCHANGE_TOKEN_TTL=1h
 # bridge for an active external domain (4 = MEETING_MANAGER, the full live flow)
 EXTERNAL_JIT_KEY_ROLE=4
 EXTERNAL_JIT_KEY_EXPIRES_IN=3650d
+# External system the entitlements API v1 writes under when a call does not
+# name one (one external system = one root organization)
+EXTERNAL_ENTITLEMENTS_DEFAULT_PROVIDER=external
 
 # Authentification settings
 JWT_ALGORITHM=HS256

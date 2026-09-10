@@ -12,6 +12,8 @@ const MAX_PAYLOAD_LABEL = bytes.format(MAX_PAYLOAD_BYTES)
 function buildErrorBody(err) {
   const body = { message: err.message }
   if (err.code) body.code = err.code
+  // The entitlements contract asks for the detail of a 400 in `error`.
+  if (err.error !== undefined) body.error = err.error
   if (err.maxSize !== undefined) body.maxSize = err.maxSize
   if (err.maxSizeBytes !== undefined) body.maxSizeBytes = err.maxSizeBytes
   return body

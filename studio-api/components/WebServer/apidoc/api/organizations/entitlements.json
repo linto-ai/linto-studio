@@ -1,0 +1,609 @@
+{
+  "/api/v1/organizations/{organizationId}/entitlements/users/{email}": {
+    "put": {
+      "tags": ["entitlements"],
+      "summary": "Declare the AI rights of one person",
+      "description": "Upsert: creates or replaces, never answers 201. Never creates an API key — the key is born just-in-time at the first use (`POST /api/auth/external/token`). `features: {}` takes every right away and drops the tokens of the linked key, which stays a member of its organization. `updatedAt` is an order guard: a PUT older than the state Studio holds is ignored and answered `200 {\"ignored\": true}`. Auth: an API key that is ADMIN (6) of `{organizationId}`, the root organization of the external system.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "email",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "email"
+          },
+          "description": "Email of the person, lowercase, percent-encoded",
+          "example": "jdoe%40twake.app"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "subject": {
+                  "type": "string",
+                  "description": "id of the person at the external system (recommended)"
+                },
+                "features": {
+                  "type": "object",
+                  "description": "Nested, extensible object, one key per feature. An absent key is false, an unknown key is kept and ignored. `{}` takes every right away.",
+                  "properties": {
+                    "transcription": {
+                      "type": "object",
+                      "properties": {
+                        "live": {
+                          "type": "boolean",
+                          "description": "live transcription during a visio"
+                        },
+                        "async": {
+                          "type": "boolean",
+                          "description": "deferred transcription of a recording"
+                        }
+                      }
+                    },
+                    "summary": {
+                      "type": "boolean",
+                      "description": "reserved"
+                    },
+                    "translation": {
+                      "type": "boolean",
+                      "description": "reserved"
+                    }
+                  },
+                  "example": {
+                    "transcription": {
+                      "live": true,
+                      "async": true
+                    }
+                  }
+                },
+                "plan": {
+                  "type": "string",
+                  "description": "free label, informative"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "ISO 8601 timestamp of the source message"
+                },
+                "provider": {
+                  "type": "string",
+                  "description": "see the query parameter of GET"
+                }
+              },
+              "required": ["features"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["user"]
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "the root organization the record was declared under"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "id of the person at the external system"
+                  },
+                  "features": {
+                    "type": "object",
+                    "description": "Nested, extensible object, one key per feature. An absent key is false, an unknown key is kept and ignored. `{}` takes every right away.",
+                    "properties": {
+                      "transcription": {
+                        "type": "object",
+                        "properties": {
+                          "live": {
+                            "type": "boolean",
+                            "description": "live transcription during a visio"
+                          },
+                          "async": {
+                            "type": "boolean",
+                            "description": "deferred transcription of a recording"
+                          }
+                        }
+                      },
+                      "summary": {
+                        "type": "boolean",
+                        "description": "reserved"
+                      },
+                      "translation": {
+                        "type": "boolean",
+                        "description": "reserved"
+                      }
+                    },
+                    "example": {
+                      "transcription": {
+                        "live": true,
+                        "async": true
+                      }
+                    }
+                  },
+                  "plan": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "ignored": {
+                    "type": "boolean",
+                    "description": "present and true when the PUT was older than the state Studio holds: nothing was written"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid body (`code: invalid_body`, detail in `error`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The key is not an admin of this organization (and, for `PUT domains`, not an ORGANIZATION_INITIATOR)"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["entitlements"],
+      "summary": "The person no longer exists: erase their state",
+      "description": "Idempotent: `204` whether or not a record existed. The tokens of the linked key are revoked; the key and its organization membership stay, so past usage keeps its attribution.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "email",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "email"
+          },
+          "description": "Email of the person, lowercase, percent-encoded",
+          "example": "jdoe%40twake.app"
+        }
+      ],
+      "responses": {
+        "204": {
+          "description": "Erased"
+        },
+        "400": {
+          "description": "Invalid body (`code: invalid_body`, detail in `error`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The key is not an admin of this organization (and, for `PUT domains`, not an ORGANIZATION_INITIATOR)"
+        }
+      }
+    },
+    "get": {
+      "tags": ["entitlements"],
+      "summary": "The state Studio holds for a person",
+      "description": "Support and replay control.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "email",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "email"
+          },
+          "description": "Email of the person, lowercase, percent-encoded",
+          "example": "jdoe%40twake.app"
+        },
+        {
+          "in": "query",
+          "name": "provider",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "External system this record belongs to. Defaults to `EXTERNAL_ENTITLEMENTS_DEFAULT_PROVIDER` (`external`); not part of the v1 contract, one system writes under one root organization."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["user"]
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "the root organization the record was declared under"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "id of the person at the external system"
+                  },
+                  "features": {
+                    "type": "object",
+                    "description": "Nested, extensible object, one key per feature. An absent key is false, an unknown key is kept and ignored. `{}` takes every right away.",
+                    "properties": {
+                      "transcription": {
+                        "type": "object",
+                        "properties": {
+                          "live": {
+                            "type": "boolean",
+                            "description": "live transcription during a visio"
+                          },
+                          "async": {
+                            "type": "boolean",
+                            "description": "deferred transcription of a recording"
+                          }
+                        }
+                      },
+                      "summary": {
+                        "type": "boolean",
+                        "description": "reserved"
+                      },
+                      "translation": {
+                        "type": "boolean",
+                        "description": "reserved"
+                      }
+                    },
+                    "example": {
+                      "transcription": {
+                        "live": true,
+                        "async": true
+                      }
+                    }
+                  },
+                  "plan": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "ignored": {
+                    "type": "boolean",
+                    "description": "present and true when the PUT was older than the state Studio holds: nothing was written"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Unknown (`code: not_found`)"
+        },
+        "400": {
+          "description": "Invalid body (`code: invalid_body`, detail in `error`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The key is not an admin of this organization (and, for `PUT domains`, not an ORGANIZATION_INITIATOR)"
+        }
+      }
+    }
+  },
+  "/api/v1/organizations/{organizationId}/entitlements/domains/{domain}": {
+    "put": {
+      "tags": ["entitlements"],
+      "summary": "Declare the AI rights of a whole email domain",
+      "description": "Same fields as a person, without `subject`. Every user whose email is in that domain inherits these rights, with no per-user call; a record set on a person wins over their domain. The first call also creates the Studio organization of the domain (managed, named after the domain, attached to the root organization by `metadata.parentOrganizationId`, the caller ADMIN and owner); the keys of its members are born there. `features: {}` takes the rights away — the organization and its data stay: removing one is an administration act, never the effect of a message, and no route here ever deletes an organization. Auth: an API key that is ADMIN (6) of `{organizationId}` and carries the platform role ORGANIZATION_INITIATOR (2).",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "domain",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Email domain of the external organization, lowercase",
+          "example": "collectivite.fr"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "features": {
+                  "type": "object",
+                  "description": "Nested, extensible object, one key per feature. An absent key is false, an unknown key is kept and ignored. `{}` takes every right away.",
+                  "properties": {
+                    "transcription": {
+                      "type": "object",
+                      "properties": {
+                        "live": {
+                          "type": "boolean",
+                          "description": "live transcription during a visio"
+                        },
+                        "async": {
+                          "type": "boolean",
+                          "description": "deferred transcription of a recording"
+                        }
+                      }
+                    },
+                    "summary": {
+                      "type": "boolean",
+                      "description": "reserved"
+                    },
+                    "translation": {
+                      "type": "boolean",
+                      "description": "reserved"
+                    }
+                  },
+                  "example": {
+                    "transcription": {
+                      "live": true,
+                      "async": true
+                    }
+                  }
+                },
+                "plan": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "provider": {
+                  "type": "string"
+                }
+              },
+              "required": ["features"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["domain"]
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "the root organization the record was declared under"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "domain": {
+                    "type": "string"
+                  },
+                  "domainOrganizationId": {
+                    "type": "string",
+                    "description": "the Studio organization of that domain, created by this route and attached to the root by `metadata.parentOrganizationId`. Keys of the domain members are born there."
+                  },
+                  "features": {
+                    "type": "object",
+                    "description": "Nested, extensible object, one key per feature. An absent key is false, an unknown key is kept and ignored. `{}` takes every right away.",
+                    "properties": {
+                      "transcription": {
+                        "type": "object",
+                        "properties": {
+                          "live": {
+                            "type": "boolean",
+                            "description": "live transcription during a visio"
+                          },
+                          "async": {
+                            "type": "boolean",
+                            "description": "deferred transcription of a recording"
+                          }
+                        }
+                      },
+                      "summary": {
+                        "type": "boolean",
+                        "description": "reserved"
+                      },
+                      "translation": {
+                        "type": "boolean",
+                        "description": "reserved"
+                      }
+                    },
+                    "example": {
+                      "transcription": {
+                        "live": true,
+                        "async": true
+                      }
+                    }
+                  },
+                  "plan": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "ignored": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid body (`code: invalid_body`, detail in `error`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The key is not an admin of this organization (and, for `PUT domains`, not an ORGANIZATION_INITIATOR)"
+        }
+      }
+    },
+    "get": {
+      "tags": ["entitlements"],
+      "summary": "The state Studio holds for a domain",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "domain",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Email domain of the external organization, lowercase",
+          "example": "collectivite.fr"
+        },
+        {
+          "in": "query",
+          "name": "provider",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "External system this record belongs to. Defaults to `EXTERNAL_ENTITLEMENTS_DEFAULT_PROVIDER` (`external`); not part of the v1 contract, one system writes under one root organization."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["domain"]
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "the root organization the record was declared under"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "domain": {
+                    "type": "string"
+                  },
+                  "domainOrganizationId": {
+                    "type": "string",
+                    "description": "the Studio organization of that domain, created by this route and attached to the root by `metadata.parentOrganizationId`. Keys of the domain members are born there."
+                  },
+                  "features": {
+                    "type": "object",
+                    "description": "Nested, extensible object, one key per feature. An absent key is false, an unknown key is kept and ignored. `{}` takes every right away.",
+                    "properties": {
+                      "transcription": {
+                        "type": "object",
+                        "properties": {
+                          "live": {
+                            "type": "boolean",
+                            "description": "live transcription during a visio"
+                          },
+                          "async": {
+                            "type": "boolean",
+                            "description": "deferred transcription of a recording"
+                          }
+                        }
+                      },
+                      "summary": {
+                        "type": "boolean",
+                        "description": "reserved"
+                      },
+                      "translation": {
+                        "type": "boolean",
+                        "description": "reserved"
+                      }
+                    },
+                    "example": {
+                      "transcription": {
+                        "live": true,
+                        "async": true
+                      }
+                    }
+                  },
+                  "plan": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "ignored": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Unknown (`code: not_found`)"
+        },
+        "400": {
+          "description": "Invalid body (`code: invalid_body`, detail in `error`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The key is not an admin of this organization (and, for `PUT domains`, not an ORGANIZATION_INITIATOR)"
+        }
+      }
+    }
+  }
+}

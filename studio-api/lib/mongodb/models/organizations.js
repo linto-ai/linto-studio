@@ -209,6 +209,24 @@ class OrganizationModel extends MongoModel {
     }
   }
 
+  /**
+   * The organization Studio holds for an external domain: created by
+   * `PUT /api/v1/organizations/{root}/entitlements/domains/{domain}` and
+   * attached to its root organization by `metadata.parentOrganizationId`.
+   */
+  async getByExternalDomain(parentOrganizationId, domain) {
+    try {
+      const query = {
+        "metadata.parentOrganizationId": parentOrganizationId,
+        "metadata.externalDomain": domain,
+      }
+      return await this.mongoRequest(query, public_projection)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getByName(name) {
     try {
       const query = { name }

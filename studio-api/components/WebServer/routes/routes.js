@@ -21,6 +21,10 @@ module.exports = (webServer) => {
       require("./api/organization/folders")(webServer),
     "/api/organizations/:organizationId/external-domains":
       require("./api/organization/externalDomains")(webServer),
+    // Entitlements API v1: the versioned contract an external billing system
+    // (Twake…) calls to declare the AI rights of its users and organizations.
+    "/api/v1/organizations/:organizationId/entitlements":
+      require("./api/v1/entitlements")(webServer),
     // Identity bridge: external identity → short token of the linked API key.
     "/api/auth/external": require("./api/auth/external")(webServer),
     "/api/conversations": [
