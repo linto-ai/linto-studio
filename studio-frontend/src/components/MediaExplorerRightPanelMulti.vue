@@ -18,10 +18,9 @@
           v-for="media in selectedMedias"
           :key="media._id"
           class="media-preview-item">
-          <Avatar
-            :icon="isFromSession(media) ? 'microphone' : 'file-audio'"
-            color="neutral-10"
-            size="sm" />
+          <ph-icon
+            :name="isFromSession(media) ? 'microphone' : 'file-audio'"
+            color="neutral" />
           <div class="media-info">
             <span class="media-title">{{ media.title || media.name }}</span>
             <span class="media-date">{{ formatDate(media.created) }}</span>
@@ -142,7 +141,6 @@
 import { mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 
-import Avatar from "@/components/atoms/Avatar.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
@@ -153,7 +151,6 @@ export default {
   name: "MediaExplorerRightPanelMulti",
   mixins: [mediaExplorerRightPanelMixin, mediaScopeMixin],
   components: {
-    Avatar,
     InputSelector,
     Tooltip,
     ModalDeleteConversations,

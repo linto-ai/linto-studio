@@ -1,49 +1,34 @@
 <template>
   <div
     class="avatar"
-    :class="[size, color, clickable, circle ? 'circle' : '']"
-    :style="{
-      backgroundColor: computedColor,
-      width: computedSize,
-      height: computedSize,
-    }"
+    :class="[sizeClass, tone, clickable, circle ? 'circle' : '']"
+    :style="frameStyle"
     @click="$emit('click')">
-    <img
-      v-if="src"
-      :src="src"
-      :alt="text"
-      @error="onImgError"
-      ref="avatar-img" />
-    <ph-icon
-      v-else-if="icon"
-      :name="icon"
-      class="avatar"
-      :size="size"
-      :color="colorIcon" />
-    <span
-      v-else-if="text"
-      class="avatar-text"
-      :class="[colorText]"
-      :style="{ color: colorText }"
-      >{{ text }}</span
-    >
-    <span
-      v-else-if="emoji"
-      class="avatar-emoji"
-      :class="[colorText]"
-      :style="{ color: colorText }"
-      >{{ unifiedToEmoji }}</span
-    >
-    <slot></slot>
+    <AvatarImage v-if="src" :src="src" :alt="text" />
+    <AvatarIcon v-else-if="icon" :name="icon" />
+    <AvatarInitials v-else-if="text" :text="text" />
+    <AvatarEmoji v-else-if="emoji" :unified="emoji" />
+    <slot v-else></slot>
   </div>
 </template>
 
 <script>
-import { getEnv } from "@/tools/getEnv"
-import userAvatar from "@/tools/userAvatar"
+import AvatarImage from "./AvatarImage.vue"
+import AvatarInitials from "./AvatarInitials.vue"
+import AvatarIcon from "./AvatarIcon.vue"
+import AvatarEmoji from "./AvatarEmoji.vue"
+import { SIZE_SCALE } from "@/const/componentSize"
 
+// Avatar is a frame: it owns size/shape/tone and renders one content child
+// (AvatarImage/AvatarIcon/AvatarInitials/AvatarEmoji) picked by priority
+// (src > icon > text > emoji > slot). No style prop is ever passed down to
+// a child — size reaches them as the --avatar-size CSS custom property
+// (consumed as a font-size ratio, see .avatar below), and color/tone reaches
+// them purely by CSS inheritance (currentColor). A child only ever receives
+// its own content data (src, icon name, text, emoji).
 export default {
   name: "Avatar",
+  components: { AvatarImage, AvatarInitials, AvatarIcon, AvatarEmoji },
   props: {
     src: {
       type: String,
@@ -58,82 +43,44 @@ export default {
       type: String,
       required: false,
     },
-    circle: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    color: {
-      type: String,
-      required: false,
-      default: "primary", // primary, secondary, tertiary… or any hex color
-    },
-    materialColor: {
-      type: String,
-      required: false,
-    },
-    colorIcon: {
-      type: String,
-      required: false,
-      default: "primary-soft", // primary, secondary, tertiary…
-    },
-    colorText: {
-      type: String,
-      required: false,
-      default: "primary-soft", // primary, secondary, tertiary…
-    },
     icon: {
       type: String,
       required: false,
       default: "",
     },
+    circle: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    // xs/sm/md/lg/xl, or a raw number (px) for a one-off custom size.
     size: {
       type: [Number, String],
       required: false,
-      default: "sm", // xs, sm, md, lg, xl
+      default: "sm",
     },
-  },
-  data() {
-    return {
-      onError: false,
-    }
+    // Intent, not a color: which fond/contenu pair the frame renders.
+    // primary = solid, high-contrast (identity — initials, photos).
+    // soft = pale fond + colored content (a badge-like category marker).
+    // neutral = gray, for a purely decorative/inert marker.
+    tone: {
+      type: String,
+      required: false,
+      default: "primary",
+      validator: (value) => ["primary", "soft", "neutral"].includes(value),
+    },
   },
   computed: {
     clickable() {
       return this.$listeners.click ? "clickable" : ""
     },
-    unifiedToEmoji() {
-      const unified = this.emoji
-      if (!unified) return ""
-
-      try {
-        return unified
-          .split("-")
-          .map((u) => String.fromCodePoint(parseInt(u, 16)))
-          .join("")
-      } catch (e) {
-        return unified
-      }
+    sizeClass() {
+      return SIZE_SCALE[this.size] ? this.size : null
     },
-    computedColor() {
-      if (this.materialColor) {
-        return `var(--material-${this.materialColor}-${this.active ? 500 : 100})`
-      }
-      return this.color
-    },
-    computedSize() {
-      if (typeof this.size === "number") {
-        return this.size + "px"
-      }
-      return this.size
-    },
-  },
-  methods: {
-    onImgError() {
-      if (this.onError) return
-      this.onError = true
-      const path = userAvatar("/pictures/default.jpg")
-      this.$refs["avatar-img"].src = path
+    frameStyle() {
+      if (SIZE_SCALE[this.size]) return {}
+      const n = Number(this.size)
+      return n ? { "--avatar-size": `${n}px` } : {}
     },
   },
 }
@@ -147,12 +94,16 @@ a:hover .avatar {
 }
 
 .avatar {
+  --avatar-size: 1.25rem; // sm, overridden by a size class or frameStyle
   position: relative;
   padding: 0;
   margin: 0;
   border-radius: 4px;
-  width: 24px;
-  height: 24px;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  // Content (icon/initials/emoji) sizes itself off this, in CSS, by
+  // inheriting font-size — no size prop is passed to any child.
+  font-size: calc(var(--avatar-size) * 0.8);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -168,28 +119,23 @@ a:hover .avatar {
   }
 
   &.xs {
-    width: 16px;
-    height: 16px;
+    --avatar-size: 1rem;
   }
 
   &.sm {
-    width: 24px;
-    height: 24px;
+    --avatar-size: 1.25rem;
   }
 
   &.md {
-    width: 32px;
-    height: 32px;
+    --avatar-size: 1.5rem;
   }
 
   &.lg {
-    width: 40px;
-    height: 40px;
+    --avatar-size: 1.75rem;
   }
 
   &.xl {
-    width: 48px;
-    height: 48px;
+    --avatar-size: 2rem;
   }
 
   &.primary {
@@ -197,31 +143,14 @@ a:hover .avatar {
     color: var(--primary-soft);
   }
 
-  &.secondary {
-    background-color: var(--secondary-color);
-    color: var(--secondary-soft);
+  &.soft {
+    background-color: var(--primary-soft);
+    color: var(--primary-color);
   }
 
-  &.tertiary {
-    background-color: var(--tertiary-color);
-    color: var(--tertiary-soft);
-  }
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .avatar-text {
-    position: relative;
-    z-index: 1;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    text-transform: uppercase;
+  &.neutral {
+    background-color: var(--neutral-15);
+    color: var(--neutral-80);
   }
 }
 </style>

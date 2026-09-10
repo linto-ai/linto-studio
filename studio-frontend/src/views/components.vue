@@ -22,6 +22,59 @@
     <div>
       <Button label="Download" icon="download" />
     </div>
+
+    <h3>Avatar - content (src / icon / text / emoji / fallback slot)</h3>
+    <div class="flex gap-small align-center">
+      <Avatar src="/pictures/missing.jpg" text="?" />
+      <Avatar icon="house" />
+      <Avatar text="TD" />
+      <Avatar emoji="1f600" />
+      <Avatar><ph-icon name="star" /></Avatar>
+    </div>
+    <p class="components-hint">
+      The first one points at a missing image on purpose — it falls back to
+      the default avatar picture (AvatarImage's own error handling).
+    </p>
+
+    <h3>Avatar - tone (primary / soft / neutral)</h3>
+    <div class="flex gap-small align-center">
+      <Avatar icon="house" tone="primary" />
+      <Avatar icon="house" tone="soft" />
+      <Avatar icon="house" tone="neutral" />
+    </div>
+    <div class="flex gap-small align-center">
+      <Avatar text="TD" tone="primary" />
+      <Avatar text="TD" tone="soft" />
+      <Avatar text="TD" tone="neutral" />
+    </div>
+
+    <h3>Avatar - size (xs / sm / md / lg / xl) and circle</h3>
+    <div class="flex gap-small align-center">
+      <Avatar icon="house" tone="soft" size="xs" />
+      <Avatar icon="house" tone="soft" size="sm" />
+      <Avatar icon="house" tone="soft" size="md" />
+      <Avatar icon="house" tone="soft" size="lg" />
+      <Avatar icon="house" tone="soft" size="xl" />
+      <Avatar text="TD" tone="primary" size="xl" circle />
+    </div>
+
+    <h3>PhIcon - size="auto" inherits the ambient font-size</h3>
+    <div class="flex gap-small align-center">
+      <span style="font-size: 1rem">
+        <ph-icon name="star" size="auto" />
+      </span>
+      <span style="font-size: 2rem">
+        <ph-icon name="star" size="auto" />
+      </span>
+      <span style="font-size: 3rem">
+        <ph-icon name="star" size="auto" />
+      </span>
+    </div>
+    <p class="components-hint">
+      No explicit size prop passed to any of the 3 icons above — each one
+      follows the font-size of its own wrapper (1rem / 2rem / 3rem).
+    </p>
+
     <FormInput :field="fieldInput" />
     <FormInput :field="fieldInputError" />
     <FormInput :field="fieldInputDisabled" disabled />
@@ -237,5 +290,11 @@ export default {
   margin: auto;
   padding: 50px;
   box-shadow: var(--shadow-5);
+}
+
+.components-hint {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
 }
 </style>

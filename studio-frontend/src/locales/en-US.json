@@ -1,5 +1,50 @@
 {
   "billing": {
+    "account": {
+      "title": "Billing",
+      "subtitle": "Plans, quotas and invoices for your organizations.",
+      "total_monthly": "Total monthly",
+      "summary_free": "{n} organization · free plan | {n} organizations · free plan",
+      "summary_paid": "{n} organization · next charge on {date} | {n} organizations · next charge on {date}",
+      "your_organizations": "Your organizations",
+      "create_business_org": "Create a business organization",
+      "personal_org_subtitle": "Personal organization · {n} member | Personal organization · {n} members",
+      "members_subtitle": "{n} member | {n} members",
+      "seats_subtitle": "{n} seat · per-seat quota | {n} seats · per-seat quota",
+      "price_per_month": "per month",
+      "price_per_seat_detail": "{seats} × {unitPrice} / month",
+      "current_quotas": "This month's quotas",
+      "reset_on": "Resets on {date}",
+      "member_consumption_link": "View usage per member",
+      "renews": "Auto-renews on {date}",
+      "renews_seats": "Auto-renews on {date} · {n} seat | Auto-renews on {date} · {n} seats",
+      "cancel_subscription": "Cancel subscription",
+      "billing_history": "Billing history",
+      "payment_method": "Account payment method: {method}",
+      "payment_method_edit": "Edit",
+      "table_date": "Date",
+      "table_organization": "Organization",
+      "table_amount": "Amount",
+      "table_invoice": "Invoice",
+      "no_invoice": "No invoice yet. The free plan isn't billed.",
+      "need_more_minutes": "Need more minutes?",
+      "upsell_hint": "Premium unlocks more transcription minutes for your personal space. Business adds unlimited offline transcription and seats for your team.",
+      "upgrade_premium": "Upgrade to Premium",
+      "per_seat_label": "{minutes} min / seat",
+      "consumed_this_month": "{amount} used this month",
+      "meter": {
+        "offline": "Offline transcription",
+        "live": "Live transcription",
+        "ai_summary": "AI summaries",
+        "chat": "Chat messages"
+      },
+      "seat_status": {
+        "under_80": "{n} under 80%",
+        "near_limit": "{n} near limit",
+        "at_limit": "{n} at limit"
+      }
+    },
+    "unlimited": "Unlimited",
     "price_flat": "{price} / month",
     "price_per_seat": "{price} / seat / month",
     "used_of": "{used} of {total}",
@@ -1075,7 +1120,8 @@
     "sections": {
       "organization": "Organisation",
       "media": "Media",
-      "personal": "Personal"
+      "personal": "Personal",
+      "my_space": "My space"
     },
     "tabs": {
       "explore": "Media",

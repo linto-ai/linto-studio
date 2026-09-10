@@ -9,7 +9,8 @@
       'plan-card--featured': badge,
     }">
     <span v-if="badge" class="plan-card__badge">{{ badge }}</span>
-    <header class="plan-card__header flex row align-top justify-between gap-small">
+    <header
+      class="plan-card__header flex row align-top justify-between gap-small">
       <div class="plan-card__heading flex row align-center gap-small">
         <ph-icon :name="icon" weight="bold" color="primary" size="md" />
         <div class="plan-card__titles flex col">
@@ -106,14 +107,13 @@ export default {
   cursor: pointer;
 
   &--selected {
-    border-color: var(--text-primary);
+    border-color: var(--primary-color);
   }
 
   // The badge and the selection border are two independent signals (a
   // featured plan isn't necessarily the selected one), so they can combine:
   // the selected border wins when both apply.
   &--featured {
-    border-color: var(--primary-color);
   }
 }
 

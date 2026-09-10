@@ -290,7 +290,9 @@ export default {
         this.loading = false
       }
     },
-    formatDate: formatDateOrDash,
+    formatDate(dateString) {
+      return formatDateOrDash(dateString, this.$i18n.locale)
+    },
     formatAudioDuration: formatCompactDuration,
     onRowClick(label) {
       if (this.isOrganizationCollection) {

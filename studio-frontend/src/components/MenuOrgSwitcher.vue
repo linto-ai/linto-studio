@@ -35,7 +35,6 @@
 import { mapGetters, mapActions } from "vuex"
 import { getEnv } from "@/tools/getEnv"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
-import { orgDisplayName } from "@/tools/orgDisplayName"
 import { computeUserInitials } from "@/tools/computeUserInitials"
 import userAvatar from "@/tools/userAvatar"
 import { userName } from "@/tools/userName"
@@ -63,11 +62,9 @@ export default {
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
       currentOrgScope: "getCurrentOrganizationScope",
+      orgName: "getCurrentOrganizationDisplayName",
     }),
     ...mapGetters("billing", ["planLabel"]),
-    orgName() {
-      return orgDisplayName(this.currentOrganization)
-    },
     userAvatar() {
       return userAvatar(this.userInfo)
     },

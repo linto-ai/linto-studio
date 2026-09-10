@@ -60,10 +60,7 @@
                 : $t('backoffice.organisation_list.group_organization')
             "
             position="bottom">
-            <Avatar
-              :icon="value ? 'user' : 'users-three'"
-              color="neutral-10"
-              size="md" />
+            <ph-icon :name="value ? 'user' : 'users-three'" color="neutral" />
           </Tooltip>
         </template>
 

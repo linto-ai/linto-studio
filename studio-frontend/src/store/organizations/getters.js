@@ -1,5 +1,6 @@
 import { getCookie } from "@/tools/getCookie"
 import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
+import { orgDisplayName } from "@/tools/orgDisplayName"
 const getters = {
   getOrganizations(state) {
     return state.organizations
@@ -39,6 +40,21 @@ const getters = {
   getOrganizationsAsArray(state) {
     return Object.values(state.organizations)
   },
+  // Same list as getOrganizationsAsArray, decorated with the current user's
+  // perspective on each org (displayName, role, icon). Centralizes that so
+  // components consuming a list of orgs never need to thread userId
+  // themselves — see orgDisplayName.js / getUserRoleInOrganization.js.
+  // `icon` is hardcoded on org.personal for now; a natural spot to switch to
+  // an API-provided value later if org types become configurable.
+  getOrganizationsWithUserContext(state, getters, rootState, rootGetters) {
+    const userId = rootGetters["user/getUserId"]
+    return getters.getOrganizationsAsArray.map((org) => ({
+      ...org,
+      displayName: orgDisplayName(org, userId),
+      role: getUserRoleInOrganization(org, userId),
+      icon: org.personal ? "house" : "buildings",
+    }))
+  },
   getOrganizationLength(state) {
     return Object.keys(state.organizations).length
   },
@@ -67,6 +83,10 @@ const getters = {
     let organization = getters.getCurrentOrganization
     const userId = rootGetters["user/getUserId"]
     return getUserRoleInOrganization(organization, userId)
+  },
+  getCurrentOrganizationDisplayName(state, getters, rootState, rootGetters) {
+    const userId = rootGetters["user/getUserId"]
+    return orgDisplayName(getters.getCurrentOrganization, userId)
   },
   isInOrganization: (state) => (organizationId) => {
     return state.rolesInOrganizations.has(organizationId)

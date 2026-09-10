@@ -42,6 +42,12 @@
                 <span>{{ $t("app_settings_modal.notifications") }}</span>
               </a>
             </li>
+            <li :class="{ active: selectedTab === 'billing' }">
+              <a href="#" @click="selectTab('billing')">
+                <ph-icon name="credit-card" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.billing") }}</span>
+              </a>
+            </li>
             <li
               v-if="speakerIdentificationEnabled"
               :class="{ active: selectedTab === 'speakerRecognition' }">
@@ -173,10 +179,9 @@
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
       </div>
-      <div
-        v-if="selectedTab === 'billing'"
-        class="app-settings__section"
-        :class="{ active: selectedTab === 'billing' }"></div>
+      <div v-if="selectedTab === 'billing'" class="app-settings__section">
+        <UserSettingsBilling v-if="isAuthenticated" />
+      </div>
     </div>
   </Modal>
 </template>
@@ -203,6 +208,7 @@ import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import SpeakerIdentificationSettings from "@/components/SpeakerIdentificationSettings.vue"
 import UserSettingsVoiceOptIn from "@/components/UserSettingsVoiceOptIn.vue"
+import UserSettingsBilling from "@/components/UserSettingsBilling.vue"
 
 export default {
   name: "AppSettingsModal",
@@ -223,6 +229,7 @@ export default {
     ApiTokenSettings,
     SpeakerIdentificationSettings,
     UserSettingsVoiceOptIn,
+    UserSettingsBilling,
   },
   data() {
     return {
@@ -252,6 +259,9 @@ export default {
         this.$store.dispatch("settings/setModalOpen", value)
       },
     },
+    requestedTab() {
+      return this.$store.state.settings.requestedTab
+    },
     userName() {
       return this.user.firstname + " " + this.user.lastname
     },
@@ -263,6 +273,16 @@ export default {
     },
     orgaName() {
       return this.currentOrganization?.name
+    },
+  },
+  watch: {
+    // Reacts whether the modal was closed or already open, so a shortcut
+    // like the billing one still lands on the right tab either way.
+    requestedTab(tab) {
+      if (!tab) return
+      this.selectTab(tab)
+      // Consume it so a later plain "open settings" doesn't land here again.
+      this.$store.dispatch("settings/setRequestedTab", null)
     },
   },
   methods: {

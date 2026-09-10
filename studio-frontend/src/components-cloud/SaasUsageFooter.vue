@@ -24,7 +24,7 @@
     <button
       type="button"
       class="saas-usage-footer__details flex row align-center justify-between custom"
-      @click="$emit('open-details')">
+      @click="openBillingDetails">
       <time v-if="primaryMeter.resetAt" :datetime="primaryMeter.resetAt">
         {{ $t("billing.reset_on", { date: resetDateLabel }) }}
       </time>
@@ -64,15 +64,19 @@ export default {
       return this.primaryMeter.unlimited ? 1 : this.primaryMeter.limit
     },
     resetDateLabel() {
-      return formatDateDayMonth(this.primaryMeter.resetAt)
+      return formatDateDayMonth(this.primaryMeter.resetAt, this.$i18n.locale)
     },
   },
   methods: {
     ...mapActions("billing", ["openUpgradeModal"]),
+    ...mapActions("settings", ["openModalOnTab"]),
     formatMeterAmount(amount) {
       return this.primaryMeter.unit === "minutes"
         ? formatMinutesDuration(amount)
         : amount
+    },
+    openBillingDetails() {
+      this.openModalOnTab("billing")
     },
   },
 }

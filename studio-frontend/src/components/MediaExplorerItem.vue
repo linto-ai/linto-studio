@@ -41,10 +41,9 @@
               : $t('media_explorer.source.media')
           "
           position="bottom">
-          <Avatar
-            :icon="isFromSession ? 'microphone' : 'file-audio'"
-            color="neutral-10"
-            size="md"
+          <ph-icon
+            :name="isFromSession ? 'microphone' : 'file-audio'"
+            color="neutral"
             class="media-explorer-item__type-icon" />
         </Tooltip>
 
@@ -68,7 +67,7 @@
         <!-- Owner avatar -->
         <Tooltip :text="convOwner.fullName" position="bottom">
           <Avatar
-            color="#dadada"
+            tone="neutral"
             :text="convOwner.fullName.substring(0, 1)"
             :src="convOwnerAvatar"
             size="sm"

@@ -678,7 +678,9 @@ export default {
         this.togglingOrgId = null
       }
     },
-    formatDate: formatDateOrDash,
+    formatDate(dateString) {
+      return formatDateOrDash(dateString, this.$i18n.locale)
+    },
     formatAudioDuration: formatCompactDuration,
 
     // Mixin contract: provide fetchAudioBlob and deleteSignatureApi

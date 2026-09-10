@@ -34,6 +34,8 @@ import FilterChip from "./FilterChip.vue"
 import InputItem from "./InputItem.vue"
 import CopyButton from "./CopyButton.vue"
 import FavoriteStar from "./FavoriteStar.vue"
+import QuotaMeter from "./QuotaMeter.vue"
+import SeatStatusBar from "./SeatStatusBar.vue"
 
 const components = [
   Avatar,
@@ -72,6 +74,8 @@ const components = [
   InputItem,
   CopyButton,
   FavoriteStar,
+  QuotaMeter,
+  SeatStatusBar,
 ]
 
 const validateComponents = (c) =>

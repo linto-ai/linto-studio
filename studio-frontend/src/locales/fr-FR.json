@@ -1,5 +1,50 @@
 {
   "billing": {
+    "account": {
+      "title": "Facturation",
+      "subtitle": "Plans, quotas et factures de vos organisations.",
+      "total_monthly": "Total mensuel",
+      "summary_free": "{n} organisation · plan gratuit | {n} organisations · plan gratuit",
+      "summary_paid": "{n} organisation · prochain prélèvement le {date} | {n} organisations · prochain prélèvement le {date}",
+      "your_organizations": "Vos organisations",
+      "create_business_org": "Créer une organisation business",
+      "personal_org_subtitle": "Organisation personnelle · {n} membre | Organisation personnelle · {n} membres",
+      "members_subtitle": "{n} membre | {n} membres",
+      "seats_subtitle": "{n} siège · quota par siège | {n} sièges · quota par siège",
+      "price_per_month": "par mois",
+      "price_per_seat_detail": "{seats} × {unitPrice} / mois",
+      "current_quotas": "Quotas du mois en cours",
+      "reset_on": "Remise à zéro le {date}",
+      "member_consumption_link": "Voir la consommation par membre",
+      "renews": "Renouvellement automatique le {date}",
+      "renews_seats": "Renouvellement automatique le {date} · {n} siège | Renouvellement automatique le {date} · {n} sièges",
+      "cancel_subscription": "Résilier l'abonnement",
+      "billing_history": "Historique de facturation",
+      "payment_method": "Moyen de paiement du compte : {method}",
+      "payment_method_edit": "Modifier",
+      "table_date": "Date",
+      "table_organization": "Organisation",
+      "table_amount": "Montant",
+      "table_invoice": "Facture",
+      "no_invoice": "Aucune facture. Le plan gratuit n'est pas facturé.",
+      "need_more_minutes": "Besoin de plus de minutes ?",
+      "upsell_hint": "Premium débloque plus de minutes de transcription pour votre espace personnel. Business ajoute la transcription offline illimitée et des sièges pour votre équipe.",
+      "upgrade_premium": "Passer en Premium",
+      "per_seat_label": "{minutes} min / siège",
+      "consumed_this_month": "{amount} consommées ce mois",
+      "meter": {
+        "offline": "Transcription offline",
+        "live": "Transcription live",
+        "ai_summary": "Résumés IA",
+        "chat": "Messages de chat"
+      },
+      "seat_status": {
+        "under_80": "{n} sous 80 %",
+        "near_limit": "{n} proches",
+        "at_limit": "{n} à la limite"
+      }
+    },
+    "unlimited": "Illimité",
     "price_flat": "{price} / mois",
     "price_per_seat": "{price} / siège / mois",
     "used_of": "{used} sur {total}",
@@ -1071,7 +1116,8 @@
     "sections": {
       "organization": "Organisation",
       "media": "Médias",
-      "personal": "Personnel"
+      "personal": "Personnel",
+      "my_space": "Mon espace"
     },
     "account": {
       "account_link": "Mon compte",
