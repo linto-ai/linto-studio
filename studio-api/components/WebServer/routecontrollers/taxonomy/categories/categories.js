@@ -4,6 +4,20 @@ const debug = require("debug")(
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
+const { categoryBelongsToOrganization } = require(
+  `${process.cwd()}/components/WebServer/controllers/taxonomy/organizationScope`,
+)
+
+// Category writes only reach categories of the organization in the URL
+async function getCategoryInOrganization(categoryId, organizationId) {
+  const category = await model.categories.getById(categoryId)
+  if (
+    category.length === 0 ||
+    !(await categoryBelongsToOrganization(category[0], organizationId))
+  )
+    throw new CategoryError("Category not found")
+  return category
+}
 
 const DEFAULT_COLOT = "white"
 
@@ -110,8 +124,10 @@ async function getCategory(req, res, next) {
 
 async function updateCategory(req, res, next) {
   try {
-    let category = await model.categories.getById(req.params.categoryId)
-    if (category.length === 0) throw new CategoryError("Category not found")
+    let category = await getCategoryInOrganization(
+      req.params.categoryId,
+      req.params.organizationId,
+    )
 
     //Check if desired update category name already exist with the body type required
     if (req.body.type && !TYPE.checkValue(req.body.type))
@@ -149,8 +165,10 @@ async function updateCategory(req, res, next) {
 
 async function deleteCategory(req, res, next) {
   try {
-    let category = await model.categories.getById(req.params.categoryId)
-    if (category.length === 0) throw new CategoryError("Category not found")
+    await getCategoryInOrganization(
+      req.params.categoryId,
+      req.params.organizationId,
+    )
 
     //delete all tag with this categoryId
     let tags = await model.tags.getTagByCategory(req.params.categoryId)
