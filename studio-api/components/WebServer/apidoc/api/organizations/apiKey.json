@@ -27,8 +27,8 @@
                 },
                 "metadata": {
                   "type": "string",
-                  "description": "Metadata of the key: a JSON string (multipart) or a JSON object (application/json body). Recognised keys: `externalIdentity` {provider, subject, email} — the external person the key stands for (unique per (provider, subject) in the organization, email lowercased); `quickMeeting` (boolean, default true) — whether the key may start a quick meeting; anything else (e.g. `plan`) is stored as is.",
-                  "example": "{\"externalIdentity\":{\"provider\":\"twake\",\"subject\":\"jdoe\",\"email\":\"jdoe@twake.app\"},\"quickMeeting\":true,\"plan\":{\"isPaying\":true}}"
+                  "description": "Metadata of the key: a JSON string (multipart) or a JSON object (application/json body). Recognised keys: `externalIdentity` {provider, subject, email} — the external person the key stands for (unique per (provider, subject) in the organization, email lowercased); `quickMeeting` (boolean, default true) — whether the key may start a quick meeting; anything else is stored as is. Rights are NOT stored here: they live in `externalEntitlements` and are read live at every gated call.",
+                  "example": "{\"externalIdentity\":{\"provider\":\"twake\",\"subject\":\"jdoe\",\"email\":\"jdoe@twake.app\"},\"quickMeeting\":true}"
                 }
               },
               "required": ["role"]
@@ -279,7 +279,7 @@
                 },
                 "metadata": {
                   "type": "object",
-                  "description": "Metadata keys to merge into the key's metadata (e.g. `plan`, `quickMeeting`). `externalIdentity`, `createdBy` and `organizationId` are immutable."
+                  "description": "Metadata keys to merge into the key's metadata (e.g. `quickMeeting`). `externalIdentity`, `createdBy` and `organizationId` are immutable; rights are not stored on the key."
                 }
               },
               "required": [],
