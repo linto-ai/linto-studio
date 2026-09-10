@@ -684,9 +684,6 @@
   "src/components/UserSettingsPersonal.vue": {
     "no-useless-assignment": {
       "count": 1
-    },
-    "vue/no-unused-components": {
-      "count": 1
     }
   },
   "src/components/UserSettingsPreferences.vue": {

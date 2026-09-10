@@ -4,24 +4,15 @@
     :with-actions="false"
     :title="$t('app_settings_modal.title')"
     :size="computedSize">
-    <div v-if="user.emailIsVerified === false || user.pendingEmail">
-      <div class="app-settings-verify-email">
-        <p v-if="user.pendingEmail">
-          {{
-            $t("app_settings_modal.pending_email", { email: user.pendingEmail })
-          }}
-        </p>
-        <p v-else>{{ $t("app_settings_modal.email_not_verified") }}</p>
+    <div class="app-settings-verify-email" v-if="verifyEmailMessage">
+      <p>{{ verifyEmailMessage }}</p>
 
-        <Button size="sm" @click="sendVerificationEmail()">
-          <ph-icon name="paper-plane-tilt" size="md" />
-          <!-- <span
-            :class="['icon', sendingEmail ? 'loading' : 'send-mail']"></span> -->
-          <span class="label">{{
-            $t("user_settings.send_verification_link")
-          }}</span>
-        </Button>
-      </div>
+      <Button size="sm" @click="sendVerificationEmail()">
+        <ph-icon name="paper-plane-tilt" size="md" />
+        <span class="label">{{
+          $t("user_settings.send_verification_link")
+        }}</span>
+      </Button>
     </div>
 
     <div class="app-settings flex1">
@@ -188,7 +179,6 @@
 
 <script>
 import { mapGetters } from "vuex"
-import { bus } from "@/main.js"
 import { apiSendVerificationLink } from "@/api/user.js"
 import { getEnv } from "@/tools/getEnv"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
@@ -237,6 +227,17 @@ export default {
     }
   },
   computed: {
+    verifyEmailMessage() {
+      if (this.user.pendingEmail) {
+        return this.$t("app_settings_modal.pending_email", {
+          email: this.user.pendingEmail,
+        })
+      }
+      if (this.user.emailIsVerified === false) {
+        return this.$t("app_settings_modal.email_not_verified")
+      }
+      return null
+    },
     ...mapGetters({
       user: "user/getUserInfos",
       isAuthenticated: "user/isAuthenticated",
@@ -294,23 +295,12 @@ export default {
       this.closeModal()
       document.location.reload()
     },
-    async sendVerificationEmail() {
-      const sendLink = await apiSendVerificationLink({
+    sendVerificationEmail() {
+      return apiSendVerificationLink({
+        message: this.$t("user_settings.verification_link_sent"),
         timeout: 3000,
         redirect: false,
       })
-
-      if (sendLink?.status === "success") {
-        bus.$emit("app_notif", {
-          status: "success",
-          message: this.$t("user_settings.verification_link_sent"),
-        })
-      } else {
-        bus.$emit("app_notif", {
-          status: "error",
-          message: this.$t("user_settings.notif_error"),
-        })
-      }
     },
   },
 }

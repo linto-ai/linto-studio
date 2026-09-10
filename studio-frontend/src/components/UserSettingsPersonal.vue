@@ -26,7 +26,6 @@
   </form>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { mapActions } from "vuex"
 
@@ -122,6 +121,6 @@ export default {
       return false
     },
   },
-  components: { Fragment, FormInput },
+  components: { FormInput },
 }
 </script>

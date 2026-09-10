@@ -53,64 +53,62 @@ function setJobsDataToImport(conversation) {
   return conversation
 }
 
+function requireValidAccess(membersRight, securityLevel) {
+  if (!CONVERSATION_RIGHT.validRight(membersRight))
+    throw new ConversationMetadataRequire("Invalid membersRight value")
+  if (!SECURITY_LEVELS.isValid(securityLevel))
+    throw new ConversationMetadataRequire(
+      "Invalid securityLevel value. Allowed values: 0, 1, 2",
+    )
+}
+
 // Only content comes from the imported file, ownership, access and storage are set here
-const IMPORTED_CONTENT = ["description", "text", "speakers"]
-
 async function importConv(req, res) {
+  let imported
   try {
-    let imported
-    try {
-      imported = JSON.parse(req.body.conversation)
-    } catch (err) {
-      throw new ConversationMetadataRequire("Conversation is not a valid json")
-    }
-
-    requireParam(
-      imported.name,
-      ConversationMetadataRequire,
-      "Conversation name key is required",
-    )
-    requireParam(
-      imported.locale,
-      ConversationMetadataRequire,
-      "Conversation locale key is required",
-    )
-
-    const membersRight =
-      imported.organization?.membersRight ?? CONVERSATION_RIGHT.READ
-    if (!CONVERSATION_RIGHT.validRight(membersRight))
-      throw new ConversationMetadataRequire("Invalid membersRight value")
-    if (!SECURITY_LEVELS.isValid(imported.securityLevel))
-      throw new ConversationMetadataRequire(
-        "Invalid securityLevel value. Allowed values: 0, 1, 2",
-      )
-
-    let conversation = initConversation(
-      {
-        name: imported.name,
-        lang: imported.locale,
-        organizationId: req.params.organizationId,
-        membersRight,
-        securityLevel: imported.securityLevel,
-        transcriptionConfig:
-          imported.metadata?.transcription?.transcriptionConfig,
-      },
-      req.payload.data.userId,
-      "imported",
-    )
-    for (const field of IMPORTED_CONTENT) {
-      if (imported[field] !== undefined) conversation[field] = imported[field]
-    }
-
-    conversation = await addFileToConv(conversation, req)
-    setJobsDataToImport(conversation)
-    await model.conversations.create(conversation)
-
-    res.status(200).send({ message: "Conversation imported" })
-    return
-  } catch (error) {
-    throw new ConversationError(error.message)
+    imported = JSON.parse(req.body.conversation)
+  } catch (err) {
+    throw new ConversationMetadataRequire("Conversation is not a valid json")
   }
+
+  requireParam(
+    imported.name,
+    ConversationMetadataRequire,
+    "Conversation name key is required",
+  )
+  requireParam(
+    imported.locale,
+    ConversationMetadataRequire,
+    "Conversation locale key is required",
+  )
+
+  const membersRight =
+    imported.organization?.membersRight ?? CONVERSATION_RIGHT.READ
+  requireValidAccess(membersRight, imported.securityLevel)
+
+  const conversation = initConversation(
+    {
+      name: imported.name,
+      description: imported.description,
+      lang: imported.locale,
+      organizationId: req.params.organizationId,
+      membersRight,
+      securityLevel: imported.securityLevel,
+      transcriptionConfig:
+        imported.metadata?.transcription?.transcriptionConfig,
+    },
+    req.payload.data.userId,
+    "imported",
+  )
+  if (imported.text) conversation.text = imported.text
+  if (imported.speakers) conversation.speakers = imported.speakers
+
+  await addFileToConv(conversation, req)
+  setJobsDataToImport(conversation)
+  const result = await model.conversations.create(conversation)
+  if (result.insertedCount !== 1) throw new ConversationError()
+
+  res.status(200).send({ message: "Conversation imported" })
 }
 
 async function importTranscription(req, res) {
@@ -136,11 +134,7 @@ async function importTranscription(req, res) {
     req.body.securityLevel = parseInt(req.body.securityLevel)
   }
 
-  if (!SECURITY_LEVELS.isValid(req.body.securityLevel)) {
-    throw new ConversationMetadataRequire(
-      "Invalid securityLevel value. Allowed values: 0, 1, 2",
-    )
-  }
+  requireValidAccess(parseInt(req.body.membersRight), req.body.securityLevel)
 
   let conversation = initConversation(req.body, req.body.userId, "imported")
   await addFileToConv(conversation, req)

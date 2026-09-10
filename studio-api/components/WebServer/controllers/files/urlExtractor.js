@@ -14,8 +14,14 @@ const { getAudioFolder, getStorageFolder } = require(
 const { ConversationURLExtractorError } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+const { assertPublicHttpUrl } = require(
+  `${process.cwd()}/lib/utility/publicUrl`,
+)
 
-async function downloadAudio(url, domain) {
+async function downloadAudio(rawUrl, domain) {
+  const url = await assertPublicHttpUrl(rawUrl).catch((err) => {
+    throw new ConversationURLExtractorError(err.message)
+  })
   try {
     const fileName = uuidv4()
     const filePath = getStorageFolder() + "/" + getAudioFolder()
