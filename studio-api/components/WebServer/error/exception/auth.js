@@ -52,27 +52,15 @@ module.exports = {
     401,
     "You are not authorized to access this resource",
   ),
-  // Identity bridge (POST /api/auth/external/token)
+  // Identity bridge (POST /api/auth/external/{resolve,token}). A missing
+  // entitlement is an EntitlementMissing (404 `no_entitlement`), see
+  // ./entitlement.js.
   ExternalIdentityInvalid: createException(
     "ExternalIdentityInvalid",
     "auth",
     400,
     "Invalid external identity",
     "invalid_external_identity",
-  ),
-  ExternalIdentityNotLinked: createException(
-    "ExternalIdentityNotLinked",
-    "auth",
-    404,
-    "No LinTO API key is linked to this identity",
-    "no_linked_key",
-  ),
-  ExternalDomainInactive: createException(
-    "ExternalDomainInactive",
-    "auth",
-    403,
-    "The domain this key was provisioned for is no longer active",
-    "domain_inactive",
   ),
   ExternalKeyRevoked: createException(
     "ExternalKeyRevoked",

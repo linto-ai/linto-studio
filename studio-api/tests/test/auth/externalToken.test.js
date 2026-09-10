@@ -1,11 +1,12 @@
 /**
- * Identity bridge — POST /api/auth/external/token
+ * Identity bridge — POST /api/auth/external/{resolve,token}
  * (VISIO-USER-API-KEY-AUTH-ANALYSIS.md §4.3 [B3]):
  *
- *   external identity {provider, subject?, email?} → short token of the API
- *   key standing for it; lookup by (provider, subject), then by email;
- *   just-in-time key when the email's domain is active in an organization's
- *   external domains; 404 no_linked_key / 403 revoked otherwise.
+ *   resolve  entitlement → capabilities, with NO side effect (no key, no
+ *            token, no organization)
+ *   token    same resolution, then the key standing for that person — created
+ *            just-in-time in the organization the resolution yields — and a
+ *            short token of it
  *
  * The minting is NOT mocked: the token is produced by the real generator and
  * verified here with the salt + CM_JWT_SECRET, exactly as the auth middleware
@@ -24,11 +25,23 @@ const mockModel = {
     findApiKeyByExternalEmail: jest.fn(),
   },
   tokens: { insert: jest.fn(), getTokenByUser: jest.fn() },
-  externalDomains: {
-    getByDomain: jest.fn(),
-    get: jest.fn(),
+  externalEntitlements: {
+    findUserBySubject: jest.fn(),
+    findUserByEmail: jest.fn(),
+    findDomain: jest.fn(),
     constructor: {
-      isActive: (d) => !!d && d.paying === true && d.ai?.transcription === true,
+      KIND_USER: "user",
+      KIND_DOMAIN: "domain",
+      hasActiveFeature: (f) =>
+        !!f &&
+        typeof f === "object" &&
+        Object.values(f).some((v) =>
+          v === true
+            ? true
+            : v && typeof v === "object"
+              ? mockModel.externalEntitlements.constructor.hasActiveFeature(v)
+              : false,
+        ),
     },
   },
 }
@@ -48,13 +61,15 @@ jest.mock(`${process.cwd()}/lib/logger/logger`, () => ({
 }))
 
 const jwt = require("jsonwebtoken")
-const { exchangeExternalIdentity } = require(
+const { exchangeExternalIdentity, resolveExternalIdentity } = require(
   `${process.cwd()}/components/WebServer/controllers/apikey/exchange`,
 )
 
-const ORG = "0123456789abcdef01234567"
+const ROOT = "0123456789abcdef01234567"
+const DOMAIN_ORG = "fedcba9876543210fedcba98"
 const KEY = "aaaaaaaaaaaaaaaaaaaaaaaa"
 const CALLER = "cccccccccccccccccccccccc"
+const BOTH = { transcription: { live: true, async: true } }
 const future = () => new Date(Date.now() + 86400e3)
 
 function key(over = {}) {
@@ -69,11 +84,22 @@ function key(over = {}) {
         email: "jdoe@twake.app",
       },
       quickMeeting: true,
-      organizationId: ORG,
+      organizationId: ROOT,
     },
     ...over,
   }
 }
+
+const domainRecord = (over = {}) => ({
+  _id: "d",
+  kind: "domain",
+  organizationId: ROOT,
+  provider: "external",
+  domain: "linagora.com",
+  domainOrganizationId: DOMAIN_ORG,
+  features: BOTH,
+  ...over,
+})
 
 beforeEach(() => {
   jest.clearAllMocks()
@@ -82,28 +108,80 @@ beforeEach(() => {
   mockModel.tokens.getTokenByUser.mockResolvedValue([
     { salt: "keysalt", expiresAt: future() },
   ])
-  mockModel.tokens.insert.mockImplementation(
-    async (userId, salt, expiresIn, extra) => ({
-      insertedId: "eeeeeeeeeeeeeeeeeeeeeeee",
-    }),
-  )
-  mockModel.externalDomains.getByDomain.mockResolvedValue([])
-  mockModel.externalDomains.get.mockResolvedValue([])
+  mockModel.tokens.insert.mockResolvedValue({
+    insertedId: "eeeeeeeeeeeeeeeeeeeeeeee",
+  })
+  mockModel.externalEntitlements.findUserBySubject.mockResolvedValue([])
+  mockModel.externalEntitlements.findUserByEmail.mockResolvedValue([])
+  mockModel.externalEntitlements.findDomain.mockResolvedValue([])
 })
 
-describe("exchange for a linked key", () => {
+function entitleUser(features = BOTH) {
+  mockModel.externalEntitlements.findUserBySubject.mockResolvedValue([
+    {
+      _id: "u",
+      kind: "user",
+      organizationId: ROOT,
+      provider: "twake",
+      email: "jdoe@twake.app",
+      subject: "jdoe",
+      features,
+    },
+  ])
+}
+
+describe("resolve has no side effect", () => {
+  test("answers the capabilities and the target organization", async () => {
+    mockModel.externalEntitlements.findDomain.mockResolvedValue([
+      domainRecord(),
+    ])
+    const out = await resolveExternalIdentity(
+      {
+        provider: "meet:linagora",
+        subject: "lemon-42",
+        email: "Alice@Linagora.com",
+      },
+      CALLER,
+    )
+    expect(out).toEqual({
+      organizationId: DOMAIN_ORG,
+      capabilities: {
+        quickMeeting: true,
+        transcription: { live: true, async: true },
+      },
+    })
+    // nothing was provisioned: no key, no token, no membership
+    expect(mockModel.users.createApiKey).not.toHaveBeenCalled()
+    expect(mockModel.tokens.insert).not.toHaveBeenCalled()
+    expect(mockAddM2m).not.toHaveBeenCalled()
+  })
+
+  test("404 no_entitlement when nothing stands for the identity", async () => {
+    await expect(
+      resolveExternalIdentity(
+        { provider: "meet:linagora", email: "nobody@nowhere.fr" },
+        CALLER,
+      ),
+    ).rejects.toMatchObject({ status: 404, code: "no_entitlement" })
+  })
+
+  test("404 no_entitlement once every feature is off", async () => {
+    entitleUser({ transcription: { live: false, async: false } })
+    await expect(
+      resolveExternalIdentity({ provider: "twake", subject: "jdoe" }, CALLER),
+    ).rejects.toMatchObject({ status: 404, code: "no_entitlement" })
+  })
+})
+
+describe("token for an existing key", () => {
   test("mints a 1h token verifiable with the exchange row's salt", async () => {
+    entitleUser()
     mockModel.users.findApiKeyByExternalIdentity.mockResolvedValue([key()])
     const before = Math.floor(Date.now() / 1000)
     const out = await exchangeExternalIdentity(
       { provider: "twake", subject: "jdoe", email: "JDoe@twake.app" },
       CALLER,
     )
-    expect(mockModel.users.findApiKeyByExternalIdentity).toHaveBeenCalledWith({
-      provider: "twake",
-      subject: "jdoe",
-    })
-    // the exchange row: dedicated kind, the key's user, the caller
     const [userId, salt, expiresIn, extra] =
       mockModel.tokens.insert.mock.calls[0]
     expect(userId).toBe(KEY)
@@ -113,7 +191,6 @@ describe("exchange for a linked key", () => {
       provider: "twake",
       mintedBy: CALLER,
     })
-    // the JWT is bound to that row (salt + secret) and expires in 1h
     const decoded = jwt.verify(out.token, salt + process.env.CM_JWT_SECRET)
     expect(decoded.data).toEqual({
       tokenId: "eeeeeeeeeeeeeeeeeeeeeeee",
@@ -125,38 +202,39 @@ describe("exchange for a linked key", () => {
     expect(out).toMatchObject({
       expiresIn: 3600,
       userId: KEY,
-      organizationId: ORG,
-      capabilities: { quickMeeting: true },
+      organizationId: ROOT,
+      capabilities: {
+        quickMeeting: true,
+        transcription: { live: true, async: true },
+      },
       externalIdentity: { provider: "twake", subject: "jdoe" },
       created: false,
     })
     expect(Object.keys(out)).not.toContain("salt")
-  })
-
-  test("falls back to the email (any provider) when (provider, subject) is unknown", async () => {
-    mockModel.users.findApiKeyByExternalEmail.mockResolvedValue([key()])
-    const out = await exchangeExternalIdentity(
-      {
-        provider: "meet:linagora",
-        subject: "lemon-sub-42",
-        email: "JDOE@twake.app",
-      },
-      CALLER,
-    )
-    expect(mockModel.users.findApiKeyByExternalEmail).toHaveBeenCalledWith({
-      email: "jdoe@twake.app",
-    })
-    expect(out.userId).toBe(KEY)
     expect(mockModel.users.createApiKey).not.toHaveBeenCalled()
   })
 
-  test("reports quickMeeting=false from the key's metadata", async () => {
+  test("capabilities follow the entitlement, not the key", async () => {
+    entitleUser({ transcription: { live: false, async: true } })
+    mockModel.users.findApiKeyByExternalIdentity.mockResolvedValue([key()])
+    const out = await exchangeExternalIdentity(
+      { provider: "twake", subject: "jdoe" },
+      CALLER,
+    )
+    expect(out.capabilities).toEqual({
+      quickMeeting: false,
+      transcription: { live: false, async: true },
+    })
+  })
+
+  test("a key barred from quick meetings stays barred", async () => {
+    entitleUser()
     mockModel.users.findApiKeyByExternalIdentity.mockResolvedValue([
       key({
         metadata: {
           externalIdentity: { provider: "twake", subject: "jdoe" },
           quickMeeting: false,
-          organizationId: ORG,
+          organizationId: ROOT,
         },
       }),
     ])
@@ -164,106 +242,19 @@ describe("exchange for a linked key", () => {
       { provider: "twake", subject: "jdoe" },
       CALLER,
     )
-    expect(out.capabilities).toEqual({ quickMeeting: false })
+    expect(out.capabilities.quickMeeting).toBe(false)
   })
 
   test("403 revoked when the key has no valid token row left", async () => {
+    entitleUser()
     mockModel.users.findApiKeyByExternalIdentity.mockResolvedValue([key()])
     mockModel.tokens.getTokenByUser.mockResolvedValue([
       { salt: "old", expiresAt: new Date(Date.now() - 1000) },
     ])
     await expect(
       exchangeExternalIdentity({ provider: "twake", subject: "jdoe" }, CALLER),
-    ).rejects.toMatchObject({
-      status: 403,
-      code: "revoked",
-    })
+    ).rejects.toMatchObject({ status: 403, code: "revoked" })
     expect(mockModel.tokens.insert).not.toHaveBeenCalled()
-  })
-})
-
-describe("just-in-time keys follow their domain", () => {
-  const jitKey = () =>
-    key({
-      metadata: {
-        externalIdentity: {
-          provider: "meet:linagora",
-          subject: "s",
-          email: "alice@linagora.com",
-        },
-        quickMeeting: true,
-        organizationId: ORG,
-        plan: { source: "domain", domain: "linagora.com", plan: "p1" },
-      },
-    })
-
-  test("mints while the domain is active", async () => {
-    mockModel.users.findApiKeyByExternalIdentity.mockResolvedValue([jitKey()])
-    mockModel.externalDomains.get.mockResolvedValue([
-      {
-        organizationId: ORG,
-        domain: "linagora.com",
-        paying: true,
-        ai: { transcription: true },
-      },
-    ])
-    const out = await exchangeExternalIdentity(
-      { provider: "meet:linagora", subject: "s" },
-      CALLER,
-    )
-    expect(out.userId).toBe(KEY)
-    expect(mockModel.externalDomains.get).toHaveBeenCalledWith(
-      ORG,
-      "linagora.com",
-    )
-  })
-
-  test("403 domain_inactive once the domain stops paying (no fan-out revocation needed)", async () => {
-    mockModel.users.findApiKeyByExternalIdentity.mockResolvedValue([jitKey()])
-    mockModel.externalDomains.get.mockResolvedValue([
-      {
-        organizationId: ORG,
-        domain: "linagora.com",
-        paying: false,
-        ai: { transcription: true },
-      },
-    ])
-    await expect(
-      exchangeExternalIdentity(
-        { provider: "meet:linagora", subject: "s" },
-        CALLER,
-      ),
-    ).rejects.toMatchObject({ status: 403, code: "domain_inactive" })
-    expect(mockModel.tokens.insert).not.toHaveBeenCalled()
-  })
-
-  test("a per-person key (no domain plan) is not tied to any domain", async () => {
-    mockModel.users.findApiKeyByExternalIdentity.mockResolvedValue([key()])
-    await exchangeExternalIdentity(
-      { provider: "twake", subject: "jdoe" },
-      CALLER,
-    )
-    expect(mockModel.externalDomains.get).not.toHaveBeenCalled()
-  })
-})
-
-describe("no linked key", () => {
-  test("404 no_linked_key when nothing matches and the domain is not active", async () => {
-    mockModel.externalDomains.getByDomain.mockResolvedValue([
-      {
-        organizationId: ORG,
-        domain: "linagora.com",
-        paying: true,
-        ai: { transcription: false },
-      },
-    ])
-    await expect(
-      exchangeExternalIdentity(
-        { provider: "meet:linagora", subject: "s", email: "x@linagora.com" },
-        CALLER,
-      ),
-    ).rejects.toMatchObject({ status: 404, code: "no_linked_key" })
-    expect(mockModel.users.createApiKey).not.toHaveBeenCalled()
   })
 
   test("400 on an invalid request", async () => {
@@ -279,16 +270,10 @@ describe("no linked key", () => {
   })
 })
 
-describe("just-in-time key for an active domain", () => {
+describe("just-in-time key", () => {
   beforeEach(() => {
-    mockModel.externalDomains.getByDomain.mockResolvedValue([
-      {
-        organizationId: ORG,
-        domain: "linagora.com",
-        paying: true,
-        ai: { transcription: true, liveMinutesPerMonth: -1 },
-        plan: "p1",
-      },
+    mockModel.externalEntitlements.findDomain.mockResolvedValue([
+      domainRecord(),
     ])
     mockModel.users.createApiKey.mockResolvedValue({
       insertedCount: 1,
@@ -301,54 +286,91 @@ describe("just-in-time key for an active domain", () => {
         metadata: {
           externalIdentity: {
             provider: "meet:linagora",
-            subject: "lemon-sub-42",
+            subject: "lemon-42",
             email: "alice@linagora.com",
           },
           quickMeeting: true,
-          organizationId: ORG,
+          organizationId: DOMAIN_ORG,
         },
       }),
     ])
   })
 
-  test("creates the key in the domain's organization, role 4, then mints", async () => {
+  test("is created in the organization of the domain, role 4, identity only", async () => {
     const out = await exchangeExternalIdentity(
       {
         provider: "meet:linagora",
-        subject: "lemon-sub-42",
+        subject: "lemon-42",
         email: "Alice@Linagora.com",
       },
       CALLER,
     )
-    expect(mockModel.externalDomains.getByDomain).toHaveBeenCalledWith(
-      "linagora.com",
-    )
     const created = mockModel.users.createApiKey.mock.calls[0][0]
-    expect(created.firstname).toBe("meet:linagora:lemon-sub-42")
-    expect(created.metadata).toMatchObject({
+    expect(created.firstname).toBe("meet:linagora:lemon-42")
+    expect(created.metadata).toEqual({
       externalIdentity: {
         provider: "meet:linagora",
-        subject: "lemon-sub-42",
+        subject: "lemon-42",
         email: "alice@linagora.com",
       },
       quickMeeting: true,
-      plan: { source: "domain", domain: "linagora.com", plan: "p1" },
       createdBy: CALLER,
-      organizationId: ORG,
+      organizationId: DOMAIN_ORG,
     })
-    expect(mockAddM2m).toHaveBeenCalledWith(ORG, KEY, 4)
+    // the rights are NOT on the key: no plan, no features
+    expect(created.metadata.plan).toBeUndefined()
+    expect(created.metadata.features).toBeUndefined()
+    expect(mockAddM2m).toHaveBeenCalledWith(DOMAIN_ORG, KEY, 4)
     // the key's own row (3650d) then the exchange row (1h)
     const kinds = mockModel.tokens.insert.mock.calls.map((c) => c[3]?.kind)
     expect(kinds).toEqual([undefined, "exchange"])
     expect(out).toMatchObject({
       created: true,
       userId: KEY,
-      organizationId: ORG,
-      capabilities: { quickMeeting: true },
+      organizationId: DOMAIN_ORG,
     })
   })
 
-  test("uses the email as subject when none is given (Twake B2B members)", async () => {
+  test("only once: the second call reuses the key", async () => {
+    await exchangeExternalIdentity(
+      {
+        provider: "meet:linagora",
+        subject: "lemon-42",
+        email: "alice@linagora.com",
+      },
+      CALLER,
+    )
+    expect(mockModel.users.createApiKey).toHaveBeenCalledTimes(1)
+
+    mockModel.users.findApiKeyByExternalIdentity.mockResolvedValue([
+      key({ metadata: { ...key().metadata, organizationId: DOMAIN_ORG } }),
+    ])
+    const second = await exchangeExternalIdentity(
+      {
+        provider: "meet:linagora",
+        subject: "lemon-42",
+        email: "alice@linagora.com",
+      },
+      CALLER,
+    )
+    expect(second.created).toBe(false)
+    expect(mockModel.users.createApiKey).toHaveBeenCalledTimes(1)
+  })
+
+  test("no key is created while every feature is off", async () => {
+    mockModel.externalEntitlements.findDomain.mockResolvedValue([
+      domainRecord({ features: {} }),
+    ])
+    await expect(
+      exchangeExternalIdentity(
+        { provider: "meet:linagora", email: "alice@linagora.com" },
+        CALLER,
+      ),
+    ).rejects.toMatchObject({ status: 404, code: "no_entitlement" })
+    expect(mockModel.users.createApiKey).not.toHaveBeenCalled()
+  })
+
+  test("uses the email as subject when none is given", async () => {
     await exchangeExternalIdentity(
       { provider: "twake", email: "bob@linagora.com" },
       CALLER,

@@ -5,12 +5,6 @@ const roles = Object.freeze({
   SESSION_OPERATOR: 4,
   SYSTEM_ADMINISTRATOR: 8,
   SUPER_ADMINISTRATOR: 16,
-  // Machine-to-machine INTEGRATION credential (e.g. the Meet backend): may
-  // exchange an external identity for a short-lived token of the linked API
-  // key (POST /api/auth/external/token). Not part of the human role ladder —
-  // a SUPER_ADMINISTRATOR does not carry this bit (it can still call the
-  // exchange with the backoffice scope).
-  INTEGRATION: 32,
 
   defaultUserRole() {
     let defaultRole = process.env.DEFAULT_USER_ROLE || roles.USER
@@ -37,10 +31,6 @@ const roles = Object.freeze({
     return roles.USER + roles.SYSTEM_ADMINISTRATOR
   },
 
-  integrationRole: function () {
-    return roles.USER + roles.INTEGRATION
-  },
-
   superAdministratorRole: function () {
     return (
       roles.USER +
@@ -56,9 +46,7 @@ const roles = Object.freeze({
   },
 
   isValid(role) {
-    return (
-      (role & (roles.superAdministratorRole() | roles.INTEGRATION)) === role
-    )
+    return (role & roles.superAdministratorRole()) === role
   },
 
   shiftBitsUp(userRole) {

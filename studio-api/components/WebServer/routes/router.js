@@ -90,8 +90,6 @@ const loadMiddlewares = (route) => {
     middlewares.push(platform_middlewares.isPlatformSessionOperator)
   if (route.requireOrganizationInitiatorAccess)
     middlewares.push(platform_middlewares.isPlatformOrganizationInitiator)
-  if (route.requireIntegrationAccess)
-    middlewares.push(platform_middlewares.isPlatformIntegration)
 
   if (route.requireConversationReadAccess)
     middlewares.push(conversation_middlewares.asReadAccess)

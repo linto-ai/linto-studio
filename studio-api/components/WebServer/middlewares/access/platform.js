@@ -27,31 +27,12 @@ module.exports = {
     if (await checkAccess(req, ROLE.ORGANIZATION_INITIATOR)) next()
     else next(new UserForbidden())
   },
-  // Identity bridge callers: an INTEGRATION credential (its own platform bit,
-  // no scope needed), or a SYSTEM_ADMINISTRATOR acting with the backoffice
-  // scope (`?userScope=backoffice`) — the dev / transition credential.
-  isPlatformIntegration: async (req, res, next) => {
-    if (await checkIntegrationAccess(req)) next()
-    else next(new UserForbidden("Integration credential required"))
-  },
   isSuperAdmin: (req) => checkAccess(req, ROLE.SUPER_ADMINISTRATOR),
   isSystemAdministrator: (req) => checkAccess(req, ROLE.SYSTEM_ADMINISTRATOR),
   isSessionOperator: (req) => checkAccess(req, ROLE.SESSION_OPERATOR),
   isOrganizationInitiator: (req) =>
     checkAccess(req, ROLE.ORGANIZATION_INITIATOR),
   isReadOnlyScope,
-}
-
-async function checkIntegrationAccess(req) {
-  try {
-    const { userId } = req.payload.data
-    const user = await model.users.getById(userId, true)
-    if (user.length === 0) return false
-    if (ROLE.hasPlatformRoleAccess(user[0].role, ROLE.INTEGRATION)) return true
-  } catch (err) {
-    return false
-  }
-  return checkAccess(req, ROLE.SYSTEM_ADMINISTRATOR)
 }
 
 async function checkAccess(req, role) {

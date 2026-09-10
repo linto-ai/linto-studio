@@ -1,18 +1,19 @@
 {
-  "/api/auth/external/token": {
+  "/api/auth/external/resolve": {
     "post": {
       "tags": ["auth"],
-      "summary": "Identity bridge: exchange an external identity for a short token of the linked API key",
-      "description": "For integrations (an INTEGRATION credential, or a SYSTEM_ADMINISTRATOR with `?userScope=backoffice`). The caller proves who the person is; Studio finds the API key standing for that identity — by (provider, subject), then by email — or creates one just-in-time when the email's domain is active in an organization's external domains, and mints a token that expires after `EXTERNAL_EXCHANGE_TOKEN_TTL` (default 1h). The token inherits the key's organization role. The long-lived key is never returned.",
+      "summary": "Identity bridge: what an external identity may do",
+      "description": "Resolves the external identity against `externalEntitlements` — the record of the person (by subject at that provider, else by email), else the record of their email domain — and answers the capabilities and the organization their content lives in. **No side effect**: no key, no token, no organization is created, so warming a cache at login never provisions anything. Auth: a SYSTEM_ADMINISTRATOR credential with `?userScope=backoffice`.",
       "parameters": [
         {
           "in": "query",
           "name": "userScope",
-          "required": false,
+          "required": true,
           "schema": {
-            "type": "string"
+            "type": "string",
+            "enum": ["backoffice"]
           },
-          "description": "`backoffice` — required only when the caller is a SYSTEM_ADMINISTRATOR rather than an INTEGRATION credential"
+          "description": "`backoffice` — the SYSTEM_ADMINISTRATOR credential of the integration acts across organizations"
         }
       ],
       "requestBody": {
@@ -24,15 +25,115 @@
               "properties": {
                 "provider": {
                   "type": "string",
-                  "example": "meet:linagora"
+                  "example": "meet:linagora",
+                  "description": "the external system presenting the identity (one per Meet instance)"
                 },
                 "subject": {
                   "type": "string",
-                  "description": "Stable id of the person at the provider (e.g. the OIDC sub)"
+                  "description": "stable id of the person at the provider (e.g. the OIDC sub)"
                 },
                 "email": {
                   "type": "string",
-                  "description": "Email of the person (lowercased server-side); the pivot between systems and the input of the just-in-time creation"
+                  "description": "email of the person (lowercased server-side); the pivot between systems and the input of the domain resolution"
+                }
+              },
+              "required": ["provider"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "organizationId": {
+                    "type": "string",
+                    "description": "the organization of the person's domain (B2B) or the root organization (B2C)"
+                  },
+                  "capabilities": {
+                    "type": "object",
+                    "description": "Computed from the entitlement at the time of the call, never stored on the key.",
+                    "properties": {
+                      "quickMeeting": {
+                        "type": "boolean",
+                        "description": "may start a quick meeting (transcription.live)"
+                      },
+                      "transcription": {
+                        "type": "object",
+                        "properties": {
+                          "live": {
+                            "type": "boolean"
+                          },
+                          "async": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid identity (`code: invalid_external_identity`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The caller is not a SYSTEM_ADMINISTRATOR acting with `?userScope=backoffice`"
+        },
+        "404": {
+          "description": "No entitlement stands for this identity, or every feature is off (`code: no_entitlement`)"
+        },
+        "429": {
+          "description": "Rate limited"
+        }
+      }
+    }
+  },
+  "/api/auth/external/token": {
+    "post": {
+      "tags": ["auth"],
+      "summary": "Identity bridge: exchange an external identity for a short token of its API key",
+      "description": "Same resolution as `/resolve`, then the key standing for that person — found by (provider, subject), then by email, or **created just-in-time** in the organization the resolution yields when the person has an entitlement and no key yet. Mints a token that expires after `EXTERNAL_EXCHANGE_TOKEN_TTL` (default 1h) as a dedicated `tokens` row, revocable on its own; the token inherits the key's organization role. The key carries the identity only — the rights are re-read from the entitlement on every gated call — and the long-lived key is never returned. Called only when the person actually starts something. Auth: a SYSTEM_ADMINISTRATOR credential with `?userScope=backoffice`.",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "description": "`backoffice` — the SYSTEM_ADMINISTRATOR credential of the integration acts across organizations"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "example": "meet:linagora",
+                  "description": "the external system presenting the identity (one per Meet instance)"
+                },
+                "subject": {
+                  "type": "string",
+                  "description": "stable id of the person at the provider (e.g. the OIDC sub)"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "email of the person (lowercased server-side); the pivot between systems and the input of the domain resolution"
                 }
               },
               "required": ["provider"]
@@ -68,9 +169,22 @@
                   },
                   "capabilities": {
                     "type": "object",
+                    "description": "Computed from the entitlement at the time of the call, never stored on the key.",
                     "properties": {
                       "quickMeeting": {
-                        "type": "boolean"
+                        "type": "boolean",
+                        "description": "may start a quick meeting (transcription.live)"
+                      },
+                      "transcription": {
+                        "type": "object",
+                        "properties": {
+                          "live": {
+                            "type": "boolean"
+                          },
+                          "async": {
+                            "type": "boolean"
+                          }
+                        }
                       }
                     }
                   },
@@ -93,10 +207,10 @@
           "$ref": "#/components/responses/Unauthorized"
         },
         "403": {
-          "description": "Caller is not an integration credential; the linked key has been revoked (`code: revoked`); or the key was provisioned for a domain that is no longer active (`code: domain_inactive`)"
+          "description": "The caller is not a SYSTEM_ADMINISTRATOR acting with `?userScope=backoffice`, or the linked key has been revoked (`code: revoked`)"
         },
         "404": {
-          "description": "No key is linked to this identity and its domain is not active (`code: no_linked_key`)"
+          "description": "No entitlement stands for this identity, or every feature is off (`code: no_entitlement`)"
         },
         "429": {
           "description": "Rate limited"
