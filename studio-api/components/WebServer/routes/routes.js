@@ -19,8 +19,6 @@ module.exports = (webServer) => {
       require("./api/organization/tag")(webServer),
     "/api/organizations/:organizationId/folders":
       require("./api/organization/folders")(webServer),
-    "/api/organizations/:organizationId/external-domains":
-      require("./api/organization/externalDomains")(webServer),
     // Entitlements API v1: the versioned contract an external billing system
     // (Twake…) calls to declare the AI rights of its users and organizations.
     "/api/v1/organizations/:organizationId/entitlements":

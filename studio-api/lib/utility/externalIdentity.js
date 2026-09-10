@@ -6,8 +6,8 @@
  * for: `{ provider, subject, email }`. The identity bridge
  * (POST /api/auth/external/token) resolves that person back to the key. Emails
  * are the pivot between systems, so they are normalised to lowercase
- * everywhere: on write (metadata), on lookup, and in the external-domains
- * table.
+ * everywhere: on write (metadata), on lookup, and in the entitlement
+ * records.
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
