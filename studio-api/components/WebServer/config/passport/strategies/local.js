@@ -23,6 +23,10 @@ const {
 
 const moment = require("moment")
 
+const { verifiedFieldsFromLink } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/emailVerification`,
+)
+
 const STRATEGY = new LocalStrategy(
   {
     usernameField: "email",
@@ -90,6 +94,9 @@ async function generateResetUserToken(magicId, psw, done) {
     else if (!moment().isBefore(user.authLink.validityDate))
       return done(new ExpiredLink()) // expired token
 
+    const verified = verifiedFieldsFromLink(user)
+    await model.users.update({ _id: user._id, ...verified })
+
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user._id, token_salt)
 
@@ -97,21 +104,10 @@ async function generateResetUserToken(magicId, psw, done) {
     let tokenData = {
       salt: token_salt,
       tokenId: token.insertedId,
-      email: user.email,
+      email: verified.email || user.email,
       userId: user._id,
     }
 
-    let verifiedEmail = user.verifiedEmail
-    if (verifiedEmail.indexOf(user.email) < 0) {
-      verifiedEmail.push(user.email)
-    }
-
-    await model.users.update({
-      _id: user._id,
-      authLink: { magicId: null, validityDate: null },
-      emailIsVerified: true,
-      verifiedEmail,
-    })
     return done(null, TokenGenerator(tokenData))
   } catch (err) {
     done(err)

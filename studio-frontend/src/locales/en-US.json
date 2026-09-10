@@ -1678,6 +1678,8 @@
     },
     "notif_success": "User information updated",
     "notif_error": "An error occurred while updating user information",
+    "pending_email": "A confirmation was sent to {email}. This address will replace the current one once validated.",
+    "verification_link_sent": "The validation link has been sent.",
     "organizations_section": {
       "title": "Organisations"
     },

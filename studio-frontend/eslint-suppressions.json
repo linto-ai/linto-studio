@@ -682,9 +682,6 @@
     }
   },
   "src/components/UserSettingsPersonal.vue": {
-    "no-unused-vars": {
-      "count": 1
-    },
     "no-useless-assignment": {
       "count": 1
     },
