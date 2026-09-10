@@ -55,6 +55,10 @@ describe("updateConversation protected fields", () => {
       "organization.membersRight": 31,
       "organization.organizationId": "mine",
       securityLevel: 0,
+      "metadata.audio.filepath": "../../etc/passwd",
+      metadata: { audio: { filepath: "../../etc/passwd" } },
+      jobs: { transcription: { state: "done" } },
+      type: { mode: "child" },
       _id: "other",
     })
     expect(res.status).toHaveBeenCalledWith(200)

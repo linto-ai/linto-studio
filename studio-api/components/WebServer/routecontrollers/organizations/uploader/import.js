@@ -53,42 +53,58 @@ function setJobsDataToImport(conversation) {
   return conversation
 }
 
+// Only content comes from the imported file, ownership, access and storage are set here
+const IMPORTED_CONTENT = ["description", "text", "speakers"]
+
 async function importConv(req, res) {
   try {
-    let conversation
+    let imported
     try {
-      conversation = JSON.parse(req.body.conversation)
+      imported = JSON.parse(req.body.conversation)
     } catch (err) {
       throw new ConversationMetadataRequire("Conversation is not a valid json")
     }
 
-    delete conversation._id
-
     requireParam(
-      conversation.name,
+      imported.name,
       ConversationMetadataRequire,
       "Conversation name key is required",
     )
     requireParam(
-      conversation.locale,
+      imported.locale,
       ConversationMetadataRequire,
       "Conversation locale key is required",
     )
 
-    if (!conversation?.organization) {
-      conversation.organization = {}
-      if (!conversation.organization?.organizationId)
-        conversation.organization.organizationId = req.params.organizationId
-      if (!conversation.organization?.membersRight)
-        conversation.organization.membersRight = CONVERSATION_RIGHT.READ
-      if (!conversation.organization?.customRights)
-        conversation.organization.customRights = []
+    const membersRight =
+      imported.organization?.membersRight ?? CONVERSATION_RIGHT.READ
+    if (!CONVERSATION_RIGHT.validRight(membersRight))
+      throw new ConversationMetadataRequire("Invalid membersRight value")
+    if (!SECURITY_LEVELS.isValid(imported.securityLevel))
+      throw new ConversationMetadataRequire(
+        "Invalid securityLevel value. Allowed values: 0, 1, 2",
+      )
+
+    let conversation = initConversation(
+      {
+        name: imported.name,
+        lang: imported.locale,
+        organizationId: req.params.organizationId,
+        membersRight,
+        securityLevel: imported.securityLevel,
+        transcriptionConfig:
+          imported.metadata?.transcription?.transcriptionConfig,
+      },
+      req.payload.data.userId,
+      "imported",
+    )
+    for (const field of IMPORTED_CONTENT) {
+      if (imported[field] !== undefined) conversation[field] = imported[field]
     }
 
-    conversation.owner = req.payload.data.userId
-    await addFileToConv(conversation, req)
+    conversation = await addFileToConv(conversation, req)
     setJobsDataToImport(conversation)
-    conversation = await model.conversations.create(conversation)
+    await model.conversations.create(conversation)
 
     res.status(200).send({ message: "Conversation imported" })
     return

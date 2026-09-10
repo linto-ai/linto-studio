@@ -30,12 +30,16 @@ const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
-// Accepted in the request but never written here, rights have their own routes
+// Accepted in the request but never written here, rights have their own
+// routes and metadata, jobs and type are owned by the processing pipeline
 const PROTECTED_FIELDS = [
   "owner",
   "organization",
   "sharedWithUsers",
   "securityLevel",
+  "metadata",
+  "jobs",
+  "type",
 ]
 
 function stripProtectedFields(body) {
