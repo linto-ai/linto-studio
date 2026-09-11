@@ -122,21 +122,36 @@ module.exports = {
   ) => {
     return await access(next, convId, userId, restricted, right, rightException)
   },
-  // Same decision tree as access(), usable without req/res/next context
-  hasAccess: async (convId, userId, right, restricted = false) => {
-    let granted = false
-    await access(
-      (err) => {
-        if (!err) granted = true
-      },
-      convId,
-      userId,
-      restricted,
-      right,
-      ConversationReadAccessDenied,
-    )
-    return granted
+  asReadBatchAccess: async (req, res, next) => {
+    const conversations = req.body.conversations
+    if (!conversations) return next(new ConversationIdRequire())
+    for (const convId of conversations.split(",")) {
+      const readable = await hasAccess(
+        convId,
+        req.payload.data.userId,
+        CONVERSATION_RIGHTS.READ,
+      )
+      if (!readable) return next(new ConversationReadAccessDenied())
+    }
+    return next()
   },
+  hasAccess,
+}
+
+// Same decision tree as access(), usable without req/res/next context
+async function hasAccess(convId, userId, right, restricted = false) {
+  let granted = false
+  await access(
+    (err) => {
+      if (!err) granted = true
+    },
+    convId,
+    userId,
+    restricted,
+    right,
+    ConversationReadAccessDenied,
+  )
+  return granted
 }
 
 async function batchAccess(

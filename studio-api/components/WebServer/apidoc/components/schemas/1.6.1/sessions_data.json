@@ -10,9 +10,9 @@
         "type": "string",
         "description": "The session alias name"
       },
-      "password": {
-        "type": "string",
-        "description": "The session password"
+      "hasPassword": {
+        "type": "boolean",
+        "description": "Whether the session is protected by a password, the hash is never returned"
       },
       "sessionId": {
         "type": "string",
@@ -26,7 +26,7 @@
     "example": {
       "_id": "5f9f9b9b7d1b424dccabc375",
       "name": "My_session",
-      "password": "hashed_password",
+      "hasPassword": true,
       "sessionId": "3f4d9ed7d1b424dccabc782",
       "organizationId": "63f4d9ed7d1b424dccabc128"
     }

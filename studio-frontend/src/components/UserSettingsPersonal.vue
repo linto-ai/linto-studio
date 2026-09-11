@@ -26,13 +26,11 @@
   </form>
 </template>
 <script>
-import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { mapActions } from "vuex"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import { apiSendVerificationLink } from "@/api/user.js"
 import { apiAdminUpdateUser } from "@/api/admin.js"
 
 import { testName } from "@/tools/fields/testName"
@@ -76,8 +74,6 @@ export default {
         testField: testEmail,
       },
       fields: ["firstName", "lastName", "email"],
-      sendingEmail: false,
-      emailSent: false,
     }
   },
   mounted() {},
@@ -105,12 +101,6 @@ export default {
 
         if (!this.isAdminPage) {
           req = await this.updateUser(payload)
-
-          if (req.status === "success") {
-            if (this.email.value !== this.userInfo.email) {
-              await this.sendVerificationEmail()
-            }
-          }
         } else {
           req = await apiAdminUpdateUser(this.userInfo._id, payload)
         }
@@ -131,6 +121,6 @@ export default {
       return false
     },
   },
-  components: { Fragment, FormInput },
+  components: { FormInput },
 }
 </script>

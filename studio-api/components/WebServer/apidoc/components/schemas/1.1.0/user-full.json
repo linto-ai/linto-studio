@@ -26,6 +26,11 @@
         "type": "boolean",
         "description": "User email validation status"
       },
+      "pendingEmail": {
+        "type": "string",
+        "nullable": true,
+        "description": "New address awaiting confirmation, becomes the email once its link is clicked"
+      },
       "verifiedEmail": {
         "type": "array",
         "description": "User verified email",

@@ -14,15 +14,21 @@ const { getAudioFolder, getStorageFolder } = require(
 const { ConversationURLExtractorError } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+const { assertPublicHttpUrl } = require(
+  `${process.cwd()}/lib/utility/publicUrl`,
+)
 
-async function downloadAudio(url, domain) {
+async function downloadAudio(rawUrl, domain) {
+  const url = await assertPublicHttpUrl(rawUrl).catch((err) => {
+    throw new ConversationURLExtractorError(err.message)
+  })
   try {
     const fileName = uuidv4()
     const filePath = getStorageFolder() + "/" + getAudioFolder()
 
     if (domain === undefined) domain = "all"
+    // "--" keeps a user supplied value from being read as an option
     const args = [
-      url,
       "--use-extractors",
       domain,
       "--output",
@@ -32,6 +38,8 @@ async function downloadAudio(url, domain) {
       "--extract-audio",
       "--audio-format",
       "mp3",
+      "--",
+      url,
     ]
 
     let streamProcess = spawn(MODULE_NAME, args)
