@@ -16,4 +16,18 @@ async function categoryBelongsToOrganization(category, organizationId) {
   )
 }
 
-module.exports = { categoryBelongsToOrganization }
+async function getCategoryInOrganization(
+  categoryId,
+  organizationId,
+  NotFoundError,
+) {
+  const category = await model.categories.getById(categoryId)
+  if (
+    category.length !== 1 ||
+    !(await categoryBelongsToOrganization(category[0], organizationId))
+  )
+    throw new NotFoundError("Category not found")
+  return category[0]
+}
+
+module.exports = { categoryBelongsToOrganization, getCategoryInOrganization }

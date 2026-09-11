@@ -4,19 +4,9 @@ const debug = require("debug")(
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
-const { categoryBelongsToOrganization } = require(
+const { getCategoryInOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/taxonomy/organizationScope`,
 )
-
-async function getCategoryInOrganization(categoryId, organizationId) {
-  const category = await model.categories.getById(categoryId)
-  if (
-    category.length === 0 ||
-    !(await categoryBelongsToOrganization(category[0], organizationId))
-  )
-    throw new CategoryError("Category not found")
-  return category
-}
 
 const DEFAULT_COLOT = "white"
 
@@ -126,18 +116,19 @@ async function updateCategory(req, res, next) {
     let category = await getCategoryInOrganization(
       req.params.categoryId,
       req.params.organizationId,
+      CategoryError,
     )
 
     //Check if desired update category name already exist with the body type required
     if (req.body.type && !TYPE.checkValue(req.body.type))
       throw new CategoryUnsupportedMediaTypepeNotDefined("Type not supported")
-    else if (req.body.type) category[0].type = req.body.type
+    else if (req.body.type) category.type = req.body.type
 
-    if (req.body.color) category[0].color = req.body.color
-    if (req.body.name) category[0].name = req.body.name
+    if (req.body.color) category.color = req.body.color
+    if (req.body.name) category.name = req.body.name
 
     let category_name = await model.categories.getByScopeAndName(
-      category[0].scopeId,
+      category.scopeId,
       req.body.name,
       req.body.type,
     )
@@ -153,7 +144,7 @@ async function updateCategory(req, res, next) {
         `Conflict with category name ${req.body.name} already exists. Category id ${category_name[0]._id}`,
       )
 
-    const result = await model.categories.update(category[0])
+    const result = await model.categories.update(category)
 
     if (result.modifiedCount === 0) res.status(304).send("Nothing to update")
     else res.status(200).send({ message: "Category updated" })
@@ -167,6 +158,7 @@ async function deleteCategory(req, res, next) {
     await getCategoryInOrganization(
       req.params.categoryId,
       req.params.organizationId,
+      CategoryError,
     )
 
     //delete all tag with this categoryId

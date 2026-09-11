@@ -7,19 +7,9 @@ const { TagError, TagConflict, TagNotFound, TagUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/tag`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
-const { categoryBelongsToOrganization } = require(
+const { categoryBelongsToOrganization, getCategoryInOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/taxonomy/organizationScope`,
 )
-
-async function getCategoryInOrganization(categoryId, organizationId) {
-  const category = await model.categories.getById(categoryId)
-  if (
-    category.length !== 1 ||
-    !(await categoryBelongsToOrganization(category[0], organizationId))
-  )
-    throw new TagError("categoryId not found")
-  return category[0]
-}
 
 async function getTagInOrganization(tagId, organizationId) {
   const tag = await model.tags.getById(tagId)
@@ -102,6 +92,7 @@ async function createTag(req, res, next) {
     await getCategoryInOrganization(
       req.body.categoryId,
       req.params.organizationId,
+      TagError,
     )
 
     if (req.body.name)
@@ -144,6 +135,7 @@ async function updateTag(req, res, next) {
       await getCategoryInOrganization(
         req.body.categoryId,
         req.params.organizationId,
+        TagError,
       )
       tag[0].categoryId = req.body.categoryId
     }
