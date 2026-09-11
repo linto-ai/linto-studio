@@ -1,7 +1,7 @@
 <template>
   <div class="quota-meter">
     <div class="quota-meter__head">
-      <span class="quota-meter__label">{{ label }}</span>
+      <span class="quota-meter__label field-label">{{ label }}</span>
       <span class="quota-meter__value">{{ displayValue }}</span>
     </div>
     <progress
@@ -63,16 +63,19 @@ export default {
 
 <style lang="scss" scoped>
 .quota-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
   &__head {
     display: flex;
     justify-content: space-between;
     gap: 0.5em;
     font-size: 0.85rem;
-    margin-bottom: 0.3em;
   }
 
   &__value {
-    font-weight: 600;
+    font-weight: 400;
+    font-family: var(--font-family-mono);
     font-variant-numeric: tabular-nums;
     color: var(--text-secondary);
   }

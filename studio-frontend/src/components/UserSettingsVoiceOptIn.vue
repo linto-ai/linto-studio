@@ -30,7 +30,7 @@
       <!-- Voice samples section -->
       <div class="voice-optin__recordings">
         <div class="flex row gap-medium align-center">
-          <h4 class="flex1">
+          <h4 class="flex1 card-title">
             {{
               isStorageModeEmbeddings
                 ? $t("speaker_diarization.temporary_recordings")
@@ -110,7 +110,9 @@
 
       <!-- Voiceprint section -->
       <div class="voice-optin__voiceprint">
-        <h4>{{ $t("speaker_diarization.voiceprint_status_title") }}</h4>
+        <h4 class="card-title">
+          {{ $t("speaker_diarization.voiceprint_status_title") }}
+        </h4>
         <p class="voice-optin__voiceprint-desc">
           {{ $t("speaker_diarization.voiceprint_status_desc") }}
         </p>
@@ -184,7 +186,7 @@
 
       <!-- Authorized organizations section -->
       <div class="voice-optin__orgs">
-        <h4>{{ $t("speaker_diarization.optin_orgs_title") }}</h4>
+        <h4 class="card-title">{{ $t("speaker_diarization.optin_orgs_title") }}</h4>
         <p class="voice-optin__orgs-desc">
           {{ $t("speaker_diarization.optin_orgs_description") }}
         </p>
@@ -930,9 +932,9 @@ export default {
   &__recordings {
     margin-top: 1rem;
 
+    // Typographic identity comes from .card-title — only layout stays here.
     h4 {
       margin: 0;
-      font-size: 14px;
     }
   }
 
@@ -984,9 +986,9 @@ export default {
     padding-top: 1.5rem;
     border-top: 1px solid var(--neutral-20);
 
+    // Typographic identity comes from .card-title — only layout stays here.
     h4 {
       margin: 0 0 0.75rem;
-      font-size: 14px;
     }
   }
 
@@ -1119,9 +1121,9 @@ export default {
     padding-top: 1.5rem;
     border-top: 1px solid var(--neutral-20);
 
+    // Typographic identity comes from .card-title — only layout stays here.
     h4 {
       margin: 0 0 0.25rem;
-      font-size: 14px;
     }
   }
 

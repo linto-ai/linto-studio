@@ -87,3 +87,38 @@
     text-transform: capitalize;
   }
 }
+
+// These three live in the theme layer, not base: layers beat specificity,
+// so a bare h1-h4 rule in @layer theme (text.scss) would otherwise always
+// win over a .class selector stuck in @layer base, no matter how specific
+// the class looks on paper. Being in the same layer as that h4 rule lets
+// normal specificity (class > tag) decide, which is what we actually want.
+@layer theme {
+  // Shared look for a field/meter caption label (FormInput, QuotaMeter…).
+  // Layout (display, margin) stays local to each component — only the
+  // typographic identity lives here.
+  .field-label {
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  // Small bold sub-heading for a card/panel section (e.g. a template name).
+  .card-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  // Small muted caption introducing a section (e.g. above a list or a
+  // group of quotas) — same weight as .card-title, quieter color.
+  .section-caption {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.2;
+    font-variant: small-caps;
+  }
+}

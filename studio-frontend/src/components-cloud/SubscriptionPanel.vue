@@ -38,7 +38,7 @@
     </div>
 
     <!-- Live balance (prepaid minutes) -->
-    <div class="sub-panel__section" v-if="live">
+    <!-- <div class="sub-panel__section" v-if="live">
       <h3 class="sub-panel__h3">{{ $t("billing.live.title") }}</h3>
       <p v-if="live.unmetered" class="sub-panel__empty">
         {{ $t("billing.live.unmetered") }}
@@ -70,7 +70,7 @@
           </Button>
         </div>
       </template>
-    </div>
+    </div> -->
 
     <!-- Plan & management -->
     <div class="sub-panel__section">

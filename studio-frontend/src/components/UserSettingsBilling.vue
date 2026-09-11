@@ -39,7 +39,8 @@
           <OrgBillingCard
             v-for="org in orgViewModels"
             :key="org.id"
-            :org="org" />
+            :org="org"
+            :open="org.id === currentOrganizationScope" />
         </div>
 
         <div v-if="!hasPaidOrg" class="user-billing__upsell">
@@ -127,13 +128,8 @@ import { apiGetUsage, apiGetSubscriptions } from "@/api/cloud"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import { computeQuotaMeters } from "@/tools/billingMeters"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
-import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
 import OrgBillingCard from "@/components-cloud/OrgBillingCard.vue"
 
-// Live-transcription quota has no backend endpoint yet (only a prepaid
-// balance, a different shape entirely) — this fixed placeholder stands in
-// until it exists. Not a fake API call, just local display data.
-const MOCK_LIVE_MINUTES_PER_SEAT = { used: 120, limit: 300 }
 // No invoice-history endpoint yet either.
 const MOCK_INVOICE_DATE = "2026-09-01"
 // No Stripe Customer Portal wiring yet.
@@ -151,6 +147,7 @@ export default {
   computed: {
     ...mapGetters("organizations", {
       userOrganizations: "getOrganizationsWithUserContext",
+      currentOrganizationScope: "getCurrentOrganizationScope",
     }),
     ...mapGetters("billing", ["plans"]),
     orgViewModels() {
@@ -264,6 +261,7 @@ export default {
       const seatsCount = members.filter(
         (u) => u.role >= ORGANIZATION_ROLES.UPLOADER,
       ).length
+      const isOrgAdmin = org.role >= ORGANIZATION_ROLES.ADMINISTRATOR
 
       let subtitleLabel
       if (org.personal) {
@@ -303,58 +301,30 @@ export default {
               })
             : this.$t("billing.account.price_per_month"),
         meters: displayMeters,
-        liveMeter: !isPerSeat
-          ? {
-              used: MOCK_LIVE_MINUTES_PER_SEAT.used,
-              limit: MOCK_LIVE_MINUTES_PER_SEAT.limit,
-            }
+        liveCredit: usage?.live
+          ? this.computeLiveCredit(usage.live, isOrgAdmin)
           : null,
-        seatStatus: isPerSeat ? this.computeSeatStatus(seats) : null,
         resetDateLabel: resetAt ? this.formatFullDate(resetAt) : null,
         renewalAt: subscription?.currentPeriodEnd || null,
         renewalLabel: this.computeRenewalLabel(subscription, isPerSeat, seats),
         showMemberConsumptionLink: isPerSeat,
       }
     },
-    // Per-seat live-transcription status has no backend breakdown yet: the
-    // split below is derived deterministically from the seat count so the
-    // bar/legend are visually consistent, not a fake API response.
-    computeSeatStatus(seats) {
-      const under80 = Math.round(seats * 0.65)
-      const near = Math.round(seats * 0.25)
-      const atLimit = Math.max(0, seats - under80 - near)
+    // usage.live is an org-wide prepaid credit balance (not a per-seat,
+    // per-period quota), so it's kept as its own view model rather than
+    // folded into the used/limit meters above.
+    computeLiveCredit(live, isOrgAdmin) {
       return {
-        perSeatLabel: this.$t("billing.account.per_seat_label", {
-          minutes: MOCK_LIVE_MINUTES_PER_SEAT.limit,
-        }),
-        segments: [
-          {
-            value: under80,
-            color: "success",
-            label: this.$t("billing.account.seat_status.under_80", {
-              n: under80,
-            }),
-          },
-          {
-            value: near,
-            color: "warning",
-            label: this.$t("billing.account.seat_status.near_limit", {
-              n: near,
-            }),
-          },
-          {
-            value: atLimit,
-            color: "danger",
-            label: this.$t("billing.account.seat_status.at_limit", {
-              n: atLimit,
-            }),
-          },
-        ],
-        consumedLabel: this.$t("billing.account.consumed_this_month", {
-          amount: formatMinutesDuration(
-            MOCK_LIVE_MINUTES_PER_SEAT.used * seats,
-          ),
-        }),
+        balance: live.balance,
+        expiresAtLabel: live.expiresAt
+          ? this.formatFullDate(live.expiresAt)
+          : null,
+        lowBalance: live.lowBalance,
+        unmetered: live.unmetered,
+        admissionMinutes: live.admissionMinutes,
+        overdraftMinutes: live.overdraftMinutes,
+        purchasable: live.purchasable,
+        isOrgAdmin,
       }
     },
     computeRenewalLabel(subscription, isPerSeat, seats) {

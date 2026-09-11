@@ -30,18 +30,10 @@
       "need_more_minutes": "Besoin de plus de minutes ?",
       "upsell_hint": "Premium débloque plus de minutes de transcription pour votre espace personnel. Business ajoute la transcription offline illimitée et des sièges pour votre équipe.",
       "upgrade_premium": "Passer en Premium",
-      "per_seat_label": "{minutes} min / siège",
-      "consumed_this_month": "{amount} consommées ce mois",
       "meter": {
         "offline": "Transcription offline",
-        "live": "Transcription live",
         "ai_summary": "Résumés IA",
         "chat": "Messages de chat"
-      },
-      "seat_status": {
-        "under_80": "{n} sous 80 %",
-        "near_limit": "{n} proches",
-        "at_limit": "{n} à la limite"
       }
     },
     "unlimited": "Illimité",
@@ -76,9 +68,11 @@
     "live": {
       "title": "Minutes de live",
       "balance": "Solde",
+      "remaining_suffix": "restantes",
       "expires": "Prochaine expiration",
-      "low": "Solde faible : un live demande au moins 10 minutes par langue pour démarrer.",
-      "buy": "Acheter des minutes",
+      "low": "Solde bas. Les crédits ne se renouvellent pas, ils s'achètent par packs.",
+      "no_renewal": "Les crédits ne se renouvellent pas, ils s'achètent par packs.",
+      "buy": "Acheter un pack",
       "buy_soon": "Les packs de live s'achètent via Stripe Checkout (prochain jalon).",
       "not_purchasable": "Les packs de live sont réservés aux offres payantes.",
       "unmetered": "Les minutes de live ne sont pas comptées pour cette organisation."

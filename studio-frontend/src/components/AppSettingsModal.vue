@@ -22,7 +22,9 @@
     <div class="app-settings flex1">
       <aside>
         <div class="flex1">
-          <h4>{{ $t("app_settings_modal.account_title") }}</h4>
+          <h4 class="section-caption">
+            {{ $t("app_settings_modal.account_title") }}
+          </h4>
           <!-- <div class="app-settings__user-info flex align-center gap-small">
           <div class="flex flex1 align-center gap-small">
             <UserProfilePicture :hover="false" :user="user" />
@@ -64,7 +66,7 @@
             </li> -->
           </ul>
           <template v-if="!isImpersonatingCurrentOrganization">
-            <h4>{{ orgaName }}</h4>
+            <h4 class="section-caption">{{ orgaName }}</h4>
 
             <ul>
               <li
@@ -245,6 +247,7 @@ export default {
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
       organizationId: "getCurrentOrganizationScope",
+      orgaName: "getCurrentOrganizationDisplayName",
     }),
     ...mapGetters("system", ["isMobile"]),
     ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
@@ -270,9 +273,6 @@ export default {
         return "screen"
       }
       return "xl"
-    },
-    orgaName() {
-      return this.currentOrganization?.name
     },
   },
   watch: {
@@ -351,9 +351,8 @@ export default {
     border-radius: 10px;
     //height: 100%;
 
+    // Typographic identity comes from .section-caption — only layout here.
     h4 {
-      font-size: 14px;
-      color: var(--text-secondary);
       margin-bottom: 0.25rem;
     }
 

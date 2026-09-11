@@ -23,6 +23,30 @@
       <Button label="Download" icon="download" />
     </div>
 
+    <h3>Headings - h1 to h5</h3>
+    <div class="flex col gap-tiny">
+      <h1>Heading 1</h1>
+      <h2>Heading 2</h2>
+      <h3>Heading 3</h3>
+      <h4>Heading 4</h4>
+      <h5>Heading 5</h5>
+    </div>
+    <p class="components-hint">
+      h1-h4 have a real theme style (themes/LinTO-green/style/text.scss). h5
+      has none — plain browser default. In practice, h4 is rarely used as-is:
+      see the 3 utility classes below, which is what most screens actually
+      reach for on top of it.
+    </p>
+
+    <h3>
+      h4 utility classes - .field-label / .card-title / .section-caption
+    </h3>
+    <div class="flex col gap-small">
+      <h4 class="field-label">Field label (FormInput, QuotaMeter)</h4>
+      <h4 class="card-title">Card title (template name, sub-section)</h4>
+      <h4 class="section-caption">Section caption (muted, above a list)</h4>
+    </div>
+
     <h3>Avatar - content (src / icon / text / emoji / fallback slot)</h3>
     <div class="flex gap-small align-center">
       <Avatar src="/pictures/missing.jpg" text="?" />
@@ -73,6 +97,27 @@
     <p class="components-hint">
       No explicit size prop passed to any of the 3 icons above — each one
       follows the font-size of its own wrapper (1rem / 2rem / 3rem).
+    </p>
+
+    <h3>QuotaMeter - success / warning / danger / unlimited</h3>
+    <div class="flex col gap-tiny" style="max-width: 260px">
+      <QuotaMeter
+        label="Offline transcription"
+        :used="120"
+        :limit="600"
+        unit="minutes" />
+      <QuotaMeter label="AI generations" :used="42" :limit="50" unit="count" />
+      <QuotaMeter label="Chat messages" :used="110" :limit="100" unit="count" />
+      <QuotaMeter
+        label="Business plan"
+        :used="4200"
+        :limit="null"
+        unit="minutes" />
+    </div>
+    <p class="components-hint">
+      Status comes from the used/limit ratio: success under 80%, warning from
+      80%, danger at 100%+ (last example above). A null limit renders as
+      unlimited instead of a ratio.
     </p>
 
     <FormInput :field="fieldInput" />

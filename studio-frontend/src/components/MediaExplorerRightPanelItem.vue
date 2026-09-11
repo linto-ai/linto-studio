@@ -41,7 +41,7 @@
 
         <!-- Media tags -->
         <div class="media-section">
-          <h4 class="section-title">{{ $t("media_explorer.panel.tags") }}</h4>
+          <h4 class="section-title field-label">{{ $t("media_explorer.panel.tags") }}</h4>
           <div class="tags-container">
             <InputSelector
               v-if="!readOnly"
@@ -69,7 +69,7 @@
 
         <!-- Media folder -->
         <div class="media-section" v-if="getCurrentScope === 'organization'">
-          <h4 class="section-title">{{ $t("folders.folder") }}</h4>
+          <h4 class="section-title field-label">{{ $t("folders.folder") }}</h4>
           <FolderSelector
             :value="reactiveSelectedMedia?.folderId || null"
             :readonly="readOnly || isProcessing"
@@ -78,7 +78,7 @@
 
         <!-- Actions section -->
         <div class="media-section">
-          <h4 class="section-title">
+          <h4 class="section-title field-label">
             {{ $t("media_explorer.panel.actions") }}
           </h4>
           <div class="actions-container">
@@ -121,7 +121,7 @@
         <div
           class="media-section"
           v-if="!readOnly && getCurrentScope == 'organization'">
-          <h4 class="section-title">
+          <h4 class="section-title field-label">
             {{ $t("media_explorer.panel.danger_zone") }}
           </h4>
           <div class="actions-container">
@@ -489,12 +489,10 @@ export default {
   color: var(--text-secondary, #666);
 }
 
+/* Typographic identity comes from the shared .field-label utility class —
+   only layout stays local here. */
 .section-title {
   display: block;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--text-primary, #222);
-  line-height: 1.2;
   margin: 0;
 }
 

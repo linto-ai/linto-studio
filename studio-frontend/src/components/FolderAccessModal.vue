@@ -48,7 +48,7 @@
       </p>
 
       <div v-if="isPrivate" class="folder-access-modal__members">
-        <h4>{{ $t("folders.members_label") }}</h4>
+        <h4 class="section-caption">{{ $t("folders.members_label") }}</h4>
         <p v-if="orgUsers.length === 0" class="folder-access-modal__no-members">
           {{ $t("folders.no_members") }}
         </p>
@@ -288,10 +288,9 @@ export default {
     flex-direction: column;
     gap: 0.5em;
 
+    // Typographic identity comes from .section-caption — only layout here.
     h4 {
       margin: 0;
-      font-size: 0.9em;
-      color: var(--text-secondary);
     }
   }
 

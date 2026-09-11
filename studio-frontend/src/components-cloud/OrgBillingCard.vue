@@ -13,9 +13,24 @@
     </summary>
 
     <div class="org-billing-card__body">
+      <LiveCreditStatus
+        v-if="org.liveCredit"
+        class="org-billing-card__live-credit"
+        :balance="org.liveCredit.balance"
+        :expires-at-label="org.liveCredit.expiresAtLabel"
+        :low-balance="org.liveCredit.lowBalance"
+        :unmetered="org.liveCredit.unmetered"
+        :admission-minutes="org.liveCredit.admissionMinutes"
+        :overdraft-minutes="org.liveCredit.overdraftMinutes"
+        :is-org-admin="org.liveCredit.isOrgAdmin"
+        :purchasable="org.liveCredit.purchasable"
+        @buy="onBuyLiveMinutes" />
+
       <div class="org-billing-card__quotas-head">
-        <h4>{{ $t("billing.account.current_quotas") }}</h4>
-        <time v-if="org.resetDateLabel">{{
+        <h4 class="section-caption">
+          {{ $t("billing.account.current_quotas") }}
+        </h4>
+        <time v-if="org.resetDateLabel" class="no-shrink">{{
           $t("billing.account.reset_on", { date: org.resetDateLabel })
         }}</time>
       </div>
@@ -28,29 +43,7 @@
           :used="meter.used"
           :limit="meter.limit"
           :unit="meter.unit" />
-
-        <!-- Live transcription has no per-period quota endpoint yet (only a
-             prepaid balance, unrelated shape) — placeholder meter for
-             non-per-seat orgs until the backend exposes it. -->
-        <QuotaMeter
-          v-if="org.liveMeter"
-          :label="$t('billing.account.meter.live')"
-          :used="org.liveMeter.used"
-          :limit="org.liveMeter.limit"
-          unit="minutes" />
-
-        <div v-if="org.seatStatus" class="org-billing-card__seat-status">
-          <div class="org-billing-card__seat-status-head">
-            <span>{{ $t("billing.account.meter.live") }}</span>
-            <span>{{ org.seatStatus.perSeatLabel }}</span>
-          </div>
-          <SeatStatusBar :segments="org.seatStatus.segments" />
-        </div>
       </div>
-
-      <p v-if="org.seatStatus" class="org-billing-card__consumed">
-        {{ org.seatStatus.consumedLabel }}
-      </p>
 
       <!-- Not wired yet: per-org member usage detail (MemberUsageTable) needs
            a target/route decision. -->
@@ -62,7 +55,9 @@
         >{{ $t("billing.account.member_consumption_link") }} →</a
       >
 
-      <div class="org-billing-card__footer">
+      <div
+        class="org-billing-card__footer"
+        v-if="org.renewalLabel || org.isPaid">
         <span v-if="org.renewalLabel">{{ org.renewalLabel }}</span>
         <Button
           v-if="org.isPaid"
@@ -79,9 +74,11 @@
 
 <script>
 import { bus } from "@/main.js"
+import LiveCreditStatus from "@/components/molecules/LiveCreditStatus.vue"
 
 export default {
   name: "OrgBillingCard",
+  components: { LiveCreditStatus },
   props: {
     org: { type: Object, required: true },
     open: { type: Boolean, default: false },
@@ -92,6 +89,14 @@ export default {
       bus.$emit("app_notif", {
         status: "info",
         message: this.$t("billing.page.portal_soon"),
+        timeout: 4000,
+      })
+    },
+    onBuyLiveMinutes() {
+      // Pack purchase through Stripe Checkout arrives in J2.
+      bus.$emit("app_notif", {
+        status: "info",
+        message: this.$t("billing.live.buy_soon"),
         timeout: 4000,
       })
     },
@@ -156,6 +161,11 @@ export default {
   &__body {
     padding: 0 1em 1em;
     border-top: 1px solid var(--neutral-20);
+    background-color: var(--neutral-5);
+  }
+
+  &__live-credit {
+    margin-top: 1em;
   }
 
   &__quotas-head {
@@ -163,14 +173,7 @@ export default {
     align-items: baseline;
     justify-content: space-between;
     margin: 1em 0 0.75em;
-
-    h4 {
-      margin: 0;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-      color: var(--text-secondary);
-    }
+    margin-bottom: 1rem;
 
     time {
       font-size: 0.78rem;
@@ -182,19 +185,6 @@ export default {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1em 1.5em;
-  }
-
-  &__seat-status-head {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    margin-bottom: 0.3em;
-  }
-
-  &__consumed {
-    margin: 0.6em 0 0;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
   }
 
   &__member-link {
