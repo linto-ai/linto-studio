@@ -81,7 +81,250 @@
   "overrides": {
     "minimatch": "^10.2.1",
     "undici": "^6.27.0",
-    "uuid": "^11.1.1"
+    "uuid": "^11.1.1",
+    "@babel/core": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/helper-compilation-targets": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/helper-module-transforms": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-async-generators": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-bigint": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-class-properties": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-class-static-block": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-import-attributes": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-import-meta": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-json-strings": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-jsx": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-logical-assignment-operators": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-nullish-coalescing-operator": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-numeric-separator": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-object-rest-spread": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-optional-catch-binding": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-optional-chaining": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-private-property-in-object": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-top-level-await": {
+      "browserslist": "4.28.7"
+    },
+    "@babel/plugin-syntax-typescript": {
+      "browserslist": "4.28.7"
+    },
+    "@jest/core": {
+      "browserslist": "4.28.7"
+    },
+    "@jest/expect": {
+      "browserslist": "4.28.7"
+    },
+    "@jest/globals": {
+      "browserslist": "4.28.7"
+    },
+    "@jest/reporters": {
+      "browserslist": "4.28.7"
+    },
+    "@jest/transform": {
+      "browserslist": "4.28.7"
+    },
+    "babel-jest": {
+      "browserslist": "4.28.7"
+    },
+    "babel-plugin-istanbul": {
+      "browserslist": "4.28.7"
+    },
+    "babel-preset-current-node-syntax": {
+      "browserslist": "4.28.7"
+    },
+    "babel-preset-jest": {
+      "browserslist": "4.28.7"
+    },
+    "browserslist": {
+      "browserslist": "4.28.7"
+    },
+    "caniuse-api": {
+      "browserslist": "4.28.7"
+    },
+    "cssnano": {
+      "browserslist": "4.28.7"
+    },
+    "cssnano-preset-default": {
+      "browserslist": "4.28.7"
+    },
+    "htmlnano": {
+      "browserslist": "4.28.7"
+    },
+    "istanbul-lib-instrument": {
+      "browserslist": "4.28.7"
+    },
+    "jest": {
+      "browserslist": "4.28.7"
+    },
+    "jest-circus": {
+      "browserslist": "4.28.7"
+    },
+    "jest-cli": {
+      "browserslist": "4.28.7"
+    },
+    "jest-config": {
+      "browserslist": "4.28.7"
+    },
+    "jest-resolve-dependencies": {
+      "browserslist": "4.28.7"
+    },
+    "jest-runner": {
+      "browserslist": "4.28.7"
+    },
+    "jest-runtime": {
+      "browserslist": "4.28.7"
+    },
+    "jest-snapshot": {
+      "browserslist": "4.28.7"
+    },
+    "mjml": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-accordion": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-body": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-button": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-carousel": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-cli": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-column": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-core": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-divider": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-group": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-head": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-head-attributes": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-head-breakpoint": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-head-font": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-head-html-attributes": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-head-preview": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-head-style": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-head-title": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-hero": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-image": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-navbar": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-preset-core": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-raw": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-section": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-social": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-spacer": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-table": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-text": {
+      "browserslist": "4.28.7"
+    },
+    "mjml-wrapper": {
+      "browserslist": "4.28.7"
+    },
+    "postcss-colormin": {
+      "browserslist": "4.28.7"
+    },
+    "postcss-convert-values": {
+      "browserslist": "4.28.7"
+    },
+    "postcss-merge-longhand": {
+      "browserslist": "4.28.7"
+    },
+    "postcss-merge-rules": {
+      "browserslist": "4.28.7"
+    },
+    "postcss-minify-params": {
+      "browserslist": "4.28.7"
+    },
+    "postcss-normalize-unicode": {
+      "browserslist": "4.28.7"
+    },
+    "postcss-reduce-initial": {
+      "browserslist": "4.28.7"
+    },
+    "stylehacks": {
+      "browserslist": "4.28.7"
+    },
+    "update-browserslist-db": {
+      "browserslist": "4.28.7"
+    }
   },
   "nodemonConfig": {
     "watch": [
