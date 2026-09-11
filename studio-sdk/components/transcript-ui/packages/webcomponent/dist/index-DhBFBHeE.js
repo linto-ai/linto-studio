@@ -7376,7 +7376,7 @@ function getTimeout(delays, durations) {
   while (delays.length < durations.length) {
     delays = delays.concat(delays);
   }
-  return Math.max(...durations.map((d2, i2) => toMs(d2) + toMs(delays[i2])));
+  return Math.max(...durations.map((d3, i2) => toMs(d3) + toMs(delays[i2])));
 }
 function toMs(s2) {
   if (s2 === "auto") return 0;
@@ -9054,17 +9054,17 @@ function toDate(value) {
     const d22 = new Date(ms);
     return Number.isNaN(d22.getTime()) ? null : d22;
   }
-  const d2 = new Date(value);
-  return Number.isNaN(d2.getTime()) ? null : d2;
+  const d3 = new Date(value);
+  return Number.isNaN(d3.getTime()) ? null : d3;
 }
 function formatLongDate(value, locale) {
-  const d2 = toDate(value);
-  if (!d2) return "";
+  const d3 = toDate(value);
+  if (!d3) return "";
   return new Intl.DateTimeFormat(locale, {
     day: "numeric",
     month: "long",
     year: "numeric"
-  }).format(d2);
+  }).format(d3);
 }
 function formatDurationMinutes(seconds, locale) {
   const minutes = Math.max(0, Math.round(seconds / 60));
@@ -9102,18 +9102,18 @@ function validateEditorDocument(doc2) {
   if (doc2 == null || typeof doc2 !== "object") {
     throw new DocumentValidationError("document", "must be a non-null object");
   }
-  const d2 = doc2;
-  if (typeof d2.title !== "string") {
+  const d3 = doc2;
+  if (typeof d3.title !== "string") {
     throw new DocumentValidationError("document.title", "must be a string");
   }
-  if (!(d2.speakers instanceof Map)) {
+  if (!(d3.speakers instanceof Map)) {
     throw new DocumentValidationError("document.speakers", "must be a Map");
   }
-  if (!Array.isArray(d2.channels)) {
+  if (!Array.isArray(d3.channels)) {
     throw new DocumentValidationError("document.channels", "must be an array");
   }
-  for (let ci = 0; ci < d2.channels.length; ci++) {
-    const ch = d2.channels[ci];
+  for (let ci = 0; ci < d3.channels.length; ci++) {
+    const ch = d3.channels[ci];
     const cp = `channels[${ci}]`;
     if (ch == null || typeof ch !== "object") {
       throw new DocumentValidationError(cp, "must be a non-null object");
@@ -10518,7 +10518,7 @@ const _sfc_main$K = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-B6rbGA8f.js");
+        const { highlightCode } = await import("./highlight-BOTcN5V7.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -14098,7 +14098,7 @@ const flip$1 = function(options) {
           const ignoreCrossAxisOverflow = checkCrossAxis === "alignment" ? initialSideAxis !== getSideAxis(nextPlacement) : false;
           if (!ignoreCrossAxisOverflow || // We leave the current main axis only if every placement on that axis
           // overflows the main axis.
-          overflowsData.every((d2) => getSideAxis(d2.placement) === initialSideAxis ? d2.overflows[0] > 0 : true)) {
+          overflowsData.every((d3) => getSideAxis(d3.placement) === initialSideAxis ? d3.overflows[0] > 0 : true)) {
             return {
               data: {
                 index: nextIndex,
@@ -14110,20 +14110,20 @@ const flip$1 = function(options) {
             };
           }
         }
-        let resetPlacement = (_overflowsData$filter = overflowsData.filter((d2) => d2.overflows[0] <= 0).sort((a2, b2) => a2.overflows[1] - b2.overflows[1])[0]) == null ? void 0 : _overflowsData$filter.placement;
+        let resetPlacement = (_overflowsData$filter = overflowsData.filter((d3) => d3.overflows[0] <= 0).sort((a2, b2) => a2.overflows[1] - b2.overflows[1])[0]) == null ? void 0 : _overflowsData$filter.placement;
         if (!resetPlacement) {
           switch (fallbackStrategy) {
             case "bestFit": {
               var _overflowsData$filter2;
-              const placement2 = (_overflowsData$filter2 = overflowsData.filter((d2) => {
+              const placement2 = (_overflowsData$filter2 = overflowsData.filter((d3) => {
                 if (hasFallbackAxisSideDirection) {
-                  const currentSideAxis = getSideAxis(d2.placement);
+                  const currentSideAxis = getSideAxis(d3.placement);
                   return currentSideAxis === initialSideAxis || // Create a bias to the `y` side axis due to horizontal
                   // reading directions favoring greater width.
                   currentSideAxis === "y";
                 }
                 return true;
-              }).map((d2) => [d2.placement, d2.overflows.filter((overflow2) => overflow2 > 0).reduce((acc, overflow2) => acc + overflow2, 0)]).sort((a2, b2) => a2[1] - b2[1])[0]) == null ? void 0 : _overflowsData$filter2[0];
+              }).map((d3) => [d3.placement, d3.overflows.filter((overflow2) => overflow2 > 0).reduce((acc, overflow2) => acc + overflow2, 0)]).sort((a2, b2) => a2[1] - b2[1])[0]) == null ? void 0 : _overflowsData$filter2[0];
               if (placement2) {
                 resetPlacement = placement2;
               }
@@ -18491,20 +18491,20 @@ ${p2}` : p2, r2 = r2 ? `${r2}
 ${c2}` : c2;
         let h2 = this.lexer.state.top;
         if (this.lexer.state.top = true, this.lexer.blockTokens(c2, o2, true), this.lexer.state.top = h2, n2.length === 0) break;
-        let d2 = o2.at(-1);
-        if (d2?.type === "code") break;
-        if (d2?.type === "blockquote") {
-          let O = d2, g2 = n2.join(`
+        let d3 = o2.at(-1);
+        if (d3?.type === "code") break;
+        if (d3?.type === "blockquote") {
+          let O = d3, g2 = n2.join(`
 `), w2 = O.raw + `
 ` + g2.replace(this.rules.other.blockquoteSetextReplace2, ""), z = this.blockquote(w2);
           o2[o2.length - 1] = z, s2 = `${s2}
 ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + z.text;
           break;
-        } else if (d2?.type === "list") {
-          let O = d2, g2 = O.raw + `
+        } else if (d3?.type === "list") {
+          let O = d3, g2 = O.raw + `
 ` + n2.join(`
 `), w2 = this.list(g2);
-          o2[o2.length - 1] = w2, s2 = s2.substring(0, s2.length - d2.raw.length) + w2.raw, r2 = r2.substring(0, r2.length - O.raw.length) + w2.raw, n2 = g2.substring(o2.at(-1).raw.length).split(`
+          o2[o2.length - 1] = w2, s2 = s2.substring(0, s2.length - d3.raw.length) + w2.raw, r2 = r2.substring(0, r2.length - O.raw.length) + w2.raw, n2 = g2.substring(o2.at(-1).raw.length).split(`
 `);
           continue;
         }
@@ -18523,23 +18523,23 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + z.text;
         if (!(t2 = o2.exec(e3)) || this.rules.block.hr.test(e3)) break;
         p2 = t2[0], e3 = e3.substring(p2.length);
         let h2 = me(t2[2].split(`
-`, 1)[0], t2[1].length), d2 = e3.split(`
+`, 1)[0], t2[1].length), d3 = e3.split(`
 `, 1)[0], O = !h2.trim(), g2 = 0;
-        if (this.options.pedantic ? (g2 = 2, c2 = h2.trimStart()) : O ? g2 = t2[1].length + 1 : (g2 = h2.search(this.rules.other.nonSpaceChar), g2 = g2 > 4 ? 1 : g2, c2 = h2.slice(g2), g2 += t2[1].length), O && this.rules.other.blankLine.test(d2) && (p2 += d2 + `
-`, e3 = e3.substring(d2.length + 1), a2 = true), !a2) {
+        if (this.options.pedantic ? (g2 = 2, c2 = h2.trimStart()) : O ? g2 = t2[1].length + 1 : (g2 = h2.search(this.rules.other.nonSpaceChar), g2 = g2 > 4 ? 1 : g2, c2 = h2.slice(g2), g2 += t2[1].length), O && this.rules.other.blankLine.test(d3) && (p2 += d3 + `
+`, e3 = e3.substring(d3.length + 1), a2 = true), !a2) {
           let w2 = this.rules.other.nextBulletRegex(g2), z = this.rules.other.hrRegex(g2), ne = this.rules.other.fencesBeginRegex(g2), re = this.rules.other.headingBeginRegex(g2), be = this.rules.other.htmlBeginRegex(g2), Re = this.rules.other.blockquoteBeginRegex(g2);
           for (; e3; ) {
             let N = e3.split(`
 `, 1)[0], D;
-            if (d2 = N, this.options.pedantic ? (d2 = d2.replace(this.rules.other.listReplaceNesting, "  "), D = d2) : D = d2.replace(this.rules.other.tabCharGlobal, "    "), ne.test(d2) || re.test(d2) || be.test(d2) || Re.test(d2) || w2.test(d2) || z.test(d2)) break;
-            if (D.search(this.rules.other.nonSpaceChar) >= g2 || !d2.trim()) c2 += `
+            if (d3 = N, this.options.pedantic ? (d3 = d3.replace(this.rules.other.listReplaceNesting, "  "), D = d3) : D = d3.replace(this.rules.other.tabCharGlobal, "    "), ne.test(d3) || re.test(d3) || be.test(d3) || Re.test(d3) || w2.test(d3) || z.test(d3)) break;
+            if (D.search(this.rules.other.nonSpaceChar) >= g2 || !d3.trim()) c2 += `
 ` + D.slice(g2);
             else {
               if (O || h2.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || ne.test(h2) || re.test(h2) || z.test(h2)) break;
               c2 += `
-` + d2;
+` + d3;
             }
-            O = !d2.trim(), p2 += N + `
+            O = !d3.trim(), p2 += N + `
 `, e3 = e3.substring(N.length + 1), h2 = D.slice(g2);
           }
         }
@@ -18670,8 +18670,8 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + z.text;
     let s2 = this.rules.inline.emStrongLDelim.exec(e3);
     if (!s2 || !s2[1] && !s2[2] && !s2[3] && !s2[4] || s2[4] && n2.match(this.rules.other.unicodeAlphaNumeric)) return;
     if (!(s2[1] || s2[3] || "") || !n2 || this.rules.inline.punctuation.exec(n2)) {
-      let o2 = [...s2[0]].length - 1, i2, l2, a2 = o2, p2 = 0, c2 = s2[0][0], h2 = n2 === c2, d2 = c2 === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
-      for (d2.lastIndex = 0, t2 = t2.slice(-1 * e3.length + o2); (s2 = d2.exec(t2)) !== null; ) {
+      let o2 = [...s2[0]].length - 1, i2, l2, a2 = o2, p2 = 0, c2 = s2[0][0], h2 = n2 === c2, d3 = c2 === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
+      for (d3.lastIndex = 0, t2 = t2.slice(-1 * e3.length + o2); (s2 = d3.exec(t2)) !== null; ) {
         if (i2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !i2) continue;
         if (l2 = [...i2].length, s2[3] || s2[4]) {
           a2 += l2;
@@ -18719,8 +18719,8 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + z.text;
         }
         if (a2 -= l2, a2 > 0) continue;
         l2 = Math.min(l2, l2 + a2);
-        let c2 = [...s2[0]][0].length, h2 = e3.slice(0, o2 + s2.index + c2 + l2), d2 = h2.slice(o2, -o2);
-        return { type: "del", raw: h2, text: d2, tokens: this.lexer.inlineTokens(d2) };
+        let c2 = [...s2[0]][0].length, h2 = e3.slice(0, o2 + s2.index + c2 + l2), d3 = h2.slice(o2, -o2);
+        return { type: "del", raw: h2, text: d3, tokens: this.lexer.inlineTokens(d3) };
       }
     }
   }
@@ -19456,8 +19456,8 @@ var Z = class {
       if (o2.hooks && (o2.hooks.options = o2, o2.hooks.block = e3), o2.async) return (async () => {
         let l2 = o2.hooks ? await o2.hooks.preprocess(n2) : n2, p2 = await (o2.hooks ? await o2.hooks.provideLexer(e3) : e3 ? x.lex : x.lexInline)(l2, o2), c2 = o2.hooks ? await o2.hooks.processAllTokens(p2) : p2;
         o2.walkTokens && await Promise.all(this.walkTokens(c2, o2.walkTokens));
-        let d2 = await (o2.hooks ? await o2.hooks.provideParser(e3) : e3 ? b$1.parse : b$1.parseInline)(c2, o2);
-        return o2.hooks ? await o2.hooks.postprocess(d2) : d2;
+        let d3 = await (o2.hooks ? await o2.hooks.provideParser(e3) : e3 ? b$1.parse : b$1.parseInline)(c2, o2);
+        return o2.hooks ? await o2.hooks.postprocess(d3) : d3;
       })().catch(i2);
       try {
         o2.hooks && (n2 = o2.hooks.preprocess(n2));
@@ -22201,34 +22201,36 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
             ]),
             _: 1
           }, 8, ["aria-label"])) : createCommentVNode("", true),
-          createVNode(unref(Button), {
-            variant: "secondary",
-            "aria-label": unref(t2)("header.undo"),
-            disabled: !props.canUndo,
-            onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("undo"))
-          }, {
-            icon: withCtx(() => [
-              createVNode(unref(EditorIcon), {
-                name: "undo",
-                size: 16
-              })
-            ]),
-            _: 1
-          }, 8, ["aria-label", "disabled"]),
-          createVNode(unref(Button), {
-            variant: "secondary",
-            "aria-label": unref(t2)("header.redo"),
-            disabled: !props.canRedo,
-            onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("redo"))
-          }, {
-            icon: withCtx(() => [
-              createVNode(unref(EditorIcon), {
-                name: "redo",
-                size: 16
-              })
-            ]),
-            _: 1
-          }, 8, ["aria-label", "disabled"]),
+          props.canUndo || props.canRedo ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+            createVNode(unref(Button), {
+              variant: "secondary",
+              "aria-label": unref(t2)("header.undo"),
+              disabled: !props.canUndo,
+              onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("undo"))
+            }, {
+              icon: withCtx(() => [
+                createVNode(unref(EditorIcon), {
+                  name: "undo",
+                  size: 16
+                })
+              ]),
+              _: 1
+            }, 8, ["aria-label", "disabled"]),
+            createVNode(unref(Button), {
+              variant: "secondary",
+              "aria-label": unref(t2)("header.redo"),
+              disabled: !props.canRedo,
+              onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("redo"))
+            }, {
+              icon: withCtx(() => [
+                createVNode(unref(EditorIcon), {
+                  name: "redo",
+                  size: 16
+                })
+              ]),
+              _: 1
+            }, 8, ["aria-label", "disabled"])
+          ], 64)) : createCommentVNode("", true),
           createVNode(unref(Button), {
             variant: "primary",
             "aria-label": unref(t2)("header.ask"),
@@ -22251,8 +22253,8 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$p = '\n.editor-header[data-v-6464a453] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-6464a453] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-6464a453] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-6464a453] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-6464a453] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-6464a453]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-6464a453] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-6464a453] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-6464a453] {\n    font-size: var(--font-size-base);\n}\n}\n';
-const Header = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-6464a453"]]);
+const _style_0$p = '\n.editor-header[data-v-491cf8ab] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-491cf8ab] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-491cf8ab] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-491cf8ab] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-491cf8ab] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-491cf8ab]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-491cf8ab] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-491cf8ab] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-491cf8ab] {\n    font-size: var(--font-size-base);\n}\n}\n';
+const Header = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-491cf8ab"]]);
 const TRANSCRIPTION_TAB = "__transcription__";
 const VERBATIM_TAB = "__verbatim__";
 const _sfc_main$t = /* @__PURE__ */ defineComponent({
@@ -25822,7 +25824,7 @@ function c(t2, e3) {
     i2 && (i2(), i2 = void 0), s2.forEach(((t3) => t3()));
   };
 }
-class u3 extends e$1 {
+let d$1 = class d extends e$1 {
   get isPlayingSignal() {
     return this._isPlaying;
   }
@@ -25953,8 +25955,8 @@ class u3 extends e$1 {
   setSinkId(t2) {
     return this.media.setSinkId(t2);
   }
-}
-function d$1({ maxTop: t2, maxBottom: e3, halfHeight: i2, vScale: n2, barMinHeight: s2 = 0, barAlign: r2 }) {
+};
+function u3({ maxTop: t2, maxBottom: e3, halfHeight: i2, vScale: n2, barMinHeight: s2 = 0, barAlign: r2 }) {
   let o2 = Math.round(t2 * i2 * n2);
   let a2 = o2 + Math.round(e3 * i2 * n2) || 1;
   return a2 < s2 && (a2 = s2, r2 || (o2 = a2 / 2)), { topHeight: o2, totalHeight: a2 };
@@ -26047,16 +26049,16 @@ class C extends e$1 {
         if (o2.has(e4.pointerId)) return;
         if (o2.set(e4.pointerId, e4), o2.size > 1) return;
         const l2 = e4.pointerId;
-        let c3 = e4.clientX, u4 = e4.clientY, d2 = false;
+        let c3 = e4.clientX, d3 = e4.clientY, u4 = false;
         const p2 = Date.now(), m2 = t3.getBoundingClientRect(), { left: g2, top: f2 } = m2, v2 = (t4) => {
           if (t4.pointerId !== l2) return;
           if (t4.defaultPrevented || o2.size > 1) return;
           if (a2 && Date.now() - p2 < s2) return;
-          const e5 = t4.clientX, n3 = t4.clientY, h3 = e5 - c3, m3 = n3 - u4;
-          (d2 || Math.abs(h3) > i2 || Math.abs(m3) > i2) && (t4.preventDefault(), t4.stopPropagation(), d2 || (r2.set({ type: "start", x: c3 - g2, y: u4 - f2 }), d2 = true), r2.set({ type: "move", x: e5 - g2, y: n3 - f2, deltaX: h3, deltaY: m3 }), c3 = e5, u4 = n3);
+          const e5 = t4.clientX, n3 = t4.clientY, h3 = e5 - c3, m3 = n3 - d3;
+          (u4 || Math.abs(h3) > i2 || Math.abs(m3) > i2) && (t4.preventDefault(), t4.stopPropagation(), u4 || (r2.set({ type: "start", x: c3 - g2, y: d3 - f2 }), u4 = true), r2.set({ type: "move", x: e5 - g2, y: n3 - f2, deltaX: h3, deltaY: m3 }), c3 = e5, d3 = n3);
         }, b2 = (t4) => {
           if (o2.delete(t4.pointerId)) {
-            if (t4.pointerId === l2 && d2) {
+            if (t4.pointerId === l2 && u4) {
               const e5 = t4.clientX, i3 = t4.clientY;
               r2.set({ type: "end", x: e5 - g2, y: i3 - f2 });
             }
@@ -26065,9 +26067,9 @@ class C extends e$1 {
         }, y3 = (t4) => {
           t4.relatedTarget && t4.relatedTarget !== document.documentElement || b2(t4);
         }, C2 = (t4) => {
-          d2 && (t4.stopPropagation(), t4.preventDefault());
+          u4 && (t4.stopPropagation(), t4.preventDefault());
         }, S3 = (t4) => {
-          t4.defaultPrevented || o2.size > 1 || d2 && t4.preventDefault();
+          t4.defaultPrevented || o2.size > 1 || u4 && t4.preventDefault();
         };
         document.addEventListener("pointermove", v2), document.addEventListener("pointerup", b2), document.addEventListener("pointerout", y3), document.addEventListener("pointercancel", y3), document.addEventListener("touchmove", S3, { passive: false }), document.addEventListener("click", C2, { capture: true }), h2 = () => {
           document.removeEventListener("pointermove", v2), document.removeEventListener("pointerup", b2), document.removeEventListener("pointerout", y3), document.removeEventListener("pointercancel", y3), document.removeEventListener("touchmove", S3), setTimeout((() => {
@@ -26240,23 +26242,23 @@ class C extends e$1 {
     var t2;
   }
   renderBarWaveform(t2, e3, i2, n2) {
-    const { width: s2, height: r2 } = i2.canvas, { halfHeight: o2, barWidth: a2, barRadius: l2, barIndexScale: h2, barSpacing: c2, barMinHeight: u4 } = (function({ width: t3, height: e4, length: i3, options: n3, pixelRatio: s3 }) {
+    const { width: s2, height: r2 } = i2.canvas, { halfHeight: o2, barWidth: a2, barRadius: l2, barIndexScale: h2, barSpacing: c2, barMinHeight: d3 } = (function({ width: t3, height: e4, length: i3, options: n3, pixelRatio: s3 }) {
       const r3 = e4 / 2, o3 = n3.barWidth ? n3.barWidth * s3 : 1, a3 = n3.barGap ? n3.barGap * s3 : n3.barWidth ? o3 / 2 : 0, l3 = o3 + a3 || 1;
       return { halfHeight: r3, barWidth: o3, barGap: a3, barRadius: n3.barRadius || 0, barMinHeight: n3.barMinHeight ? n3.barMinHeight * s3 : 0, barIndexScale: i3 > 0 ? t3 / l3 / i3 : 0, barSpacing: l3 };
     })({ width: s2, height: r2, length: (t2[0] || []).length, options: e3, pixelRatio: this.getPixelRatio() }), m2 = (function({ channelData: t3, barIndexScale: e4, barSpacing: i3, barWidth: n3, halfHeight: s3, vScale: r3, canvasHeight: o3, barAlign: a3, barMinHeight: l3 }) {
-      const h3 = t3[0] || [], c3 = t3[1] || h3, u5 = h3.length, m3 = [];
+      const h3 = t3[0] || [], c3 = t3[1] || h3, d4 = h3.length, m3 = [];
       let g2 = 0, f2 = 0, v2 = 0;
-      for (let t4 = 0; t4 <= u5; t4++) {
-        const u6 = Math.round(t4 * e4);
-        if (u6 > g2) {
-          const { topHeight: t5, totalHeight: e5 } = d$1({ maxTop: f2, maxBottom: v2, halfHeight: s3, vScale: r3, barMinHeight: l3, barAlign: a3 }), h4 = p({ barAlign: a3, halfHeight: s3, topHeight: t5, totalHeight: e5, canvasHeight: o3 });
-          m3.push({ x: g2 * i3, y: h4, width: n3, height: e5 }), g2 = u6, f2 = 0, v2 = 0;
+      for (let t4 = 0; t4 <= d4; t4++) {
+        const d5 = Math.round(t4 * e4);
+        if (d5 > g2) {
+          const { topHeight: t5, totalHeight: e5 } = u3({ maxTop: f2, maxBottom: v2, halfHeight: s3, vScale: r3, barMinHeight: l3, barAlign: a3 }), h4 = p({ barAlign: a3, halfHeight: s3, topHeight: t5, totalHeight: e5, canvasHeight: o3 });
+          m3.push({ x: g2 * i3, y: h4, width: n3, height: e5 }), g2 = d5, f2 = 0, v2 = 0;
         }
         const b2 = Math.abs(h3[t4] || 0), y3 = Math.abs(c3[t4] || 0);
         b2 > f2 && (f2 = b2), y3 > v2 && (v2 = y3);
       }
       return m3;
-    })({ channelData: t2, barIndexScale: h2, barSpacing: c2, barWidth: a2, halfHeight: o2, vScale: n2, canvasHeight: r2, barAlign: e3.barAlign, barMinHeight: u4 });
+    })({ channelData: t2, barIndexScale: h2, barSpacing: c2, barWidth: a2, halfHeight: o2, vScale: n2, canvasHeight: r2, barAlign: e3.barAlign, barMinHeight: d3 });
     i2.beginPath();
     for (const t3 of m2) l2 && "roundRect" in i2 ? i2.roundRect(t3.x, t3.y, t3.width, t3.height, l2) : i2.rect(t3.x, t3.y, t3.width, t3.height);
     i2.fill(), i2.closePath();
@@ -26266,15 +26268,15 @@ class C extends e$1 {
       const s3 = i3 / 2, r3 = t3[0] || [];
       return [r3, t3[1] || r3].map(((t4, i4) => {
         const r4 = t4.length, o3 = r4 ? e4 / r4 : 0, a2 = s3, l2 = 0 === i4 ? -1 : 1, h2 = [{ x: 0, y: a2 }];
-        let c2 = 0, u4 = 0;
+        let c2 = 0, d3 = 0;
         for (let e5 = 0; e5 <= r4; e5++) {
           const i5 = Math.round(e5 * o3);
           if (i5 > c2) {
-            const t5 = a2 + (Math.round(u4 * s3 * n3) || 1) * l2;
-            h2.push({ x: c2, y: t5 }), c2 = i5, u4 = 0;
+            const t5 = a2 + (Math.round(d3 * s3 * n3) || 1) * l2;
+            h2.push({ x: c2, y: t5 }), c2 = i5, d3 = 0;
           }
           const r5 = Math.abs(t4[e5] || 0);
-          r5 > u4 && (u4 = r5);
+          r5 > d3 && (d3 = r5);
         }
         return h2.push({ x: c2, y: a2 }), h2;
       }));
@@ -26321,29 +26323,29 @@ class C extends e$1 {
     })({ clientWidth: a2, totalWidth: l2, options: e3 });
     let c2 = {};
     if (0 === h2) return;
-    const u4 = (i3) => {
-      if (i3 < 0 || i3 >= d2) return;
+    const d3 = (i3) => {
+      if (i3 < 0 || i3 >= u4) return;
       if (c2[i3]) return;
       c2[i3] = true;
       const o3 = i3 * h2;
       let a3 = Math.min(l2 - o3, h2);
       if (a3 = f(a3, e3), a3 <= 0) return;
-      const u5 = (function({ channelData: t3, offset: e4, clampedWidth: i4, totalWidth: n3 }) {
+      const d4 = (function({ channelData: t3, offset: e4, clampedWidth: i4, totalWidth: n3 }) {
         return t3.map(((t4) => {
           const s3 = Math.floor(e4 / n3 * t4.length), r3 = Math.floor((e4 + i4) / n3 * t4.length);
           return t4.slice(s3, r3);
         }));
       })({ channelData: t2, offset: o3, clampedWidth: a3, totalWidth: l2 });
-      this.renderSingleCanvas(u5, e3, a3, n2, o3, s2, r2);
-    }, d2 = Math.ceil(l2 / h2);
+      this.renderSingleCanvas(d4, e3, a3, n2, o3, s2, r2);
+    }, u4 = Math.ceil(l2 / h2);
     if (!this.isScrollable) {
-      for (let t3 = 0; t3 < d2; t3++) u4(t3);
+      for (let t3 = 0; t3 < u4; t3++) d3(t3);
       return;
     }
-    if (v({ scrollLeft: this.scrollContainer.scrollLeft, totalWidth: l2, numCanvases: d2 }).forEach(((t3) => u4(t3))), d2 > 1) {
+    if (v({ scrollLeft: this.scrollContainer.scrollLeft, totalWidth: l2, numCanvases: u4 }).forEach(((t3) => d3(t3))), u4 > 1) {
       const t3 = this.on("scroll", (() => {
         const { scrollLeft: t4 } = this.scrollContainer;
-        Object.keys(c2).length > 10 && (s2.innerHTML = "", r2.innerHTML = "", c2 = {}), v({ scrollLeft: t4, totalWidth: l2, numCanvases: d2 }).forEach(((t5) => u4(t5)));
+        Object.keys(c2).length > 10 && (s2.innerHTML = "", r2.innerHTML = "", c2 = {}), v({ scrollLeft: t4, totalWidth: l2, numCanvases: u4 }).forEach(((t5) => d3(t5)));
       }));
       this.unsubscribeOnScroll.push(t3);
     }
@@ -26606,7 +26608,7 @@ class E extends e$1 {
   }
 }
 const P2 = { waveColor: "#999", progressColor: "#555", cursorWidth: 1, minPxPerSec: 0, fillParent: true, interact: true, dragToSeek: false, autoScroll: true, autoCenter: true, sampleRate: 8e3 };
-class w extends u3 {
+class w extends d$1 {
   static create(t2) {
     return new w(t2);
   }
@@ -26618,19 +26620,19 @@ class w extends u3 {
   }
   constructor(t2) {
     const e3 = t2.media || ("WebAudio" === t2.backend ? new E() : void 0);
-    super({ media: e3, mediaControls: t2.mediaControls, autoplay: t2.autoplay, playbackRate: t2.audioRate }), this.plugins = [], this.decodedData = null, this.stopAtPosition = null, this.subscriptions = [], this.mediaSubscriptions = [], this.abortController = null, this._isDestroyed = false, this._loadVersion = 0, this.reactiveCleanups = [], this.options = Object.assign({}, P2, t2);
+    super({ media: e3, mediaControls: t2.mediaControls, autoplay: t2.autoplay, playbackRate: t2.audioRate }), this.plugins = [], this.decodedData = null, this.stopAtPosition = null, this.subscriptions = [], this.mediaSubscriptions = [], this.abortController = null, this._isDestroyed = false, this._loadVersion = 0, this.options = Object.assign({}, P2, t2);
     const { state: i2, actions: n2 } = (function(t3) {
       var e4, i3, n3, s3, r3, o2;
-      const a2 = null !== (e4 = null == t3 ? void 0 : t3.currentTime) && void 0 !== e4 ? e4 : l$1(0), c2 = null !== (i3 = null == t3 ? void 0 : t3.duration) && void 0 !== i3 ? i3 : l$1(0), u4 = null !== (n3 = null == t3 ? void 0 : t3.isPlaying) && void 0 !== n3 ? n3 : l$1(false), d2 = null !== (s3 = null == t3 ? void 0 : t3.isSeeking) && void 0 !== s3 ? s3 : l$1(false), p2 = null !== (r3 = null == t3 ? void 0 : t3.volume) && void 0 !== r3 ? r3 : l$1(1), m2 = null !== (o2 = null == t3 ? void 0 : t3.playbackRate) && void 0 !== o2 ? o2 : l$1(1), g2 = l$1(null), f2 = l$1(null), v2 = l$1(""), b2 = l$1(0), y3 = l$1(0), C2 = h$1((() => !u4.value), [u4]), S3 = h$1((() => null !== g2.value), [g2]), E2 = h$1((() => S3.value && c2.value > 0), [S3, c2]), P3 = h$1((() => a2.value), [a2]), w2 = h$1((() => c2.value > 0 ? a2.value / c2.value : 0), [a2, c2]);
-      return { state: { currentTime: a2, duration: c2, isPlaying: u4, isPaused: C2, isSeeking: d2, volume: p2, playbackRate: m2, audioBuffer: g2, peaks: f2, url: v2, zoom: b2, scrollPosition: y3, canPlay: S3, isReady: E2, progress: P3, progressPercent: w2 }, actions: { setCurrentTime: (t4) => {
+      const a2 = null !== (e4 = null == t3 ? void 0 : t3.currentTime) && void 0 !== e4 ? e4 : l$1(0), c2 = null !== (i3 = null == t3 ? void 0 : t3.duration) && void 0 !== i3 ? i3 : l$1(0), d3 = null !== (n3 = null == t3 ? void 0 : t3.isPlaying) && void 0 !== n3 ? n3 : l$1(false), u4 = null !== (s3 = null == t3 ? void 0 : t3.isSeeking) && void 0 !== s3 ? s3 : l$1(false), p2 = null !== (r3 = null == t3 ? void 0 : t3.volume) && void 0 !== r3 ? r3 : l$1(1), m2 = null !== (o2 = null == t3 ? void 0 : t3.playbackRate) && void 0 !== o2 ? o2 : l$1(1), g2 = l$1(null), f2 = l$1(null), v2 = l$1(""), b2 = l$1(0), y3 = l$1(0), C2 = h$1((() => !d3.value), [d3]), S3 = h$1((() => null !== g2.value), [g2]), E2 = h$1((() => S3.value && c2.value > 0), [S3, c2]), P3 = h$1((() => a2.value), [a2]), w2 = h$1((() => c2.value > 0 ? a2.value / c2.value : 0), [a2, c2]);
+      return { state: { currentTime: a2, duration: c2, isPlaying: d3, isPaused: C2, isSeeking: u4, volume: p2, playbackRate: m2, audioBuffer: g2, peaks: f2, url: v2, zoom: b2, scrollPosition: y3, canPlay: S3, isReady: E2, progress: P3, progressPercent: w2 }, actions: { setCurrentTime: (t4) => {
         const e5 = Math.max(0, Math.min(c2.value || 1 / 0, t4));
         a2.set(e5);
       }, setDuration: (t4) => {
         c2.set(Math.max(0, t4));
       }, setPlaying: (t4) => {
-        u4.set(t4);
+        d3.set(t4);
       }, setSeeking: (t4) => {
-        d2.set(t4);
+        u4.set(t4);
       }, setVolume: (t4) => {
         const e5 = Math.max(0, Math.min(1, t4));
         p2.set(e5);
@@ -26651,7 +26653,7 @@ class w extends u3 {
     })({ isPlaying: this.isPlayingSignal, currentTime: this.currentTimeSignal, duration: this.durationSignal, volume: this.volumeSignal, playbackRate: this.playbackRateSignal, isSeeking: this.seekingSignal });
     this.wavesurferState = i2, this.wavesurferActions = n2, this.timer = new S2();
     const s2 = e3 ? void 0 : this.getMediaElement();
-    this.renderer = new C(this.options, s2), this.initPlayerEvents(), this.initRendererEvents(), this.initTimerEvents(), this.initReactiveState(), this.initPlugins();
+    this.renderer = new C(this.options, s2), this.initPlayerEvents(), this.initRendererEvents(), this.initTimerEvents(), this.initPlugins();
     const r2 = this.options.url || this.getSrc() || "";
     Promise.resolve().then((() => {
       this.emit("init");
@@ -26673,36 +26675,6 @@ class w extends u3 {
         }
       }
     })));
-  }
-  initReactiveState() {
-    this.reactiveCleanups.push((function(t2, e3) {
-      const i2 = [];
-      i2.push(c((() => {
-        const i3 = t2.isPlaying.value;
-        e3.emit(i3 ? "play" : "pause");
-      }), [t2.isPlaying])), i2.push(c((() => {
-        const i3 = t2.currentTime.value;
-        e3.emit("timeupdate", i3), t2.isPlaying.value && e3.emit("audioprocess", i3);
-      }), [t2.currentTime, t2.isPlaying])), i2.push(c((() => {
-        t2.isSeeking.value && e3.emit("seeking", t2.currentTime.value);
-      }), [t2.isSeeking, t2.currentTime]));
-      let n2 = false;
-      i2.push(c((() => {
-        t2.isReady.value && !n2 && (n2 = true, e3.emit("ready", t2.duration.value));
-      }), [t2.isReady, t2.duration])), i2.push(c((() => {
-        null === t2.audioBuffer.value && (n2 = false);
-      }), [t2.audioBuffer]));
-      let s2 = false;
-      return i2.push(c((() => {
-        const i3 = t2.isPlaying.value, n3 = t2.currentTime.value, r2 = t2.duration.value, o2 = r2 > 0 && n3 >= r2;
-        s2 && !i3 && o2 && e3.emit("finish"), s2 = i3 && o2;
-      }), [t2.isPlaying, t2.currentTime, t2.duration])), i2.push(c((() => {
-        const i3 = t2.zoom.value;
-        i3 > 0 && e3.emit("zoom", i3);
-      }), [t2.zoom])), () => {
-        i2.forEach(((t3) => t3()));
-      };
-    })(this.wavesurferState, { emit: this.emit.bind(this) }));
   }
   initPlayerEvents() {
     this.isPlaying() && (this.emit("play"), this.timer.start()), this.mediaSubscriptions.push(this.onMediaEvent("timeupdate", (() => {
@@ -26923,7 +26895,7 @@ class w extends u3 {
   }
   destroy() {
     var t2;
-    this._isDestroyed = true, this.emit("destroy"), null === (t2 = this.abortController) || void 0 === t2 || t2.abort(), this.plugins.forEach(((t3) => t3.destroy())), this.subscriptions.forEach(((t3) => t3())), this.unsubscribePlayerEvents(), this.reactiveCleanups.forEach(((t3) => t3())), this.reactiveCleanups = [], this.timer.destroy(), this.renderer.destroy(), super.destroy();
+    this._isDestroyed = true, this.emit("destroy"), null === (t2 = this.abortController) || void 0 === t2 || t2.abort(), this.plugins.forEach(((t3) => t3.destroy())), this.subscriptions.forEach(((t3) => t3())), this.unsubscribePlayerEvents(), this.timer.destroy(), this.renderer.destroy(), super.destroy();
   }
 }
 w.BasePlugin = class extends e$1 {
@@ -27023,7 +26995,7 @@ function l(t2) {
 }
 function h(t2, e3 = {}) {
   const { threshold: i2 = 3, mouseButton: n2 = 0, touchDelay: r2 = 100 } = e3, o2 = s(null), h2 = /* @__PURE__ */ new Map(), a2 = matchMedia("(pointer: coarse)").matches;
-  let d2 = () => {
+  let d3 = () => {
   };
   const c2 = (e4) => {
     if (e4.button !== n2) return;
@@ -27035,15 +27007,15 @@ function h(t2, e3 = {}) {
       if (t3.pointerId !== s2) return;
       if (t3.defaultPrevented || h2.size > 1) return;
       if (a2 && Date.now() - p2 < r2) return;
-      const e5 = t3.clientX, n3 = t3.clientY, d3 = e5 - l2, v3 = n3 - c3;
-      (u4 || Math.abs(d3) > i2 || Math.abs(v3) > i2) && (t3.preventDefault(), t3.stopPropagation(), u4 || (o2.set({ type: "start", x: l2 - g2, y: c3 - m2 }), u4 = true), o2.set({ type: "move", x: e5 - g2, y: n3 - m2, deltaX: d3, deltaY: v3 }), l2 = e5, c3 = n3);
+      const e5 = t3.clientX, n3 = t3.clientY, d4 = e5 - l2, v3 = n3 - c3;
+      (u4 || Math.abs(d4) > i2 || Math.abs(v3) > i2) && (t3.preventDefault(), t3.stopPropagation(), u4 || (o2.set({ type: "start", x: l2 - g2, y: c3 - m2 }), u4 = true), o2.set({ type: "move", x: e5 - g2, y: n3 - m2, deltaX: d4, deltaY: v3 }), l2 = e5, c3 = n3);
     }, b2 = (t3) => {
       if (h2.delete(t3.pointerId)) {
         if (t3.pointerId === s2 && u4) {
           const e5 = t3.clientX, i3 = t3.clientY;
           o2.set({ type: "end", x: e5 - g2, y: i3 - m2 });
         }
-        0 === h2.size && d2();
+        0 === h2.size && d3();
       }
     }, E2 = (t3) => {
       t3.relatedTarget && t3.relatedTarget !== document.documentElement || b2(t3);
@@ -27052,7 +27024,7 @@ function h(t2, e3 = {}) {
     }, L2 = (t3) => {
       t3.defaultPrevented || h2.size > 1 || u4 && t3.preventDefault();
     };
-    document.addEventListener("pointermove", f2), document.addEventListener("pointerup", b2), document.addEventListener("pointerout", E2), document.addEventListener("pointercancel", E2), document.addEventListener("touchmove", L2, { passive: false }), document.addEventListener("click", C2, { capture: true }), d2 = () => {
+    document.addEventListener("pointermove", f2), document.addEventListener("pointerup", b2), document.addEventListener("pointerout", E2), document.addEventListener("pointercancel", E2), document.addEventListener("touchmove", L2, { passive: false }), document.addEventListener("click", C2, { capture: true }), d3 = () => {
       document.removeEventListener("pointermove", f2), document.removeEventListener("pointerup", b2), document.removeEventListener("pointerout", E2), document.removeEventListener("pointercancel", E2), document.removeEventListener("touchmove", L2), setTimeout((() => {
         document.removeEventListener("click", C2, { capture: true });
       }), 10);
@@ -27060,13 +27032,13 @@ function h(t2, e3 = {}) {
   };
   t2.addEventListener("pointerdown", c2);
   return { signal: o2, cleanup: () => {
-    d2(), t2.removeEventListener("pointerdown", c2), h2.clear(), l(o2);
+    d3(), t2.removeEventListener("pointerdown", c2), h2.clear(), l(o2);
   } };
 }
 class a extends t {
   constructor(t2, e3, i2 = 0) {
-    var n2, s2, r2, o2, l2, h2, a2, d2, c2, u4;
-    super(), this.totalDuration = e3, this.numberOfChannels = i2, this.element = null, this.minLength = 0, this.maxLength = 1 / 0, this.contentEditable = false, this.subscriptions = [], this.updatingSide = void 0, this.isRemoved = false, this.subscriptions = [], this.id = t2.id || `region-${Math.random().toString(32).slice(2)}`, this.start = this.clampPosition(t2.start), this.end = this.clampPosition(null !== (n2 = t2.end) && void 0 !== n2 ? n2 : t2.start), this.drag = null === (s2 = t2.drag) || void 0 === s2 || s2, this.resize = null === (r2 = t2.resize) || void 0 === r2 || r2, this.resizeStart = null === (o2 = t2.resizeStart) || void 0 === o2 || o2, this.resizeEnd = null === (l2 = t2.resizeEnd) || void 0 === l2 || l2, this.color = null !== (h2 = t2.color) && void 0 !== h2 ? h2 : "rgba(0, 0, 0, 0.1)", this.minLength = null !== (a2 = t2.minLength) && void 0 !== a2 ? a2 : this.minLength, this.maxLength = null !== (d2 = t2.maxLength) && void 0 !== d2 ? d2 : this.maxLength, this.channelIdx = null !== (c2 = t2.channelIdx) && void 0 !== c2 ? c2 : -1, this.contentEditable = null !== (u4 = t2.contentEditable) && void 0 !== u4 ? u4 : this.contentEditable, this.element = this.initElement(), this.setContent(t2.content), this.setPart(), this.renderPosition(), this.initMouseEvents();
+    var n2, s2, r2, o2, l2, h2, a2, d3, c2, u4;
+    super(), this.totalDuration = e3, this.numberOfChannels = i2, this.element = null, this.minLength = 0, this.maxLength = 1 / 0, this.contentEditable = false, this.subscriptions = [], this.updatingSide = void 0, this.isRemoved = false, this.subscriptions = [], this.id = t2.id || `region-${Math.random().toString(32).slice(2)}`, this.start = this.clampPosition(t2.start), this.end = this.clampPosition(null !== (n2 = t2.end) && void 0 !== n2 ? n2 : t2.start), this.drag = null === (s2 = t2.drag) || void 0 === s2 || s2, this.resize = null === (r2 = t2.resize) || void 0 === r2 || r2, this.resizeStart = null === (o2 = t2.resizeStart) || void 0 === o2 || o2, this.resizeEnd = null === (l2 = t2.resizeEnd) || void 0 === l2 || l2, this.color = null !== (h2 = t2.color) && void 0 !== h2 ? h2 : "rgba(0, 0, 0, 0.1)", this.minLength = null !== (a2 = t2.minLength) && void 0 !== a2 ? a2 : this.minLength, this.maxLength = null !== (d3 = t2.maxLength) && void 0 !== d3 ? d3 : this.maxLength, this.channelIdx = null !== (c2 = t2.channelIdx) && void 0 !== c2 ? c2 : -1, this.contentEditable = null !== (u4 = t2.contentEditable) && void 0 !== u4 ? u4 : this.contentEditable, this.element = this.initElement(), this.setContent(t2.content), this.setPart(), this.renderPosition(), this.initMouseEvents();
   }
   clampPosition(t2) {
     return Math.max(0, Math.min(this.totalDuration, t2));
@@ -27080,12 +27052,12 @@ class a extends t {
     const e3 = { position: "absolute", zIndex: "2", width: "6px", height: "100%", top: "0", cursor: "ew-resize", wordBreak: "keep-all" }, i2 = n("div", { part: "region-handle region-handle-left", style: Object.assign(Object.assign({}, e3), { left: "0", borderLeft: "2px solid rgba(0, 0, 0, 0.5)", borderRadius: "2px 0 0 2px" }) }, t2), s2 = n("div", { part: "region-handle region-handle-right", style: Object.assign(Object.assign({}, e3), { right: "0", borderRight: "2px solid rgba(0, 0, 0, 0.5)", borderRadius: "0 2px 2px 0" }) }, t2), o2 = h(i2, { threshold: 1 }), l2 = h(s2, { threshold: 1 }), a2 = r((() => {
       const t3 = o2.signal.value;
       t3 && ("move" === t3.type && void 0 !== t3.deltaX ? this.onResize(t3.deltaX, "start") : "end" === t3.type && this.onEndResizing("start"));
-    }), [o2.signal]), d2 = r((() => {
+    }), [o2.signal]), d3 = r((() => {
       const t3 = l2.signal.value;
       t3 && ("move" === t3.type && void 0 !== t3.deltaX ? this.onResize(t3.deltaX, "end") : "end" === t3.type && this.onEndResizing("end"));
     }), [l2.signal]);
     this.subscriptions.push((() => {
-      a2(), d2(), o2.cleanup(), l2.cleanup();
+      a2(), d3(), o2.cleanup(), l2.cleanup();
     }));
   }
   removeResizeHandles(t2) {
@@ -27112,9 +27084,9 @@ class a extends t {
   initMouseEvents() {
     const { element: t2 } = this;
     if (!t2) return;
-    const e3 = o(t2, "click"), i2 = o(t2, "mouseenter"), n2 = o(t2, "mouseleave"), s2 = o(t2, "dblclick"), a2 = o(t2, "pointerdown"), d2 = o(t2, "pointerup"), c2 = e3.subscribe(((t3) => t3 && this.emit("click", t3))), u4 = i2.subscribe(((t3) => t3 && this.emit("over", t3))), p2 = n2.subscribe(((t3) => t3 && this.emit("leave", t3))), v2 = s2.subscribe(((t3) => t3 && this.emit("dblclick", t3))), g2 = a2.subscribe(((t3) => t3 && this.toggleCursor(true))), m2 = d2.subscribe(((t3) => t3 && this.toggleCursor(false)));
+    const e3 = o(t2, "click"), i2 = o(t2, "mouseenter"), n2 = o(t2, "mouseleave"), s2 = o(t2, "dblclick"), a2 = o(t2, "pointerdown"), d3 = o(t2, "pointerup"), c2 = e3.subscribe(((t3) => t3 && this.emit("click", t3))), u4 = i2.subscribe(((t3) => t3 && this.emit("over", t3))), p2 = n2.subscribe(((t3) => t3 && this.emit("leave", t3))), v2 = s2.subscribe(((t3) => t3 && this.emit("dblclick", t3))), g2 = a2.subscribe(((t3) => t3 && this.toggleCursor(true))), m2 = d3.subscribe(((t3) => t3 && this.toggleCursor(false)));
     this.subscriptions.push((() => {
-      c2(), u4(), p2(), v2(), g2(), m2(), l(e3), l(i2), l(n2), l(s2), l(a2), l(d2);
+      c2(), u4(), p2(), v2(), g2(), m2(), l(e3), l(i2), l(n2), l(s2), l(a2), l(d3);
     }));
     const f2 = h(t2), b2 = r((() => {
       const t3 = f2.signal.value;
@@ -27133,8 +27105,8 @@ class a extends t {
     h2 && this.updatingSide && this.updatingSide !== e3 && ("start" === this.updatingSide ? o2 = i2 : l2 = i2), o2 = Math.max(0, o2), l2 = Math.min(this.totalDuration, l2);
     const a2 = l2 - o2;
     this.updatingSide = e3;
-    const d2 = a2 >= this.minLength && a2 <= this.maxLength;
-    o2 <= l2 && (d2 || h2) && (this.start = o2, this.end = l2, this.renderPosition(), this.emit("update", e3));
+    const d3 = a2 >= this.minLength && a2 <= this.maxLength;
+    o2 <= l2 && (d3 || h2) && (this.start = o2, this.end = l2, this.renderPosition(), this.emit("update", e3));
   }
   onMove(t2) {
     this.drag && this._onUpdate(t2);
@@ -27190,12 +27162,12 @@ class a extends t {
     this.isRemoved = true, this.emit("remove"), this.subscriptions.forEach(((t2) => t2())), this.subscriptions = [], this.content && this.contentEditable && (this.contentClickListener && (this.content.removeEventListener("click", this.contentClickListener), this.contentClickListener = void 0), this.contentBlurListener && (this.content.removeEventListener("blur", this.contentBlurListener), this.contentBlurListener = void 0)), this.element && (this.element.remove(), this.element = null), this.unAll();
   }
 }
-class d extends e2 {
+class d2 extends e2 {
   constructor(t2) {
     super(t2), this.regions = [], this.regionsContainer = this.initRegionsContainer();
   }
   static create(t2) {
-    return new d(t2);
+    return new d2(t2);
   }
   onInit() {
     if (!this.wavesurfer) throw Error("WaveSurfer is not initialized");
@@ -27304,19 +27276,19 @@ class d extends e2 {
     if (!(n2 && n2 instanceof HTMLElement)) return () => {
     };
     let s2 = null, o2 = 0, l2 = 0;
-    const d2 = h(n2, { threshold: e3 }), c2 = r((() => {
+    const d3 = h(n2, { threshold: e3 }), c2 = r((() => {
       var e4, i3;
-      const n3 = d2.signal.value;
+      const n3 = d3.signal.value;
       if (n3) if ("start" === n3.type) {
         if (o2 = n3.x, !this.wavesurfer) return;
-        const r2 = this.wavesurfer.getDuration(), h2 = null === (i3 = null === (e4 = this.wavesurfer) || void 0 === e4 ? void 0 : e4.getDecodedData()) || void 0 === i3 ? void 0 : i3.numberOfChannels, { width: d3 } = this.wavesurfer.getWrapper().getBoundingClientRect();
-        l2 = o2 / d3 * r2;
-        const c3 = n3.x / d3 * r2, u4 = (n3.x + 5) / d3 * r2;
+        const r2 = this.wavesurfer.getDuration(), h2 = null === (i3 = null === (e4 = this.wavesurfer) || void 0 === e4 ? void 0 : e4.getDecodedData()) || void 0 === i3 ? void 0 : i3.numberOfChannels, { width: d4 } = this.wavesurfer.getWrapper().getBoundingClientRect();
+        l2 = o2 / d4 * r2;
+        const c3 = n3.x / d4 * r2, u4 = (n3.x + 5) / d4 * r2;
         s2 = new a(Object.assign(Object.assign({}, t2), { start: c3, end: u4 }), r2, h2), this.emit("region-initialized", s2), s2.element && this.regionsContainer.appendChild(s2.element);
       } else "move" === n3.type && void 0 !== n3.deltaX ? s2 && s2._onUpdate(n3.deltaX, n3.x > o2 ? "end" : "start", l2) : "end" === n3.type && s2 && (this.saveRegion(s2), s2.updatingSide = void 0, s2 = null);
-    }), [d2.signal]);
+    }), [d3.signal]);
     return () => {
-      c2(), d2.cleanup();
+      c2(), d3.cleanup();
     };
   }
   clearRegions() {
@@ -27488,7 +27460,7 @@ function useAudioPlayer(options) {
     isLoading.value = true;
     isReady.value = false;
     loadError.value = null;
-    const regionsPlugin = d.create();
+    const regionsPlugin = d2.create();
     regions.value = regionsPlugin;
     const precomputed = audio.waveform.value;
     const peaks = precomputed?.length ? [normalizePeaks(precomputed)] : void 0;
@@ -28024,23 +27996,23 @@ function splitPartialSubtitles({ previousText, previousIndexes: oldCutPositions 
       );
       wordIndex += diff.countRemoved;
     } else if ("removed" in diff && diff.removed) {
-      const d2 = diff;
-      wordIndex += d2.count;
+      const d3 = diff;
+      wordIndex += d3.count;
       newCutPositions = incrementIndexes(
         newCutPositions,
         copyCutPositions[0],
-        -d2.count
+        -d3.count
       );
     } else if ("added" in diff && diff.added) {
-      const d2 = diff;
+      const d3 = diff;
       newCutPositions = incrementIndexes(
         newCutPositions,
         copyCutPositions[0],
-        d2.count
+        d3.count
       );
     } else {
-      const d2 = diff;
-      wordIndex += d2.count;
+      const d3 = diff;
+      wordIndex += d3.count;
     }
   }
   const lineText = (from, to) => newTextSplitBySpace.slice(from, to).join(" ");
@@ -30318,4 +30290,4 @@ export {
   purify as p,
   register as r
 };
-//# sourceMappingURL=index-CopL8cVA.js.map
+//# sourceMappingURL=index-DhBFBHeE.js.map

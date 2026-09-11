@@ -22203,34 +22203,36 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               ]),
               _: 1
             }, 8, ["aria-label"])) : createCommentVNode("", true),
-            createVNode(unref(Button), {
-              variant: "secondary",
-              "aria-label": unref(t2)("header.undo"),
-              disabled: !props.canUndo,
-              onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("undo"))
-            }, {
-              icon: withCtx(() => [
-                createVNode(unref(EditorIcon), {
-                  name: "undo",
-                  size: 16
-                })
-              ]),
-              _: 1
-            }, 8, ["aria-label", "disabled"]),
-            createVNode(unref(Button), {
-              variant: "secondary",
-              "aria-label": unref(t2)("header.redo"),
-              disabled: !props.canRedo,
-              onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("redo"))
-            }, {
-              icon: withCtx(() => [
-                createVNode(unref(EditorIcon), {
-                  name: "redo",
-                  size: 16
-                })
-              ]),
-              _: 1
-            }, 8, ["aria-label", "disabled"]),
+            props.canUndo || props.canRedo ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+              createVNode(unref(Button), {
+                variant: "secondary",
+                "aria-label": unref(t2)("header.undo"),
+                disabled: !props.canUndo,
+                onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("undo"))
+              }, {
+                icon: withCtx(() => [
+                  createVNode(unref(EditorIcon), {
+                    name: "undo",
+                    size: 16
+                  })
+                ]),
+                _: 1
+              }, 8, ["aria-label", "disabled"]),
+              createVNode(unref(Button), {
+                variant: "secondary",
+                "aria-label": unref(t2)("header.redo"),
+                disabled: !props.canRedo,
+                onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("redo"))
+              }, {
+                icon: withCtx(() => [
+                  createVNode(unref(EditorIcon), {
+                    name: "redo",
+                    size: 16
+                  })
+                ]),
+                _: 1
+              }, 8, ["aria-label", "disabled"])
+            ], 64)) : createCommentVNode("", true),
             createVNode(unref(Button), {
               variant: "primary",
               "aria-label": unref(t2)("header.ask"),
@@ -22253,8 +22255,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$p = '\n.editor-header[data-v-6464a453] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-6464a453] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-6464a453] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-6464a453] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-6464a453] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-6464a453]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-6464a453] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-6464a453] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-6464a453] {\n    font-size: var(--font-size-base);\n}\n}\n';
-  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-6464a453"]]);
+  const _style_0$p = '\n.editor-header[data-v-491cf8ab] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-491cf8ab] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-491cf8ab] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-491cf8ab] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-491cf8ab] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-491cf8ab]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-491cf8ab] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-491cf8ab] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-491cf8ab] {\n    font-size: var(--font-size-base);\n}\n}\n';
+  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-491cf8ab"]]);
   const TRANSCRIPTION_TAB = "__transcription__";
   const VERBATIM_TAB = "__verbatim__";
   const _sfc_main$t = /* @__PURE__ */ defineComponent({
@@ -25824,7 +25826,7 @@ section.turn:has([data-state="open"]) {
       i2 && (i2(), i2 = void 0), s2.forEach(((t3) => t3()));
     };
   }
-  class u extends e$1 {
+  let d$1 = class d extends e$1 {
     get isPlayingSignal() {
       return this._isPlaying;
     }
@@ -25955,8 +25957,8 @@ section.turn:has([data-state="open"]) {
     setSinkId(t2) {
       return this.media.setSinkId(t2);
     }
-  }
-  function d$1({ maxTop: t2, maxBottom: e2, halfHeight: i2, vScale: n2, barMinHeight: s2 = 0, barAlign: r2 }) {
+  };
+  function u({ maxTop: t2, maxBottom: e2, halfHeight: i2, vScale: n2, barMinHeight: s2 = 0, barAlign: r2 }) {
     let o2 = Math.round(t2 * i2 * n2);
     let a2 = o2 + Math.round(e2 * i2 * n2) || 1;
     return a2 < s2 && (a2 = s2, r2 || (o2 = a2 / 2)), { topHeight: o2, totalHeight: a2 };
@@ -26049,16 +26051,16 @@ section.turn:has([data-state="open"]) {
           if (o2.has(e3.pointerId)) return;
           if (o2.set(e3.pointerId, e3), o2.size > 1) return;
           const l2 = e3.pointerId;
-          let c3 = e3.clientX, u2 = e3.clientY, d2 = false;
+          let c3 = e3.clientX, d2 = e3.clientY, u2 = false;
           const p2 = Date.now(), m2 = t3.getBoundingClientRect(), { left: g2, top: f2 } = m2, v2 = (t4) => {
             if (t4.pointerId !== l2) return;
             if (t4.defaultPrevented || o2.size > 1) return;
             if (a2 && Date.now() - p2 < s2) return;
-            const e4 = t4.clientX, n3 = t4.clientY, h3 = e4 - c3, m3 = n3 - u2;
-            (d2 || Math.abs(h3) > i2 || Math.abs(m3) > i2) && (t4.preventDefault(), t4.stopPropagation(), d2 || (r2.set({ type: "start", x: c3 - g2, y: u2 - f2 }), d2 = true), r2.set({ type: "move", x: e4 - g2, y: n3 - f2, deltaX: h3, deltaY: m3 }), c3 = e4, u2 = n3);
+            const e4 = t4.clientX, n3 = t4.clientY, h3 = e4 - c3, m3 = n3 - d2;
+            (u2 || Math.abs(h3) > i2 || Math.abs(m3) > i2) && (t4.preventDefault(), t4.stopPropagation(), u2 || (r2.set({ type: "start", x: c3 - g2, y: d2 - f2 }), u2 = true), r2.set({ type: "move", x: e4 - g2, y: n3 - f2, deltaX: h3, deltaY: m3 }), c3 = e4, d2 = n3);
           }, b2 = (t4) => {
             if (o2.delete(t4.pointerId)) {
-              if (t4.pointerId === l2 && d2) {
+              if (t4.pointerId === l2 && u2) {
                 const e4 = t4.clientX, i3 = t4.clientY;
                 r2.set({ type: "end", x: e4 - g2, y: i3 - f2 });
               }
@@ -26067,9 +26069,9 @@ section.turn:has([data-state="open"]) {
           }, y2 = (t4) => {
             t4.relatedTarget && t4.relatedTarget !== document.documentElement || b2(t4);
           }, C2 = (t4) => {
-            d2 && (t4.stopPropagation(), t4.preventDefault());
+            u2 && (t4.stopPropagation(), t4.preventDefault());
           }, S2 = (t4) => {
-            t4.defaultPrevented || o2.size > 1 || d2 && t4.preventDefault();
+            t4.defaultPrevented || o2.size > 1 || u2 && t4.preventDefault();
           };
           document.addEventListener("pointermove", v2), document.addEventListener("pointerup", b2), document.addEventListener("pointerout", y2), document.addEventListener("pointercancel", y2), document.addEventListener("touchmove", S2, { passive: false }), document.addEventListener("click", C2, { capture: true }), h2 = () => {
             document.removeEventListener("pointermove", v2), document.removeEventListener("pointerup", b2), document.removeEventListener("pointerout", y2), document.removeEventListener("pointercancel", y2), document.removeEventListener("touchmove", S2), setTimeout((() => {
@@ -26242,23 +26244,23 @@ section.turn:has([data-state="open"]) {
       var t2;
     }
     renderBarWaveform(t2, e2, i2, n2) {
-      const { width: s2, height: r2 } = i2.canvas, { halfHeight: o2, barWidth: a2, barRadius: l2, barIndexScale: h2, barSpacing: c2, barMinHeight: u2 } = (function({ width: t3, height: e3, length: i3, options: n3, pixelRatio: s3 }) {
+      const { width: s2, height: r2 } = i2.canvas, { halfHeight: o2, barWidth: a2, barRadius: l2, barIndexScale: h2, barSpacing: c2, barMinHeight: d2 } = (function({ width: t3, height: e3, length: i3, options: n3, pixelRatio: s3 }) {
         const r3 = e3 / 2, o3 = n3.barWidth ? n3.barWidth * s3 : 1, a3 = n3.barGap ? n3.barGap * s3 : n3.barWidth ? o3 / 2 : 0, l3 = o3 + a3 || 1;
         return { halfHeight: r3, barWidth: o3, barGap: a3, barRadius: n3.barRadius || 0, barMinHeight: n3.barMinHeight ? n3.barMinHeight * s3 : 0, barIndexScale: i3 > 0 ? t3 / l3 / i3 : 0, barSpacing: l3 };
       })({ width: s2, height: r2, length: (t2[0] || []).length, options: e2, pixelRatio: this.getPixelRatio() }), m2 = (function({ channelData: t3, barIndexScale: e3, barSpacing: i3, barWidth: n3, halfHeight: s3, vScale: r3, canvasHeight: o3, barAlign: a3, barMinHeight: l3 }) {
-        const h3 = t3[0] || [], c3 = t3[1] || h3, u3 = h3.length, m3 = [];
+        const h3 = t3[0] || [], c3 = t3[1] || h3, d3 = h3.length, m3 = [];
         let g2 = 0, f2 = 0, v2 = 0;
-        for (let t4 = 0; t4 <= u3; t4++) {
-          const u4 = Math.round(t4 * e3);
-          if (u4 > g2) {
-            const { topHeight: t5, totalHeight: e4 } = d$1({ maxTop: f2, maxBottom: v2, halfHeight: s3, vScale: r3, barMinHeight: l3, barAlign: a3 }), h4 = p({ barAlign: a3, halfHeight: s3, topHeight: t5, totalHeight: e4, canvasHeight: o3 });
-            m3.push({ x: g2 * i3, y: h4, width: n3, height: e4 }), g2 = u4, f2 = 0, v2 = 0;
+        for (let t4 = 0; t4 <= d3; t4++) {
+          const d4 = Math.round(t4 * e3);
+          if (d4 > g2) {
+            const { topHeight: t5, totalHeight: e4 } = u({ maxTop: f2, maxBottom: v2, halfHeight: s3, vScale: r3, barMinHeight: l3, barAlign: a3 }), h4 = p({ barAlign: a3, halfHeight: s3, topHeight: t5, totalHeight: e4, canvasHeight: o3 });
+            m3.push({ x: g2 * i3, y: h4, width: n3, height: e4 }), g2 = d4, f2 = 0, v2 = 0;
           }
           const b2 = Math.abs(h3[t4] || 0), y2 = Math.abs(c3[t4] || 0);
           b2 > f2 && (f2 = b2), y2 > v2 && (v2 = y2);
         }
         return m3;
-      })({ channelData: t2, barIndexScale: h2, barSpacing: c2, barWidth: a2, halfHeight: o2, vScale: n2, canvasHeight: r2, barAlign: e2.barAlign, barMinHeight: u2 });
+      })({ channelData: t2, barIndexScale: h2, barSpacing: c2, barWidth: a2, halfHeight: o2, vScale: n2, canvasHeight: r2, barAlign: e2.barAlign, barMinHeight: d2 });
       i2.beginPath();
       for (const t3 of m2) l2 && "roundRect" in i2 ? i2.roundRect(t3.x, t3.y, t3.width, t3.height, l2) : i2.rect(t3.x, t3.y, t3.width, t3.height);
       i2.fill(), i2.closePath();
@@ -26268,15 +26270,15 @@ section.turn:has([data-state="open"]) {
         const s3 = i3 / 2, r3 = t3[0] || [];
         return [r3, t3[1] || r3].map(((t4, i4) => {
           const r4 = t4.length, o3 = r4 ? e3 / r4 : 0, a2 = s3, l2 = 0 === i4 ? -1 : 1, h2 = [{ x: 0, y: a2 }];
-          let c2 = 0, u2 = 0;
+          let c2 = 0, d2 = 0;
           for (let e4 = 0; e4 <= r4; e4++) {
             const i5 = Math.round(e4 * o3);
             if (i5 > c2) {
-              const t5 = a2 + (Math.round(u2 * s3 * n3) || 1) * l2;
-              h2.push({ x: c2, y: t5 }), c2 = i5, u2 = 0;
+              const t5 = a2 + (Math.round(d2 * s3 * n3) || 1) * l2;
+              h2.push({ x: c2, y: t5 }), c2 = i5, d2 = 0;
             }
             const r5 = Math.abs(t4[e4] || 0);
-            r5 > u2 && (u2 = r5);
+            r5 > d2 && (d2 = r5);
           }
           return h2.push({ x: c2, y: a2 }), h2;
         }));
@@ -26323,29 +26325,29 @@ section.turn:has([data-state="open"]) {
       })({ clientWidth: a2, totalWidth: l2, options: e2 });
       let c2 = {};
       if (0 === h2) return;
-      const u2 = (i3) => {
-        if (i3 < 0 || i3 >= d2) return;
+      const d2 = (i3) => {
+        if (i3 < 0 || i3 >= u2) return;
         if (c2[i3]) return;
         c2[i3] = true;
         const o3 = i3 * h2;
         let a3 = Math.min(l2 - o3, h2);
         if (a3 = f(a3, e2), a3 <= 0) return;
-        const u3 = (function({ channelData: t3, offset: e3, clampedWidth: i4, totalWidth: n3 }) {
+        const d3 = (function({ channelData: t3, offset: e3, clampedWidth: i4, totalWidth: n3 }) {
           return t3.map(((t4) => {
             const s3 = Math.floor(e3 / n3 * t4.length), r3 = Math.floor((e3 + i4) / n3 * t4.length);
             return t4.slice(s3, r3);
           }));
         })({ channelData: t2, offset: o3, clampedWidth: a3, totalWidth: l2 });
-        this.renderSingleCanvas(u3, e2, a3, n2, o3, s2, r2);
-      }, d2 = Math.ceil(l2 / h2);
+        this.renderSingleCanvas(d3, e2, a3, n2, o3, s2, r2);
+      }, u2 = Math.ceil(l2 / h2);
       if (!this.isScrollable) {
-        for (let t3 = 0; t3 < d2; t3++) u2(t3);
+        for (let t3 = 0; t3 < u2; t3++) d2(t3);
         return;
       }
-      if (v({ scrollLeft: this.scrollContainer.scrollLeft, totalWidth: l2, numCanvases: d2 }).forEach(((t3) => u2(t3))), d2 > 1) {
+      if (v({ scrollLeft: this.scrollContainer.scrollLeft, totalWidth: l2, numCanvases: u2 }).forEach(((t3) => d2(t3))), u2 > 1) {
         const t3 = this.on("scroll", (() => {
           const { scrollLeft: t4 } = this.scrollContainer;
-          Object.keys(c2).length > 10 && (s2.innerHTML = "", r2.innerHTML = "", c2 = {}), v({ scrollLeft: t4, totalWidth: l2, numCanvases: d2 }).forEach(((t5) => u2(t5)));
+          Object.keys(c2).length > 10 && (s2.innerHTML = "", r2.innerHTML = "", c2 = {}), v({ scrollLeft: t4, totalWidth: l2, numCanvases: u2 }).forEach(((t5) => d2(t5)));
         }));
         this.unsubscribeOnScroll.push(t3);
       }
@@ -26608,7 +26610,7 @@ section.turn:has([data-state="open"]) {
     }
   }
   const P = { waveColor: "#999", progressColor: "#555", cursorWidth: 1, minPxPerSec: 0, fillParent: true, interact: true, dragToSeek: false, autoScroll: true, autoCenter: true, sampleRate: 8e3 };
-  class w extends u {
+  class w extends d$1 {
     static create(t2) {
       return new w(t2);
     }
@@ -26620,19 +26622,19 @@ section.turn:has([data-state="open"]) {
     }
     constructor(t2) {
       const e2 = t2.media || ("WebAudio" === t2.backend ? new E() : void 0);
-      super({ media: e2, mediaControls: t2.mediaControls, autoplay: t2.autoplay, playbackRate: t2.audioRate }), this.plugins = [], this.decodedData = null, this.stopAtPosition = null, this.subscriptions = [], this.mediaSubscriptions = [], this.abortController = null, this._isDestroyed = false, this._loadVersion = 0, this.reactiveCleanups = [], this.options = Object.assign({}, P, t2);
+      super({ media: e2, mediaControls: t2.mediaControls, autoplay: t2.autoplay, playbackRate: t2.audioRate }), this.plugins = [], this.decodedData = null, this.stopAtPosition = null, this.subscriptions = [], this.mediaSubscriptions = [], this.abortController = null, this._isDestroyed = false, this._loadVersion = 0, this.options = Object.assign({}, P, t2);
       const { state: i2, actions: n2 } = (function(t3) {
         var e3, i3, n3, s3, r3, o2;
-        const a2 = null !== (e3 = null == t3 ? void 0 : t3.currentTime) && void 0 !== e3 ? e3 : l$1(0), c2 = null !== (i3 = null == t3 ? void 0 : t3.duration) && void 0 !== i3 ? i3 : l$1(0), u2 = null !== (n3 = null == t3 ? void 0 : t3.isPlaying) && void 0 !== n3 ? n3 : l$1(false), d2 = null !== (s3 = null == t3 ? void 0 : t3.isSeeking) && void 0 !== s3 ? s3 : l$1(false), p2 = null !== (r3 = null == t3 ? void 0 : t3.volume) && void 0 !== r3 ? r3 : l$1(1), m2 = null !== (o2 = null == t3 ? void 0 : t3.playbackRate) && void 0 !== o2 ? o2 : l$1(1), g2 = l$1(null), f2 = l$1(null), v2 = l$1(""), b2 = l$1(0), y2 = l$1(0), C2 = h$1((() => !u2.value), [u2]), S2 = h$1((() => null !== g2.value), [g2]), E2 = h$1((() => S2.value && c2.value > 0), [S2, c2]), P2 = h$1((() => a2.value), [a2]), w2 = h$1((() => c2.value > 0 ? a2.value / c2.value : 0), [a2, c2]);
-        return { state: { currentTime: a2, duration: c2, isPlaying: u2, isPaused: C2, isSeeking: d2, volume: p2, playbackRate: m2, audioBuffer: g2, peaks: f2, url: v2, zoom: b2, scrollPosition: y2, canPlay: S2, isReady: E2, progress: P2, progressPercent: w2 }, actions: { setCurrentTime: (t4) => {
+        const a2 = null !== (e3 = null == t3 ? void 0 : t3.currentTime) && void 0 !== e3 ? e3 : l$1(0), c2 = null !== (i3 = null == t3 ? void 0 : t3.duration) && void 0 !== i3 ? i3 : l$1(0), d2 = null !== (n3 = null == t3 ? void 0 : t3.isPlaying) && void 0 !== n3 ? n3 : l$1(false), u2 = null !== (s3 = null == t3 ? void 0 : t3.isSeeking) && void 0 !== s3 ? s3 : l$1(false), p2 = null !== (r3 = null == t3 ? void 0 : t3.volume) && void 0 !== r3 ? r3 : l$1(1), m2 = null !== (o2 = null == t3 ? void 0 : t3.playbackRate) && void 0 !== o2 ? o2 : l$1(1), g2 = l$1(null), f2 = l$1(null), v2 = l$1(""), b2 = l$1(0), y2 = l$1(0), C2 = h$1((() => !d2.value), [d2]), S2 = h$1((() => null !== g2.value), [g2]), E2 = h$1((() => S2.value && c2.value > 0), [S2, c2]), P2 = h$1((() => a2.value), [a2]), w2 = h$1((() => c2.value > 0 ? a2.value / c2.value : 0), [a2, c2]);
+        return { state: { currentTime: a2, duration: c2, isPlaying: d2, isPaused: C2, isSeeking: u2, volume: p2, playbackRate: m2, audioBuffer: g2, peaks: f2, url: v2, zoom: b2, scrollPosition: y2, canPlay: S2, isReady: E2, progress: P2, progressPercent: w2 }, actions: { setCurrentTime: (t4) => {
           const e4 = Math.max(0, Math.min(c2.value || 1 / 0, t4));
           a2.set(e4);
         }, setDuration: (t4) => {
           c2.set(Math.max(0, t4));
         }, setPlaying: (t4) => {
-          u2.set(t4);
-        }, setSeeking: (t4) => {
           d2.set(t4);
+        }, setSeeking: (t4) => {
+          u2.set(t4);
         }, setVolume: (t4) => {
           const e4 = Math.max(0, Math.min(1, t4));
           p2.set(e4);
@@ -26653,7 +26655,7 @@ section.turn:has([data-state="open"]) {
       })({ isPlaying: this.isPlayingSignal, currentTime: this.currentTimeSignal, duration: this.durationSignal, volume: this.volumeSignal, playbackRate: this.playbackRateSignal, isSeeking: this.seekingSignal });
       this.wavesurferState = i2, this.wavesurferActions = n2, this.timer = new S();
       const s2 = e2 ? void 0 : this.getMediaElement();
-      this.renderer = new C(this.options, s2), this.initPlayerEvents(), this.initRendererEvents(), this.initTimerEvents(), this.initReactiveState(), this.initPlugins();
+      this.renderer = new C(this.options, s2), this.initPlayerEvents(), this.initRendererEvents(), this.initTimerEvents(), this.initPlugins();
       const r2 = this.options.url || this.getSrc() || "";
       Promise.resolve().then((() => {
         this.emit("init");
@@ -26675,36 +26677,6 @@ section.turn:has([data-state="open"]) {
           }
         }
       })));
-    }
-    initReactiveState() {
-      this.reactiveCleanups.push((function(t2, e2) {
-        const i2 = [];
-        i2.push(c((() => {
-          const i3 = t2.isPlaying.value;
-          e2.emit(i3 ? "play" : "pause");
-        }), [t2.isPlaying])), i2.push(c((() => {
-          const i3 = t2.currentTime.value;
-          e2.emit("timeupdate", i3), t2.isPlaying.value && e2.emit("audioprocess", i3);
-        }), [t2.currentTime, t2.isPlaying])), i2.push(c((() => {
-          t2.isSeeking.value && e2.emit("seeking", t2.currentTime.value);
-        }), [t2.isSeeking, t2.currentTime]));
-        let n2 = false;
-        i2.push(c((() => {
-          t2.isReady.value && !n2 && (n2 = true, e2.emit("ready", t2.duration.value));
-        }), [t2.isReady, t2.duration])), i2.push(c((() => {
-          null === t2.audioBuffer.value && (n2 = false);
-        }), [t2.audioBuffer]));
-        let s2 = false;
-        return i2.push(c((() => {
-          const i3 = t2.isPlaying.value, n3 = t2.currentTime.value, r2 = t2.duration.value, o2 = r2 > 0 && n3 >= r2;
-          s2 && !i3 && o2 && e2.emit("finish"), s2 = i3 && o2;
-        }), [t2.isPlaying, t2.currentTime, t2.duration])), i2.push(c((() => {
-          const i3 = t2.zoom.value;
-          i3 > 0 && e2.emit("zoom", i3);
-        }), [t2.zoom])), () => {
-          i2.forEach(((t3) => t3()));
-        };
-      })(this.wavesurferState, { emit: this.emit.bind(this) }));
     }
     initPlayerEvents() {
       this.isPlaying() && (this.emit("play"), this.timer.start()), this.mediaSubscriptions.push(this.onMediaEvent("timeupdate", (() => {
@@ -26925,7 +26897,7 @@ section.turn:has([data-state="open"]) {
     }
     destroy() {
       var t2;
-      this._isDestroyed = true, this.emit("destroy"), null === (t2 = this.abortController) || void 0 === t2 || t2.abort(), this.plugins.forEach(((t3) => t3.destroy())), this.subscriptions.forEach(((t3) => t3())), this.unsubscribePlayerEvents(), this.reactiveCleanups.forEach(((t3) => t3())), this.reactiveCleanups = [], this.timer.destroy(), this.renderer.destroy(), super.destroy();
+      this._isDestroyed = true, this.emit("destroy"), null === (t2 = this.abortController) || void 0 === t2 || t2.abort(), this.plugins.forEach(((t3) => t3.destroy())), this.subscriptions.forEach(((t3) => t3())), this.unsubscribePlayerEvents(), this.timer.destroy(), this.renderer.destroy(), super.destroy();
     }
   }
   w.BasePlugin = class extends e$1 {
