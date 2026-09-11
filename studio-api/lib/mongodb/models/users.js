@@ -44,6 +44,16 @@ const defaultUserPayload = {
   },
 }
 
+// Normalize an email address so invitation, self sign-up and OIDC login
+// all resolve to the same account regardless of casing/whitespace.
+// Email lookups in Mongo are exact and case sensitive, while the OIDC
+// provider may return a capitalized email claim, so both writes and
+// lookups must be normalized consistently.
+function normalizeEmail(email) {
+  if (typeof email !== "string") return email
+  return email.trim().toLowerCase()
+}
+
 function generatePasswordHash(password) {
   const salt = randomstring.generate(12)
   const passwordHash = crypto
@@ -76,7 +86,7 @@ class UsersModel extends MongoModel {
       const adminPayload = {
         ...defaultUserPayload,
         ...user,
-        email: user.email,
+        email: normalizeEmail(user.email),
         salt,
         passwordHash,
         authLink: generateAuthLink(),
@@ -104,6 +114,7 @@ class UsersModel extends MongoModel {
       const dateTime = moment().format()
       delete payload.password
 
+      if (payload.email) payload.email = normalizeEmail(payload.email)
       if (!payload.fromSso) payload.fromSso = false
       const userPayload = {
         ...payload,
@@ -179,6 +190,8 @@ class UsersModel extends MongoModel {
     try {
       const dateTime = moment().format()
       delete payload.password
+
+      if (payload.email) payload.email = normalizeEmail(payload.email)
 
       const externalPayload = {
         lastname: "",
@@ -326,6 +339,7 @@ class UsersModel extends MongoModel {
   async getByEmail(email, serverAccess = false) {
     try {
       if (typeof email !== "string") return []
+      email = normalizeEmail(email)
       const query = {
         $or: [{ email }, { verifiedEmail: { $in: [email] } }],
       }
@@ -344,6 +358,10 @@ class UsersModel extends MongoModel {
     }
     delete payload._id
     payload.last_update = moment().format()
+
+    if (payload.email) payload.email = normalizeEmail(payload.email)
+    if (Array.isArray(payload.verifiedEmail))
+      payload.verifiedEmail = payload.verifiedEmail.map(normalizeEmail)
 
     if (payload.password) {
       const salt = randomstring.generate(12)
@@ -434,6 +452,7 @@ class UsersModel extends MongoModel {
   async getTokenByEmail(email) {
     try {
       if (typeof email !== "string") return []
+      email = normalizeEmail(email)
       const query = { email }
       return await this.mongoRequest(query)
     } catch (error) {

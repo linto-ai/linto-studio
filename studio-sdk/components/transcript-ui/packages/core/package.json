@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui-core",
-  "version": "0.9.18",
+  "version": "0.9.22",
   "description": "State layer and UI shell for @linto-ai/transcript-ui — core, stores, format adapters, and the TranscriptUI component",
   "keywords": [
     "vue",
@@ -41,6 +41,8 @@
   "dependencies": {
     "@linto-ai/transcript-ui-i18n": "workspace:*",
     "@linto-ai/transcript-ui-ui": "workspace:*",
+    "lucide-vue-next": "^0.564.0",
+    "reka-ui": "^2.8.0",
     "vue-stick-to-bottom": "^1.0.0"
   }
 }

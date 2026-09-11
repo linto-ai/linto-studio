@@ -176,15 +176,16 @@ onBeforeUnmount(() => {
       </div>
 
       <Transition name="fade-slide">
-        <Button
-          v-if="showResumeButton"
-          size="sm"
-          icon="arrow-down"
-          class="resume-scroll-btn"
-          :aria-label="t('transcription.resumeScroll')"
-          @click="onResumeClick">
-          {{ t("transcription.resumeScroll") }}
-        </Button>
+        <div v-if="showResumeButton" class="resume-scroll-anchor">
+          <Button
+            size="sm"
+            icon="arrow-down"
+            class="resume-scroll-btn"
+            :aria-label="t('transcription.resumeScroll')"
+            @click="onResumeClick">
+            {{ t("transcription.resumeScroll") }}
+          </Button>
+        </div>
       </Transition>
     </div>
   </article>
@@ -231,13 +232,22 @@ onBeforeUnmount(() => {
   font-size: var(--font-size-sm);
 }
 
-/* Resume scroll button */
-.resume-scroll-btn {
+/* Resume scroll button — placement lives on this wrapper, never on the
+   button itself: Button.vue's `.editor-btn` base rule resets `position` via
+   `all: unset` (and, in the webcomponent build, gets re-injected a second
+   time after everything else to reach teleported popovers/dialogs — see
+   packages/webcomponent/src/index.ts), so any positioning put directly on
+   the button is one rebuild away from being silently overridden again. */
+.resume-scroll-anchor {
   position: sticky;
   bottom: var(--spacing-lg);
-  left: 50%;
-  translate: -50% 0;
   z-index: var(--z-sticky);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.resume-scroll-btn {
   /* No backdrop-filter: this button is sticky inside the tall scroll
      container, where a backdrop-filter makes WebRender allocate a render
      target spanning the whole scroll height — multi-GB on a long transcript. */
@@ -257,7 +267,7 @@ onBeforeUnmount(() => {
 .fade-slide-enter-from,
 .fade-slide-leave-to {
   opacity: 0;
-  translate: -50% 8px;
+  translate: 0 8px;
 }
 
 @media (prefers-reduced-motion: reduce) {
