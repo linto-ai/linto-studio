@@ -1,63 +1,69 @@
 <template>
   <div>
-    <form @submit="saveSso">
-      <section>
-        <h2>{{ $t("organisation.sso.title") }}</h2>
+    <Loading v-if="loading" block />
+    <template v-else>
+      <form @submit="saveSso">
+        <section>
+          <h2>{{ $t("organisation.sso.title") }}</h2>
 
-        <FormCheckbox :field="enabled" v-model="enabled.value" switchDisplay />
+          <FormCheckbox
+            :field="enabled"
+            v-model="enabled.value"
+            switchDisplay />
 
-        <FormInput :field="issuerUrl" v-model="issuerUrl.value" />
+          <FormInput :field="issuerUrl" v-model="issuerUrl.value" />
 
-        <FormInput :field="clientId" v-model="clientId.value" />
+          <FormInput :field="clientId" v-model="clientId.value" />
 
-        <FormInput
-          :field="clientSecret"
-          v-model="clientSecret.value"
-          type="password"
-          autocomplete="new-password"
-          :placeholder="clientSecretPlaceholder" />
-
-        <FormInput :field="scope" v-model="scope.value" />
-
-        <FormInput :field="emailDomains" v-model="emailDomains.value" />
-
-        <FormInput :field="callbackUrl" readonly code />
-
-        <fieldset class="small-margin">
-          <legend>{{ $t("organisation.sso.advanced_title") }}</legend>
           <FormInput
-            :field="authorizationUrl"
-            v-model="authorizationUrl.value" />
-          <FormInput :field="tokenUrl" v-model="tokenUrl.value" />
-          <FormInput :field="userInfoUrl" v-model="userInfoUrl.value" />
-        </fieldset>
+            :field="clientSecret"
+            v-model="clientSecret.value"
+            type="password"
+            autocomplete="new-password"
+            :placeholder="clientSecretPlaceholder" />
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="sm"
-          :loading="saving"
-          :label="$t('organisation.sso.save_button')" />
-      </section>
-    </form>
+          <FormInput :field="scope" v-model="scope.value" />
 
-    <section v-if="isConfigured">
-      <h2>{{ $t("organisation.danger_zone") }}</h2>
-      <Alert
-        variant="error"
-        icon="trash"
-        size="xs"
-        :title="$t('organisation.sso.delete_modal.title')"
-        :message="$t('organisation.sso.delete_modal.content')"
-        @confirm="removeSso">
-        <Button
-          variant="secondary"
-          intent="destructive"
+          <FormInput :field="emailDomains" v-model="emailDomains.value" />
+
+          <FormInput :field="callbackUrl" readonly code />
+
+          <fieldset class="small-margin">
+            <legend>{{ $t("organisation.sso.advanced_title") }}</legend>
+            <FormInput
+              :field="authorizationUrl"
+              v-model="authorizationUrl.value" />
+            <FormInput :field="tokenUrl" v-model="tokenUrl.value" />
+            <FormInput :field="userInfoUrl" v-model="userInfoUrl.value" />
+          </fieldset>
+
+          <Button
+            type="submit"
+            variant="primary"
+            size="sm"
+            :loading="saving"
+            :label="$t('organisation.sso.save_button')" />
+        </section>
+      </form>
+
+      <section v-if="isConfigured">
+        <h2>{{ $t("organisation.danger_zone") }}</h2>
+        <Alert
+          variant="error"
           icon="trash"
-          size="sm"
-          :label="$t('organisation.sso.delete_button')" />
-      </Alert>
-    </section>
+          size="xs"
+          :title="$t('organisation.sso.delete_modal.title')"
+          :message="$t('organisation.sso.delete_modal.content')"
+          @confirm="removeSso">
+          <Button
+            variant="secondary"
+            intent="destructive"
+            icon="trash"
+            size="sm"
+            :label="$t('organisation.sso.delete_button')" />
+        </Alert>
+      </section>
+    </template>
   </div>
 </template>
 
@@ -81,6 +87,7 @@ import {
 import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import Alert from "@/components/atoms/Alert.vue"
+// Loading is registered globally by the atoms plugin (components/atoms/index.js).
 
 const DEFAULT_SCOPE = "openid, email, profile"
 const TEXT_FIELDS = [
@@ -105,6 +112,7 @@ export default {
   data() {
     return {
       fields: TEXT_FIELDS,
+      loading: true,
       saving: false,
       isConfigured: false,
       enabled: {
@@ -179,6 +187,8 @@ export default {
     async fetchSso() {
       const req = await apiGetOrganisationSso(this.organizationId)
       if (req.status === "success") this.applyConfig(req.data)
+      this.loading = false
+      return req.data
     },
     applyConfig({ callbackUrl, sso }) {
       if (callbackUrl) this.callbackUrl.value = callbackUrl

@@ -41,7 +41,7 @@
     "price_per_seat": "{price} / siège / mois",
     "used_of": "{used} sur {total}",
     "reset_on": "Réinitialisé le {date}",
-    "upgrade_cta": "Passer pro",
+    "upgrade_cta": "Voir les offres",
     "upgrade_title": "Choisir une offre",
     "upgrade_subtitle": "Des plafonds plus hauts, le travail en équipe et des minutes de live prépayées.",
     "upgrade_pending_payment": "Abonnement créé, paiement à finaliser. Stripe Checkout arrive au prochain jalon.",
@@ -50,6 +50,7 @@
     "upgrade_done": "Bienvenue dans {plan} !",
     "limit_reached": "Vous avez atteint la limite de votre offre.",
     "feature_locked": "Cette fonctionnalité est incluse dans une offre équipe.",
+    "feature_locked_plan": "Cette fonctionnalité est incluse dans l'offre {plan}.",
     "footer": {
       "usage": "{used} / {total}",
       "upgrade_cta": "Améliorer"

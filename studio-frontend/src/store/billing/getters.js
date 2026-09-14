@@ -30,6 +30,21 @@ export default {
         (a, b) => (a.pricing.amountCents || 0) - (b.pricing.amountCents || 0),
       ),
   planLabel: (s, g) => g.currentPlan?.displayName || "",
+  // Cheapest catalog plan that grants `capability` — drives the "included in
+  // the X plan" hint on a locked feature. null while the catalog isn't
+  // loaded yet, or if no plan grants it.
+  planFor: (s) => (capability) => {
+    const grants = (plan) => {
+      const rule = plan.entitlements?.[capability]
+      if (!rule) return false
+      return rule.type === "boolean" ? rule.value === true : true
+    }
+    return (
+      [...s.plans]
+        .sort((a, b) => (a.pricing?.amountCents || 0) - (b.pricing?.amountCents || 0))
+        .find(grants) || null
+    )
+  },
   // Only a per-seat plan bills a seat on promotion.
   isPerSeat: (s, g) => g.currentPlan?.pricing?.perSeat === true,
   // Live balance block of the usage summary (null until loaded).

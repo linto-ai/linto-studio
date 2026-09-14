@@ -41,7 +41,7 @@
     "price_per_seat": "{price} / seat / month",
     "used_of": "{used} of {total}",
     "reset_on": "Resets on {date}",
-    "upgrade_cta": "Go Pro",
+    "upgrade_cta": "See plans",
     "upgrade_title": "Choose a plan",
     "upgrade_subtitle": "Higher fair-use limits, team features and prepaid live minutes.",
     "upgrade_pending_payment": "Subscription created, payment to complete. Stripe Checkout arrives with the next milestone.",
@@ -50,6 +50,7 @@
     "upgrade_done": "Welcome to {plan}!",
     "limit_reached": "You've reached the limit of your plan.",
     "feature_locked": "This feature is included in a team plan.",
+    "feature_locked_plan": "This feature is included in the {plan} plan.",
     "footer": {
       "usage": "{used} / {total}",
       "upgrade_cta": "Upgrade"

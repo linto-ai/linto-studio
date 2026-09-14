@@ -185,8 +185,10 @@
         </div>
         <div
           v-if="selectedTab === 'sso' && isAdmin"
-          class="app-settings__section">
-          <UpdateOrganizationSso :currentOrganization="currentOrganization" />
+          class="app-settings__section flex col">
+          <HasEntitlement capability="sso.custom" lockedPlaceholder>
+            <UpdateOrganizationSso :currentOrganization="currentOrganization" />
+          </HasEntitlement>
         </div>
       </template>
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
@@ -218,6 +220,7 @@ import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
 import UpdateOrganizationSso from "@/components/UpdateOrganizationSso.vue"
+import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import SpeakerIdentificationSettings from "@/components/SpeakerIdentificationSettings.vue"
@@ -240,6 +243,7 @@ export default {
     UpdateOrganizationUsers,
     UpdateOrganizationDeletion,
     UpdateOrganizationSso,
+    HasEntitlement,
     Modal,
     ApiTokenSettings,
     SpeakerIdentificationSettings,
