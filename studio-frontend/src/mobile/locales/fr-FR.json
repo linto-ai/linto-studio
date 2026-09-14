@@ -132,5 +132,27 @@
     "step_punctuation": "Ponctuation {progress} %",
     "step_postprocessing": "Finalisation",
     "step_started": "En cours"
+  },
+  "live": {
+    "intro": "Sous-titres pendant la réunion, traduction en temps réel, puis une conversation dans vos médias.",
+    "profile": "Profil de transcription",
+    "translations": "Traduire en",
+    "no_translation": "Aucune",
+    "no_translation_available": "Ce profil ne propose pas de traduction.",
+    "keep_audio": "Garder l'audio et transcrire après",
+    "keep_audio_hint": "Une transcription complète sera lancée à la fin.",
+    "diarization": "Séparation des locuteurs en direct",
+    "offline": "Le direct a besoin du réseau.",
+    "screen_note": "L'écran reste allumé pendant le direct. Le direct s'ouvre dans la page Studio.",
+    "start": "Commencer",
+    "start_failed": "Impossible de démarrer le direct. Réessayez.",
+    "no_profile": "Aucun profil de transcription en direct n'est disponible pour cette organisation.",
+    "running_title": "Un direct est en cours",
+    "running_text": "Vous avez déjà une session en cours. Reprenez-la ou terminez-la pour en démarrer une autre.",
+    "resume": "Reprendre le direct",
+    "stop": "Terminer et enregistrer",
+    "stopped": "Direct terminé, la conversation arrive dans vos médias.",
+    "stop_failed": "Impossible de terminer le direct.",
+    "default_name": "Direct"
   }
 }
