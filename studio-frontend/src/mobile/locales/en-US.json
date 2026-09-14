@@ -1,0 +1,115 @@
+{
+  "common": {
+    "close": "Close",
+    "back": "Back",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading…",
+    "retry": "Retry",
+    "offline": "Offline"
+  },
+  "home": {
+    "record_title": "Record",
+    "record_subtitle": "Transcribed once you stop",
+    "media_title": "My media",
+    "media_subtitle": "Browse, read, edit",
+    "live_title": "Transcribe live",
+    "live_subtitle": "Live captions and translation",
+    "live_unavailable_disabled": "Not available on this instance",
+    "pending_count": "{count} pending"
+  },
+  "organization": {
+    "switch": "Switch",
+    "choose": "Choose an organization"
+  },
+  "account": {
+    "title": "Account",
+    "studio_settings": "Settings in Studio",
+    "language": "Language",
+    "install": "Install the app",
+    "full_version": "Full Studio version",
+    "logout": "Log out"
+  },
+  "login": {
+    "title": "Sign in to continue",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "sso": "Sign in with an external account (SSO)",
+    "create_account": "Create an account",
+    "error": "Wrong email or password"
+  },
+  "not_found": {
+    "title": "This page does not exist",
+    "back_home": "Back to home"
+  },
+  "coming_soon": {
+    "text": "This part is coming soon."
+  },
+  "install": {
+    "title": "Install the app",
+    "subtitle": "On your home screen, works offline too",
+    "button": "Install",
+    "dismiss": "Don't ask again",
+    "ios_title": "Add to Home Screen",
+    "ios_intro": "From Safari, in three taps:",
+    "ios_step_share": "Tap Share at the bottom of the screen",
+    "ios_step_add": "Choose \"Add to Home Screen\"",
+    "ios_step_confirm": "Tap Add. The icon lands right on your home screen.",
+    "ios_outro": "Once installed, the app opens full screen and keeps your pending recordings even offline.",
+    "understood": "Got it"
+  },
+  "update": {
+    "available": "A new version is ready. Reload the page to use it."
+  },
+  "record": {
+    "start": "Record",
+    "starting": "Starting…",
+    "stop": "Stop",
+    "denied": "Microphone refused. Allow it in the browser settings.",
+    "blocked": "Microphone unavailable on this device",
+    "pause": "Pause",
+    "resume": "Resume",
+    "paused": "Paused",
+    "local_only": "Local recording only. Nothing is sent while recording.",
+    "keep_screen_on": "Keep the screen on: the phone cuts the microphone when the screen locks.",
+    "finished": "Recording finished",
+    "name": "Name",
+    "default_name": "Recording",
+    "stopped_summary": "{duration} · {size} · saved on this phone",
+    "send": "Send for transcription",
+    "keep": "Keep for later",
+    "offline_send": "Offline: the upload will start automatically when the network is back.",
+    "interrupted": "The recording was interrupted (call, screen lock or microphone lost). What was captured is kept."
+  },
+  "queue": {
+    "title": "Pending ({count})",
+    "empty": "No pending recording.",
+    "recent": "Recently sent",
+    "actions": "Actions",
+    "send_now": "Send now",
+    "rename": "Rename",
+    "delete": "Delete",
+    "status_ready": "To send",
+    "status_offline": "Offline",
+    "status_uploading": "Sending {progress}%",
+    "status_error": "Error",
+    "status_uploaded": "Sent",
+    "status_recording": "Recording",
+    "error_file_too_large": "File too large (maximum {maxSize}).",
+    "error_rejected": "The server refused the upload.",
+    "error_offline": "Offline, will retry when the network is back.",
+    "error_network": "The server did not answer, automatic retry.",
+    "error_missing": "Recording not found on this phone."
+  },
+  "settings": {
+    "title": "Transcription",
+    "service": "Service",
+    "language": "Language",
+    "diarization": "Separate speakers",
+    "no_diarization": "This service does not separate speakers.",
+    "no_service": "No transcription service available",
+    "speakers_auto": "auto speakers",
+    "speakers_off": "no speakers"
+  }
+}

@@ -12,7 +12,13 @@
         :to="{ name: 'record' }"
         icon="microphone"
         :title="$t('mobile.home.record_title')"
-        :subtitle="$t('mobile.home.record_subtitle')" />
+        :subtitle="$t('mobile.home.record_subtitle')">
+        <template v-if="pendingCount > 0" #badge>
+          <span class="m-home__badge">{{
+            $t("mobile.home.pending_count", { count: pendingCount })
+          }}</span>
+        </template>
+      </ActionButton>
       <ActionButton
         :to="{ name: 'media' }"
         icon="folder"
@@ -77,10 +83,14 @@ export default {
   data() {
     return { organizationsOpen: false, accountOpen: false }
   },
+  created() {
+    this.$store.dispatch("mobileRecordings/load")
+  },
   computed: {
     ...mapGetters("organizations", {
       organizations: "getOrganizationsWithUserContext",
     }),
+    ...mapGetters("mobileRecordings", ["pendingCount"]),
     liveEnabled() {
       return getEnv("VUE_APP_ENABLE_SESSION") === "true"
     },
@@ -108,5 +118,14 @@ export default {
 .m-home {
   gap: var(--m-space-3);
   padding-top: var(--m-space-2);
+}
+
+.m-home__badge {
+  padding: 2px var(--m-space-2);
+  border-radius: var(--m-radius-round);
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--m-warning-soft);
+  color: var(--m-warning-text);
 }
 </style>
