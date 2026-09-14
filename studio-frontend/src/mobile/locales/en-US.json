@@ -132,5 +132,27 @@
     "step_punctuation": "Punctuation {progress}%",
     "step_postprocessing": "Finishing",
     "step_started": "In progress"
+  },
+  "live": {
+    "intro": "Captions during the meeting, live translation, then a conversation in your media.",
+    "profile": "Transcription profile",
+    "translations": "Translate into",
+    "no_translation": "None",
+    "no_translation_available": "This profile offers no translation.",
+    "keep_audio": "Keep the audio and transcribe afterwards",
+    "keep_audio_hint": "A full transcription will run at the end.",
+    "diarization": "Live speaker separation",
+    "offline": "Live needs the network.",
+    "screen_note": "The screen stays on during the live. The live opens in the Studio page.",
+    "start": "Start",
+    "start_failed": "Could not start the live session. Try again.",
+    "no_profile": "No live transcription profile is available for this organization.",
+    "running_title": "A live session is running",
+    "running_text": "You already have a session running. Resume it or end it to start another one.",
+    "resume": "Resume the live",
+    "stop": "End and save",
+    "stopped": "Live ended, the conversation is on its way to your media.",
+    "stop_failed": "Could not end the live session.",
+    "default_name": "Live"
   }
 }
