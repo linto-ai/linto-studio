@@ -5,7 +5,7 @@
   "description": "Enregistrer, transcrire, retrouver vos réunions.",
   "lang": "fr",
   "start_url": "/m/?source=pwa",
-  "scope": "/",
+  "scope": "/m/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f5f5f5",

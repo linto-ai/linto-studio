@@ -47,3 +47,24 @@ test("shouldRedirectToMobileApp() never loops on the mobile app or auth callback
     }),
   )
 })
+
+test("shouldRedirectToMobileApp() leaves the pages the mobile app opens itself", (t) => {
+  t.false(
+    shouldRedirectToMobileApp({
+      ...phoneOnRoot,
+      pathname: "/interface/org1/conversations/conv1/transcription",
+    }),
+  )
+  t.false(
+    shouldRedirectToMobileApp({
+      ...phoneOnRoot,
+      pathname: "/interface/org1/quick-session",
+    }),
+  )
+  t.true(
+    shouldRedirectToMobileApp({
+      ...phoneOnRoot,
+      pathname: "/interface/org1/conversations/create",
+    }),
+  )
+})

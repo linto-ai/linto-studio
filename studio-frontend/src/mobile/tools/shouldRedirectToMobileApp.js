@@ -1,8 +1,12 @@
-const EXCLUDED_PATH_PREFIXES = [
-  "/m",
-  "/backoffice",
-  "/login/oidc",
-  "/magiclink-auth",
+// Pages the mobile app opens on purpose (editor, live) or that must never
+// bounce (auth callbacks, backoffice, the mobile app itself).
+const EXCLUDED_PATH_PATTERNS = [
+  /^\/m(\/|$)/,
+  /^\/backoffice/,
+  /^\/login\/oidc/,
+  /^\/magiclink-auth/,
+  /^\/interface\/[^/]+\/conversations\/(?!create)/,
+  /^\/interface\/[^/]+\/quick-session/,
 ]
 
 /**
@@ -18,5 +22,5 @@ export function shouldRedirectToMobileApp({
   pathname,
 }) {
   if (!enabled || !isPhone || optedOut) return false
-  return !EXCLUDED_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+  return !EXCLUDED_PATH_PATTERNS.some((pattern) => pattern.test(pathname))
 }
