@@ -167,6 +167,14 @@ OIDC_CLIENT_SECRET=
 OIDC_CALLBACK_URI=https://<domain>/auth/oidc/cb
 OIDC_SCOPE=openid,email,profile
 
+# Bring your own SSO: organizations configure their own OIDC provider in their
+# settings. The callback must be registered on their provider; it defaults to
+# <api origin>/auth/oidc/organization/cb.
+ORGANIZATION_SSO_ENABLED=true
+ORGANIZATION_SSO_CALLBACK_URI=
+# PEM file of an extra CA to trust for identity providers (dev, self-signed IdP)
+ORGANIZATION_SSO_CA_FILE=
+
 OIDC_GOOGLE_ENABLED=false
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=

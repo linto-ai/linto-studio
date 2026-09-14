@@ -19,6 +19,13 @@ module.exports = {
     404,
     "Organization not found",
   ),
+  OrganizationSsoNotFound: createException(
+    "OrganizationSsoNotFound",
+    "organization",
+    404,
+    "No SSO configured for this organization",
+    "ORGANIZATION_SSO_NOT_FOUND",
+  ),
   OrganizationConflict: createException(
     "OrganizationConflict",
     "organization",

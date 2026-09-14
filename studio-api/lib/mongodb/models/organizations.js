@@ -17,7 +17,8 @@ const tagsModel = require(`./tags`)
 
 const moment = require("moment")
 
-const public_projection = { token: 0 }
+// sso holds the client secret: only the dedicated admin route exposes it
+const public_projection = { token: 0, sso: 0 }
 
 class OrganizationModel extends MongoModel {
   constructor() {
@@ -286,6 +287,45 @@ class OrganizationModel extends MongoModel {
 
       let mutableElements = payload
       return await this.mongoUpdateOne(query, operator, mutableElements)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // Login routing: the organization whose enabled SSO claims the email domain.
+  // Oldest wins when several do. Re-throws on DB error (an auth gate must not
+  // fail open).
+  async getBySsoEmailDomain(domain) {
+    const rows = await this.mongoRequest(
+      { "sso.enabled": true, "sso.emailDomains": domain },
+      { projection: { name: 1, sso: 1 }, sort: { created: 1 }, limit: 1 },
+    )
+    return rows[0] ?? null
+  }
+
+  // Idempotent: matchedCount 0 when the user is already a member (or the
+  // organization does not exist).
+  async addMember(id, userId, role) {
+    try {
+      const query = {
+        _id: this.getObjectId(id),
+        "users.userId": { $ne: userId.toString() },
+      }
+      return await this.mongoUpdateOne(query, "$addToSet", {
+        users: { userId: userId.toString(), role },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // matchedCount 0 when the organization has no sso to remove
+  async deleteSso(id) {
+    try {
+      const query = { _id: this.getObjectId(id), sso: { $exists: true } }
+      return await this.mongoUpdateOne(query, "$unset", { sso: "" })
     } catch (error) {
       console.error(error)
       return error

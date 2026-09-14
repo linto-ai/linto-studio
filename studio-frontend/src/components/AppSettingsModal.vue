@@ -118,6 +118,12 @@
                   <span>{{ $t("app_settings_modal.api_tokens") }}</span>
                 </a>
               </li>
+              <li :class="{ active: selectedTab === 'sso' }" v-if="isAdmin">
+                <a href="#" @click="selectTab('sso')">
+                  <ph-icon name="shield-check" weight="bold"></ph-icon>
+                  <span>{{ $t("app_settings_modal.sso") }}</span>
+                </a>
+              </li>
             </ul>
           </template>
         </div>
@@ -177,6 +183,13 @@
             :organizationId="organizationId"
             @quit="leaveSpeakerIdentification" />
         </div>
+        <div
+          v-if="selectedTab === 'sso' && isAdmin"
+          class="app-settings__section flex col">
+          <HasEntitlement capability="sso.custom" lockedPlaceholder>
+            <UpdateOrganizationSso :currentOrganization="currentOrganization" />
+          </HasEntitlement>
+        </div>
       </template>
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
@@ -206,6 +219,8 @@ import TagManagement from "@/components/TagManagement.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
+import UpdateOrganizationSso from "@/components/UpdateOrganizationSso.vue"
+import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import SpeakerIdentificationSettings from "@/components/SpeakerIdentificationSettings.vue"
@@ -227,6 +242,8 @@ export default {
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
     UpdateOrganizationDeletion,
+    UpdateOrganizationSso,
+    HasEntitlement,
     Modal,
     ApiTokenSettings,
     SpeakerIdentificationSettings,

@@ -26,6 +26,16 @@ const AuthProviders = {
     registerRoutes: () => `${API_PATH}/auth/oidc.js`,
   },
 
+  // Bring your own SSO: per-organization OIDC, configured in the organization
+  // settings. The provider is picked from the user's email domain.
+  ORGANIZATION: {
+    path: "oidc/organization",
+    from: "organization",
+    name: "organization",
+    isEnabled: () => process.env.ORGANIZATION_SSO_ENABLED !== "false",
+    registerRoutes: () => `${API_PATH}/auth/oidc_organization.js`,
+  },
+
   GOOGLE: {
     path: "oidc/google",
     from: "google",
