@@ -4,12 +4,14 @@
 // names never collide) and nginx serves /m/* from mobile.html.
 import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue2"
+import { VitePWA } from "vite-plugin-pwa"
+import { mobileServiceWorkerOptions } from "./config/vite/mobileServiceWorker.js"
 import path from "path"
 import { fileURLToPath } from "url"
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), VitePWA(mobileServiceWorkerOptions)],
 
   resolve: {
     alias: {

@@ -8,6 +8,8 @@ import router from "@/mobile/router.js"
 import store from "@/mobile/store.js"
 import i18n from "@/i18n"
 import { getEnv } from "@/tools/getEnv"
+import { registerServiceWorker } from "@/mobile/services/pwa/registerServiceWorker.js"
+import { listenForInstallPrompt } from "@/mobile/services/pwa/installPrompt.js"
 
 import "@/mobile/style/tokens.css"
 import "@/mobile/style/base.css"
@@ -15,6 +17,9 @@ import "@/mobile/style/base.css"
 Vue.config.productionTip = false
 Vue.prototype.debug = Debug("VueMobile")
 Debug.enable(getEnv("VUE_APP_DEBUG"))
+
+listenForInstallPrompt()
+registerServiceWorker()
 
 new Vue({
   router,

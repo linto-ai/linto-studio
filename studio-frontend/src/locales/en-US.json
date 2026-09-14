@@ -2215,6 +2215,22 @@
     },
     "coming_soon": {
       "text": "This part is coming soon."
+    },
+    "install": {
+      "title": "Install the app",
+      "subtitle": "On your home screen, works offline too",
+      "button": "Install",
+      "dismiss": "Don't ask again",
+      "ios_title": "Add to Home Screen",
+      "ios_intro": "From Safari, in three taps:",
+      "ios_step_share": "Tap Share at the bottom of the screen",
+      "ios_step_add": "Choose \"Add to Home Screen\"",
+      "ios_step_confirm": "Tap Add. The icon lands right on your home screen.",
+      "ios_outro": "Once installed, the app opens full screen and keeps your pending recordings even offline.",
+      "understood": "Got it"
+    },
+    "update": {
+      "available": "A new version is ready. Reload the page to use it."
     }
   }
 }

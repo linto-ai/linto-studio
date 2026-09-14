@@ -1,3 +1,5 @@
+// Mobile app hand-off: no-op unless VUE_APP_ENABLE_MOBILE_APP is "true".
+import "@/mobile/redirect.js"
 import Vue from "vue"
 import App from "./App.vue"
 import router from "./routers/app-router.js"
