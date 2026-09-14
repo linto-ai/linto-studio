@@ -68,7 +68,6 @@ export const livePrepareMixin = {
         profile: this.profile,
         translations: this.translations,
         keepAudio: this.keepAudio,
-        transcriptionService: this.transcriptionSettings,
         diarization: this.diarization && this.supportsDiarization,
       })
       const result = await startLiveSession(this.liveOrganizationId, channel)

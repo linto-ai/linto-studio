@@ -44,11 +44,11 @@
           <ToggleRow
             v-model="keepAudio"
             :label="$t('mobile.live.keep_audio')"
-            :hint="keepAudioHint" />
+            :hint="$t('mobile.live.keep_audio_hint')" />
           <ToggleRow
+            v-if="supportsDiarization"
             v-model="diarization"
-            :label="$t('mobile.live.diarization')"
-            :disabled="!supportsDiarization" />
+            :label="$t('mobile.live.diarization')" />
         </div>
 
         <InfoBanner v-if="!online" tone="warning">{{
@@ -79,7 +79,6 @@ import ToggleRow from "@/mobile/components/ToggleRow.vue"
 import TranslationPicker from "@/mobile/components/live/TranslationPicker.vue"
 import LiveRunningCard from "@/mobile/components/live/LiveRunningCard.vue"
 import { livePrepareMixin } from "@/mobile/mixins/livePrepare.js"
-import { transcriptionSettingsMixin } from "@/mobile/mixins/transcriptionSettings.js"
 import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 
 export default {
@@ -92,15 +91,10 @@ export default {
     TranslationPicker,
     LiveRunningCard,
   },
-  mixins: [livePrepareMixin, transcriptionSettingsMixin],
+  mixins: [livePrepareMixin],
   computed: {
     online() {
       return onlineStatus.online
-    },
-    keepAudioHint() {
-      return this.transcriptionSettings
-        ? this.transcriptionSummary
-        : this.$t("mobile.live.keep_audio_hint")
     },
   },
 }
