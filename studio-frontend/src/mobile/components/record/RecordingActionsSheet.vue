@@ -17,7 +17,11 @@
         {{ $t("mobile.common.confirm") }}
       </button>
     </form>
-    <div v-else class="m-actions__list">
+    <RecordingPlayer
+      v-if="value && recording && !renaming"
+      :recording-id="recording.id"
+      :mime-type="recording.mimeType" />
+    <div v-if="!renaming" class="m-actions__list">
       <ListRow
         v-if="canSend"
         icon="upload-simple"
@@ -42,10 +46,11 @@
 <script>
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
 import ListRow from "@/mobile/components/ListRow.vue"
+import RecordingPlayer from "@/mobile/components/record/RecordingPlayer.vue"
 
 export default {
   name: "RecordingActionsSheet",
-  components: { BottomSheet, ListRow },
+  components: { BottomSheet, ListRow, RecordingPlayer },
   props: {
     value: { type: Boolean, default: false },
     recording: { type: Object, default: null },

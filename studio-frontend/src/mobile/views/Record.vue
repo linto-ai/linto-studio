@@ -73,6 +73,9 @@
       :default-name="stoppedRecording ? stoppedRecording.name : ''"
       :summary="stoppedSummary"
       :online="online"
+      :recording-id="stoppedRecording ? stoppedRecording.id : ''"
+      :mime-type="stoppedRecording ? stoppedRecording.mimeType : ''"
+      :quiet="stoppedQuiet"
       @send="sendStopped"
       @keep="keepStopped" />
     <MicrophoneSheet

@@ -20,6 +20,7 @@ export const recordingControllerMixin = {
         elapsedMs: 0,
         level: 0,
         sizeBytes: 0,
+        peakLevel: 0,
         interruptedAt: null,
         wakeLockOk: true,
       },
@@ -44,7 +45,7 @@ export const recordingControllerMixin = {
       const id = crypto.randomUUID()
       this.localRecorder = new LocalRecorder({
         onChunk: (index, blob) => this.storeChunk(id, index, blob),
-        onLevel: (level) => (this.recorder.level = level),
+        onLevel: (level) => this.trackLevel(level),
         onInterrupted: () => this.stopRecording({ interrupted: true }),
       })
       try {
@@ -63,6 +64,7 @@ export const recordingControllerMixin = {
         id,
         elapsedMs: 0,
         sizeBytes: 0,
+        peakLevel: 0,
         interruptedAt: null,
         state: "recording",
       })
@@ -90,11 +92,16 @@ export const recordingControllerMixin = {
         status: RECORDING_STATUS.READY,
         durationMs: this.recorder.elapsedMs,
         sizeBytes: this.recorder.sizeBytes,
+        peakLevel: this.recorder.peakLevel,
         interruptedAt: this.recorder.interruptedAt,
       })
       this.recorder.state = "idle"
       this.$emit("recording-stopped", this.recorder.id)
       this.onRecordingStopped(this.recorder.id)
+    },
+    trackLevel(level) {
+      this.recorder.level = level
+      if (level > this.recorder.peakLevel) this.recorder.peakLevel = level
     },
     async storeChunk(id, index, blob) {
       this.recorder.sizeBytes += blob.size

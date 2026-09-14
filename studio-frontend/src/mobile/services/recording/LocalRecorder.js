@@ -105,11 +105,16 @@ export class LocalRecorder {
   }
 }
 
+// Speech on a phone mic is quiet (RMS 0.02 to 0.1): both RMS and peak
+// are boosted so a normal voice fills a good part of the meter.
 function computeRmsLevel(samples) {
   let sum = 0
+  let peak = 0
   for (const sample of samples) {
-    const centered = (sample - 128) / 128
+    const centered = Math.abs(sample - 128) / 128
     sum += centered * centered
+    if (centered > peak) peak = centered
   }
-  return Math.min(1, Math.sqrt(sum / samples.length) * 3)
+  const rms = Math.sqrt(sum / samples.length)
+  return Math.min(1, Math.max(rms * 8, peak * 2))
 }

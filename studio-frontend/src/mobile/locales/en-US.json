@@ -83,7 +83,8 @@
     "microphone": "Microphone",
     "microphone_default": "Default microphone",
     "microphone_choose": "Choose the microphone",
-    "microphone_permission": "Allow the microphone to list the inputs."
+    "microphone_permission": "Allow the microphone to list the inputs.",
+    "quiet_warning": "The microphone barely picked up anything. Check the selected input before sending: an empty transcription fails."
   },
   "queue": {
     "title": "Pending ({count})",
@@ -104,7 +105,8 @@
     "error_offline": "Offline, will retry when the network is back.",
     "error_network": "The server did not answer, automatic retry.",
     "error_missing": "Recording not found on this phone.",
-    "status_queued": "Sending soon"
+    "status_queued": "Sending soon",
+    "play_failed": "Audio not found on this phone."
   },
   "settings": {
     "title": "Transcription",
