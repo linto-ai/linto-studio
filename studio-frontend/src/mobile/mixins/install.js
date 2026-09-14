@@ -28,7 +28,7 @@ export const installMixin = {
   },
   methods: {
     async startInstall() {
-      this.accountOpen = false
+      if ("accountOpen" in this) this.accountOpen = false
       if (installPrompt.platform === "ios") {
         this.iosGuideOpen = true
         return

@@ -1,6 +1,11 @@
 <template>
   <div class="m-page m-login">
     <main class="m-page__content m-login__content">
+      <InstallBanner
+        v-if="canInstall"
+        class="m-login__install"
+        @install="startInstall"
+        @dismiss="dismissInstall" />
       <img src="/img/linto.svg" alt="" class="m-login__logo" />
       <h1 class="m-login__title">LinTO Studio</h1>
       <p class="m-muted">{{ $t("mobile.login.title") }}</p>
@@ -40,16 +45,23 @@
         $t("mobile.login.create_account")
       }}</a>
     </main>
+    <InstallGuideIos v-model="iosGuideOpen" />
   </div>
 </template>
 
 <script>
 import PhIcon from "@/components/atoms/PhIcon.vue"
+import InstallBanner from "@/mobile/components/InstallBanner.vue"
+import InstallGuideIos from "@/mobile/components/InstallGuideIos.vue"
 import { loginWithPassword } from "@/mobile/services/session/loginWithPassword.js"
+import { installMixin } from "@/mobile/mixins/install.js"
 
+// Phones reaching studio.linto.ai land here (redirect.js): the install
+// offer is made right away, before signing in.
 export default {
   name: "MobileLogin",
-  components: { PhIcon },
+  components: { PhIcon, InstallBanner, InstallGuideIos },
+  mixins: [installMixin],
   data() {
     return { email: "", password: "", pending: false, failed: false }
   },
@@ -74,6 +86,10 @@ export default {
   justify-content: center;
   align-items: stretch;
   text-align: center;
+}
+
+.m-login__install {
+  margin-bottom: var(--m-space-4);
 }
 
 .m-login__logo {
