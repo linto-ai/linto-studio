@@ -155,9 +155,12 @@ function onSave(): void {
           :aria-label="t('llmService.download')"
           :title="t('llmService.download')"
           @click="onExport">
-          {{ t("llmService.download") }}
+          <span class="llm-service-panel__download-label">{{
+            t("llmService.download")
+          }}</span>
         </Button>
         <Button
+          class="llm-service-panel__split"
           :variant="split ? 'primary' : 'secondary'"
           icon="panel-right"
           :aria-pressed="!!split"
@@ -188,6 +191,7 @@ function onSave(): void {
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .llm-service-panel__status {
@@ -223,9 +227,16 @@ function onSave(): void {
   color: var(--color-text-secondary);
 }
 
+/* Phone: no side-by-side (Layout forces split off below 767px), and the
+   download button keeps its icon only. */
 @media (max-width: 767px) {
   .llm-service-panel {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+  }
+
+  .llm-service-panel__split,
+  .llm-service-panel__download-label {
+    display: none;
   }
 }
 </style>

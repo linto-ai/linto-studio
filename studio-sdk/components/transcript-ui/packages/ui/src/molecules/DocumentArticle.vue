@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, onBeforeUnmount, onMounted, ref } from "vue"
 import EditorIcon from "../atoms/EditorIcon.vue"
 import Button from "../atoms/Button.vue"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
@@ -25,6 +25,29 @@ const errorText = computed(
   () => props.errorMessage || t("llmService.errorTemporary"),
 )
 
+// The markdown editor below sticks its own toolbar right under this one:
+// it reads --document-toolbar-height, measured here because the toolbar
+// wraps on narrow screens and its height is not a constant anymore.
+const articleEl = ref<HTMLElement | null>(null)
+const toolbarEl = ref<HTMLElement | null>(null)
+let toolbarObserver: ResizeObserver | null = null
+
+function publishToolbarHeight(): void {
+  const height = toolbarEl.value?.offsetHeight ?? 0
+  articleEl.value?.style.setProperty("--document-toolbar-height", `${height}px`)
+}
+
+onMounted(() => {
+  publishToolbarHeight()
+  if (typeof ResizeObserver === "undefined" || !toolbarEl.value) return
+  toolbarObserver = new ResizeObserver(publishToolbarHeight)
+  toolbarObserver.observe(toolbarEl.value)
+})
+
+onBeforeUnmount(() => {
+  toolbarObserver?.disconnect()
+})
+
 const progressValue = computed(() => {
   const v = props.progress
   if (v == null || !Number.isFinite(v)) return null
@@ -33,8 +56,9 @@ const progressValue = computed(() => {
 </script>
 
 <template>
-  <article class="document-article" :data-status="props.status">
+  <article ref="articleEl" class="document-article" :data-status="props.status">
     <div
+      ref="toolbarEl"
       class="document-article__toolbar"
       role="toolbar"
       v-if="
@@ -98,6 +122,7 @@ const progressValue = computed(() => {
 
 .document-article__toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-sm) var(--spacing-md);
@@ -157,6 +182,21 @@ const progressValue = computed(() => {
   font-size: var(--font-size-xs);
   font-variant-numeric: tabular-nums;
   color: var(--color-text-muted);
+}
+
+/* Phone: the status line takes its own row under the buttons, so nothing
+   ever needs to scroll sideways. */
+@media (max-width: 767px) {
+  .document-article {
+    width: calc(100% - 16px);
+    margin: var(--spacing-sm) auto;
+  }
+
+  .document-article__toolbar-center {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: flex-start;
+  }
 }
 
 .document-article__error-text {

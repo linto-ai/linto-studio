@@ -4,6 +4,7 @@ import { computed } from "vue"
 import { TRANSCRIPTION_TAB, VERBATIM_TAB } from "./TabBar.constants"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useCore } from "../core"
+import { useIsMobile } from "../composables/useIsMobile"
 
 const props = withDefaults(
   defineProps<{
@@ -21,6 +22,14 @@ const emit = defineEmits<{
 
 const core = useCore()
 const { t } = useI18n()
+const { isMobile } = useIsMobile()
+
+// Phone: transcription (and verbatim) stay inline, every AI service folds
+// into the "More" menu so the bar never scrolls sideways.
+const collapseFrom = computed(() => {
+  if (!isMobile.value) return undefined
+  return props.showVerbatim ? 2 : 1
+})
 
 const tabs = computed<TabItem[]>(() => {
   const services = core.llmServices?.list.value ?? []
@@ -60,5 +69,6 @@ function onSelect(value: string): void {
     v-if="tabs.length > 1"
     :tabs="tabs"
     :model-value="modelValue"
+    :collapse-from="collapseFrom"
     @update:model-value="onSelect" />
 </template>
