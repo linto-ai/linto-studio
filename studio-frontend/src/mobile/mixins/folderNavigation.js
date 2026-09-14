@@ -16,7 +16,19 @@ export const folderNavigationMixin = {
       return this.$store.getters["folders/getFolderById"](this.folderId) ?? null
     },
     subfolders() {
-      return listChildFolders(this.folders, this.folderId)
+      return listChildFolders(this.folders, this.folderId).map((folder) => ({
+        ...folder,
+        childCount: listChildFolders(this.folders, folder._id).length,
+      }))
+    },
+    // undefined at the top level (no "up" row), null when the parent is the
+    // top level, the parent folder otherwise.
+    parentFolder() {
+      if (!this.folderId) return undefined
+      const parentId = this.currentFolder?.parentId
+      return parentId
+        ? (this.$store.getters["folders/getFolderById"](parentId) ?? null)
+        : null
     },
     folderPath() {
       return buildFolderPath(this.folders, this.folderId)

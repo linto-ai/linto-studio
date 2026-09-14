@@ -86,7 +86,7 @@ export const liveSessionMixin = {
       this.endSheetOpen = false
       this.$store.commit("quickSession/clearQuickSession")
       this.$store.dispatch("system/showSuccess", this.$t("mobile.live.stopped"))
-      this.$router.replace({ name: "media", query: { status: "processing" } })
+      this.$router.replace({ name: "media" })
     },
   },
 }

@@ -145,7 +145,12 @@
     "folders": "Dossiers",
     "root_folder": "Médias",
     "kind_live": "Session en direct",
-    "kind_file": "Fichier audio"
+    "kind_file": "Fichier audio",
+    "inbox": "Tous les médias",
+    "inbox_hint": "Les plus récents en premier",
+    "up_to": "Remonter vers {name}",
+    "subfolders": "{count} sous-dossier | {count} sous-dossiers",
+    "no_subfolder": "Aucun sous-dossier ici."
   },
   "live": {
     "intro": "Sous-titres pendant la réunion, traduction en temps réel, puis une conversation dans vos médias.",

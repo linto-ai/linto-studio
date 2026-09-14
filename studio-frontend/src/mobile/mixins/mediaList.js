@@ -44,15 +44,17 @@ export const mediaListMixin = {
       watchOrganizationMedia(this.organizationId)
       await this.reloadMedias()
     },
-    // A search spans every folder; otherwise the list follows the route:
-    // null = unfiled media at the top level, an id = inside that folder.
+    // The inbox (no folder in the route) and a search span every folder;
+    // inside a folder the list is that folder's media.
     listFolderId() {
       if (this.query) return undefined
-      return this.$route.params.folderId ?? null
+      return this.$route.params.folderId ?? undefined
     },
     async reloadMedias() {
       this.loading = true
       this.$store.commit(`${this.storeScope}/setSearchQuery`, this.query)
+      this.$store.commit(`${this.storeScope}/setSortField`, "created")
+      this.$store.commit(`${this.storeScope}/setSortOrder`, -1)
       await this.$store.dispatch(`${this.storeScope}/load`, {
         folderId: this.listFolderId(),
       })
