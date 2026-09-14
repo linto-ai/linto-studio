@@ -36,10 +36,14 @@ h3 {
   font-weight: 600;
 }
 
+/* Phone-first: on a wide screen the app stays a centered phone column. */
 .m-page {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
   padding-top: var(--m-safe-top);
 }
 
