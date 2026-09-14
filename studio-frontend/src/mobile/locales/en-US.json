@@ -141,7 +141,9 @@
     "step_punctuation": "Punctuation {progress}%",
     "step_postprocessing": "Finishing",
     "step_started": "In progress",
-    "open": "Open"
+    "open": "Open",
+    "folders": "Folders",
+    "root_folder": "Media"
   },
   "live": {
     "intro": "Captions during the meeting, live translation, then a conversation in your media.",

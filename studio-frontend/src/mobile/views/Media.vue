@@ -1,12 +1,29 @@
 <template>
   <div class="m-page">
-    <PageHeader :title="$t('mobile.home.media_title')" />
+    <PageHeader
+      :title="
+        currentFolder ? currentFolder.name : $t('mobile.home.media_title')
+      "
+      :back-to="parentRoute" />
     <main class="m-page__content m-media-page">
       <MediaFilters
         :status="status"
         :query="query"
         @search="searchMedias"
         @change-status="status = $event" />
+
+      <template v-if="!query">
+        <FolderBreadcrumb
+          v-if="folderPath.length > 0"
+          :path="folderPath"
+          :current-id="folderId" />
+        <ul v-if="subfolders.length > 0" class="m-media-page__list">
+          <FolderRow
+            v-for="folder in subfolders"
+            :key="folder._id"
+            :folder="folder" />
+        </ul>
+      </template>
 
       <p v-if="loading" class="m-muted m-media-page__state">
         {{ $t("mobile.common.loading") }}
@@ -50,13 +67,23 @@ import PageHeader from "@/mobile/components/PageHeader.vue"
 import MediaFilters from "@/mobile/components/media/MediaFilters.vue"
 import MediaItem from "@/mobile/components/media/MediaItem.vue"
 import MediaActionsSheet from "@/mobile/components/media/MediaActionsSheet.vue"
+import FolderRow from "@/mobile/components/media/FolderRow.vue"
+import FolderBreadcrumb from "@/mobile/components/media/FolderBreadcrumb.vue"
 import { mediaListMixin } from "@/mobile/mixins/mediaList.js"
+import { folderNavigationMixin } from "@/mobile/mixins/folderNavigation.js"
 import { MEDIA_STATUS_FILTERS } from "@/mobile/const/mediaStatusFilters.js"
 
 export default {
   name: "MobileMedia",
-  components: { PageHeader, MediaFilters, MediaItem, MediaActionsSheet },
-  mixins: [mediaListMixin],
+  components: {
+    PageHeader,
+    MediaFilters,
+    MediaItem,
+    MediaActionsSheet,
+    FolderRow,
+    FolderBreadcrumb,
+  },
+  mixins: [mediaListMixin, folderNavigationMixin],
   data() {
     return { actionsOpen: false, selected: null }
   },
