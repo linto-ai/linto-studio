@@ -1,5 +1,6 @@
 import { formatDurationShort } from "@/mobile/tools/formatDurationShort.js"
 import { formatFileSize } from "@/mobile/tools/formatFileSize.js"
+import { isRecordingQuiet } from "@/mobile/tools/isRecordingQuiet.js"
 
 // What the Record page does with queue items: the stop sheet after a
 // recording, and the per-item actions sheet (send, rename, delete).
@@ -13,6 +14,9 @@ export const queueActionsMixin = {
     }
   },
   computed: {
+    stoppedQuiet() {
+      return isRecordingQuiet(this.stoppedRecording)
+    },
     stoppedSummary() {
       if (!this.stoppedRecording) return ""
       const duration = formatDurationShort(

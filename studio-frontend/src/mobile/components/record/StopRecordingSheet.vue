@@ -4,6 +4,13 @@
     :title="$t('mobile.record.finished')"
     @input="$emit('input', $event)">
     <p class="m-muted">{{ summary }}</p>
+    <RecordingPlayer
+      v-if="value && recordingId"
+      :recording-id="recordingId"
+      :mime-type="mimeType" />
+    <InfoBanner v-if="quiet" tone="warning">
+      {{ $t("mobile.record.quiet_warning") }}
+    </InfoBanner>
     <form class="m-stop" @submit.prevent="$emit('send', name)">
       <label class="m-stop__field">
         <span>{{ $t("mobile.record.name") }}</span>
@@ -27,15 +34,19 @@
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
 import InfoBanner from "@/mobile/components/InfoBanner.vue"
+import RecordingPlayer from "@/mobile/components/record/RecordingPlayer.vue"
 
 export default {
   name: "StopRecordingSheet",
-  components: { BottomSheet, InfoBanner, PhIcon },
+  components: { BottomSheet, InfoBanner, PhIcon, RecordingPlayer },
   props: {
     value: { type: Boolean, default: false },
     defaultName: { type: String, required: true },
     summary: { type: String, default: "" },
     online: { type: Boolean, default: true },
+    recordingId: { type: String, default: "" },
+    mimeType: { type: String, default: "" },
+    quiet: { type: Boolean, default: false },
   },
   data() {
     return { name: this.defaultName }
