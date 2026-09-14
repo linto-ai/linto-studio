@@ -111,5 +111,26 @@
     "no_service": "No transcription service available",
     "speakers_auto": "auto speakers",
     "speakers_off": "no speakers"
+  },
+  "media": {
+    "search": "Search media",
+    "filter_done": "Ready",
+    "filter_processing": "In progress",
+    "filter_error": "Failed",
+    "empty": "Nothing here.",
+    "load_more": "Show more",
+    "open_in_studio": "Open in Studio",
+    "delete": "Delete",
+    "delete_confirm": "Confirm deletion",
+    "delete_hint": "The media and its transcript will be deleted for everyone.",
+    "status_done": "Ready",
+    "status_error": "Error",
+    "status_pending": "Queued",
+    "step_preprocessing": "Preparing",
+    "step_transcription": "Transcribing {progress}%",
+    "step_diarization": "Speakers {progress}%",
+    "step_punctuation": "Punctuation {progress}%",
+    "step_postprocessing": "Finishing",
+    "step_started": "In progress"
   }
 }
