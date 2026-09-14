@@ -9,9 +9,14 @@ import { canOfferInstall } from "@/mobile/tools/canOfferInstall.js"
 // the step-by-step sheet (iosGuideOpen), everything else offers nothing.
 export const installMixin = {
   data() {
-    return { iosGuideOpen: false }
+    return { iosGuideOpen: false, androidGuideOpen: false }
   },
   computed: {
+    // The account row: any phone browser that does not run installed.
+    installAvailable() {
+      const { standalone, platform } = installPrompt
+      return !standalone && platform !== "other"
+    },
     canInstall() {
       const { standalone, dismissedUntil, deferredEvent, platform } =
         installPrompt
@@ -33,7 +38,8 @@ export const installMixin = {
         this.iosGuideOpen = true
         return
       }
-      await promptInstall()
+      const outcome = await promptInstall()
+      if (outcome === "unavailable") this.androidGuideOpen = true
     },
     dismissInstall,
   },

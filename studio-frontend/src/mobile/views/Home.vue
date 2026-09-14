@@ -50,10 +50,11 @@
       :initials="initials"
       :organization-name="organizationName"
       :role-label="roleLabel"
-      :can-install="canInstall"
+      :can-install="installAvailable"
       @install="startInstall"
       @open-organizations="openOrganizationsFromAccount" />
     <InstallGuideIos v-model="iosGuideOpen" />
+    <InstallGuideAndroid v-model="androidGuideOpen" />
   </div>
 </template>
 
@@ -65,6 +66,7 @@ import OrgPickerSheet from "@/mobile/components/OrgPickerSheet.vue"
 import AccountSheet from "@/mobile/components/AccountSheet.vue"
 import InstallBanner from "@/mobile/components/InstallBanner.vue"
 import InstallGuideIos from "@/mobile/components/InstallGuideIos.vue"
+import InstallGuideAndroid from "@/mobile/components/InstallGuideAndroid.vue"
 import { currentUserMixin } from "@/mobile/mixins/currentUser.js"
 import { installMixin } from "@/mobile/mixins/install.js"
 import { getEnv } from "@/tools/getEnv"
@@ -79,6 +81,7 @@ export default {
     AccountSheet,
     InstallBanner,
     InstallGuideIos,
+    InstallGuideAndroid,
   },
   mixins: [currentUserMixin, installMixin],
   data() {

@@ -46,6 +46,7 @@
       }}</a>
     </main>
     <InstallGuideIos v-model="iosGuideOpen" />
+    <InstallGuideAndroid v-model="androidGuideOpen" />
   </div>
 </template>
 
@@ -53,6 +54,7 @@
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import InstallBanner from "@/mobile/components/InstallBanner.vue"
 import InstallGuideIos from "@/mobile/components/InstallGuideIos.vue"
+import InstallGuideAndroid from "@/mobile/components/InstallGuideAndroid.vue"
 import { loginWithPassword } from "@/mobile/services/session/loginWithPassword.js"
 import { installMixin } from "@/mobile/mixins/install.js"
 
@@ -60,7 +62,7 @@ import { installMixin } from "@/mobile/mixins/install.js"
 // offer is made right away, before signing in.
 export default {
   name: "MobileLogin",
-  components: { PhIcon, InstallBanner, InstallGuideIos },
+  components: { PhIcon, InstallBanner, InstallGuideIos, InstallGuideAndroid },
   mixins: [installMixin],
   data() {
     return { email: "", password: "", pending: false, failed: false }

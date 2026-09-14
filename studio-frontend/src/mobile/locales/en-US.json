@@ -56,7 +56,13 @@
     "ios_step_add": "Choose \"Add to Home Screen\"",
     "ios_step_confirm": "Tap Add. The icon lands right on your home screen.",
     "ios_outro": "Once installed, the app opens full screen and keeps your pending recordings even offline.",
-    "understood": "Got it"
+    "understood": "Got it",
+    "android_title": "Install on this phone",
+    "android_intro": "Chrome did not offer the automatic install. It still takes three taps:",
+    "android_step_menu": "Open the Chrome ⋮ menu, top right",
+    "android_step_install": "Tap \"Install app\" or \"Add to Home screen\"",
+    "android_step_confirm": "Confirm. The icon lands on the home screen or in the app list.",
+    "android_outro": "If the menu shows \"Open LinTO Studio\", the app is already installed: look for it in the app list."
   },
   "update": {
     "available": "A new version is ready. Reload the page to use it."

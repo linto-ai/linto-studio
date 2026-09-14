@@ -56,7 +56,13 @@
     "ios_step_add": "Choisissez « Sur l'écran d'accueil »",
     "ios_step_confirm": "Touchez Ajouter. L'icône apparaît directement sur votre écran d'accueil.",
     "ios_outro": "Une fois installée, l'application s'ouvre en plein écran et garde vos enregistrements en attente même hors connexion.",
-    "understood": "Compris"
+    "understood": "Compris",
+    "android_title": "Installer sur ce téléphone",
+    "android_intro": "Chrome n'a pas proposé l'installation automatique. Elle reste possible en trois gestes :",
+    "android_step_menu": "Ouvrez le menu ⋮ de Chrome, en haut à droite",
+    "android_step_install": "Touchez « Installer l'application » ou « Ajouter à l'écran d'accueil »",
+    "android_step_confirm": "Confirmez. L'icône apparaît sur l'écran d'accueil ou dans la liste des applications.",
+    "android_outro": "Si le menu affiche « Ouvrir LinTO Studio », l'application est déjà installée : cherchez-la dans la liste des applications."
   },
   "update": {
     "available": "Une nouvelle version est prête. Rechargez la page pour l'utiliser."

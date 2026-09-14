@@ -2,7 +2,7 @@ import Vue from "vue"
 import { detectInstallPlatform } from "@/mobile/tools/detectInstallPlatform.js"
 
 const DISMISS_STORAGE_KEY = "mobile.install.dismissedUntil"
-const DISMISS_DAYS = 30
+const DISMISS_DAYS = 7
 
 // Owns everything about "can this phone install the app": the captured
 // beforeinstallprompt event (Android), the platform (iOS needs a guide),
