@@ -7,12 +7,11 @@ import {
 import { buildLiveChannel } from "@/mobile/tools/buildLiveChannel.js"
 import { listProfileTranslations } from "@/mobile/tools/listProfileTranslations.js"
 import { suggestTranslationTargets } from "@/mobile/tools/suggestTranslationTargets.js"
-import { buildStudioLiveUrl } from "@/mobile/tools/buildStudioLiveUrl.js"
 import { buildRecordingName } from "@/mobile/tools/buildRecordingName.js"
 
 // State of the live preparation page: profiles, the running session if
 // any, the user's choices, and the start/stop calls. The live page itself
-// is the classic quick session page, opened in this tab.
+// is the in-app LiveSession view.
 export const livePrepareMixin = {
   data() {
     return {
@@ -81,7 +80,7 @@ export const livePrepareMixin = {
       this.openLivePage()
     },
     openLivePage() {
-      window.location.assign(buildStudioLiveUrl(this.liveOrganizationId))
+      this.$router.push({ name: "live-session" })
     },
     async stopRunning() {
       this.stopping = true

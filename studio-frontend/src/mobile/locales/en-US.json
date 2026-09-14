@@ -155,7 +155,7 @@
     "keep_audio_hint": "A full transcription will run at the end.",
     "diarization": "Live speaker separation",
     "offline": "Live needs the network.",
-    "screen_note": "The screen stays on during the live. The live opens in the Studio page.",
+    "screen_note": "The screen stays on during the live.",
     "start": "Start",
     "start_failed": "Could not start the live session. Try again.",
     "no_profile": "No live transcription profile is available for this organization.",
@@ -167,7 +167,14 @@
     "stop_failed": "Could not end the live session.",
     "default_name": "Live",
     "add_translation": "Other language",
-    "add_translation_placeholder": "Add a language…"
+    "add_translation_placeholder": "Add a language…",
+    "on_air": "On air",
+    "mute": "Mute the microphone",
+    "unmute": "Unmute the microphone",
+    "end": "End",
+    "end_title": "End the live",
+    "end_text": "The session becomes a conversation in your media.",
+    "keep_going": "Keep going"
   },
   "conversation": {
     "load_failed": "Cannot open this conversation.",

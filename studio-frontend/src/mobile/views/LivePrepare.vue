@@ -17,8 +17,6 @@
       </p>
 
       <form v-else class="m-live__form" @submit.prevent="start">
-        <p class="m-muted">{{ $t("mobile.live.intro") }}</p>
-
         <label v-if="profiles.length > 1" class="m-live__field">
           <span>{{ $t("mobile.live.profile") }}</span>
           <select v-model="profileId">
@@ -60,8 +58,6 @@
           {{ $t("mobile.live.start_failed") }}
         </p>
 
-        <div class="m-grow"></div>
-        <p class="m-muted m-live__note">{{ $t("mobile.live.screen_note") }}</p>
         <button
           type="submit"
           class="m-live__start"
@@ -69,6 +65,7 @@
           <PhIcon name="broadcast" size="sm" />
           {{ starting ? $t("mobile.common.loading") : $t("mobile.live.start") }}
         </button>
+        <p class="m-muted m-live__note">{{ $t("mobile.live.screen_note") }}</p>
       </form>
     </main>
   </div>
@@ -120,7 +117,6 @@ export default {
 }
 
 .m-live__form {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--m-space-4);
