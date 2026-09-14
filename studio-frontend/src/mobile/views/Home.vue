@@ -68,6 +68,7 @@ import InstallGuideIos from "@/mobile/components/InstallGuideIos.vue"
 import { currentUserMixin } from "@/mobile/mixins/currentUser.js"
 import { installMixin } from "@/mobile/mixins/install.js"
 import { getEnv } from "@/tools/getEnv"
+import { listUserOrganizations } from "@/mobile/tools/listUserOrganizations.js"
 
 export default {
   name: "MobileHome",
@@ -88,8 +89,15 @@ export default {
   },
   computed: {
     ...mapGetters("organizations", {
-      organizations: "getOrganizationsWithUserContext",
+      organizationList: "getOrganizationsAsArray",
     }),
+    organizations() {
+      return listUserOrganizations(
+        this.organizationList,
+        this.userId,
+        this.$t("navigation.sections.my_space"),
+      )
+    },
     ...mapGetters("mobileRecordings", ["pendingCount"]),
     liveEnabled() {
       return getEnv("VUE_APP_ENABLE_SESSION") === "true"

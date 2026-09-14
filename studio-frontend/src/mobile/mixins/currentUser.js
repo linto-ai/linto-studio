@@ -1,6 +1,6 @@
 import { mapGetters } from "vuex"
 import { userName } from "@/tools/userName"
-import { computeUserInitials } from "@/tools/computeUserInitials"
+import { computeInitials } from "@/mobile/tools/computeInitials.js"
 import { orgDisplayName } from "@/tools/orgDisplayName"
 import { getOrganizationRoleKey } from "@/mobile/tools/getOrganizationRoleKey.js"
 
@@ -21,7 +21,7 @@ export const currentUserMixin = {
       return this.userInfos?.email ?? ""
     },
     initials() {
-      return computeUserInitials(this.userName)
+      return computeInitials(this.userName)
     },
     organizationName() {
       return orgDisplayName(this.currentOrganization, this.userId)
