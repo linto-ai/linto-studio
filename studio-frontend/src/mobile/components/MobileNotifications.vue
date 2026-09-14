@@ -24,15 +24,38 @@ import { mapGetters, mapActions } from "vuex"
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import { NOTIFICATION_ICONS } from "@/mobile/const/notificationIcons.js"
 
-// Renders the shared system/notifications queue with the mobile look.
+// Renders the shared system/notifications queue with the mobile look and
+// drops each notification once its timeout has passed (0 = sticky).
 export default {
   name: "MobileNotifications",
   components: { PhIcon },
   computed: {
     ...mapGetters("system", ["notifications"]),
   },
+  watch: {
+    notifications: {
+      immediate: true,
+      handler(list) {
+        list.forEach((notification) => this.scheduleExpiry(notification))
+      },
+    },
+  },
+  created() {
+    this.timers = new Map()
+  },
+  beforeDestroy() {
+    this.timers.forEach((timer) => clearTimeout(timer))
+  },
   methods: {
     ...mapActions("system", ["removeNotification"]),
+    scheduleExpiry(notification) {
+      if (!notification.timeout || this.timers.has(notification.id)) return
+      const timer = setTimeout(() => {
+        this.timers.delete(notification.id)
+        this.removeNotification(notification)
+      }, notification.timeout)
+      this.timers.set(notification.id, timer)
+    },
     iconFor(type) {
       return NOTIFICATION_ICONS[type] ?? NOTIFICATION_ICONS.info
     },

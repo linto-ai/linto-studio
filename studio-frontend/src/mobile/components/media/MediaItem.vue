@@ -1,7 +1,12 @@
 <template>
   <li class="m-media">
     <button type="button" class="m-media__main" @click="$emit('open', media)">
-      <span class="m-media__icon"><PhIcon name="waveform" size="sm" /></span>
+      <span
+        class="m-media__icon"
+        :class="`m-media__icon--${kind.kind}`"
+        :title="$t(`mobile.media.kind_${kind.kind}`)">
+        <PhIcon :name="kind.icon" size="sm" />
+      </span>
       <span class="m-media__body">
         <span class="m-media__name">{{ media.name }}</span>
         <span class="m-muted">{{ details }}</span>
@@ -21,6 +26,7 @@ import IconButton from "@/mobile/components/IconButton.vue"
 import MediaStatusChip from "@/mobile/components/media/MediaStatusChip.vue"
 import { formatDurationShort } from "@/mobile/tools/formatDurationShort.js"
 import { formatMediaDate } from "@/mobile/tools/formatMediaDate.js"
+import { describeMediaKind } from "@/mobile/tools/describeMediaKind.js"
 
 export default {
   name: "MediaItem",
@@ -29,6 +35,9 @@ export default {
     media: { type: Object, required: true },
   },
   computed: {
+    kind() {
+      return describeMediaKind(this.media)
+    },
     details() {
       const seconds = this.media.metadata?.audio?.duration
       const parts = []
@@ -82,6 +91,11 @@ export default {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.m-media__icon--live {
+  background: var(--m-danger-soft);
+  color: var(--m-danger);
 }
 
 .m-media__body {

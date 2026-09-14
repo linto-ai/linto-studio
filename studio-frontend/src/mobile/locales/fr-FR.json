@@ -143,7 +143,9 @@
     "step_started": "En cours",
     "open": "Ouvrir",
     "folders": "Dossiers",
-    "root_folder": "Médias"
+    "root_folder": "Médias",
+    "kind_live": "Session en direct",
+    "kind_file": "Fichier audio"
   },
   "live": {
     "intro": "Sous-titres pendant la réunion, traduction en temps réel, puis une conversation dans vos médias.",
