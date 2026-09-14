@@ -67,6 +67,7 @@
       :choices="choices"
       :voice-collections="voiceCollections"
       :voice-identification-capable="speakerIdentificationCapable"
+      :organization-id="organizationScope"
       @change="updateChoices" />
     <StopRecordingSheet
       v-model="stopSheetOpen"

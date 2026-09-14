@@ -51,24 +51,17 @@
         <p v-if="voiceCollections.length === 0" class="m-muted">
           {{ $t("mobile.settings.voices_empty") }}
         </p>
-        <div v-else class="m-settings__chips" role="group">
-          <button
+        <ul v-else class="m-settings__collections">
+          <VoiceCollectionRow
             v-for="collection in voiceCollections"
             :key="collection._id"
-            type="button"
-            class="m-settings__chip"
-            :class="{
-              'm-settings__chip--on': selectedCollections.includes(
-                collection._id,
-              ),
-            }"
-            :aria-pressed="
-              selectedCollections.includes(collection._id) ? 'true' : 'false'
-            "
-            @click="toggleCollection(collection._id)">
-            {{ collection.name }}
-          </button>
-        </div>
+            :collection="collection"
+            :selected="selectedCollections.includes(collection._id)"
+            :voices="voicesByCollection[collection._id] || []"
+            :loaded="collection._id in voicesByCollection"
+            @toggle="toggleCollection(collection._id)"
+            @load-voices="loadVoices(collection)" />
+        </ul>
         <p class="m-muted">{{ $t("mobile.settings.voices_help") }}</p>
       </div>
       <button type="submit" class="m-settings__done">
@@ -80,19 +73,25 @@
 
 <script>
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
+import VoiceCollectionRow from "@/mobile/components/record/VoiceCollectionRow.vue"
+import { loadCollectionVoices } from "@/mobile/services/voices/loadCollectionVoices.js"
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 
 // Language, service and speaker separation for the next recordings.
 // v-model carries { serviceName, language, diarization }.
 export default {
   name: "TranscriptionSettingsSheet",
-  components: { BottomSheet },
+  components: { BottomSheet, VoiceCollectionRow },
   props: {
     value: { type: Boolean, default: false },
     services: { type: Array, required: true },
     choices: { type: Object, required: true },
     voiceCollections: { type: Array, default: () => [] },
     voiceIdentificationCapable: { type: Boolean, default: false },
+    organizationId: { type: String, default: "" },
+  },
+  data() {
+    return { voicesByCollection: {} }
   },
   computed: {
     currentService() {
@@ -115,6 +114,13 @@ export default {
   methods: {
     update(key, value) {
       this.$emit("change", { ...this.choices, [key]: value })
+    },
+    async loadVoices(collection) {
+      const voices = await loadCollectionVoices(this.organizationId, collection)
+      this.voicesByCollection = {
+        ...this.voicesByCollection,
+        [collection._id]: voices,
+      }
     },
     toggleCollection(id) {
       const current = this.selectedCollections
@@ -181,27 +187,13 @@ export default {
   accent-color: var(--m-primary);
 }
 
-.m-settings__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--m-space-2);
-}
-
-.m-settings__chip {
-  min-height: 40px;
-  padding: 0 var(--m-space-3);
-  border: 1px solid var(--m-border);
-  border-radius: var(--m-radius-round);
-  background: var(--m-surface);
-  font-size: var(--m-font-size-sm);
-  font-weight: 500;
-}
-
-.m-settings__chip--on {
-  border-color: var(--m-primary);
-  background: var(--m-primary-soft);
-  color: var(--m-primary);
-  font-weight: 600;
+.m-settings__collections {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-radius: var(--m-radius);
+  overflow: hidden;
+  background: var(--m-surface-muted);
 }
 
 .m-settings__done {

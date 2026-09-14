@@ -120,7 +120,10 @@
     "voices": "Reconnaissance des voix",
     "voices_empty": "Aucune collection de voix dans cette organisation.",
     "voices_help": "Les locuteurs dont la voix est enregistrée dans ces collections seront nommés automatiquement.",
-    "voices_on": "voix reconnues"
+    "voices_on": "voix reconnues",
+    "voices_organization": "Voix par défaut de l'organisation",
+    "voices_list": "Voir les voix",
+    "voices_none": "Aucune voix enregistrée pour l'instant."
   },
   "media": {
     "search": "Rechercher un média",
