@@ -768,24 +768,6 @@ let router = new Router({
       },
     },
     {
-      path: "/interface/organizations/:organizationId",
-      name: "organizations update",
-      components: {
-        default: () => import("../views/OrganizationsUpdate.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-      meta: {
-        breadcrumb: {
-          label: "",
-          parent: "explore",
-          dynamic: true,
-          entity: "organization",
-          showInBreadcrumb: true,
-        },
-      },
-    },
-    {
       path: "/interface/user/settings",
       name: "user settings",
       components: {
