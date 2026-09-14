@@ -38,7 +38,9 @@ async function loadOrganizations() {
 }
 
 async function selectOrganizationScope() {
-  if (store.getters["organizations/getCurrentOrganizationScope"]) {
+  // The scope getter falls back to the cookie before anything is loaded;
+  // the organization object itself is the sign the scope was applied.
+  if (store.getters["organizations/getCurrentOrganization"]) {
     return
   }
   const organizationId = store.getters["organizations/getDefaultOrganizationId"]

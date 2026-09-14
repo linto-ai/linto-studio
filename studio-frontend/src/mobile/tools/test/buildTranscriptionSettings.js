@@ -45,3 +45,18 @@ test("buildTranscriptionSettings() enables the first punctuation sub-service for
   t.true(settings.config.punctuationConfig.enablePunctuation)
   t.is(settings.config.punctuationConfig.serviceName, "punct-fr")
 })
+
+test("buildTranscriptionSettings() forwards voice collections only with diarization", (t) => {
+  const withVoices = buildTranscriptionSettings(whisper, {
+    language: "fr-FR",
+    diarization: true,
+    speakerIdentificationCollections: ["c1"],
+  })
+  t.deepEqual(withVoices.speakerIdentificationCollections, ["c1"])
+  const withoutDiarization = buildTranscriptionSettings(whisper, {
+    language: "fr-FR",
+    diarization: false,
+    speakerIdentificationCollections: ["c1"],
+  })
+  t.deepEqual(withoutDiarization.speakerIdentificationCollections, [])
+})

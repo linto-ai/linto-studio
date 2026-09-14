@@ -6,10 +6,13 @@ import generateServiceConfig from "../../tools/generateServiceConfig.js"
  * separation. Punctuation follows the service (built-in or its first
  * sub-service).
  * @param {object} service - one entry of GET /services
- * @param {{ language: string, diarization: boolean }} choices
- * @returns {object} what apiCreateConversation expects, plus displayName
+ * @param {{ language: string, diarization: boolean, speakerIdentificationCollections?: string[] }} choices
+ * @returns {object} what apiCreateConversation expects, plus `diarization`
  */
-export function buildTranscriptionSettings(service, { language, diarization }) {
+export function buildTranscriptionSettings(
+  service,
+  { language, diarization, speakerIdentificationCollections = [] },
+) {
   const hasBuiltInPunctuation = ["whisper", "nemo"].includes(service.model_type)
   const punctuationService =
     service.sub_services?.punctuation?.[0]?.service_name
@@ -22,6 +25,7 @@ export function buildTranscriptionSettings(service, { language, diarization }) {
       : (punctuationService ?? "disabled"),
     diarizationValue:
       diarization && diarizationService ? diarizationService : "disabled",
+    speakerIdentificationCollections,
   })
   return { ...config, diarization: diarization && !!diarizationService }
 }

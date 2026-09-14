@@ -110,7 +110,11 @@
     "no_diarization": "This service does not separate speakers.",
     "no_service": "No transcription service available",
     "speakers_auto": "auto speakers",
-    "speakers_off": "no speakers"
+    "speakers_off": "no speakers",
+    "voices": "Voice recognition",
+    "voices_empty": "No voice collection in this organization.",
+    "voices_help": "Speakers whose voice is enrolled in these collections will be named automatically.",
+    "voices_on": "voices recognized"
   },
   "media": {
     "search": "Search media",

@@ -88,6 +88,8 @@ export class LocalRecorder {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext
     if (!AudioContextClass) return
     this.audioContext = new AudioContextClass()
+    // Created after an await: browsers may hand it out suspended.
+    this.audioContext.resume().catch(() => {})
     this.analyser = this.audioContext.createAnalyser()
     this.analyser.fftSize = 256
     this.audioContext

@@ -24,7 +24,8 @@ export async function uploadRecording(id, onProgress) {
       securityLevel: DEFAULT_SECURITY_LEVEL,
       serviceName: recording.transcription.serviceName,
       transcriptionConfig: JSON.stringify(recording.transcription.config),
-      speakerIdentificationCollections: [],
+      speakerIdentificationCollections:
+        recording.transcription.speakerIdentificationCollections ?? [],
       lang: recording.transcription.lang,
       endpoint: recording.transcription.endpoint,
       tracks: [file],
