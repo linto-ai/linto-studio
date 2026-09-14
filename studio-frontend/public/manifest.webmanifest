@@ -1,0 +1,20 @@
+{
+  "id": "/m/",
+  "name": "LinTO Studio",
+  "short_name": "LinTO Studio",
+  "description": "Enregistrer, transcrire, retrouver vos réunions.",
+  "lang": "fr",
+  "start_url": "/m/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f5f5",
+  "theme_color": "#11977c",
+  "categories": ["productivity", "business"],
+  "icons": [
+    { "src": "/img/pwa/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/img/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/img/pwa/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/img/pwa/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

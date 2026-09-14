@@ -24,6 +24,12 @@
         :title="$t('mobile.home.live_title')"
         :subtitle="liveSubtitle"
         :disabled="!liveEnabled" />
+
+      <div class="m-grow"></div>
+      <InstallBanner
+        v-if="canInstall"
+        @install="startInstall"
+        @dismiss="dismissInstall" />
     </main>
 
     <OrgPickerSheet
@@ -38,7 +44,10 @@
       :initials="initials"
       :organization-name="organizationName"
       :role-label="roleLabel"
+      :can-install="canInstall"
+      @install="startInstall"
       @open-organizations="openOrganizationsFromAccount" />
+    <InstallGuideIos v-model="iosGuideOpen" />
   </div>
 </template>
 
@@ -48,13 +57,23 @@ import AppHeader from "@/mobile/components/AppHeader.vue"
 import ActionButton from "@/mobile/components/ActionButton.vue"
 import OrgPickerSheet from "@/mobile/components/OrgPickerSheet.vue"
 import AccountSheet from "@/mobile/components/AccountSheet.vue"
+import InstallBanner from "@/mobile/components/InstallBanner.vue"
+import InstallGuideIos from "@/mobile/components/InstallGuideIos.vue"
 import { currentUserMixin } from "@/mobile/mixins/currentUser.js"
+import { installMixin } from "@/mobile/mixins/install.js"
 import { getEnv } from "@/tools/getEnv"
 
 export default {
   name: "MobileHome",
-  components: { AppHeader, ActionButton, OrgPickerSheet, AccountSheet },
-  mixins: [currentUserMixin],
+  components: {
+    AppHeader,
+    ActionButton,
+    OrgPickerSheet,
+    AccountSheet,
+    InstallBanner,
+    InstallGuideIos,
+  },
+  mixins: [currentUserMixin, installMixin],
   data() {
     return { organizationsOpen: false, accountOpen: false }
   },

@@ -45,6 +45,11 @@
         </select>
       </label>
       <ListRow
+        v-if="canInstall"
+        icon="device-mobile"
+        :label="$t('mobile.account.install')"
+        @click="$emit('install')" />
+      <ListRow
         icon="desktop"
         :label="$t('mobile.account.full_version')"
         @click="optOut" />
@@ -78,6 +83,7 @@ export default {
     initials: { type: String, default: "" },
     organizationName: { type: String, required: true },
     roleLabel: { type: String, default: "" },
+    canInstall: { type: Boolean, default: false },
   },
   computed: {
     version() {
