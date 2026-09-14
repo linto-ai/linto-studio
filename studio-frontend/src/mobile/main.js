@@ -7,9 +7,12 @@ import App from "@/mobile/App.vue"
 import router from "@/mobile/router.js"
 import store from "@/mobile/store.js"
 import i18n from "@/i18n"
+import { addMobileMessages } from "@/mobile/services/i18n/addMobileMessages.js"
 import { getEnv } from "@/tools/getEnv"
 import { registerServiceWorker } from "@/mobile/services/pwa/registerServiceWorker.js"
 import { listenForInstallPrompt } from "@/mobile/services/pwa/installPrompt.js"
+import { watchOnlineStatus } from "@/mobile/services/network/onlineStatus.js"
+import { startUploadResumption } from "@/mobile/services/recording/resumeUploads.js"
 
 import "@/mobile/style/tokens.css"
 import "@/mobile/style/base.css"
@@ -18,8 +21,13 @@ Vue.config.productionTip = false
 Vue.prototype.debug = Debug("VueMobile")
 Debug.enable(getEnv("VUE_APP_DEBUG"))
 
+addMobileMessages(i18n)
+
 listenForInstallPrompt()
 registerServiceWorker()
+watchOnlineStatus()
+// Uploads need the organization scope: wait for the first guarded navigation.
+router.onReady(() => startUploadResumption())
 
 new Vue({
   router,
