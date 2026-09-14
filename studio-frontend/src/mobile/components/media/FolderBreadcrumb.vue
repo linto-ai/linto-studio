@@ -1,7 +1,7 @@
 <template>
   <nav class="m-crumbs" :aria-label="$t('mobile.media.folders')">
     <router-link :to="{ name: 'media' }" class="m-crumbs__item">
-      <PhIcon name="house" size="xs" />
+      <PhIcon name="tray" size="xs" />
       <span>{{ $t("mobile.media.root_folder") }}</span>
     </router-link>
     <template v-for="folder in path">

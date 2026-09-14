@@ -4,7 +4,14 @@
       :title="
         currentFolder ? currentFolder.name : $t('mobile.home.media_title')
       "
-      :back-to="parentRoute" />
+      :back-to="parentRoute">
+      <template #actions>
+        <IconButton
+          icon="folder-open"
+          :label="$t('mobile.media.folders')"
+          @click="folderSheetOpen = true" />
+      </template>
+    </PageHeader>
     <main class="m-page__content m-media-page">
       <MediaFilters
         :status="status"
@@ -12,18 +19,10 @@
         @search="searchMedias"
         @change-status="status = $event" />
 
-      <template v-if="!query">
-        <FolderBreadcrumb
-          v-if="folderPath.length > 0"
-          :path="folderPath"
-          :current-id="folderId" />
-        <ul v-if="subfolders.length > 0" class="m-media-page__list">
-          <FolderRow
-            v-for="folder in subfolders"
-            :key="folder._id"
-            :folder="folder" />
-        </ul>
-      </template>
+      <FolderBreadcrumb
+        v-if="!query && folderPath.length > 0"
+        :path="folderPath"
+        :current-id="folderId" />
 
       <p v-if="loading" class="m-muted m-media-page__state">
         {{ $t("mobile.common.loading") }}
@@ -54,6 +53,12 @@
       </button>
     </main>
 
+    <FolderSheet
+      v-model="folderSheetOpen"
+      :folders="subfolders"
+      :current-id="folderId"
+      :parent="parentFolder"
+      @select="goToFolder" />
     <MediaActionsSheet
       v-model="actionsOpen"
       :media="selected"
@@ -67,7 +72,8 @@ import PageHeader from "@/mobile/components/PageHeader.vue"
 import MediaFilters from "@/mobile/components/media/MediaFilters.vue"
 import MediaItem from "@/mobile/components/media/MediaItem.vue"
 import MediaActionsSheet from "@/mobile/components/media/MediaActionsSheet.vue"
-import FolderRow from "@/mobile/components/media/FolderRow.vue"
+import IconButton from "@/mobile/components/IconButton.vue"
+import FolderSheet from "@/mobile/components/media/FolderSheet.vue"
 import FolderBreadcrumb from "@/mobile/components/media/FolderBreadcrumb.vue"
 import { mediaListMixin } from "@/mobile/mixins/mediaList.js"
 import { folderNavigationMixin } from "@/mobile/mixins/folderNavigation.js"
@@ -80,12 +86,13 @@ export default {
     MediaFilters,
     MediaItem,
     MediaActionsSheet,
-    FolderRow,
+    IconButton,
+    FolderSheet,
     FolderBreadcrumb,
   },
   mixins: [mediaListMixin, folderNavigationMixin],
   data() {
-    return { actionsOpen: false, selected: null }
+    return { actionsOpen: false, selected: null, folderSheetOpen: false }
   },
   created() {
     const wanted = this.$route.query.status
@@ -94,6 +101,13 @@ export default {
     }
   },
   methods: {
+    goToFolder(folderId) {
+      this.folderSheetOpen = false
+      const target = folderId
+        ? { name: "media", params: { folderId } }
+        : { name: "media" }
+      if (this.$route.params.folderId !== folderId) this.$router.push(target)
+    },
     openMedia(media) {
       this.actionsOpen = false
       if (media.jobs?.transcription?.state !== "done") {

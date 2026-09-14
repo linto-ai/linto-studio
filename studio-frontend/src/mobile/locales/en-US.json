@@ -145,7 +145,12 @@
     "folders": "Folders",
     "root_folder": "Media",
     "kind_live": "Live session",
-    "kind_file": "Audio file"
+    "kind_file": "Audio file",
+    "inbox": "All media",
+    "inbox_hint": "Newest first",
+    "up_to": "Up to {name}",
+    "subfolders": "{count} subfolder | {count} subfolders",
+    "no_subfolder": "No subfolder here."
   },
   "live": {
     "intro": "Captions during the meeting, live translation, then a conversation in your media.",
