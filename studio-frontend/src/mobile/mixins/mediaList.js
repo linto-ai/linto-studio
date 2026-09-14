@@ -27,6 +27,7 @@ export const mediaListMixin = {
   },
   watch: {
     status: "reloadMedias",
+    "$route.params.folderId": "reloadMedias",
     organizationId(newId, oldId) {
       if (newId && newId !== oldId) this.watchAndReload()
     },
@@ -43,11 +44,17 @@ export const mediaListMixin = {
       watchOrganizationMedia(this.organizationId)
       await this.reloadMedias()
     },
+    // A search spans every folder; otherwise the list follows the route:
+    // null = unfiled media at the top level, an id = inside that folder.
+    listFolderId() {
+      if (this.query) return undefined
+      return this.$route.params.folderId ?? null
+    },
     async reloadMedias() {
       this.loading = true
       this.$store.commit(`${this.storeScope}/setSearchQuery`, this.query)
       await this.$store.dispatch(`${this.storeScope}/load`, {
-        folderId: undefined,
+        folderId: this.listFolderId(),
       })
       this.loading = false
     },
@@ -55,7 +62,7 @@ export const mediaListMixin = {
       if (this.loadingMore || !this.hasMore) return
       this.loadingMore = true
       await this.$store.dispatch(`${this.storeScope}/loadNextPage`, {
-        folderId: undefined,
+        folderId: this.listFolderId(),
       })
       this.loadingMore = false
     },
