@@ -2,10 +2,11 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue2'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { mobileEntryPlugin } from './config/vite/mobileEntryPlugin.js'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [vue(), mobileEntryPlugin()],
 
     resolve: {
       alias: {
