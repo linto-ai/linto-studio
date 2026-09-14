@@ -19,7 +19,7 @@ import { register as registerLintoEditor } from "@linto-ai/transcript-ui-webcomp
 
 import "vue-loading-overlay/dist/vue-loading.css"
 
-export const bus = new Vue()
+export { bus } from "@/tools/eventBus.js"
 Vue.use(PortalVue)
 Vue.use(vClickOutside)
 Vue.use(Fragment.Plugin)

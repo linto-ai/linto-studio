@@ -1,0 +1,85 @@
+/* Reset and generic layout classes of the mobile app. UI styling lives in
+   the components; only positioning helpers are allowed here. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--m-font);
+  font-size: var(--m-font-size);
+  line-height: 1.4;
+  color: var(--m-text);
+  background: var(--m-bg);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: var(--m-info);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.m-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding-top: var(--m-safe-top);
+}
+
+.m-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--m-space-3);
+  padding: var(--m-space-4) var(--m-space-4)
+    calc(var(--m-space-6) + var(--m-safe-bottom));
+}
+
+.m-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--m-space-2);
+}
+
+.m-muted {
+  color: var(--m-text-muted);
+  font-size: var(--m-font-size-sm);
+}
+
+.m-section-title {
+  font-size: var(--m-font-size-sm);
+  font-weight: 600;
+  color: var(--m-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.m-grow {
+  flex: 1;
+}
+
+.m-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

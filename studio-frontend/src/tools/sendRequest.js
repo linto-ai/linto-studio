@@ -1,5 +1,5 @@
 import axios from "axios"
-import { bus } from "@/main.js"
+import { bus } from "@/tools/eventBus.js"
 import { getCookie } from "./getCookie"
 import { getImpersonatedOrgId } from "./getImpersonatedOrgId.js"
 
