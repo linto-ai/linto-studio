@@ -110,7 +110,11 @@
     "no_diarization": "Ce service ne sépare pas les locuteurs.",
     "no_service": "Aucun service de transcription disponible",
     "speakers_auto": "locuteurs auto",
-    "speakers_off": "sans locuteurs"
+    "speakers_off": "sans locuteurs",
+    "voices": "Reconnaissance des voix",
+    "voices_empty": "Aucune collection de voix dans cette organisation.",
+    "voices_help": "Les locuteurs dont la voix est enregistrée dans ces collections seront nommés automatiquement.",
+    "voices_on": "voix reconnues"
   },
   "media": {
     "search": "Rechercher un média",

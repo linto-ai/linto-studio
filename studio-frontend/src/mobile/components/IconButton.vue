@@ -1,5 +1,9 @@
 <template>
-  <button type="button" class="m-icon-button" :aria-label="label">
+  <button
+    type="button"
+    class="m-icon-button"
+    :aria-label="label"
+    v-on="$listeners">
     <PhIcon :name="icon" :size="size" :weight="weight" />
   </button>
 </template>
@@ -8,7 +12,8 @@
 import PhIcon from "@/components/atoms/PhIcon.vue"
 
 // Square 44px tap target around a single icon. The label is mandatory: the
-// icon alone means nothing to a screen reader.
+// icon alone means nothing to a screen reader. Listeners are forwarded to
+// the native button so @click works on the component.
 export default {
   name: "IconButton",
   components: { PhIcon },

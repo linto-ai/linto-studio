@@ -58,6 +58,8 @@
       v-model="settingsOpen"
       :services="services"
       :choices="choices"
+      :voice-collections="voiceCollections"
+      :voice-identification-capable="speakerIdentificationCapable"
       @change="updateChoices" />
     <StopRecordingSheet
       v-model="stopSheetOpen"
