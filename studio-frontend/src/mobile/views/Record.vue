@@ -35,10 +35,17 @@
         </p>
       </section>
 
-      <TranscriptionSettingsRow
-        v-if="!isRecording"
-        :summary="transcriptionSummary"
-        @click="settingsOpen = true" />
+      <template v-if="!isRecording">
+        <TranscriptionSettingsRow
+          :summary="transcriptionSummary"
+          @click="settingsOpen = true" />
+        <ListRow
+          icon="microphone"
+          :label="$t('mobile.record.microphone')"
+          :hint="microphoneLabel"
+          class="m-record-page__microphone"
+          @click="openMicrophonePicker" />
+      </template>
 
       <PendingRecordingsList
         :recordings="pending"
@@ -68,6 +75,12 @@
       :online="online"
       @send="sendStopped"
       @keep="keepStopped" />
+    <MicrophoneSheet
+      v-model="microphoneSheetOpen"
+      :microphones="microphones"
+      :loaded="microphonesLoaded"
+      :current-id="microphoneId"
+      @choose="chooseMicrophone" />
     <RecordingActionsSheet
       v-model="actionsOpen"
       :recording="selected"
@@ -91,9 +104,11 @@ import TranscriptionSettingsSheet from "@/mobile/components/record/Transcription
 import StopRecordingSheet from "@/mobile/components/record/StopRecordingSheet.vue"
 import PendingRecordingsList from "@/mobile/components/record/PendingRecordingsList.vue"
 import RecordingActionsSheet from "@/mobile/components/record/RecordingActionsSheet.vue"
+import MicrophoneSheet from "@/mobile/components/record/MicrophoneSheet.vue"
 import { recordingControllerMixin } from "@/mobile/mixins/recordingController.js"
 import { transcriptionSettingsMixin } from "@/mobile/mixins/transcriptionSettings.js"
 import { queueActionsMixin } from "@/mobile/mixins/queueActions.js"
+import { microphoneChoiceMixin } from "@/mobile/mixins/microphoneChoice.js"
 import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 
 export default {
@@ -111,11 +126,13 @@ export default {
     StopRecordingSheet,
     PendingRecordingsList,
     RecordingActionsSheet,
+    MicrophoneSheet,
   },
   mixins: [
     recordingControllerMixin,
     transcriptionSettingsMixin,
     queueActionsMixin,
+    microphoneChoiceMixin,
   ],
   data() {
     return { settingsOpen: false }
@@ -139,7 +156,7 @@ export default {
       if (this.isRecording) {
         this.stopRecording()
       } else if (this.recorder.state === "idle" && this.transcriptionSettings) {
-        this.startRecording(this.transcriptionSettings)
+        this.startRecording(this.transcriptionSettings, this.microphoneId)
       }
     },
   },
@@ -177,6 +194,7 @@ export default {
   max-width: 320px;
 }
 
+.m-record-page__microphone,
 .m-record-page__recent {
   border-radius: var(--m-radius);
   box-shadow: var(--m-shadow-1);

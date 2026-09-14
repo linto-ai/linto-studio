@@ -1,5 +1,5 @@
 import { getSupportedRecordingMimeType } from "@/tools/audioMimeTypes.js"
-import { AUDIO_CONSTRAINTS } from "@/mobile/const/audioConstraints.js"
+import { buildAudioConstraints } from "@/mobile/tools/buildAudioConstraints.js"
 
 const CHUNK_INTERVAL_MS = 10_000
 const LEVEL_INTERVAL_MS = 100
@@ -21,8 +21,10 @@ export class LocalRecorder {
     this.mimeType = ""
   }
 
-  async start() {
-    this.stream = await navigator.mediaDevices.getUserMedia(AUDIO_CONSTRAINTS)
+  async start(deviceId = null) {
+    this.stream = await navigator.mediaDevices.getUserMedia(
+      buildAudioConstraints(deviceId),
+    )
     this.mimeType = getSupportedRecordingMimeType()
     this.mediaRecorder = new MediaRecorder(this.stream, {
       mimeType: this.mimeType || undefined,

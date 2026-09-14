@@ -1,13 +1,24 @@
 import test from "ava"
 import { describeRecordingStatus } from "../describeRecordingStatus.js"
 
-test("describeRecordingStatus() distinguishes ready online from ready offline", (t) => {
+test("describeRecordingStatus() keeps a kept recording manual whatever the network", (t) => {
   t.is(
     describeRecordingStatus({ status: "ready" }, true).label,
     "mobile.queue.status_ready",
   )
   t.is(
     describeRecordingStatus({ status: "ready" }, false).label,
+    "mobile.queue.status_ready",
+  )
+})
+
+test("describeRecordingStatus() distinguishes queued online from queued offline", (t) => {
+  t.is(
+    describeRecordingStatus({ status: "queued" }, true).label,
+    "mobile.queue.status_queued",
+  )
+  t.is(
+    describeRecordingStatus({ status: "queued" }, false).label,
     "mobile.queue.status_offline",
   )
 })

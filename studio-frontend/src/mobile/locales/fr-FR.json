@@ -24,7 +24,6 @@
   },
   "account": {
     "title": "Compte",
-    "studio_settings": "Paramètres dans Studio",
     "language": "Langue",
     "install": "Installer l'application",
     "full_version": "Version complète de Studio",
@@ -80,7 +79,11 @@
     "send": "Envoyer en transcription",
     "keep": "Garder pour plus tard",
     "offline_send": "Hors connexion : l'envoi partira automatiquement au retour du réseau.",
-    "interrupted": "L'enregistrement a été interrompu (appel, verrouillage ou micro perdu). Ce qui a été capté est conservé."
+    "interrupted": "L'enregistrement a été interrompu (appel, verrouillage ou micro perdu). Ce qui a été capté est conservé.",
+    "microphone": "Micro",
+    "microphone_default": "Micro par défaut",
+    "microphone_choose": "Choisir le micro",
+    "microphone_permission": "Autorisez le micro pour voir la liste des entrées."
   },
   "queue": {
     "title": "En attente ({count})",
@@ -90,7 +93,7 @@
     "send_now": "Envoyer maintenant",
     "rename": "Renommer",
     "delete": "Supprimer",
-    "status_ready": "À envoyer",
+    "status_ready": "Gardé",
     "status_offline": "Hors connexion",
     "status_uploading": "Envoi {progress} %",
     "status_error": "Erreur",
@@ -100,7 +103,8 @@
     "error_rejected": "Le serveur a refusé l'envoi.",
     "error_offline": "Hors connexion, nouvel essai au retour du réseau.",
     "error_network": "Le serveur n'a pas répondu, nouvel essai automatique.",
-    "error_missing": "Enregistrement introuvable sur ce téléphone."
+    "error_missing": "Enregistrement introuvable sur ce téléphone.",
+    "status_queued": "Envoi prévu"
   },
   "settings": {
     "title": "Transcription",
@@ -123,7 +127,6 @@
     "filter_error": "En erreur",
     "empty": "Aucun média ici.",
     "load_more": "Afficher plus",
-    "open_in_studio": "Ouvrir dans Studio",
     "delete": "Supprimer",
     "delete_confirm": "Confirmer la suppression",
     "delete_hint": "Le média et sa transcription seront supprimés pour tout le monde.",
@@ -135,7 +138,8 @@
     "step_diarization": "Locuteurs {progress} %",
     "step_punctuation": "Ponctuation {progress} %",
     "step_postprocessing": "Finalisation",
-    "step_started": "En cours"
+    "step_started": "En cours",
+    "open": "Ouvrir"
   },
   "live": {
     "intro": "Sous-titres pendant la réunion, traduction en temps réel, puis une conversation dans vos médias.",
@@ -157,6 +161,12 @@
     "stop": "Terminer et enregistrer",
     "stopped": "Direct terminé, la conversation arrive dans vos médias.",
     "stop_failed": "Impossible de terminer le direct.",
-    "default_name": "Direct"
+    "default_name": "Direct",
+    "add_translation": "Autre langue",
+    "add_translation_placeholder": "Ajouter une langue…"
+  },
+  "conversation": {
+    "load_failed": "Impossible d'ouvrir cette conversation.",
+    "publish_in_studio": "La publication se fait depuis la version complète de Studio."
   }
 }

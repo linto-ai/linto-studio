@@ -6,6 +6,7 @@ import {
 } from "@/mobile/services/live/liveSession.js"
 import { buildLiveChannel } from "@/mobile/tools/buildLiveChannel.js"
 import { listProfileTranslations } from "@/mobile/tools/listProfileTranslations.js"
+import { suggestTranslationTargets } from "@/mobile/tools/suggestTranslationTargets.js"
 import { buildStudioLiveUrl } from "@/mobile/tools/buildStudioLiveUrl.js"
 import { buildRecordingName } from "@/mobile/tools/buildRecordingName.js"
 
@@ -36,6 +37,9 @@ export const livePrepareMixin = {
     },
     translationOptions() {
       return listProfileTranslations(this.profile, this.$i18n.locale)
+    },
+    translationSuggestions() {
+      return suggestTranslationTargets(this.profile, this.translationOptions)
     },
     supportsDiarization() {
       return !!this.profile?.config?.hasDiarization

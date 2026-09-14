@@ -39,7 +39,7 @@ export const recordingControllerMixin = {
     this.releaseRecorder()
   },
   methods: {
-    async startRecording(transcription) {
+    async startRecording(transcription, deviceId = null) {
       this.recorder.state = "starting"
       const id = crypto.randomUUID()
       this.localRecorder = new LocalRecorder({
@@ -48,7 +48,7 @@ export const recordingControllerMixin = {
         onInterrupted: () => this.stopRecording({ interrupted: true }),
       })
       try {
-        const mimeType = await this.localRecorder.start()
+        const mimeType = await this.localRecorder.start(deviceId)
         await this.createQueueEntry(id, mimeType, transcription)
       } catch (error) {
         console.error("cannot start recording", error)

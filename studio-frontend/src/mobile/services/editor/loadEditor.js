@@ -1,12 +1,16 @@
-let registration = null
+let editorModule = null
 
-// The transcript editor web component weighs ~800 kB: it is fetched the
-// first time a page needs <linto-editor>, never at startup.
+// The transcript editor web component weighs ~800 kB: fetched the first
+// time a page needs <linto-editor>, never at startup. Resolves to the
+// package module (plugins, mapApiTurns) once the element is registered.
 export function loadEditor() {
-  if (!registration) {
-    registration = import("@linto-ai/transcript-ui-webcomponent").then(
-      (module) => module.register(),
+  if (!editorModule) {
+    editorModule = import("@linto-ai/transcript-ui-webcomponent").then(
+      (module) => {
+        module.register()
+        return module
+      },
     )
   }
-  return registration
+  return editorModule
 }

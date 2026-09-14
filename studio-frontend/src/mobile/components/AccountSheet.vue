@@ -23,10 +23,6 @@
           }}</span>
         </template>
       </ListRow>
-      <ListRow
-        icon="gear"
-        :label="$t('mobile.account.studio_settings')"
-        href="/interface/" />
     </div>
 
     <div class="m-account__group">
