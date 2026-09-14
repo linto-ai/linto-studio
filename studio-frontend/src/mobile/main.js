@@ -3,6 +3,7 @@
 import Vue from "vue"
 import Debug from "debug"
 
+import Atoms from "@/components/atoms/index.js"
 import App from "@/mobile/App.vue"
 import router from "@/mobile/router.js"
 import store from "@/mobile/store.js"
@@ -17,7 +18,12 @@ import { startUploadResumption } from "@/mobile/services/recording/resumeUploads
 import "@/mobile/style/tokens.css"
 import "@/mobile/style/base.css"
 
+// Global atoms (Button, PhIcon…) are what the shared live component expects.
+Vue.use(Atoms)
+
 Vue.config.productionTip = false
+// The editor is a custom element registered on demand (loadEditor).
+Vue.config.ignoredElements = [/^linto-/]
 Vue.prototype.debug = Debug("VueMobile")
 Debug.enable(getEnv("VUE_APP_DEBUG"))
 

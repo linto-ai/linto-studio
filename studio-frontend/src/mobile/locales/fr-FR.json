@@ -155,7 +155,7 @@
     "keep_audio_hint": "Une transcription complète sera lancée à la fin.",
     "diarization": "Séparation des locuteurs en direct",
     "offline": "Le direct a besoin du réseau.",
-    "screen_note": "L'écran reste allumé pendant le direct. Le direct s'ouvre dans la page Studio.",
+    "screen_note": "L'écran reste allumé pendant le direct.",
     "start": "Commencer",
     "start_failed": "Impossible de démarrer le direct. Réessayez.",
     "no_profile": "Aucun profil de transcription en direct n'est disponible pour cette organisation.",
@@ -167,7 +167,14 @@
     "stop_failed": "Impossible de terminer le direct.",
     "default_name": "Direct",
     "add_translation": "Autre langue",
-    "add_translation_placeholder": "Ajouter une langue…"
+    "add_translation_placeholder": "Ajouter une langue…",
+    "on_air": "En direct",
+    "mute": "Couper le micro",
+    "unmute": "Rétablir le micro",
+    "end": "Terminer",
+    "end_title": "Terminer le direct",
+    "end_text": "La session devient une conversation dans vos médias.",
+    "keep_going": "Continuer le direct"
   },
   "conversation": {
     "load_failed": "Impossible d'ouvrir cette conversation.",

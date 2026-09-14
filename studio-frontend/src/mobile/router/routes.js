@@ -33,6 +33,11 @@ export const MOBILE_ROUTES = [
     component: () => import("@/mobile/views/LivePrepare.vue"),
   },
   {
+    path: "/live/session",
+    name: "live-session",
+    component: () => import("@/mobile/views/LiveSession.vue"),
+  },
+  {
     path: "*",
     name: "not-found",
     meta: { public: true },
