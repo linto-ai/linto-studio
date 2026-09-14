@@ -71,7 +71,9 @@ export default {
   methods: {
     folderHint(folder) {
       return folder.childCount > 0
-        ? this.$t("mobile.media.subfolders", { count: folder.childCount })
+        ? this.$tc("mobile.media.subfolders", folder.childCount, {
+            count: folder.childCount,
+          })
         : ""
     },
   },
