@@ -5,9 +5,6 @@
         <input type="checkbox" :checked="selected" @change="$emit('toggle')" />
         <span class="m-voices__text">
           <span class="m-voices__name">{{ label }}</span>
-          <span v-if="isOrganization" class="m-muted">{{
-            collection.name
-          }}</span>
         </span>
       </label>
       <button
