@@ -4,8 +4,8 @@
     <div class="m-media-actions__list">
       <ListRow
         v-if="isReady"
-        icon="arrow-square-out"
-        :label="$t('mobile.media.open_in_studio')"
+        icon="play"
+        :label="$t('mobile.media.open')"
         :chevron="false"
         @click="$emit('open', media)" />
       <ListRow

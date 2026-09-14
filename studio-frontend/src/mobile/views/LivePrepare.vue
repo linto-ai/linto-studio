@@ -33,9 +33,10 @@
 
         <div class="m-live__field">
           <span>{{ $t("mobile.live.translations") }}</span>
-          <TranslationChips
+          <TranslationPicker
             v-model="translations"
-            :options="translationOptions" />
+            :options="translationOptions"
+            :suggestions="translationSuggestions" />
           <p v-if="translationOptions.length === 0" class="m-muted">
             {{ $t("mobile.live.no_translation_available") }}
           </p>
@@ -78,7 +79,7 @@ import PhIcon from "@/components/atoms/PhIcon.vue"
 import PageHeader from "@/mobile/components/PageHeader.vue"
 import InfoBanner from "@/mobile/components/InfoBanner.vue"
 import ToggleRow from "@/mobile/components/ToggleRow.vue"
-import TranslationChips from "@/mobile/components/live/TranslationChips.vue"
+import TranslationPicker from "@/mobile/components/live/TranslationPicker.vue"
 import LiveRunningCard from "@/mobile/components/live/LiveRunningCard.vue"
 import { livePrepareMixin } from "@/mobile/mixins/livePrepare.js"
 import { transcriptionSettingsMixin } from "@/mobile/mixins/transcriptionSettings.js"
@@ -91,7 +92,7 @@ export default {
     PageHeader,
     InfoBanner,
     ToggleRow,
-    TranslationChips,
+    TranslationPicker,
     LiveRunningCard,
   },
   mixins: [livePrepareMixin, transcriptionSettingsMixin],

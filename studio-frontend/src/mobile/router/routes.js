@@ -23,6 +23,11 @@ export const MOBILE_ROUTES = [
     component: () => import("@/mobile/views/Media.vue"),
   },
   {
+    path: "/conversations/:conversationId",
+    name: "conversation",
+    component: () => import("@/mobile/views/Conversation.vue"),
+  },
+  {
     path: "/live",
     name: "live",
     component: () => import("@/mobile/views/LivePrepare.vue"),

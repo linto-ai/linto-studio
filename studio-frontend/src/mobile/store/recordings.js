@@ -20,6 +20,7 @@ const getters = {
       state.items.filter((item) =>
         [
           RECORDING_STATUS.READY,
+          RECORDING_STATUS.QUEUED,
           RECORDING_STATUS.ERROR,
           RECORDING_STATUS.UPLOADING,
         ].includes(item.status),
@@ -97,9 +98,11 @@ const actions = {
     }
     commit("setUploadingId", null)
   },
+  // Only what the user asked to send: "ready" items were kept on purpose.
   async retryPending({ getters, dispatch }) {
     const retryable = getters.pending.filter(
-      (item) => item.status === RECORDING_STATUS.READY || item.error?.retryable,
+      (item) =>
+        item.status === RECORDING_STATUS.QUEUED || item.error?.retryable,
     )
     for (const item of retryable) {
       await dispatch("upload", item.id)

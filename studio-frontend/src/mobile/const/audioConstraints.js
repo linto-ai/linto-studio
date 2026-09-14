@@ -2,10 +2,8 @@
 // suppression help on a phone lying on a table; gain control keeps distant
 // speakers audible.
 export const AUDIO_CONSTRAINTS = Object.freeze({
-  audio: {
-    channelCount: 1,
-    echoCancellation: true,
-    noiseSuppression: true,
-    autoGainControl: true,
-  },
+  channelCount: 1,
+  echoCancellation: true,
+  noiseSuppression: true,
+  autoGainControl: true,
 })

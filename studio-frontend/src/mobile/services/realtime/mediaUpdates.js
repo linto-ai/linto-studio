@@ -5,6 +5,9 @@ import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket.js"
 const socket = new ApiEventWebSocket()
 let watchedOrganizationId = null
 
+// The editor page drives the lock+save protocol on this same connection.
+export const realtimeSocket = socket
+
 export async function connectRealtime() {
   await socket.connect()
 }

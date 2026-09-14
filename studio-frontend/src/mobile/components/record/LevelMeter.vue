@@ -13,6 +13,12 @@ const BAR_COUNT = 20
 const MAX_HEIGHT = 40
 const MIN_HEIGHT = 6
 
+// Quiet speech sits around 0.1 to 0.3 RMS: a log curve keeps it visible
+// while a shout still tops out.
+function perceivedLevel(level) {
+  return Math.min(1, Math.log10(1 + 9 * Math.max(0, level)))
+}
+
 // A rolling history of the microphone level, newest on the right. Purely
 // decorative: it reassures that the microphone hears something.
 export default {
@@ -26,7 +32,9 @@ export default {
   computed: {
     bars() {
       return this.history.map(
-        (value) => MIN_HEIGHT + Math.round(value * (MAX_HEIGHT - MIN_HEIGHT)),
+        (value) =>
+          MIN_HEIGHT +
+          Math.round(perceivedLevel(value) * (MAX_HEIGHT - MIN_HEIGHT)),
       )
     },
   },

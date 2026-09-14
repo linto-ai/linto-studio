@@ -1,10 +1,15 @@
 const STATUS_VIEWS = Object.freeze({
-  ready_online: {
+  ready: {
     tone: "warning",
-    icon: "clock",
+    icon: "hand",
     label: "mobile.queue.status_ready",
   },
-  ready_offline: {
+  queued_online: {
+    tone: "info",
+    icon: "clock",
+    label: "mobile.queue.status_queued",
+  },
+  queued_offline: {
     tone: "warning",
     icon: "wifi-slash",
     label: "mobile.queue.status_offline",
@@ -38,8 +43,8 @@ const STATUS_VIEWS = Object.freeze({
  * @returns {{ tone: string, icon: string, label: string }}
  */
 export function describeRecordingStatus({ status }, online) {
-  if (status === "ready") {
-    return online ? STATUS_VIEWS.ready_online : STATUS_VIEWS.ready_offline
+  if (status === "queued") {
+    return online ? STATUS_VIEWS.queued_online : STATUS_VIEWS.queued_offline
   }
   return STATUS_VIEWS[status] ?? STATUS_VIEWS.error
 }

@@ -51,8 +51,6 @@ import MediaFilters from "@/mobile/components/media/MediaFilters.vue"
 import MediaItem from "@/mobile/components/media/MediaItem.vue"
 import MediaActionsSheet from "@/mobile/components/media/MediaActionsSheet.vue"
 import { mediaListMixin } from "@/mobile/mixins/mediaList.js"
-import { buildStudioConversationUrl } from "@/mobile/tools/buildStudioConversationUrl.js"
-import { openInStudio } from "@/mobile/services/navigation/openInStudio.js"
 import { MEDIA_STATUS_FILTERS } from "@/mobile/const/mediaStatusFilters.js"
 
 export default {
@@ -76,7 +74,10 @@ export default {
         this.actionsOpen = true
         return
       }
-      openInStudio(buildStudioConversationUrl(this.organizationId, media._id))
+      this.$router.push({
+        name: "conversation",
+        params: { conversationId: media._id },
+      })
     },
     openActions(media) {
       this.selected = media

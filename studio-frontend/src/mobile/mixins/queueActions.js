@@ -38,6 +38,7 @@ export const queueActionsMixin = {
       await this.$store.dispatch("mobileRecordings/patch", {
         id: this.stoppedRecording.id,
         name,
+        status: "queued",
       })
       this.$store.dispatch("mobileRecordings/upload", this.stoppedRecording.id)
     },
@@ -52,8 +53,12 @@ export const queueActionsMixin = {
       this.selected = recording
       this.actionsOpen = true
     },
-    sendRecording(recording) {
+    async sendRecording(recording) {
       this.actionsOpen = false
+      await this.$store.dispatch("mobileRecordings/patch", {
+        id: recording.id,
+        status: "queued",
+      })
       this.$store.dispatch("mobileRecordings/upload", recording.id)
     },
     async renameRecording({ recording, name }) {
