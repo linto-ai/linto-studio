@@ -3,56 +3,23 @@
     <form
       class="flex col login-page__form gap-small"
       @submit="handlePersonalForm"
-      v-if="state == 'personal-information'">
+      v-if="state == 'personal-information' || state == 'sending'">
       <h2 class="login-title">{{ $t("createaccount.personal_title") }}</h2>
-      <!-- First name -->
-      <div class="form-field flex col">
-        <label class="form-label" for="firstname">
-          {{ $t("createaccount.first_name_label") }}<strong>*</strong> :
-        </label>
-        <input
-          id="firstname"
-          type="text"
-          v-model="firstname.value"
-          class="fullwidth"
-          :class="firstname.error !== null ? 'error' : ''"
-          @change="testName(firstname)" />
-        <span class="error-field" v-if="firstname.error !== null">
-          {{ firstname.error }}
-        </span>
-      </div>
-      <!-- Last name -->
-      <div class="form-field flex col">
-        <label class="form-label" for="lastname">
-          {{ $t("createaccount.last_name_label") }}<strong>*</strong> :
-        </label>
-        <input
-          id="lastname"
-          type="text"
-          v-model="lastname.value"
-          class="fullwidth"
-          :class="lastname.error !== null ? 'error' : ''"
-          @change="testName(lastname)" />
-        <span class="error-field" v-if="lastname.error !== null">
-          {{ lastname.error }}
-        </span>
-      </div>
-      <!-- Email -->
-      <div class="form-field flex col">
-        <label class="form-label" for="email">
-          {{ $t("createaccount.email_label") }}<strong>*</strong> :
-        </label>
-        <input
-          id="email"
-          type="email"
-          v-model="email.value"
-          class="fullwidth"
-          :class="email.error !== null ? 'error' : ''"
-          @change="testEmail(email)" />
-        <span class="error-field" v-if="email.error !== null">
-          {{ email.error }}
-        </span>
-      </div>
+      <FormInput
+        :field="firstname"
+        v-model="firstname.value"
+        @change="testName(firstname)"
+        inputFullWidth />
+      <FormInput
+        :field="lastname"
+        v-model="lastname.value"
+        @change="testName(lastname)"
+        inputFullWidth />
+      <FormInput
+        :field="email"
+        v-model="email.value"
+        @change="testEmail(email)"
+        inputFullWidth />
       <!-- Profil picture -->
       <div class="form-field flex col">
         <label class="form-label">{{ $t("createaccount.image_label") }}</label>
@@ -89,41 +56,16 @@
           {{ picture.error }}
         </span>
       </div>
-      <!-- Password -->
-      <div class="form-field flex col">
-        <label class="form-label" for="password">
-          {{ $t("createaccount.password_label") }}<strong>*</strong> :
-        </label>
-        <input
-          id="password"
-          type="password"
-          autocomplete="new-password"
-          v-model="password.value"
-          class="fullwidth"
-          :class="password.error !== null ? 'error' : ''"
-          @change="testPassword(password)" />
-        <span class="error-field" v-if="password.error !== null">
-          {{ password.error }}
-        </span>
-      </div>
-      <!-- Password confirmation -->
-      <div class="form-field flex col">
-        <label class="form-label" for="passwordconfirm">
-          {{ $t("createaccount.password_confirmation_label") }}
-          <strong>*</strong> :
-        </label>
-        <input
-          id="passwordconfirm"
-          type="password"
-          autocomplete="new-password"
-          v-model="passwordConfirm.value"
-          class="fullwidth"
-          :class="passwordConfirm.error !== null ? 'error' : ''"
-          @change="testPasswordConfirm(passwordConfirm, password)" />
-        <span class="error-field" v-if="passwordConfirm.error !== null">
-          {{ passwordConfirm.error }}
-        </span>
-      </div>
+      <FormInput
+        :field="password"
+        v-model="password.value"
+        @change="testPassword(password)"
+        inputFullWidth />
+      <FormInput
+        :field="passwordConfirm"
+        v-model="passwordConfirm.value"
+        @change="testPasswordConfirm(passwordConfirm, password)"
+        inputFullWidth />
 
       <div class="form-field flex row">
         <Button
@@ -135,37 +77,6 @@
       <div class="form-field" v-if="formError !== null">
         <span class="form-error">{{ formError }}</span>
       </div>
-    </form>
-
-    <form
-      class="flex col login-page__form gap-small"
-      v-else-if="state == 'organization-information' || state == 'sending'"
-      @submit="handleOrgaForm">
-      <h2>{{ $t("createaccount.organization_title") }}</h2>
-      <p>
-        {{ $t("createaccount.organization_description") }}
-      </p>
-      <!-- Organization name -->
-      <div class="form-field flex col">
-        <label class="form-label" for="organizationName">
-          {{ $t("createaccount.organization_name_label") }}
-        </label>
-        <input
-          id="organizationName"
-          type="text"
-          class="fullwidth"
-          v-model="organizationName.value"
-          :class="organizationName.error !== null ? 'error' : ''" />
-        <span class="error-field" v-if="organizationName.error !== null">
-          {{ organizationName.error }}
-        </span>
-      </div>
-
-      <Button
-        type="submit"
-        variant="primary"
-        :label="$t('createaccount.create_account_button')"
-        :loading="state === 'sending'" />
     </form>
 
     <div
@@ -190,6 +101,7 @@ import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { apiCreateUser } from "@/api/user.js"
 import MainContentPublic from "@/components/MainContentPublic.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
 import { testEmail } from "@/tools/fields/testEmail.js"
 import { testName } from "@/tools/fields/testName.js"
 import { testPassword } from "@/tools/fields/testPassword.js"
@@ -197,13 +109,31 @@ import { testPasswordConfirm } from "@/tools/fields/testPasswordConfirm.js"
 export default {
   data() {
     return {
-      firstname: { ...EMPTY_FIELD },
-      lastname: { ...EMPTY_FIELD },
-      email: { ...EMPTY_FIELD },
-      password: { ...EMPTY_FIELD },
-      passwordConfirm: { ...EMPTY_FIELD },
+      firstname: {
+        ...EMPTY_FIELD,
+        label: this.$t("createaccount.first_name_label"),
+      },
+      lastname: {
+        ...EMPTY_FIELD,
+        label: this.$t("createaccount.last_name_label"),
+      },
+      email: {
+        ...EMPTY_FIELD,
+        label: this.$t("createaccount.email_label"),
+      },
+      password: {
+        ...EMPTY_FIELD,
+        label: this.$t("createaccount.password_label"),
+        type: "password",
+        autocomplete: "new-password",
+      },
+      passwordConfirm: {
+        ...EMPTY_FIELD,
+        label: this.$t("createaccount.password_confirmation_label"),
+        type: "password",
+        autocomplete: "new-password",
+      },
       picture: { ...EMPTY_FIELD },
-      organizationName: { ...EMPTY_FIELD },
       formError: null,
       state: "personal-information",
     }
@@ -237,6 +167,12 @@ export default {
     pictureSelected() {
       return this.picture.value !== ""
     },
+    // Default organization name a new account is created with. The
+    // organization can be renamed later; there is no dedicated step for
+    // it in the signup flow anymore.
+    defaultOrganizationName() {
+      return `${this.email.value}'s organization`
+    },
     enable_inscription() {
       return getEnv("VUE_APP_DISABLE_USER_CREATION") !== "true"
     },
@@ -246,22 +182,21 @@ export default {
   },
 
   methods: {
+    // TODO: refactore with forms mixin
     async handlePersonalForm(event) {
-      // TODO: refactore with forms mixin
       event.preventDefault()
       try {
         this.formError = null
-        this.testEmail(this.email)
         this.testName(this.firstname)
         this.testName(this.lastname)
+        this.testEmail(this.email)
         this.testPassword(this.password)
         this.testPasswordConfirm(this.passwordConfirm, this.password)
         if (this.pictureSelected) {
           this.handleFileUpload()
         }
         if (this.formValid) {
-          this.organizationName.value = `${this.email.value}'s organization`
-          this.state = "organization-information"
+          await this.createAccount()
         }
       } catch (error) {
         if (getEnv("VUE_APP_DEBUG") === "true") {
@@ -270,51 +205,46 @@ export default {
       }
       return false
     },
-    async handleOrgaForm(event) {
-      event.preventDefault()
-      if (this.formValid && this.organizationName.value !== "") {
-        this.state = "sending"
-        let formData = new FormData()
-        if (this.pictureSelected) {
-          formData.append("file", this.picture.value)
-        }
-        formData.append("firstname", this.firstname.value)
-        formData.append("lastname", this.lastname.value)
-        formData.append("email", this.email.value)
-        formData.append("password", this.password.value)
-        formData.append("organizationName", this.organizationName.value)
-
-        const res = await apiCreateUser(formData, {
-          timeout: null,
-          redirect: false,
-        })
-        if (res.message === "User address already use") {
-          this.state = "personal-information"
-          this.email.error = this.$t("user_creation.email_already_exists")
-        } else if (res.status === "success") {
-          if (res.data?.organizationCreationDisabled === true) {
-            this.$router.push({
-              name: "login",
-              query: { notice: "account_created" },
-            })
-            return
-          }
-
-          this.firstname = { ...EMPTY_FIELD }
-          this.lastname = { ...EMPTY_FIELD }
-          this.email = { ...EMPTY_FIELD }
-          this.password = { ...EMPTY_FIELD }
-          this.passwordConfirm = { ...EMPTY_FIELD }
-          this.picture = { ...EMPTY_FIELD }
-
-          this.state = "email-verification"
-        } else {
-          this.state = "personal-information"
-          this.formError = this.$t("user_creation.error_message")
-        }
-      } else {
+    async createAccount() {
+      this.state = "sending"
+      let formData = new FormData()
+      if (this.pictureSelected) {
+        formData.append("file", this.picture.value)
       }
-      return false
+      formData.append("firstname", this.firstname.value)
+      formData.append("lastname", this.lastname.value)
+      formData.append("email", this.email.value)
+      formData.append("password", this.password.value)
+      formData.append("organizationName", this.defaultOrganizationName)
+
+      const res = await apiCreateUser(formData, {
+        timeout: null,
+        redirect: false,
+      })
+      if (res.message === "User address already use") {
+        this.state = "personal-information"
+        this.email.error = this.$t("user_creation.email_already_exists")
+      } else if (res.status === "success") {
+        if (res.data?.organizationCreationDisabled === true) {
+          this.$router.push({
+            name: "login",
+            query: { notice: "account_created" },
+          })
+          return
+        }
+
+        Object.assign(this.firstname, EMPTY_FIELD)
+        Object.assign(this.lastname, EMPTY_FIELD)
+        Object.assign(this.email, EMPTY_FIELD)
+        Object.assign(this.password, EMPTY_FIELD)
+        Object.assign(this.passwordConfirm, EMPTY_FIELD)
+        Object.assign(this.picture, EMPTY_FIELD)
+
+        this.state = "email-verification"
+      } else {
+        this.state = "personal-information"
+        this.formError = this.$t("user_creation.error_message")
+      }
     },
     handleFileUpload() {
       this.picture.value = this.$refs.file.files[0]
@@ -355,6 +285,7 @@ export default {
   components: {
     LocalSwitcher,
     MainContentPublic,
+    FormInput,
   },
 }
 </script>

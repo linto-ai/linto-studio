@@ -1,4 +1,5 @@
 import Avatar from "./Avatar.vue"
+import AppName from "./AppName.vue"
 import PhIcon from "./PhIcon.vue"
 import TimeDuration from "./TimeDuration.vue"
 import SwitchInput from "./SwitchInput.vue"
@@ -33,9 +34,11 @@ import FilterChip from "./FilterChip.vue"
 import InputItem from "./InputItem.vue"
 import CopyButton from "./CopyButton.vue"
 import FavoriteStar from "./FavoriteStar.vue"
+import QuotaMeter from "./QuotaMeter.vue"
 
 const components = [
   Avatar,
+  AppName,
   PhIcon,
   TimeDuration,
   SwitchInput,
@@ -70,6 +73,7 @@ const components = [
   InputItem,
   CopyButton,
   FavoriteStar,
+  QuotaMeter,
 ]
 
 const validateComponents = (c) =>

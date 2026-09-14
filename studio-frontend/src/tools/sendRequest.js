@@ -1,5 +1,6 @@
 import axios from "axios"
 import { bus } from "@/main.js"
+import store from "@/store/index.js"
 import { getCookie } from "./getCookie"
 import { getImpersonatedOrgId } from "./getImpersonatedOrgId.js"
 
@@ -86,7 +87,7 @@ export async function sendRequest(
       saasCode === "SAAS_QUOTA_EXCEEDED" ||
       saasCode === "SAAS_FEATURE_LOCKED"
     ) {
-      bus.$emit("saas-upgrade-needed", error.response.data)
+      store.dispatch("billing/openUpgradeModal", error.response.data)
     }
     if (notif) {
       bus.$emit("app_notif", {

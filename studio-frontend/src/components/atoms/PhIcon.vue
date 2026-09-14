@@ -1,22 +1,9 @@
 <template>
-  <span
-    v-if="framed"
-    class="icon-frame"
-    :class="[`icon-frame--${frameColor}`]">
-    <Icon
-      v-if="iconName"
-      :icon="iconName"
-      :width="sizePx"
-      :height="sizePx"
-      :class="['icon-svg', animation]"
-      :horizontal-flip="mirrored" />
-    <span v-else class="icon-svg missing-icon">?</span>
-  </span>
   <Icon
-    v-else-if="iconName"
+    v-if="iconName"
     :icon="iconName"
-    :width="sizePx"
-    :height="sizePx"
+    :width="sizeValue"
+    :height="sizeValue"
     :class="['icon-svg', color, animation]"
     :style="{ color: computedColor }"
     :horizontal-flip="mirrored" />
@@ -25,28 +12,21 @@
 
 <script>
 import { Icon } from "@iconify/vue2"
-
-const SIZE_MAP = {
-  xs: 16,
-  sm: 20,
-  md: 24,
-  lg: 28,
-  xl: 32,
-}
+import { SIZE_SCALE } from "@/const/componentSize"
 
 export default {
   name: "PhIcon",
   components: { Icon },
   props: {
     name: { type: String, required: true },
+    // xs/sm/md/lg/xl, a raw number (px), or "auto" to inherit the ambient
+    // font-size (1em) instead of imposing an explicit size — lets a parent
+    // (e.g. AvatarIcon) drive sizing purely through CSS.
     size: { type: [String, Number], default: "sm" },
     color: { type: String, default: "" },
     weight: { type: String, default: "regular" },
     mirrored: { type: Boolean, default: false },
     animation: { type: String, default: "" },
-    // Wrap the icon in a rounded, soft-colored frame (badge-like).
-    framed: { type: Boolean, default: false },
-    frameColor: { type: String, default: "primary" },
   },
   computed: {
     iconName() {
@@ -55,10 +35,11 @@ export default {
       const suffix = w && w !== "regular" ? "-" + w : ""
       return `ph:${this.name}${suffix}`
     },
-    sizePx() {
+    sizeValue() {
+      if (this.size === "auto") return null
       const n = Number(this.size)
       if (n) return n + "px"
-      return (SIZE_MAP[this.size] || 20) + "px"
+      return SIZE_SCALE[this.size] || SIZE_SCALE.sm
     },
     computedColor() {
       return this.color || "currentColor"
@@ -125,29 +106,5 @@ export default {
 .missing-icon {
   font-size: 1.2em;
   opacity: 0.5;
-}
-
-.icon-frame {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px;
-  border-radius: 8px;
-  flex-shrink: 0;
-
-  &--primary {
-    background: var(--primary-soft);
-    color: var(--primary-color);
-  }
-
-  &--secondary {
-    background: var(--secondary-soft, var(--neutral-10));
-    color: var(--secondary-color);
-  }
-
-  &--neutral {
-    background: var(--neutral-10);
-    color: var(--neutral-80);
-  }
 }
 </style>

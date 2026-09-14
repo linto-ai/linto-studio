@@ -384,10 +384,10 @@ export default {
     async dispatchOrganization() {
       bus.$emit("user_orga_update")
     },
-    // Same event sendRequest emits on a 403 SAAS_FEATURE_LOCKED: opens the
-    // upgrade modal in v2-layout.
+    // Same gating detail sendRequest dispatches on a 403 SAAS_FEATURE_LOCKED:
+    // opens the onboarding/upgrade wizard (OnboardingWizard.vue, App.vue).
     lockedInvite() {
-      bus.$emit("saas-upgrade-needed", {
+      this.$store.dispatch("billing/openUpgradeModal", {
         code: "SAAS_FEATURE_LOCKED",
         reason: "feature_disabled",
         capability: "collaboration",

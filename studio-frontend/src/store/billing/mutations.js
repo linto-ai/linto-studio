@@ -14,4 +14,12 @@ export default {
   setLoading(state, value) {
     state.loading = !!value
   },
+  openUpgradeModal(state, reason) {
+    state.upgradeModalOpen = true
+    state.upgradeReason = reason || null
+  },
+  closeUpgradeModal(state) {
+    state.upgradeModalOpen = false
+    state.upgradeReason = null
+  },
 }

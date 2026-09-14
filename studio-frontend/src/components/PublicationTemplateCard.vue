@@ -77,7 +77,7 @@
 
     <!-- Card Content -->
     <div class="template-content">
-      <h4 class="template-name">{{ displayName }}</h4>
+      <h4 class="template-name card-title">{{ displayName }}</h4>
       <p class="template-description">{{ displayDescription }}</p>
 
       <!-- Footer -->
@@ -496,11 +496,11 @@ export default {
   gap: 8px;
 }
 
+/* Typographic identity comes from the shared .card-title utility class —
+   only layout/truncation stays local here (line-height 1.3 fits the 2-line
+   clamp better than the shared 1.2). */
 .template-name {
   margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary, #333);
   line-height: 1.3;
   overflow: hidden;
   display: -webkit-box;

@@ -22,7 +22,9 @@
     <div class="app-settings flex1">
       <aside>
         <div class="flex1">
-          <h4>{{ $t("app_settings_modal.account_title") }}</h4>
+          <h4 class="section-caption">
+            {{ $t("app_settings_modal.account_title") }}
+          </h4>
           <!-- <div class="app-settings__user-info flex align-center gap-small">
           <div class="flex flex1 align-center gap-small">
             <UserProfilePicture :hover="false" :user="user" />
@@ -42,6 +44,12 @@
                 <span>{{ $t("app_settings_modal.notifications") }}</span>
               </a>
             </li>
+            <li :class="{ active: selectedTab === 'billing' }">
+              <a href="#" @click="selectTab('billing')">
+                <ph-icon name="credit-card" weight="bold"></ph-icon>
+                <span>{{ $t("app_settings_modal.billing") }}</span>
+              </a>
+            </li>
             <li
               v-if="speakerIdentificationEnabled"
               :class="{ active: selectedTab === 'speakerRecognition' }">
@@ -58,7 +66,7 @@
             </li> -->
           </ul>
           <template v-if="!isImpersonatingCurrentOrganization">
-            <h4>{{ orgaName }}</h4>
+            <h4 class="section-caption">{{ orgaName }}</h4>
 
             <ul>
               <li
@@ -184,10 +192,9 @@
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
       </div>
-      <div
-        v-if="selectedTab === 'billing'"
-        class="app-settings__section"
-        :class="{ active: selectedTab === 'billing' }"></div>
+      <div v-if="selectedTab === 'billing'" class="app-settings__section">
+        <UserSettingsBilling v-if="isAuthenticated" />
+      </div>
     </div>
   </Modal>
 </template>
@@ -215,6 +222,7 @@ import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import SpeakerIdentificationSettings from "@/components/SpeakerIdentificationSettings.vue"
 import UserSettingsVoiceOptIn from "@/components/UserSettingsVoiceOptIn.vue"
+import UserSettingsBilling from "@/components/UserSettingsBilling.vue"
 
 export default {
   name: "AppSettingsModal",
@@ -236,6 +244,7 @@ export default {
     ApiTokenSettings,
     SpeakerIdentificationSettings,
     UserSettingsVoiceOptIn,
+    UserSettingsBilling,
   },
   data() {
     return {
@@ -251,6 +260,7 @@ export default {
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
       organizationId: "getCurrentOrganizationScope",
+      orgaName: "getCurrentOrganizationDisplayName",
     }),
     ...mapGetters("system", ["isMobile"]),
     ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
@@ -265,6 +275,9 @@ export default {
         this.$store.dispatch("settings/setModalOpen", value)
       },
     },
+    requestedTab() {
+      return this.$store.state.settings.requestedTab
+    },
     userName() {
       return this.user.firstname + " " + this.user.lastname
     },
@@ -274,8 +287,15 @@ export default {
       }
       return "xl"
     },
-    orgaName() {
-      return this.currentOrganization?.name
+  },
+  watch: {
+    // Reacts whether the modal was closed or already open, so a shortcut
+    // like the billing one still lands on the right tab either way.
+    requestedTab(tab) {
+      if (!tab) return
+      this.selectTab(tab)
+      // Consume it so a later plain "open settings" doesn't land here again.
+      this.$store.dispatch("settings/setRequestedTab", null)
     },
   },
   methods: {
@@ -344,9 +364,8 @@ export default {
     border-radius: 10px;
     //height: 100%;
 
+    // Typographic identity comes from .section-caption — only layout here.
     h4 {
-      font-size: 14px;
-      color: var(--text-secondary);
       margin-bottom: 0.25rem;
     }
 

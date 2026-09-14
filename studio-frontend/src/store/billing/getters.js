@@ -12,6 +12,8 @@ export default {
   usageByMember: (s) => s.usageByMember,
   subscription: (s) => s.subscription,
   loading: (s) => s.loading,
+  upgradeModalOpen: (s) => s.upgradeModalOpen,
+  upgradeReason: (s) => s.upgradeReason,
   planKey: (s) => s.usage?.planKey || s.subscription?.planKey || "free_payg",
   // normal | comp | managed
   mode: (s) => s.usage?.mode || s.subscription?.mode || "normal",

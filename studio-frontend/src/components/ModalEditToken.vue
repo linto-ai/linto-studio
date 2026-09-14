@@ -19,7 +19,7 @@
           <div class="avatar-upload__row">
             <Avatar
               size="lg"
-              color="#dadada"
+              tone="neutral"
               :src="avatarPreview"
               :text="avatarPreview ? '' : '?'" />
             <div class="avatar-upload__actions">

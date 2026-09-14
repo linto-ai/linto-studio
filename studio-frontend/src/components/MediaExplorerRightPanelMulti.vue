@@ -3,7 +3,7 @@
     <!-- Selected medias preview -->
     <div class="selected-medias-preview">
       <div class="preview-header">
-        <h4 class="section-title">
+        <h4 class="section-title field-label">
           {{ $t("media_explorer.panel.selected_medias") }}
         </h4>
         <Button
@@ -18,10 +18,9 @@
           v-for="media in selectedMedias"
           :key="media._id"
           class="media-preview-item">
-          <Avatar
-            :icon="isFromSession(media) ? 'microphone' : 'file-audio'"
-            color="neutral-10"
-            size="sm" />
+          <ph-icon
+            :name="isFromSession(media) ? 'microphone' : 'file-audio'"
+            color="neutral" />
           <div class="media-info">
             <span class="media-title">{{ media.title || media.name }}</span>
             <span class="media-date">{{ formatDate(media.created) }}</span>
@@ -48,7 +47,7 @@
 
     <!-- Bulk actions -->
     <div class="media-section bulk-actions">
-      <h4 class="section-title">
+      <h4 class="section-title field-label">
         {{ $t("media_explorer.panel.bulk_actions") }}
       </h4>
 
@@ -71,7 +70,7 @@
 
     <!-- Bulk tag management -->
     <div class="media-section bulk-tag-management">
-      <h4 class="section-title">
+      <h4 class="section-title field-label">
         {{ $t("media_explorer.panel.manage_tags") }}
       </h4>
 
@@ -100,7 +99,7 @@
     <div
       class="media-section"
       v-if="!readOnly && getCurrentScope == 'organization'">
-      <h4 class="section-title">
+      <h4 class="section-title field-label">
         {{ $t("folders.move_to_folder") }}
       </h4>
       <div class="actions-container">
@@ -114,7 +113,7 @@
     <div
       class="media-section"
       v-if="!readOnly && getCurrentScope == 'organization'">
-      <h4 class="section-title">
+      <h4 class="section-title field-label">
         {{ $t("media_explorer.panel.danger_zone") }}
       </h4>
       <div class="actions-container">
@@ -142,7 +141,6 @@
 import { mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 
-import Avatar from "@/components/atoms/Avatar.vue"
 import InputSelector from "@/components/atoms/InputSelector.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
@@ -153,7 +151,6 @@ export default {
   name: "MediaExplorerRightPanelMulti",
   mixins: [mediaExplorerRightPanelMixin, mediaScopeMixin],
   components: {
-    Avatar,
     InputSelector,
     Tooltip,
     ModalDeleteConversations,
@@ -418,12 +415,10 @@ export default {
   gap: 0.5rem;
 }
 
+/* Typographic identity comes from the shared .field-label utility class —
+   only layout stays local here. */
 .section-title {
   display: block;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--text-primary, #222);
-  line-height: 1.2;
   margin: 0;
 }
 

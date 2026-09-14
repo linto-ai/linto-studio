@@ -26,7 +26,7 @@
   max-width: 100%;
   overflow: auto;
 
-  &:hover:not([disabled]):not(.disabled) {
+  &:hover:not([disabled]):not(.disabled):not(.custom) {
     background-color: var(--btn-hover-bg, var(--background-primary));
     color: var(--btn-hover-text, var(--text-primary));
     transform: translateY(-1px);

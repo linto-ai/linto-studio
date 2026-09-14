@@ -34,7 +34,7 @@
             </div>
           </div>
           <div class="create-content">
-            <h4 class="create-title">
+            <h4 class="create-title card-title">
               {{ $t("publish.publication.upload_template") }}
             </h4>
             <p class="create-description">
@@ -872,11 +872,10 @@ export default {
   gap: 8px;
 }
 
+/* Typographic identity comes from the shared .card-title utility class —
+   only layout stays local here. */
 .create-title {
   margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary, #333);
 }
 
 .create-description {

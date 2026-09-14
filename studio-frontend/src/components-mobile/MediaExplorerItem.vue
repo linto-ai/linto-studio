@@ -19,15 +19,14 @@
       </span>
 
       <!-- Media type icon -->
-      <Avatar
-        :icon="isFromSession ? 'microphone' : 'file-audio'"
-        color="neutral-10"
-        size="sm" />
+      <ph-icon
+        :name="isFromSession ? 'microphone' : 'file-audio'"
+        color="neutral" />
 
       <!-- Owner avatar -->
       <Tooltip :text="convOwner.fullName" position="bottom">
         <Avatar
-          color="#dadada"
+          tone="neutral"
           :text="convOwner.fullName.substring(0, 1)"
           :src="convOwner.img"
           size="sm" />

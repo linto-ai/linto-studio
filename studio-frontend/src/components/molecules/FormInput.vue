@@ -1,7 +1,7 @@
 <template>
   <div class="form-field" :class="formFieldClasses">
     <div class="form-field__header" v-if="field.label">
-      <label class="form-field__label" :for="id">
+      <label class="form-field__label field-label" :for="id">
         {{ field.label }}
       </label>
       <slot name="content-after-label"></slot>
@@ -332,12 +332,10 @@ export default {
     gap: 0.5rem;
   }
 
+  // Typographic identity (weight/size/color/line-height) comes from the
+  // shared .field-label utility class — only layout stays local here.
   &__label {
     display: block;
-    font-weight: 600;
-    font-size: 0.875rem;
-    color: var(--text-primary, #222);
-    line-height: 1.2;
     margin: 0;
   }
 

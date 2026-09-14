@@ -1,5 +1,42 @@
 {
   "billing": {
+    "account": {
+      "title": "Billing",
+      "subtitle": "Plans, quotas and invoices for your organizations.",
+      "total_monthly": "Total monthly",
+      "summary_free": "{n} organization · free plan | {n} organizations · free plan",
+      "summary_paid": "{n} organization · next charge on {date} | {n} organizations · next charge on {date}",
+      "your_organizations": "Your organizations",
+      "create_business_org": "Create a business organization",
+      "personal_org_subtitle": "Personal organization · {n} member | Personal organization · {n} members",
+      "members_subtitle": "{n} member | {n} members",
+      "seats_subtitle": "{n} seat · per-seat quota | {n} seats · per-seat quota",
+      "price_per_month": "per month",
+      "price_per_seat_detail": "{seats} × {unitPrice} / month",
+      "current_quotas": "This month's quotas",
+      "reset_on": "Resets on {date}",
+      "member_consumption_link": "View usage per member",
+      "renews": "Auto-renews on {date}",
+      "renews_seats": "Auto-renews on {date} · {n} seat | Auto-renews on {date} · {n} seats",
+      "cancel_subscription": "Cancel subscription",
+      "billing_history": "Billing history",
+      "payment_method": "Account payment method: {method}",
+      "payment_method_edit": "Edit",
+      "table_date": "Date",
+      "table_organization": "Organization",
+      "table_amount": "Amount",
+      "table_invoice": "Invoice",
+      "no_invoice": "No invoice yet. The free plan isn't billed.",
+      "need_more_minutes": "Need more minutes?",
+      "upsell_hint": "Premium unlocks more transcription minutes for your personal space. Business adds unlimited offline transcription and seats for your team.",
+      "upgrade_premium": "Upgrade to Premium",
+      "meter": {
+        "offline": "Offline transcription",
+        "ai_summary": "AI summaries",
+        "chat": "Chat messages"
+      }
+    },
+    "unlimited": "Unlimited",
     "price_flat": "{price} / month",
     "price_per_seat": "{price} / seat / month",
     "used_of": "{used} of {total}",
@@ -13,6 +50,10 @@
     "upgrade_done": "Welcome to {plan}!",
     "limit_reached": "You've reached the limit of your plan.",
     "feature_locked": "This feature is included in a team plan.",
+    "footer": {
+      "usage": "{used} / {total}",
+      "upgrade_cta": "Upgrade"
+    },
     "mode": {
       "normal": "SaaS",
       "comp": "Complimentary",
@@ -27,9 +68,11 @@
     "live": {
       "title": "Live minutes",
       "balance": "Balance",
+      "remaining_suffix": "remaining",
       "expires": "Next expiry",
-      "low": "Low balance: a live needs at least 10 minutes per language to start.",
-      "buy": "Buy minutes",
+      "low": "Low balance. Credits don't renew — you top up with packs.",
+      "no_renewal": "Credits don't renew — you top up with packs.",
+      "buy": "Buy a pack",
       "buy_soon": "Live packs are bought through Stripe Checkout (next milestone).",
       "not_purchasable": "Live packs are available on paid plans.",
       "unmetered": "Live minutes are not metered for this organization."
@@ -706,19 +749,15 @@
     }
   },
   "createaccount": {
-    "create_account_button": "Create an account",
     "email_label": "Email",
     "email_verification_text": "You have just received an email to validate your account. Click on the verification link to start using Linto Studio.",
     "email_verification_title": "Congratulations, a Linto Studio account has been associated with your email address !",
     "first_name_label": "First name",
     "image_label": "Image (.png, .jpg) :",
     "last_name_label": "Last name",
-    "organization_description": "Create and share your transcripts, invite collaborators within organisations.",
-    "organization_name_label": "One last step : please name your first organisation, you can create others later",
-    "organization_title": "Name your organisation",
     "password_confirmation_label": "Password confirmation",
     "password_label": "Password",
-    "personal_button": "Next",
+    "personal_button": "Create an account",
     "personal_title": "Create an account",
     "picture_selected": "One picture selected",
     "picture_upload_label": "Upload a picture",
@@ -853,7 +892,7 @@
   "folders": {
     "uncategorized": "Inbox",
     "select_this_folder": "Choose “{name}”",
-    "create": "Create folder",
+    "create": "New folder",
     "create_placeholder": "Folder name...",
     "name_required": "Folder name is required",
     "create_subfolder": "Create subfolder",
@@ -1081,13 +1120,15 @@
       "logout": "Logout",
       "title": "User menu"
     },
+    "toggle_sidebar": "Collapse menu",
     "conversation": {
       "start": "Transcribe"
     },
     "sections": {
       "organization": "Organisation",
       "media": "Media",
-      "personal": "Personal"
+      "personal": "Personal",
+      "my_space": "My space"
     },
     "tabs": {
       "explore": "Media",
@@ -1120,12 +1161,53 @@
   },
   "onboarding": {
     "welcome_title": "Welcome to LinTO Studio",
-    "name_org_help": "To get started, give your organisation a name. This is your workspace: it's where you create transcriptions and can invite collaborators.",
-    "org_name_label": "Organisation name",
-    "org_name_placeholder": "e.g. My team, Comms department…",
-    "org_name_required": "Please enter a name.",
-    "continue": "Continue",
-    "generic_error": "Something went wrong. Please try again."
+    "kicker": "Welcome to LinTO Studio",
+    "billing_period": {
+      "label": "Billing period",
+      "monthly": "Monthly",
+      "annual": "Annual"
+    },
+    "most_popular": "Most popular",
+    "price_note_free": "No credit card required",
+    "price_note_billed_yearly": "Billed {price} per year ({freeMonths} months free)",
+    "price_note_annual_hint": "or {price} per year ({freeMonths} months free)",
+    "price_note_seats_minimum": "from {seats} seats",
+    "price_suffix_monthly": "/ month",
+    "price_suffix_per_seat": "/ seat / month",
+    "price_suffix_annual": "/ month, billed annually",
+    "price_suffix_per_seat_annual": "/ seat / month, billed annually",
+    "fair_use_note": "* Within reasonable use limits, not shared publicly.",
+    "plans": {
+      "free": {
+        "tagline": "To try it out, or for occasional use."
+      },
+      "premium": {
+        "tagline": "Freelancers, independent professionals, journalists, researchers, small associations."
+      },
+      "business": {
+        "tagline": "Teams and organizations: firms, local government, companies, federations."
+      }
+    },
+    "features": {
+      "transcription_hours": "{hours} h of transcription per month",
+      "transcription_hours_per_seat": "{hours} h of transcription per month and per seat",
+      "transcription_unlimited": "Unlimited* transcription per month",
+      "transcription_unlimited_per_seat": "Unlimited* transcription per seat",
+      "usage_all_unlimited": "Unlimited* transcription, summaries and chat per month",
+      "usage_all_unlimited_per_seat": "Unlimited* transcription, summaries and chat per seat",
+      "ai_and_chat_unlimited": "Unlimited* summaries and chat",
+      "ai_and_chat_unlimited_per_seat": "Unlimited* summaries and chat per seat",
+      "ai_and_chat_count": "{generations} AI summaries and {chat} chat messages per month",
+      "api_calls_unlimited": "Unlimited* API calls",
+      "api_calls_count": "{count} API calls per month",
+      "live_welcome": "{minutes} language-minutes of live offered, one time",
+      "live_packs": "Meeting bots and live microphone, with prepaid minutes",
+      "editor_suite": "Speaker recognition, collaborative editor, exports and document templates",
+      "invitations": "Free member and reader invitations",
+      "multi_orga": "Multiple organizations"
+    },
+    "payment_note": "Payment at the next step. Cancel anytime.",
+    "continue": "Continue with {plan}"
   },
   "organisation": {
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",

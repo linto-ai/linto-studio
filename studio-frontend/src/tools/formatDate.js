@@ -8,10 +8,9 @@ const RANGES = [
   [Infinity, "year", 31536000],
 ]
 
-export function timeAgo(date) {
+export function timeAgo(date, locale = "fr-FR") {
   const seconds = Math.round((Date.now() - new Date(date).getTime()) / 1000)
-  const lang = document.documentElement.lang || "en"
-  const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" })
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" })
 
   for (const [max, unit, divisor] of RANGES) {
     if (Math.abs(seconds) < max) {
@@ -45,10 +44,9 @@ export function formatDateLocale(dateString, fallback = "–") {
   return d.toLocaleDateString()
 }
 
-export function formatDateShort(dateString) {
+export function formatDateShort(dateString, locale = "fr-FR") {
   if (!dateString) return ""
-  const lang = document.documentElement.lang || "en"
-  return new Date(dateString).toLocaleString(lang, {
+  return new Date(dateString).toLocaleString(locale, {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -62,8 +60,9 @@ export function formatDateShort(dateString) {
  * Formats a date string using formatDateShort, returning "-" for empty/null values.
  * Convenience wrapper for display in table cells.
  * @param {string} dateString - ISO date string
+ * @param {string} locale - BCP-47 tag, e.g. this.$i18n.locale ("fr-FR")
  * @returns {string} Formatted date or "-"
  */
-export function formatDateOrDash(dateString) {
-  return formatDateShort(dateString) || "-"
+export function formatDateOrDash(dateString, locale) {
+  return formatDateShort(dateString, locale) || "-"
 }

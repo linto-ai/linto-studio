@@ -1,18 +1,18 @@
 <template>
   <header class="share-section-header">
-    <PhIcon :name="icon" framed frameColor="primary" />
+    <Avatar :icon="icon" tone="soft" size="xl" />
     <h4 class="share-section-header__title">{{ title }}</h4>
     <CountBadge>{{ count }}</CountBadge>
   </header>
 </template>
 
 <script>
-import PhIcon from "@/components/atoms/PhIcon.vue"
+import Avatar from "@/components/atoms/Avatar.vue"
 import CountBadge from "@/components/atoms/CountBadge.vue"
 
 export default {
   name: "ShareSectionHeader",
-  components: { PhIcon, CountBadge },
+  components: { Avatar, CountBadge },
   props: {
     icon: { type: String, required: true },
     title: { type: String, required: true },

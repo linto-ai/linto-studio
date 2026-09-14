@@ -12,7 +12,7 @@
       <template #cell-firstname="{ element }">
         <div class="flex gap-small align-center">
           <Avatar
-            color="#dadada"
+            tone="neutral"
             size="sm"
             :text="(element.firstname || '?').substring(0, 1)"
             :src="element.avatarSrc" />
