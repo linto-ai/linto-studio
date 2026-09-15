@@ -1,9 +1,12 @@
-// Pages the mobile app opens on purpose (editor, live) or that must never
-// bounce (auth callbacks, backoffice, the mobile app itself).
+// Pages the mobile app opens on purpose (editor, live, account creation,
+// password reset) or that must never bounce (auth callbacks, backoffice,
+// the mobile app itself).
 const EXCLUDED_PATH_PATTERNS = [
   /^\/m(\/|$)/,
   /^\/backoffice/,
   /^\/login\/oidc/,
+  /^\/create-account/,
+  /^\/reset-password/,
   /^\/magiclink-auth/,
   /^\/interface\/[^/]+\/conversations\/(?!create)/,
   /^\/interface\/[^/]+\/quick-session/,
