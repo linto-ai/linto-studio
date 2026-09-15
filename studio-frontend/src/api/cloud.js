@@ -79,6 +79,23 @@ export async function apiCreateSubscription(
   return res?.data
 }
 
+// POST /cloud/checkout { organizationId, planKey, interval?, returnUrl? }
+// -> { url, sessionId }. The caller redirects the browser to url.
+export async function apiCreateCheckout(
+  organizationId,
+  planKey,
+  returnUrl,
+  notif = null,
+) {
+  const res = await sendRequest(
+    `${CLOUD_API}/checkout`,
+    { method: "post" },
+    { organizationId, planKey, returnUrl },
+    notif,
+  )
+  return res?.data
+}
+
 // DELETE /cloud/subscriptions/:id  (?immediate=true) -> updated subscription
 export async function apiCancelSubscription(
   subscriptionId,

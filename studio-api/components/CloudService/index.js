@@ -145,13 +145,15 @@ class CloudService extends Component {
     // slot after authentication (lib/saas.afterAuth).
     this.paymentProcessor.hostAfterAuth = this.paymentProcessor.apiCallMeter()
 
-    this.app.components.WebServer.express.use(
-      "/cloud",
-      this.paymentProcessor.apiRouter(buildGuards()),
-    )
+    // Webhook first: the /cloud router parses JSON, which would consume the
+    // raw body Stripe signs.
     this.app.components.WebServer.express.use(
       "/cloud/webhook",
       this.paymentProcessor.webhookRouter(),
+    )
+    this.app.components.WebServer.express.use(
+      "/cloud",
+      this.paymentProcessor.apiRouter(buildGuards()),
     )
 
     return this

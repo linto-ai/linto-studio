@@ -167,6 +167,7 @@
           v-if="selectedTab === 'organization-information'"
           class="app-settings__section">
           <UpdateOrganizationForm :currentOrganization="currentOrganization" />
+          <DevSubscribeButtons :currentOrganization="currentOrganization" />
           <UpdateOrganizationDeletion
             v-if="isAdmin"
             :currentOrganization="currentOrganization" />
@@ -217,6 +218,7 @@ import UserSettingsAvatar from "@/components/UserSettingsAvatar.vue"
 import UserSettingsPreferences from "@/components/UserSettingsPreferences.vue"
 import TagManagement from "@/components/TagManagement.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
+import DevSubscribeButtons from "@/components-cloud/DevSubscribeButtons.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
 import UpdateOrganizationSso from "@/components/UpdateOrganizationSso.vue"
@@ -240,6 +242,7 @@ export default {
     UserSettingsPreferences,
     TagManagement,
     UpdateOrganizationForm,
+    DevSubscribeButtons,
     UpdateOrganizationUsers,
     UpdateOrganizationDeletion,
     UpdateOrganizationSso,

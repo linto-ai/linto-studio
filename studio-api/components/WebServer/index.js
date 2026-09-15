@@ -77,11 +77,13 @@ class WebServer extends Component {
     this.express.set("etag", false)
     this.express.set("trust proxy", true)
 
-    this.express.use(
-      bodyParser.json({
-        limit: process.env.EXPRESS_SIZE_FILE_MAX,
-        extended: true,
-      }),
+    const jsonParser = bodyParser.json({
+      limit: process.env.EXPRESS_SIZE_FILE_MAX,
+      extended: true,
+    })
+    // Stripe signs the raw body: /cloud/webhook keeps its own raw parser.
+    this.express.use((req, res, next) =>
+      req.path === "/cloud/webhook" ? next() : jsonParser(req, res, next),
     )
     this.express.use(
       bodyParser.urlencoded({
