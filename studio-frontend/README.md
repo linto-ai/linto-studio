@@ -56,8 +56,9 @@ nginx serves `mobile.html` for every `/m/*` navigation (`config/nginx/nginx.conf
 
 - `npm run dev` serves both apps: open `http://localhost:8080/m/`.
 - `npm run build` builds the classic app, then the mobile app.
-- `VUE_APP_ENABLE_MOBILE_APP=true` sends phones (viewport up to 767px) that
-  open the classic app to `/m/`. Off by default. The "Full Studio version"
+- `VUE_APP_ENABLE_MOBILE_APP` (default `true`) sends phones (touch screen,
+  short side up to 767px) that open the classic app to `/m/`. Set it to
+  `false` to keep phones on the classic interface. The "Full Studio version"
   entry of the mobile account sheet sets a `mobile_optout` cookie.
 - The service worker (`sw-mobile.js`, Workbox) is scoped to `/m/` and only
   registered by the mobile app, in production builds. To try it locally:
