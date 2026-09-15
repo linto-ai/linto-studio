@@ -38,6 +38,9 @@
             pending ? $t("mobile.common.loading") : $t("mobile.login.submit")
           }}
         </button>
+        <a href="/reset-password" class="m-login__link">{{
+          $t("login.recover_password")
+        }}</a>
       </form>
 
       <div v-if="methods.oidc.length > 0" class="m-login__sso">

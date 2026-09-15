@@ -20,7 +20,10 @@
   },
   "organization": {
     "switch": "Changer",
-    "choose": "Choisir une organisation"
+    "choose": "Choisir une organisation",
+    "set_favorite": "Définir comme organisation favorite",
+    "unset_favorite": "Retirer des favorites",
+    "favorite_hint": "L'application s'ouvre sur l'organisation favorite, sinon sur Mon espace."
   },
   "account": {
     "title": "Compte",

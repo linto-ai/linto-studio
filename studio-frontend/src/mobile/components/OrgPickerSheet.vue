@@ -4,7 +4,7 @@
     :title="$t('mobile.organization.choose')"
     @input="$emit('input', $event)">
     <ul class="m-org-list">
-      <li v-for="org in organizations" :key="org._id">
+      <li v-for="org in organizations" :key="org._id" class="m-org-list__row">
         <button
           type="button"
           class="m-org-list__item"
@@ -23,23 +23,43 @@
             size="md"
             weight="bold" />
         </button>
+        <IconButton
+          icon="star"
+          :weight="org._id === favoriteId ? 'fill' : 'regular'"
+          :label="
+            $t(
+              org._id === favoriteId
+                ? 'mobile.organization.unset_favorite'
+                : 'mobile.organization.set_favorite',
+            )
+          "
+          class="m-org-list__star"
+          :class="{ 'm-org-list__star--on': org._id === favoriteId }"
+          @click="$emit('toggle-favorite', org._id)" />
       </li>
     </ul>
+    <p class="m-muted m-org-list__hint">
+      {{ $t("mobile.organization.favorite_hint") }}
+    </p>
   </BottomSheet>
 </template>
 
 <script>
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
+import IconButton from "@/mobile/components/IconButton.vue"
 import { getOrganizationRoleKey } from "@/mobile/tools/getOrganizationRoleKey.js"
 
 export default {
   name: "OrgPickerSheet",
-  components: { BottomSheet, PhIcon },
+  components: { BottomSheet, PhIcon, IconButton },
   props: {
     value: { type: Boolean, default: false },
     organizations: { type: Array, required: true },
     currentId: { type: String, default: "" },
+    // The favorite organization opens by default (otherwise the personal
+    // space does); the star toggles it.
+    favoriteId: { type: String, default: null },
   },
   methods: {
     roleKey: getOrganizationRoleKey,
@@ -48,6 +68,25 @@ export default {
 </script>
 
 <style scoped>
+.m-org-list__row {
+  display: flex;
+  align-items: center;
+}
+
+.m-org-list__row .m-org-list__item {
+  flex: 1;
+  min-width: 0;
+}
+
+.m-org-list__star--on {
+  color: var(--m-warning);
+}
+
+.m-org-list__hint {
+  margin: var(--m-space-2) 0 0;
+  font-size: var(--m-font-size-sm);
+}
+
 .m-org-list {
   list-style: none;
   margin: 0;

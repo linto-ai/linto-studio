@@ -42,7 +42,9 @@
       v-model="organizationsOpen"
       :organizations="organizations"
       :current-id="organizationId"
-      @select="selectOrganization" />
+      :favorite-id="favoriteOrganizationId"
+      @select="selectOrganization"
+      @toggle-favorite="toggleFavoriteOrganization" />
     <AccountSheet
       v-model="accountOpen"
       :user-name="userName"
@@ -94,6 +96,9 @@ export default {
     ...mapGetters("organizations", {
       organizationList: "getOrganizationsAsArray",
     }),
+    ...mapGetters("user", {
+      favoriteOrganizationId: "getFavoriteOrganizationId",
+    }),
     organizations() {
       return listUserOrganizations(
         this.organizationList,
@@ -113,6 +118,7 @@ export default {
   },
   methods: {
     ...mapActions("organizations", ["setCurrentOrganizationScope"]),
+    ...mapActions("user", ["toggleFavoriteOrganization"]),
     async selectOrganization(organizationId) {
       this.organizationsOpen = false
       await this.setCurrentOrganizationScope(organizationId)

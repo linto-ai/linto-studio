@@ -1,6 +1,8 @@
 <template>
-  <a :href="href" class="m-sso">
-    <img :src="icon" alt="" class="m-sso__icon" />
+  <a :href="href" class="m-sso" @click="markSsoReturn">
+    <span class="m-sso__disc" :style="{ background: icon.background }">
+      <img :src="icon.src" alt="" class="m-sso__icon" />
+    </span>
     <span>{{ label }}</span>
   </a>
 </template>
@@ -8,10 +10,12 @@
 <script>
 import { getEnv } from "@/tools/getEnv"
 import { oidcProviderIcon } from "@/mobile/tools/oidcProviderIcon.js"
+import { markSsoReturn } from "@/mobile/services/session/markSsoReturn.js"
 
 // One OIDC provider of the login page. Same target as the classic button:
 // the API starts the flow and lands on /login/oidc, whose page reloads "/"
-// once the cookies are set, so a phone comes back to the mobile app.
+// once the cookies are set; the SSO-return cookie set here brings that
+// load back to the mobile app.
 export default {
   name: "SsoProviderLink",
   props: {
@@ -30,6 +34,7 @@ export default {
       return this.$te(key) ? this.$t(key) : this.$t("login.sso.default")
     },
   },
+  methods: { markSsoReturn },
 }
 </script>
 
@@ -46,6 +51,16 @@ export default {
   color: var(--m-text);
   font-weight: 600;
   text-decoration: none;
+}
+
+.m-sso__disc {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--m-radius-round);
 }
 
 .m-sso__icon {
