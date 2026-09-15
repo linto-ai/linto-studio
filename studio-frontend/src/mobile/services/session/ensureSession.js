@@ -1,5 +1,6 @@
 import store from "@/mobile/store.js"
 import { logout } from "@/tools/logout"
+import { pickDefaultOrganization } from "@/mobile/tools/pickDefaultOrganization.js"
 
 // Loads the user, its organizations and the current organization scope once.
 // Returns false when the cookie is stale (the caller sends the user to login).
@@ -43,7 +44,13 @@ async function selectOrganizationScope() {
   if (store.getters["organizations/getCurrentOrganization"]) {
     return
   }
-  const organizationId = store.getters["organizations/getDefaultOrganizationId"]
+  // Not the classic default (last organization used): the favorite one,
+  // otherwise the personal space.
+  const organizationId = pickDefaultOrganization(
+    store.getters["organizations/getOrganizationsAsArray"],
+    store.getters["user/getUserId"],
+    store.getters["user/getFavoriteOrganizationId"],
+  )
   await store.dispatch(
     "organizations/setCurrentOrganizationScope",
     organizationId,

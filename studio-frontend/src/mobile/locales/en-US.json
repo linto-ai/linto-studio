@@ -20,7 +20,10 @@
   },
   "organization": {
     "switch": "Switch",
-    "choose": "Choose an organization"
+    "choose": "Choose an organization",
+    "set_favorite": "Set as favorite organization",
+    "unset_favorite": "Remove from favorites",
+    "favorite_hint": "The app opens on the favorite organization, otherwise on My space."
   },
   "account": {
     "title": "Account",
