@@ -1,9 +1,4 @@
 const STATUS_VIEWS = Object.freeze({
-  ready: {
-    tone: "warning",
-    icon: "hand",
-    label: "mobile.queue.status_ready",
-  },
   queued_online: {
     tone: "info",
     icon: "clock",
@@ -25,7 +20,7 @@ const STATUS_VIEWS = Object.freeze({
     label: "mobile.queue.status_error",
   },
   uploaded: {
-    tone: "info",
+    tone: "success",
     icon: "check",
     label: "mobile.queue.status_uploaded",
   },

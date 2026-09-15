@@ -1,15 +1,19 @@
 import { formatDurationShort } from "@/mobile/tools/formatDurationShort.js"
 import { formatFileSize } from "@/mobile/tools/formatFileSize.js"
 import { isRecordingQuiet } from "@/mobile/tools/isRecordingQuiet.js"
+import { saveKeepAudioPreference } from "@/mobile/services/preferences/keepAudioPreference.js"
+import { buildRecordingFile } from "@/mobile/services/recording/buildRecordingFile.js"
+import { shareFile } from "@/mobile/services/export/shareFile.js"
 
-// What the Record page does with queue items: the stop sheet after a
-// recording, and the per-item actions sheet (send, rename, delete).
-export const queueActionsMixin = {
+// What the Record page does with its recordings: the stop sheet after a
+// recording (name, keep the audio, then it is sent by itself) and the
+// detail sheet of a library entry.
+export const libraryActionsMixin = {
   data() {
     return {
       stopSheetOpen: false,
       stoppedRecording: null,
-      actionsOpen: false,
+      recordingSheetOpen: false,
       selected: null,
     }
   },
@@ -26,6 +30,11 @@ export const queueActionsMixin = {
       return this.$t("mobile.record.stopped_summary", { duration, size })
     },
   },
+  watch: {
+    stopSheetOpen(open) {
+      if (!open) this.onStopSheetClosed()
+    },
+  },
   methods: {
     onRecordingStopped(id) {
       this.stoppedRecording = this.$store.getters["mobileRecordings/byId"](id)
@@ -37,43 +46,56 @@ export const queueActionsMixin = {
         )
       }
     },
-    async sendStopped(name) {
-      this.stopSheetOpen = false
+    async finishStopped({ name, keepAudio }) {
+      const id = this.stoppedRecording.id
+      saveKeepAudioPreference(keepAudio)
       await this.$store.dispatch("mobileRecordings/patch", {
-        id: this.stoppedRecording.id,
+        id,
         name,
+        keepAudio,
         status: "queued",
       })
-      this.$store.dispatch("mobileRecordings/upload", this.stoppedRecording.id)
-    },
-    async keepStopped(name) {
       this.stopSheetOpen = false
-      await this.$store.dispatch("mobileRecordings/patch", {
-        id: this.stoppedRecording.id,
-        name,
-      })
+      this.$store.dispatch("mobileRecordings/upload", id)
     },
-    openActions(recording) {
+    // The sheet dismissed without "Done": sent all the same, as it stands.
+    onStopSheetClosed() {
+      const current = this.$store.getters["mobileRecordings/byId"](
+        this.stoppedRecording?.id,
+      )
+      if (current?.status !== "naming") return
+      this.finishStopped({ name: current.name, keepAudio: current.keepAudio })
+    },
+    openRecording(recording) {
       this.selected = recording
-      this.actionsOpen = true
+      this.recordingSheetOpen = true
     },
-    async sendRecording(recording) {
-      this.actionsOpen = false
-      await this.$store.dispatch("mobileRecordings/patch", {
+    retryUpload(recording) {
+      this.$store.dispatch("mobileRecordings/patch", {
         id: recording.id,
         status: "queued",
+        error: null,
       })
       this.$store.dispatch("mobileRecordings/upload", recording.id)
     },
     async renameRecording({ recording, name }) {
-      this.actionsOpen = false
       await this.$store.dispatch("mobileRecordings/patch", {
         id: recording.id,
         name,
       })
     },
+    async shareAudio(recording) {
+      const file = await buildRecordingFile(recording)
+      const outcome = file ? await shareFile(file, recording.name) : "failed"
+      if (outcome === "failed") {
+        this.$store.dispatch(
+          "system/showError",
+          this.$t("mobile.library.share_audio_failed"),
+        )
+      }
+    },
     async removeRecording(recording) {
-      this.actionsOpen = false
+      this.recordingSheetOpen = false
       await this.$store.dispatch("mobileRecordings/remove", recording.id)
     },
   },

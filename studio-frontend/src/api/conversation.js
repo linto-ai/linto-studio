@@ -323,7 +323,9 @@ export async function apiCreateConversation(
       onUploadProgress,
     )
 
-    if (req.status === "success") return { success: true }
+    if (req.status === "success") {
+      return { success: true, conversationId: req.data?.conversationId }
+    }
     return {
       success: false,
       errorCode: req.error?.response?.data?.code,

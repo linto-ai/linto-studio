@@ -82,27 +82,19 @@
     "name": "Name",
     "default_name": "Recording",
     "stopped_summary": "{duration} · {size} · saved on this phone",
-    "send": "Send for transcription",
-    "keep": "Keep for later",
-    "offline_send": "Offline: the upload will start automatically when the network is back.",
+    "offline_send": "Offline: the recording will be sent by itself when the network is back.",
     "interrupted": "The recording was interrupted (call, screen lock or microphone lost). What was captured is kept.",
     "microphone": "Microphone",
     "microphone_default": "Default microphone",
     "microphone_choose": "Choose the microphone",
     "microphone_permission": "Allow the microphone to list the inputs.",
     "quiet_warning": "The microphone barely picked up anything. Check the selected input before sending: an empty transcription fails.",
-    "sharing_line": "{right} for the organization · {folder}"
+    "sharing_line": "{right} for the organization · {folder}",
+    "finish": "Done"
   },
   "queue": {
-    "title": "Pending ({count})",
-    "empty": "No pending recording.",
-    "recent": "Recently sent",
-    "actions": "Actions",
-    "send_now": "Send now",
     "rename": "Rename",
-    "delete": "Delete",
-    "status_ready": "Kept",
-    "status_offline": "Offline",
+    "status_offline": "Will be sent when back online",
     "status_uploading": "Sending {progress}%",
     "status_error": "Error",
     "status_uploaded": "Sent",
@@ -112,8 +104,9 @@
     "error_offline": "Offline, will retry when the network is back.",
     "error_network": "The server did not answer, automatic retry.",
     "error_missing": "Recording not found on this phone.",
-    "status_queued": "Sending soon",
-    "play_failed": "Audio not found on this phone."
+    "status_queued": "Sending automatically",
+    "play_failed": "Audio not found on this phone.",
+    "actions": "Actions"
   },
   "settings": {
     "title": "Transcription",
@@ -214,5 +207,23 @@
     "update_failed": "The right could not be changed.",
     "invite_failed": "The invitation could not be sent.",
     "external_hint": "Search an email address above to share with someone from another organization."
+  },
+  "library": {
+    "title": "My recordings",
+    "empty": "No recording on this phone.",
+    "storage": "{size} on this phone",
+    "keep_audio": "Keep the audio on this phone",
+    "keep_audio_hint": "To listen to it again or share it, even offline.",
+    "open_transcript": "Open the transcript",
+    "transcript_processing": "Transcription in progress",
+    "transcript_missing": "The transcript no longer exists on the server. The audio stays here.",
+    "links_failed": "The server could not be reached for this recording.",
+    "share_document": "Share as PDF",
+    "retry": "Send again",
+    "share_audio": "Share the audio",
+    "discard_audio": "Delete the audio from this phone",
+    "discard_hint": "The media and its transcript stay in My media.",
+    "cancel_upload": "Cancel sending and delete",
+    "share_audio_failed": "The audio could not be shared."
   }
 }
