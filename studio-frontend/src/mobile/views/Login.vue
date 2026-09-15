@@ -10,7 +10,7 @@
       <h1 class="m-login__title">LinTO Studio</h1>
       <p class="m-muted">{{ $t("mobile.login.title") }}</p>
 
-      <form class="m-login__form" @submit.prevent="submit">
+      <form v-if="methods.local" class="m-login__form" @submit.prevent="submit">
         <label class="m-field">
           <span>{{ $t("mobile.login.email") }}</span>
           <input
@@ -40,7 +40,14 @@
         </button>
       </form>
 
-      <a href="/login" class="m-login__link">{{ $t("mobile.login.sso") }}</a>
+      <div v-if="methods.oidc.length > 0" class="m-login__sso">
+        <p class="m-muted">{{ $t("login.or_continue_with") }}</p>
+        <SsoProviderLink
+          v-for="provider in methods.oidc"
+          :key="provider.name"
+          :name="provider.name"
+          :path="provider.path" />
+      </div>
       <a href="/create-account" class="m-login__link">{{
         $t("mobile.login.create_account")
       }}</a>
@@ -55,6 +62,8 @@ import PhIcon from "@/components/atoms/PhIcon.vue"
 import InstallBanner from "@/mobile/components/InstallBanner.vue"
 import InstallGuideIos from "@/mobile/components/InstallGuideIos.vue"
 import InstallGuideAndroid from "@/mobile/components/InstallGuideAndroid.vue"
+import SsoProviderLink from "@/mobile/components/SsoProviderLink.vue"
+import { loadLoginMethods } from "@/mobile/services/session/loadLoginMethods.js"
 import { loginWithPassword } from "@/mobile/services/session/loginWithPassword.js"
 import { installMixin } from "@/mobile/mixins/install.js"
 
@@ -62,10 +71,25 @@ import { installMixin } from "@/mobile/mixins/install.js"
 // offer is made right away, before signing in.
 export default {
   name: "MobileLogin",
-  components: { PhIcon, InstallBanner, InstallGuideIos, InstallGuideAndroid },
+  components: {
+    PhIcon,
+    InstallBanner,
+    InstallGuideIos,
+    InstallGuideAndroid,
+    SsoProviderLink,
+  },
   mixins: [installMixin],
   data() {
-    return { email: "", password: "", pending: false, failed: false }
+    return {
+      email: "",
+      password: "",
+      pending: false,
+      failed: false,
+      methods: { local: true, oidc: [] },
+    }
+  },
+  async created() {
+    this.methods = await loadLoginMethods()
   },
   methods: {
     async submit() {
@@ -150,6 +174,17 @@ export default {
 
 .m-login__submit:disabled {
   opacity: 0.6;
+}
+
+.m-login__sso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--m-space-2);
+  margin-top: var(--m-space-4);
+}
+
+.m-login__sso p {
+  margin: 0;
 }
 
 .m-login__link {

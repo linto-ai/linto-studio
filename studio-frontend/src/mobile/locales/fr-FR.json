@@ -34,7 +34,6 @@
     "email": "E-mail",
     "password": "Mot de passe",
     "submit": "Se connecter",
-    "sso": "Se connecter avec un compte externe (SSO)",
     "create_account": "Créer un compte",
     "error": "E-mail ou mot de passe incorrect"
   },

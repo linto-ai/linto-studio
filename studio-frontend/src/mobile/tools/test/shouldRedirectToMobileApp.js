@@ -41,6 +41,12 @@ test("shouldRedirectToMobileApp() never loops on the mobile app or auth callback
     shouldRedirectToMobileApp({ ...phoneOnRoot, pathname: "/login/oidc" }),
   )
   t.false(
+    shouldRedirectToMobileApp({ ...phoneOnRoot, pathname: "/create-account" }),
+  )
+  t.false(
+    shouldRedirectToMobileApp({ ...phoneOnRoot, pathname: "/reset-password" }),
+  )
+  t.false(
     shouldRedirectToMobileApp({
       ...phoneOnRoot,
       pathname: "/magiclink-auth/abc",
