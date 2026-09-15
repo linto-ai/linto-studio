@@ -12,20 +12,28 @@
       {{ $t("mobile.record.quiet_warning") }}
     </InfoBanner>
     <form class="m-stop" @submit.prevent="$emit('send', name)">
+      <InfoBanner v-if="!online" tone="warning">
+        {{ $t("mobile.record.offline_send") }}
+      </InfoBanner>
       <label class="m-stop__field">
         <span>{{ $t("mobile.record.name") }}</span>
         <input v-model="name" type="text" required maxlength="200" />
       </label>
-      <InfoBanner v-if="!online" tone="warning">
-        {{ $t("mobile.record.offline_send") }}
-      </InfoBanner>
-      <button type="submit" class="m-stop__send">
-        <PhIcon name="upload-simple" size="sm" />
-        {{ $t("mobile.record.send") }}
-      </button>
-      <button type="button" class="m-stop__keep" @click="$emit('keep', name)">
-        {{ $t("mobile.record.keep") }}
-      </button>
+      <p v-if="sharingSummary" class="m-muted m-stop__sharing">
+        {{ sharingSummary }}
+      </p>
+      <!-- Both actions sit right under the name: while it is edited the
+           keyboard covers the bottom of the sheet and the browser only keeps
+           the focused field in view. -->
+      <div class="m-stop__actions">
+        <button type="button" class="m-stop__keep" @click="$emit('keep', name)">
+          {{ $t("mobile.record.keep") }}
+        </button>
+        <button type="submit" class="m-stop__send">
+          <PhIcon name="upload-simple" size="sm" />
+          {{ $t("mobile.record.send") }}
+        </button>
+      </div>
     </form>
   </BottomSheet>
 </template>
@@ -47,6 +55,7 @@ export default {
     recordingId: { type: String, default: "" },
     mimeType: { type: String, default: "" },
     quiet: { type: Boolean, default: false },
+    sharingSummary: { type: String, default: "" },
   },
   data() {
     return { name: this.defaultName }
@@ -85,7 +94,18 @@ export default {
   background: var(--m-surface);
 }
 
+.m-stop__sharing {
+  margin: 0;
+  font-size: var(--m-font-size-sm);
+}
+
+.m-stop__actions {
+  display: flex;
+  gap: var(--m-space-2);
+}
+
 .m-stop__send {
+  flex: 1.3;
   min-height: 52px;
   display: inline-flex;
   align-items: center;
@@ -99,9 +119,11 @@ export default {
 }
 
 .m-stop__keep {
-  min-height: var(--m-tap);
-  border: none;
-  background: transparent;
+  flex: 1;
+  min-height: 52px;
+  border: 1px solid var(--m-border);
+  border-radius: var(--m-radius-sm);
+  background: var(--m-surface);
   color: var(--m-primary);
   font-weight: 600;
 }

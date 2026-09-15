@@ -8,6 +8,21 @@
         :label="$t('mobile.media.open')"
         :chevron="false"
         @click="$emit('open', media)" />
+      <template v-if="isReady">
+        <ListRow
+          v-for="option in exportFormats"
+          :key="option.format"
+          :icon="option.icon"
+          :label="$t(option.labelKey)"
+          :chevron="false"
+          @click="$emit('export', { media, format: option.format })" />
+      </template>
+      <ListRow
+        v-if="shareable"
+        icon="users"
+        :label="$t('mobile.media.share_studio')"
+        :chevron="false"
+        @click="$emit('share', media)" />
       <ListRow
         v-if="!confirmingDelete"
         icon="trash"
@@ -33,9 +48,11 @@ import ListRow from "@/mobile/components/ListRow.vue"
 import { mediaProgressMixin } from "@/mixins/mediaProgress.js"
 import { formatDurationShort } from "@/mobile/tools/formatDurationShort.js"
 import { formatMediaDate } from "@/mobile/tools/formatMediaDate.js"
+import { TRANSCRIPT_EXPORT_FORMATS } from "@/mobile/const/transcriptExportFormats.js"
 
-// Actions on one media. Deleting asks for a second tap on the same row
-// instead of a separate dialog.
+// Actions on one media: open, share the verbatim through the phone, share
+// inside Studio (when the user may), delete. Deleting asks for a second tap
+// on the same row instead of a separate dialog.
 export default {
   name: "MediaActionsSheet",
   components: { BottomSheet, ListRow },
@@ -43,9 +60,10 @@ export default {
   props: {
     value: { type: Boolean, default: false },
     media: { type: Object, default: null },
+    shareable: { type: Boolean, default: false },
   },
   data() {
-    return { confirmingDelete: false }
+    return { confirmingDelete: false, exportFormats: TRANSCRIPT_EXPORT_FORMATS }
   },
   computed: {
     isReady() {

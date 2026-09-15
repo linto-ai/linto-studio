@@ -1,4 +1,4 @@
-import { listChildFolders } from "@/mobile/tools/listChildFolders.js"
+import { describeFolderPosition } from "@/mobile/tools/describeFolderPosition.js"
 import { buildFolderPath } from "@/mobile/tools/buildFolderPath.js"
 
 // Where the media list stands in the folder tree: the current folder comes
@@ -12,23 +12,19 @@ export const folderNavigationMixin = {
     folders() {
       return this.$store.state.folders.folders ?? []
     },
+    position() {
+      return describeFolderPosition(this.folders, this.folderId)
+    },
     currentFolder() {
-      return this.$store.getters["folders/getFolderById"](this.folderId) ?? null
+      return this.position.current
     },
     subfolders() {
-      return listChildFolders(this.folders, this.folderId).map((folder) => ({
-        ...folder,
-        childCount: listChildFolders(this.folders, folder._id).length,
-      }))
+      return this.position.subfolders
     },
     // undefined at the top level (no "up" row), null when the parent is the
     // top level, the parent folder otherwise.
     parentFolder() {
-      if (!this.folderId) return undefined
-      const parentId = this.currentFolder?.parentId
-      return parentId
-        ? (this.$store.getters["folders/getFolderById"](parentId) ?? null)
-        : null
+      return this.position.parent
     },
     folderPath() {
       return buildFolderPath(this.folders, this.folderId)

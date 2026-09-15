@@ -90,7 +90,8 @@
     "microphone_default": "Default microphone",
     "microphone_choose": "Choose the microphone",
     "microphone_permission": "Allow the microphone to list the inputs.",
-    "quiet_warning": "The microphone barely picked up anything. Check the selected input before sending: an empty transcription fails."
+    "quiet_warning": "The microphone barely picked up anything. Check the selected input before sending: an empty transcription fails.",
+    "sharing_line": "{right} for the organization · {folder}"
   },
   "queue": {
     "title": "Pending ({count})",
@@ -129,7 +130,11 @@
     "voices_on": "voices recognized",
     "voices_organization": "Organization default voices",
     "voices_list": "Show the voices",
-    "voices_none": "No enrolled voice yet."
+    "voices_none": "No enrolled voice yet.",
+    "sharing_title": "Sharing and filing",
+    "members_right": "Organization members' right",
+    "folder": "Folder",
+    "sharing_help": "Applies to the next recordings. Sharing of a media is changed later from the media list."
   },
   "media": {
     "search": "Search media",
@@ -159,7 +164,13 @@
     "inbox_hint": "Newest first",
     "up_to": "Up to {name}",
     "subfolders": "{count} subfolder | {count} subfolders",
-    "no_subfolder": "No subfolder here."
+    "no_subfolder": "No subfolder here.",
+    "share_pdf": "Share as PDF",
+    "share_text": "Share as text",
+    "share_studio": "Share in LinTO Studio",
+    "export_preparing": "Preparing the file…",
+    "export_failed": "The file could not be prepared.",
+    "export_downloaded": "File downloaded."
   },
   "live": {
     "intro": "Captions during the meeting, live translation, then a conversation in your media.",
@@ -195,5 +206,13 @@
   "conversation": {
     "load_failed": "Cannot open this conversation.",
     "publish_in_studio": "Publishing is done from the full Studio version."
+  },
+  "share": {
+    "search_placeholder": "Name or email address",
+    "custom_right": "Custom right",
+    "load_failed": "Sharing could not be loaded.",
+    "update_failed": "The right could not be changed.",
+    "invite_failed": "The invitation could not be sent.",
+    "external_hint": "Search an email address above to share with someone from another organization."
   }
 }

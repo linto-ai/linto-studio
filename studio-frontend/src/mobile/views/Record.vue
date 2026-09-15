@@ -77,6 +77,7 @@
       :recording-id="stoppedRecording ? stoppedRecording.id : ''"
       :mime-type="stoppedRecording ? stoppedRecording.mimeType : ''"
       :quiet="stoppedQuiet"
+      :sharing-summary="sharingSummary"
       @send="sendStopped"
       @keep="keepStopped" />
     <MicrophoneSheet
@@ -160,7 +161,11 @@ export default {
       if (this.isRecording) {
         this.stopRecording()
       } else if (this.recorder.state === "idle" && this.transcriptionSettings) {
-        this.startRecording(this.transcriptionSettings, this.microphoneId)
+        this.startRecording(
+          this.transcriptionSettings,
+          this.microphoneId,
+          this.sharingSettings,
+        )
       }
     },
   },

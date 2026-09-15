@@ -90,7 +90,8 @@
     "microphone_default": "Micro par défaut",
     "microphone_choose": "Choisir le micro",
     "microphone_permission": "Autorisez le micro pour voir la liste des entrées.",
-    "quiet_warning": "Le micro n'a presque rien capté. Vérifiez l'entrée choisie avant d'envoyer : une transcription vide tombe en erreur."
+    "quiet_warning": "Le micro n'a presque rien capté. Vérifiez l'entrée choisie avant d'envoyer : une transcription vide tombe en erreur.",
+    "sharing_line": "{right} pour l'organisation · {folder}"
   },
   "queue": {
     "title": "En attente ({count})",
@@ -129,7 +130,11 @@
     "voices_on": "voix reconnues",
     "voices_organization": "Voix par défaut de l'organisation",
     "voices_list": "Voir les voix",
-    "voices_none": "Aucune voix enregistrée pour l'instant."
+    "voices_none": "Aucune voix enregistrée pour l'instant.",
+    "sharing_title": "Partage et rangement",
+    "members_right": "Droits des membres de l'organisation",
+    "folder": "Dossier",
+    "sharing_help": "S'applique aux prochains enregistrements. Le partage d'un média se modifie ensuite depuis la liste des médias."
   },
   "media": {
     "search": "Rechercher un média",
@@ -159,7 +164,13 @@
     "inbox_hint": "Les plus récents en premier",
     "up_to": "Remonter vers {name}",
     "subfolders": "{count} sous-dossier | {count} sous-dossiers",
-    "no_subfolder": "Aucun sous-dossier ici."
+    "no_subfolder": "Aucun sous-dossier ici.",
+    "share_pdf": "Partager en PDF",
+    "share_text": "Partager en texte",
+    "share_studio": "Partager dans LinTO Studio",
+    "export_preparing": "Préparation du fichier…",
+    "export_failed": "Impossible de préparer le fichier.",
+    "export_downloaded": "Fichier téléchargé."
   },
   "live": {
     "intro": "Sous-titres pendant la réunion, traduction en temps réel, puis une conversation dans vos médias.",
@@ -195,5 +206,13 @@
   "conversation": {
     "load_failed": "Impossible d'ouvrir cette conversation.",
     "publish_in_studio": "La publication se fait depuis la version complète de Studio."
+  },
+  "share": {
+    "search_placeholder": "Nom ou adresse e-mail",
+    "custom_right": "Droit personnalisé",
+    "load_failed": "Impossible de charger les partages.",
+    "update_failed": "Le droit n'a pas pu être modifié.",
+    "invite_failed": "L'invitation n'a pas pu être envoyée.",
+    "external_hint": "Cherchez une adresse e-mail ci-dessus pour partager avec quelqu'un d'une autre organisation."
   }
 }
