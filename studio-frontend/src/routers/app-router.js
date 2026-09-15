@@ -947,14 +947,23 @@ router.beforeEach(async (to, from, next) => {
       to.meta?.authRoute
     ) {
       routerDebug("Redirect to explore from auth route or root")
-      return next({ name: "explore" })
+      return next({ name: "explore", replace: true })
     }
 
     // Handle organization scope
     const orgScopeResult = await authGuards.handleOrganizationScope(to, next)
     if (orgScopeResult.redirect) {
       routerDebug("Redirect to default organization")
-      return next(orgScopeResult.nextRoute)
+      // Replace: an organization-less URL ("/", "/interface/explore") must
+      // not stay in the history, a back to it re-enters this redirect.
+      const target = { ...orgScopeResult.nextRoute, replace: true }
+      // Back to such a URL resolves to the page already shown: vue-router
+      // aborts that duplicated navigation without afterEach, so stop the
+      // loader here or it stays on for good.
+      if (router.resolve(target).route.fullPath === from.fullPath) {
+        store.dispatch("system/setIsLoading", false)
+      }
+      return next(target)
     }
 
     // Fetch tags scoped to the target folder + all org tags for header selector
