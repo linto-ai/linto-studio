@@ -8,7 +8,7 @@ import i18n from "@/i18n"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import USER_RIGHTS from "@/const/userRights"
 import Vue from "vue"
-import { bus } from "@/main.js"
+import { bus } from "@/tools/eventBus.js"
 
 function applyMediaUpdate(state, mediaId, media, patch) {
   const newValueFor = (idx, list) =>

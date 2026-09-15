@@ -6,6 +6,7 @@ export default {
   VUE_APP_PUBLIC_MEDIA: "http://127.0.0.1:8001/media",
   VUE_APP_SESSION_WS: "http://127.0.0.1:8001",
   VUE_APP_ENABLE_SESSION: "false",
+  VUE_APP_ENABLE_MOBILE_APP: "true",
   VUE_APP_SHOW_LOGIN_FOOTER: "false",
   VUE_APP_WEBSOCKET_TRANSPORTS: "websocket",
   VUE_APP_DEFAULT_METADATA: "",

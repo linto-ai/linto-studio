@@ -1,3 +1,19 @@
+# 1.8.7
+
+_2026_09_15_
+
+- Mobile app (phones)
+  - New mobile web app under `/m/`, installable on the home screen (Android and iOS); phones opening Studio are sent there (`VUE_APP_ENABLE_MOBILE_APP`, on by default)
+  - Record a meeting on the phone: local recording that survives a call or a locked screen, sent to transcription by itself as soon as the network allows
+  - Library of the phone's recordings: audio kept on the phone, linked to the transcript and the documents generated on it
+  - Media list with folders, transcription editor and live session inside the app
+  - Share a transcript as PDF or text through the phone (mail, SMS, WhatsApp…), share inside Studio (organization members, external users, invitation by email)
+  - Sharing rules and destination folder chosen before recording, remembered per organization
+  - SSO providers available on the mobile login page
+- Classic interface
+  - No history entry left for organization-less URLs, and the loader no longer stays on after a back navigation to the explorer
+  - Creating a media returns the conversation id
+
 # 1.8.6
 
 _2026_09_01_

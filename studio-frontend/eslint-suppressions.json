@@ -475,9 +475,6 @@
     }
   },
   "src/components/SessionLiveNG.vue": {
-    "no-undef": {
-      "count": 2
-    },
     "vue/no-mutating-props": {
       "count": 1
     }
