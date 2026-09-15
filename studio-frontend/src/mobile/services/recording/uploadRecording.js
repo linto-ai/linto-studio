@@ -3,8 +3,7 @@ import { getExtensionForMimeType } from "@/tools/audioMimeTypes.js"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import * as queue from "@/mobile/services/recording/queue.js"
 import { mapUploadError } from "@/mobile/tools/mapUploadError.js"
-
-const DEFAULT_MEMBERS_RIGHT = 1
+import { DEFAULT_MEMBERS_RIGHT } from "@/mobile/const/defaultMembersRight.js"
 
 // Sends one local recording through the same endpoint as a classic upload.
 // The audio file is assembled from its chunks only here, never kept.
@@ -20,7 +19,8 @@ export async function uploadRecording(id, onProgress) {
     {
       name: recording.name,
       description: "",
-      membersRight: DEFAULT_MEMBERS_RIGHT,
+      membersRight: recording.sharing?.membersRight ?? DEFAULT_MEMBERS_RIGHT,
+      folderId: recording.sharing?.folderId || undefined,
       securityLevel: DEFAULT_SECURITY_LEVEL,
       serviceName: recording.transcription.serviceName,
       transcriptionConfig: JSON.stringify(recording.transcription.config),

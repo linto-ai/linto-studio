@@ -64,6 +64,10 @@
         </ul>
         <p class="m-muted">{{ $t("mobile.settings.voices_help") }}</p>
       </div>
+      <SharingSettingsFields
+        :members-right="choices.membersRight"
+        :folder-id="choices.folderId"
+        @change="updateMany" />
       <button type="submit" class="m-settings__done">
         {{ $t("mobile.common.confirm") }}
       </button>
@@ -74,14 +78,16 @@
 <script>
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
 import VoiceCollectionRow from "@/mobile/components/record/VoiceCollectionRow.vue"
+import SharingSettingsFields from "@/mobile/components/record/SharingSettingsFields.vue"
 import { loadCollectionVoices } from "@/mobile/services/voices/loadCollectionVoices.js"
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 
-// Language, service and speaker separation for the next recordings.
-// v-model carries { serviceName, language, diarization }.
+// Language, service, speaker separation and sharing rules for the next
+// recordings. `choices` carries { serviceName, language, diarization,
+// voiceCollections, membersRight, folderId }; every edit emits "change".
 export default {
   name: "TranscriptionSettingsSheet",
-  components: { BottomSheet, VoiceCollectionRow },
+  components: { BottomSheet, VoiceCollectionRow, SharingSettingsFields },
   props: {
     value: { type: Boolean, default: false },
     services: { type: Array, required: true },
@@ -113,7 +119,10 @@ export default {
   },
   methods: {
     update(key, value) {
-      this.$emit("change", { ...this.choices, [key]: value })
+      this.updateMany({ [key]: value })
+    },
+    updateMany(partial) {
+      this.$emit("change", { ...this.choices, ...partial })
     },
     async loadVoices(collection) {
       const voices = await loadCollectionVoices(this.organizationId, collection)

@@ -62,8 +62,15 @@
     <MediaActionsSheet
       v-model="actionsOpen"
       :media="selected"
+      :shareable="selectedShareable"
       @open="openMedia"
+      @export="exportSelected"
+      @share="openShare"
       @remove="removeMedia" />
+    <ShareSheet
+      v-model="shareOpen"
+      :media="selected"
+      :organization-id="organizationId" />
   </div>
 </template>
 
@@ -72,11 +79,15 @@ import PageHeader from "@/mobile/components/PageHeader.vue"
 import MediaFilters from "@/mobile/components/media/MediaFilters.vue"
 import MediaItem from "@/mobile/components/media/MediaItem.vue"
 import MediaActionsSheet from "@/mobile/components/media/MediaActionsSheet.vue"
+import ShareSheet from "@/mobile/components/media/ShareSheet.vue"
 import IconButton from "@/mobile/components/IconButton.vue"
 import FolderSheet from "@/mobile/components/media/FolderSheet.vue"
 import FolderBreadcrumb from "@/mobile/components/media/FolderBreadcrumb.vue"
 import { mediaListMixin } from "@/mobile/mixins/mediaList.js"
 import { folderNavigationMixin } from "@/mobile/mixins/folderNavigation.js"
+import { transcriptShareMixin } from "@/mobile/mixins/transcriptShare.js"
+import { currentUserMixin } from "@/mobile/mixins/currentUser.js"
+import { canShareConversation } from "@/mobile/tools/canShareConversation.js"
 import { MEDIA_STATUS_FILTERS } from "@/mobile/const/mediaStatusFilters.js"
 
 export default {
@@ -86,13 +97,33 @@ export default {
     MediaFilters,
     MediaItem,
     MediaActionsSheet,
+    ShareSheet,
     IconButton,
     FolderSheet,
     FolderBreadcrumb,
   },
-  mixins: [mediaListMixin, folderNavigationMixin],
+  mixins: [
+    mediaListMixin,
+    folderNavigationMixin,
+    transcriptShareMixin,
+    currentUserMixin,
+  ],
   data() {
-    return { actionsOpen: false, selected: null, folderSheetOpen: false }
+    return {
+      actionsOpen: false,
+      shareOpen: false,
+      selected: null,
+      folderSheetOpen: false,
+    }
+  },
+  computed: {
+    selectedShareable() {
+      return canShareConversation(
+        this.selected,
+        this.userId,
+        this.organizationRole,
+      )
+    },
   },
   created() {
     const wanted = this.$route.query.status
@@ -123,6 +154,14 @@ export default {
     openActions(media) {
       this.selected = media
       this.actionsOpen = true
+    },
+    openShare() {
+      this.actionsOpen = false
+      this.shareOpen = true
+    },
+    exportSelected(request) {
+      this.actionsOpen = false
+      this.shareTranscript(request)
     },
     async removeMedia(media) {
       this.actionsOpen = false
