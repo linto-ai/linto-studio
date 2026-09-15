@@ -14,6 +14,7 @@ import { registerServiceWorker } from "@/mobile/services/pwa/registerServiceWork
 import { listenForInstallPrompt } from "@/mobile/services/pwa/installPrompt.js"
 import { watchOnlineStatus } from "@/mobile/services/network/onlineStatus.js"
 import { startUploadResumption } from "@/mobile/services/recording/resumeUploads.js"
+import { clearMobileAppOptOut } from "@/mobile/services/preferences/clearMobileAppOptOut.js"
 
 import "@/mobile/style/tokens.css"
 import "@/mobile/style/base.css"
@@ -29,6 +30,7 @@ Debug.enable(getEnv("VUE_APP_DEBUG"))
 
 addMobileMessages(i18n)
 
+clearMobileAppOptOut()
 listenForInstallPrompt()
 registerServiceWorker()
 watchOnlineStatus()
