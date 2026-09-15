@@ -4,6 +4,8 @@ import { detectInstallPlatform } from "@/mobile/tools/detectInstallPlatform.js"
 const DISMISS_STORAGE_KEY = "mobile.install.dismissedUntil"
 const DISMISS_DAYS = 7
 
+const standaloneQuery = window.matchMedia("(display-mode: standalone)")
+
 // Owns everything about "can this phone install the app": the captured
 // beforeinstallprompt event (Android), the platform (iOS needs a guide),
 // whether we already run installed, and the user's dismissal.
@@ -16,7 +18,8 @@ export const installPrompt = Vue.observable({
 
 export function listenForInstallPrompt() {
   window.addEventListener("beforeinstallprompt", keepPromptForLater)
-  window.addEventListener("appinstalled", markInstalled)
+  window.addEventListener("appinstalled", forgetPromptEvent)
+  standaloneQuery.addEventListener("change", updateStandalone)
 }
 
 export async function promptInstall() {
@@ -45,16 +48,20 @@ function keepPromptForLater(event) {
   installPrompt.deferredEvent = event
 }
 
-function markInstalled() {
+// "appinstalled" only says Chrome accepted the install: this tab still runs
+// in the browser and the install may fail afterwards, so the account row keeps
+// offering it (the Android guide then explains the menu path). Only a real
+// standalone display hides the offer.
+function forgetPromptEvent() {
   installPrompt.deferredEvent = null
-  installPrompt.standalone = true
+}
+
+function updateStandalone() {
+  installPrompt.standalone = isStandaloneDisplay()
 }
 
 function isStandaloneDisplay() {
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    navigator.standalone === true
-  )
+  return standaloneQuery.matches || navigator.standalone === true
 }
 
 function readDismissedUntil() {
