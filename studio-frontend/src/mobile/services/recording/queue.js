@@ -3,7 +3,8 @@ import { openDB } from "idb"
 const DATABASE_NAME = "linto-mobile"
 const DATABASE_VERSION = 1
 
-// Local store of recordings waiting to be sent. Audio is kept as 10 s
+// Local store of the phone's recordings: the ones waiting to be sent and
+// the ones whose audio is kept after sending. Audio is stored as 10 s
 // chunks (one row each) so a crash mid-recording loses seconds, not the
 // whole meeting. Metadata lives in `recordings`, audio in `chunks`.
 let databasePromise = null
@@ -67,14 +68,21 @@ export async function deleteRecording(id) {
   const db = await database()
   const transaction = db.transaction(["recordings", "chunks"], "readwrite")
   await transaction.objectStore("recordings").delete(id)
-  const chunkKeys = await transaction
-    .objectStore("chunks")
-    .index("byRecording")
-    .getAllKeys(id)
-  await Promise.all(
-    chunkKeys.map((key) => transaction.objectStore("chunks").delete(key)),
-  )
+  await deleteChunksIn(transaction, id)
   await transaction.done
+}
+
+export async function deleteRecordingChunks(id) {
+  const db = await database()
+  const transaction = db.transaction(["chunks"], "readwrite")
+  await deleteChunksIn(transaction, id)
+  await transaction.done
+}
+
+async function deleteChunksIn(transaction, recordingId) {
+  const chunks = transaction.objectStore("chunks")
+  const keys = await chunks.index("byRecording").getAllKeys(recordingId)
+  await Promise.all(keys.map((key) => chunks.delete(key)))
 }
 
 // Test hook: forget the cached connection so a fresh fake database is used.

@@ -82,27 +82,19 @@
     "name": "Nom",
     "default_name": "Enregistrement",
     "stopped_summary": "{duration} · {size} · enregistré localement",
-    "send": "Envoyer en transcription",
-    "keep": "Garder pour plus tard",
-    "offline_send": "Hors connexion : l'envoi partira automatiquement au retour du réseau.",
+    "offline_send": "Hors connexion : l'enregistrement partira de lui-même au retour du réseau.",
     "interrupted": "L'enregistrement a été interrompu (appel, verrouillage ou micro perdu). Ce qui a été capté est conservé.",
     "microphone": "Micro",
     "microphone_default": "Micro par défaut",
     "microphone_choose": "Choisir le micro",
     "microphone_permission": "Autorisez le micro pour voir la liste des entrées.",
     "quiet_warning": "Le micro n'a presque rien capté. Vérifiez l'entrée choisie avant d'envoyer : une transcription vide tombe en erreur.",
-    "sharing_line": "{right} pour l'organisation · {folder}"
+    "sharing_line": "{right} pour l'organisation · {folder}",
+    "finish": "Terminer"
   },
   "queue": {
-    "title": "En attente ({count})",
-    "empty": "Aucun enregistrement en attente.",
-    "recent": "Envoyés récemment",
-    "actions": "Actions",
-    "send_now": "Envoyer maintenant",
     "rename": "Renommer",
-    "delete": "Supprimer",
-    "status_ready": "Gardé",
-    "status_offline": "Hors connexion",
+    "status_offline": "Partira au retour du réseau",
     "status_uploading": "Envoi {progress} %",
     "status_error": "Erreur",
     "status_uploaded": "Envoyé",
@@ -112,8 +104,9 @@
     "error_offline": "Hors connexion, nouvel essai au retour du réseau.",
     "error_network": "Le serveur n'a pas répondu, nouvel essai automatique.",
     "error_missing": "Enregistrement introuvable sur ce téléphone.",
-    "status_queued": "Envoi prévu",
-    "play_failed": "Audio introuvable sur ce téléphone."
+    "status_queued": "Envoi automatique",
+    "play_failed": "Audio introuvable sur ce téléphone.",
+    "actions": "Actions"
   },
   "settings": {
     "title": "Transcription",
@@ -214,5 +207,23 @@
     "update_failed": "Le droit n'a pas pu être modifié.",
     "invite_failed": "L'invitation n'a pas pu être envoyée.",
     "external_hint": "Cherchez une adresse e-mail ci-dessus pour partager avec quelqu'un d'une autre organisation."
+  },
+  "library": {
+    "title": "Mes enregistrements",
+    "empty": "Aucun enregistrement sur ce téléphone.",
+    "storage": "{size} sur ce téléphone",
+    "keep_audio": "Conserver l'audio sur ce téléphone",
+    "keep_audio_hint": "Pour le réécouter ou le partager, même sans réseau.",
+    "open_transcript": "Ouvrir la transcription",
+    "transcript_processing": "Transcription en cours",
+    "transcript_missing": "La transcription n'existe plus sur le serveur. L'audio reste ici.",
+    "links_failed": "Impossible de joindre le serveur pour cet enregistrement.",
+    "share_document": "Partager en PDF",
+    "retry": "Réessayer l'envoi",
+    "share_audio": "Partager l'audio",
+    "discard_audio": "Supprimer l'audio de ce téléphone",
+    "discard_hint": "Le média et sa transcription restent dans Mes médias.",
+    "cancel_upload": "Annuler l'envoi et supprimer",
+    "share_audio_failed": "Impossible de partager l'audio."
   }
 }

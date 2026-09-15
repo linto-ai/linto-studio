@@ -4,6 +4,7 @@ import { appendChunk } from "@/mobile/services/recording/queue.js"
 import { requestPersistentStorage } from "@/mobile/services/recording/requestPersistentStorage.js"
 import { buildRecordingName } from "@/mobile/tools/buildRecordingName.js"
 import { RECORDING_STATUS } from "@/mobile/const/recordingStatus.js"
+import { readKeepAudioPreference } from "@/mobile/services/preferences/keepAudioPreference.js"
 
 const TICK_MS = 250
 const MAX_DURATION_MS = 4 * 60 * 60 * 1000
@@ -89,7 +90,7 @@ export const recordingControllerMixin = {
       if (interrupted) this.recorder.interruptedAt = this.recorder.elapsedMs
       await this.$store.dispatch("mobileRecordings/patch", {
         id: this.recorder.id,
-        status: RECORDING_STATUS.READY,
+        status: RECORDING_STATUS.NAMING,
         durationMs: this.recorder.elapsedMs,
         sizeBytes: this.recorder.sizeBytes,
         peakLevel: this.recorder.peakLevel,
@@ -120,6 +121,8 @@ export const recordingControllerMixin = {
         mimeType,
         transcription,
         sharing,
+        keepAudio: readKeepAudioPreference(),
+        conversationId: null,
         createdAt: Date.now(),
         status: RECORDING_STATUS.RECORDING,
         durationMs: 0,

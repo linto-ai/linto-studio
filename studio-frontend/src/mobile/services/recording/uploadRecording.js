@@ -1,19 +1,21 @@
 import { apiCreateConversation } from "@/api/conversation.js"
-import { getExtensionForMimeType } from "@/tools/audioMimeTypes.js"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import * as queue from "@/mobile/services/recording/queue.js"
+import { buildRecordingFile } from "@/mobile/services/recording/buildRecordingFile.js"
 import { mapUploadError } from "@/mobile/tools/mapUploadError.js"
 import { DEFAULT_MEMBERS_RIGHT } from "@/mobile/const/defaultMembersRight.js"
 
 // Sends one local recording through the same endpoint as a classic upload.
-// The audio file is assembled from its chunks only here, never kept.
-// Never throws: { ok } or { ok: false, error }.
+// Never throws: { ok, conversationId } or { ok: false, error }.
 export async function uploadRecording(id, onProgress) {
   const recording = await queue.getRecording(id)
   if (!recording) {
     return { ok: false, error: { code: "missing", retryable: false } }
   }
-  const file = await buildFile(recording)
+  const file = await buildRecordingFile(recording)
+  if (!file) {
+    return { ok: false, error: { code: "missing", retryable: false } }
+  }
   const result = await apiCreateConversation(
     recording.organizationId,
     {
@@ -34,17 +36,9 @@ export async function uploadRecording(id, onProgress) {
     (event) => reportProgress(event, onProgress),
   )
   if (result.success) {
-    return { ok: true }
+    return { ok: true, conversationId: result.conversationId ?? null }
   }
   return { ok: false, error: mapUploadError(result, navigator.onLine) }
-}
-
-async function buildFile(recording) {
-  const chunks = await queue.getRecordingChunks(recording.id)
-  const extension = getExtensionForMimeType(recording.mimeType || "")
-  return new File(chunks, `${recording.name}.${extension}`, {
-    type: recording.mimeType || "application/octet-stream",
-  })
 }
 
 function reportProgress(event, onProgress) {

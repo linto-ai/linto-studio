@@ -1,36 +1,40 @@
 import * as queue from "@/mobile/services/recording/queue.js"
 import { uploadRecording } from "@/mobile/services/recording/uploadRecording.js"
 import { sortRecordingsByDate } from "@/mobile/tools/sortRecordingsByDate.js"
+import { normalizeLoadedRecordings } from "@/mobile/tools/normalizeLoadedRecordings.js"
+import { sumRecordingBytes } from "@/mobile/tools/sumRecordingBytes.js"
 import { RECORDING_STATUS } from "@/mobile/const/recordingStatus.js"
 
-const RECENT_UPLOADS_LIMIT = 5
-
-// Vuex module `mobileRecordings`: the queue of local recordings. IndexedDB
-// is the source of truth (queue.js); this state is its in-memory mirror.
-// One upload at a time; retryPending() is called on "online" and on focus.
+// Vuex module `mobileRecordings`: the phone's recordings. IndexedDB is the
+// source of truth (queue.js); this state is its in-memory mirror. Every
+// recording is sent as soon as the network allows (retryPending runs at
+// startup, on "online", on focus); the audio stays on the phone afterwards
+// when the recording was kept, so the library links it to the server side.
 const state = () => ({
   items: [],
   loaded: false,
   uploadingId: null,
 })
 
+const PENDING_STATUSES = [
+  RECORDING_STATUS.QUEUED,
+  RECORDING_STATUS.ERROR,
+  RECORDING_STATUS.UPLOADING,
+]
+
 const getters = {
-  pending: (state) =>
+  library: (state) =>
     sortRecordingsByDate(
-      state.items.filter((item) =>
-        [
-          RECORDING_STATUS.READY,
-          RECORDING_STATUS.QUEUED,
-          RECORDING_STATUS.ERROR,
-          RECORDING_STATUS.UPLOADING,
-        ].includes(item.status),
+      state.items.filter(
+        (item) =>
+          item.status !== RECORDING_STATUS.RECORDING &&
+          item.status !== RECORDING_STATUS.NAMING,
       ),
     ),
-  recent: (state) =>
-    sortRecordingsByDate(
-      state.items.filter((item) => item.status === RECORDING_STATUS.UPLOADED),
-    ).slice(0, RECENT_UPLOADS_LIMIT),
+  pending: (state) =>
+    state.items.filter((item) => PENDING_STATUSES.includes(item.status)),
   pendingCount: (state, getters) => getters.pending.length,
+  localBytes: (state, getters) => sumRecordingBytes(getters.library),
   byId: (state) => (id) => state.items.find((item) => item.id === id),
 }
 
@@ -54,7 +58,16 @@ const mutations = {
 
 const actions = {
   async load({ commit }) {
-    commit("setItems", await queue.listRecordings())
+    const { keep, remove } = normalizeLoadedRecordings(
+      await queue.listRecordings(),
+    )
+    await Promise.all(remove.map((id) => queue.deleteRecording(id)))
+    await Promise.all(
+      keep
+        .filter((item) => item.status === RECORDING_STATUS.QUEUED)
+        .map((item) => queue.updateRecording(item.id, { status: item.status })),
+    )
+    commit("setItems", keep)
   },
   async create({ commit }, recording) {
     commit("upsert", await queue.createRecording(recording))
@@ -66,6 +79,11 @@ const actions = {
   async remove({ commit }, id) {
     await queue.deleteRecording(id)
     commit("remove", id)
+  },
+  // The entry disappears with its audio: the media itself lives on the
+  // server, in the media list.
+  async discardAudio({ dispatch }, id) {
+    await dispatch("remove", id)
   },
   async upload({ state, commit, dispatch }, id) {
     if (state.uploadingId) return
@@ -83,11 +101,9 @@ const actions = {
       }),
     )
     if (result.ok) {
-      await queue.deleteRecording(id)
-      commit("upsert", {
-        ...state.items.find((item) => item.id === id),
-        status: RECORDING_STATUS.UPLOADED,
-        uploadedAt: Date.now(),
+      await dispatch("finishUpload", {
+        id,
+        conversationId: result.conversationId,
       })
     } else {
       await dispatch("patch", {
@@ -98,7 +114,21 @@ const actions = {
     }
     commit("setUploadingId", null)
   },
-  // Only what the user asked to send: "ready" items were kept on purpose.
+  async finishUpload({ getters, dispatch }, { id, conversationId }) {
+    const recording = getters.byId(id)
+    if (!recording?.keepAudio) {
+      await dispatch("remove", id)
+      return
+    }
+    await dispatch("patch", {
+      id,
+      status: RECORDING_STATUS.UPLOADED,
+      uploadedAt: Date.now(),
+      conversationId,
+      progress: 100,
+    })
+  },
+  // Network errors retry by themselves; a refusal waits for the user.
   async retryPending({ getters, dispatch }) {
     const retryable = getters.pending.filter(
       (item) =>

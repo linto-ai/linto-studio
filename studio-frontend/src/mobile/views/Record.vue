@@ -47,18 +47,11 @@
           @click="openMicrophonePicker" />
       </template>
 
-      <PendingRecordingsList
-        :recordings="pending"
+      <LibraryList
+        :recordings="library"
+        :local-bytes="localBytes"
         :online="online"
-        @open-actions="openActions" />
-
-      <ListRow
-        v-if="recent.length > 0"
-        icon="paper-plane-tilt"
-        :label="$t('mobile.queue.recent')"
-        :hint="recent[0].name"
-        :to="{ name: 'media', query: { status: 'processing' } }"
-        class="m-record-page__recent" />
+        @open="openRecording" />
     </main>
 
     <TranscriptionSettingsSheet
@@ -72,25 +65,28 @@
     <StopRecordingSheet
       v-model="stopSheetOpen"
       :default-name="stoppedRecording ? stoppedRecording.name : ''"
+      :default-keep-audio="stoppedRecording ? stoppedRecording.keepAudio : true"
       :summary="stoppedSummary"
       :online="online"
       :recording-id="stoppedRecording ? stoppedRecording.id : ''"
       :mime-type="stoppedRecording ? stoppedRecording.mimeType : ''"
       :quiet="stoppedQuiet"
       :sharing-summary="sharingSummary"
-      @send="sendStopped"
-      @keep="keepStopped" />
+      @finish="finishStopped" />
     <MicrophoneSheet
       v-model="microphoneSheetOpen"
       :microphones="microphones"
       :loaded="microphonesLoaded"
       :current-id="microphoneId"
       @choose="chooseMicrophone" />
-    <RecordingActionsSheet
-      v-model="actionsOpen"
+    <RecordingSheet
+      v-model="recordingSheetOpen"
       :recording="selected"
-      @send="sendRecording"
+      :online="online"
+      @retry="retryUpload"
       @rename="renameRecording"
+      @share-audio="shareAudio"
+      @share-document="shareDocument"
       @remove="removeRecording" />
   </div>
 </template>
@@ -107,12 +103,13 @@ import LevelMeter from "@/mobile/components/record/LevelMeter.vue"
 import TranscriptionSettingsRow from "@/mobile/components/record/TranscriptionSettingsRow.vue"
 import TranscriptionSettingsSheet from "@/mobile/components/record/TranscriptionSettingsSheet.vue"
 import StopRecordingSheet from "@/mobile/components/record/StopRecordingSheet.vue"
-import PendingRecordingsList from "@/mobile/components/record/PendingRecordingsList.vue"
-import RecordingActionsSheet from "@/mobile/components/record/RecordingActionsSheet.vue"
+import LibraryList from "@/mobile/components/record/LibraryList.vue"
+import RecordingSheet from "@/mobile/components/record/RecordingSheet.vue"
 import MicrophoneSheet from "@/mobile/components/record/MicrophoneSheet.vue"
 import { recordingControllerMixin } from "@/mobile/mixins/recordingController.js"
 import { transcriptionSettingsMixin } from "@/mobile/mixins/transcriptionSettings.js"
-import { queueActionsMixin } from "@/mobile/mixins/queueActions.js"
+import { libraryActionsMixin } from "@/mobile/mixins/libraryActions.js"
+import { documentShareMixin } from "@/mobile/mixins/documentShare.js"
 import { microphoneChoiceMixin } from "@/mobile/mixins/microphoneChoice.js"
 import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 
@@ -129,21 +126,22 @@ export default {
     TranscriptionSettingsRow,
     TranscriptionSettingsSheet,
     StopRecordingSheet,
-    PendingRecordingsList,
-    RecordingActionsSheet,
+    LibraryList,
+    RecordingSheet,
     MicrophoneSheet,
   },
   mixins: [
     recordingControllerMixin,
     transcriptionSettingsMixin,
-    queueActionsMixin,
+    libraryActionsMixin,
+    documentShareMixin,
     microphoneChoiceMixin,
   ],
   data() {
     return { settingsOpen: false }
   },
   computed: {
-    ...mapGetters("mobileRecordings", ["pending", "recent"]),
+    ...mapGetters("mobileRecordings", ["library", "localBytes"]),
     online() {
       return onlineStatus.online
     },
@@ -203,8 +201,7 @@ export default {
   max-width: 320px;
 }
 
-.m-record-page__microphone,
-.m-record-page__recent {
+.m-record-page__microphone {
   border-radius: var(--m-radius);
   box-shadow: var(--m-shadow-1);
 }

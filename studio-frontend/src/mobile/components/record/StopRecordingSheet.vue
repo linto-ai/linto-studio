@@ -11,29 +11,29 @@
     <InfoBanner v-if="quiet" tone="warning">
       {{ $t("mobile.record.quiet_warning") }}
     </InfoBanner>
-    <form class="m-stop" @submit.prevent="$emit('send', name)">
-      <InfoBanner v-if="!online" tone="warning">
-        {{ $t("mobile.record.offline_send") }}
-      </InfoBanner>
+    <InfoBanner v-if="!online" tone="warning">
+      {{ $t("mobile.record.offline_send") }}
+    </InfoBanner>
+    <!-- The recording is sent by itself once the sheet closes: here the
+         user names it and says whether the audio stays on the phone. The
+         button sits right under the name because the keyboard covers the
+         bottom of the sheet while the name is edited. -->
+    <form class="m-stop" @submit.prevent="finish">
       <label class="m-stop__field">
         <span>{{ $t("mobile.record.name") }}</span>
         <input v-model="name" type="text" required maxlength="200" />
       </label>
+      <button type="submit" class="m-stop__finish">
+        <PhIcon name="upload-simple" size="sm" />
+        {{ $t("mobile.record.finish") }}
+      </button>
+      <ToggleRow
+        v-model="keepAudio"
+        :label="$t('mobile.library.keep_audio')"
+        :hint="$t('mobile.library.keep_audio_hint')" />
       <p v-if="sharingSummary" class="m-muted m-stop__sharing">
         {{ sharingSummary }}
       </p>
-      <!-- Both actions sit right under the name: while it is edited the
-           keyboard covers the bottom of the sheet and the browser only keeps
-           the focused field in view. -->
-      <div class="m-stop__actions">
-        <button type="button" class="m-stop__keep" @click="$emit('keep', name)">
-          {{ $t("mobile.record.keep") }}
-        </button>
-        <button type="submit" class="m-stop__send">
-          <PhIcon name="upload-simple" size="sm" />
-          {{ $t("mobile.record.send") }}
-        </button>
-      </div>
     </form>
   </BottomSheet>
 </template>
@@ -42,14 +42,16 @@
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
 import InfoBanner from "@/mobile/components/InfoBanner.vue"
+import ToggleRow from "@/mobile/components/ToggleRow.vue"
 import RecordingPlayer from "@/mobile/components/record/RecordingPlayer.vue"
 
 export default {
   name: "StopRecordingSheet",
-  components: { BottomSheet, InfoBanner, PhIcon, RecordingPlayer },
+  components: { BottomSheet, InfoBanner, PhIcon, ToggleRow, RecordingPlayer },
   props: {
     value: { type: Boolean, default: false },
     defaultName: { type: String, required: true },
+    defaultKeepAudio: { type: Boolean, default: true },
     summary: { type: String, default: "" },
     online: { type: Boolean, default: true },
     recordingId: { type: String, default: "" },
@@ -58,11 +60,19 @@ export default {
     sharingSummary: { type: String, default: "" },
   },
   data() {
-    return { name: this.defaultName }
+    return { name: this.defaultName, keepAudio: this.defaultKeepAudio }
   },
   watch: {
     defaultName(value) {
       this.name = value
+    },
+    defaultKeepAudio(value) {
+      this.keepAudio = value
+    },
+  },
+  methods: {
+    finish() {
+      this.$emit("finish", { name: this.name, keepAudio: this.keepAudio })
     },
   },
 }
@@ -94,18 +104,7 @@ export default {
   background: var(--m-surface);
 }
 
-.m-stop__sharing {
-  margin: 0;
-  font-size: var(--m-font-size-sm);
-}
-
-.m-stop__actions {
-  display: flex;
-  gap: var(--m-space-2);
-}
-
-.m-stop__send {
-  flex: 1.3;
+.m-stop__finish {
   min-height: 52px;
   display: inline-flex;
   align-items: center;
@@ -118,13 +117,8 @@ export default {
   font-weight: 600;
 }
 
-.m-stop__keep {
-  flex: 1;
-  min-height: 52px;
-  border: 1px solid var(--m-border);
-  border-radius: var(--m-radius-sm);
-  background: var(--m-surface);
-  color: var(--m-primary);
-  font-weight: 600;
+.m-stop__sharing {
+  margin: 0;
+  font-size: var(--m-font-size-sm);
 }
 </style>
