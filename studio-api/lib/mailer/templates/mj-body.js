@@ -30,8 +30,12 @@ module.exports = function (Type, payload) {
   }
 }
 
+// Second pass fills the placeholders carried by the language strings,
+// user provided names must be escaped like the first pass does
 function renderTemplate(template, payload) {
-  return template.replace(/\{\{(\w+)\}\}/g, (_, key) => payload[key] || "")
+  return template.replace(/\{\{(\w+)\}\}/g, (_, key) =>
+    Handlebars.escapeExpression(payload[key] || ""),
+  )
 }
 
 function generateHtml(keyTemplate, payload) {

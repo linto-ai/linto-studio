@@ -3,7 +3,7 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { UserUnsupportedMediaType } = require(
+const { UserUnsupportedMediaType, UserForbidden } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 const PLATFORM_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
@@ -17,6 +17,13 @@ async function createApiKeyPlatform(req, res, next) {
 
     if (!PLATFORM_ROLE.isValid(req.body.role))
       throw new UserUnsupportedMediaType("Role invalid")
+
+    const caller = await model.users.getById(req.payload.data.userId, true)
+    if (
+      caller.length !== 1 ||
+      !PLATFORM_ROLE.hasPlatformRoleAccess(caller[0].role, req.body.role)
+    )
+      throw new UserForbidden("An API key cannot exceed your platform role")
 
     let token = await TokenHandler.createApiKey(req, req.body.role)
     if (token === undefined) return res.status(500).send()

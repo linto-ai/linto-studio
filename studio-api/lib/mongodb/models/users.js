@@ -1,6 +1,4 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:users",
-)
+const debug = require("debug")("linto:lib:mongodb:models:users")
 const MongoModel = require(`../model`)
 const crypto = require("crypto")
 const randomstring = require("randomstring")
@@ -62,13 +60,14 @@ function generatePasswordHash(password) {
   return { salt, passwordHash }
 }
 
-function generateAuthLink() {
+function generateAuthLink(email) {
   return {
     magicId: randomstring.generate({
       charset: "alphanumeric",
       length: 20,
     }),
     validityDate: VALIDITY_DATE.generateValidityDate(VALIDITY_DATE.SHORT), // 30 minutes
+    email,
   }
 }
 
@@ -89,20 +88,21 @@ class UsersModel extends MongoModel {
         email: normalizeEmail(user.email),
         salt,
         passwordHash,
-        authLink: generateAuthLink(),
+        authLink: generateAuthLink(user.email),
         created: dateTime,
         last_update: dateTime,
         fromSso: false,
         type: USER_TYPE.USER,
       }
 
-      // If SMTP is not configured, mark the email as verified
       if (!process.env.SMTP_HOST) {
         adminPayload.emailIsVerified = true
         adminPayload.verifiedEmail.push(adminPayload.email)
       }
 
-      return await this.mongoInsert(adminPayload)
+      const inserted = await this.mongoInsert(adminPayload)
+      await this.releasePendingEmail(adminPayload.email)
+      return inserted
     } catch (error) {
       console.error(error)
       return error
@@ -118,7 +118,7 @@ class UsersModel extends MongoModel {
       if (!payload.fromSso) payload.fromSso = false
       const userPayload = {
         ...payload,
-        authLink: generateAuthLink(),
+        authLink: generateAuthLink(payload.email),
         ...defaultUserPayload,
         role: ROLE.defaultUserRole(),
         created: dateTime,
@@ -126,13 +126,33 @@ class UsersModel extends MongoModel {
         type: USER_TYPE.USER,
       }
 
-      // If SMTP is not configured, mark the email as verified
       if (!process.env.SMTP_HOST) {
         userPayload.emailIsVerified = true
         userPayload.verifiedEmail.push(userPayload.email)
       }
 
-      return await this.mongoInsert(userPayload)
+      const inserted = await this.mongoInsert(userPayload)
+      await this.releasePendingEmail(userPayload.email)
+      return inserted
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // The address has a real owner now, pending claims and their links are void
+  async releasePendingEmail(email) {
+    try {
+      await this.mongoUpdateMany(
+        { "pendingEmail.address": email, "authLink.email": email },
+        "$set",
+        { authLink: { magicId: null, validityDate: null } },
+      )
+      return await this.mongoUpdateMany(
+        { "pendingEmail.address": email },
+        "$set",
+        { pendingEmail: null },
+      )
     } catch (error) {
       console.error(error)
       return error
@@ -401,6 +421,7 @@ class UsersModel extends MongoModel {
         authLink: {
           magicId,
           validityDate,
+          email: payload.email,
         },
       }
 

@@ -143,6 +143,7 @@
     "title": "Paramètres",
     "logout": "Déconnexion",
     "email_not_verified": "Votre adresse e-mail n'est pas vérifiée. Veuillez la vérifier pour accéder à l'ensemble des fonctionnalités.",
+    "pending_email": "Une confirmation a été envoyée à {email}. Cette adresse remplacera l'actuelle une fois validée.",
     "speaker_identification": "Identification des locuteurs",
     "speaker_recognition": "Ma signature vocale"
   },
@@ -1672,6 +1673,7 @@
     },
     "notif_success": "Les informations ont été mises à jour",
     "notif_error": "Une erreur est survenue lors de la mise à jour des informations",
+    "verification_link_sent": "Le lien de validation a été envoyé.",
     "organizations_section": {
       "title": "Organisations"
     },
