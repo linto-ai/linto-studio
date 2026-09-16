@@ -18,7 +18,6 @@ const {
   OrganizationUnsupportedMediaType,
   OrganizationForbidden,
   OrganizationNotFound,
-  OrganizationConflict,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
@@ -27,26 +26,11 @@ const { ConversationError, ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
-const { UserError } = require(
-  `${process.cwd()}/components/WebServer/error/exception/users`,
-)
-
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const saas = require(`${process.cwd()}/lib/saas`)
 
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
-
-// Billable seats = org members with a role >= uploader (members below cannot
-// produce billable usage). Floored at 1 (solo owner). FAIL-SOFT; no-op if the
-// SaaS plugin is absent.
-function syncOrgSeats(organizationId, organization) {
-  const seats = Math.max(
-    1,
-    (organization.users || []).filter((u) => u.role >= ROLES.UPLOADER).length,
-  )
-  saas.syncSeats(organizationId, seats)
-}
 
 async function addUserInOrganization(req, res, next) {
   try {
@@ -61,78 +45,19 @@ async function addUserInOrganization(req, res, next) {
     let organization = await model.organizations.getById(
       req.params.organizationId,
     )
-    let user = await model.users.getByEmail(req.body.email)
-
     if (organization.length === 0) throw new OrganizationNotFound()
     else organization = organization[0]
 
-    let userId = null
-    let magicId = null
-    if (user.length === 0) {
-      if (process.env.DISABLE_USER_INVITATION === "true")
-        throw new UserError("User invitation is disabled")
-
-      const createdUser = await model.users.createExternal({
-        email: req.body.email,
-      })
-
-      if (createdUser.insertedCount !== 1) throw new UserError()
-      userId = createdUser.insertedId.toString()
-      const invitedUser = await model.users.getById(userId, true)
-      magicId = invitedUser[0].authLink.magicId
-
-      if (magicId) {
-        const createOrganization = await model.organizations.createDefault(
-          userId,
-          req.body.email,
-          {},
-        )
-        if (createOrganization.insertedCount !== 1) {
-          await model.users.delete(userId)
-          throw new UserError()
-        }
-      }
-    } else {
-      userId = user[0]._id.toString()
-      if (
-        organization.users.filter((oUser) => oUser.userId === userId).length !==
-        0
-      )
-        throw new OrganizationConflict(
-          req.body.email + " is already in " + organization.name,
-        )
-    }
-
-    organization.users.push({
-      userId: userId,
-      role: parseInt(req.body.role),
+    const sharedUser = await model.users.getById(req.payload.data.userId)
+    const userId = await orgaUtility.inviteMemberByEmail({
+      organization,
+      email: req.body.email,
+      role: req.body.role,
+      inviterEmail: sharedUser[0].email,
+      origin: req,
     })
 
-    const result = await model.organizations.update(organization)
-    if (result.matchedCount === 0) throw new OrganizationError()
-
-    syncOrgSeats(req.params.organizationId, organization)
-
-    const sharedUser = await model.users.getById(req.payload.data.userId)
-    if (user.length === 0) {
-      await Mailing.organizationAccountCreate(
-        req.body.email,
-        req,
-        magicId,
-        sharedUser[0].email,
-        organization.name,
-        req.params.organizationId,
-      )
-    } else {
-      user = await model.users.getById(user[0]._id, true)
-      await Mailing.organizationInvite(
-        user[0],
-        req,
-        sharedUser[0].email,
-        organization.name,
-        req.params.organizationId,
-      )
-    }
+    saas.syncOrgSeats(req.params.organizationId, organization)
 
     const conversations = await model.conversations.getSharedConvFromOrga(
       req.params.organizationId,
@@ -197,7 +122,7 @@ async function updateUserFromOrganization(req, res, next) {
     if (result.matchedCount === 0)
       throw new OrganizationError("Error while updating user in organization")
 
-    syncOrgSeats(req.params.organizationId, organization)
+    saas.syncOrgSeats(req.params.organizationId, organization)
 
     user = await model.users.getById(req.body.userId, true)
     await Mailing.organizationRightUpdate(user[0], req, organization.name)
@@ -240,7 +165,7 @@ async function deleteUserFromOrganization(req, res, next) {
     const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
 
-    syncOrgSeats(req.params.organizationId, organization)
+    saas.syncOrgSeats(req.params.organizationId, organization)
 
     user = await model.users.getById(req.body.userId, true)
     await Mailing.organizationDelete(user[0], req, organization.name)

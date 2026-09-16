@@ -3,8 +3,13 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const saas = require(`${process.cwd()}/lib/saas`)
 
-const { OrganizationError } = require(
+const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
+
+const { OrganizationError, OrganizationConflict } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
+)
+const { inviteNewUser } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
 const { ConversationError, ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
@@ -77,6 +82,57 @@ async function deleteConversationCascade(conversation) {
   )
 
   await deleteCategoriesFromScope(conversation._id.toString())
+}
+
+// Adds `email` to the organization with `role`, creating the account when
+// unknown, and sends the invitation. origin: the request or the front URL.
+async function inviteMemberByEmail({
+  organization,
+  email,
+  role,
+  inviterEmail,
+  origin,
+}) {
+  const organizationId = organization._id.toString()
+  const existing = throwIfError(await model.users.getByEmail(email))
+  const isNewAccount = existing.length === 0
+  const invited = isNewAccount
+    ? await inviteNewUser(email)
+    : { id: existing[0]._id.toString(), magicId: null }
+
+  const added = throwIfError(
+    await model.organizations.addMember(
+      organizationId,
+      invited.id,
+      parseInt(role),
+    ),
+  )
+  if (added.matchedCount === 0)
+    throw new OrganizationConflict(
+      email + " is already in " + organization.name,
+    )
+  organization.users.push({ userId: invited.id, role: parseInt(role) })
+
+  if (isNewAccount) {
+    await Mailing.organizationAccountCreate(
+      email,
+      origin,
+      invited.magicId,
+      inviterEmail,
+      organization.name,
+      organizationId,
+    )
+  } else {
+    const user = await model.users.getById(invited.id, true)
+    await Mailing.organizationInvite(
+      user[0],
+      origin,
+      inviterEmail,
+      organization.name,
+      organizationId,
+    )
+  }
+  return invited.id
 }
 
 // Deletion order matters: media, taxonomy, organization-scoped speaker
@@ -247,6 +303,7 @@ module.exports = {
   deleteCategoriesFromScope,
   deleteConversationCascade,
   deleteOrganizationCascade,
+  inviteMemberByEmail,
   getUserConversationFromOrganization,
   populateUserToOrganization,
   addM2mUserToOrganization,

@@ -1,6 +1,7 @@
 // Bridge to the private `linto-saas` plugin. Every function is a no-op when the
 // plugin is absent (open-source build) so the core behaves exactly as before.
 // SaaS mode = CloudService in COMPONENTS and the `linto-saas` package installed.
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const { SaasQuotaExceeded, SaasFeatureLocked } = require(
   `${process.cwd()}/components/WebServer/error/exception/saas`,
 )
@@ -83,7 +84,23 @@ function afterAuth() {
   }
 }
 
-// Seats derived from membership (role >= uploader) -> subscription + Stripe. Fail-soft.
+// Billable seats: members with role >= uploader, plus the invitations of an
+// org still pending checkout (SPEC-SAAS §3.2), floored at 1.
+function billableSeats(organization) {
+  const members = (organization.users || []).filter(
+    (u) => u.role >= ROLES.UPLOADER,
+  ).length
+  const invited = organization.pendingCheckout
+    ? (organization.pendingCheckout.invitations || []).length
+    : 0
+  return Math.max(1, members + invited)
+}
+
+function syncOrgSeats(organizationId, organization) {
+  return syncSeats(organizationId, billableSeats(organization))
+}
+
+// Seats -> subscription + Stripe. Fail-soft.
 async function syncSeats(orgId, seatCount) {
   const pp = plugin()
   if (!pp) return
@@ -124,6 +141,8 @@ module.exports = {
   liveAdmit,
   record,
   afterAuth,
+  billableSeats,
+  syncOrgSeats,
   syncSeats,
   purgeOrganization,
   purgeUser,

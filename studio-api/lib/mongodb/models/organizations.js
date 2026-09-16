@@ -20,6 +20,9 @@ const moment = require("moment")
 // sso holds the client secret: only the dedicated admin route exposes it
 const public_projection = { token: 0, sso: 0 }
 
+// Orgs bought with a plan stay hidden until paid (see createPending)
+const VISIBLE = { pendingCheckout: { $exists: false } }
+
 class OrganizationModel extends MongoModel {
   constructor() {
     super("organizations")
@@ -105,6 +108,68 @@ class OrganizationModel extends MongoModel {
       result.categories = [labelsCategory, tagsCategory]
 
       return result
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // Hidden until the SaaS plugin activates it (SPEC-SAAS §3.2); a retry for
+  // the same owner and name reuses the row.
+  async createPending(userId, name, { invitations = [], origin = null } = {}) {
+    try {
+      const pendingCheckout = { since: new Date(), invitations, origin }
+      const existing = await this.mongoRequest(
+        {
+          owner: userId.toString(),
+          name,
+          pendingCheckout: { $exists: true },
+        },
+        { projection: { _id: 1 } },
+      )
+      if (existing.length > 0) {
+        await this.mongoUpdateOne({ _id: existing[0]._id }, "$set", {
+          pendingCheckout,
+        })
+        return existing[0]._id.toString()
+      }
+      const result = await this.createDefault(userId.toString(), name, {
+        personal: false,
+        pendingCheckout,
+      })
+      if (result instanceof Error) return result
+      return result.insertedId.toString()
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // true when the org was pending and is now visible
+  async activatePending(id) {
+    try {
+      const result = await this.mongoUpdateOne(
+        { _id: this.getObjectId(id), pendingCheckout: { $exists: true } },
+        "$unset",
+        { pendingCheckout: "" },
+      )
+      if (result.modifiedCount !== 1) return false
+      await this.mongoUpdateOne({ _id: this.getObjectId(id) }, "$set", {
+        last_update: moment().format(),
+      })
+      return true
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async listPendingBefore(date) {
+    try {
+      return await this.mongoRequest(
+        { "pendingCheckout.since": { $lt: date } },
+        { projection: { _id: 1 } },
+      )
     } catch (error) {
       console.error(error)
       return error
@@ -197,6 +262,7 @@ class OrganizationModel extends MongoModel {
       }
       const query = {
         _id: this.getObjectId(orgaId),
+        ...VISIBLE,
         users: {
           $elemMatch: {
             userId: userId.toString(),
@@ -239,6 +305,7 @@ class OrganizationModel extends MongoModel {
   async listSelf(userId) {
     try {
       const query = {
+        ...VISIBLE,
         users: {
           $elemMatch: {
             userId: userId.toString(),

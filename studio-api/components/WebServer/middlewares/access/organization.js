@@ -159,29 +159,27 @@ async function access(req, next, organizationId, userId, right) {
     }
     const organization = await model.organizations.getById(organizationId)
     if (organization.length !== 1) return next(new OrganizationNotFound())
-    else {
-      const isUserFound = organization[0].users.filter(
-        (user) =>
-          user.userId === userId && ROLES.hasRoleAccess(user.role, right),
-      )
-      if (isUserFound.length !== 0) {
-        if (req) req.userRole = isUserFound[0].role
+    // Bought with a plan and not paid yet: invisible, even to its admin
+    if (organization[0].pendingCheckout) return next(new OrganizationNotFound())
 
+    const isUserFound = organization[0].users.filter(
+      (user) => user.userId === userId && ROLES.hasRoleAccess(user.role, right),
+    )
+    if (isUserFound.length !== 0) {
+      if (req) req.userRole = isUserFound[0].role
+      return next()
+    }
+    // Special case if the user is owner of an action regarding some conversation
+    if (req?.body?.conversationsId) {
+      const conv = await model.conversations.listConvFromOwner(
+        req.body.conversationsId,
+        userId,
+      )
+      if (conv.length >= 1) {
         return next()
-      } else {
-        // Special case if the user is owner of an action regarding some conversation
-        if (req?.body?.conversationsId) {
-          const conv = await model.conversations.listConvFromOwner(
-            req.body.conversationsId,
-            userId,
-          )
-          if (conv.length >= 1) {
-            return next()
-          }
-        }
-        return next(new OrganizationForbidden())
       }
     }
+    return next(new OrganizationForbidden())
   } catch (err) {
     return next(err)
   }

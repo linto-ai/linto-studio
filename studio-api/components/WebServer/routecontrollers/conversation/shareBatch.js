@@ -21,14 +21,22 @@ const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
-const { UserError } = require(
-  `${process.cwd()}/components/WebServer/error/exception/users`,
+const { inviteNewUser } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
 
 async function batchShareConversation(req, res, next) {
   try {
-    requireParam(req.body.conversations, ConversationMetadataRequire, "A conversations ids list is")
-    requireParam(req.body.users, ConversationMetadataRequire, "A users list with desired rights is required")
+    requireParam(
+      req.body.conversations,
+      ConversationMetadataRequire,
+      "A conversations ids list is",
+    )
+    requireParam(
+      req.body.users,
+      ConversationMetadataRequire,
+      "A users list with desired rights is required",
+    )
 
     let auth_user = {
       id: req.payload.data.userId,
@@ -174,35 +182,6 @@ async function usersCheck(users_list, method) {
     users.push(user)
   }
   users_list.users = users
-}
-
-async function inviteNewUser(email) {
-  if (process.env.DISABLE_USER_INVITATION === "true")
-    throw new UserError("User invitation is disabled")
-  const createdUser = await model.users.createExternal({ email })
-  // Create new user personal organization
-
-  if (createdUser.insertedCount !== 1) throw new UserError()
-  const userId = createdUser.insertedId.toString()
-
-  const invitedUser = await model.users.getById(userId, true)
-  const magicId = invitedUser[0].authLink.magicId
-
-  if (magicId) {
-    const createOrganization = await model.organizations.createDefault(
-      userId,
-      email,
-      {},
-    )
-    if (createOrganization.insertedCount !== 1) {
-      await model.users.delete(userId)
-      throw new UserError()
-    }
-    return {
-      id: userId,
-      magicId: magicId,
-    }
-  }
 }
 
 module.exports = {

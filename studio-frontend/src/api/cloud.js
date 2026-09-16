@@ -79,18 +79,14 @@ export async function apiCreateSubscription(
   return res?.data
 }
 
-// POST /cloud/checkout { organizationId, planKey, interval?, returnUrl? }
-// -> { url, sessionId }. The caller redirects the browser to url.
-export async function apiCreateCheckout(
-  organizationId,
-  planKey,
-  returnUrl,
-  notif = null,
-) {
+// POST /cloud/checkout -> { url, sessionId }. The caller redirects the browser
+// to url. payload: { organizationId, planKey, interval?, returnUrl? }, or for a
+// plan bought with a new org { organizationName, invitations?, planKey, ... }.
+export async function apiCreateCheckout(payload, notif = null) {
   const res = await sendRequest(
     `${CLOUD_API}/checkout`,
     { method: "post" },
-    { organizationId, planKey, returnUrl },
+    payload,
     notif,
   )
   return res?.data

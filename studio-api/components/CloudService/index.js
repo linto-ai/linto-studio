@@ -29,6 +29,16 @@ const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const logger = require(`${process.cwd()}/lib/logger/logger`)
+const saas = require(`${process.cwd()}/lib/saas`)
+const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
+const orgaUtility = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+
+// A never-paid org is dropped once every Checkout session that could still
+// reference it has expired (Stripe expires them after 24 h).
+const PENDING_ORG_MAX_AGE_MS = 48 * 3600 * 1000
+const PENDING_ORG_SWEEP_MS = 3600 * 1000
 
 const ROLE_MAP = {
   member: ROLES.MEMBER,
@@ -71,20 +81,94 @@ function buildGuards() {
     // ?userScope=backoffice (the front adds it on /backoffice pages).
     authorizePlatformAdmin: platform_access.isPlatformSystemAdministrator,
 
-    // Billable seats = members with role >= uploader, floored at 1. null on
-    // failure so the plugin falls back to the request instead of mis-billing.
+    // null on failure so the plugin falls back to the request instead of
+    // mis-billing.
     resolveSeats: async (orgId) => {
       try {
         const orgs = await model.organizations.getById(orgId)
         if (!orgs || orgs.length !== 1) return null
-        const seats = (orgs[0].users || []).filter(
-          (u) => u.role >= ROLES.UPLOADER,
-        ).length
-        return Math.max(1, seats)
+        return saas.billableSeats(orgs[0])
       } catch (e) {
         return null
       }
     },
+  }
+}
+
+// A plan sold with its own organization (Business): the org exists, hidden,
+// before Checkout so Stripe metadata can carry its id; the webhook reveals it.
+function buildOrganizationHooks() {
+  return {
+    createPending: async ({ ownerUserId, name, invitations, origin }) => {
+      if (!ownerUserId) {
+        throw new Error("CloudService: createPending needs the caller userId")
+      }
+      return throwIfError(
+        await model.organizations.createPending(ownerUserId, name, {
+          invitations,
+          origin,
+        }),
+      )
+    },
+    activate: async (orgId) => {
+      const rows = throwIfError(await model.organizations.getById(orgId))
+      if (rows.length !== 1) return false
+      const changed = throwIfError(
+        await model.organizations.activatePending(orgId),
+      )
+      // Member inserts and mails stay off the webhook's critical path
+      if (changed) {
+        invitePendingMembers(rows[0]).catch((err) =>
+          logger.error(
+            `[saas] org ${orgId}: invitations failed: ${err && err.message}`,
+          ),
+        )
+      }
+      return changed
+    },
+  }
+}
+
+// Invitations captured at checkout, sent once the org is paid, as uploaders
+// (the seats already billed). A failed invitation is logged and skipped.
+async function invitePendingMembers(org) {
+  const { pendingCheckout, ...activated } = org
+  const invitations = (pendingCheckout && pendingCheckout.invitations) || []
+  if (invitations.length === 0) return
+  const orgId = activated._id.toString()
+
+  const owner = throwIfError(await model.users.getById(activated.owner))
+  const inviterEmail = owner[0] ? owner[0].email : null
+  for (const email of invitations) {
+    try {
+      await orgaUtility.inviteMemberByEmail({
+        organization: activated,
+        email,
+        role: ROLES.UPLOADER,
+        inviterEmail,
+        origin: pendingCheckout.origin,
+      })
+    } catch (err) {
+      logger.error(
+        `[saas] org ${orgId}: could not invite ${email}: ${err && err.message}`,
+      )
+    }
+  }
+  saas.syncOrgSeats(orgId, activated)
+}
+
+async function sweepPendingOrganizations() {
+  const before = new Date(Date.now() - PENDING_ORG_MAX_AGE_MS)
+  const rows = throwIfError(await model.organizations.listPendingBefore(before))
+  for (const org of rows) {
+    try {
+      await orgaUtility.deleteOrganizationCascade(org._id.toString())
+      logger.info(`[saas] dropped never-paid organization ${org._id}`)
+    } catch (err) {
+      logger.error(
+        `[saas] could not drop never-paid organization ${org._id}: ${err && err.message}`,
+      )
+    }
   }
 }
 
@@ -126,6 +210,7 @@ class CloudService extends Component {
       defaultPlanKey: process.env.SAAS_DEFAULT_PLAN_KEY || undefined,
       stripe: {},
       resolveRequester,
+      organizations: buildOrganizationHooks(),
     })
 
     // Init runs in the background. A failure leaves the plugin loaded and every
@@ -155,6 +240,15 @@ class CloudService extends Component {
       "/cloud",
       this.paymentProcessor.apiRouter(buildGuards()),
     )
+
+    this.pendingOrgSweep = setInterval(() => {
+      sweepPendingOrganizations().catch((err) =>
+        logger.error(
+          `[saas] pending organization sweep failed: ${err && err.message}`,
+        ),
+      )
+    }, PENDING_ORG_SWEEP_MS)
+    if (this.pendingOrgSweep.unref) this.pendingOrgSweep.unref()
 
     return this
   }
