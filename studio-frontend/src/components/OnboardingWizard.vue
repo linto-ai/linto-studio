@@ -88,8 +88,16 @@ import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 // Plan catalog keys (linto-studio-cloud-service/src/plans/catalog.js), in
 // display order. "free_payg" is the engine's historical slug for Free.
 const PLAN_ORDER = ["free_payg", "premium", "business"]
-const PLAN_ICON = { free_payg: "prohibit", premium: "sparkle", business: "users" }
-const PLAN_LOCALE_KEY = { free_payg: "free", premium: "premium", business: "business" }
+const PLAN_ICON = {
+  free_payg: "prohibit",
+  premium: "sparkle",
+  business: "users",
+}
+const PLAN_LOCALE_KEY = {
+  free_payg: "free",
+  premium: "premium",
+  business: "business",
+}
 
 export default {
   name: "OnboardingWizard",
@@ -141,6 +149,9 @@ export default {
     // UpgradeModal's context line.
     contextMessage() {
       if (!this.upgradeReason) return ""
+      if (this.upgradeReason.capability === "seats") {
+        return this.$t("billing.seats_full")
+      }
       if (
         this.upgradeReason.reason === "quota_exceeded" ||
         this.upgradeReason.reason === "credit_exhausted"
@@ -210,7 +221,8 @@ export default {
         tagline: this.$t(
           `onboarding.plans.${PLAN_LOCALE_KEY[plan.planKey]}.tagline`,
         ),
-        badge: plan.planKey === "premium" ? this.$t("onboarding.most_popular") : "",
+        badge:
+          plan.planKey === "premium" ? this.$t("onboarding.most_popular") : "",
         ...this.buildPriceDisplay(plan),
         features: this.buildFeatures(plan),
       }
@@ -237,7 +249,10 @@ export default {
       )
       if (this.billingPeriod === "annual" && annual) {
         return {
-          priceLabel: this.formatPrice(annual.monthlyEquivalentCents, pricing.currency),
+          priceLabel: this.formatPrice(
+            annual.monthlyEquivalentCents,
+            pricing.currency,
+          ),
           priceSuffix: this.$t(
             pricing.perSeat
               ? "onboarding.price_suffix_per_seat_annual"
@@ -261,7 +276,10 @@ export default {
       if (annual) {
         notes.push(
           this.$t("onboarding.price_note_annual_hint", {
-            price: this.formatPrice(plan.pricing.amountCentsYearly, plan.pricing.currency),
+            price: this.formatPrice(
+              plan.pricing.amountCentsYearly,
+              plan.pricing.currency,
+            ),
             freeMonths: annual.freeMonths,
           }),
         )
@@ -278,7 +296,10 @@ export default {
     buildAnnualPriceNote(plan, annual) {
       const notes = [
         this.$t("onboarding.price_note_billed_yearly", {
-          price: this.formatPrice(plan.pricing.amountCentsYearly, plan.pricing.currency),
+          price: this.formatPrice(
+            plan.pricing.amountCentsYearly,
+            plan.pricing.currency,
+          ),
           freeMonths: annual.freeMonths,
         }),
       ]
@@ -391,7 +412,10 @@ export default {
     buildLiveFeature(plan) {
       const rule = plan.entitlements["live.minutes"]
       if (rule.purchasable) {
-        return { text: this.$t("onboarding.features.live_packs"), icon: "radio" }
+        return {
+          text: this.$t("onboarding.features.live_packs"),
+          icon: "radio",
+        }
       }
       return {
         text: this.$t("onboarding.features.live_welcome", {

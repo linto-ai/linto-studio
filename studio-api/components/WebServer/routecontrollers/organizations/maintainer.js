@@ -48,6 +48,8 @@ async function addUserInOrganization(req, res, next) {
     if (organization.length === 0) throw new OrganizationNotFound()
     else organization = organization[0]
 
+    await saas.enforceSeats(organization, { toRole: parseInt(req.body.role) })
+
     const sharedUser = await model.users.getById(req.payload.data.userId)
     const userId = await orgaUtility.inviteMemberByEmail({
       organization,
@@ -56,8 +58,6 @@ async function addUserInOrganization(req, res, next) {
       inviterEmail: sharedUser[0].email,
       origin: req,
     })
-
-    saas.syncOrgSeats(req.params.organizationId, organization)
 
     const conversations = await model.conversations.getSharedConvFromOrga(
       req.params.organizationId,
@@ -96,33 +96,28 @@ async function updateUserFromOrganization(req, res, next) {
 
     const userRole = parseInt(req.body.role)
 
-    if (
-      organization.users.filter((oUser) => oUser.userId === req.body.userId)
-        .length === 0
+    const current = organization.users.find(
+      (oUser) => oUser.userId === req.body.userId,
     )
+    if (!current)
       throw new OrganizationError(
         "User is not part of the " + organization.name,
       )
-
-    organization.users.map((oUser) => {
-      if (oUser.userId === req.body.userId) {
-        if (ROLES.hasRoleAccess(req.userRole, oUser.role))
-          // Update role need to be lower or equal than my current role
-          oUser.role = userRole
-        else throw new OrganizationForbidden()
-        return
-      }
-    })
+    // Update role need to be lower or equal than my current role
+    if (!ROLES.hasRoleAccess(req.userRole, current.role))
+      throw new OrganizationForbidden()
+    const fromRole = current.role
+    current.role = userRole
 
     const data = orgaUtility.countAdmin(organization, req.body.userId)
     if (data.adminCount === 0)
       throw new OrganizationForbidden("You cannot change the last admin role")
 
+    await saas.enforceSeats(organization, { fromRole, toRole: userRole })
+
     const result = await model.organizations.update(organization)
     if (result.matchedCount === 0)
       throw new OrganizationError("Error while updating user in organization")
-
-    saas.syncOrgSeats(req.params.organizationId, organization)
 
     user = await model.users.getById(req.body.userId, true)
     await Mailing.organizationRightUpdate(user[0], req, organization.name)
@@ -164,8 +159,6 @@ async function deleteUserFromOrganization(req, res, next) {
 
     const result = await model.organizations.update(organization)
     if (result.matchedCount === 0) throw new OrganizationError()
-
-    saas.syncOrgSeats(req.params.organizationId, organization)
 
     user = await model.users.getById(req.body.userId, true)
     await Mailing.organizationDelete(user[0], req, organization.name)

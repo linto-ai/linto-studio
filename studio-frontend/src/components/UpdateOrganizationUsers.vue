@@ -25,6 +25,15 @@
             @click="lockedInvite" />
         </template>
       </HasEntitlement>
+      <IsCloud>
+        <span
+          v-if="hasSeatCapacity"
+          class="flex row align-center gap-small"
+          :title="seatsFull ? $t('billing.seats_full') : null">
+          <ph-icon :name="seatsFull ? 'lock' : 'users'" />
+          {{ $t("billing.seats_usage", { used: collaborators, total: seats }) }}
+        </span>
+      </IsCloud>
     </div>
 
     <!--Organization Members -->
@@ -43,7 +52,7 @@
       <template #cell-role="{ element }">
         <OrgaRoleSelector
           v-model="element.role"
-          @input="updateUserRole(element)"
+          @input="applyRoleChange(element)"
           :readonly="!canUpdateRole(element)" />
       </template>
       <template #cell-actions="{ element }">
@@ -87,43 +96,6 @@
     <IsCloud>
       <MemberUsageTable />
     </IsCloud>
-
-    <!-- Explicit confirmation when a promotion adds a billable seat (premium). -->
-    <div
-      v-if="pendingPromo"
-      class="seat-promo-modal"
-      @click.self="cancelPromotion">
-      <div class="seat-promo-modal__card">
-        <div class="seat-promo-modal__badge">
-          ＋ {{ $t("billing.seat_promo.seat") }}
-        </div>
-        <h3 class="seat-promo-modal__title">
-          {{ $t("billing.seat_promo.title") }}
-        </h3>
-        <p class="seat-promo-modal__msg">
-          {{
-            $t("billing.seat_promo.message", {
-              name:
-                pendingPromo.user.firstname ||
-                pendingPromo.user.email ||
-                $t("billing.seat_promo.this_member"),
-              price: seatPriceLabel,
-            })
-          }}
-        </p>
-        <p class="seat-promo-modal__prorate">
-          {{ $t("billing.seat_promo.prorated") }}
-        </p>
-        <div class="seat-promo-modal__actions">
-          <Button variant="secondary" @click="cancelPromotion">{{
-            $t("billing.cancel")
-          }}</Button>
-          <Button variant="primary" @click="confirmPromotion">{{
-            $t("billing.seat_promo.confirm")
-          }}</Button>
-        </div>
-      </div>
-    </div>
   </section>
 </template>
 <script>
@@ -134,8 +106,7 @@ import EMPTY_FIELD from "@/const/emptyField"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
-const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
-import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
+import { isCollaboratorRole } from "@/tools/isCollaboratorRole.js"
 
 import { sortArray } from "@/tools/sortList.js"
 
@@ -188,32 +159,24 @@ export default {
       displayLeaveModal: false,
       displayRemoveUserModal: false,
       userToRemove: null,
-      // previous role per member, to detect a seat-adding promotion
+      // previous role per member, to revert a refused promotion
       prevRoles: Object.fromEntries(users.map((u) => [u._id, u.role])),
-      pendingPromo: null, // { user, oldRole } awaiting billing confirmation
     }
   },
   computed: {
-    ...mapGetters("billing", ["isPerSeat", "currentPlan", "isUnmetered"]),
-    // Only a per-seat plan bills an extra seat on promotion. The flat solo plan
-    // has no seats at all, and a comp or managed org is never billed.
-    seatBilled() {
-      return IS_MODE_CLOUD && this.isPerSeat && !this.isUnmetered
+    ...mapGetters("billing", ["isPerSeat", "isUnmetered", "seats"]),
+    // Seats cap the collaborators (role >= uploader) of a per-seat plan; a comp
+    // or managed org is never capped.
+    hasSeatCapacity() {
+      return this.isPerSeat && !this.isUnmetered
     },
-    seatPriceLabel() {
-      const cents = this.currentPlan?.pricing?.amountCents
-      if (!cents) return ""
-      const v = cents / 100
-      try {
-        return new Intl.NumberFormat(this.$i18n?.locale || "fr-FR", {
-          style: "currency",
-          currency: (
-            this.currentPlan?.pricing?.currency || "eur"
-          ).toUpperCase(),
-        }).format(v)
-      } catch (e) {
-        return `${v} €`
-      }
+    collaborators() {
+      return this.orgaMembers.filter((member) =>
+        isCollaboratorRole(member.role),
+      ).length
+    },
+    seatsFull() {
+      return this.hasSeatCapacity && this.collaborators >= this.seats
     },
     columns() {
       return [
@@ -321,21 +284,7 @@ export default {
     imgFullPath(imgPath) {
       return getEnv("VUE_APP_PUBLIC_MEDIA") + "/" + imgPath
     },
-    async updateUserRole(user) {
-      const oldRole = this.prevRoles[user._id] ?? user.role
-      const newRole = user.role
-      // Premium org: promoting a member to a contributor role (>= uploader) adds
-      // a billable seat. Make it explicit (prorated) before applying.
-      if (
-        this.seatBilled &&
-        oldRole < ORGANIZATION_ROLES.UPLOADER &&
-        newRole >= ORGANIZATION_ROLES.UPLOADER
-      ) {
-        this.pendingPromo = { user, oldRole }
-        return
-      }
-      await this.applyRoleChange(user)
-    },
+    // The seat cap is enforced by the API (402 opens the upgrade modal)
     async applyRoleChange(user) {
       const req = await apiUpdateUserRoleInOrganisation(
         this.organizationId,
@@ -353,22 +302,9 @@ export default {
         this.revertRole(user)
       }
     },
-    confirmPromotion() {
-      if (!this.pendingPromo) return
-      const { user } = this.pendingPromo
-      this.pendingPromo = null
-      this.applyRoleChange(user)
-    },
-    cancelPromotion() {
-      if (!this.pendingPromo) return
-      const { user, oldRole } = this.pendingPromo
-      this.pendingPromo = null
-      this.revertRole(user, oldRole)
-    },
-    revertRole(user, role) {
-      const back = role != null ? role : this.prevRoles[user._id]
+    revertRole(user) {
       const member = this.orgaMembers.find((m) => m._id === user._id)
-      if (member) member.role = back
+      if (member) member.role = this.prevRoles[user._id]
     },
     canUpdateRole(user) {
       if (this.isBackofficePage) {
@@ -407,49 +343,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-.seat-promo-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1em;
-
-  &__card {
-    background: var(--neutral-0, #fff);
-    border-radius: 10px;
-    padding: 1.5em;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-  }
-  &__badge {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--primary-color);
-  }
-  &__title {
-    margin: 0.2em 0 0.4em;
-    font-size: 1.2rem;
-  }
-  &__msg {
-    color: var(--neutral-80);
-    font-size: 0.9rem;
-    margin: 0 0 0.4em;
-  }
-  &__prorate {
-    color: var(--neutral-60);
-    font-size: 0.82rem;
-    margin: 0 0 1em;
-  }
-  &__actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5em;
-  }
-}
-</style>

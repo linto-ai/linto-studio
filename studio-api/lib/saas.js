@@ -84,31 +84,39 @@ function afterAuth() {
   }
 }
 
-// Billable seats: members with role >= uploader, plus the invitations of an
-// org still pending checkout (SPEC-SAAS §3.2), floored at 1.
-function billableSeats(organization) {
-  const members = (organization.users || []).filter(
-    (u) => u.role >= ROLES.UPLOADER,
-  ).length
+// A collaborator occupies a seat: member with role >= uploader.
+function isCollaboratorRole(role) {
+  return ROLES.hasRoleAccess(role, ROLES.UPLOADER)
+}
+
+function countCollaborators(organization) {
+  return (organization.users || []).filter((u) => isCollaboratorRole(u.role))
+    .length
+}
+
+// Seats an org requires: its collaborators plus the invitations of an org
+// still pending checkout (SPEC-SAAS §3.2), floored at 1.
+function requiredSeats(organization) {
   const invited = organization.pendingCheckout
     ? (organization.pendingCheckout.invitations || []).length
     : 0
-  return Math.max(1, members + invited)
+  return Math.max(1, countCollaborators(organization) + invited)
 }
 
-function syncOrgSeats(organizationId, organization) {
-  return syncSeats(organizationId, billableSeats(organization))
-}
-
-// Seats -> subscription + Stripe. Fail-soft.
-async function syncSeats(orgId, seatCount) {
+// Seat capacity gate on a member role change: only becoming a collaborator
+// takes a seat. Throws 402 with capability "seats" when every seat is taken.
+// No-op in OSS.
+async function enforceSeats(organization, { fromRole = null, toRole }) {
   const pp = plugin()
-  if (!pp) return
-  try {
-    return await pp.syncSeats(orgId, seatCount)
-  } catch (e) {
-    /* fail-soft */
-  }
+  if (!pp) return null
+  const wasCollaborator = fromRole != null && isCollaboratorRole(fromRole)
+  if (wasCollaborator || !isCollaboratorRole(toRole)) return null
+  const v = await pp.entitlements.checkSeats({
+    orgId: organization._id.toString(),
+    used: countCollaborators(organization),
+  })
+  if (!v.allowed) throwDenied(v, "seats")
+  return v
 }
 
 // RGPD: erase an org's billing footprint (Stripe subscription canceled, local
@@ -141,9 +149,8 @@ module.exports = {
   liveAdmit,
   record,
   afterAuth,
-  billableSeats,
-  syncOrgSeats,
-  syncSeats,
+  requiredSeats,
+  enforceSeats,
   purgeOrganization,
   purgeUser,
 }

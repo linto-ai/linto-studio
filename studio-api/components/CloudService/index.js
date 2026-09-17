@@ -87,7 +87,7 @@ function buildGuards() {
       try {
         const orgs = await model.organizations.getById(orgId)
         if (!orgs || orgs.length !== 1) return null
-        return saas.billableSeats(orgs[0])
+        return saas.requiredSeats(orgs[0])
       } catch (e) {
         return null
       }
@@ -130,7 +130,7 @@ function buildOrganizationHooks() {
 }
 
 // Invitations captured at checkout, sent once the org is paid, as uploaders
-// (the seats already billed). A failed invitation is logged and skipped.
+// (the seats bought with them). A failed invitation is logged and skipped.
 async function invitePendingMembers(org) {
   const { pendingCheckout, ...activated } = org
   const invitations = (pendingCheckout && pendingCheckout.invitations) || []
@@ -154,7 +154,6 @@ async function invitePendingMembers(org) {
       )
     }
   }
-  saas.syncOrgSeats(orgId, activated)
 }
 
 async function sweepPendingOrganizations() {

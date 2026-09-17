@@ -101,14 +101,8 @@
       "unmetered_hint": "Cette organisation n'est pas comptée (offert ou managé). Géré depuis le backoffice.",
       "portal_soon": "Factures, carte et résiliation passent par le portail client Stripe (prochain jalon)."
     },
-    "seat_promo": {
-      "seat": "1 siège",
-      "title": "Ajouter un siège facturé ?",
-      "this_member": "ce membre",
-      "message": "Donner à {name} un rôle contributeur (uploader ou plus) ajoute 1 siège facturé à {price}/siège/mois.",
-      "prorated": "Il est proratisé sur les jours restants de la période en cours ; une rétrogradation ultérieure crédite la part non utilisée.",
-      "confirm": "Promouvoir & ajouter le siège"
-    },
+    "seats_usage": "{used} / {total} sièges utilisés",
+    "seats_full": "Tous les sièges sont occupés. Ajoutez des sièges pour donner un rôle contributeur à un membre.",
     "backoffice": {
       "title": "Abonnement (SaaS)",
       "plan": "Offre",

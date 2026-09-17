@@ -138,6 +138,7 @@ export default {
   components: { Button },
   computed: {
     ...mapGetters("billing", [
+      "seats",
       "isFree",
       "isPaid",
       "isPerSeat",
@@ -157,9 +158,6 @@ export default {
     }),
     isOrgAdmin() {
       return (this.userRoleInOrg || 0) >= ORGANIZATION_ROLES.ADMINISTRATOR
-    },
-    seats() {
-      return this.subscription?.seats || this.usage?.seats || 1
     },
     renewalDate() {
       return this.subscription?.currentPeriodEnd || null

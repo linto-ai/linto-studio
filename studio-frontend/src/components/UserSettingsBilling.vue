@@ -126,6 +126,7 @@ import { mapGetters, mapActions } from "vuex"
 import { bus } from "@/main.js"
 import { apiGetUsage, apiGetSubscriptions } from "@/api/cloud"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
+import { isCollaboratorRole } from "@/tools/isCollaboratorRole.js"
 import { computeQuotaMeters } from "@/tools/billingMeters"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 import OrgBillingCard from "@/components-cloud/OrgBillingCard.vue"
@@ -258,8 +259,8 @@ export default {
         : 0
 
       const members = org.users || []
-      const seatsCount = members.filter(
-        (u) => u.role >= ORGANIZATION_ROLES.UPLOADER,
+      const seatsCount = members.filter((u) =>
+        isCollaboratorRole(u.role),
       ).length
       const isOrgAdmin = org.role >= ORGANIZATION_ROLES.ADMINISTRATOR
 

@@ -41,12 +41,17 @@ export default {
     }
     return (
       [...s.plans]
-        .sort((a, b) => (a.pricing?.amountCents || 0) - (b.pricing?.amountCents || 0))
+        .sort(
+          (a, b) =>
+            (a.pricing?.amountCents || 0) - (b.pricing?.amountCents || 0),
+        )
         .find(grants) || null
     )
   },
-  // Only a per-seat plan bills a seat on promotion.
+  // Per-seat plan: seats are bought and cap the collaborators
   isPerSeat: (s, g) => g.currentPlan?.pricing?.perSeat === true,
+  // Seat capacity of the subscription (per-seat plans), caps the collaborators
+  seats: (s) => s.usage?.seats || s.subscription?.seats || 1,
   // Live balance block of the usage summary (null until loaded).
   live: (s) => s.usage?.live || null,
 
