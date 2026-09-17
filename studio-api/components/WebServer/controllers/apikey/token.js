@@ -11,6 +11,13 @@ const { UserError, UserNotFound } = require(
 )
 const PLATFORM_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 
+// Token routes take a user id: only machine accounts may be handled here
+async function getApiKeyUser(userId) {
+  const user = await model.users.listApiKeyList([userId])
+  if (user.length !== 1) throw new UserNotFound("API key not found")
+  return user[0]
+}
+
 function getExpiresIn(value, defaultValue = "14d") {
   defaultValue = process.env.EXTENDED_TOKEN_DAYS_TIME || defaultValue
   try {
@@ -24,23 +31,20 @@ function getExpiresIn(value, defaultValue = "14d") {
 }
 
 async function generateApiKeyToken(
-  userId,
+  user,
   token,
   expires_in = process.env.EXTENDED_TOKEN_DAYS_TIME,
 ) {
   try {
-    const user = await model.users.getById(userId, true)
-    if (user.length !== 1) throw new UserNotFound()
-
     expires_in = getExpiresIn(expires_in)
     if (token === undefined) {
       token_salt = require("randomstring").generate(12)
       const tokenCreatedAt = new Date()
       const tokenExpiresAt = new Date(Date.now() + expires_in)
       const [insertedToken] = await Promise.all([
-        model.tokens.insert(user[0]._id, token_salt, expires_in, true),
+        model.tokens.insert(user._id, token_salt, expires_in, true),
         model.users.update({
-          _id: user[0]._id.toString(),
+          _id: user._id.toString(),
           tokenCreatedAt,
           tokenExpiresAt,
         }),
@@ -53,8 +57,8 @@ async function generateApiKeyToken(
     let tokenData = {
       salt: token_salt,
       tokenId: token.insertedId || token._id.toString(),
-      userId: user[0]._id,
-      role: user[0].role,
+      userId: user._id,
+      role: user.role,
     }
 
     return TokenGenerator(tokenData, {
@@ -94,7 +98,7 @@ async function createApiKey(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
     if (createdUser.insertedCount !== 1) throw new UserError()
 
     return await generateApiKeyToken(
-      createdUser.insertedId.toString(),
+      { _id: createdUser.insertedId, role },
       undefined,
       body.expires_in,
     )
@@ -134,12 +138,7 @@ async function listApiKey(idList, orgaRoles = undefined) {
     const token = tokenMap.get(id)
     const roleData = roleMap.get(id)
 
-    const {
-      _id,
-      tokenCreatedAt,
-      tokenExpiresAt,
-      ...user
-    } = userDoc || {}
+    const { _id, tokenCreatedAt, tokenExpiresAt, ...user } = userDoc || {}
 
     const createdAt = token?.createdAt || tokenCreatedAt
     const expiresAt = token?.expiresAt || tokenExpiresAt
@@ -167,13 +166,14 @@ async function listApiKey(idList, orgaRoles = undefined) {
 
 async function getApiKeyData(tokenId, regenerate = false, expiresIn) {
   try {
+    const user = await getApiKeyUser(tokenId)
     if (regenerate) {
       await model.tokens.deleteAllUserTokens(tokenId)
     }
 
     let existingTokens = await model.tokens.getTokenByUser(tokenId)
     const auth = await generateApiKeyToken(
-      tokenId,
+      user,
       regenerate ? undefined : existingTokens[0],
       expiresIn,
     )
@@ -202,6 +202,7 @@ async function refreshApiKey(tokenId, expiresIn) {
 }
 
 async function deleteApiKey(tokenId, revoke = false) {
+  await getApiKeyUser(tokenId)
   await model.tokens.deleteAllUserTokens(tokenId)
 
   if (revoke === "true") {

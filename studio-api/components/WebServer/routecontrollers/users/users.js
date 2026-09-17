@@ -52,6 +52,14 @@ const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 const triggers = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
+const {
+  activePendingEmail,
+  pendingEmailFor,
+  requestEmailChange,
+  sendVerificationLink,
+} = require(
+  `${process.cwd()}/components/WebServer/controllers/user/emailVerification`,
+)
 
 async function createUser(req, res, next) {
   try {
@@ -163,7 +171,7 @@ async function getUserById(req, res, next) {
     ) {
       user = await model.users.getById(req.params.userId, true)
       const { salt, passwordHash, authLink, keyToken, ...cleanedUser } = user[0]
-      user = [cleanedUser]
+      user = [{ ...cleanedUser, pendingEmail: activePendingEmail(user[0]) }]
     } else {
       user = await model.users.getById(req.params.userId)
     }
@@ -184,6 +192,7 @@ async function getPersonalInfo(req, res, next) {
 
     res.status(200).send({
       ...user[0],
+      pendingEmail: activePendingEmail(user[0]),
     })
   } catch (err) {
     next(err)
@@ -205,9 +214,11 @@ async function updateUser(req, res, next) {
     )
       throw new UserUnsupportedMediaType()
 
-    const myUser = await model.users.getById(req.payload.data.userId, true)
+    const userId = req.payload.data.userId
+    const myUser = await model.users.getById(userId, true)
     if (myUser.length !== 1) throw new UserNotFound()
     let user = myUser[0]
+    let pendingEmail = null
 
     if (req.body.email) {
       if (myUser[0].fromSso)
@@ -222,11 +233,25 @@ async function updateUser(req, res, next) {
         throw new UserConflict("Email already used")
 
       if (user.email !== req.body.email) {
-        if (!user.verifiedEmail.includes(user.email) && user.emailIsVerified) {
-          user.verifiedEmail.push(user.email)
+        if (process.env.SMTP_HOST) {
+          pendingEmail = req.body.email
+          user.pendingEmail = pendingEmailFor(pendingEmail)
+        } else {
+          if (
+            !user.verifiedEmail.includes(user.email) &&
+            user.emailIsVerified
+          ) {
+            user.verifiedEmail.push(user.email)
+          }
+          user.email = req.body.email
+          user.emailIsVerified = false
         }
-        user.email = req.body.email
-        user.emailIsVerified = false
+      } else if (user.pendingEmail) {
+        // The link sent to the abandoned address must not open the account
+        if (user.authLink?.email === user.pendingEmail.address) {
+          user.authLink = { magicId: null, validityDate: null }
+        }
+        user.pendingEmail = null
       }
     }
     if (req.body.firstname) user.firstname = req.body.firstname
@@ -251,9 +276,11 @@ async function updateUser(req, res, next) {
     const result = await model.users.update(user)
     if (result.matchedCount === 0) throw new UserError()
 
+    if (pendingEmail) await sendVerificationLink(userId, pendingEmail, req)
+
     // Propagate the name change to the user's Qdrant points (fire-and-forget)
     if (req.body.firstname || req.body.lastname) {
-      triggers.renameUserSpeaker(req.payload.data.userId)
+      triggers.renameUserSpeaker(userId)
     }
 
     if (result.modifiedCount === 1)
@@ -315,9 +342,13 @@ async function recoveryAuth(req, res, next) {
         message: "An email with an authentication link has been sent to you.",
       })
     } else {
-      user[0].accountNotifications = user[0].accountNotifications ?? {}
-      user[0].accountNotifications.updatePassword = true
-      const updatedUser = await model.users.generateMagicLink(user[0])
+      const accountNotifications = user[0].accountNotifications ?? {}
+      accountNotifications.updatePassword = true
+      const updatedUser = await model.users.generateMagicLink({
+        _id: user[0]._id,
+        email: req.body.email,
+        accountNotifications,
+      })
       if (updatedUser.modifiedCount === 0) throw new GenerateMagicLinkError()
 
       const mail_result = await Mailing.resetPassword(
@@ -352,17 +383,11 @@ async function resendVerificationEmail(req, res, next) {
       return
     }
 
-    const updatedUser = await model.users.generateMagicLink({
-      _id: user[0]._id,
-    })
-    if (updatedUser.modifiedCount === 0) throw new GenerateMagicLinkError()
-
-    const mail_result = await Mailing.verifyEmailAddress(
-      req.body.email,
-      req,
-      updatedUser.data.magicId,
-    )
-    if (!mail_result) {
+    // A mail failure stays silent here, the response must not reveal accounts
+    try {
+      await sendVerificationLink(user[0]._id, req.body.email, req)
+    } catch (err) {
+      if (!(err instanceof NodemailerError)) throw err
       debug(`Error sending verification email to ${req.body.email}`)
     }
 
@@ -388,16 +413,12 @@ async function deleteUser(req, res, next) {
 async function sendVerificationEmail(req, res, next) {
   try {
     const userId = req.payload.data.userId
-    const user = await model.users.getById(userId)
+    const user = await model.users.getById(userId, true)
     if (user.length !== 1) throw new UserNotFound()
 
-    await model.users.generateMagicLink({ _id: userId })
-
-    const userUpdated = await model.users.getById(userId, true)
-    const email = userUpdated[0].email
-    const magicId = userUpdated[0].authLink.magicId
-    const mail_result = await Mailing.verifyEmailAddress(email, req, magicId)
-    if (!mail_result) throw "Error when sending mail"
+    const pending = activePendingEmail(user[0])
+    if (pending) await requestEmailChange(userId, pending, req)
+    else await sendVerificationLink(userId, user[0].email, req)
 
     res.status(200).send({
       status: "success",
