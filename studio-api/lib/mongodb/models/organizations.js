@@ -164,6 +164,20 @@ class OrganizationModel extends MongoModel {
     }
   }
 
+  async setUsersRole(id, userIds, role) {
+    try {
+      return await this.mongoUpdateOne(
+        { _id: this.getObjectId(id) },
+        "$set",
+        { "users.$[u].role": role, last_update: moment().format() },
+        { arrayFilters: [{ "u.userId": { $in: userIds } }] },
+      )
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async listPendingBefore(date) {
     try {
       return await this.mongoRequest(

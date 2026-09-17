@@ -107,13 +107,13 @@ async function updateUserFromOrganization(req, res, next) {
     if (!ROLES.hasRoleAccess(req.userRole, current.role))
       throw new OrganizationForbidden()
     const fromRole = current.role
+    // Seats are counted on the organization before the change
+    await saas.enforceSeats(organization, { fromRole, toRole: userRole })
     current.role = userRole
 
     const data = orgaUtility.countAdmin(organization, req.body.userId)
     if (data.adminCount === 0)
       throw new OrganizationForbidden("You cannot change the last admin role")
-
-    await saas.enforceSeats(organization, { fromRole, toRole: userRole })
 
     const result = await model.organizations.update(organization)
     if (result.matchedCount === 0)

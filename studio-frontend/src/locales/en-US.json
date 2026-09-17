@@ -168,9 +168,11 @@
         "feature_denied": "Feature blocked",
         "credit_exhausted": "Live balance exhausted",
         "subscription_suspended": "Subscription suspended",
+        "collaborators_demoted": "Collaborators demoted to member",
         "user_purged": "User data anonymized"
       },
-      "minutes_unit": "min"
+      "minutes_unit": "min",
+      "collaborators_unit": "collaborator(s)"
     }
   },
   "session_list": {

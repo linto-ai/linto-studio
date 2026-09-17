@@ -169,9 +169,11 @@
         "feature_denied": "Fonctionnalité bloquée",
         "credit_exhausted": "Solde live épuisé",
         "subscription_suspended": "Abonnement suspendu",
+        "collaborators_demoted": "Collaborateurs repassés en membre",
         "user_purged": "Données utilisateur anonymisées"
       },
-      "minutes_unit": "min"
+      "minutes_unit": "min",
+      "collaborators_unit": "collaborateur(s)"
     }
   },
   "session_list": {

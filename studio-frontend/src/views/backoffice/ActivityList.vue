@@ -135,6 +135,7 @@ const SAAS_ACTION_KEY = {
   "feature.denied": "feature_denied",
   "credit.exhausted": "credit_exhausted",
   "subscription.suspended": "subscription_suspended",
+  "organization.collaborators_demoted": "collaborators_demoted",
   "billing.user.purged": "user_purged",
 }
 
@@ -418,6 +419,7 @@ export default {
         action === "feature.denied" ||
         action === "credit.exhausted" ||
         action === "subscription.suspended" ||
+        action === "organization.collaborators_demoted" ||
         action === "billing.user.purged"
       )
         return "warning"
@@ -453,6 +455,10 @@ export default {
         case "subscription.canceled":
         case "subscription.ended":
           return d.planKey || ""
+        case "organization.collaborators_demoted":
+          return `${(d.userIds || []).length} ${this.$t(
+            "activity_list.saas.collaborators_unit",
+          )} · ${d.planKey || ""}`
         case "org.mode.changed":
           return `${d.fromMode || "?"} → ${d.toMode || "?"}${
             d.reason ? ` · ${d.reason}` : ""

@@ -95,8 +95,7 @@ function buildGuards() {
   }
 }
 
-// A plan sold with its own organization (Business): the org exists, hidden,
-// before Checkout so Stripe metadata can carry its id; the webhook reveals it.
+// Organization hooks of the plugin (SPEC-SAAS §3.2 pending org, §3.4 demotion)
 function buildOrganizationHooks() {
   return {
     createPending: async ({ ownerUserId, name, invitations, origin }) => {
@@ -125,6 +124,18 @@ function buildOrganizationHooks() {
         )
       }
       return changed
+    },
+    // The org lost collaboration: its collaborators become members until
+    // seats are bought again. Returns the demoted userIds.
+    demoteCollaborators: async (orgId) => {
+      const rows = throwIfError(await model.organizations.getById(orgId))
+      if (rows.length !== 1) return []
+      const userIds = saas.demotableCollaborators(rows[0])
+      if (userIds.length === 0) return []
+      throwIfError(
+        await model.organizations.setUsersRole(orgId, userIds, ROLES.MEMBER),
+      )
+      return userIds
     },
   }
 }
