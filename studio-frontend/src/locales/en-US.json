@@ -1265,13 +1265,7 @@
       "unshare_success": "The template is personal again",
       "share_error": "Unable to change the template sharing",
       "help": {
-        "title": "How to create your own template",
-        "step_download": "Download a base template as DOCX:",
         "no_base_template": "No base template is available for this service.",
-        "step_edit": "Open it in Word or LibreOffice and adapt the layout, logos and texts. Keep the tags between double braces, they are replaced at export time.",
-        "step_upload": "Upload it below. Only you can see it.",
-        "step_upload_manager": "Upload it below, for yourself or for the whole organization. You can change this sharing later from the template card.",
-        "placeholders_title": "Tags",
         "required": "required",
         "placeholder": {
           "output": "content produced by the AI service",
@@ -1282,12 +1276,13 @@
           "generated_at": "export date and time"
         },
         "custom_title": "Create your own tags",
-        "custom_intro": "Write any tag in your document, with a description of what you expect: the AI extracts the value from the conversation at export time and places it there.",
+        "custom_intro": "Add any tag with a description: the AI extracts the value from the conversation at export time.",
         "custom_syntax": "field_name: what the AI should extract",
         "custom_example_actions": "decisions: list of the decisions taken and who owns them",
-        "custom_example_participants": "participants: names and roles of the attendees",
-        "custom_note": "Without a description, the AI relies on the tag name. Base templates already contain such tags (participants, actions, agenda), keep or replace them. If the AI service is not configured for extraction, the tag stays empty.",
-        "standard_title": "Tags filled automatically"
+        "custom_note": "Without a description the AI relies on the name. Empty if the service has no extraction.",
+        "standard_title": "Tags filled automatically",
+        "base_prefix": "Start from a LinTO template:",
+        "placeholders_button": "Available tags"
       },
       "remove_file": "Remove the file",
       "scope_label": {

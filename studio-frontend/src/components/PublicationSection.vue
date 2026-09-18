@@ -101,7 +101,6 @@
         <form class="flex col gap-medium" @submit.prevent="uploadTemplate">
           <PublicationTemplateHelp
             :baseTemplates="baseTemplates"
-            :canManageOrganization="canManageOrganization"
             @download="handleDownloadTemplate" />
 
           <div class="form-field">
