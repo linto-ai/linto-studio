@@ -49,6 +49,7 @@ onMounted(() => {
       class="chat-composer__textarea"
       :placeholder="t('chat.placeholder')"
       :disabled="disabled"
+      enterkeyhint="send"
       rows="2"
       ref="chat-composer__textarea"
       @keydown="onKeydown" />

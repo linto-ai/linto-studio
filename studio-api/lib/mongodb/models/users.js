@@ -1,6 +1,4 @@
-const debug = require("debug")(
-  "linto:lib:mongodb:models:users",
-)
+const debug = require("debug")("linto:lib:mongodb:models:users")
 const MongoModel = require(`../model`)
 const crypto = require("crypto")
 const randomstring = require("randomstring")
@@ -45,6 +43,16 @@ const defaultUserPayload = {
   },
 }
 
+// Normalize an email address so invitation, self sign-up and OIDC login
+// all resolve to the same account regardless of casing/whitespace.
+// Email lookups in Mongo are exact and case sensitive, while the OIDC
+// provider may return a capitalized email claim, so both writes and
+// lookups must be normalized consistently.
+function normalizeEmail(email) {
+  if (typeof email !== "string") return email
+  return email.trim().toLowerCase()
+}
+
 function generatePasswordHash(password) {
   const salt = randomstring.generate(12)
   const passwordHash = crypto
@@ -53,13 +61,14 @@ function generatePasswordHash(password) {
   return { salt, passwordHash }
 }
 
-function generateAuthLink() {
+function generateAuthLink(email) {
   return {
     magicId: randomstring.generate({
       charset: "alphanumeric",
       length: 20,
     }),
     validityDate: VALIDITY_DATE.generateValidityDate(VALIDITY_DATE.SHORT), // 30 minutes
+    email,
   }
 }
 
@@ -77,23 +86,24 @@ class UsersModel extends MongoModel {
       const adminPayload = {
         ...defaultUserPayload,
         ...user,
-        email: user.email,
+        email: normalizeEmail(user.email),
         salt,
         passwordHash,
-        authLink: generateAuthLink(),
+        authLink: generateAuthLink(user.email),
         created: dateTime,
         last_update: dateTime,
         fromSso: false,
         type: USER_TYPE.USER,
       }
 
-      // If SMTP is not configured, mark the email as verified
       if (!process.env.SMTP_HOST) {
         adminPayload.emailIsVerified = true
         adminPayload.verifiedEmail.push(adminPayload.email)
       }
 
-      return await this.mongoInsert(adminPayload)
+      const inserted = await this.mongoInsert(adminPayload)
+      await this.releasePendingEmail(adminPayload.email)
+      return inserted
     } catch (error) {
       console.error(error)
       return error
@@ -105,10 +115,11 @@ class UsersModel extends MongoModel {
       const dateTime = moment().format()
       delete payload.password
 
+      if (payload.email) payload.email = normalizeEmail(payload.email)
       if (!payload.fromSso) payload.fromSso = false
       const userPayload = {
         ...payload,
-        authLink: generateAuthLink(),
+        authLink: generateAuthLink(payload.email),
         ...defaultUserPayload,
         role: ROLE.defaultUserRole(),
         created: dateTime,
@@ -116,13 +127,33 @@ class UsersModel extends MongoModel {
         type: USER_TYPE.USER,
       }
 
-      // If SMTP is not configured, mark the email as verified
       if (!process.env.SMTP_HOST) {
         userPayload.emailIsVerified = true
         userPayload.verifiedEmail.push(userPayload.email)
       }
 
-      return await this.mongoInsert(userPayload)
+      const inserted = await this.mongoInsert(userPayload)
+      await this.releasePendingEmail(userPayload.email)
+      return inserted
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // The address has a real owner now, pending claims and their links are void
+  async releasePendingEmail(email) {
+    try {
+      await this.mongoUpdateMany(
+        { "pendingEmail.address": email, "authLink.email": email },
+        "$set",
+        { authLink: { magicId: null, validityDate: null } },
+      )
+      return await this.mongoUpdateMany(
+        { "pendingEmail.address": email },
+        "$set",
+        { pendingEmail: null },
+      )
     } catch (error) {
       console.error(error)
       return error
@@ -180,6 +211,8 @@ class UsersModel extends MongoModel {
     try {
       const dateTime = moment().format()
       delete payload.password
+
+      if (payload.email) payload.email = normalizeEmail(payload.email)
 
       const externalPayload = {
         lastname: "",
@@ -327,6 +360,7 @@ class UsersModel extends MongoModel {
   async getByEmail(email, serverAccess = false) {
     try {
       if (typeof email !== "string") return []
+      email = normalizeEmail(email)
       const query = {
         $or: [{ email }, { verifiedEmail: { $in: [email] } }],
       }
@@ -345,6 +379,10 @@ class UsersModel extends MongoModel {
     }
     delete payload._id
     payload.last_update = moment().format()
+
+    if (payload.email) payload.email = normalizeEmail(payload.email)
+    if (Array.isArray(payload.verifiedEmail))
+      payload.verifiedEmail = payload.verifiedEmail.map(normalizeEmail)
 
     if (payload.password) {
       const salt = randomstring.generate(12)
@@ -384,6 +422,7 @@ class UsersModel extends MongoModel {
         authLink: {
           magicId,
           validityDate,
+          email: payload.email,
         },
       }
 
@@ -435,6 +474,7 @@ class UsersModel extends MongoModel {
   async getTokenByEmail(email) {
     try {
       if (typeof email !== "string") return []
+      email = normalizeEmail(email)
       const query = { email }
       return await this.mongoRequest(query)
     } catch (error) {

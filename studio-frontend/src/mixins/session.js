@@ -131,7 +131,9 @@ export const sessionMixin = {
         this.websocketInstance = this.$apiEventWS
       }
 
-      await this.fetchAliases()
+      // Aliases are organization scoped, a public link viewer cannot read them
+      if (this.isFromPublicLink) this.sessionAliases = []
+      else await this.fetchAliases()
       this.sessionLoaded = true
     },
     async fetchAliases() {

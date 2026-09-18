@@ -79,6 +79,13 @@ export function useFollowPlayback(
     },
   )
 
+  // Re-enable follow on any seek (widget scrub or click-to-read): the user
+  // just told the player where to be, which is exactly what follow means to
+  // track — symmetric with the isPlaying re-enable above.
+  const stopSeekListener = core.on("audio:seek", () => {
+    isFollowing.value = true
+  })
+
   function onManualScroll() {
     isFollowing.value = false
   }
@@ -89,12 +96,14 @@ export function useFollowPlayback(
     }
   }
 
+  // wheel/touchstart/keydown are real scroll gestures — a bare pointerdown
+  // isn't (clicking a word, a button, anything in the panel triggers it
+  // without ever moving the scroll position), so it's deliberately excluded.
   function setupScrollListener(handler: (e: Event) => void) {
     const el = scrollContainer.value
     if (!el) return
     el.addEventListener("wheel", handler, { passive: true })
     el.addEventListener("touchstart", handler, { passive: true })
-    el.addEventListener("pointerdown", handler, { passive: true })
     el.addEventListener("keydown", checkKeyDownIsScroll)
   }
 
@@ -103,7 +112,6 @@ export function useFollowPlayback(
     if (!el) return
     el.removeEventListener("wheel", handler)
     el.removeEventListener("touchstart", handler)
-    el.removeEventListener("pointerdown", handler)
     el.removeEventListener("keydown", checkKeyDownIsScroll)
   }
 
@@ -113,6 +121,7 @@ export function useFollowPlayback(
 
   onBeforeUnmount(() => {
     downScrollListener(onManualScroll)
+    stopSeekListener()
   })
 
   function resumeFollow() {

@@ -35,7 +35,7 @@ import {
   computeTurnEndDate,
 } from "@/tools/computeTurnTime.js"
 import { getEnv } from "@/tools/getEnv"
-import { bus } from "@/main.js"
+import { bus } from "@/tools/eventBus.js"
 import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
 import { customDebug } from "@/tools/customDebug"
 
