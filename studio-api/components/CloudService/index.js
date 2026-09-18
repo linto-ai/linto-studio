@@ -95,9 +95,20 @@ function buildGuards() {
   }
 }
 
-// Organization hooks of the plugin (SPEC-SAAS §3.2 pending org, §3.4 demotion)
+// Organization hooks of the plugin (SPEC-SAAS §3.2 pending org, §4.2 lock)
 function buildOrganizationHooks() {
   return {
+    // false = team org (bought with a plan or created under one): the plugin
+    // locks it out while it has no team plan. null when the org is unknown.
+    isPersonal: async (orgId) => {
+      const rows = throwIfError(
+        await model.organizations.getByIdFilter(orgId, { personal: 1 }),
+      )
+      if (rows.length !== 1) return null
+      return rows[0].personal !== false
+    },
+    // A plan sold with its own organization (Business): the org exists, hidden,
+    // before Checkout so Stripe metadata can carry its id; the webhook reveals it.
     createPending: async ({ ownerUserId, name, invitations, origin }) => {
       if (!ownerUserId) {
         throw new Error("CloudService: createPending needs the caller userId")
@@ -124,18 +135,6 @@ function buildOrganizationHooks() {
         )
       }
       return changed
-    },
-    // The org lost collaboration: its collaborators become members until
-    // seats are bought again. Returns the demoted userIds.
-    demoteCollaborators: async (orgId) => {
-      const rows = throwIfError(await model.organizations.getById(orgId))
-      if (rows.length !== 1) return []
-      const userIds = saas.demotableCollaborators(rows[0])
-      if (userIds.length === 0) return []
-      throwIfError(
-        await model.organizations.setUsersRole(orgId, userIds, ROLES.MEMBER),
-      )
-      return userIds
     },
   }
 }

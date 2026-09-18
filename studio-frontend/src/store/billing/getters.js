@@ -19,6 +19,8 @@ export default {
   mode: (s) => s.usage?.mode || s.subscription?.mode || "normal",
   // comp and managed orgs have no gate and no limit.
   isUnmetered: (s, g) => g.mode !== "normal",
+  // Team org without a team plan: every gated call is refused server-side.
+  locked: (s) => s.usage?.locked === true,
   isFree: (s, g) => g.planKey === "free_payg",
   currentPlan: (s, g) => s.plans.find((p) => p.planKey === g.planKey) || null,
   isPaid: (s, g) => !g.isFree,
@@ -61,6 +63,7 @@ export default {
   // their limit is enforced server-side.
   can: (s, g) => (capability) => {
     if (g.isUnmetered) return true
+    if (g.locked) return false
     const c = s.usage?.capabilities?.[capability]
     if (c) {
       if (c.type === "boolean") return c.enabled === true
