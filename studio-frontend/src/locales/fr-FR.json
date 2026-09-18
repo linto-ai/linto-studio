@@ -51,6 +51,7 @@
     "limit_reached": "Vous avez atteint la limite de votre offre.",
     "feature_locked": "Cette fonctionnalité est incluse dans une offre équipe.",
     "feature_locked_plan": "Cette fonctionnalité est incluse dans l'offre {plan}.",
+    "feature_locked_paid": "Cette fonctionnalité est incluse dans les offres payantes.",
     "footer": {
       "usage": "{used} / {total}",
       "upgrade_cta": "Améliorer"

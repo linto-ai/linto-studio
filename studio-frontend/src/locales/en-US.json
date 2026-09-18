@@ -51,6 +51,7 @@
     "limit_reached": "You've reached the limit of your plan.",
     "feature_locked": "This feature is included in a team plan.",
     "feature_locked_plan": "This feature is included in the {plan} plan.",
+    "feature_locked_paid": "This feature is included in paid plans.",
     "footer": {
       "usage": "{used} / {total}",
       "upgrade_cta": "Upgrade"

@@ -3,6 +3,7 @@ import { bus } from "@/tools/eventBus.js"
 import store from "@/store/index.js"
 import { getCookie } from "./getCookie"
 import { getImpersonatedOrgId } from "./getImpersonatedOrgId.js"
+import { readErrorPayload } from "@/tools/readErrorPayload.js"
 
 export async function sendRequest(
   url,
@@ -79,15 +80,16 @@ export async function sendRequest(
     }
   } catch (error) {
     if (error.code === "ERR_CANCELED") return
-    let errMsg = error?.response?.data?.message || error.code || error.message
+    const payload = await readErrorPayload(error?.response?.data)
+    let errMsg = payload?.message || error.code || error.message
     // SaaS gating: surface the upgrade flow globally (filtered services / quota
     // exhausted / feature locked) regardless of the caller.
-    const saasCode = error?.response?.data?.code
+    const saasCode = payload?.code
     if (
       saasCode === "SAAS_QUOTA_EXCEEDED" ||
       saasCode === "SAAS_FEATURE_LOCKED"
     ) {
-      store.dispatch("billing/openUpgradeModal", error.response.data)
+      store.dispatch("billing/openUpgradeModal", payload)
     }
     if (notif) {
       bus.$emit("app_notif", {

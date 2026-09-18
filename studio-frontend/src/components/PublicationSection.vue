@@ -21,18 +21,15 @@
     </div>
 
     <div v-else class="templates-grid">
-      <button
-        type="button"
-        class="template-card--create"
-        @click="showCreateForm = true">
-        <PhIcon name="file-plus" framed size="lg" />
-        <span class="template-card--create__title card-title">
-          {{ $t("publish.publication.upload_template") }}
-        </span>
-        <span class="template-card--create__hint">
-          {{ $t("publish.publication.upload_template_hint") }}
-        </span>
-      </button>
+      <HasEntitlement capability="publication.custom_templates">
+        <PublicationCreateTemplateCard @select="showCreateForm = true" />
+        <template #locked="{ plan, showUpgrade }">
+          <PublicationCreateTemplateCard
+            locked
+            :lockedPlan="plan"
+            @select="showUpgrade" />
+        </template>
+      </HasEntitlement>
 
       <PublicationTemplateCard
         v-for="template in templates"
@@ -73,13 +70,24 @@
           :label="$t('common.cancel')" />
       </template>
       <template #actions-right>
-        <Button
-          variant="secondary"
-          @click="downloadFromPreview('docx')"
-          :disabled="!previewUrl"
-          type="button"
-          icon="download"
-          label="DOCX" />
+        <HasEntitlement capability="publication.docx_export">
+          <Button
+            variant="secondary"
+            @click="downloadFromPreview('docx')"
+            :disabled="!previewUrl"
+            type="button"
+            icon="download"
+            label="DOCX" />
+          <template #locked="{ plan, showUpgrade }">
+            <Button
+              variant="secondary"
+              @click="showUpgrade"
+              type="button"
+              icon="lock"
+              label="DOCX"
+              :title="lockedHint(plan)" />
+          </template>
+        </HasEntitlement>
         <Button
           variant="primary"
           @click="downloadFromPreview('pdf')"
@@ -186,6 +194,8 @@ import FormInput from "@/components/molecules/FormInput.vue"
 import FormRadio from "@/components/molecules/FormRadio.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import PdfViewer from "@/components/PdfViewer.vue"
+import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
+import PublicationCreateTemplateCard from "@/components/molecules/PublicationCreateTemplateCard.vue"
 import PublicationPlaceholdersPopover from "@/components/molecules/PublicationPlaceholdersPopover.vue"
 import PublicationTemplateHelp from "@/components/molecules/PublicationTemplateHelp.vue"
 import PublicationTemplateCard from "@/components/PublicationTemplateCard.vue"
@@ -193,6 +203,7 @@ import EMPTY_FIELD from "@/const/emptyField.js"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import { getTemplateDisplayName } from "@/tools/getTemplateDisplayName.js"
 import { formatFileSize } from "@/tools/formatFileSize.js"
+import { lockedPlanHint } from "@/tools/lockedPlanHint.js"
 
 const DOCX_MIME_TYPE =
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -205,10 +216,12 @@ export default {
     Droparea,
     FormInput,
     FormRadio,
+    HasEntitlement,
     Loading,
     Modal,
     PdfViewer,
     PhIcon,
+    PublicationCreateTemplateCard,
     PublicationPlaceholdersPopover,
     PublicationTemplateCard,
     PublicationTemplateHelp,
@@ -307,6 +320,9 @@ export default {
   },
   methods: {
     formatFileSize,
+    lockedHint(plan) {
+      return lockedPlanHint(this.$t.bind(this), plan)
+    },
     notify(type, message) {
       this.$store.dispatch("system/addNotification", { type, message })
     },
@@ -538,36 +554,6 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
   gap: var(--medium-gap);
-}
-
-.template-card--create {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--small-gap);
-  padding: var(--medium-gap);
-  min-height: 11rem;
-  background: var(--background-inset-section);
-  border: var(--border-button);
-  border-style: dashed;
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  font: inherit;
-  color: var(--text-primary);
-  text-align: center;
-  white-space: normal;
-
-  &:hover,
-  &:focus-visible {
-    border-color: var(--primary-color);
-    background: var(--primary-soft);
-  }
-}
-
-.template-card--create__hint {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
 }
 
 // The modal content is tinted: the drop zone needs its own contrast
