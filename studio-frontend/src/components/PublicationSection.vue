@@ -1,20 +1,18 @@
 <template>
-  <div class="publication-section">
-    <div v-if="!hideHeader" class="section-header">
-      <h3 class="section-title">{{ $t("publish.publication.title") }}</h3>
-      <p class="section-description">
+  <div class="publication-section flex col gap-medium">
+    <header v-if="!hideHeader" class="flex col gap-small">
+      <h3 class="publication-section__title">
+        {{ $t("publish.publication.title") }}
+      </h3>
+      <p class="publication-section__description">
         {{ $t("publish.publication.description") }}
       </p>
-    </div>
+    </header>
 
-    <!-- Loading state -->
-    <div v-if="loading" class="publication-loading">
-      <Loading :title="$t('publish.publication.loading')" />
-    </div>
+    <Loading v-if="loading" :title="$t('publish.publication.loading')" />
 
-    <!-- Error state -->
-    <div v-else-if="error" class="publication-error">
-      <span class="icon warning"></span>
+    <div v-else-if="error" class="publication-section__error">
+      <PhIcon name="warning" framed frameColor="neutral" />
       <span>{{ error }}</span>
       <Button
         variant="secondary"
@@ -22,58 +20,29 @@
         :label="$t('common.retry')" />
     </div>
 
-    <!-- Content (even when templates.length === 0, we show create card) -->
-    <div v-else class="publication-content">
-      <!-- Templates grid -->
-      <div class="templates-grid">
-        <!-- Upload template card -->
-        <div class="create-template-card" @click="showCreateForm = true">
-          <div class="create-preview">
-            <div class="create-icon-wrapper">
-              <span class="icon upload create-icon"></span>
-            </div>
-          </div>
-          <div class="create-content">
-            <h4 class="create-title">
-              {{ $t("publish.publication.upload_template") }}
-            </h4>
-            <p class="create-description">
-              {{ $t("publish.publication.upload_template_hint") }}
-            </p>
-          </div>
-        </div>
+    <div v-else class="templates-grid">
+      <button
+        type="button"
+        class="template-card--create"
+        @click="showCreateForm = true">
+        <PhIcon name="file-plus" framed size="lg" />
+        <span class="template-card--create__title">
+          {{ $t("publish.publication.upload_template") }}
+        </span>
+        <span class="template-card--create__hint">
+          {{ $t("publish.publication.upload_template_hint") }}
+        </span>
+      </button>
 
-        <PublicationTemplateCard
-          v-for="template in templates"
-          :key="template.id"
-          :template="template"
-          :isSelected="selectedTemplate && selectedTemplate.id === template.id"
-          @select="selectTemplate"
-          @delete="handleDeleteTemplate" />
-      </div>
-
-      <!-- Export actions (shown when a template is selected) -->
-      <div v-if="selectedTemplate" class="export-actions">
-        <div class="selected-template-info">
-          <span class="icon done"></span>
-          <span
-            >{{ $t("publish.publication.selected") }}:
-            {{ selectedTemplate.name }}</span
-          >
-        </div>
-        <div class="export-buttons">
-          <Button
-            variant="secondary"
-            @click="exportDocument('docx')"
-            icon="download"
-            :label="$t('conversation.export.docx')" />
-          <Button
-            variant="primary"
-            @click="exportDocument('pdf')"
-            icon="download"
-            :label="$t('conversation.export.pdf')" />
-        </div>
-      </div>
+      <PublicationTemplateCard
+        v-for="template in templates"
+        :key="template.id"
+        :template="template"
+        :currentUserId="currentUserId"
+        :canManageOrganization="canManageOrganization"
+        @select="openPreview"
+        @share="handleShareTemplate"
+        @delete="handleDeleteTemplate" />
     </div>
 
     <!-- Preview Modal -->
@@ -125,109 +94,75 @@
     <Modal
       v-model="showCreateForm"
       :title="$t('publish.publication.upload_template_title')"
-      size="sm"
+      size="md"
       :withActionApply="false"
       @close="resetUploadForm">
       <template #content>
-        <div class="form-field">
-          <label>{{ $t("publish.publication.template_file") }} *</label>
-          <div
-            class="file-upload-zone"
-            :class="{ 'has-file': newTemplate.file, 'drag-over': isDragging }"
-            @click="triggerFileInput"
-            @dragover.prevent="isDragging = true"
-            @dragleave.prevent="isDragging = false"
-            @drop.prevent="handleFileDrop">
-            <input
-              ref="fileInput"
-              type="file"
-              accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-              @change="handleFileSelect"
-              style="display: none" />
-            <template v-if="newTemplate.file">
-              <span class="icon document file-icon"></span>
-              <span class="file-name">{{ newTemplate.file.name }}</span>
-              <span class="file-size"
-                >({{ formatFileSize(newTemplate.file.size) }})</span
-              >
-              <button
+        <form class="flex col gap-medium" @submit.prevent="uploadTemplate">
+          <PublicationTemplateHelp
+            :baseTemplates="baseTemplates"
+            @download="handleDownloadTemplate" />
+
+          <div class="form-field">
+            <div class="form-field__header">
+              <label>{{ $t("publish.publication.template_file") }} *</label>
+              <PublicationPlaceholdersPopover />
+            </div>
+            <div v-if="newTemplateFile" class="selected-file">
+              <PhIcon name="file-doc" framed />
+              <span class="selected-file__name">{{
+                newTemplateFile.name
+              }}</span>
+              <span class="selected-file__size">
+                {{ formatFileSize(newTemplateFile.size) }}
+              </span>
+              <Button
+                variant="text"
+                size="sm"
+                icon="x"
                 type="button"
-                class="file-remove"
-                @click.stop="removeFile">
-                ×
-              </button>
-            </template>
-            <template v-else>
-              <span class="icon upload upload-icon"></span>
-              <span class="upload-text">{{
-                $t("publish.publication.drop_file")
-              }}</span>
-              <span class="upload-hint">{{
-                $t("publish.publication.or_click")
-              }}</span>
-            </template>
+                :title="$t('publish.publication.remove_file')"
+                @click="removeFile" />
+            </div>
+            <Droparea
+              v-else
+              class="template-droparea"
+              :accepts="[DOCX_MIME_TYPE, '.docx']"
+              @drop="handleDroppedFiles"
+              @error="handleDropareaError">
+              <PhIcon name="file-doc" size="xl" />
+              <p>{{ $t("publish.publication.drop_file") }}</p>
+            </Droparea>
+            <p class="form-field__hint" v-html="templateFormatHint"></p>
           </div>
-          <p class="field-hint" v-html="templateFormatHint"></p>
-        </div>
 
-        <div class="form-field">
-          <label>{{ $t("publish.publication.template_name") }} *</label>
-          <input
-            type="text"
-            v-model="newTemplate.name_fr"
-            :placeholder="
-              $t('publish.publication.template_name_placeholder')
-            " />
-        </div>
+          <FormInput
+            v-model="nameField.value"
+            :field="nameField"
+            inputId="publication-template-name"
+            required />
 
-        <div class="form-field">
-          <label>{{ $t("publish.publication.template_description") }}</label>
-          <textarea
-            v-model="newTemplate.description_fr"
-            :placeholder="
-              $t('publish.publication.template_description_placeholder')
-            "
-            rows="2"></textarea>
-        </div>
+          <FormInput
+            v-model="descriptionField.value"
+            :field="descriptionField"
+            inputId="publication-template-description"
+            textarea />
 
-        <div class="form-field" v-if="canCreateOrgTemplate">
-          <label>{{ $t("publish.publication.template_scope") }}</label>
-          <div class="scope-options">
-            <label class="scope-option">
-              <input
-                type="radio"
-                v-model="newTemplate.scope"
-                value="personal" />
-              <span>{{ $t("publish.publication.scope_personal") }}</span>
-              <span class="scope-hint">{{
-                $t("publish.publication.scope_personal_hint")
-              }}</span>
-            </label>
-            <label class="scope-option">
-              <input
-                type="radio"
-                v-model="newTemplate.scope"
-                value="organization" />
-              <span>{{ $t("publish.publication.scope_organization") }}</span>
-              <span class="scope-hint">{{
-                $t("publish.publication.scope_organization_hint")
-              }}</span>
-            </label>
+          <div class="form-field" v-if="canManageOrganization">
+            <label>{{ $t("publish.publication.template_scope") }}</label>
+            <FormRadio :field="scopeField" v-model="scopeField.value" />
           </div>
-        </div>
+        </form>
       </template>
       <template #actions-right>
         <Button
           variant="primary"
           @click="uploadTemplate"
           :disabled="!canUpload || uploading"
+          :loading="uploading"
           type="button"
-          :icon="uploading ? 'spinner-gap' : 'check'"
-          :label="
-            uploading
-              ? $t('common.uploading')
-              : $t('publish.publication.upload_button')
-          " />
+          icon="check"
+          :label="$t('publish.publication.upload_button')" />
       </template>
     </Modal>
   </div>
@@ -239,75 +174,85 @@ import {
   apiExportWithTemplate,
   apiUploadPublicationTemplate,
   apiDeletePublicationTemplate,
+  apiUpdatePublicationTemplateScope,
+  apiDownloadPublicationTemplate,
 } from "@/api/publication"
-import PublicationTemplateCard from "@/components/PublicationTemplateCard.vue"
-import PdfViewer from "@/components/PdfViewer.vue"
+import Button from "@/components/atoms/Button.vue"
+import Loading from "@/components/atoms/Loading.vue"
+import PhIcon from "@/components/atoms/PhIcon.vue"
+import Droparea from "@/components/molecules/Droparea.vue"
+import FormInput from "@/components/molecules/FormInput.vue"
+import FormRadio from "@/components/molecules/FormRadio.vue"
 import Modal from "@/components/molecules/Modal.vue"
-import Loading from "./atoms/Loading.vue"
+import PdfViewer from "@/components/PdfViewer.vue"
+import PublicationPlaceholdersPopover from "@/components/molecules/PublicationPlaceholdersPopover.vue"
+import PublicationTemplateHelp from "@/components/molecules/PublicationTemplateHelp.vue"
+import PublicationTemplateCard from "@/components/PublicationTemplateCard.vue"
+import EMPTY_FIELD from "@/const/emptyField.js"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
+import { getTemplateDisplayName } from "@/tools/getTemplateDisplayName.js"
+import { formatFileSize } from "@/tools/formatFileSize.js"
+
+const DOCX_MIME_TYPE =
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+const MAX_TEMPLATE_SIZE = 10 * 1024 * 1024
 
 export default {
   name: "PublicationSection",
   components: {
-    PublicationTemplateCard,
-    PdfViewer,
+    Button,
+    Droparea,
+    FormInput,
+    FormRadio,
+    Loading,
     Modal,
+    PdfViewer,
+    PhIcon,
+    PublicationPlaceholdersPopover,
+    PublicationTemplateCard,
+    PublicationTemplateHelp,
   },
   props: {
-    jobId: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    organizationId: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    conversationId: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    serviceId: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    conversationName: {
-      type: String,
-      required: false,
-      default: "export",
-    },
-    hideHeader: {
-      type: Boolean,
-      default: false,
-    },
-    userRole: {
-      type: String,
-      required: false,
-      default: "member",
-    },
-    versionNumber: {
-      type: Number,
-      required: false,
-      default: null,
-    },
+    jobId: { type: String, default: null },
+    organizationId: { type: String, default: null },
+    conversationId: { type: String, default: null },
+    serviceId: { type: String, default: null },
+    conversationName: { type: String, default: "export" },
+    hideHeader: { type: Boolean, default: false },
+    versionNumber: { type: Number, default: null },
   },
   data() {
     return {
+      DOCX_MIME_TYPE,
       loading: false,
       error: null,
       templates: [],
-      selectedTemplate: null,
-      exporting: false,
       showCreateForm: false,
       uploading: false,
-      isDragging: false,
-      newTemplate: {
-        file: null,
-        name_fr: "",
-        description_fr: "",
-        scope: "personal",
+      newTemplateFile: null,
+      nameField: {
+        ...EMPTY_FIELD,
+        label: this.$t("publish.publication.template_name"),
+      },
+      descriptionField: {
+        ...EMPTY_FIELD,
+        label: this.$t("publish.publication.template_description"),
+      },
+      scopeField: {
+        value: "personal",
+        error: null,
+        options: [
+          {
+            name: "personal",
+            label: this.$t("publish.publication.scope_personal"),
+            description: this.$t("publish.publication.scope_personal_hint"),
+          },
+          {
+            name: "organization",
+            label: this.$t("publish.publication.scope_organization"),
+            description: this.$t("publish.publication.scope_organization_hint"),
+          },
+        ],
       },
       // Preview modal
       previewTemplate: null,
@@ -325,59 +270,48 @@ export default {
         if (!val) this.closePreview()
       },
     },
-    canCreateOrgTemplate() {
-      // User can create org-scoped templates if they are admin or manager
-      const allowedRoles = [
-        "admin",
-        "administrator",
-        "maintainer",
-        "manager",
-        "meeting manager",
-      ]
-      return allowedRoles.includes((this.userRole || "").toLowerCase())
+    currentUserId() {
+      return this.$store.getters["user/getUserId"]
+    },
+    // Maintainers and admins share templates with the whole organization
+    canManageOrganization() {
+      const role =
+        this.$store.getters["organizations/getUserRoleInOrganization"]
+      return role >= ORGANIZATION_ROLES.MAINTAINER
+    },
+    baseTemplates() {
+      return this.templates.filter((template) => template.scope === "system")
     },
     canUpload() {
-      return (
-        this.newTemplate.file &&
-        this.newTemplate.name_fr &&
-        this.newTemplate.name_fr.trim().length > 0
-      )
+      return Boolean(this.newTemplateFile) && this.nameField.value.trim() !== ""
     },
     templateFormatHint() {
-      // Return hint text with placeholder syntax escaped for Vue
+      // Placeholder syntax is HTML-escaped in the translation
       return this.$t("publish.publication.template_format_hint")
     },
   },
   watch: {
-    organizationId: {
-      immediate: false,
-      handler() {
-        this.loadTemplates()
-      },
+    organizationId() {
+      this.loadTemplates()
     },
-    serviceId: {
-      immediate: false,
-      handler() {
-        this.loadTemplates()
-      },
+    serviceId() {
+      this.loadTemplates()
     },
   },
   mounted() {
     this.loadTemplates()
   },
   beforeDestroy() {
-    // Revoke any blob URLs to prevent memory leak
-    if (this.previewUrl) {
-      URL.revokeObjectURL(this.previewUrl)
-      this.previewUrl = null
-    }
+    this.revokePreviewUrl()
   },
   methods: {
+    formatFileSize,
+    notify(type, message) {
+      this.$store.dispatch("system/addNotification", { type, message })
+    },
     async loadTemplates() {
       // organizationId can be unset on mount; the watcher retries once it resolves
-      if (!this.organizationId) {
-        return
-      }
+      if (!this.organizationId) return
       this.loading = true
       this.error = null
       try {
@@ -391,19 +325,15 @@ export default {
         this.loading = false
       }
     },
-    selectTemplate(template) {
-      // Open preview modal instead of just selecting
-      this.openPreview(template)
+    getTemplateName(template) {
+      return getTemplateDisplayName(template, this.$i18n.locale)
     },
+    // Preview
     openPreview(template) {
       this.$emit("preview-open")
       this.previewTemplate = template
       this.previewError = null
-      // Revoke previous blob URL if exists
-      if (this.previewUrl) {
-        URL.revokeObjectURL(this.previewUrl)
-        this.previewUrl = null
-      }
+      this.revokePreviewUrl()
       this.generatePreview()
     },
     closePreview() {
@@ -411,7 +341,9 @@ export default {
       this.previewTemplate = null
       this.previewLoading = false
       this.previewError = null
-      // Revoke blob URL to free memory
+      this.revokePreviewUrl()
+    },
+    revokePreviewUrl() {
       if (this.previewUrl) {
         URL.revokeObjectURL(this.previewUrl)
         this.previewUrl = null
@@ -422,112 +354,52 @@ export default {
         this.previewError = this.$t("publish.publication.no_job_for_preview")
         return
       }
-
       this.previewLoading = true
       this.previewError = null
-
-      try {
-        // Fetch PDF blob for preview
-        const blob = await apiExportWithTemplate(
-          this.conversationId,
-          this.jobId,
-          "pdf",
-          {
-            templateId: this.previewTemplate.id,
-            versionNumber: this.versionNumber,
-          },
-        )
-
-        if (blob) {
-          this.previewUrl = URL.createObjectURL(blob)
-        } else {
-          throw new Error("No data returned")
-        }
-      } catch (err) {
-        console.error("Preview generation failed:", err)
+      const blob = await apiExportWithTemplate(
+        this.conversationId,
+        this.jobId,
+        "pdf",
+        {
+          templateId: this.previewTemplate.id,
+          versionNumber: this.versionNumber,
+        },
+      )
+      if (blob) {
+        this.previewUrl = URL.createObjectURL(blob)
+      } else {
         this.previewError = this.$t("publish.publication.preview_error")
-      } finally {
-        this.previewLoading = false
       }
+      this.previewLoading = false
     },
+    // Download from the preview, then close the preview and the parent modal
     async downloadFromPreview(format) {
       if (!this.jobId || !this.previewTemplate) return
-
-      try {
-        const blob = await apiExportWithTemplate(
-          this.conversationId,
-          this.jobId,
-          format,
-          {
-            templateId: this.previewTemplate.id,
-            versionNumber: this.versionNumber,
-          },
-        )
-        if (blob) {
-          this.downloadBlob(blob, format)
-        }
-      } catch (err) {
-        this.$store.dispatch("system/addNotification", {
-          type: "error",
-          message: this.$t("publish.export_error"),
-        })
-      }
-    },
-    getTemplateName(template) {
-      const locale = this.$i18n.locale
-      if (locale.startsWith("fr") && template.name_fr) {
-        return template.name_fr
-      }
-      return template.name_en || template.name_fr || template.name || ""
-    },
-    async exportDocument(format) {
-      if (!this.jobId || !this.selectedTemplate) {
+      const template = this.previewTemplate
+      const blob = await apiExportWithTemplate(
+        this.conversationId,
+        this.jobId,
+        format,
+        { templateId: template.id, versionNumber: this.versionNumber },
+      )
+      if (!blob) {
+        this.notify("error", this.$t("publish.export_error"))
         return
       }
-
-      this.exporting = true
-      this.$emit("export-start", { format, template: this.selectedTemplate })
-
-      try {
-        const blob = await apiExportWithTemplate(
-          this.conversationId,
-          this.jobId,
-          format,
-          {
-            templateId: this.selectedTemplate.id,
-            versionNumber: this.versionNumber,
-          },
-        )
-
-        if (blob) {
-          this.downloadBlob(blob, format)
-          this.$emit("export-success", {
-            format,
-            template: this.selectedTemplate,
-          })
-        } else {
-          throw new Error("Export returned no data")
-        }
-      } catch (err) {
-        this.$emit("export-error", {
-          format,
-          template: this.selectedTemplate,
-          error: err,
-        })
-        this.$store.dispatch("system/addNotification", {
-          type: "error",
-          message: this.$t("publish.export_error"),
-        })
-      } finally {
-        this.exporting = false
-      }
-    },
-    downloadBlob(blob, format) {
       const validCharsRegex = /[a-zA-Z0-9-_.]/g
       const safeName =
         this.conversationName.match(validCharsRegex)?.join("") || "export"
-      const filename = `${safeName}.${format}`
-
+      this.downloadBlob(blob, `${safeName}.${format}`)
+      this.notify(
+        "success",
+        this.$t("publish.publication.export_success", {
+          format: format.toUpperCase(),
+        }),
+      )
+      this.closePreview()
+      this.$emit("export-success", { format, template })
+    },
+    downloadBlob(blob, filename) {
       const url = URL.createObjectURL(blob)
       const link = document.createElement("a")
       link.href = url
@@ -535,531 +407,225 @@ export default {
       link.click()
       URL.revokeObjectURL(url)
     },
-    // File upload methods
-    triggerFileInput() {
-      this.$refs.fileInput?.click()
-    },
-    handleFileSelect(event) {
-      const file = event.target.files?.[0]
-      if (file) {
-        this.setFile(file)
-      }
-    },
-    handleFileDrop(event) {
-      this.isDragging = false
-      const file = event.dataTransfer?.files?.[0]
-      if (file) {
-        this.setFile(file)
-      }
-    },
-    setFile(file) {
-      // Validate file type
-      const validTypes = [
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        ".docx",
-      ]
-      const isValidType =
-        validTypes.includes(file.type) || file.name.endsWith(".docx")
-
-      if (!isValidType) {
-        this.$store.dispatch("system/addNotification", {
-          type: "error",
-          message: this.$t("publish.publication.invalid_file_type"),
-        })
+    // Template actions
+    async handleDownloadTemplate(template) {
+      const blob = await apiDownloadPublicationTemplate(
+        this.organizationId,
+        template.id,
+      )
+      if (!blob) {
+        this.notify(
+          "error",
+          this.$t("publish.publication.download_template_error"),
+        )
         return
       }
-
-      // Validate file size (max 10MB)
-      const maxSize = 10 * 1024 * 1024
-      if (file.size > maxSize) {
-        this.$store.dispatch("system/addNotification", {
-          type: "error",
-          message: this.$t("publish.publication.file_too_large"),
-        })
+      this.downloadBlob(
+        blob,
+        template.file_name || `${this.getTemplateName(template)}.docx`,
+      )
+    },
+    async handleShareTemplate({ template, shared }) {
+      const updated = await apiUpdatePublicationTemplateScope(
+        this.organizationId,
+        template.id,
+        shared ? "organization" : "personal",
+      )
+      if (!updated) {
+        this.notify("error", this.$t("publish.publication.share_error"))
         return
       }
-
-      this.newTemplate.file = file
-
-      // Auto-fill name from filename if empty
-      if (!this.newTemplate.name_fr) {
-        const nameWithoutExt = file.name.replace(/\.docx$/i, "")
-        this.newTemplate.name_fr = nameWithoutExt
-      }
-    },
-    removeFile() {
-      this.newTemplate.file = null
-      if (this.$refs.fileInput) {
-        this.$refs.fileInput.value = ""
-      }
-    },
-    formatFileSize(bytes) {
-      if (bytes < 1024) return bytes + " o"
-      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " Ko"
-      return (bytes / (1024 * 1024)).toFixed(1) + " Mo"
-    },
-    closeUploadModal() {
-      this.showCreateForm = false
-      this.resetUploadForm()
+      this.notify(
+        "success",
+        this.$t(
+          shared
+            ? "publish.publication.share_success"
+            : "publish.publication.unshare_success",
+        ),
+      )
+      await this.loadTemplates()
     },
     async handleDeleteTemplate(template) {
-      // Show confirmation dialog
-      const templateName =
-        template.name_fr || template.name_en || template.name || ""
       const confirmMessage = this.$t("publish.publication.delete_confirm", {
-        name: templateName,
+        name: this.getTemplateName(template),
       })
+      if (!confirm(confirmMessage)) return
 
-      if (!confirm(confirmMessage)) {
+      const success = await apiDeletePublicationTemplate(
+        this.organizationId,
+        template.id,
+      )
+      if (!success) {
+        this.notify("error", this.$t("publish.publication.delete_error"))
         return
       }
-
-      try {
-        const success = await apiDeletePublicationTemplate(
-          this.organizationId,
-          template.id,
-        )
-
-        if (success) {
-          this.$store.dispatch("system/addNotification", {
-            type: "success",
-            message: this.$t("publish.publication.delete_success"),
-          })
-
-          // Clear selection if deleted template was selected
-          if (
-            this.selectedTemplate &&
-            this.selectedTemplate.id === template.id
-          ) {
-            this.selectedTemplate = null
-          }
-
-          // Reload templates
-          await this.loadTemplates()
-        } else {
-          throw new Error("Delete returned false")
-        }
-      } catch (err) {
-        console.error("Template delete error:", err)
-        this.$store.dispatch("system/addNotification", {
-          type: "error",
-          message: this.$t("publish.publication.delete_error"),
-        })
+      this.notify("success", this.$t("publish.publication.delete_success"))
+      await this.loadTemplates()
+    },
+    // Upload form
+    handleDroppedFiles(files) {
+      const file = files[0]
+      if (!file) return
+      if (file.size > MAX_TEMPLATE_SIZE) {
+        this.notify("error", this.$t("publish.publication.file_too_large"))
+        return
       }
+      this.newTemplateFile = file
+      if (!this.nameField.value) {
+        this.nameField.value = file.name.replace(/\.docx$/i, "")
+      }
+    },
+    handleDropareaError() {
+      this.notify("error", this.$t("publish.publication.invalid_file_type"))
+    },
+    removeFile() {
+      this.newTemplateFile = null
     },
     resetUploadForm() {
-      this.newTemplate = {
-        file: null,
-        name_fr: "",
-        description_fr: "",
-        scope: "personal",
-      }
-      this.isDragging = false
-      if (this.$refs.fileInput) {
-        this.$refs.fileInput.value = ""
-      }
+      this.newTemplateFile = null
+      this.nameField.value = ""
+      this.descriptionField.value = ""
+      this.scopeField.value = "personal"
     },
     async uploadTemplate() {
-      if (!this.canUpload || !this.organizationId) return
-
+      if (!this.canUpload || !this.organizationId || this.uploading) return
       this.uploading = true
-      try {
-        const uploadData = {
-          file: this.newTemplate.file,
-          name_fr: this.newTemplate.name_fr.trim(),
-          description_fr: this.newTemplate.description_fr?.trim() || "",
-          scope: this.newTemplate.scope, // "personal" or "organization"
-          // organization_id is a required path segment of the upload route
-          organization_id: this.organizationId,
-        }
-
-        const result = await apiUploadPublicationTemplate(uploadData)
-
-        if (result) {
-          this.$store.dispatch("system/addNotification", {
-            type: "success",
-            message: this.$t("publish.publication.upload_success"),
-          })
-          this.closeUploadModal()
-          // Reload templates
-          await this.loadTemplates()
-        } else {
-          throw new Error("Failed to upload template")
-        }
-      } catch (err) {
-        console.error("Template upload error:", err)
-        this.$store.dispatch("system/addNotification", {
-          type: "error",
-          message: this.$t("publish.publication.upload_error"),
-        })
-      } finally {
-        this.uploading = false
+      const result = await apiUploadPublicationTemplate({
+        file: this.newTemplateFile,
+        name_fr: this.nameField.value.trim(),
+        description_fr: this.descriptionField.value.trim(),
+        scope: this.scopeField.value,
+        organization_id: this.organizationId,
+        // The template is linked to the AI service it was uploaded from
+        service_id: this.serviceId,
+      })
+      this.uploading = false
+      if (!result) {
+        this.notify("error", this.$t("publish.publication.upload_error"))
+        return
       }
+      this.notify("success", this.$t("publish.publication.upload_success"))
+      this.showCreateForm = false
+      this.resetUploadForm()
+      await this.loadTemplates()
     },
   },
 }
 </script>
 
-<style scoped>
-.publication-section {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 8px;
-}
-
-.section-header {
-  margin-bottom: 4px;
-}
-
-.section-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-primary, #333);
-  margin: 0 0 6px 0;
-}
-
-.section-description {
-  font-size: 14px;
-  color: var(--text-secondary, #666);
+<style lang="scss" scoped>
+.publication-section__title {
   margin: 0;
-  line-height: 1.5;
+  font-size: var(--text-lg);
 }
 
-.publication-loading,
-.publication-error,
-.publication-empty {
+.publication-section__description {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.publication-section__error {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 32px;
-  background: var(--background-secondary, #f5f5f5);
-  border-radius: 8px;
-  color: var(--text-secondary, #666);
-}
-
-.publication-error {
-  color: var(--error-color, #f44336);
-}
-
-.publication-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  gap: var(--small-gap);
+  padding: var(--large-gap);
+  color: var(--text-secondary);
 }
 
 .templates-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--medium-gap);
 }
 
-.export-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  border-radius: 12px;
-  margin-top: 12px;
-  border: 1px solid rgba(76, 175, 80, 0.2);
-}
-
-.selected-template-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--success-color-dark, #2e7d32);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.export-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.export-buttons button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 500;
-}
-
-.export-buttons button .icon {
-  background-color: currentColor;
-}
-
-.export-buttons button.primary .icon {
-  background-color: white;
-}
-
-.selected-template-info .icon {
-  width: 20px;
-  height: 20px;
-  background-color: var(--success-color, #4caf50);
-}
-
-/* Create template card */
-.create-template-card {
+.template-card--create {
   display: flex;
   flex-direction: column;
-  background: white;
-  border: 2px dashed var(--border-color, #e0e0e0);
-  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--small-gap);
+  padding: var(--medium-gap);
+  min-height: 11rem;
+  background: var(--background-inset-section);
+  border: var(--border-button);
+  border-style: dashed;
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
-  transition: all 0.25s ease;
-  overflow: hidden;
-  min-height: 260px;
-}
-
-.create-template-card:hover {
-  border-color: var(--primary-color, #2196f3);
-  border-style: solid;
-  box-shadow: 0 4px 20px rgba(33, 150, 243, 0.15);
-  transform: translateY(-2px);
-}
-
-.create-preview {
-  height: 130px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
-}
-
-.create-icon-wrapper {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: white;
-  border: 2px dashed var(--border-color, #ccc);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.25s ease;
-}
-
-.create-template-card:hover .create-icon-wrapper {
-  background: var(--primary-color, #2196f3);
-  border-color: var(--primary-color, #2196f3);
-  border-style: solid;
-}
-
-.create-icon {
-  width: 24px;
-  height: 24px;
-  background: var(--text-secondary, #666);
-  transition: background 0.25s ease;
-}
-
-.create-template-card:hover .create-icon {
-  background: white;
-}
-
-.create-content {
-  flex: 1;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  font: inherit;
+  color: var(--text-primary);
   text-align: center;
-  gap: 8px;
+  white-space: normal;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--primary-color);
+    background: var(--primary-soft);
+  }
 }
 
-.create-title {
-  margin: 0;
-  font-size: 15px;
+.template-card--create__title {
   font-weight: 600;
-  color: var(--text-primary, #333);
 }
 
-.create-description {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-secondary, #666);
-  line-height: 1.4;
+.template-card--create__hint {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
 }
 
-/* Form field styles (rendered inside Modal body) */
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+// The modal content is tinted: the drop zone needs its own contrast
+.template-droparea {
+  padding: var(--medium-gap);
+  background: var(--background-primary);
+  border: 2px dashed var(--neutral-40);
+  border-radius: var(--border-radius-sm);
+  color: var(--primary-color);
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-soft);
+  }
 }
 
-.form-field label {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary, #333);
-}
-
-.form-field input,
-.form-field textarea,
-.form-field select {
-  padding: 10px 12px;
-  border: 1px solid var(--border-color, #e0e0e0);
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: inherit;
-}
-
-.form-field input:focus,
-.form-field textarea:focus,
-.form-field select:focus {
-  outline: none;
-  border-color: var(--primary-color, #2196f3);
-}
-
-.scope-options {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.scope-option {
+.selected-file {
   display: flex;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 13px;
+  gap: var(--small-gap);
+  padding: var(--small-gap);
+  border: var(--border-block);
+  border-radius: var(--border-radius-sm);
 }
 
-.scope-option input[type="radio"] {
-  margin: 0;
-}
-
-.scope-hint {
-  font-size: 11px;
-  color: var(--text-tertiary, #999);
-  margin-left: auto;
-}
-
-/* File upload zone */
-.file-upload-zone {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 24px;
-  border: 2px dashed var(--border-color, #e0e0e0);
-  border-radius: 12px;
-  background: var(--background-secondary, #f8f9fa);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 120px;
-}
-
-.file-upload-zone:hover {
-  border-color: var(--primary-color, #2196f3);
-  background: var(--primary-light, #e3f2fd);
-}
-
-.file-upload-zone.drag-over {
-  border-color: var(--primary-color, #2196f3);
-  background: var(--primary-light, #e3f2fd);
-  border-style: solid;
-}
-
-.file-upload-zone.has-file {
-  flex-direction: row;
-  padding: 16px;
-  min-height: auto;
-  background: var(--background-primary, white);
-  border-style: solid;
-  border-color: var(--success-color, #4caf50);
-}
-
-.upload-icon {
-  width: 32px;
-  height: 32px;
-  background: var(--text-secondary, #666);
-}
-
-.upload-text {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary, #333);
-}
-
-.upload-hint {
-  font-size: 12px;
-  color: var(--text-secondary, #666);
-}
-
-.file-icon {
-  width: 24px;
-  height: 24px;
-  background: var(--success-color, #4caf50);
-  flex-shrink: 0;
-}
-
-.file-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary, #333);
+.selected-file__name {
   flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.file-size {
-  font-size: 12px;
-  color: var(--text-secondary, #666);
+.selected-file__size {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 }
 
-.file-remove {
-  width: 24px;
-  height: 24px;
-  border: none;
-  border-radius: 50%;
-  background: var(--error-light, #ffebee);
-  color: var(--error-color, #f44336);
-  font-size: 16px;
-  cursor: pointer;
+.form-field__header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  margin-left: 8px;
+  justify-content: space-between;
+  gap: var(--small-gap);
 }
 
-.file-remove:hover {
-  background: var(--error-color, #f44336);
-  color: white;
-}
-
-.field-hint {
-  margin: 6px 0 0 0;
-  font-size: 11px;
-  color: var(--text-tertiary, #999);
-}
-
-.field-hint code {
-  background: var(--background-secondary, #f5f5f5);
-  padding: 1px 4px;
-  border-radius: 3px;
-  font-family: monospace;
-  font-size: 10px;
-  color: var(--primary-color, #2196f3);
+.form-field__hint {
+  margin: var(--tiny-gap) 0 0;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 }
 
 .preview-pdf-viewer {
-  width: 100%;
-  height: 100%;
-}
-</style>
-
-<!-- Unscoped: customModalClass renders in PopupHost outside this component's scope -->
-<style lang="scss">
-.publication-preview-modal {
-  height: 85vh;
+  height: 70vh;
 }
 </style>

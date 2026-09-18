@@ -8,6 +8,8 @@ const {
   exportWithTemplate,
   createTemplate,
   deleteTemplate,
+  updateTemplateScope,
+  downloadTemplate,
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`,
 )
@@ -34,6 +36,20 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       controller: deleteTemplate,
+    },
+    {
+      path: "/organizations/:organizationId/templates/:templateId",
+      method: "patch",
+      requireAuth: true,
+      requireOrganizationMemberAccess: true,
+      controller: updateTemplateScope,
+    },
+    {
+      path: "/organizations/:organizationId/templates/:templateId/download",
+      method: "get",
+      requireAuth: true,
+      requireOrganizationMemberAccess: true,
+      controller: downloadTemplate,
     },
     {
       path: "/organizations/:organizationId/templates/:templateId/placeholders",
