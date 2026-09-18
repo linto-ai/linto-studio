@@ -28,6 +28,7 @@ module.exports = (webserver) => {
       method: "post",
       requireAuth: true,
       requireOrganizationMemberAccess: true,
+      requireEntitlement: "publication.custom_templates",
       controller: createTemplate,
     },
     {
@@ -35,6 +36,7 @@ module.exports = (webserver) => {
       method: "delete",
       requireAuth: true,
       requireOrganizationMemberAccess: true,
+      requireEntitlement: "publication.custom_templates",
       controller: deleteTemplate,
     },
     {
@@ -42,6 +44,7 @@ module.exports = (webserver) => {
       method: "patch",
       requireAuth: true,
       requireOrganizationMemberAccess: true,
+      requireEntitlement: "publication.custom_templates",
       controller: updateTemplateScope,
     },
     {
@@ -49,6 +52,7 @@ module.exports = (webserver) => {
       method: "get",
       requireAuth: true,
       requireOrganizationMemberAccess: true,
+      requireEntitlement: "publication.docx_export",
       controller: downloadTemplate,
     },
     {
