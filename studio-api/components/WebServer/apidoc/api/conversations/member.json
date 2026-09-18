@@ -66,7 +66,7 @@
                 },
                 "other": {
                   "type": "string",
-                  "description": "Any other conversation field desired"
+                  "description": "Any other content field. owner, organization, sharedWithUsers, securityLevel, metadata, jobs and type are ignored, use their dedicated routes."
                 }
               }
             }

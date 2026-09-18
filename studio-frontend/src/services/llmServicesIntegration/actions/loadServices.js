@@ -53,6 +53,8 @@ export async function loadServices({
     store.commit("llmServices/REGISTER", {
       id,
       data: {
+        // Gateway UUID, needed by the publication endpoints
+        serviceId: service.id ?? null,
         format: service.format || id,
         route: service.route || id,
         flavor: defaultFlavor?.name ?? null,

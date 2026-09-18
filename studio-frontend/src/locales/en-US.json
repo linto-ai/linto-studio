@@ -51,6 +51,7 @@
     "limit_reached": "You've reached the limit of your plan.",
     "feature_locked": "This feature is included in a team plan.",
     "feature_locked_plan": "This feature is included in the {plan} plan.",
+    "feature_locked_paid": "This feature is included in paid plans.",
     "footer": {
       "usage": "{used} / {total}",
       "upgrade_cta": "Upgrade"
@@ -298,6 +299,7 @@
     "title": "Settings",
     "logout": "Logout",
     "email_not_verified": "Your email is not verified. Please verify your email to access all features.",
+    "pending_email": "A confirmation was sent to {email}. This address will replace the current one once validated.",
     "speaker_identification": "Speaker identification",
     "sso": "SSO",
     "speaker_recognition": "My voice signature"
@@ -1480,17 +1482,17 @@
       "generating_preview": "Generating preview...",
       "preview_error": "Unable to generate preview",
       "no_job_for_preview": "No AI processing available for preview",
-      "upload_template": "Upload a template",
-      "upload_template_hint": "Upload your own DOCX file",
-      "upload_template_title": "Upload a template",
+      "upload_template": "Create my template",
+      "upload_template_hint": "Start from a base template, customize it, then upload it",
+      "upload_template_title": "Create my template",
       "template_file": "Template file (DOCX)",
       "drop_file": "Drop a DOCX file here",
       "or_click": "or click to select",
-      "template_format_hint": "DOCX format. The placeholder <code>&#123;&#123;output&#125;&#125;</code> will be replaced by the AI service content.",
+      "template_format_hint": "DOCX format, 10 MB max. The file must contain <code>&#123;&#123;output&#125;&#125;</code>.",
       "template_name_placeholder": "Template name",
       "template_description_placeholder": "Optional description",
       "scope_personal_hint": "Visible only to you",
-      "scope_organization_hint": "Visible to the entire organisation",
+      "scope_organization_hint": "Visible to every member with access to this AI service",
       "upload_button": "Upload",
       "upload_success": "Template uploaded successfully",
       "upload_error": "Error uploading template",
@@ -1499,7 +1501,42 @@
       "preview_action": "Preview",
       "delete_confirm": "Are you sure you want to delete \"{name}\"?",
       "delete_success": "Template deleted successfully",
-      "delete_error": "Error deleting template"
+      "delete_error": "Error deleting template",
+      "download_template": "Download the template (.docx)",
+      "download_template_error": "Unable to download the template",
+      "delete_template": "Delete the template",
+      "share_with_organization": "Organization",
+      "share_with_organization_hint": "Make this template available to the whole organization",
+      "share_success": "Template shared with the organization",
+      "unshare_success": "The template is personal again",
+      "share_error": "Unable to change the template sharing",
+      "help": {
+        "no_base_template": "No base template is available for this service.",
+        "required": "required",
+        "placeholder": {
+          "output": "content produced by the AI service",
+          "conversation_name": "media name",
+          "service_name": "AI service name",
+          "organization_name": "organization name",
+          "job_date": "processing date",
+          "generated_at": "export date and time"
+        },
+        "custom_title": "Create your own tags",
+        "custom_intro": "Add any tag with a description: the AI extracts the value from the conversation at export time.",
+        "custom_syntax": "field_name: what the AI should extract",
+        "custom_example_actions": "decisions: list of the decisions taken and who owns them",
+        "custom_note": "Without a description the AI relies on the name. Empty if the service has no extraction.",
+        "standard_title": "Tags filled automatically",
+        "base_prefix": "Start from a LinTO template:",
+        "placeholders_button": "Available tags"
+      },
+      "remove_file": "Remove the file",
+      "scope_label": {
+        "system": "LinTO template",
+        "organization": "Organization",
+        "user": "Personal"
+      },
+      "export_success": "{format} document downloaded"
     }
   },
   "common": {
@@ -1923,6 +1960,7 @@
     },
     "notif_success": "User information updated",
     "notif_error": "An error occurred while updating user information",
+    "verification_link_sent": "The validation link has been sent.",
     "organizations_section": {
       "title": "Organisations"
     },

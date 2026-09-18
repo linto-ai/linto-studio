@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import {
   MarkdownEditor,
+  MarkdownView,
   Button,
-  EditorIcon,
   DocumentArticle,
   type DocumentArticleStatus,
 } from "@linto-ai/transcript-ui-ui"
 import { computed, ref, watch } from "vue"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
-import { useCore } from "@linto-ai/transcript-ui-core"
+import { useCore, useIsMobile } from "@linto-ai/transcript-ui-core"
 import type { LLMService } from "@linto-ai/transcript-ui-core"
+import LLMServiceStatus from "./LLMServiceStatus.vue"
 
 const props = defineProps<{
   service: LLMService
@@ -22,6 +23,12 @@ const emit = defineEmits<{
 
 const core = useCore()
 const { t } = useI18n()
+const { isMobile } = useIsMobile()
+
+// Phones only read the document: editing, saving and the split view stay on
+// larger screens. Downloading stays (the mobile app turns it into a PDF
+// export), and regenerating is offered once the transcription has changed.
+const isReadOnly = computed(() => isMobile.value)
 
 function toggleSplit(): void {
   emit("update:split", !props.split)
@@ -112,7 +119,7 @@ function onSave(): void {
       :status="articleStatus"
       :progress="progress"
       @retry="onRegenerate">
-      <template #toolbar-left>
+      <template v-if="!isReadOnly" #toolbar-left>
         <Button
           variant="primary"
           icon="save"
@@ -130,24 +137,11 @@ function onSave(): void {
           @click="onRegenerate" />
       </template>
 
-      <template #toolbar-center>
-        <span
-          class="llm-service-panel__status"
-          :class="[
-            isUpdated
-              ? 'llm-service-panel__status--ok'
-              : 'llm-service-panel__status--warn',
-          ]">
-          <EditorIcon :name="isUpdated ? 'check' : 'warning'" :size="14" />
-          <span>{{
-            isUpdated
-              ? t("llmService.statusUpdated")
-              : t("llmService.statusOutdated")
-          }}</span>
-        </span>
+      <template v-if="!isReadOnly" #toolbar-center>
+        <LLMServiceStatus :is-updated="isUpdated" />
       </template>
 
-      <template #toolbar-right>
+      <template v-if="!isReadOnly" #toolbar-right>
         <Button
           variant="primary"
           icon="download"
@@ -176,7 +170,33 @@ function onSave(): void {
           {{ t("llmService.generate") }}
         </Button>
       </div>
-      <MarkdownEditor v-else v-model="draft" :disabled="busy" />
+      <MarkdownEditor v-else-if="!isReadOnly" v-model="draft" :disabled="busy" />
+      <template v-else>
+        <!-- Scrolls with the text: on a phone, reading gets the whole
+             screen instead of a sticky toolbar. -->
+        <div class="llm-service-panel__reading-status">
+          <LLMServiceStatus :is-updated="isUpdated" />
+          <div class="llm-service-panel__reading-actions">
+            <Button
+              v-if="!isUpdated"
+              variant="secondary"
+              icon="refresh-cw"
+              :disabled="busy"
+              @click="onRegenerate">
+              {{ t("llmService.regenerate") }}
+            </Button>
+            <Button
+              variant="primary"
+              icon="download"
+              :aria-label="t('llmService.download')"
+              :title="t('llmService.download')"
+              @click="onExport" />
+          </div>
+        </div>
+        <!-- The draft, not the saved content: unsaved edits made on a wider
+             screen stay visible, and come back in the editor on widening. -->
+        <MarkdownView class="llm-service-panel__reading" :source="draft" />
+      </template>
     </DocumentArticle>
   </section>
 </template>
@@ -188,22 +208,28 @@ function onSave(): void {
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.llm-service-panel__status {
-  display: inline-flex;
+.llm-service-panel__reading-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.llm-service-panel__reading-actions {
+  display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  font-size: var(--font-size-xs);
-  font-weight: 500;
+  margin-left: auto;
 }
 
-.llm-service-panel__status--ok {
-  color: var(--color-success, #2e7d32);
-}
-
-.llm-service-panel__status--warn {
-  color: var(--color-warning, #ed6c02);
+.llm-service-panel__reading {
+  padding: var(--spacing-xl) var(--spacing-lg);
 }
 
 .llm-service-panel__empty {
@@ -221,11 +247,5 @@ function onSave(): void {
   max-width: 400px;
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-}
-
-@media (max-width: 767px) {
-  .llm-service-panel {
-    padding: var(--spacing-md);
-  }
 }
 </style>

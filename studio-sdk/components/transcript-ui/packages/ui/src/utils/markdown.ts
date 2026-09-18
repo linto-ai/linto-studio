@@ -18,10 +18,13 @@ export function renderMarkdown(md: string): string {
 }
 
 // Code blocks are extracted as their own segments so the view can render them
-// with a real Vue component (copy button, etc.) instead of inert v-html. Every
-// other run of block tokens is parsed back to sanitized HTML as before.
+// with a real Vue component (copy button, etc.) instead of inert v-html.
+// Tables too, so the view can give them their own horizontal scroll instead
+// of letting a wide table overflow a narrow screen. Every other run of block
+// tokens is parsed back to sanitized HTML as before.
 export type MarkdownSegment =
   | { type: "html"; html: string }
+  | { type: "table"; html: string }
   | { type: "code"; code: string; lang: string }
 
 export function renderMarkdownSegments(md: string): MarkdownSegment[] {
@@ -34,11 +37,15 @@ export function renderMarkdownSegments(md: string): MarkdownSegment[] {
   // Reference-link definitions ([x][ref] … [ref]: url) live on tokens.links,
   // not on individual tokens. Each sliced group must carry them over or
   // reference links break when re-parsed in isolation.
-  const flush = () => {
+  function renderGroup(group: Token[]): string {
+    const list = group as TokensList
+    list.links = tokens.links
+    return DOMPurify.sanitize(marked.parser(list))
+  }
+
+  function flush(): void {
     if (buffer.length === 0) return
-    const group = buffer as TokensList
-    group.links = tokens.links
-    segments.push({ type: "html", html: DOMPurify.sanitize(marked.parser(group)) })
+    segments.push({ type: "html", html: renderGroup(buffer) })
     buffer = []
   }
 
@@ -46,6 +53,9 @@ export function renderMarkdownSegments(md: string): MarkdownSegment[] {
     if (token.type === "code") {
       flush()
       segments.push({ type: "code", code: token.text, lang: token.lang ?? "" })
+    } else if (token.type === "table") {
+      flush()
+      segments.push({ type: "table", html: renderGroup([token]) })
     } else {
       buffer.push(token)
     }

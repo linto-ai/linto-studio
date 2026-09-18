@@ -108,6 +108,7 @@ function onExport(format?: string): void {
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .verbatim-panel__content {

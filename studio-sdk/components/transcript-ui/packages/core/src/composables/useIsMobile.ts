@@ -3,7 +3,9 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 const MOBILE_BREAKPOINT = '(max-width: 767px)'
 
 export function useIsMobile() {
-  const isMobile = ref(false)
+  // Read right away, not on mount: the first render must already match the
+  // viewport, or a phone briefly mounts desktop-only UI before swapping it.
+  const isMobile = ref(window.matchMedia(MOBILE_BREAKPOINT).matches)
   let mql: MediaQueryList | null = null
 
   function onChange(e: MediaQueryListEvent) {

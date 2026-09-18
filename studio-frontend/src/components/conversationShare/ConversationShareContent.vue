@@ -210,7 +210,7 @@ export default {
     },
     conversationCanBeShared(conversation) {
       const userRight = getUserRightFromConversation(conversation)
-      return this.hasDeleteRight(userRight) || this.isAtLeastMaintainer
+      return this.hasShareRight(userRight) || this.isAtLeastMaintainer
     },
     async loadUsersRights() {
       const convIds = this.normalizedConversations.map((c) => c._id)
@@ -333,6 +333,5 @@ export default {
       margin: 0;
     }
   }
-
 }
 </style>

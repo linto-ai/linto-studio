@@ -66,6 +66,7 @@ const disableAuthIfDev = (route) => {
     route.requireConversationDeleteAccess = false
     route.requireConversationReadAccess = false
     route.requireConversationShareAccess = false
+    route.requireConversationReadBatchAccess = false
     route.requireConversationWriteAccess = false
     route.requireDeleteTaxonomyAccess = false
     route.requireOrganizationAdminAccess = false
@@ -112,6 +113,8 @@ const loadMiddlewares = (route) => {
     middlewares.push(conversation_middlewares.asShareAccess)
   if (route.requireConversationShareBatchAccess)
     middlewares.push(conversation_middlewares.asShareBatchAccess)
+  if (route.requireConversationReadBatchAccess)
+    middlewares.push(conversation_middlewares.asReadBatchAccess)
 
   if (route.requireOrganizationAdminAccess)
     middlewares.push(organization_middlewares.asAdminAccess)
