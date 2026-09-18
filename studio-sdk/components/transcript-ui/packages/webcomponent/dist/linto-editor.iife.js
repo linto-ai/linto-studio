@@ -10682,9 +10682,9 @@ pre[class*="language-"] {
     class: "form-field__required",
     "aria-hidden": "true"
   };
-  const _hoisted_4$c = { class: "form-field__input-wrapper" };
-  const _hoisted_5$b = ["id", "disabled", "required", "aria-required", "aria-invalid", "aria-describedby"];
-  const _hoisted_6$a = ["value"];
+  const _hoisted_4$e = { class: "form-field__input-wrapper" };
+  const _hoisted_5$c = ["id", "disabled", "required", "aria-required", "aria-invalid", "aria-describedby"];
+  const _hoisted_6$b = ["value"];
   const _hoisted_7$5 = ["type", "id", "disabled", "readonly", "placeholder", "autocomplete", "required", "aria-required", "aria-invalid", "aria-describedby"];
   const _hoisted_8$3 = {
     key: 3,
@@ -10696,7 +10696,7 @@ pre[class*="language-"] {
     "aria-hidden": "true"
   };
   const _hoisted_10$3 = ["id"];
-  const _hoisted_11$2 = { class: "form-field__error" };
+  const _hoisted_11$1 = { class: "form-field__error" };
   const _sfc_main$J = /* @__PURE__ */ defineComponent({
     __name: "FormInput",
     props: {
@@ -10817,7 +10817,7 @@ pre[class*="language-"] {
             ], 8, _hoisted_2$t),
             renderSlot(_ctx.$slots, "content-after-label", {}, void 0, true)
           ])) : createCommentVNode("", true),
-          createBaseVNode("div", _hoisted_4$c, [
+          createBaseVNode("div", _hoisted_4$e, [
             renderSlot(_ctx.$slots, "default", {}, void 0, true),
             _ctx.$slots["custom-input"] ? renderSlot(_ctx.$slots, "custom-input", {
               id: id.value,
@@ -10843,9 +10843,9 @@ pre[class*="language-"] {
                 return openBlock(), createElementBlock("option", {
                   key: opt.value,
                   value: opt.value
-                }, toDisplayString(opt.label), 9, _hoisted_6$a);
+                }, toDisplayString(opt.label), 9, _hoisted_6$b);
               }), 128))
-            ], 16, _hoisted_5$b)), [
+            ], 16, _hoisted_5$c)), [
               [vModelSelect, draft.value]
             ]) : withDirectives((openBlock(), createElementBlock("input", mergeProps({
               key: 2,
@@ -10898,7 +10898,7 @@ pre[class*="language-"] {
             id: `${id.value}-error`,
             class: "form-field__info"
           }, [
-            createBaseVNode("span", _hoisted_11$2, toDisplayString(errorMessage.value), 1)
+            createBaseVNode("span", _hoisted_11$1, toDisplayString(errorMessage.value), 1)
           ], 8, _hoisted_10$3)) : createCommentVNode("", true)
         ], 2);
       };
@@ -21514,8 +21514,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$y = "\n.markdown-editor[data-v-b3d64419] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-b3d64419] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 49px;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-b3d64419] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-b3d64419] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-b3d64419] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-b3d64419] h1,\n.markdown-editor__content[data-v-b3d64419] h2,\n.markdown-editor__content[data-v-b3d64419] h3,\n.markdown-editor__content[data-v-b3d64419] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-b3d64419] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-b3d64419] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-b3d64419] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-b3d64419] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-b3d64419] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-b3d64419] ul,\n.markdown-editor__content[data-v-b3d64419] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-b3d64419] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-b3d64419] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-b3d64419] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-b3d64419] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-b3d64419] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-b3d64419] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-b3d64419] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-b3d64419] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-b3d64419] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-b3d64419] th,\n.markdown-editor__content[data-v-b3d64419] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-b3d64419] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-  const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$y]], ["__scopeId", "data-v-b3d64419"]]);
+  const _style_0$y = "\n.markdown-editor[data-v-d9e8bd29] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-d9e8bd29] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: var(--document-toolbar-height, 49px);\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-d9e8bd29] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-d9e8bd29] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-d9e8bd29] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-d9e8bd29] h1,\n.markdown-editor__content[data-v-d9e8bd29] h2,\n.markdown-editor__content[data-v-d9e8bd29] h3,\n.markdown-editor__content[data-v-d9e8bd29] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-d9e8bd29] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-d9e8bd29] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-d9e8bd29] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-d9e8bd29] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-d9e8bd29] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-d9e8bd29] ul,\n.markdown-editor__content[data-v-d9e8bd29] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-d9e8bd29] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-d9e8bd29] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-d9e8bd29] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-d9e8bd29] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-d9e8bd29] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-d9e8bd29] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-d9e8bd29] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-d9e8bd29] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-d9e8bd29] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-d9e8bd29] th,\n.markdown-editor__content[data-v-d9e8bd29] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-d9e8bd29] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+  const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$y]], ["__scopeId", "data-v-d9e8bd29"]]);
   const _hoisted_1$z = { class: "markdown-view" };
   const _hoisted_2$r = ["innerHTML"];
   const _sfc_main$F = /* @__PURE__ */ defineComponent({
@@ -21650,11 +21650,11 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     class: "selectable-list-item__leading"
   };
   const _hoisted_3$j = { class: "selectable-list-item__label" };
-  const _hoisted_4$b = {
+  const _hoisted_4$d = {
     key: 1,
     class: "selectable-list-item__trailing"
   };
-  const _hoisted_5$a = {
+  const _hoisted_5$b = {
     key: 0,
     class: "selectable-list-item__actions"
   };
@@ -21691,11 +21691,11 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                 createTextVNode(toDisplayString(__props.label), 1)
               ], true)
             ]),
-            _ctx.$slots.trailing ? (openBlock(), createElementBlock("span", _hoisted_4$b, [
+            _ctx.$slots.trailing ? (openBlock(), createElementBlock("span", _hoisted_4$d, [
               renderSlot(_ctx.$slots, "trailing", {}, void 0, true)
             ])) : createCommentVNode("", true)
           ], 8, _hoisted_1$x),
-          _ctx.$slots.actions ? (openBlock(), createElementBlock("div", _hoisted_5$a, [
+          _ctx.$slots.actions ? (openBlock(), createElementBlock("div", _hoisted_5$b, [
             renderSlot(_ctx.$slots, "actions", {}, void 0, true)
           ])) : createCommentVNode("", true)
         ], 2);
@@ -21783,32 +21783,27 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   const _style_0$t = "\n.user-avatar[data-v-977a8d17] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  user-select: none;\n  cursor: default;\n}\n";
   const UserAvatar = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$t]], ["__scopeId", "data-v-977a8d17"]]);
   const _hoisted_1$u = ["data-status"];
-  const _hoisted_2$n = {
-    key: 0,
-    class: "document-article__toolbar",
-    role: "toolbar"
-  };
-  const _hoisted_3$h = { class: "document-article__toolbar-left" };
-  const _hoisted_4$a = { class: "document-article__toolbar-center" };
-  const _hoisted_5$9 = { class: "document-article__toolbar-right" };
-  const _hoisted_6$9 = { class: "document-article__body" };
-  const _hoisted_7$4 = {
+  const _hoisted_2$n = { class: "document-article__toolbar-left" };
+  const _hoisted_3$h = { class: "document-article__toolbar-center" };
+  const _hoisted_4$c = { class: "document-article__toolbar-right" };
+  const _hoisted_5$a = { class: "document-article__body" };
+  const _hoisted_6$a = {
     key: 0,
     class: "document-article__center document-article__center--processing",
     role: "status",
     "aria-live": "polite"
   };
-  const _hoisted_8$2 = ["value"];
-  const _hoisted_9$2 = {
+  const _hoisted_7$4 = ["value"];
+  const _hoisted_8$2 = {
     key: 0,
     class: "document-article__progress-value"
   };
-  const _hoisted_10$2 = {
+  const _hoisted_9$2 = {
     key: 1,
     class: "document-article__center document-article__center--error",
     role: "alert"
   };
-  const _hoisted_11$1 = { class: "document-article__error-text" };
+  const _hoisted_10$2 = { class: "document-article__error-text" };
   const _sfc_main$z = /* @__PURE__ */ defineComponent({
     __name: "DocumentArticle",
     props: {
@@ -21824,6 +21819,22 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const errorText = computed(
         () => props.errorMessage || t2("llmService.errorTemporary")
       );
+      const articleEl = /* @__PURE__ */ ref(null);
+      const toolbarEl = /* @__PURE__ */ ref(null);
+      let toolbarObserver = null;
+      function publishToolbarHeight() {
+        const height = toolbarEl.value?.offsetHeight ?? 0;
+        articleEl.value?.style.setProperty("--document-toolbar-height", `${height}px`);
+      }
+      onMounted(() => {
+        publishToolbarHeight();
+        if (typeof ResizeObserver === "undefined" || !toolbarEl.value) return;
+        toolbarObserver = new ResizeObserver(publishToolbarHeight);
+        toolbarObserver.observe(toolbarEl.value);
+      });
+      onBeforeUnmount(() => {
+        toolbarObserver?.disconnect();
+      });
       const progressValue = computed(() => {
         const v2 = props.progress;
         if (v2 == null || !Number.isFinite(v2)) return null;
@@ -21831,22 +21842,30 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       });
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("article", {
+          ref_key: "articleEl",
+          ref: articleEl,
           class: "document-article",
           "data-status": props.status
         }, [
-          _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", _hoisted_2$n, [
-            createBaseVNode("div", _hoisted_3$h, [
+          _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", {
+            key: 0,
+            ref_key: "toolbarEl",
+            ref: toolbarEl,
+            class: "document-article__toolbar",
+            role: "toolbar"
+          }, [
+            createBaseVNode("div", _hoisted_2$n, [
               renderSlot(_ctx.$slots, "toolbar-left", {}, void 0, true)
             ]),
-            createBaseVNode("div", _hoisted_4$a, [
+            createBaseVNode("div", _hoisted_3$h, [
               renderSlot(_ctx.$slots, "toolbar-center", {}, void 0, true)
             ]),
-            createBaseVNode("div", _hoisted_5$9, [
+            createBaseVNode("div", _hoisted_4$c, [
               renderSlot(_ctx.$slots, "toolbar-right", {}, void 0, true)
             ])
-          ])) : createCommentVNode("", true),
-          createBaseVNode("div", _hoisted_6$9, [
-            props.status === "processing" ? (openBlock(), createElementBlock("div", _hoisted_7$4, [
+          ], 512)) : createCommentVNode("", true),
+          createBaseVNode("div", _hoisted_5$a, [
+            props.status === "processing" ? (openBlock(), createElementBlock("div", _hoisted_6$a, [
               createVNode(EditorIcon, {
                 name: "spinner",
                 spin: "",
@@ -21856,10 +21875,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                 class: "document-article__progress",
                 max: 100,
                 value: progressValue.value ?? void 0
-              }, null, 8, _hoisted_8$2),
-              progressValue.value !== null ? (openBlock(), createElementBlock("span", _hoisted_9$2, toDisplayString(progressValue.value) + "% ", 1)) : createCommentVNode("", true)
-            ])) : props.status === "error" ? (openBlock(), createElementBlock("div", _hoisted_10$2, [
-              createBaseVNode("p", _hoisted_11$1, toDisplayString(errorText.value), 1),
+              }, null, 8, _hoisted_7$4),
+              progressValue.value !== null ? (openBlock(), createElementBlock("span", _hoisted_8$2, toDisplayString(progressValue.value) + "% ", 1)) : createCommentVNode("", true)
+            ])) : props.status === "error" ? (openBlock(), createElementBlock("div", _hoisted_9$2, [
+              createBaseVNode("p", _hoisted_10$2, toDisplayString(errorText.value), 1),
               createVNode(Button, {
                 variant: "primary",
                 icon: "refresh-cw",
@@ -21876,8 +21895,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$s = "\n.document-article[data-v-e3f4ca33] {\n  width: min(1088px, calc(100% - 16px));\n  max-width: 1088px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-e3f4ca33] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-e3f4ca33],\n.document-article__toolbar-right[data-v-e3f4ca33] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-e3f4ca33] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-e3f4ca33] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-e3f4ca33] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-e3f4ca33] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-e3f4ca33] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-e3f4ca33] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-e3f4ca33] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-e3f4ca33] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
-  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$s]], ["__scopeId", "data-v-e3f4ca33"]]);
+  const _style_0$s = "\n.document-article[data-v-54a8890c] {\n  width: min(1088px, calc(100% - 16px));\n  max-width: 1088px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-54a8890c] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-54a8890c],\n.document-article__toolbar-right[data-v-54a8890c] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-54a8890c] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-54a8890c] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-54a8890c] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-54a8890c] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-54a8890c] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-54a8890c] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-54a8890c] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n\n/* Phone: the status line takes its own row under the buttons, so nothing\n   ever needs to scroll sideways. */\n@media (max-width: 767px) {\n.document-article[data-v-54a8890c] {\n    width: calc(100% - 16px);\n    margin: var(--spacing-sm) auto;\n}\n.document-article__toolbar-center[data-v-54a8890c] {\n    order: 3;\n    flex-basis: 100%;\n    justify-content: flex-start;\n}\n}\n.document-article__error-text[data-v-54a8890c] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
+  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$s]], ["__scopeId", "data-v-54a8890c"]]);
   const _sfc_main$y = /* @__PURE__ */ defineComponent({
     __name: "DownloadMenu",
     props: {
@@ -21959,17 +21978,31 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   const _hoisted_1$t = ["aria-label"];
   const _hoisted_2$m = ["aria-selected", "aria-disabled", "disabled", "onClick"];
   const _hoisted_3$g = { class: "tab__label" };
+  const _hoisted_4$b = ["aria-selected", "aria-label"];
+  const _hoisted_5$9 = { class: "tab__label" };
+  const _hoisted_6$9 = { class: "tab__menu-item" };
   const _sfc_main$w = /* @__PURE__ */ defineComponent({
     __name: "Tabs",
     props: {
       tabs: { type: Array },
       modelValue: { type: null },
-      ariaLabel: { type: String }
+      ariaLabel: { type: String },
+      collapseFrom: { type: Number }
     },
     emits: ["update:modelValue"],
     setup(__props, { emit: __emit }) {
       const props = __props;
       const emit2 = __emit;
+      const { t: t2 } = useI18n();
+      const inlineTabs = computed(
+        () => props.collapseFrom === void 0 ? props.tabs : props.tabs.slice(0, props.collapseFrom)
+      );
+      const collapsedTabs = computed(
+        () => props.collapseFrom === void 0 ? [] : props.tabs.slice(props.collapseFrom)
+      );
+      const activeCollapsedTab = computed(
+        () => collapsedTabs.value.find((tab) => tab.value === props.modelValue) ?? null
+      );
       function onSelect(tab) {
         if (tab.disabled) return;
         if (tab.value === props.modelValue) return;
@@ -21981,7 +22014,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           role: "tablist",
           "aria-label": __props.ariaLabel
         }, [
-          (openBlock(true), createElementBlock(Fragment, null, renderList(__props.tabs, (tab) => {
+          (openBlock(true), createElementBlock(Fragment, null, renderList(inlineTabs.value, (tab) => {
             return openBlock(), createElementBlock("button", {
               key: tab.value,
               type: "button",
@@ -22009,13 +22042,64 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                 _: 2
               }, 1024)) : createCommentVNode("", true)
             ], 10, _hoisted_2$m);
-          }), 128))
+          }), 128)),
+          collapsedTabs.value.length > 0 ? (openBlock(), createBlock(_sfc_main$E, {
+            key: 0,
+            items: collapsedTabs.value,
+            "item-key": (tab) => tab.value,
+            "is-current": (tab) => tab.value === __props.modelValue,
+            align: "end",
+            onSelect
+          }, {
+            trigger: withCtx(() => [
+              createBaseVNode("button", {
+                type: "button",
+                role: "tab",
+                class: normalizeClass(["tab tab--more", { "tab--active": activeCollapsedTab.value !== null }]),
+                "aria-selected": activeCollapsedTab.value !== null,
+                "aria-label": unref(t2)("tabs.moreLabel")
+              }, [
+                createBaseVNode("span", _hoisted_5$9, toDisplayString(activeCollapsedTab.value ? activeCollapsedTab.value.label : unref(t2)("tabs.moreLabel")), 1),
+                activeCollapsedTab.value?.badge ? (openBlock(), createBlock(Badge, {
+                  key: 0,
+                  class: "tab__badge"
+                }, {
+                  default: withCtx(() => [
+                    createTextVNode(toDisplayString(activeCollapsedTab.value.badge), 1)
+                  ]),
+                  _: 1
+                })) : createCommentVNode("", true),
+                createVNode(EditorIcon, {
+                  name: "chevron-down",
+                  size: 14,
+                  class: "tab__chevron"
+                })
+              ], 10, _hoisted_4$b)
+            ]),
+            item: withCtx(({ item }) => [
+              createBaseVNode("span", _hoisted_6$9, [
+                unref(resolveIcon)(item.icon) ? (openBlock(), createBlock(EditorIcon, {
+                  key: 0,
+                  name: item.icon,
+                  size: 16
+                }, null, 8, ["name"])) : createCommentVNode("", true),
+                createBaseVNode("span", null, toDisplayString(item.label), 1),
+                item.badge ? (openBlock(), createBlock(Badge, { key: 1 }, {
+                  default: withCtx(() => [
+                    createTextVNode(toDisplayString(item.badge), 1)
+                  ]),
+                  _: 2
+                }, 1024)) : createCommentVNode("", true)
+              ])
+            ]),
+            _: 1
+          }, 8, ["items", "item-key", "is-current"])) : createCommentVNode("", true)
         ], 8, _hoisted_1$t);
       };
     }
   });
-  const _style_0$r = "\n.tabs[data-v-b17b8689] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.transcript-ui-root .tab[data-v-b17b8689] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .tab[data-v-b17b8689]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.transcript-ui-root .tab[data-v-b17b8689]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .tab--active[data-v-b17b8689] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.transcript-ui-root .tab[disabled][data-v-b17b8689] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-b17b8689] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-b17b8689] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-b17b8689] {\n  margin-left: var(--spacing-xs);\n}\n";
-  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$r]], ["__scopeId", "data-v-b17b8689"]]);
+  const _style_0$r = '\n.tabs[data-v-30747b8d] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.transcript-ui-root .tab[data-v-30747b8d] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .tab[data-v-30747b8d]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.transcript-ui-root .tab[data-v-30747b8d]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .tab--active[data-v-30747b8d] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.transcript-ui-root .tab[disabled][data-v-30747b8d] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-30747b8d] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-30747b8d] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-30747b8d] {\n  margin-left: var(--spacing-xs);\n}\n.tab__chevron[data-v-30747b8d] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__menu-item[data-v-30747b8d] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n\n/* Phone: the inline tabs share the width, labels shrink with an ellipsis,\n   icons go, nothing scrolls sideways (the rest lives in the "More" menu). */\n@media (max-width: 767px) {\n.tabs[data-v-30747b8d] {\n    padding: 0 var(--spacing-sm);\n    overflow-x: hidden;\n}\n.transcript-ui-root .tab[data-v-30747b8d] {\n    flex: 1;\n    min-width: 0;\n    justify-content: center;\n    padding: 0 var(--spacing-xs);\n    font-size: var(--font-size-xs);\n}\n.tab__icon[data-v-30747b8d] {\n    display: none;\n}\n.tab__label[data-v-30747b8d] {\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n}\n';
+  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$r]], ["__scopeId", "data-v-30747b8d"]]);
   const TEXT_NODE$1 = 3;
   function placeCaretAt(element, offset2) {
     element.focus({ preventScroll: true });
@@ -22136,7 +22220,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   const _hoisted_1$r = { class: "editor-header" };
   const _hoisted_2$l = { class: "header-main" };
   const _hoisted_3$f = { class: "document-title" };
-  const _hoisted_4$9 = {
+  const _hoisted_4$a = {
     key: 0,
     class: "document-meta"
   };
@@ -22179,7 +22263,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         return openBlock(), createElementBlock("header", _hoisted_1$r, [
           createBaseVNode("div", _hoisted_2$l, [
             createBaseVNode("h1", _hoisted_3$f, toDisplayString(formattedTitle.value), 1),
-            metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$9, [
+            metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$a, [
               (openBlock(true), createElementBlock(Fragment, null, renderList(metaParts.value, (part, i2) => {
                 return openBlock(), createElementBlock("span", {
                   key: i2,
@@ -22259,6 +22343,23 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   const Header = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-491cf8ab"]]);
   const TRANSCRIPTION_TAB = "__transcription__";
   const VERBATIM_TAB = "__verbatim__";
+  const MOBILE_BREAKPOINT = "(max-width: 767px)";
+  function useIsMobile() {
+    const isMobile = /* @__PURE__ */ ref(false);
+    let mql = null;
+    function onChange(e2) {
+      isMobile.value = e2.matches;
+    }
+    onMounted(() => {
+      mql = window.matchMedia(MOBILE_BREAKPOINT);
+      isMobile.value = mql.matches;
+      mql.addEventListener("change", onChange);
+    });
+    onBeforeUnmount(() => {
+      mql?.removeEventListener("change", onChange);
+    });
+    return { isMobile };
+  }
   const _sfc_main$t = /* @__PURE__ */ defineComponent({
     __name: "TabBar",
     props: {
@@ -22271,6 +22372,11 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const emit2 = __emit;
       const core = useCore();
       const { t: t2 } = useI18n();
+      const { isMobile } = useIsMobile();
+      const collapseFrom = computed(() => {
+        if (!isMobile.value) return void 0;
+        return props.showVerbatim ? 2 : 1;
+      });
       const tabs = computed(() => {
         const services = core.llmServices?.list.value ?? [];
         return [
@@ -22302,8 +22408,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           key: 0,
           tabs: tabs.value,
           "model-value": __props.modelValue,
+          "collapse-from": collapseFrom.value,
           "onUpdate:modelValue": onSelect
-        }, null, 8, ["tabs", "model-value"])) : createCommentVNode("", true);
+        }, null, 8, ["tabs", "model-value", "collapse-from"])) : createCommentVNode("", true);
       };
     }
   });
@@ -23196,7 +23303,7 @@ ${text2}` : text2;
     class: "turn-edit-actions"
   };
   const _hoisted_3$e = ["role", "tabindex", "aria-label", "aria-disabled"];
-  const _hoisted_4$8 = ["data-word-active"];
+  const _hoisted_4$9 = ["data-word-active"];
   const _sfc_main$p = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionTurn",
     props: {
@@ -23433,7 +23540,7 @@ ${text2}` : text2;
                 createBaseVNode("span", {
                   class: normalizeClass({ "word--active": word.id === activeWordId.value }),
                   "data-word-active": word.id === activeWordId.value || void 0
-                }, toDisplayString(word.text), 11, _hoisted_4$8),
+                }, toDisplayString(word.text), 11, _hoisted_4$9),
                 createTextVNode(toDisplayString(i2 < __props.turn.words.length - 1 ? " " : ""), 1)
               ], 64);
             }), 128)) : __props.turn.text ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
@@ -23617,7 +23724,7 @@ ${text2}` : text2;
     class: "scroll-container"
   };
   const _hoisted_3$d = { class: "turns-container" };
-  const _hoisted_4$7 = {
+  const _hoisted_4$8 = {
     key: 0,
     class: "history-loading",
     role: "status"
@@ -23730,7 +23837,7 @@ ${text2}` : text2;
         return openBlock(), createElementBlock("article", _hoisted_1$j, [
           createBaseVNode("div", _hoisted_2$g, [
             createBaseVNode("div", _hoisted_3$d, [
-              isLoadingHistory.value ? (openBlock(), createElementBlock("div", _hoisted_4$7, [..._cache[2] || (_cache[2] = [
+              isLoadingHistory.value ? (openBlock(), createElementBlock("div", _hoisted_4$8, [..._cache[2] || (_cache[2] = [
                 createBaseVNode("progress", null, null, -1)
               ])])) : createCommentVNode("", true),
               !hasMoreHistory.value && __props.turns.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_5$7, toDisplayString(unref(t2)("transcription.historyStart")), 1)) : createCommentVNode("", true),
@@ -23792,7 +23899,7 @@ ${text2}` : text2;
   const _hoisted_1$i = { class: "verbatim-panel" };
   const _hoisted_2$f = { class: "verbatim-panel__content" };
   const _hoisted_3$c = { class: "verbatim-panel__header" };
-  const _hoisted_4$6 = { class: "verbatim-panel__doc-title" };
+  const _hoisted_4$7 = { class: "verbatim-panel__doc-title" };
   const _hoisted_5$6 = { class: "verbatim-panel__turns" };
   const _hoisted_6$6 = { class: "verbatim-panel__turn-header" };
   const _hoisted_7$3 = { class: "verbatim-panel__speaker-name" };
@@ -23862,7 +23969,7 @@ ${text2}` : text2;
             default: withCtx(() => [
               createBaseVNode("article", _hoisted_2$f, [
                 createBaseVNode("header", _hoisted_3$c, [
-                  createBaseVNode("h1", _hoisted_4$6, toDisplayString(title.value), 1)
+                  createBaseVNode("h1", _hoisted_4$7, toDisplayString(title.value), 1)
                 ]),
                 createBaseVNode("ul", _hoisted_5$6, [
                   (openBlock(true), createElementBlock(Fragment, null, renderList(turns.value, (turn) => {
@@ -23899,8 +24006,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$i = "\n.verbatim-panel[data-v-4bbe16ed] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__content[data-v-4bbe16ed] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n}\n.verbatim-panel__header[data-v-4bbe16ed] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-4bbe16ed] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-4bbe16ed] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-4bbe16ed] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-4bbe16ed] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-4bbe16ed] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-4bbe16ed] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-4bbe16ed] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-4bbe16ed] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n\n";
-  const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-4bbe16ed"]]);
+  const _style_0$i = "\n.verbatim-panel[data-v-7a077f5a] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.verbatim-panel__content[data-v-7a077f5a] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n}\n.verbatim-panel__header[data-v-7a077f5a] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-7a077f5a] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-7a077f5a] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-7a077f5a] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-7a077f5a] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-7a077f5a] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-7a077f5a] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-7a077f5a] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-7a077f5a] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n\n";
+  const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-7a077f5a"]]);
   const _sfc_main$k = /* @__PURE__ */ defineComponent({
     __name: "ChannelSelector",
     props: {
@@ -24077,7 +24184,7 @@ ${text2}` : text2;
     class: "sidebar-section sidebar-section--selector"
   };
   const _hoisted_3$a = { class: "sidebar-title" };
-  const _hoisted_4$5 = {
+  const _hoisted_4$6 = {
     key: 1,
     class: "sidebar-section sidebar-section--selector"
   };
@@ -24218,7 +24325,7 @@ ${text2}` : text2;
               "onUpdate:selectedChannelId": _cache[0] || (_cache[0] = ($event) => _ctx.$emit("update:selectedChannelId", $event))
             }, null, 8, ["channels", "selected-channel-id"])
           ])) : createCommentVNode("", true),
-          __props.translations.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_4$5, [
+          __props.translations.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_4$6, [
             createBaseVNode("h2", _hoisted_5$5, toDisplayString(unref(t2)("sidebar.translation")), 1),
             createVNode(_sfc_main$j, {
               translations: __props.translations,
@@ -24488,23 +24595,6 @@ ${text2}` : text2;
   });
   const _style_0$f = "\n.selection-bar[data-v-9bad1410] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  /* No backdrop-filter: it forces a WebRender backdrop render target sized to\n     the content behind, a heavy GPU-memory cost on long transcripts. The\n     semi-opaque glass background stays legible without the blur. */\n  background: var(--glass-background);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-9bad1410 var(--transition-duration) ease;\n}\n.selection-count[data-v-9bad1410] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-9bad1410] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-9bad1410 {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-9bad1410] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-9bad1410] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
   const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$f]], ["__scopeId", "data-v-9bad1410"]]);
-  const MOBILE_BREAKPOINT = "(max-width: 767px)";
-  function useIsMobile() {
-    const isMobile = /* @__PURE__ */ ref(false);
-    let mql = null;
-    function onChange(e2) {
-      isMobile.value = e2.matches;
-    }
-    onMounted(() => {
-      mql = window.matchMedia(MOBILE_BREAKPOINT);
-      isMobile.value = mql.matches;
-      mql.addEventListener("change", onChange);
-    });
-    onBeforeUnmount(() => {
-      mql?.removeEventListener("change", onChange);
-    });
-    return { isMobile };
-  }
   const _hoisted_1$e = { class: "editor-layout" };
   const _hoisted_2$b = {
     key: 6,
@@ -24552,6 +24642,9 @@ ${text2}` : text2;
       );
       const speakerList = computed(() => Array.from(speakers.values()));
       const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB);
+      watch(isMobile, (mobile) => {
+        if (mobile && isSplit.value) isSplit.value = false;
+      });
       watch(activeTab, (id) => {
         if (!core.llmServices) return;
         if (id === TRANSCRIPTION_TAB || id === VERBATIM_TAB) {
@@ -24700,8 +24793,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$e = "\n.editor-layout[data-v-540cad68] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-540cad68] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-540cad68] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-540cad68] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-540cad68] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-540cad68] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-540cad68] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-540cad68] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-540cad68] {\n    grid-template-columns: 1fr;\n}\n}\n";
-  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-540cad68"]]);
+  const _style_0$e = "\n.editor-layout[data-v-972b2fff] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-972b2fff] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-972b2fff] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-972b2fff] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-972b2fff] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-972b2fff] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-972b2fff] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-972b2fff] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-972b2fff] {\n    grid-template-columns: 1fr;\n}\n}\n";
+  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-972b2fff"]]);
   const _hoisted_1$d = {
     class: "editor-loading",
     role: "status",
@@ -25524,7 +25617,7 @@ section.turn:has([data-state="open"]) {
   const _hoisted_1$a = { class: "player-controls" };
   const _hoisted_2$8 = { class: "controls-left" };
   const _hoisted_3$7 = { class: "controls-time" };
-  const _hoisted_4$4 = { class: "time-display" };
+  const _hoisted_4$5 = { class: "time-display" };
   const _hoisted_5$4 = { class: "time-display" };
   const _hoisted_6$4 = { class: "controls-right" };
   const _hoisted_7$1 = ["value", "aria-label", "disabled"];
@@ -25598,7 +25691,7 @@ section.turn:has([data-state="open"]) {
             }, 8, ["aria-label", "disabled"])
           ]),
           createBaseVNode("div", _hoisted_3$7, [
-            createBaseVNode("time", _hoisted_4$4, toDisplayString(__props.currentTime), 1),
+            createBaseVNode("time", _hoisted_4$5, toDisplayString(__props.currentTime), 1),
             _cache[7] || (_cache[7] = createBaseVNode("span", { class: "time-separator" }, "/", -1)),
             createBaseVNode("time", _hoisted_5$4, toDisplayString(__props.duration), 1)
           ]),
@@ -29335,12 +29428,13 @@ section.turn:has([data-state="open"]) {
     };
   }
   const _hoisted_1$5 = { class: "llm-service-panel" };
-  const _hoisted_2$5 = {
+  const _hoisted_2$5 = { class: "llm-service-panel__download-label" };
+  const _hoisted_3$5 = {
     key: 0,
     class: "llm-service-panel__empty",
     role: "status"
   };
-  const _hoisted_3$5 = { class: "llm-service-panel__empty-text" };
+  const _hoisted_4$4 = { class: "llm-service-panel__empty-text" };
   const _sfc_main$5 = /* @__PURE__ */ defineComponent({
     __name: "LLMServicePanel",
     props: {
@@ -29462,11 +29556,12 @@ section.turn:has([data-state="open"]) {
                 onClick: onExport
               }, {
                 default: withCtx(() => [
-                  createTextVNode(toDisplayString(unref(t2)("llmService.download")), 1)
+                  createBaseVNode("span", _hoisted_2$5, toDisplayString(unref(t2)("llmService.download")), 1)
                 ]),
                 _: 1
               }, 8, ["disabled", "aria-label", "title"]),
               createVNode(unref(Button), {
+                class: "llm-service-panel__split",
                 variant: __props.split ? "primary" : "secondary",
                 icon: "panel-right",
                 "aria-pressed": !!__props.split,
@@ -29476,8 +29571,8 @@ section.turn:has([data-state="open"]) {
               }, null, 8, ["variant", "aria-pressed", "aria-label", "title"])
             ]),
             default: withCtx(() => [
-              isEmpty.value ? (openBlock(), createElementBlock("div", _hoisted_2$5, [
-                createBaseVNode("p", _hoisted_3$5, toDisplayString(unref(t2)("llmService.empty")), 1),
+              isEmpty.value ? (openBlock(), createElementBlock("div", _hoisted_3$5, [
+                createBaseVNode("p", _hoisted_4$4, toDisplayString(unref(t2)("llmService.empty")), 1),
                 createVNode(unref(Button), {
                   variant: "primary",
                   icon: "sparkles",
@@ -29502,8 +29597,8 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0$5 = "\n.llm-service-panel[data-v-0222a168] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-0222a168] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-0222a168] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-0222a168] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-0222a168] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-0222a168] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-0222a168] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-0222a168"]]);
+  const _style_0$5 = "\n.llm-service-panel[data-v-920b527a] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.llm-service-panel__status[data-v-920b527a] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-920b527a] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-920b527a] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-920b527a] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-920b527a] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n\n/* Phone: no side-by-side (Layout forces split off below 767px), and the\n   download button keeps its icon only. */\n@media (max-width: 767px) {\n.llm-service-panel[data-v-920b527a] {\n    padding: var(--spacing-sm) 0;\n}\n.llm-service-panel__split[data-v-920b527a],\n  .llm-service-panel__download-label[data-v-920b527a] {\n    display: none;\n}\n}\n";
+  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-920b527a"]]);
   function createService(init) {
     return {
       id: init.id,
