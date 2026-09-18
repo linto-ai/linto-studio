@@ -66,11 +66,20 @@ def publishSdk(distTag) {
     }
 
     echo "Publishing SDK ${sdkPackage}@${version} to npm (dist-tag: ${distTag})..."
-    // needs node >= 24 and bun >= 1.4 on the agent (package.json engines)
-    sh 'node --version && bun --version'
-    withCredentials([string(credentialsId: 'npm-linto', variable: 'NPM_CONFIG_TOKEN')]) {
+    // "npm-linto-jenkins": secret text credential holding an npm granular access token with publish rights
+    withCredentials([string(credentialsId: 'npm-linto-jenkins', variable: 'NPM_CONFIG_TOKEN')]) {
         try {
-            sh "cd ${sdkDir} && bash scripts/publish-all.sh ${version} --live --tag ${distTag} --yes"
+            // no node on the Jenkins host: run in the official node image, bun comes from npm (package.json engines)
+            def image = docker.image('node:24')
+            image.pull()
+            image.inside('-e HOME=/tmp -e NPM_CONFIG_PREFIX=/tmp/npm-global') {
+                sh """
+                    npm install -g bun
+                    export PATH=/tmp/npm-global/bin:\$PATH
+                    node --version && bun --version
+                    cd ${sdkDir} && bash scripts/publish-all.sh ${version} --live --tag ${distTag} --yes
+                """
+            }
         } finally {
             // the publish script bumps every package.json, regenerates bun.lock and installs node_modules in place
             sh "git checkout -- ${sdkDir} && git clean -fdxq ${sdkDir}"
