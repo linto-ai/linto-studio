@@ -30,8 +30,22 @@
         }}
       </li>
     </ol>
-    <details class="template-help__placeholders">
+    <details class="template-help__placeholders" open>
       <summary>{{ $t("publish.publication.help.placeholders_title") }}</summary>
+
+      <h5>{{ $t("publish.publication.help.custom_title") }}</h5>
+      <p>{{ $t("publish.publication.help.custom_intro") }}</p>
+      <p class="template-help__syntax">
+        <code v-text="customSyntax"></code>
+      </p>
+      <ul>
+        <li v-for="example in customExamples" :key="example">
+          <code v-text="example"></code>
+        </li>
+      </ul>
+      <p>{{ $t("publish.publication.help.custom_note") }}</p>
+
+      <h5>{{ $t("publish.publication.help.standard_title") }}</h5>
       <ul>
         <li v-for="placeholder in placeholders" :key="placeholder.name">
           <code v-text="placeholderTag(placeholder)"></code>
@@ -43,7 +57,6 @@
           </strong>
         </li>
       </ul>
-      <p>{{ $t("publish.publication.help.placeholders_note") }}</p>
     </details>
   </section>
 </template>
@@ -62,6 +75,17 @@ export default {
   },
   data() {
     return { placeholders: PUBLICATION_PLACEHOLDERS }
+  },
+  computed: {
+    customSyntax() {
+      return `{{${this.$t("publish.publication.help.custom_syntax")}}}`
+    },
+    customExamples() {
+      return [
+        this.$t("publish.publication.help.custom_example_actions"),
+        this.$t("publish.publication.help.custom_example_participants"),
+      ].map((example) => `{{${example}}}`)
+    },
   },
   methods: {
     placeholderTag({ name }) {
@@ -120,6 +144,19 @@ export default {
   font-weight: 600;
 }
 
+.template-help__placeholders h5 {
+  margin: 0.6em 0 0.2em;
+  font-size: inherit;
+}
+
+.template-help__placeholders p {
+  margin: 0;
+}
+
+.template-help__syntax code {
+  font-weight: 600;
+}
+
 .template-help__placeholders ul {
   margin: 0.4em 0;
   padding-left: 1.2em;
@@ -133,10 +170,5 @@ export default {
 
 .template-help__placeholders code {
   font-size: 0.9em;
-}
-
-.template-help__placeholders p {
-  margin: 0;
-  color: var(--text-secondary);
 }
 </style>

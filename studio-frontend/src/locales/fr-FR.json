@@ -1265,9 +1265,8 @@
         "step_edit": "Ouvrez-le dans Word ou LibreOffice et adaptez la mise en page, les logos et les textes. Conservez les balises entre doubles accolades, elles sont remplacées à l'export.",
         "step_upload": "Importez-le ci-dessous. Il n'est visible que par vous.",
         "step_upload_manager": "Importez-le ci-dessous, pour vous seul ou pour toute l'organisation. Vous pourrez changer ce partage plus tard depuis la carte du modèle.",
-        "placeholders_title": "Balises disponibles",
+        "placeholders_title": "Les balises",
         "required": "obligatoire",
-        "placeholders_note": "Certains modèles de base contiennent d'autres balises propres au service (participants, actions…). Vous pouvez les conserver telles quelles.",
         "placeholder": {
           "output": "contenu produit par le service IA",
           "conversation_name": "nom du média",
@@ -1275,7 +1274,14 @@
           "organization_name": "nom de l'organisation",
           "job_date": "date du traitement",
           "generated_at": "date et heure de l'export"
-        }
+        },
+        "custom_title": "Créez vos propres balises",
+        "custom_intro": "Écrivez n'importe quelle balise dans votre document, avec une description de ce que vous attendez : l'IA extrait la valeur depuis la conversation au moment de l'export et la place à cet endroit.",
+        "custom_syntax": "nom_du_champ: ce que l'IA doit extraire",
+        "custom_example_actions": "decisions: liste des décisions prises et de leurs responsables",
+        "custom_example_participants": "participants: noms et rôles des personnes présentes",
+        "custom_note": "Sans description, l'IA se base sur le nom de la balise. Les modèles de base en contiennent déjà (participants, actions, ordre du jour), vous pouvez les garder ou les remplacer. Si le service IA n'est pas configuré pour l'extraction, la balise reste vide.",
+        "standard_title": "Balises remplies automatiquement"
       },
       "remove_file": "Retirer le fichier",
       "scope_label": {

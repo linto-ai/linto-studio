@@ -1271,9 +1271,8 @@
         "step_edit": "Open it in Word or LibreOffice and adapt the layout, logos and texts. Keep the tags between double braces, they are replaced at export time.",
         "step_upload": "Upload it below. Only you can see it.",
         "step_upload_manager": "Upload it below, for yourself or for the whole organization. You can change this sharing later from the template card.",
-        "placeholders_title": "Available tags",
+        "placeholders_title": "Tags",
         "required": "required",
-        "placeholders_note": "Some base templates contain extra tags specific to the service (participants, actions…). You can keep them as they are.",
         "placeholder": {
           "output": "content produced by the AI service",
           "conversation_name": "media name",
@@ -1281,7 +1280,14 @@
           "organization_name": "organization name",
           "job_date": "processing date",
           "generated_at": "export date and time"
-        }
+        },
+        "custom_title": "Create your own tags",
+        "custom_intro": "Write any tag in your document, with a description of what you expect: the AI extracts the value from the conversation at export time and places it there.",
+        "custom_syntax": "field_name: what the AI should extract",
+        "custom_example_actions": "decisions: list of the decisions taken and who owns them",
+        "custom_example_participants": "participants: names and roles of the attendees",
+        "custom_note": "Without a description, the AI relies on the tag name. Base templates already contain such tags (participants, actions, agenda), keep or replace them. If the AI service is not configured for extraction, the tag stays empty.",
+        "standard_title": "Tags filled automatically"
       },
       "remove_file": "Remove the file",
       "scope_label": {
