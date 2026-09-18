@@ -18,6 +18,10 @@ const segments = computed(() => renderMarkdownSegments(props.source))
         v-if="seg.type === 'html'"
         class="markdown-view__html"
         v-html="seg.html" />
+      <div
+        v-else-if="seg.type === 'table'"
+        class="markdown-view__table"
+        v-html="seg.html" />
       <CodeBlock
         v-else
         :code="seg.code"
@@ -33,6 +37,9 @@ const segments = computed(() => renderMarkdownSegments(props.source))
   font-size: var(--font-size-base);
   line-height: var(--line-height);
   color: var(--color-text-primary);
+  /* Long URLs and identifiers wrap instead of running past a narrow
+     column (phones, chat), where the overflow would just be clipped. */
+  overflow-wrap: break-word;
 }
 
 /* No box: block children flow as direct children of .markdown-view so margin
@@ -48,6 +55,14 @@ const segments = computed(() => renderMarkdownSegments(props.source))
 }
 
 .markdown-view > .markdown-view__html:last-child > :deep(:last-child) {
+  margin-bottom: 0;
+}
+
+.markdown-view > .markdown-view__table:first-child {
+  margin-top: 0;
+}
+
+.markdown-view > .markdown-view__table:last-child {
   margin-bottom: 0;
 }
 
@@ -141,9 +156,20 @@ const segments = computed(() => renderMarkdownSegments(props.source))
   font-weight: 700;
 }
 
+.markdown-view :deep(img) {
+  max-width: 100%;
+  height: auto;
+}
+
+/* A table wider than the column scrolls on its own, the text around it
+   keeps the column width. */
+.markdown-view__table {
+  margin: var(--spacing-md) 0;
+  overflow-x: auto;
+}
+
 .markdown-view :deep(table) {
   border-collapse: collapse;
-  margin: var(--spacing-md) 0;
 }
 
 .markdown-view :deep(th),

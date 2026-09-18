@@ -87,8 +87,7 @@ const speakerList = computed(() => Array.from(speakers.values()))
 
 const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB)
 
-// Two 50/50 panels are unreadable on a phone: leaving split when the
-// viewport shrinks also brings the speaker drawer and the player back.
+// remove split when shrinking in mobile view
 watch(isMobile, (mobile) => {
   if (mobile && isSplit.value) isSplit.value = false
 })
@@ -123,8 +122,11 @@ watch(
   () => props.showVerbatim,
   (canShow) => {
     if (canShow) return
-    const withoutVerbatim = shownPanels.value.filter((id) => id !== VERBATIM_TAB)
-    shownPanels.value = withoutVerbatim.length > 0 ? withoutVerbatim : [TRANSCRIPTION_TAB]
+    const withoutVerbatim = shownPanels.value.filter(
+      (id) => id !== VERBATIM_TAB,
+    )
+    shownPanels.value =
+      withoutVerbatim.length > 0 ? withoutVerbatim : [TRANSCRIPTION_TAB]
   },
 )
 
