@@ -199,8 +199,7 @@
     "keep_going": "Keep going"
   },
   "conversation": {
-    "load_failed": "Cannot open this conversation.",
-    "publish_in_studio": "Publishing is done from the full Studio version."
+    "load_failed": "Cannot open this conversation."
   },
   "share": {
     "search_placeholder": "Name or email address",
@@ -227,5 +226,18 @@
     "discard_hint": "The media and its transcript stay in My media.",
     "cancel_upload": "Cancel sending and delete",
     "share_audio_failed": "The audio could not be shared."
+  },
+  "publication": {
+    "title": "Export as PDF",
+    "loading": "Loading templates…",
+    "empty": "No publication template for this service.",
+    "generating": "Generating the PDF…",
+    "export_failed": "Unable to generate the PDF.",
+    "rendering": "Opening the document…",
+    "render_failed": "The PDF cannot be shown here. Open it with the button below.",
+    "close": "Close",
+    "share": "Share or save",
+    "share_failed": "Unable to share the PDF.",
+    "downloaded": "PDF downloaded"
   }
 }

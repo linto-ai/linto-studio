@@ -10,6 +10,9 @@ _2026_09_18_
   - Organization-wide templates are reserved to maintainers and admins, enforced server-side; deletion is allowed to the author or, for shared templates, to maintainers and admins
   - Redesigned template cards: icon chosen in LLM Gateway, LinTO / organization / personal label, PDF preview on click; closing the preview goes back to the picker, a download closes both
   - New API routes: `PATCH /publication/organizations/:organizationId/templates/:templateId` (scope) and `GET .../templates/:templateId/download`
+- Mobile app
+  - AI reports can be exported as PDF from the editor: pick a publication template of the service, read the PDF inside the app, then share or save it through the phone
+- LLM services are listed for the `linto` usage scope only (`LLM_GATEWAY_SCOPE`, default `linto`)
 - Requires LLM Gateway 2.6.0 (template owner and icon)
 
 # 1.8.7

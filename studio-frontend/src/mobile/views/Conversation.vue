@@ -12,11 +12,18 @@
         {{ $t("mobile.common.loading") }}
       </p>
     </div>
+    <ReportPdfFlow
+      v-if="ready"
+      ref="reportPdf"
+      :conversation-id="$route.params.conversationId"
+      :conversation-name="name"
+      :organization-id="organizationId" />
   </div>
 </template>
 
 <script>
 import PageHeader from "@/mobile/components/PageHeader.vue"
+import ReportPdfFlow from "@/mobile/components/publication/ReportPdfFlow.vue"
 import { ConversationEditorSession } from "@/mobile/services/editor/ConversationEditorSession.js"
 import {
   connectRealtime,
@@ -27,9 +34,9 @@ import {
 // app, with a back link to the media list.
 export default {
   name: "MobileConversation",
-  components: { PageHeader },
+  components: { PageHeader, ReportPdfFlow },
   data() {
-    return { ready: false, failed: false, name: "" }
+    return { ready: false, failed: false, name: "", organizationId: null }
   },
   async created() {
     this.session = new ConversationEditorSession({
@@ -37,6 +44,7 @@ export default {
       socket: realtimeSocket,
       store: this.$store,
       i18n: this.$i18n,
+      openPublication: (request) => this.$refs.reportPdf?.start(request),
     })
     try {
       await connectRealtime()
@@ -47,6 +55,7 @@ export default {
       return
     }
     this.name = this.session.name
+    this.organizationId = this.session.document.organizationId
     this.ready = true
     await this.$nextTick()
     await this.session.mount(this.$refs.editor)
