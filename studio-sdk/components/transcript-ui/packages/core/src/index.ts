@@ -66,6 +66,10 @@ export { default as SpeakerLabel } from './components/SpeakerLabel.vue'
 export { default as SpeakerPopover } from './components/molecules/SpeakerPopover.vue'
 export { useEditorReady } from './composables/useEditorReady'
 
+// Phone breakpoint shared with plugins, so their panels switch layout at the
+// same width as the core Layout.
+export { useIsMobile } from './composables/useIsMobile'
+
 // Adapter API LinTO
 export { mapApiDocument } from './adapters/apiAdapter'
 export { mapApiTurns } from './adapters/mapApiTurns'

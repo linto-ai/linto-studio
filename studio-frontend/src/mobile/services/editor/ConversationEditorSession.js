@@ -33,11 +33,13 @@ const EDIT_EVENTS = [
 // wires the plugins on the shared socket, and releases everything in
 // destroy(). Mirrors the classic ConversationsTranscription page.
 export class ConversationEditorSession {
-  constructor({ conversationId, socket, store, i18n }) {
+  constructor({ conversationId, socket, store, i18n, openPublication }) {
     this.conversationId = conversationId
     this.socket = socket
     this.store = store
     this.i18n = i18n
+    // Called with { serviceId, jobId } when "Download" is pressed on a report
+    this.openPublication = openPublication
     this.core = null
     this.destroyed = false
     this.disposers = []
@@ -125,11 +127,7 @@ export class ConversationEditorSession {
       t: (key, params) => this.i18n.t(key, params),
       notify: (type, message) =>
         this.store.dispatch("system/addNotification", { type, message }),
-      openPublication: () =>
-        this.store.dispatch(
-          "system/showInfo",
-          this.i18n.t("mobile.conversation.publish_in_studio"),
-        ),
+      openPublication: (request) => this.openPublication?.(request),
     }).dispose
   }
 

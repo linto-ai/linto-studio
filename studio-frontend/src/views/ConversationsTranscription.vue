@@ -6,6 +6,7 @@
     <PublicationModal
       v-model="publicationModal.open"
       :jobId="publicationModal.jobId"
+      :serviceId="publicationModal.serviceId"
       :conversationId="conversationId"
       :organizationId="organizationId"
       :conversationName="conversationName" />
@@ -59,7 +60,7 @@ export default {
       chatDispose: null,
       editListeners: [],
       canWrite: false,
-      publicationModal: { open: false, jobId: null },
+      publicationModal: { open: false, jobId: null, serviceId: null },
       verbatimFormats: [
         { format: "docx", labelKey: "format.docx" },
         { format: "pdf", labelKey: "format.pdf" },
@@ -201,8 +202,8 @@ export default {
         t: (key, params) => this.$t(key, params),
         notify: (type, message) =>
           this.$store.dispatch("system/addNotification", { type, message }),
-        openPublication: ({ jobId }) => {
-          this.publicationModal = { open: true, jobId }
+        openPublication: ({ jobId, serviceId }) => {
+          this.publicationModal = { open: true, jobId, serviceId }
         },
       }).dispose
 

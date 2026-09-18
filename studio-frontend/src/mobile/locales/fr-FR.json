@@ -199,8 +199,7 @@
     "keep_going": "Continuer le direct"
   },
   "conversation": {
-    "load_failed": "Impossible d'ouvrir cette conversation.",
-    "publish_in_studio": "La publication se fait depuis la version complète de Studio."
+    "load_failed": "Impossible d'ouvrir cette conversation."
   },
   "share": {
     "search_placeholder": "Nom ou adresse e-mail",
@@ -227,5 +226,18 @@
     "discard_hint": "Le média et sa transcription restent dans Mes médias.",
     "cancel_upload": "Annuler l'envoi et supprimer",
     "share_audio_failed": "Impossible de partager l'audio."
+  },
+  "publication": {
+    "title": "Exporter en PDF",
+    "loading": "Chargement des modèles…",
+    "empty": "Aucun modèle de publication pour ce service.",
+    "generating": "Génération du PDF…",
+    "export_failed": "Impossible de générer le PDF.",
+    "rendering": "Affichage du document…",
+    "render_failed": "Impossible d'afficher le PDF ici. Vous pouvez l'ouvrir avec le bouton ci-dessous.",
+    "close": "Fermer",
+    "share": "Partager ou enregistrer",
+    "share_failed": "Impossible de partager le PDF.",
+    "downloaded": "PDF téléchargé"
   }
 }

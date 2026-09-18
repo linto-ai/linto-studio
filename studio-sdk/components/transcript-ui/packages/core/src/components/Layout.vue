@@ -87,6 +87,11 @@ const speakerList = computed(() => Array.from(speakers.values()))
 
 const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB)
 
+// remove split when shrinking in mobile view
+watch(isMobile, (mobile) => {
+  if (mobile && isSplit.value) isSplit.value = false
+})
+
 watch(activeTab, (id) => {
   if (!core.llmServices) return
   if (id === TRANSCRIPTION_TAB || id === VERBATIM_TAB) {
@@ -117,8 +122,11 @@ watch(
   () => props.showVerbatim,
   (canShow) => {
     if (canShow) return
-    const withoutVerbatim = shownPanels.value.filter((id) => id !== VERBATIM_TAB)
-    shownPanels.value = withoutVerbatim.length > 0 ? withoutVerbatim : [TRANSCRIPTION_TAB]
+    const withoutVerbatim = shownPanels.value.filter(
+      (id) => id !== VERBATIM_TAB,
+    )
+    shownPanels.value =
+      withoutVerbatim.length > 0 ? withoutVerbatim : [TRANSCRIPTION_TAB]
   },
 )
 

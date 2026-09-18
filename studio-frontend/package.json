@@ -2,7 +2,7 @@
   "name": "linto-studio-frontend",
   "author": "Romain Lopez <rlopez@linagora.com>",
   "description": "This is LinTO Studio web interface",
-  "version": "1.8.7",
+  "version": "1.8.8",
   "license": "GNU AFFERO GPLV3",
   "repository": {
     "type": "git",
@@ -46,7 +46,7 @@
   "dependencies": {
     "@iconify/vue2": "^2.1.0",
     "@joeattardi/emoji-button": "^4.6.4",
-    "@linto-ai/transcript-ui-webcomponent": "^0.9.22",
+    "@linto-ai/transcript-ui-webcomponent": "0.9.23-unstable.202609181642",
     "@linto-ai/webvoicesdk": "github:linto-ai/WebVoiceSDK",
     "axios": "^1.13.2",
     "chart.js": "^4.5.1",
@@ -55,6 +55,7 @@
     "diff": "^5.1.0",
     "idb": "^8.0.3",
     "jspdf": "^4.1.0",
+    "pdfjs-dist": "^6.3.289",
     "portal-vue": "^2.1.7",
     "qrcode-generator": "^2.0.4",
     "socket.io-client": "^4.5.2",

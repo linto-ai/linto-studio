@@ -50,7 +50,7 @@ describe("LLM Gateway V2 Integration", () => {
 
   describe("listLlmServices (GET /api/v1/services)", () => {
     const { listLlmServices } = require(
-      `${process.cwd()}/components/WebServer/controllers/services/utility`
+      `${process.cwd()}/components/WebServer/controllers/services/utility`,
     )
 
     it("should call V2 API with correct URL and pagination", async () => {
@@ -88,8 +88,8 @@ describe("LLM Gateway V2 Integration", () => {
 
       // Implementation includes timeout option for reliability
       expect(mockAxios.get).toHaveBeenCalledWith(
-        "http://localhost:8010/api/v1/services?page=1&page_size=100",
-        expect.objectContaining({ timeout: expect.any(Number) })
+        "http://localhost:8010/api/v1/services?page=1&page_size=100&scope=linto",
+        expect.objectContaining({ timeout: expect.any(Number) }),
       )
       expect(services).toHaveLength(1)
       expect(services[0]).toHaveProperty("id", "service-uuid-1")
@@ -109,7 +109,13 @@ describe("LLM Gateway V2 Integration", () => {
     })
 
     it("should handle empty service list", async () => {
-      mockAxios.get.mockResolvedValue({ items: [], total: 0, page: 1, page_size: 100, pages: 0 })
+      mockAxios.get.mockResolvedValue({
+        items: [],
+        total: 0,
+        page: 1,
+        page_size: 100,
+        pages: 0,
+      })
 
       const services = await listLlmServices()
 
@@ -172,42 +178,60 @@ describe("LLM Gateway V2 Integration", () => {
     })
 
     it("should filter by organizationId when provided", async () => {
-      mockAxios.get.mockResolvedValue({ items: [], total: 0, page: 1, page_size: 100, pages: 0 })
+      mockAxios.get.mockResolvedValue({
+        items: [],
+        total: 0,
+        page: 1,
+        page_size: 100,
+        pages: 0,
+      })
 
       await listLlmServices("org-123")
 
       expect(mockAxios.get).toHaveBeenCalledWith(
-        "http://localhost:8010/api/v1/services?page=1&page_size=100&organization_id=org-123",
-        expect.objectContaining({ timeout: expect.any(Number) })
+        "http://localhost:8010/api/v1/services?page=1&page_size=100&scope=linto&organization_id=org-123",
+        expect.objectContaining({ timeout: expect.any(Number) }),
       )
     })
 
     it("should not add organization_id param when not provided", async () => {
-      mockAxios.get.mockResolvedValue({ items: [], total: 0, page: 1, page_size: 100, pages: 0 })
+      mockAxios.get.mockResolvedValue({
+        items: [],
+        total: 0,
+        page: 1,
+        page_size: 100,
+        pages: 0,
+      })
 
       await listLlmServices()
 
       expect(mockAxios.get).toHaveBeenCalledWith(
-        "http://localhost:8010/api/v1/services?page=1&page_size=100",
-        expect.objectContaining({ timeout: expect.any(Number) })
+        "http://localhost:8010/api/v1/services?page=1&page_size=100&scope=linto",
+        expect.objectContaining({ timeout: expect.any(Number) }),
       )
     })
 
     it("should URL-encode organizationId with special characters", async () => {
-      mockAxios.get.mockResolvedValue({ items: [], total: 0, page: 1, page_size: 100, pages: 0 })
+      mockAxios.get.mockResolvedValue({
+        items: [],
+        total: 0,
+        page: 1,
+        page_size: 100,
+        pages: 0,
+      })
 
       await listLlmServices("org/with spaces&special")
 
       expect(mockAxios.get).toHaveBeenCalledWith(
-        "http://localhost:8010/api/v1/services?page=1&page_size=100&organization_id=org%2Fwith%20spaces%26special",
-        expect.objectContaining({ timeout: expect.any(Number) })
+        "http://localhost:8010/api/v1/services?page=1&page_size=100&scope=linto&organization_id=org%2Fwith%20spaces%26special",
+        expect.objectContaining({ timeout: expect.any(Number) }),
       )
     })
   })
 
   describe("generateText", () => {
     const { generateText } = require(
-      `${process.cwd()}/components/WebServer/controllers/llm/index`
+      `${process.cwd()}/components/WebServer/controllers/llm/index`,
     )
 
     it("should generate plain text from conversation", async () => {
@@ -227,9 +251,7 @@ describe("LLM Gateway V2 Integration", () => {
 
     it("should omit speaker names when speakers=false", async () => {
       const conversation = {
-        text: [
-          { speaker_name: "Speaker1", segment: "Hello world" },
-        ],
+        text: [{ speaker_name: "Speaker1", segment: "Hello world" }],
       }
       const metadata = { speakers: false }
 
@@ -242,7 +264,7 @@ describe("LLM Gateway V2 Integration", () => {
 
   describe("getJobStatus (GET /api/v1/jobs/{job_id})", () => {
     const { getJobStatus } = require(
-      `${process.cwd()}/components/WebServer/controllers/llm/index`
+      `${process.cwd()}/components/WebServer/controllers/llm/index`,
     )
 
     it("should fetch job status from V2 API", async () => {
@@ -261,7 +283,7 @@ describe("LLM Gateway V2 Integration", () => {
       const result = await getJobStatus("job-uuid")
 
       expect(mockAxios.get).toHaveBeenCalledWith(
-        "http://localhost:8010/api/v1/jobs/job-uuid"
+        "http://localhost:8010/api/v1/jobs/job-uuid",
       )
       expect(result).toEqual(mockJobResponse)
     })
@@ -282,7 +304,7 @@ describe("LLM Gateway V2 Integration", () => {
 
   describe("completedJob status check", () => {
     const { completedJob } = require(
-      `${process.cwd()}/components/WebServer/controllers/llm/index`
+      `${process.cwd()}/components/WebServer/controllers/llm/index`,
     )
 
     it("should recognize V2 terminal statuses", () => {
