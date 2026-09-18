@@ -88,13 +88,17 @@ export async function apiExportWithTemplate(
  * @param {string} [options.description_fr] - French description
  * @param {string} [options.description_en] - English description
  * @param {string} options.organization_id - Organization owning the template
- * @param {string} [options.user_id] - User ID for user-scoped template
+ * @param {string} [options.scope] - "personal" (default) or "organization"
+ * @param {string} [options.service_id] - AI service the template is uploaded for
  * @returns {Promise<Object|null>} Created template or null
  */
 export async function apiUploadPublicationTemplate(options) {
   const formData = new FormData()
   formData.append("file", options.file)
   formData.append("name_fr", options.name_fr)
+  if (options.service_id) {
+    formData.append("service_id", options.service_id)
+  }
 
   if (options.name_en) {
     formData.append("name_en", options.name_en)
@@ -127,6 +131,54 @@ export async function apiUploadPublicationTemplate(options) {
  */
 export async function apiCreatePublicationTemplate(templateData) {
   return apiUploadPublicationTemplate(templateData)
+}
+
+/**
+ * Share a template with the organization, or make it personal again
+ * @param {string} organizationId - Organization owning the template
+ * @param {string} templateId - The template ID
+ * @param {"personal"|"organization"} scope - Target scope
+ * @returns {Promise<Object|null>} Updated template or null
+ */
+export async function apiUpdatePublicationTemplateScope(
+  organizationId,
+  templateId,
+  scope,
+) {
+  const req = await sendRequest(
+    `${BASE_API}/publication/organizations/${organizationId}/templates/${templateId}`,
+    { method: "patch" },
+    { scope },
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data?.template || null
+  }
+  return null
+}
+
+/**
+ * Download the DOCX file of a template, to customize it
+ * @param {string} organizationId - Organization owning the template
+ * @param {string} templateId - The template ID
+ * @returns {Promise<Blob|null>} DOCX blob or null
+ */
+export async function apiDownloadPublicationTemplate(
+  organizationId,
+  templateId,
+) {
+  const req = await sendRequest(
+    `${BASE_API}/publication/organizations/${organizationId}/templates/${templateId}/download`,
+    { method: "get", responseType: "blob" },
+    {},
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data
+  }
+  return null
 }
 
 /**

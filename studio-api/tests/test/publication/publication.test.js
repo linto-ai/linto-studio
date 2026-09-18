@@ -41,7 +41,7 @@ describe("Publication Feature - API Contract Conformance", () => {
     // Re-require to get fresh module with mocks
     jest.resetModules()
     const publication = require(
-      `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`
+      `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`,
     )
     getTemplates = publication.getTemplates
     getTemplatePlaceholders = publication.getTemplatePlaceholders
@@ -105,12 +105,12 @@ describe("Publication Feature - API Contract Conformance", () => {
       // Per API contract and bug fix: must call /api/v1/document-templates (NOT /api/v1/templates)
       expect(mockAxios.get).toHaveBeenCalledWith(
         expect.stringContaining("/api/v1/document-templates"),
-        expect.any(Object)
+        expect.any(Object),
       )
       // Should NOT call the old incorrect endpoint
       expect(mockAxios.get).not.toHaveBeenCalledWith(
         expect.stringMatching(/\/api\/v1\/templates[^/]/),
-        expect.any(Object)
+        expect.any(Object),
       )
     })
 
@@ -131,12 +131,12 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       expect(mockAxios.get).toHaveBeenCalledWith(
         expect.stringContaining("organization_id=org-uuid-123"),
-        expect.any(Object)
+        expect.any(Object),
       )
       // Should NOT use a client-supplied query value
       expect(mockAxios.get).not.toHaveBeenCalledWith(
         expect.stringContaining("organization_id=untrusted-org-id"),
-        expect.any(Object)
+        expect.any(Object),
       )
     })
 
@@ -149,7 +149,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       const mockReq = {
         query: { user_id: "untrusted-user-id" },
         params: { organizationId: "org-uuid-123" },
-        payload: { data: { userId: "jwt-authenticated-user-123" } }
+        payload: { data: { userId: "jwt-authenticated-user-123" } },
       }
       const mockRes = {
         status: jest.fn().mockReturnThis(),
@@ -161,12 +161,12 @@ describe("Publication Feature - API Contract Conformance", () => {
       // Should use JWT-derived user, not the query param
       expect(mockAxios.get).toHaveBeenCalledWith(
         expect.stringContaining("user_id=jwt-authenticated-user-123"),
-        expect.any(Object)
+        expect.any(Object),
       )
       // Should NOT use the untrusted query param
       expect(mockAxios.get).not.toHaveBeenCalledWith(
         expect.stringContaining("user_id=untrusted-user-id"),
-        expect.any(Object)
+        expect.any(Object),
       )
     })
 
@@ -184,7 +184,7 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       expect(mockAxios.get).toHaveBeenCalledWith(
         expect.stringContaining("include_system=true"),
-        expect.any(Object)
+        expect.any(Object),
       )
     })
 
@@ -208,7 +208,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       // Implementation always includes system templates (hardcoded to true)
       expect(mockAxios.get).toHaveBeenCalledWith(
         expect.stringContaining("include_system=true"),
-        expect.any(Object)
+        expect.any(Object),
       )
     })
 
@@ -218,7 +218,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       // Re-require to pick up env change
       jest.resetModules()
       const publication = require(
-        `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`
+        `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`,
       )
 
       const mockReq = { query: {}, params: { organizationId: "org-uuid-123" } }
@@ -235,7 +235,7 @@ describe("Publication Feature - API Contract Conformance", () => {
           name: "PublicationNotConfigured",
           status: 500,
           message: "LLM Gateway not configured",
-        })
+        }),
       )
     })
 
@@ -254,7 +254,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       expect(mockNext).toHaveBeenCalledWith(
         expect.objectContaining({
           message: "Connection refused",
-        })
+        }),
       )
     })
 
@@ -282,7 +282,10 @@ describe("Publication Feature - API Contract Conformance", () => {
       await getTemplates(mockReq, mockRes, jest.fn())
 
       const response = mockRes.json.mock.calls[0][0]
-      expect(response.templates[0]).toHaveProperty("name_fr", "Compte rendu de reunion")
+      expect(response.templates[0]).toHaveProperty(
+        "name_fr",
+        "Compte rendu de reunion",
+      )
       expect(response.templates[0]).toHaveProperty("name_en", "Meeting Minutes")
       // Should NOT have a single "name" field that overwrites i18n fields
       expect(response.templates[0]).not.toHaveProperty("name")
@@ -293,7 +296,11 @@ describe("Publication Feature - API Contract Conformance", () => {
     it("[CONTRACT] should return { status: success, placeholders: [...] } for valid template", async () => {
       // LLM Gateway returns placeholders array
       const mockPlaceholders = [
-        { name: "output", description: "Main content output", is_standard: true },
+        {
+          name: "output",
+          description: "Main content output",
+          is_standard: true,
+        },
         { name: "title", description: "Document title", is_standard: true },
         { name: "summary", description: "Summary", is_standard: false },
       ]
@@ -332,7 +339,7 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       expect(mockAxios.get).toHaveBeenCalledWith(
         "http://localhost:8010/api/v1/document-templates/template-uuid-123/placeholders",
-        expect.any(Object)
+        expect.any(Object),
       )
     })
 
@@ -351,7 +358,7 @@ describe("Publication Feature - API Contract Conformance", () => {
           name: "PublicationIdRequired",
           status: 400,
           message: "templateId is required",
-        })
+        }),
       )
     })
 
@@ -374,7 +381,7 @@ describe("Publication Feature - API Contract Conformance", () => {
           name: "PublicationNotFound",
           status: 404,
           message: "Template not found",
-        })
+        }),
       )
     })
 
@@ -383,7 +390,7 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       jest.resetModules()
       const publication = require(
-        `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`
+        `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`,
       )
 
       const mockReq = { params: { templateId: "template-uuid-1" } }
@@ -400,7 +407,7 @@ describe("Publication Feature - API Contract Conformance", () => {
           name: "PublicationNotConfigured",
           status: 500,
           message: "LLM Gateway not configured",
-        })
+        }),
       )
     })
   })
@@ -424,11 +431,11 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       expect(mockRes.setHeader).toHaveBeenCalledWith(
         "Content-Type",
-        "application/pdf"
+        "application/pdf",
       )
       expect(mockRes.setHeader).toHaveBeenCalledWith(
         "Content-Disposition",
-        expect.stringContaining("export.pdf")
+        expect.stringContaining("export.pdf"),
       )
       expect(mockRes.send).toHaveBeenCalled()
     })
@@ -451,11 +458,11 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       expect(mockRes.setHeader).toHaveBeenCalledWith(
         "Content-Type",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       )
       expect(mockRes.setHeader).toHaveBeenCalledWith(
         "Content-Disposition",
-        expect.stringContaining("export.docx")
+        expect.stringContaining("export.docx"),
       )
     })
 
@@ -477,7 +484,7 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       expect(mockAxios.get).toHaveBeenCalledWith(
         "http://localhost:8010/api/v1/jobs/job-uuid-123/export/pdf",
-        expect.objectContaining({ responseType: "arraybuffer" })
+        expect.objectContaining({ responseType: "arraybuffer" }),
       )
     })
 
@@ -499,7 +506,7 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       expect(mockAxios.get).toHaveBeenCalledWith(
         expect.stringContaining("template_id=template-uuid-456"),
-        expect.any(Object)
+        expect.any(Object),
       )
     })
 
@@ -521,7 +528,7 @@ describe("Publication Feature - API Contract Conformance", () => {
           name: "PublicationInvalidFormat",
           status: 400,
           message: "Invalid format. Allowed: pdf, docx, html",
-        })
+        }),
       )
     })
 
@@ -543,7 +550,7 @@ describe("Publication Feature - API Contract Conformance", () => {
           name: "PublicationIdRequired",
           status: 400,
           message: "jobId is required",
-        })
+        }),
       )
     })
 
@@ -569,7 +576,7 @@ describe("Publication Feature - API Contract Conformance", () => {
           name: "PublicationNotFound",
           status: 404,
           message: "Job not found",
-        })
+        }),
       )
     })
 
@@ -578,7 +585,7 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       jest.resetModules()
       const publication = require(
-        `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`
+        `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`,
       )
 
       const mockReq = {
@@ -598,7 +605,7 @@ describe("Publication Feature - API Contract Conformance", () => {
           name: "PublicationNotConfigured",
           status: 500,
           message: "LLM Gateway not configured",
-        })
+        }),
       )
     })
 
@@ -623,7 +630,7 @@ describe("Publication Feature - API Contract Conformance", () => {
       expect(mockNext).toHaveBeenCalledWith(
         expect.objectContaining({
           message: "Internal server error",
-        })
+        }),
       )
     })
   })
@@ -671,7 +678,7 @@ describe("Publication Feature - API Contract Conformance", () => {
 
       jest.resetModules()
       const publication = require(
-        `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`
+        `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`,
       )
 
       const mockReq = { query: {}, params: { organizationId: "org-uuid-123" } }
@@ -696,7 +703,7 @@ describe("Publication Feature - API Contract Conformance", () => {
 describe("Publication Routes Configuration", () => {
   it("should export routes with correct configuration", () => {
     const routes = require(
-      `${process.cwd()}/components/WebServer/routes/api/publication/publication.js`
+      `${process.cwd()}/components/WebServer/routes/api/publication/publication.js`,
     )
     const webserver = {}
     const routeConfig = routes(webserver)
@@ -721,7 +728,359 @@ describe("Publication Routes Configuration", () => {
           requireAuth: true,
           requireConversationReadAccess: true,
         }),
-      ])
+      ]),
+    )
+  })
+})
+
+describe("Publication templates - ownership and organization sharing", () => {
+  let createTemplate, deleteTemplate, updateTemplateScope, downloadTemplate
+  const mockNativeAxios = { post: jest.fn(), put: jest.fn() }
+
+  const ROLES = { MEMBER: 1, MAINTAINER: 5, ADMIN: 6 }
+  const ORG = "org-1"
+  const ME = "user-1"
+
+  function reqFor({
+    role = ROLES.MEMBER,
+    userId = ME,
+    body = {},
+    params = {},
+  } = {}) {
+    return {
+      params: { organizationId: ORG, templateId: "tpl-1", ...params },
+      payload: { data: { userId } },
+      userRole: role,
+      body,
+      files: {
+        file: {
+          name: "mine.docx",
+          data: Buffer.from("PK"),
+          size: 10,
+          mimetype:
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        },
+      },
+    }
+  }
+  function resMock() {
+    return {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+      send: jest.fn(),
+      setHeader: jest.fn(),
+    }
+  }
+  const personalOfMe = {
+    id: "tpl-1",
+    scope: "user",
+    owner_user_id: ME,
+    allowed_organization_ids: [ORG],
+    allowed_user_ids: [ME],
+    file_name: "mine.docx",
+  }
+  const sharedByOther = {
+    id: "tpl-1",
+    scope: "organization",
+    owner_user_id: "user-2",
+    allowed_organization_ids: [ORG],
+    allowed_user_ids: [],
+    file_name: "shared.docx",
+  }
+  const personalOfOther = {
+    ...personalOfMe,
+    owner_user_id: "user-2",
+    allowed_user_ids: ["user-2"],
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    process.env.LLM_GATEWAY_SERVICES = "http://localhost:8010"
+    jest.resetModules()
+    jest.doMock("axios", () => mockNativeAxios)
+    mockAxios.delete = jest.fn().mockResolvedValue({})
+    const publication = require(
+      `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`,
+    )
+    createTemplate = publication.createTemplate
+    deleteTemplate = publication.deleteTemplate
+    updateTemplateScope = publication.updateTemplateScope
+    downloadTemplate = publication.downloadTemplate
+  })
+
+  describe("service identifier resolution", () => {
+    const publicationModule = () =>
+      require(
+        `${process.cwd()}/components/WebServer/routecontrollers/publication/publication.js`,
+      )
+
+    it("resolves a service route to the gateway UUID when listing", async () => {
+      mockAxios.get
+        .mockResolvedValueOnce({
+          items: [
+            { id: "0b1c2d3e-0000-4000-8000-000000000001", route: "resumé" },
+          ],
+        })
+        .mockResolvedValueOnce([])
+      const res = resMock()
+      await publicationModule().getTemplates(
+        {
+          query: { service_id: "resumé" },
+          params: { organizationId: ORG },
+          payload: { data: { userId: ME } },
+        },
+        res,
+        jest.fn(),
+      )
+      expect(mockAxios.get.mock.calls[1][0]).toContain(
+        "/api/v1/services/0b1c2d3e-0000-4000-8000-000000000001/templates",
+      )
+      expect(res.status).toHaveBeenCalledWith(200)
+    })
+
+    it("uses a UUID as-is without asking the gateway", async () => {
+      mockAxios.get.mockResolvedValueOnce([])
+      await publicationModule().getTemplates(
+        {
+          query: { service_id: "0b1c2d3e-0000-4000-8000-000000000001" },
+          params: { organizationId: ORG },
+          payload: { data: { userId: ME } },
+        },
+        resMock(),
+        jest.fn(),
+      )
+      expect(mockAxios.get).toHaveBeenCalledTimes(1)
+    })
+
+    it("fails with not found for an unknown route", async () => {
+      mockAxios.get.mockResolvedValueOnce({ items: [] })
+      const next = jest.fn()
+      await publicationModule().getTemplates(
+        {
+          query: { service_id: "nope" },
+          params: { organizationId: ORG },
+          payload: { data: { userId: ME } },
+        },
+        resMock(),
+        next,
+      )
+      expect(next.mock.calls[0][0].name).toBe("PublicationNotFound")
+    })
+  })
+
+  describe("createTemplate", () => {
+    it("records the uploader and links the service", async () => {
+      mockNativeAxios.post.mockResolvedValue({ data: { id: "tpl-1" } })
+      const res = resMock()
+      await createTemplate(
+        reqFor({
+          body: {
+            name_fr: "Mien",
+            service_id: "0b1c2d3e-0000-4000-8000-000000000001",
+          },
+        }),
+        res,
+        jest.fn(),
+      )
+      expect(res.status).toHaveBeenCalledWith(201)
+      const form = mockNativeAxios.post.mock.calls[0][1]
+      const payload = form.getBuffer().toString()
+      expect(payload).toContain('name="owner_user_id"')
+      expect(payload).toContain(ME)
+      expect(payload).toContain('name="service_id"')
+      expect(payload).toContain("0b1c2d3e-0000-4000-8000-000000000001")
+      expect(payload).toContain('name="user_id"')
+    })
+
+    it("refuses an organization template from a plain member", async () => {
+      const next = jest.fn()
+      await createTemplate(
+        reqFor({ body: { name_fr: "Mien", scope: "organization" } }),
+        resMock(),
+        next,
+      )
+      expect(next.mock.calls[0][0].name).toBe("PublicationForbidden")
+      expect(mockNativeAxios.post).not.toHaveBeenCalled()
+    })
+
+    it("lets a maintainer upload an organization template", async () => {
+      mockNativeAxios.post.mockResolvedValue({ data: { id: "tpl-1" } })
+      const res = resMock()
+      await createTemplate(
+        reqFor({
+          role: ROLES.MAINTAINER,
+          body: { name_fr: "Orga", scope: "organization" },
+        }),
+        res,
+        jest.fn(),
+      )
+      expect(res.status).toHaveBeenCalledWith(201)
+      const payload = mockNativeAxios.post.mock.calls[0][1]
+        .getBuffer()
+        .toString()
+      expect(payload).not.toContain('name="user_id"')
+    })
+  })
+
+  describe("deleteTemplate", () => {
+    it("owner can delete a personal template", async () => {
+      mockAxios.get.mockResolvedValue(personalOfMe)
+      const res = resMock()
+      await deleteTemplate(reqFor(), res, jest.fn())
+      expect(mockAxios.delete).toHaveBeenCalled()
+      expect(res.status).toHaveBeenCalledWith(200)
+    })
+
+    it("member cannot delete a template shared by someone else", async () => {
+      mockAxios.get.mockResolvedValue(sharedByOther)
+      const next = jest.fn()
+      await deleteTemplate(reqFor(), resMock(), next)
+      expect(next.mock.calls[0][0].name).toBe("PublicationForbidden")
+      expect(mockAxios.delete).not.toHaveBeenCalled()
+    })
+
+    it("maintainer can delete a template shared with the organization", async () => {
+      mockAxios.get.mockResolvedValue(sharedByOther)
+      const res = resMock()
+      await deleteTemplate(reqFor({ role: ROLES.MAINTAINER }), res, jest.fn())
+      expect(mockAxios.delete).toHaveBeenCalled()
+    })
+
+    it("maintainer cannot delete someone else's personal template", async () => {
+      mockAxios.get.mockResolvedValue(personalOfOther)
+      const next = jest.fn()
+      await deleteTemplate(reqFor({ role: ROLES.ADMIN }), resMock(), next)
+      expect(next.mock.calls[0][0].name).toBe("PublicationForbidden")
+    })
+
+    it("system templates are never deleted", async () => {
+      mockAxios.get.mockResolvedValue({ id: "tpl-1", scope: "system" })
+      const next = jest.fn()
+      await deleteTemplate(reqFor({ role: ROLES.ADMIN }), resMock(), next)
+      expect(next.mock.calls[0][0].name).toBe("PublicationForbidden")
+    })
+  })
+
+  describe("updateTemplateScope", () => {
+    it("maintainer shares their own template with the organization", async () => {
+      mockAxios.get.mockResolvedValue(personalOfMe)
+      mockNativeAxios.put.mockResolvedValue({
+        data: { ...personalOfMe, scope: "organization" },
+      })
+      const res = resMock()
+      await updateTemplateScope(
+        reqFor({ role: ROLES.MAINTAINER, body: { scope: "organization" } }),
+        res,
+        jest.fn(),
+      )
+      expect(res.status).toHaveBeenCalledWith(200)
+      const [url, form] = mockNativeAxios.put.mock.calls[0]
+      expect(url).toBe("http://localhost:8010/api/v1/document-templates/tpl-1")
+      const payload = form.getBuffer().toString()
+      expect(payload).toContain('name="replace_scope"')
+      expect(payload).toContain('name="allowed_organization_ids"')
+      expect(payload).not.toContain('name="allowed_user_ids"')
+    })
+
+    it("back to personal keeps the owner in the user list", async () => {
+      mockAxios.get.mockResolvedValue({
+        ...personalOfMe,
+        scope: "organization",
+      })
+      mockNativeAxios.put.mockResolvedValue({ data: personalOfMe })
+      await updateTemplateScope(
+        reqFor({ role: ROLES.ADMIN, body: { scope: "personal" } }),
+        resMock(),
+        jest.fn(),
+      )
+      const payload = mockNativeAxios.put.mock.calls[0][1]
+        .getBuffer()
+        .toString()
+      expect(payload).toContain('name="allowed_user_ids"')
+      expect(payload).toContain(ME)
+    })
+
+    it("plain member cannot share", async () => {
+      mockAxios.get.mockResolvedValue(personalOfMe)
+      const next = jest.fn()
+      await updateTemplateScope(
+        reqFor({ body: { scope: "organization" } }),
+        resMock(),
+        next,
+      )
+      expect(next.mock.calls[0][0].name).toBe("PublicationForbidden")
+      expect(mockNativeAxios.put).not.toHaveBeenCalled()
+    })
+
+    it("maintainer cannot share someone else's template", async () => {
+      mockAxios.get.mockResolvedValue(personalOfOther)
+      const next = jest.fn()
+      await updateTemplateScope(
+        reqFor({ role: ROLES.MAINTAINER, body: { scope: "organization" } }),
+        resMock(),
+        next,
+      )
+      expect(next.mock.calls[0][0].name).toBe("PublicationForbidden")
+    })
+
+    it("rejects an unknown scope", async () => {
+      const next = jest.fn()
+      await updateTemplateScope(
+        reqFor({ role: ROLES.ADMIN, body: { scope: "everyone" } }),
+        resMock(),
+        next,
+      )
+      expect(next.mock.calls[0][0].name).toBe("PublicationError")
+    })
+  })
+
+  describe("downloadTemplate", () => {
+    it("streams the docx of a visible template", async () => {
+      mockAxios.get
+        .mockResolvedValueOnce({
+          id: "tpl-1",
+          scope: "system",
+          file_name: "base.docx",
+        })
+        .mockResolvedValueOnce(Buffer.from("PKdocx"))
+      const res = resMock()
+      await downloadTemplate(reqFor(), res, jest.fn())
+      expect(mockAxios.get.mock.calls[1][0]).toBe(
+        "http://localhost:8010/api/v1/document-templates/tpl-1/download",
+      )
+      expect(res.setHeader).toHaveBeenCalledWith(
+        "Content-Disposition",
+        'attachment; filename="base.docx"',
+      )
+      expect(res.send).toHaveBeenCalled()
+    })
+
+    it("refuses someone else's personal template", async () => {
+      mockAxios.get.mockResolvedValueOnce(personalOfOther)
+      const next = jest.fn()
+      await downloadTemplate(reqFor(), resMock(), next)
+      expect(next.mock.calls[0][0].name).toBe("PublicationForbidden")
+      expect(mockAxios.get).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it("routes expose the scope and download endpoints to members", () => {
+    const routes = require(
+      `${process.cwd()}/components/WebServer/routes/api/publication/publication.js`,
+    )
+    expect(routes({})).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: "/organizations/:organizationId/templates/:templateId",
+          method: "patch",
+          requireOrganizationMemberAccess: true,
+        }),
+        expect.objectContaining({
+          path: "/organizations/:organizationId/templates/:templateId/download",
+          method: "get",
+          requireOrganizationMemberAccess: true,
+        }),
+      ]),
     )
   })
 })
