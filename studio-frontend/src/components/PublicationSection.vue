@@ -117,11 +117,12 @@
                 {{ formatFileSize(newTemplateFile.size) }}
               </span>
               <Button
-                variant="text"
+                variant="transparent"
                 size="sm"
                 icon="x"
                 type="button"
                 :title="$t('publish.publication.remove_file')"
+                :aria-label="$t('publish.publication.remove_file')"
                 @click="removeFile" />
             </div>
             <Droparea
