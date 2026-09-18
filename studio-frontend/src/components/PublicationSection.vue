@@ -104,7 +104,10 @@
             @download="handleDownloadTemplate" />
 
           <div class="form-field">
-            <label>{{ $t("publish.publication.template_file") }} *</label>
+            <div class="form-field__header">
+              <label>{{ $t("publish.publication.template_file") }} *</label>
+              <PublicationPlaceholdersPopover />
+            </div>
             <div v-if="newTemplateFile" class="selected-file">
               <PhIcon name="file-doc" framed />
               <span class="selected-file__name">{{
@@ -123,6 +126,7 @@
             </div>
             <Droparea
               v-else
+              class="template-droparea"
               :accepts="[DOCX_MIME_TYPE, '.docx']"
               @drop="handleDroppedFiles"
               @error="handleDropareaError">
@@ -181,6 +185,7 @@ import FormInput from "@/components/molecules/FormInput.vue"
 import FormRadio from "@/components/molecules/FormRadio.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import PdfViewer from "@/components/PdfViewer.vue"
+import PublicationPlaceholdersPopover from "@/components/molecules/PublicationPlaceholdersPopover.vue"
 import PublicationTemplateHelp from "@/components/molecules/PublicationTemplateHelp.vue"
 import PublicationTemplateCard from "@/components/PublicationTemplateCard.vue"
 import EMPTY_FIELD from "@/const/emptyField.js"
@@ -203,6 +208,7 @@ export default {
     Modal,
     PdfViewer,
     PhIcon,
+    PublicationPlaceholdersPopover,
     PublicationTemplateCard,
     PublicationTemplateHelp,
   },
@@ -567,6 +573,23 @@ export default {
   color: var(--text-secondary);
 }
 
+// The modal content is tinted: the drop zone needs its own contrast
+.template-droparea {
+  padding: var(--medium-gap);
+  background: var(--background-primary);
+  border: 2px dashed var(--neutral-40);
+  border-radius: var(--border-radius-sm);
+  color: var(--primary-color);
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-soft);
+  }
+}
+
 .selected-file {
   display: flex;
   align-items: center;
@@ -587,6 +610,13 @@ export default {
 .selected-file__size {
   font-size: var(--text-xs);
   color: var(--text-secondary);
+}
+
+.form-field__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--small-gap);
 }
 
 .form-field__hint {

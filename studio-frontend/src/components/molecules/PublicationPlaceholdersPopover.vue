@@ -4,7 +4,7 @@
     close-on-escape
     :closeOnClick="false"
     position="bottom"
-    width="26rem">
+    width="30rem">
     <template #trigger>
       <Button
         variant="link"
@@ -23,7 +23,9 @@
           {{ $t("publish.publication.help.custom_note") }}
         </p>
 
-        <h4>{{ $t("publish.publication.help.standard_title") }}</h4>
+        <h4 class="placeholders-popover__standard-title">
+          {{ $t("publish.publication.help.standard_title") }}
+        </h4>
         <dl class="placeholders-popover__standard">
           <template v-for="placeholder in placeholders">
             <dt :key="`${placeholder.name}-tag`">
@@ -76,18 +78,21 @@ export default {
 .placeholders-popover {
   display: flex;
   flex-direction: column;
-  gap: var(--tiny-gap);
-  padding: var(--small-gap) var(--medium-gap);
+  gap: var(--small-gap);
+  padding: var(--medium-gap);
+  background: var(--background-primary);
+  color: var(--text-primary);
   font-size: var(--text-sm);
+  line-height: 1.5;
   text-align: left;
 
   h4 {
-    margin: var(--small-gap) 0 0;
-    font-size: var(--text-sm);
+    margin: 0;
+    font-size: var(--text-md);
   }
 
-  h4:first-child {
-    margin-top: 0;
+  h4 + p {
+    margin-top: calc(-1 * var(--tiny-gap));
   }
 
   p {
@@ -95,12 +100,19 @@ export default {
   }
 
   code {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: var(--border-radius-sm);
+    background: var(--neutral-10);
+    border: 1px solid var(--neutral-20);
     font-size: var(--text-xs);
+    line-height: 1.6;
   }
 }
 
 .placeholders-popover__syntax {
   font-weight: 600;
+  color: var(--primary-color);
 }
 
 .placeholders-popover__note {
@@ -110,16 +122,15 @@ export default {
 .placeholders-popover__standard {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: var(--tiny-gap) var(--small-gap);
+  align-items: center;
+  gap: var(--tiny-gap) var(--medium-gap);
   margin: 0;
+  padding-top: var(--small-gap);
+  border-top: var(--border-block);
 
   dt,
   dd {
     margin: 0;
-  }
-
-  dd {
-    color: var(--text-secondary);
   }
 }
 </style>

@@ -1,62 +1,78 @@
 <template>
-  <div class="template-help">
-    <template v-if="baseTemplates.length">
-      <span class="template-help__label">
-        {{ $t("publish.publication.help.base_prefix") }}
-      </span>
-      <Button
+  <div class="form-field">
+    <label>{{ $t("publish.publication.help.base_prefix") }}</label>
+    <ul v-if="baseTemplates.length" class="base-templates">
+      <li
         v-for="template in baseTemplates"
         :key="template.id"
-        variant="secondary"
-        size="sm"
-        icon="download-simple"
-        type="button"
-        :label="baseTemplateLabel(template)"
-        @click="$emit('download', template)" />
-    </template>
-    <span v-else class="template-help__label">
+        class="base-templates__row">
+        <PhIcon name="file-doc" framed size="sm" />
+        <span class="base-templates__name">
+          {{ getTemplateDisplayName(template, $i18n.locale) }}
+        </span>
+        <Button
+          variant="secondary"
+          size="xs"
+          icon="download-simple"
+          type="button"
+          label=".docx"
+          @click="$emit('download', template)" />
+      </li>
+    </ul>
+    <p v-else class="base-templates__empty">
       {{ $t("publish.publication.help.no_base_template") }}
-    </span>
-    <PublicationPlaceholdersPopover class="template-help__tags" />
+    </p>
   </div>
 </template>
 
 <script>
 import Button from "@/components/atoms/Button.vue"
-import PublicationPlaceholdersPopover from "@/components/molecules/PublicationPlaceholdersPopover.vue"
+import PhIcon from "@/components/atoms/PhIcon.vue"
 import { getTemplateDisplayName } from "@/tools/getTemplateDisplayName.js"
 
-// One line above the upload zone: download a LinTO template as a starting
-// point, and the tags reference on demand.
+// LinTO templates of the service, offered as a starting point for a custom one.
 export default {
   name: "PublicationTemplateHelp",
-  components: { Button, PublicationPlaceholdersPopover },
+  components: { Button, PhIcon },
   props: {
-    // System templates of the service, offered as a starting point
     baseTemplates: { type: Array, default: () => [] },
   },
-  methods: {
-    baseTemplateLabel(template) {
-      return `${getTemplateDisplayName(template, this.$i18n.locale)} (.docx)`
-    },
-  },
+  methods: { getTemplateDisplayName },
 }
 </script>
 
 <style lang="scss" scoped>
-.template-help {
+.base-templates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: var(--border-block);
+  border-radius: var(--border-radius-sm);
+}
+
+.base-templates__row {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--small-gap);
+  padding: var(--tiny-gap) var(--small-gap);
+
+  & + & {
+    border-top: var(--border-block);
+  }
+}
+
+.base-templates__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: var(--text-sm);
 }
 
-.template-help__label {
+.base-templates__empty {
+  margin: 0;
+  font-size: var(--text-sm);
   color: var(--text-secondary);
-}
-
-.template-help__tags {
-  margin-left: auto;
 }
 </style>
