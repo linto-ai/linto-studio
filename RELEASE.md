@@ -17,6 +17,10 @@ _2026_09_18_
   - Chat: native discussion picker on phones; AI documents: compact up-to-date / outdated status in the toolbar
 - LLM services are listed for the `linto` usage scope only (`LLM_GATEWAY_SCOPE`, default `linto`)
 - Requires LLM Gateway 2.6.0 (template owner and icon)
+- Hotfix (2026_09_21)
+  - Live sessions: option to hide the text being transcribed; on phones the header button toggles it, a typing bubble shows that someone is speaking
+  - Mobile app: record and live are only offered when the organization allows them
+  - Mobile app: phones are only sent to `/m/` from the root, shared links and session QR codes open as is
 
 # 1.8.7
 

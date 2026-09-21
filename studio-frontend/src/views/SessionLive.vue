@@ -33,12 +33,12 @@
 
             <Button
               v-if="editorIsMobile"
-              @click="toggleEditorSidebar"
+              @click="togglePartials"
               variant="secondary"
-              icon="sidebar-simple"
-              :aria-expanded="String(editorSidebarOpen)"
-              :aria-label="$t('session.detail_page.editor_sidebar_button')"
-              :title="$t('session.detail_page.editor_sidebar_button')" />
+              :icon="partialsVisible ? 'chat-circle-dots' : 'chat-circle-slash'"
+              :aria-pressed="String(partialsVisible)"
+              :aria-label="$t('session.detail_page.partials_button')"
+              :title="$t('session.detail_page.partials_button')" />
           </div>
 
           <template #desktop>
@@ -75,7 +75,7 @@
         @retry-microphone="retryAudioConnection"
         @reconfigure-microphone="showMicrophoneSetup = true"
         @viewport-change="editorIsMobile = $event"
-        @sidebar-open="editorSidebarOpen = $event" />
+        @partials-visible="partialsVisible = $event" />
 
       <Modal
         :withActions="false"
@@ -149,7 +149,7 @@ export default {
       // Pushed by the editor, at ITS breakpoint — the app's own isMobile
       // getter switches at 1100px, the editor's sidebar at 767px.
       editorIsMobile: false,
-      editorSidebarOpen: false,
+      partialsVisible: true,
     }
   },
   created() {
@@ -210,8 +210,8 @@ export default {
       this.$refs["sessionLiveNG"].showMobileSubtitles()
       this.showSubtitlesFullscreen = true
     },
-    toggleEditorSidebar() {
-      this.$refs["sessionLiveNG"].toggleSidebar()
+    togglePartials() {
+      this.$refs["sessionLiveNG"].togglePartials()
     },
     closeSubtitleFullscreen() {
       this.showSubtitlesFullscreen = false
