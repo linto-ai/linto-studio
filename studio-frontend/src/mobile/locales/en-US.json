@@ -193,6 +193,7 @@
     "on_air": "On air",
     "mute": "Mute the microphone",
     "unmute": "Unmute the microphone",
+    "settings": "Transcription settings",
     "end": "End",
     "end_title": "End the live",
     "end_text": "The session becomes a conversation in your media.",
