@@ -18,6 +18,17 @@ export async function apiGetPlans(notif = null) {
   return res?.data
 }
 
+// GET /cloud/packs -> [{ packKey, kind, displayName, minutes, amountCents, currency, plans }]
+export async function apiGetPacks(notif = null) {
+  const res = await sendRequest(
+    `${CLOUD_API}/packs`,
+    { method: "get" },
+    {},
+    notif,
+  )
+  return res?.data
+}
+
 // GET /cloud/usage/:orgId -> { planKey, mode, seats, capabilities, live }
 export async function apiGetUsage(organizationId, notif = null) {
   const res = await sendRequest(
@@ -87,6 +98,40 @@ export async function apiCreateCheckout(payload, notif = null) {
     `${CLOUD_API}/checkout`,
     { method: "post" },
     payload,
+    notif,
+  )
+  return res?.data
+}
+
+// POST /cloud/checkout/credits { organizationId, packKey, returnUrl? }
+// -> { url, sessionId }. One-time payment for a live pack; the caller redirects
+// the browser to url and comes back with ?type=credits&status=success|cancel.
+export async function apiCreateCreditsCheckout(
+  organizationId,
+  { packKey, returnUrl } = {},
+  notif = null,
+) {
+  const res = await sendRequest(
+    `${CLOUD_API}/checkout/credits`,
+    { method: "post" },
+    { organizationId, packKey, returnUrl },
+    notif,
+  )
+  return res?.data
+}
+
+// POST /cloud/subscriptions/change { organizationId, planKey?, interval?, seats? }
+// -> updated subscription. Moves a billed org between paid plans, monthly and
+// yearly, or seat counts, in place with proration.
+export async function apiChangeSubscription(
+  organizationId,
+  { planKey, interval, seats } = {},
+  notif = null,
+) {
+  const res = await sendRequest(
+    `${CLOUD_API}/subscriptions/change`,
+    { method: "post" },
+    { organizationId, planKey, interval, seats },
     notif,
   )
   return res?.data

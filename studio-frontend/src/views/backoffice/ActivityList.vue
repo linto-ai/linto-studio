@@ -131,6 +131,7 @@ const SAAS_ACTION_KEY = {
   "seats.changed": "seats_changed",
   "org.mode.changed": "mode_changed",
   "credits.granted": "credits_granted",
+  "credits.purchased": "credits_purchased",
   "quota.exceeded": "quota_exceeded",
   "feature.denied": "feature_denied",
   "credit.exhausted": "credit_exhausted",
@@ -461,6 +462,10 @@ export default {
           return `${d.minutes ?? "?"} ${this.$t(
             "activity_list.saas.minutes_unit",
           )}${d.reason ? ` · ${d.reason}` : ""}`
+        case "credits.purchased":
+          return `${d.minutes ?? "?"} ${this.$t(
+            "activity_list.saas.minutes_unit",
+          )} · ${fmtMoney(d.amount, d.currency)}`
         case "credit.exhausted":
           return `${d.balance ?? 0}/${d.requested ?? "?"} ${this.$t(
             "activity_list.saas.minutes_unit",

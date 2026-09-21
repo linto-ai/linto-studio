@@ -165,6 +165,7 @@
         "seats_changed": "Seats changed",
         "mode_changed": "Organization mode changed",
         "credits_granted": "Live minutes granted",
+        "credits_purchased": "Live minutes bought",
         "quota_exceeded": "Quota exceeded",
         "feature_denied": "Feature blocked",
         "credit_exhausted": "Live balance exhausted",

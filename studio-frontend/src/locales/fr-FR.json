@@ -166,6 +166,7 @@
         "seats_changed": "Sièges modifiés",
         "mode_changed": "Mode de l'organisation modifié",
         "credits_granted": "Minutes de live octroyées",
+        "credits_purchased": "Minutes de live achetées",
         "quota_exceeded": "Quota dépassé",
         "feature_denied": "Fonctionnalité bloquée",
         "credit_exhausted": "Solde live épuisé",
