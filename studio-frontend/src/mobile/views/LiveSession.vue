@@ -14,10 +14,10 @@
       <span class="m-grow"></span>
       <IconButton
         v-if="editorIsMobile"
-        icon="sidebar-simple"
-        :label="$t('mobile.live.settings')"
-        :aria-expanded="String(editorSidebarOpen)"
-        @click="toggleEditorSidebar" />
+        :icon="partialsVisible ? 'lightning' : 'lightning-slash'"
+        :label="$t('mobile.live.partials')"
+        :aria-pressed="String(partialsVisible)"
+        @click="togglePartials" />
       <IconButton
         :icon="wantsRecording ? 'microphone' : 'microphone-slash'"
         :label="
@@ -45,7 +45,7 @@
         @retry-microphone="retryAudioConnection"
         @reconfigure-microphone="restartMicrophone"
         @viewport-change="editorIsMobile = $event"
-        @sidebar-open="editorSidebarOpen = $event" />
+        @partials-visible="partialsVisible = $event" />
     </div>
 
     <EndLiveSheet
@@ -79,12 +79,12 @@ export default {
       // editor is mounted: this bar shows while the session is still
       // loading, and the button must not appear before it can work.
       editorIsMobile: false,
-      editorSidebarOpen: false,
+      partialsVisible: true,
     }
   },
   methods: {
-    toggleEditorSidebar() {
-      this.$refs.sessionLiveNG.toggleSidebar()
+    togglePartials() {
+      this.$refs.sessionLiveNG.togglePartials()
     },
   },
 }

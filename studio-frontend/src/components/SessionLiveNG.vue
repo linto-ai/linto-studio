@@ -63,7 +63,6 @@ export default {
       offWatermarkDisplay: null,
       offWatermarkPin: null,
       offViewportChange: null,
-      offSidebarOpen: null,
       unwatchWatermarkHost: [],
       activeChannelIndex: null,
       historyOffset: 0,
@@ -120,10 +119,9 @@ export default {
     this.offWatermarkDisplay?.()
     this.offWatermarkPin?.()
     this.offViewportChange?.()
-    this.offSidebarOpen?.()
     // The header outlives this component (the session may end while it is
-    // open): tell it the editor's sidebar is gone rather than leaving it
-    // with a button pointing at nothing.
+    // open): tell it the editor is gone rather than leaving it with a button
+    // pointing at nothing.
     this.$emit("viewport-change", false)
     this.unwatchWatermarkHost.forEach((stop) => stop())
     this.websocketInstance.unSubscribeSessionRoom()
@@ -175,20 +173,15 @@ export default {
       const { core } = el
       this.core = markRaw(core)
 
-      // The editor's own sidebar has no opener here (no-header), so the host
-      // header carries the button. Its breakpoint has to be the editor's
-      // (767px), not the app's `isMobile` getter (1100px), or it would show
-      // 300px too early and open a drawer that isn't mounted.
+      // At phone width the editor's sidebar is not reachable (no-header), so
+      // the host header carries the partials toggle. Its breakpoint has to be
+      // the editor's (767px), not the app's `isMobile` getter (1100px).
       // An event never covers "already true when subscribing", and there is
       // no crossing to report when the page opens on a phone: read it once,
-      // then follow. `sidebar:open` too, since the drawer also closes on its
-      // own (its close button, a channel change, leaving phone width).
+      // then follow.
       this.$emit("viewport-change", core.isMobile.value)
       this.offViewportChange = core.on("viewport:change", ({ isMobile }) =>
         this.$emit("viewport-change", isMobile),
-      )
-      this.offSidebarOpen = core.on("sidebar:open", ({ open }) =>
-        this.$emit("sidebar-open", open),
       )
 
       this.livePlugin = createLivePlugin({
@@ -422,8 +415,12 @@ export default {
       this.core.subtitle.enterFullscreen()
     },
 
-    toggleSidebar() {
-      this.core.setSidebarOpen(!this.core.sidebarOpen.value)
+    togglePartials() {
+      const live = this.core.live
+      if (!live) return
+      if (live.partialsVisible.value) live.hidePartials()
+      else live.showPartials()
+      this.$emit("partials-visible", live.partialsVisible.value)
     },
 
     async patchWatermark(settings) {

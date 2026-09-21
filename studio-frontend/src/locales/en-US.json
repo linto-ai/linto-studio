@@ -1379,7 +1379,7 @@
       "session_ended_link_to_inbox": "Go to the media library",
       "session_not_started_title": "The session has not started yet",
       "settings_button": "Settings",
-      "editor_sidebar_button": "Show transcription settings",
+      "partials_button": "Show text while it is being transcribed",
       "delete_session_button": "Delete session",
       "stop_button": "Stop and save",
       "stop_force_button": "Force stop",
