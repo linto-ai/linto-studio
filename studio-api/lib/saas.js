@@ -94,18 +94,6 @@ function countCollaborators(organization) {
     .length
 }
 
-// Collaborators to demote when the org loses collaboration: all but the
-// owner, or the first admin when the owner is not one (SPEC-SAAS §3.4).
-function demotableCollaborators(organization) {
-  const users = organization.users || []
-  const admins = users.filter((u) => u.role === ROLES.ADMIN)
-  const owner = String(organization.owner)
-  const kept = (admins.find((u) => u.userId === owner) || admins[0])?.userId
-  return users
-    .filter((u) => u.userId !== kept && isCollaboratorRole(u.role))
-    .map((u) => u.userId)
-}
-
 // Seats an org requires: its collaborators, floored at 1. A pending org
 // (SPEC-SAAS §3.2) only holds its buyer.
 function requiredSeats(organization) {
@@ -160,7 +148,6 @@ module.exports = {
   afterAuth,
   isCollaboratorRole,
   countCollaborators,
-  demotableCollaborators,
   requiredSeats,
   enforceSeats,
   purgeOrganization,

@@ -76,6 +76,10 @@
     <div class="sub-panel__section">
       <h3 class="sub-panel__h3">{{ $t("billing.page.your_plan") }}</h3>
 
+      <p v-if="locked" class="sub-panel__locked">
+        {{ $t("billing.team_plan_required") }}
+      </p>
+
       <p v-if="isUnmetered" class="sub-panel__empty">
         {{ $t("billing.page.unmetered_hint") }}
       </p>
@@ -139,6 +143,7 @@ export default {
   computed: {
     ...mapGetters("billing", [
       "seats",
+      "locked",
       "isFree",
       "isPaid",
       "isPerSeat",
@@ -281,6 +286,11 @@ export default {
     color: var(--neutral-60);
     font-size: 0.9rem;
     margin: 0;
+  }
+  &__locked {
+    color: var(--danger-color, #e5484d);
+    font-size: 0.9rem;
+    margin: 0 0 0.75em;
   }
 }
 

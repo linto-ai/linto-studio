@@ -165,20 +165,6 @@ class OrganizationModel extends MongoModel {
     }
   }
 
-  async setUsersRole(id, userIds, role) {
-    try {
-      return await this.mongoUpdateOne(
-        { _id: this.getObjectId(id) },
-        "$set",
-        { "users.$[u].role": role, last_update: moment().format() },
-        { arrayFilters: [{ "u.userId": { $in: userIds } }] },
-      )
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
   async listPendingBefore(date) {
     try {
       return await this.mongoRequest(
@@ -260,6 +246,18 @@ class OrganizationModel extends MongoModel {
         _id: this.getObjectId(id),
       }
       return await this.mongoRequest(query)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async getByIdFilter(id, filter = undefined) {
+    try {
+      const query = {
+        _id: this.getObjectId(id),
+      }
+      return await this.mongoRequest(query, { ...filter })
     } catch (error) {
       console.error(error)
       return error

@@ -50,6 +50,7 @@
     "upgrade_done": "Welcome to {plan}!",
     "limit_reached": "You've reached the limit of your plan.",
     "feature_locked": "This feature is included in a team plan.",
+    "team_plan_required": "This organization no longer has a team plan: its features are blocked until it is back on Business. Members and their roles are kept.",
     "feature_locked_plan": "This feature is included in the {plan} plan.",
     "footer": {
       "usage": "{used} / {total}",
@@ -165,15 +166,14 @@
         "seats_changed": "Seats changed",
         "mode_changed": "Organization mode changed",
         "credits_granted": "Live minutes granted",
+        "credits_purchased": "Live minutes bought",
         "quota_exceeded": "Quota exceeded",
         "feature_denied": "Feature blocked",
         "credit_exhausted": "Live balance exhausted",
         "subscription_suspended": "Subscription suspended",
-        "collaborators_demoted": "Collaborators demoted to member",
         "user_purged": "User data anonymized"
       },
-      "minutes_unit": "min",
-      "collaborators_unit": "collaborator(s)"
+      "minutes_unit": "min"
     }
   },
   "session_list": {

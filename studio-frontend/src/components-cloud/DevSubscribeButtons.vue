@@ -12,6 +12,40 @@
         @click="subscribe(planKey)" />
     </div>
 
+    <h3>Change the current plan (billed organization only)</h3>
+    <div class="dev-subscribe__row">
+      <Button
+        v-for="planKey in paidPlanKeys"
+        :key="'change-' + planKey"
+        variant="secondary"
+        size="sm"
+        :disabled="loading"
+        :label="'Switch to ' + planKey"
+        @click="changePlan(planKey)" />
+    </div>
+
+    <h3>Buy live minutes (Premium or Business only)</h3>
+    <p class="dev-subscribe__balance">
+      Live balance: <strong>{{ liveBalanceLabel }}</strong>
+      <Button
+        variant="secondary"
+        size="xs"
+        :disabled="loading"
+        label="Refresh"
+        @click="loadCredits" />
+    </p>
+    <div class="dev-subscribe__row">
+      <Button
+        v-for="pack in livePacks"
+        :key="pack.packKey"
+        variant="secondary"
+        size="sm"
+        :disabled="loading"
+        :label="packLabel(pack)"
+        @click="buyPack(pack.packKey)" />
+      <span v-if="livePacks.length === 0">No live pack from /cloud/packs</span>
+    </div>
+
     <form
       class="dev-subscribe__form"
       @submit="subscribeBusinessWithNewOrganization">
@@ -39,7 +73,15 @@
 <script>
 // Dev helper: POST /cloud/subscriptions for the current org, shows the raw
 // response and copies it to the clipboard (clientSecret first when present).
-import { apiCreateSubscription, apiCreateCheckout } from "@/api/cloud.js"
+import {
+  apiCreateSubscription,
+  apiCreateCheckout,
+  apiCreateCreditsCheckout,
+  apiChangeSubscription,
+  apiGetPacks,
+  apiGetCredits,
+} from "@/api/cloud.js"
+import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount.js"
 import { formsMixin } from "@/mixins/forms.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testName } from "@/tools/fields/testName"
@@ -58,6 +100,9 @@ export default {
   data() {
     return {
       planKeys: ["free_payg", "premium", "business"],
+      paidPlanKeys: ["premium", "business"],
+      packs: [],
+      credits: null,
       loading: false,
       output: "",
       fields: ["newOrganizationName"],
@@ -73,6 +118,30 @@ export default {
         value: "2",
       },
     }
+  },
+  async mounted() {
+    this.loadCredits()
+    this.packs = (await apiGetPacks()) ?? []
+  },
+  watch: {
+    "currentOrganization._id": "loadCredits",
+  },
+  computed: {
+    liveBalanceLabel() {
+      if (!this.credits) return "unknown (GET /cloud/credits failed)"
+      const { balance, expiresAt, lowBalance, admissionMinutes } = this.credits
+      let label = `${balance} min`
+      if (expiresAt) {
+        label += `, next expiry ${new Date(expiresAt).toLocaleDateString()}`
+      }
+      if (lowBalance) {
+        label += ` (low, ${admissionMinutes} min per language needed to start)`
+      }
+      return label
+    },
+    livePacks() {
+      return this.packs.filter((pack) => pack.kind === "live")
+    },
   },
   methods: {
     // Paid plans go through hosted Checkout and come back to this page with
@@ -100,6 +169,36 @@ export default {
         returnUrl: window.location.href,
       })
     },
+    async loadCredits() {
+      this.credits = (await apiGetCredits(this.currentOrganization._id)) ?? null
+    },
+    packLabel(pack) {
+      const price = formatCurrencyAmount(
+        pack.amountCents,
+        pack.currency,
+        this.$i18n?.locale,
+      )
+      return `${pack.minutes} min (${price})`
+    },
+    // One-time payment through hosted Checkout, back here with ?type=credits
+    async buyPack(packKey) {
+      this.loading = true
+      this.output = `POST /cloud/checkout/credits packKey=${packKey} ...`
+      try {
+        const res = await apiCreateCreditsCheckout(
+          this.currentOrganization._id,
+          { packKey, returnUrl: window.location.href },
+          { message: "checkout failed" },
+        )
+        this.output = JSON.stringify(res ?? { error: "no response" }, null, 2)
+        if (res?.url) window.location.assign(res.url)
+      } catch (error) {
+        console.error(error)
+        this.output = String(error)
+      } finally {
+        this.loading = false
+      }
+    },
     async startCheckout(payload) {
       this.loading = true
       this.output = `POST /cloud/checkout ${JSON.stringify(payload)} ...`
@@ -109,6 +208,24 @@ export default {
         })
         this.output = JSON.stringify(res, null, 2)
         if (res.url) window.location.assign(res.url)
+      } catch (error) {
+        console.error(error)
+        this.output = String(error)
+      } finally {
+        this.loading = false
+      }
+    },
+    // Updates the Stripe subscription in place, no Checkout
+    async changePlan(planKey) {
+      this.loading = true
+      this.output = `POST /cloud/subscriptions/change planKey=${planKey} ...`
+      try {
+        const res = await apiChangeSubscription(
+          this.currentOrganization._id,
+          { planKey },
+          { message: "plan changed" },
+        )
+        this.output = JSON.stringify(res ?? { error: "no response" }, null, 2)
       } catch (error) {
         console.error(error)
         this.output = String(error)
@@ -154,6 +271,12 @@ export default {
   &__form {
     display: flex;
     flex-direction: column;
+    gap: 0.5em;
+    margin-bottom: 0.5em;
+  }
+  &__balance {
+    display: flex;
+    align-items: center;
     gap: 0.5em;
     margin-bottom: 0.5em;
   }

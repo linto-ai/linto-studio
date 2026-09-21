@@ -123,6 +123,9 @@ export default {
       if (this.upgradeReason.reason === "feature_disabled") {
         return this.$t("billing.feature_locked")
       }
+      if (this.upgradeReason.reason === "team_plan_required") {
+        return this.$t("billing.team_plan_required")
+      }
       return ""
     },
     periodOptions() {

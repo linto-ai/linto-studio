@@ -50,6 +50,7 @@
     "upgrade_done": "Bienvenue dans {plan} !",
     "limit_reached": "Vous avez atteint la limite de votre offre.",
     "feature_locked": "Cette fonctionnalité est incluse dans une offre équipe.",
+    "team_plan_required": "Cette organisation n'a plus d'offre équipe : ses fonctions sont bloquées jusqu'au retour sur une offre Business. Les membres et leurs rôles sont conservés.",
     "feature_locked_plan": "Cette fonctionnalité est incluse dans l'offre {plan}.",
     "footer": {
       "usage": "{used} / {total}",
@@ -166,15 +167,14 @@
         "seats_changed": "Sièges modifiés",
         "mode_changed": "Mode de l'organisation modifié",
         "credits_granted": "Minutes de live octroyées",
+        "credits_purchased": "Minutes de live achetées",
         "quota_exceeded": "Quota dépassé",
         "feature_denied": "Fonctionnalité bloquée",
         "credit_exhausted": "Solde live épuisé",
         "subscription_suspended": "Abonnement suspendu",
-        "collaborators_demoted": "Collaborateurs repassés en membre",
         "user_purged": "Données utilisateur anonymisées"
       },
-      "minutes_unit": "min",
-      "collaborators_unit": "collaborateur(s)"
+      "minutes_unit": "min"
     }
   },
   "session_list": {
