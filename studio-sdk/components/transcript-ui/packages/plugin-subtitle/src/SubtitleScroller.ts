@@ -125,6 +125,15 @@ export class SubtitleScroller extends SubtitleDrawer {
     this.draw()
   }
 
+  /** Drops the provisional line being built and repaints without it — the
+   *  last finalized line stays up. What the canvas showed just before the
+   *  partial started, in other words. */
+  clearPartial(): void {
+    if (this.isResizing) return
+    this.currentState = { previousText: "", previousIndexes: [] }
+    this.draw()
+  }
+
   newFinal(text: string): void {
     if (this.isResizing) return
     this.currentState = splitPartialSubtitles(

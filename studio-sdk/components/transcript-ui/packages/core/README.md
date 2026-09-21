@@ -22,6 +22,38 @@ import { TranscriptUI, mapApiDocument } from "@linto-ai/transcript-ui-core"
 
 If you don't want `TranscriptUI`'s default screen, `createCore`/`provideCore` and `Layout` are the two pieces it uses internally — use them directly to build your own.
 
+## Driving the layout from the host
+
+Rendering your own header (`<TranscriptUI no-header>`) removes the button that
+opens the sidebar on phones — the sidebar's only entry point at that width.
+Two things on `core` let your own header take that job over:
+
+- `core.isMobile` — readonly ref, true at the width where the layout swaps its
+  permanent sidebar for a drawer. Read it instead of repeating the media query,
+  so your button shows up exactly when the drawer exists.
+- `core.setSidebarOpen(open)` / `core.sidebarOpen` — open or close that drawer.
+
+Opening is **refused** above the breakpoint, silently and without an event:
+only the mobile, single-panel layout mounts a drawer, and an "open" stored
+while none exists would spring it on the user at the next resize. Closing
+always applies.
+
+Two events keep a host in sync without watching a Vue ref — which matters when
+the host isn't a Vue 3 app (a Vue 2 app, or plain JS around the web component,
+can read `core.isMobile.value` but can't subscribe to it):
+
+```js
+core.on("viewport:change", ({ isMobile }) => {
+  sidebarButton.hidden = !isMobile
+})
+
+// Your button is not the only thing that moves the drawer — its own close
+// button, a channel change and leaving phone width also shut it.
+core.on("sidebar:open", ({ open }) => {
+  sidebarButton.setAttribute("aria-expanded", String(open))
+})
+```
+
 ## Turning a transcript into something this package understands
 
 - `mapApiDocument` — for a transcript from the LinTO Studio API.

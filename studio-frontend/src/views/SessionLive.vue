@@ -30,6 +30,15 @@
               @click="showMobileSubtitles"
               variant="secondary"
               icon="closed-captioning" />
+
+            <Button
+              v-if="editorIsMobile"
+              @click="toggleEditorSidebar"
+              variant="secondary"
+              icon="sidebar-simple"
+              :aria-expanded="String(editorSidebarOpen)"
+              :aria-label="$t('session.detail_page.editor_sidebar_button')"
+              :title="$t('session.detail_page.editor_sidebar_button')" />
           </div>
 
           <template #desktop>
@@ -64,7 +73,9 @@
         :isFromPublicLink="isFromPublicLink"
         :microphoneStatus="microphoneStatus"
         @retry-microphone="retryAudioConnection"
-        @reconfigure-microphone="showMicrophoneSetup = true" />
+        @reconfigure-microphone="showMicrophoneSetup = true"
+        @viewport-change="editorIsMobile = $event"
+        @sidebar-open="editorSidebarOpen = $event" />
 
       <Modal
         :withActions="false"
@@ -135,6 +146,10 @@ export default {
       deviceId: null,
       showMicrophoneSetup: false,
       showSubtitlesFullscreen: false,
+      // Pushed by the editor, at ITS breakpoint — the app's own isMobile
+      // getter switches at 1100px, the editor's sidebar at 767px.
+      editorIsMobile: false,
+      editorSidebarOpen: false,
     }
   },
   created() {
@@ -194,6 +209,9 @@ export default {
     showMobileSubtitles() {
       this.$refs["sessionLiveNG"].showMobileSubtitles()
       this.showSubtitlesFullscreen = true
+    },
+    toggleEditorSidebar() {
+      this.$refs["sessionLiveNG"].toggleSidebar()
     },
     closeSubtitleFullscreen() {
       this.showSubtitlesFullscreen = false

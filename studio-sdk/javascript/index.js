@@ -456,6 +456,204 @@ class LinTO {
     })
     return userId
   }
+
+  // ── Live meeting-bot flow (Visio/Meet) ────────────────────────────────────
+  // These drive a LIVE quick-meeting bot as the CURRENT USER, so a browser can
+  // own the whole flow (create the session, choose translations, launch/stop
+  // the bot) with the user's own Studio token — no server-side service account.
+
+  /**
+   * List the org's quickMeeting ASR profiles, normalized for a picker.
+   * @returns {Promise<Array<{id,name,languages:string[],translations:string[]}>>}
+   */
+  async listQuickMeetingProfiles({ organizationId } = {}) {
+    const profiles = await this.apiService.listTranscriberProfiles({
+      organizationId,
+      quickMeeting: true,
+    })
+    return (profiles || []).map((prof) => {
+      const config = prof.config || {}
+      const languages = (config.languages || [])
+        .map((l) => (typeof l === "object" ? l.candidate : l))
+        .filter(Boolean)
+      const rawTr =
+        prof.translations ||
+        config.availableTranslations ||
+        config.translations ||
+        []
+      const translations = Array.isArray(rawTr)
+        ? rawTr
+        : Object.values(rawTr)
+            .filter(Array.isArray)
+            .flat()
+      return {
+        id: getId(prof) || prof.id,
+        name: prof.name || config.name || "",
+        languages,
+        translations,
+      }
+    })
+  }
+
+  /**
+   * Create a quick-meeting session.
+   * @returns the raw session (with `id` and `channels`).
+   */
+  async createQuickMeeting({ organizationId, channels, meta } = {}) {
+    return await this.apiService.createQuickMeeting({
+      organizationId,
+      channels,
+      meta,
+    })
+  }
+
+  /** Patch a session's fields (e.g. `{ visibility }` or `{ meta }`). */
+  async patchSession({ organizationId, sessionId, data } = {}) {
+    return await this.apiService.patchSession({
+      organizationId,
+      sessionId,
+      data,
+    })
+  }
+
+  /** Launch a meeting bot on a channel (provider defaults to "visio"). */
+  async startBot({
+    organizationId,
+    url,
+    channelId,
+    provider = "visio",
+    enableDisplaySub = false,
+    subSource = "original",
+  } = {}) {
+    return await this.apiService.startBot({
+      organizationId,
+      url,
+      channelId,
+      provider,
+      enableDisplaySub,
+      subSource,
+    })
+  }
+
+  /** Stop a meeting bot by id. */
+  async stopBot({ organizationId, botId } = {}) {
+    return await this.apiService.stopBot({ organizationId, botId })
+  }
+
+  /** Stop (and finalize) a quick-meeting session; `name` names the resulting
+   * conversation so it can be resolved afterwards. */
+  async stopQuickMeeting({ organizationId, sessionId, name } = {}) {
+    return await this.apiService.stopQuickMeeting({
+      organizationId,
+      sessionId,
+      name,
+    })
+  }
+
+  /**
+   * Resolve the conversation finalized for a stopped quick session: match on
+   * `type.from_session_id === sessionId`, falling back to an exact `name`.
+   * @returns the conversation id, or null.
+   */
+  async findConversation({ organizationId, name, fromSessionId } = {}) {
+    const items = await this.apiService.listConversations({
+      organizationId,
+      name,
+    })
+    for (const item of items || []) {
+      const type = item.type || {}
+      if (type && type.from_session_id === fromSessionId) {
+        return getId(item) || item.id
+      }
+    }
+    for (const item of items || []) {
+      if (item.name === name) return getId(item) || item.id
+    }
+    return null
+  }
+
+  /**
+   * One-shot orchestration: create the quick-meeting, optionally patch its meta
+   * (e.g. inject a native bot join token), make it public, then launch the bot.
+   * Returns { sessionId, channelId, botId }.
+   *
+   * @param {Object} opts
+   * @param {string} [opts.organizationId]
+   * @param {Object} opts.channel - channel spec (name, transcriberProfileId,
+   *   enableLiveTranscripts, diarization, keepAudio, translations).
+   * @param {Object} [opts.meta] - session meta (native descriptor).
+   * @param {string} opts.botUrl - the room URL the bot navigates to.
+   * @param {string} [opts.provider="visio"]
+   * @param {boolean} [opts.makePublic=false] - PATCH visibility:"public".
+   * @param {(sessionId:string, channelId:string) => Promise<Object>} [opts.metaWithToken]
+   *   - async hook returning the FULL meta to persist once the channel id is
+   *   known (used to add a Meet-minted native join token before the bot starts).
+   */
+  async launchVisioBot({
+    organizationId,
+    channel,
+    meta,
+    botUrl,
+    provider = "visio",
+    makePublic = false,
+    metaWithToken,
+  } = {}) {
+    const session = await this.createQuickMeeting({
+      organizationId,
+      channels: [channel],
+      meta,
+    })
+    const sessionId = getId(session) || session.id
+    const channelId = ((session.channels || [])[0] || {}).id
+    if (!sessionId || !channelId) {
+      throw new Error(
+        `quickMeeting response missing ids: ${JSON.stringify(session)}`
+      )
+    }
+    // The org falls back to the first one inside the apiService; reuse the
+    // resolved value for the subsequent calls so they hit the same org.
+    const org =
+      organizationId || (this.apiService.organizations[0] || {})._id
+
+    if (makePublic) {
+      try {
+        await this.patchSession({
+          organizationId: org,
+          sessionId,
+          data: { visibility: "public" },
+        })
+      } catch (_) {
+        // Best-effort — only affects the public live token, not the bot.
+      }
+    }
+    if (typeof metaWithToken === "function") {
+      const fullMeta = await metaWithToken(sessionId, channelId)
+      if (fullMeta) {
+        await this.patchSession({
+          organizationId: org,
+          sessionId,
+          data: { meta: fullMeta },
+        })
+      }
+    }
+    let botId = null
+    try {
+      const bot = await this.startBot({
+        organizationId: org,
+        url: botUrl,
+        channelId,
+        provider,
+      })
+      botId = getId(bot) || bot.id
+    } catch (err) {
+      // Roll back the orphan session so Studio is not littered with a bot-less one.
+      try {
+        await this.stopQuickMeeting({ organizationId: org, sessionId })
+      } catch (_) {}
+      throw err
+    }
+    return { sessionId, channelId, botId, organizationId: org }
+  }
 }
 
 try {

@@ -13,6 +13,12 @@
       </span>
       <span class="m-grow"></span>
       <IconButton
+        v-if="editorIsMobile"
+        icon="sidebar-simple"
+        :label="$t('mobile.live.settings')"
+        :aria-expanded="String(editorSidebarOpen)"
+        @click="toggleEditorSidebar" />
+      <IconButton
         :icon="wantsRecording ? 'microphone' : 'microphone-slash'"
         :label="
           wantsRecording ? $t('mobile.live.mute') : $t('mobile.live.unmute')
@@ -31,12 +37,15 @@
     </p>
     <div v-else class="m-live-session__body">
       <SessionLiveNG
+        ref="sessionLiveNG"
         :session="session"
         :websocket-instance="socket"
         :current-organization-scope="organizationId"
         :microphone-status="microphoneStatus"
         @retry-microphone="retryAudioConnection"
-        @reconfigure-microphone="restartMicrophone" />
+        @reconfigure-microphone="restartMicrophone"
+        @viewport-change="editorIsMobile = $event"
+        @sidebar-open="editorSidebarOpen = $event" />
     </div>
 
     <EndLiveSheet
@@ -61,6 +70,23 @@ export default {
   name: "MobileLiveSession",
   components: { PhIcon, SessionLiveNG, IconButton, EndLiveSheet },
   mixins: [liveSessionMixin],
+  data() {
+    return {
+      // Both pushed by the editor. <linto-editor> is mounted with no-header
+      // here, so its sidebar — subtitles, voice playback, live settings,
+      // speakers — has no opener of its own and this bar carries it.
+      // editorIsMobile is always true on a phone, but it also says the
+      // editor is mounted: this bar shows while the session is still
+      // loading, and the button must not appear before it can work.
+      editorIsMobile: false,
+      editorSidebarOpen: false,
+    }
+  },
+  methods: {
+    toggleEditorSidebar() {
+      this.$refs.sessionLiveNG.toggleSidebar()
+    },
+  },
 }
 </script>
 

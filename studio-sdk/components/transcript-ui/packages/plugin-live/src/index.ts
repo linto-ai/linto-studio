@@ -16,6 +16,10 @@ import type {
 
 const { isSameLanguage, speakText, stopTTS, unlockTTS, isTTSSupported, hasVoices } = utils
 
+/** Long enough to bridge the pause between two sentences, short enough that a
+ *  real silence shows within a breath. */
+const DEFAULT_SILENCE_DELAY = 2000
+
 export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent }
 export type { LivePluginApi }
 
@@ -53,8 +57,17 @@ function finalEventToTranslationTurn(
   }
 }
 
+export interface LivePluginOptions {
+  /** Whether the voice-playback feature is offered at all. */
+  tts?: boolean
+  /** Milliseconds without a partial before speech counts as over. See
+   *  LivePluginApi.silenceDelay — ASRs differ in how often they emit, so
+   *  hosts tune it per backend. Defaults to 2s. */
+  silenceDelay?: number
+}
+
 export function createLivePlugin(
-  options: { tts?: boolean } = {},
+  options: LivePluginOptions = {},
 ): CorePlugin {
   // Deployment flag: whether the voice-playback feature is offered at all.
   const ttsAvailable = options.tts ?? false
@@ -64,6 +77,10 @@ export function createLivePlugin(
 
     install(core: Core) {
       const partial = shallowRef<string | null>(null)
+      const partialsVisible = ref(true)
+      const isSpeechActive = ref(false)
+      const silenceDelay = ref(options.silenceDelay ?? DEFAULT_SILENCE_DELAY)
+      let silenceTimeout: ReturnType<typeof setTimeout> | null = null
       const hasLiveUpdate = ref(false)
       // Voice playback of finalized turns (browser speech synthesis).
       const ttsEnabled = ref(false)
@@ -84,10 +101,47 @@ export function createLivePlugin(
 
       hasLiveUpdate.value = true
 
+      // Partials are the only sign that someone is talking, and nothing on
+      // the wire ever announces silence — it is only the absence of the next
+      // one. Each partial pushes the deadline back, so the state doesn't
+      // flicker off between two sentences.
+      function markSpeechActivity(): void {
+        isSpeechActive.value = true
+        if (silenceTimeout !== null) clearTimeout(silenceTimeout)
+        silenceTimeout = setTimeout(endSpeechActivity, silenceDelay.value)
+      }
+
+      function endSpeechActivity(): void {
+        if (silenceTimeout !== null) {
+          clearTimeout(silenceTimeout)
+          silenceTimeout = null
+        }
+        isSpeechActive.value = false
+      }
+
       function clearPartial(): void {
         // shallowRef detects the change on its own, no triggerRef needed
         partial.value = null
         lastOriginalPartialEvent = null
+      }
+
+      // The single door every partial goes through — source, translation and
+      // cross alike — so one setting closes it for the transcription panel
+      // and the subtitle scroller at once. Ignored while they are hidden.
+      function setPartial(text: string): void {
+        if (!partialsVisible.value) return
+        partial.value = text
+      }
+
+      function showPartials(): void {
+        partialsVisible.value = true
+      }
+
+      function hidePartials(): void {
+        partialsVisible.value = false
+        // Drop what is already on screen now, rather than leaving the last
+        // provisional line up until a final turn happens to replace it.
+        immediateClearPartial()
       }
 
       function isTranslationTrackFor(
@@ -103,6 +157,10 @@ export function createLivePlugin(
         const channel = core.activeChannel.value
         if (!channel) return
 
+        // Someone is talking on the channel being watched — true whichever
+        // track is displayed, and whether or not the text itself is shown.
+        markSpeechActivity()
+
         lastOriginalPartialEvent = event
 
         const activeTranslation = channel.activeTranslation.value
@@ -110,7 +168,7 @@ export function createLivePlugin(
         // Only the original (source-language) partial flows through here.
         // Translated partials arrive via onTranslation, one per translation.
         if (activeTranslation.isSource && event.text != null) {
-          partial.value = event.text
+          setPartial(event.text)
         }
       }
 
@@ -247,6 +305,8 @@ export function createLivePlugin(
         const activeTranslation = channel.activeTranslation.value
 
         if (!_event.final) {
+          markSpeechActivity()
+
           if (activeTranslation.id === CROSS_TRANSLATION_ID) {
             if (
               _event.turnId === lastOriginalPartialEvent?.turnId &&
@@ -255,10 +315,10 @@ export function createLivePlugin(
                 lastOriginalPartialEvent?.language,
               )
             ) {
-              partial.value = _event.text
+              setPartial(_event.text)
             }
           } else if (isTranslationTrackFor(activeTranslation, _event.language)) {
-            partial.value = _event.text
+            setPartial(_event.text)
           }
           return
         }
@@ -305,6 +365,11 @@ export function createLivePlugin(
 
       const api: LivePluginApi = {
         partial,
+        partialsVisible,
+        isSpeechActive,
+        silenceDelay,
+        showPartials,
+        hidePartials,
         hasLiveUpdate,
         ttsAvailable,
         ttsEnabled,
@@ -336,6 +401,7 @@ export function createLivePlugin(
 
       return () => {
         immediateClearPartial()
+        endSpeechActivity()
         stopTTS()
         if (ttsSupported) {
           window.speechSynthesis.removeEventListener(

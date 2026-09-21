@@ -103,7 +103,9 @@ onMounted(async () => {
 
 ```bash
 bun install
-bun dev            # playground — every plugin wired up, http://localhost:5173
+bun dev            # playground — http://localhost:5173
+                   # add ?live=1 for the simulated live feed (live +
+                   # subtitle plugins, partials word by word)
 bun test
 bun run build      # build the root package
 bun run build:wc   # build the Web Component
