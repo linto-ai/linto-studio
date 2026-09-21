@@ -36,6 +36,16 @@ export function useSubtitleScroller(options: UseSubtitleScrollerOptions) {
     },
   )
 
+  // Clearing core.live.partial is routine — it happens on every finalized
+  // turn — so the scroller ignores it and keeps the text on screen. Turning
+  // the setting off is the one case where the line must actually go.
+  watch(
+    () => core.live?.partialsVisible.value,
+    (visible) => {
+      if (visible === false) scroller?.clearPartial()
+    },
+  )
+
   const unsubTurnAdd = core.onActiveTranslation("turn:add", ({ turn }) => {
     if (!scroller) return
     const text =

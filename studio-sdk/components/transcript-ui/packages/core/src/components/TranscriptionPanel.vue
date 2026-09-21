@@ -11,6 +11,7 @@ import {
 import { useStickToBottom } from "vue-stick-to-bottom"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
 import TranscriptionEmpty from "./TranscriptionEmpty.vue"
+import SpeechActivityIndicator from "./SpeechActivityIndicator.vue"
 import { useCore } from "../core"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useFollowPlayback } from "../composables/useFollowPlayback"
@@ -41,6 +42,17 @@ const partialTurn = computed(() => {
 })
 
 const hasLiveUpdate = computed(() => core.live?.hasLiveUpdate.value ?? false)
+
+// With the partial text hidden, the panel would sit perfectly still between
+// two finalized turns — nothing left to say the session is still listening.
+// The line is kept for the whole session rather than mounted when someone
+// speaks: useStickToBottom watches .turns-container, so anything appearing
+// and disappearing in there drags the transcript with it (the indicator
+// hides in place instead — see SpeechActivityIndicator).
+const showSpeechIndicator = computed(
+  () => core.live !== undefined && core.live.partialsVisible.value === false,
+)
+const isSpeechActive = computed(() => core.live?.isSpeechActive.value === true)
 const isPlaying = computed(() => core.audio?.isPlaying.value ?? false)
 
 const activeTranslation = computed(
@@ -173,6 +185,9 @@ onBeforeUnmount(() => {
           key="__partial__"
           :turn="partialTurn"
           partial />
+        <SpeechActivityIndicator
+          v-if="showSpeechIndicator"
+          :active="isSpeechActive" />
       </div>
 
       <Transition name="fade-slide">

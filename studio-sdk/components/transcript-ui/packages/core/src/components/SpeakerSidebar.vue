@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { SpeakerIndicator, SwitchToggle, EditableText, SelectableListItem, EditorIcon, SpeakerMenu } from "@linto-ai/transcript-ui-ui"
-import { computed, ref } from "vue"
+import { computed, ref, useId } from "vue"
 import ChannelSelector from "./ChannelSelector.vue"
 import TranslationSelector from "./TranslationSelector.vue"
 import MergeDialog from "./molecules/MergeDialog.vue"
@@ -45,6 +45,16 @@ function onToggleTts(value: boolean): void {
   if (!core.live || !ttsReady.value) return
   if (value) core.live.enableTTS()
   else core.live.disableTTS()
+}
+
+// The switch is a bare checkbox with no built-in name, so the visible text
+// has to be a real <label> pointing at it.
+const partialsToggleId = useId()
+
+function onTogglePartials(value: boolean): void {
+  if (!core.live) return
+  if (value) core.live.showPartials()
+  else core.live.hidePartials()
 }
 
 const mergeOpen = ref(false)
@@ -145,6 +155,18 @@ function onSelectVersion(versionNumber: number): void {
         @update:selected-translation-id="
           $emit('update:selectedTranslationId', $event)
         " />
+    </section>
+    <section v-if="core.live" class="sidebar-section">
+      <h2 class="sidebar-title">{{ t("sidebar.live") }}</h2>
+      <div class="subtitle-toggle">
+        <label class="subtitle-toggle-label" :for="partialsToggleId">
+          {{ t("live.showPartials") }}
+        </label>
+        <SwitchToggle
+          :id="partialsToggleId"
+          :model-value="core.live.partialsVisible.value"
+          @update:model-value="onTogglePartials" />
+      </div>
     </section>
     <section v-if="core.subtitle" class="sidebar-section">
       <h2 class="sidebar-title">{{ t("sidebar.subtitle") }}</h2>
@@ -353,6 +375,10 @@ function onSelectVersion(versionNumber: number): void {
 .subtitle-toggle-label {
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
+}
+
+label.subtitle-toggle-label {
+  cursor: pointer;
 }
 
 .voice-playback-hint {

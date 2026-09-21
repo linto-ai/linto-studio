@@ -11,6 +11,7 @@ import type {
   UISlot,
 } from "./types"
 import { createEventBus } from "./modules/eventBus"
+import { createViewport } from "./modules/viewport"
 import { createSpeakersStore } from "./stores/speakersStore"
 import { createChannelStore } from "./stores/channelStore"
 import type { ChannelStore } from "./types"
@@ -48,6 +49,32 @@ export function createCore(options: CoreOptions = {}): Core {
   // ── Event bus ──────────────────────────────────────────────────────
 
   const { on, off, emit, clear: clearEvents } = createEventBus<CoreEventMap>()
+
+  // ── Layout chrome ──────────────────────────────────────────────────
+
+  // The core owns the media query rather than each component watching its
+  // own: a host rendering its own header reads the same value the layout
+  // switches on, and there is a single listener to release on destroy.
+  const viewport = createViewport(onViewportChange)
+  const sidebarOpen = ref(false)
+
+  // Only the phone-width layout mounts the sidebar drawer, so "open" is
+  // refused anywhere else instead of being stored: a host header that isn't
+  // width-gated would otherwise leave the drawer armed and drop it on screen,
+  // focus trapped, at the next resize below the breakpoint.
+  function setSidebarOpen(open: boolean): void {
+    if (open && !viewport.isMobile.value) return
+    if (open === sidebarOpen.value) return
+    sidebarOpen.value = open
+    emit("sidebar:open", { open })
+  }
+
+  function onViewportChange(isMobile: boolean): void {
+    emit("viewport:change", { isMobile })
+    // Same invariant, the other way round: leaving phone width unmounts the
+    // drawer, so the state can't keep claiming it is open.
+    if (!isMobile) setSidebarOpen(false)
+  }
 
   // ── Speakers ───────────────────────────────────────────────────────
 
@@ -145,6 +172,7 @@ export function createCore(options: CoreOptions = {}): Core {
     cleanups.forEach((fn) => fn())
     cleanups.length = 0
     for (const channel of channels.values()) channel.dispose()
+    viewport.destroy()
     clearEvents()
   }
 
@@ -166,6 +194,9 @@ export function createCore(options: CoreOptions = {}): Core {
     speakers,
     channels,
     activeChannel,
+    isMobile: viewport.isMobile,
+    sidebarOpen,
+    setSidebarOpen,
     components,
     onActiveTranslation,
     setDocument,
