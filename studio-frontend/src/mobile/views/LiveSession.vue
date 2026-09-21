@@ -14,7 +14,7 @@
       <span class="m-grow"></span>
       <IconButton
         v-if="editorIsMobile"
-        :icon="partialsVisible ? 'lightning' : 'lightning-slash'"
+        :icon="partialsVisible ? 'chat-circle-dots' : 'chat-circle-slash'"
         :label="$t('mobile.live.partials')"
         :aria-pressed="String(partialsVisible)"
         @click="togglePartials" />

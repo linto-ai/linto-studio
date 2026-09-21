@@ -35,7 +35,7 @@
               v-if="editorIsMobile"
               @click="togglePartials"
               variant="secondary"
-              :icon="partialsVisible ? 'lightning' : 'lightning-slash'"
+              :icon="partialsVisible ? 'chat-circle-dots' : 'chat-circle-slash'"
               :aria-pressed="String(partialsVisible)"
               :aria-label="$t('session.detail_page.partials_button')"
               :title="$t('session.detail_page.partials_button')" />
