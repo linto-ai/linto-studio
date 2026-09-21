@@ -72,6 +72,7 @@
       "remaining_suffix": "remaining",
       "expires": "Next expiry",
       "low": "Low balance. Credits don't renew — you top up with packs.",
+      "exhausted": "Balance exhausted. Credits don't renew — you top up with packs.",
       "no_renewal": "Credits don't renew — you top up with packs.",
       "buy": "Buy a pack",
       "buy_soon": "Live packs are bought through Stripe Checkout (next milestone).",
@@ -1204,7 +1205,55 @@
       "multi_orga": "Multiple organizations"
     },
     "payment_note": "Payment at the next step. Cancel anytime.",
-    "continue": "Continue with {plan}"
+    "continue": "Continue with {plan}",
+    "organization": {
+      "steps_label": "Subscription steps",
+      "step_plan": "Plan",
+      "step_organization": "Organization",
+      "step_payment": "Payment",
+      "title": "Create your organization",
+      "description": "Only collaborators are billed. Read-only members are free and unlimited.",
+      "name_label": "Organization name",
+      "name_placeholder": "e.g. Communications department",
+      "collaborators_title": "Collaborators",
+      "collaborators_description": "Can import media and transcribe live · min. {min}",
+      "collaborators_admin": "You are one of them, as the administrator.",
+      "seat_price_monthly": "{price} / month each",
+      "seat_price_yearly": "{price} / year each",
+      "remove_seat": "Remove a collaborator",
+      "add_seat": "Add a collaborator",
+      "members_title": "Members",
+      "members_description": "View, search and export transcriptions",
+      "members_unlimited": "Unlimited",
+      "members_free": "Free",
+      "total_monthly": "Monthly total",
+      "total_yearly": "Yearly total",
+      "total_monthly_detail": "{seats} × {price} · charged every month, cancel anytime",
+      "total_yearly_detail": "{seats} × {price} · charged every year, cancel anytime",
+      "seats_note": "Nothing is set in stone: add or remove collaborators at any time from the settings, billing is prorated.",
+      "back": "Plans",
+      "submit": "Continue to payment"
+    },
+    "payment": {
+      "waiting_title": "Payment received",
+      "waiting_organization": "Creating your organization…",
+      "waiting_plan": "Activating your subscription…",
+      "ready_title": "All set",
+      "ready_organization": "Your organization “{name}” is ready. Invite your members from its settings.",
+      "ready_plan": "Your subscription is active.",
+      "timeout": "Activation is taking longer than expected. It will show up within a few minutes, you can close this window.",
+      "open_organization": "Open the organization",
+      "close": "Close"
+    },
+    "checkout": {
+      "canceled": "Payment canceled, nothing was charged.",
+      "errors": {
+        "default": "Could not start the payment. Please try again in a moment.",
+        "already_subscribed": "This organization already has a paid subscription.",
+        "organization_creation_not_supported": "Organization creation is not available right now.",
+        "plan_not_synced_to_stripe": "This plan cannot be purchased yet."
+      }
+    }
   },
   "organisation": {
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",

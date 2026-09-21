@@ -19,14 +19,7 @@
       <FormInput
         :field="newOrganizationName"
         v-model="newOrganizationName.value" />
-      <FormInput
-        :field="invitationEmails"
-        v-model="invitationEmails.value"
-        textarea />
-      <p class="dev-subscribe__seats">
-        Seats requested: {{ requestedSeats }} (you + {{ invitedCount }}
-        invited), the plan floor applies server-side
-      </p>
+      <FormInput :field="seats" v-model="seats.value" />
       <Button
         type="submit"
         variant="primary"
@@ -50,26 +43,7 @@ import { apiCreateSubscription, apiCreateCheckout } from "@/api/cloud.js"
 import { formsMixin } from "@/mixins/forms.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testName } from "@/tools/fields/testName"
-import { splitCommaList } from "@/tools/splitCommaList.js"
-import { isValidEmail } from "@/tools/isValidEmail.js"
 import FormInput from "@/components/molecules/FormInput.vue"
-
-function parseEmails(text) {
-  const items = splitCommaList(text).map((item) => item.toLowerCase())
-  return {
-    emails: items.filter(isValidEmail),
-    invalid: items.filter((item) => !isValidEmail(item)),
-  }
-}
-
-function testInvitationEmails(field, t) {
-  const { invalid } = parseEmails(field.value)
-  field.valid = invalid.length === 0
-  field.error = field.valid
-    ? null
-    : `${t("error.invalid_email")}: ${invalid.join(", ")}`
-  return field.valid
-}
 
 export default {
   name: "DevSubscribeButtons",
@@ -86,27 +60,19 @@ export default {
       planKeys: ["free_payg", "premium", "business"],
       loading: false,
       output: "",
-      fields: ["newOrganizationName", "invitationEmails"],
+      fields: ["newOrganizationName"],
       newOrganizationName: {
         ...EMPTY_FIELD,
         label: "Organization name",
         testField: testName,
       },
-      invitationEmails: {
+      seats: {
         ...EMPTY_FIELD,
-        label: "Members to invite (emails, one per line or comma separated)",
-        value: "alice@example.com\nbob@example.com, carol@example.com",
-        testField: testInvitationEmails,
+        label: "Seats (the plan floor applies server-side)",
+        type: "number",
+        value: "2",
       },
     }
-  },
-  computed: {
-    invitedCount() {
-      return parseEmails(this.invitationEmails.value).emails.length
-    },
-    requestedSeats() {
-      return 1 + this.invitedCount
-    },
   },
   methods: {
     // Paid plans go through hosted Checkout and come back to this page with
@@ -125,7 +91,11 @@ export default {
       if (!this.testFields()) return
       await this.startCheckout({
         organizationName: this.newOrganizationName.value.trim(),
-        invitations: parseEmails(this.invitationEmails.value).emails,
+        // Not a positive integer: left out, the API applies the plan floor
+        seats:
+          Number(this.seats.value) >= 1
+            ? Math.floor(this.seats.value)
+            : undefined,
         planKey: "business",
         returnUrl: window.location.href,
       })
@@ -137,8 +107,8 @@ export default {
         const res = await apiCreateCheckout(payload, {
           message: "checkout failed",
         })
-        this.output = JSON.stringify(res ?? { error: "no response" }, null, 2)
-        if (res?.url) window.location.assign(res.url)
+        this.output = JSON.stringify(res, null, 2)
+        if (res.url) window.location.assign(res.url)
       } catch (error) {
         console.error(error)
         this.output = String(error)
@@ -186,9 +156,6 @@ export default {
     flex-direction: column;
     gap: 0.5em;
     margin-bottom: 0.5em;
-  }
-  &__seats {
-    margin: 0;
   }
   &__output {
     width: 100%;

@@ -72,6 +72,7 @@
       "remaining_suffix": "restantes",
       "expires": "Prochaine expiration",
       "low": "Solde bas. Les crédits ne se renouvellent pas, ils s'achètent par packs.",
+      "exhausted": "Solde épuisé. Les crédits ne se renouvellent pas, ils s'achètent par packs.",
       "no_renewal": "Les crédits ne se renouvellent pas, ils s'achètent par packs.",
       "buy": "Acheter un pack",
       "buy_soon": "Les packs de live s'achètent via Stripe Checkout (prochain jalon).",
@@ -1198,7 +1199,55 @@
       "multi_orga": "Organisations multiples"
     },
     "payment_note": "Paiement à l'étape suivante. Résiliable à tout moment.",
-    "continue": "Continuer avec {plan}"
+    "continue": "Continuer avec {plan}",
+    "organization": {
+      "steps_label": "Étapes de l'abonnement",
+      "step_plan": "Formule",
+      "step_organization": "Organisation",
+      "step_payment": "Paiement",
+      "title": "Créez votre organisation",
+      "description": "Seuls les collaborateurs sont facturés. Les membres en lecture seule sont gratuits et illimités.",
+      "name_label": "Nom de l'organisation",
+      "name_placeholder": "ex. Direction de la communication",
+      "collaborators_title": "Collaborateurs",
+      "collaborators_description": "Peuvent importer des médias et transcrire en direct · min. {min}",
+      "collaborators_admin": "Vous en faites partie en tant qu'administrateur.",
+      "seat_price_monthly": "{price} / mois chacun",
+      "seat_price_yearly": "{price} / an chacun",
+      "remove_seat": "Retirer un collaborateur",
+      "add_seat": "Ajouter un collaborateur",
+      "members_title": "Membres",
+      "members_description": "Consultent, recherchent et exportent les transcriptions",
+      "members_unlimited": "Illimité",
+      "members_free": "Gratuit",
+      "total_monthly": "Total mensuel",
+      "total_yearly": "Total annuel",
+      "total_monthly_detail": "{seats} × {price} · prélevé chaque mois, résiliable à tout moment",
+      "total_yearly_detail": "{seats} × {price} · prélevé chaque année, résiliable à tout moment",
+      "seats_note": "Rien n'est figé : ajoutez ou retirez des collaborateurs à tout moment depuis les réglages, la facturation s'ajuste au prorata.",
+      "back": "Formules",
+      "submit": "Passer au paiement"
+    },
+    "payment": {
+      "waiting_title": "Paiement reçu",
+      "waiting_organization": "Création de votre organisation en cours…",
+      "waiting_plan": "Activation de votre abonnement en cours…",
+      "ready_title": "C'est prêt",
+      "ready_organization": "Votre organisation « {name} » est prête. Invitez vos membres depuis ses réglages.",
+      "ready_plan": "Votre abonnement est actif.",
+      "timeout": "L'activation prend plus de temps que prévu. Elle apparaîtra d'ici quelques minutes, vous pouvez fermer cette fenêtre.",
+      "open_organization": "Ouvrir l'organisation",
+      "close": "Fermer"
+    },
+    "checkout": {
+      "canceled": "Paiement annulé, rien n'a été facturé.",
+      "errors": {
+        "default": "Impossible de lancer le paiement. Réessayez dans un instant.",
+        "already_subscribed": "Cette organisation a déjà un abonnement payant.",
+        "organization_creation_not_supported": "La création d'organisation n'est pas disponible pour le moment.",
+        "plan_not_synced_to_stripe": "Cette offre n'est pas encore disponible au paiement."
+      }
+    }
   },
   "organisation": {
     "add_member_description": "Recherchez des utilisateurs par prénom, nom ou adresse électronique",

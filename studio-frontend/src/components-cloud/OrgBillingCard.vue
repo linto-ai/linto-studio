@@ -2,10 +2,14 @@
   <details class="org-billing-card" :open="open">
     <summary class="org-billing-card__summary">
       <ph-icon name="caret-right" size="sm" class="org-billing-card__caret" />
-      <Avatar :icon="org.icon" size="sm" tone="neutral" />
-      <span class="org-billing-card__name">{{ org.name }}</span>
-      <Chip :value="org.planLabel" :primary="!org.isFree" />
-      <span class="org-billing-card__subtitle">{{ org.subtitleLabel }}</span>
+      <Avatar :icon="org.icon" size="lg" tone="soft" border />
+      <span class="org-billing-card__info">
+        <span class="org-billing-card__name-row">
+          <span class="org-billing-card__name">{{ org.name }}</span>
+          <Chip :value="org.planLabel" :primary="!org.isFree" />
+        </span>
+        <span class="org-billing-card__subtitle">{{ org.subtitleLabel }}</span>
+      </span>
       <span class="org-billing-card__price">
         <strong>{{ org.priceLabel }}</strong>
         <small v-if="org.priceSubLabel">{{ org.priceSubLabel }}</small>
@@ -57,8 +61,16 @@
 
       <div
         class="org-billing-card__footer"
-        v-if="org.renewalLabel || org.isPaid">
+        v-if="org.renewalLabel || org.isPaid || org.isFree">
         <span v-if="org.renewalLabel">{{ org.renewalLabel }}</span>
+        <Button
+          v-if="org.isFree"
+          variant="primary"
+          size="xs"
+          icon="sparkle"
+          @click="$emit('upgrade')">
+          {{ $t("billing.account.upgrade_premium") }}
+        </Button>
         <Button
           v-if="org.isPaid"
           variant="link"
@@ -107,8 +119,9 @@ export default {
 <style lang="scss" scoped>
 .org-billing-card {
   border: 1px solid var(--neutral-20);
-  border-radius: 8px;
+  border-radius: 4px;
   background: var(--background-primary);
+  box-shadow: var(--shadow-1);
 
   & + & {
     margin-top: 0.75em;
@@ -136,12 +149,25 @@ export default {
     transform: rotate(90deg);
   }
 
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+    min-width: 0;
+  }
+
+  &__name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
   &__name {
     font-weight: 600;
   }
 
   &__subtitle {
-    flex: 1;
     color: var(--text-secondary);
     font-size: 0.85rem;
   }
@@ -204,6 +230,10 @@ export default {
     border-top: 1px solid var(--neutral-20);
     font-size: 0.8rem;
     color: var(--text-secondary);
+
+    .btn {
+      margin-left: auto;
+    }
   }
 }
 </style>

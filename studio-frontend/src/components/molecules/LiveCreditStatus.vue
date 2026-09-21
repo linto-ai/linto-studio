@@ -1,7 +1,10 @@
 <template>
   <div
     class="live-credit-status"
-    :class="{ 'live-credit-status--low': lowBalance }">
+    :class="{
+      'live-credit-status--low': lowBalance && !exhausted,
+      'live-credit-status--exhausted': exhausted,
+    }">
     <div class="live-credit-status__main">
       <span class="live-credit-status__label section-caption">{{
         $t("billing.live.title")
@@ -20,7 +23,7 @@
         </p>
 
         <p class="live-credit-status__message">
-          {{ lowBalance ? $t("billing.live.low") : $t("billing.live.no_renewal") }}
+          {{ messageLabel }}
         </p>
 
         <p v-if="expiresAtLabel" class="live-credit-status__expiry">
@@ -71,6 +74,14 @@ export default {
   computed: {
     balanceLabel() {
       return formatMinutesDuration(this.balance)
+    },
+    exhausted() {
+      return this.balance <= 0
+    },
+    messageLabel() {
+      if (this.exhausted) return this.$t("billing.live.exhausted")
+      if (this.lowBalance) return this.$t("billing.live.low")
+      return this.$t("billing.live.no_renewal")
     },
   },
 }
@@ -133,6 +144,13 @@ export default {
     .live-credit-status__value output,
     .live-credit-status__message {
       color: var(--warning-text);
+    }
+  }
+
+  &--exhausted {
+    .live-credit-status__value output,
+    .live-credit-status__message {
+      color: var(--danger-color);
     }
   }
 

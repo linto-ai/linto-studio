@@ -40,7 +40,8 @@
             v-for="org in orgViewModels"
             :key="org.id"
             :org="org"
-            :open="org.id === currentOrganizationScope" />
+            :open="org.id === currentOrganizationScope"
+            @upgrade="openUpgradeModal(null)" />
         </div>
 
         <div v-if="!hasPaidOrg" class="user-billing__upsell">
@@ -201,7 +202,8 @@ export default {
     },
   },
   async mounted() {
-    await this.$store.dispatch("billing/fetchPlans")
+    // Plan catalog is preloaded at router bootstrap (see app-router.js) —
+    // this page only needs its own per-org usage/subscription data.
     await this.loadOrgsBilling()
   },
   methods: {

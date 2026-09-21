@@ -1,3 +1,5 @@
+import { isQuotaUnlimited } from "@/tools/billingMeters"
+
 // i18n label per metered capability (quota rules of the catalog).
 const METER_LABEL = {
   "import.minutes": "billing.meter.import",
@@ -79,7 +81,7 @@ export default {
     return Object.entries(caps)
       .filter(([, c]) => c && c.type === "quota")
       .map(([key, c]) => {
-        const unlimited = c.limit == null
+        const unlimited = isQuotaUnlimited(c.limit, c.unit)
         const percent = unlimited
           ? 0
           : Math.min(100, Math.round((c.used / Math.max(1, c.limit)) * 100))

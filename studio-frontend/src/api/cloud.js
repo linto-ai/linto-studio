@@ -79,9 +79,15 @@ export async function apiCreateSubscription(
   return res?.data
 }
 
-// POST /cloud/checkout -> { url, sessionId }. The caller redirects the browser
-// to url. payload: { organizationId, planKey, interval?, returnUrl? }, or for a
-// plan bought with a new org { organizationName, invitations?, planKey, ... }.
+// POST /cloud/checkout. payload: { organizationId, planKey, seats?, interval?,
+// returnUrl? }, or for a plan bought with a new org { organizationName, seats?,
+// planKey, ... } where seats is the number of collaborator seats bought on a
+// per-seat plan (never below the plan floor).
+// -> { url, sessionId, organizationId } (the caller redirects the browser to
+// url; organizationId is the org the plan is bought for, created hidden for a
+// new org), or
+// { errorCode } carrying the API error code ("already_subscribed"…, null when
+// the API gave none).
 export async function apiCreateCheckout(payload, notif = null) {
   const res = await sendRequest(
     `${CLOUD_API}/checkout`,
@@ -89,7 +95,8 @@ export async function apiCreateCheckout(payload, notif = null) {
     payload,
     notif,
   )
-  return res?.data
+  if (res?.status === "success" && res.data?.url) return res.data
+  return { errorCode: res?.error?.response?.data?.error ?? null }
 }
 
 // DELETE /cloud/subscriptions/:id  (?immediate=true) -> updated subscription

@@ -106,13 +106,10 @@ function demotableCollaborators(organization) {
     .map((u) => u.userId)
 }
 
-// Seats an org requires: its collaborators plus the invitations of an org
-// still pending checkout (SPEC-SAAS §3.2), floored at 1.
+// Seats an org requires: its collaborators, floored at 1. A pending org
+// (SPEC-SAAS §3.2) only holds its buyer.
 function requiredSeats(organization) {
-  const invited = organization.pendingCheckout
-    ? (organization.pendingCheckout.invitations || []).length
-    : 0
-  return Math.max(1, countCollaborators(organization) + invited)
+  return Math.max(1, countCollaborators(organization))
 }
 
 // Seat capacity gate on a member role change: only becoming a collaborator

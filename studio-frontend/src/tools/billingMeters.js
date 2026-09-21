@@ -1,3 +1,12 @@
+// A minutes quota above this is unlimited in practice: shown as "unlimited"
+// rather than as a literal (and meaningless) hour count.
+export const UNLIMITED_MINUTES_THRESHOLD = 100 * 60
+
+export function isQuotaUnlimited(limit, unit) {
+  if (limit === null || limit === undefined) return true
+  return unit === "minutes" && limit > UNLIMITED_MINUTES_THRESHOLD
+}
+
 /**
  * Turns a raw usage.capabilities object (GET /cloud/usage/:orgId) into
  * display-ready quota meters. Pure transform: no i18n, no number formatting —
@@ -15,6 +24,6 @@ export function computeQuotaMeters(capabilities) {
       limit: c.limit,
       unit: c.unit, // "minutes" | "count"
       resetAt: c.resetAt || null,
-      unlimited: c.limit === null || c.limit === undefined,
+      unlimited: isQuotaUnlimited(c.limit, c.unit),
     }))
 }

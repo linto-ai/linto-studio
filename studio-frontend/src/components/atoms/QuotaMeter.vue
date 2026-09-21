@@ -5,6 +5,7 @@
       <span class="quota-meter__value">{{ displayValue }}</span>
     </div>
     <progress
+      v-if="!isUnlimited"
       class="quota-meter__bar"
       :class="statusClass"
       :value="progressValue"
@@ -14,19 +15,21 @@
 
 <script>
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
+import { isQuotaUnlimited } from "@/tools/billingMeters"
 
 export default {
   name: "QuotaMeter",
   props: {
     label: { type: String, required: true },
     used: { type: Number, default: 0 },
-    // null/undefined limit means unlimited
+    // null/undefined limit means unlimited, as does a minutes limit above
+    // UNLIMITED_MINUTES_THRESHOLD (see isQuotaUnlimited).
     limit: { type: Number, default: null },
     unit: { type: String, default: "count" }, // "minutes" | "count"
   },
   computed: {
     isUnlimited() {
-      return this.limit === null || this.limit === undefined
+      return isQuotaUnlimited(this.limit, this.unit)
     },
     percent() {
       if (this.isUnlimited) return 0
@@ -36,14 +39,13 @@ export default {
       )
     },
     progressValue() {
-      return this.isUnlimited ? 1 : this.used
+      return this.used
     },
     progressMax() {
-      return this.isUnlimited ? 1 : Math.max(1, this.limit)
+      return Math.max(1, this.limit)
     },
     // Mirrors the seat-status thresholds used across the billing UI.
     statusClass() {
-      if (this.isUnlimited) return "unlimited"
       if (this.percent >= 100) return "danger"
       if (this.percent >= 80) return "warning"
       return "success"
@@ -114,15 +116,6 @@ export default {
     }
     &.danger::-moz-progress-bar {
       background: var(--danger-color);
-    }
-
-    &.unlimited::-webkit-progress-value {
-      background: var(--success-color);
-      opacity: 0.5;
-    }
-    &.unlimited::-moz-progress-bar {
-      background: var(--success-color);
-      opacity: 0.5;
     }
   }
 }

@@ -114,11 +114,12 @@ class OrganizationModel extends MongoModel {
     }
   }
 
-  // Hidden until the SaaS plugin activates it (SPEC-SAAS §3.2); a retry for
-  // the same owner and name reuses the row.
-  async createPending(userId, name, { invitations = [], origin = null } = {}) {
+  // Hidden until the SaaS plugin activates it (SPEC-SAAS §3.2); holds only its
+  // buyer, members are invited once it is paid. A retry for the same owner and
+  // name reuses the row.
+  async createPending(userId, name) {
     try {
-      const pendingCheckout = { since: new Date(), invitations, origin }
+      const pendingCheckout = { since: new Date() }
       const existing = await this.mongoRequest(
         {
           owner: userId.toString(),

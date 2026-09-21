@@ -17,6 +17,7 @@
     </div>
 
     <progress
+      v-if="!primaryMeter.unlimited"
       class="saas-usage-footer__bar"
       :value="progressValue"
       :max="progressMax"></progress>
@@ -58,10 +59,10 @@ export default {
       })
     },
     progressValue() {
-      return this.primaryMeter.unlimited ? 1 : this.primaryMeter.used
+      return this.primaryMeter.used
     },
     progressMax() {
-      return this.primaryMeter.unlimited ? 1 : this.primaryMeter.limit
+      return this.primaryMeter.limit
     },
     resetDateLabel() {
       return formatDateDayMonth(this.primaryMeter.resetAt, this.$i18n.locale)

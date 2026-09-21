@@ -33,5 +33,10 @@
       --btn-hover-bg: var(--danger-color);
       --btn-hover-text: var(--danger-contrast);
     }
+
+    &.btn--link,
+    &.btn--text {
+      --btn-text: var(--danger-color);
+    }
   }
 }

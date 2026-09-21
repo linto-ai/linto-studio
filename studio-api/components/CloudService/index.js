@@ -98,32 +98,18 @@ function buildGuards() {
 // Organization hooks of the plugin (SPEC-SAAS §3.2 pending org, §3.4 demotion)
 function buildOrganizationHooks() {
   return {
-    createPending: async ({ ownerUserId, name, invitations, origin }) => {
+    createPending: async ({ ownerUserId, name }) => {
       if (!ownerUserId) {
         throw new Error("CloudService: createPending needs the caller userId")
       }
       return throwIfError(
-        await model.organizations.createPending(ownerUserId, name, {
-          invitations,
-          origin,
-        }),
+        await model.organizations.createPending(ownerUserId, name),
       )
     },
     activate: async (orgId) => {
       const rows = throwIfError(await model.organizations.getById(orgId))
       if (rows.length !== 1) return false
-      const changed = throwIfError(
-        await model.organizations.activatePending(orgId),
-      )
-      // Member inserts and mails stay off the webhook's critical path
-      if (changed) {
-        invitePendingMembers(rows[0]).catch((err) =>
-          logger.error(
-            `[saas] org ${orgId}: invitations failed: ${err && err.message}`,
-          ),
-        )
-      }
-      return changed
+      return throwIfError(await model.organizations.activatePending(orgId))
     },
     // The org lost collaboration: its collaborators become members until
     // seats are bought again. Returns the demoted userIds.
@@ -137,33 +123,6 @@ function buildOrganizationHooks() {
       )
       return userIds
     },
-  }
-}
-
-// Invitations captured at checkout, sent once the org is paid, as uploaders
-// (the seats bought with them). A failed invitation is logged and skipped.
-async function invitePendingMembers(org) {
-  const { pendingCheckout, ...activated } = org
-  const invitations = (pendingCheckout && pendingCheckout.invitations) || []
-  if (invitations.length === 0) return
-  const orgId = activated._id.toString()
-
-  const owner = throwIfError(await model.users.getById(activated.owner))
-  const inviterEmail = owner[0] ? owner[0].email : null
-  for (const email of invitations) {
-    try {
-      await orgaUtility.inviteMemberByEmail({
-        organization: activated,
-        email,
-        role: ROLES.UPLOADER,
-        inviterEmail,
-        origin: pendingCheckout.origin,
-      })
-    } catch (err) {
-      logger.error(
-        `[saas] org ${orgId}: could not invite ${email}: ${err && err.message}`,
-      )
-    }
   }
 }
 

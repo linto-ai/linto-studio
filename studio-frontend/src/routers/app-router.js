@@ -907,6 +907,17 @@ router.beforeEach(async (to, from, next) => {
     await store.dispatch("organizations/fetchOrganizations")
     routerDebug("Organizations fetched")
 
+    // Preload the billing plan catalog once per session (cloud only) so
+    // OnboardingWizard and the billing pages never show their own spinner
+    // for it — it rides the same global loader as organizations/tags.
+    if (
+      getEnv("VUE_APP_MODE") === "cloud" &&
+      store.getters["billing/plans"].length === 0
+    ) {
+      await store.dispatch("billing/fetchPlans")
+      routerDebug("Billing plans fetched")
+    }
+
     syncImpersonationState(to)
 
     // raw id, not the getter: the impersonated org scope is not set yet here
