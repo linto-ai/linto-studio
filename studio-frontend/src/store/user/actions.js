@@ -54,17 +54,9 @@ const actions = {
   dismissOnboarding({ commit, state }) {
     commit("setUserInfos", { ...state.userInfos, onboarded: true })
   },
-  async updateUser({ commit }, payload) {
+  async updateUser({ dispatch }, payload) {
     const req = await apiUpdateUserInfo(payload, null)
-
-    if (req.status === "success") {
-      const newValue = {
-        ...this.state.user.userInfos,
-        ...payload,
-      }
-      commit("setUserInfos", newValue)
-    }
-
+    if (req.status === "success") await dispatch("fetchUser")
     return req
   },
   async updateUserImage({ commit }, image) {

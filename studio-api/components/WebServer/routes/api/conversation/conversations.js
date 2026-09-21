@@ -46,6 +46,7 @@ module.exports = (webserver) => {
       path: "/users",
       method: "post",
       requireAuth: true,
+      requireConversationReadBatchAccess: true,
       controller: getUsersByConversationList,
     },
     {

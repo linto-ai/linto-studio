@@ -110,7 +110,16 @@ bun run build:wc   # build the Web Component
 bash scripts/pack-all.sh  # pack every publishable package into .pack/ (real
                           # tarballs, "workspace:*" resolved) — test installs
                           # elsewhere before actually publishing
+bash scripts/publish-all.sh 1.0.0 [--live] [--tag <dist-tag>] [--yes]
+                          # bump every package to 1.0.0 and publish them in
+                          # dependency order (dry run unless --live)
 ```
+
+CI publishes every package on its own when this directory changes (see the
+root `Jenkinsfile`): a push on `next` publishes `<version>-unstable.<timestamp>`
+under the `latest-unstable` dist-tag, a push on `master` publishes the version
+of `package.json` under `latest` (skipped when it is already on the registry,
+so bump the version to release).
 
 ### Development fixtures
 

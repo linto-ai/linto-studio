@@ -156,6 +156,7 @@ export function createAudioPlugin(
 
       function seekTo(time: number) {
         seekHandler?.(time)
+        core.emit("audio:seek", { time })
       }
 
       function setSeekHandler(fn: ((time: number) => void) | null) {

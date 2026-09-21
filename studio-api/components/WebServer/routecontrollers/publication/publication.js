@@ -5,6 +5,27 @@ const debug = require("debug")(
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 const FormData = require("form-data")
+const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const saas = require(`${process.cwd()}/lib/saas`)
+const { exportRestrictions } = require(
+  `${process.cwd()}/components/WebServer/controllers/publication/exportPolicy`,
+)
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/** Gateway service UUID for a UUID, route or name (null when unknown). */
+async function resolveServiceId(baseUrl, identifier) {
+  if (UUID_PATTERN.test(identifier)) return identifier
+  const response = await axios.get(
+    `${baseUrl}/api/v1/services?page=1&page_size=100`,
+    { timeout: 5000 },
+  )
+  const service = (response?.items || []).find(
+    (s) => s.route === identifier || s.name === identifier,
+  )
+  return service ? service.id : null
+}
 
 const {
   PublicationError,
@@ -43,14 +64,17 @@ async function getTemplates(req, res, next) {
     // linked). Otherwise return all templates visible to the org/user.
     let url
     if (req.query.service_id) {
+      // The editor may send the service route instead of the gateway UUID
+      const serviceId = await resolveServiceId(baseUrl, req.query.service_id)
+      if (!serviceId) {
+        throw new PublicationNotFound("Service not found")
+      }
       const params = new URLSearchParams()
       params.append("organization_id", organizationId)
       if (authenticatedUserId) {
         params.append("user_id", authenticatedUserId)
       }
-      url = `${baseUrl}/api/v1/services/${encodeURIComponent(
-        req.query.service_id,
-      )}/templates?${params.toString()}`
+      url = `${baseUrl}/api/v1/services/${serviceId}/templates?${params.toString()}`
     } else {
       // Build query params for hierarchical visibility
       const params = new URLSearchParams()
@@ -67,11 +91,22 @@ async function getTemplates(req, res, next) {
     }
 
     const response = await axios.get(url, { timeout: 5000 })
+    let templates = response || []
+
+    // Off plan only LinTO templates are listed, custom ones stay stored
+    const customAllowed = await saas.allowed({
+      orgId: organizationId,
+      capability: "publication.custom_templates",
+      userId: authenticatedUserId,
+    })
+    if (!customAllowed && Array.isArray(templates)) {
+      templates = templates.filter((template) => template.scope === "system")
+    }
 
     // Return with status wrapper, preserve all fields from LLM Gateway (including name_fr, name_en, etc.)
     return res.status(200).json({
       status: "success",
-      templates: response || [],
+      templates,
     })
   } catch (err) {
     next(err)
@@ -146,6 +181,17 @@ async function exportWithTemplate(req, res, next) {
       throw new PublicationNotConfigured()
     }
 
+    const templateScope =
+      req.query.templateId && saas.enabled()
+        ? (await fetchTemplate(baseUrl, req.query.templateId)).scope
+        : null
+    const restrictions = await exportRestrictions({
+      conversationId: req.params.conversationId,
+      userId: req.payload?.data?.userId,
+      format,
+      templateScope,
+    })
+
     // Build request URL
     url = `${baseUrl}/api/v1/jobs/${jobId}/export/${format}`
 
@@ -167,6 +213,9 @@ async function exportWithTemplate(req, res, next) {
     }
     if (req.query.timezone) {
       queryParams.append("timezone", req.query.timezone)
+    }
+    for (const [key, value] of Object.entries(restrictions)) {
+      queryParams.append(key, value)
     }
 
     if (queryParams.toString()) {
@@ -222,6 +271,43 @@ async function exportWithTemplate(req, res, next) {
   }
 }
 
+/** Org maintainers and admins manage organization-wide templates. */
+function canManageOrgTemplates(req) {
+  return ROLES.hasRoleAccess(req.userRole || ROLES.UNDEFINED, ROLES.MAINTAINER)
+}
+
+/** True when the caller uploaded the template (legacy user_id as fallback). */
+function isTemplateOwner(template, userId) {
+  const owner = template.owner_user_id || template.user_id
+  return Boolean(owner) && owner === userId
+}
+
+/** Visibility of a gateway template for a member of `organizationId`. */
+function isTemplateVisible(template, organizationId, userId) {
+  if (template.scope === "system") return true
+  if (isTemplateOwner(template, userId)) return true
+  if (template.scope === "user") {
+    return (template.allowed_user_ids || []).includes(userId)
+  }
+  return (template.allowed_organization_ids || []).includes(organizationId)
+}
+
+async function fetchTemplate(baseUrl, templateId) {
+  try {
+    return await axios.get(
+      `${baseUrl}/api/v1/document-templates/${templateId}`,
+      {
+        timeout: 5000,
+      },
+    )
+  } catch (err) {
+    if (err.response?.status === 404) {
+      throw new PublicationNotFound("Template not found")
+    }
+    throw err
+  }
+}
+
 /**
  * Upload a new publication template (DOCX file)
  * POST /publication/organizations/:organizationId/templates
@@ -233,10 +319,13 @@ async function exportWithTemplate(req, res, next) {
  *   - description_fr: French description (optional)
  *   - description_en: English description (optional)
  *   - scope: "personal" (default) or "organization" - determines template visibility
+ *   - service_id: LLM service the template is uploaded for (linked on the gateway)
  *
  * Scope behavior:
  *   - "personal": Template is scoped to the authenticated user (user_id from JWT)
- *   - "organization": Template is scoped to the organization from the path
+ *   - "organization": Template is scoped to the organization from the path,
+ *     reserved to maintainers and admins
+ * The authenticated user is recorded as owner of the template.
  *
  * Note: The template file should contain {{output}} placeholder for AI-generated content
  */
@@ -254,13 +343,32 @@ async function createTemplate(req, res, next) {
     }
 
     const file = req.files.file
-    const { name_fr, name_en, description_fr, description_en, scope } = req.body
+    const {
+      name_fr,
+      name_en,
+      description_fr,
+      description_en,
+      scope,
+      service_id,
+    } = req.body
     // Organization comes from the path param, membership enforced by the route middleware
     const organization_id = req.params.organizationId
 
     // Validate required fields
     if (!name_fr || !name_fr.trim()) {
       throw new PublicationError("name_fr is required")
+    }
+
+    // Handle scope: personal (user) or organization
+    // Default to personal scope using authenticated user's ID
+    const templateScope = scope || "personal"
+    if (!["personal", "organization"].includes(templateScope)) {
+      throw new PublicationError("scope must be personal or organization")
+    }
+    if (templateScope === "organization" && !canManageOrgTemplates(req)) {
+      throw new PublicationForbidden(
+        "Only maintainers and admins can share a template with the organization",
+      )
     }
 
     // Validate file type
@@ -314,12 +422,16 @@ async function createTemplate(req, res, next) {
       formData.append("description_en", description_en.trim())
     }
 
-    // Handle scope: personal (user) or organization
-    // Default to personal scope using authenticated user's ID
-    const templateScope = scope || "personal"
-
     // Organization ID is required for all scoped templates (LLM Gateway enforces this)
     formData.append("organization_id", organization_id)
+    formData.append("owner_user_id", authenticatedUserId)
+    if (service_id) {
+      const resolvedServiceId = await resolveServiceId(baseUrl, service_id)
+      if (!resolvedServiceId) {
+        throw new PublicationNotFound("Service not found")
+      }
+      formData.append("service_id", resolvedServiceId)
+    }
 
     if (templateScope === "organization") {
       // Organization-scoped template: org_id only, no user_id
@@ -373,13 +485,12 @@ async function createTemplate(req, res, next) {
  * Delete a publication template
  * DELETE /publication/organizations/:organizationId/templates/:templateId
  *
- * Only allows deletion of non-system templates.
- * Users can only delete their own templates (user-scoped) or organization templates
- * if they have appropriate permissions.
+ * System templates cannot be deleted. Otherwise the owner can always delete,
+ * and maintainers/admins can delete any template shared with the organization.
  */
 async function deleteTemplate(req, res, next) {
   try {
-    const { templateId } = req.params
+    const { templateId, organizationId } = req.params
 
     if (!templateId) {
       throw new PublicationIdRequired("templateId is required")
@@ -396,31 +507,21 @@ async function deleteTemplate(req, res, next) {
       throw new PublicationNotConfigured()
     }
 
-    // First, get the template to check its scope and ownership
-    const getUrl = `${baseUrl}/api/v1/document-templates/${templateId}`
-    let template
-    try {
-      const getResponse = await axios.get(getUrl, { timeout: 5000 })
-      template = getResponse
-    } catch (err) {
-      if (err.response?.status === 404) {
-        throw new PublicationNotFound("Template not found")
-      }
-      throw err
-    }
+    const template = await fetchTemplate(baseUrl, templateId)
 
-    // Check if it's a system template (cannot be deleted via this endpoint)
     if (template.scope === "system") {
       throw new PublicationForbidden("Cannot delete system templates")
     }
 
-    // Check ownership for user-scoped templates
-    if (template.scope === "user" && template.user_id !== authenticatedUserId) {
+    const sharedWithOrg =
+      template.scope === "organization" &&
+      (template.allowed_organization_ids || []).includes(organizationId)
+    const allowed =
+      isTemplateOwner(template, authenticatedUserId) ||
+      (sharedWithOrg && canManageOrgTemplates(req))
+    if (!allowed) {
       throw new PublicationForbidden("You can only delete your own templates")
     }
-
-    // For organization-scoped templates, we could add permission checks here
-    // For now, allow any authenticated user in the org to delete org templates
 
     // Delete the template via LLM Gateway
     const deleteUrl = `${baseUrl}/api/v1/document-templates/${templateId}`
@@ -437,10 +538,144 @@ async function deleteTemplate(req, res, next) {
   }
 }
 
+/**
+ * Share a template with the organization, or make it personal again
+ * PATCH /publication/organizations/:organizationId/templates/:templateId
+ *
+ * Body: { scope: "organization" | "personal" }
+ * Only the owner can change the scope, and only maintainers/admins can share
+ * with the organization. System templates are read-only.
+ */
+async function updateTemplateScope(req, res, next) {
+  try {
+    const { templateId, organizationId } = req.params
+    const { scope } = req.body || {}
+
+    if (!templateId) {
+      throw new PublicationIdRequired("templateId is required")
+    }
+    if (!["personal", "organization"].includes(scope)) {
+      throw new PublicationError("scope must be personal or organization")
+    }
+
+    const authenticatedUserId = req.payload?.data?.userId
+    if (!authenticatedUserId) {
+      throw new PublicationAuthRequired()
+    }
+
+    const baseUrl = process.env.LLM_GATEWAY_SERVICES
+    if (!baseUrl) {
+      throw new PublicationNotConfigured()
+    }
+
+    const template = await fetchTemplate(baseUrl, templateId)
+
+    if (template.scope === "system") {
+      throw new PublicationForbidden("System templates cannot be changed")
+    }
+    if (!isTemplateOwner(template, authenticatedUserId)) {
+      throw new PublicationForbidden("You can only share your own templates")
+    }
+    if (!canManageOrgTemplates(req)) {
+      throw new PublicationForbidden(
+        "Only maintainers and admins can share a template with the organization",
+      )
+    }
+
+    // Gateway PUT is multipart: replace_scope lets us send an empty user list.
+    const formData = new FormData()
+    formData.append("replace_scope", "true")
+    formData.append("allowed_organization_ids", organizationId)
+    if (scope === "personal") {
+      formData.append("allowed_user_ids", authenticatedUserId)
+    }
+
+    const nativeAxios = require("axios")
+    const response = await nativeAxios.put(
+      `${baseUrl}/api/v1/document-templates/${templateId}`,
+      formData,
+      { headers: { ...formData.getHeaders() }, timeout: 10000 },
+    )
+
+    debug(
+      `Template ${templateId} scope set to ${scope} by user ${authenticatedUserId}`,
+    )
+
+    return res.status(200).json({
+      status: "success",
+      template: response.data || {},
+    })
+  } catch (err) {
+    if (err.response?.status === 404) {
+      return next(new PublicationNotFound("Template not found"))
+    }
+    if (err.response?.status === 400) {
+      return next(
+        new PublicationError(err.response?.data?.detail || "Invalid request"),
+      )
+    }
+    next(err)
+  }
+}
+
+/**
+ * Download the DOCX file of a template (to customize it)
+ * GET /publication/organizations/:organizationId/templates/:templateId/download
+ *
+ * Any template visible to the caller can be downloaded.
+ */
+async function downloadTemplate(req, res, next) {
+  try {
+    const { templateId, organizationId } = req.params
+
+    if (!templateId) {
+      throw new PublicationIdRequired("templateId is required")
+    }
+
+    const authenticatedUserId = req.payload?.data?.userId
+    if (!authenticatedUserId) {
+      throw new PublicationAuthRequired()
+    }
+
+    const baseUrl = process.env.LLM_GATEWAY_SERVICES
+    if (!baseUrl) {
+      throw new PublicationNotConfigured()
+    }
+
+    const template = await fetchTemplate(baseUrl, templateId)
+    if (!isTemplateVisible(template, organizationId, authenticatedUserId)) {
+      throw new PublicationForbidden("Template not available")
+    }
+
+    const content = await axios.get(
+      `${baseUrl}/api/v1/document-templates/${templateId}/download`,
+      { responseType: "arraybuffer", timeout: 30000 },
+    )
+
+    const safeName = (template.file_name || "template.docx").replace(
+      /[^a-zA-Z0-9-_.]/g,
+      "_",
+    )
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    )
+    res.setHeader("Content-Disposition", `attachment; filename="${safeName}"`)
+    return res.send(Buffer.from(content))
+  } catch (err) {
+    if (err.response?.status === 404) {
+      return next(new PublicationNotFound("Template not found"))
+    }
+    next(err)
+  }
+}
+
 module.exports = {
   getTemplates,
   getTemplatePlaceholders,
   exportWithTemplate,
   createTemplate,
   deleteTemplate,
+  updateTemplateScope,
+  downloadTemplate,
 }

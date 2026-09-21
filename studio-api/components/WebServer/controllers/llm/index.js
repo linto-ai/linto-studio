@@ -401,8 +401,15 @@ async function getJobResult(jobId) {
  * @param {string} format - Export format (pdf, docx, html)
  * @param {string} templateId - Optional template ID
  * @param {number} versionNumber - Optional version number for per-version export
+ * @param {Object} restrictions - Optional pdf_lock / pdf_footer_note (SaaS plan)
  */
-async function exportJobDocument(jobId, format = "pdf", templateId = null, versionNumber = null) {
+async function exportJobDocument(
+  jobId,
+  format = "pdf",
+  templateId = null,
+  versionNumber = null,
+  restrictions = {},
+) {
   if (!jobId) throw new Error("Job ID is required")
 
   const baseUrl = process.env.LLM_GATEWAY_SERVICES
@@ -415,6 +422,9 @@ async function exportJobDocument(jobId, format = "pdf", templateId = null, versi
   }
   if (versionNumber !== null) {
     params.push(`version_number=${versionNumber}`)
+  }
+  for (const [key, value] of Object.entries(restrictions)) {
+    params.push(`${key}=${encodeURIComponent(value)}`)
   }
   if (params.length > 0) {
     url += `?${params.join("&")}`

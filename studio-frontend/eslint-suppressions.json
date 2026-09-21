@@ -475,9 +475,6 @@
     }
   },
   "src/components/SessionLiveNG.vue": {
-    "no-undef": {
-      "count": 2
-    },
     "vue/no-mutating-props": {
       "count": 1
     }
@@ -682,13 +679,7 @@
     }
   },
   "src/components/UserSettingsPersonal.vue": {
-    "no-unused-vars": {
-      "count": 1
-    },
     "no-useless-assignment": {
-      "count": 1
-    },
-    "vue/no-unused-components": {
       "count": 1
     }
   },

@@ -1,3 +1,39 @@
+# 1.8.8
+
+_2026_09_18_
+
+- AI summaries publication
+  - The template picker only lists the templates linked to the AI service: the service id was lost on the way to the API, so every template showed up
+  - Templates uploaded from Studio belong to their author and are linked to the service they were uploaded from; maintainers and admins can share them with the organization from the card, and take them back
+  - Personal templates were visible to the whole organization; they are now visible to their author only
+  - Download the DOCX of any available template to build a custom one; the upload dialog explains the steps and the placeholders
+  - Organization-wide templates are reserved to maintainers and admins, enforced server-side; deletion is allowed to the author or, for shared templates, to maintainers and admins
+  - Redesigned template cards: icon chosen in LLM Gateway, LinTO / organization / personal label, PDF preview on click; closing the preview goes back to the picker, a download closes both
+  - New API routes: `PATCH /publication/organizations/:organizationId/templates/:templateId` (scope) and `GET .../templates/:templateId/download`
+- Mobile app
+  - AI reports can be exported as PDF from the editor: pick a publication template of the service, read the PDF inside the app, then share or save it through the phone
+- Transcription editor (transcript-ui SDK 0.9.23)
+  - Readable on phones: AI services fold into a "More" menu, toolbars wrap, no sideways scroll, side-by-side view off
+  - Chat: native discussion picker on phones; AI documents: compact up-to-date / outdated status in the toolbar
+- LLM services are listed for the `linto` usage scope only (`LLM_GATEWAY_SCOPE`, default `linto`)
+- Requires LLM Gateway 2.6.0 (template owner and icon)
+
+# 1.8.7
+
+_2026_09_15_
+
+- Mobile app (phones)
+  - New mobile web app under `/m/`, installable on the home screen (Android and iOS); phones opening Studio are sent there (`VUE_APP_ENABLE_MOBILE_APP`, on by default)
+  - Record a meeting on the phone: local recording that survives a call or a locked screen, sent to transcription by itself as soon as the network allows
+  - Library of the phone's recordings: audio kept on the phone, linked to the transcript and the documents generated on it
+  - Media list with folders, transcription editor and live session inside the app
+  - Share a transcript as PDF or text through the phone (mail, SMS, WhatsApp…), share inside Studio (organization members, external users, invitation by email)
+  - Sharing rules and destination folder chosen before recording, remembered per organization
+  - SSO providers available on the mobile login page
+- Classic interface
+  - No history entry left for organization-less URLs, and the loader no longer stays on after a back navigation to the explorer
+  - Creating a media returns the conversation id
+
 # 1.8.6
 
 _2026_09_01_

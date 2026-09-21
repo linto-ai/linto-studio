@@ -1,3 +1,5 @@
+// Mobile app hand-off: no-op unless VUE_APP_ENABLE_MOBILE_APP is "true".
+import { redirectingToMobileApp } from "@/mobile/redirect.js"
 import Vue from "vue"
 import App from "./App.vue"
 import router from "./routers/app-router.js"
@@ -19,7 +21,7 @@ import { register as registerLintoEditor } from "@linto-ai/transcript-ui-webcomp
 
 import "vue-loading-overlay/dist/vue-loading.css"
 
-export const bus = new Vue()
+export { bus } from "@/tools/eventBus.js"
 Vue.use(PortalVue)
 Vue.use(vClickOutside)
 Vue.use(Fragment.Plugin)
@@ -32,11 +34,13 @@ Vue.prototype.$apiEventWS = new ApiEventWebSocket()
 
 Debug.enable(getEnv("VUE_APP_DEBUG"))
 
-new Vue({
-  router,
-  store,
-  i18n,
-  render: (h) => h(App),
-}).$mount("#app")
+if (!redirectingToMobileApp) {
+  new Vue({
+    router,
+    store,
+    i18n,
+    render: (h) => h(App),
+  }).$mount("#app")
 
-registerLintoEditor()
+  registerLintoEditor()
+}

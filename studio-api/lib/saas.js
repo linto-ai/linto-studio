@@ -51,6 +51,19 @@ async function enforce({ orgId, capability, value, userId }) {
   return v
 }
 
+// Verdict without throwing, for a controller that adapts its answer instead of
+// refusing (list filtering, locked PDF). True when SaaS is off, false on error.
+async function allowed({ orgId, capability, userId }) {
+  const pp = plugin()
+  if (!pp) return true
+  try {
+    const v = await pp.entitlements.check({ orgId, capability, userId })
+    return Boolean(v && v.allowed)
+  } catch (e) {
+    return false
+  }
+}
+
 // Admission of a live (microphone, bot): balance >= admission x languages.
 // Throws 402 on an empty balance, 403 on an unverified caller.
 async function liveAdmit({ orgId, languages, userId }) {
@@ -121,6 +134,7 @@ module.exports = {
   plugin,
   enabled,
   enforce,
+  allowed,
   liveAdmit,
   record,
   afterAuth,
