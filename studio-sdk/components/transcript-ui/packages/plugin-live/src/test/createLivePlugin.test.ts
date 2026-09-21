@@ -158,7 +158,7 @@ describe("createLivePlugin — speech activity", () => {
   })
 
   it("defaults to a two-second delay, host-tunable at runtime", () => {
-    expect(makeLiveCore().live!.silenceDelay.value).toBe(2000)
+    expect(makeLiveCore().live!.silenceDelay.value).toBe(6000)
     expect(makeLiveCore(500).live!.silenceDelay.value).toBe(500)
   })
 })

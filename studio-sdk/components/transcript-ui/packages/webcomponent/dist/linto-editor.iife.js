@@ -23643,8 +23643,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$l = "\n/* Typing bubble, as in messaging apps. The box never changes size, only the\n   dots move inside it, so the transcript above stays still. */\n.speech-activity[data-v-b0ad1dc4] {\n  display: flex;\n  align-items: center;\n  gap: 5px;\n  width: fit-content;\n  margin: var(--spacing-sm) var(--spacing-lg);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg)\n    var(--radius-sm);\n  background-color: var(--color-surface-hover);\n}\n.speech-activity-dot[data-v-b0ad1dc4] {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  background-color: var(--color-text-muted);\n  animation: speech-activity-hop-b0ad1dc4 1.2s infinite ease-in-out;\n}\n.speech-activity-dot[data-v-b0ad1dc4]:nth-child(2) {\n  animation-delay: 0.15s;\n}\n.speech-activity-dot[data-v-b0ad1dc4]:nth-child(3) {\n  animation-delay: 0.3s;\n}\n@keyframes speech-activity-hop-b0ad1dc4 {\n0%,\n  60%,\n  100% {\n    transform: translateY(0);\n    opacity: 0.55;\n}\n30% {\n    transform: translateY(-5px);\n    opacity: 1;\n}\n}\n.speech-activity--idle[data-v-b0ad1dc4] {\n  visibility: hidden;\n}\n.speech-activity--idle .speech-activity-dot[data-v-b0ad1dc4] {\n  animation: none;\n}\n@media (prefers-reduced-motion: reduce) {\n.speech-activity-dot[data-v-b0ad1dc4] {\n    animation: none;\n    opacity: 0.8;\n}\n}\n@media (max-width: 767px) {\n.speech-activity[data-v-b0ad1dc4] {\n    margin-inline: var(--spacing-md);\n}\n}\n";
-  const SpeechActivityIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$l]], ["__scopeId", "data-v-b0ad1dc4"]]);
+  const _style_0$l = "\n/* Typing bubble, as in messaging apps. The box never changes size, only the\n   dots move inside it, so the transcript above stays still. */\n.speech-activity[data-v-c0396c58] {\n  display: flex;\n  align-items: center;\n  gap: 5px;\n  width: fit-content;\n  margin: var(--spacing-sm) var(--spacing-lg);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg)\n    var(--radius-sm);\n  background-color: var(--color-surface-hover);\n  transition:\n    opacity 0.4s ease,\n    visibility 0.4s;\n}\n.speech-activity-dot[data-v-c0396c58] {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  background-color: var(--color-text-muted);\n  animation: speech-activity-hop-c0396c58 1.2s infinite ease-in-out;\n}\n.speech-activity-dot[data-v-c0396c58]:nth-child(2) {\n  animation-delay: 0.15s;\n}\n.speech-activity-dot[data-v-c0396c58]:nth-child(3) {\n  animation-delay: 0.3s;\n}\n@keyframes speech-activity-hop-c0396c58 {\n0%,\n  60%,\n  100% {\n    transform: translateY(0);\n    opacity: 0.55;\n}\n30% {\n    transform: translateY(-5px);\n    opacity: 1;\n}\n}\n.speech-activity--idle[data-v-c0396c58] {\n  opacity: 0;\n  visibility: hidden;\n}\n@media (prefers-reduced-motion: reduce) {\n.speech-activity-dot[data-v-c0396c58] {\n    animation: none;\n    opacity: 0.8;\n}\n}\n@media (max-width: 767px) {\n.speech-activity[data-v-c0396c58] {\n    margin-inline: var(--spacing-md);\n}\n}\n";
+  const SpeechActivityIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$l]], ["__scopeId", "data-v-c0396c58"]]);
   function activeWordRange(root2, core, wordId2) {
     const parsed = parseWordId(wordId2);
     if (!parsed) return null;
@@ -25455,7 +25455,7 @@ section.turn:has([data-state="open"]) {
     };
   }
   const { isSameLanguage, speakText, stopTTS, unlockTTS, isTTSSupported, hasVoices } = utils;
-  const DEFAULT_SILENCE_DELAY = 2e3;
+  const DEFAULT_SILENCE_DELAY = 6e3;
   function finalEventToSourceTurn(event) {
     const hasWords = event.words.length > 0;
     return {

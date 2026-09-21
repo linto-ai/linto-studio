@@ -40,6 +40,9 @@ const { t } = useI18n()
   border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg)
     var(--radius-sm);
   background-color: var(--color-surface-hover);
+  transition:
+    opacity 0.4s ease,
+    visibility 0.4s;
 }
 
 .speech-activity-dot {
@@ -72,11 +75,8 @@ const { t } = useI18n()
 }
 
 .speech-activity--idle {
+  opacity: 0;
   visibility: hidden;
-}
-
-.speech-activity--idle .speech-activity-dot {
-  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -16,9 +16,10 @@ import type {
 
 const { isSameLanguage, speakText, stopTTS, unlockTTS, isTTSSupported, hasVoices } = utils
 
-/** Long enough to bridge the pause between two sentences, short enough that a
- *  real silence shows within a breath. */
-const DEFAULT_SILENCE_DELAY = 2000
+/** ASRs can go quiet for a few seconds between the last partial and the final
+ *  while someone is still talking: long enough to bridge that gap, so the
+ *  indicator doesn't blink in the middle of a speech. */
+const DEFAULT_SILENCE_DELAY = 6000
 
 export type { LivePartialEvent, LiveFinalEvent, LiveTranslationEvent }
 export type { LivePluginApi }
@@ -62,7 +63,7 @@ export interface LivePluginOptions {
   tts?: boolean
   /** Milliseconds without a partial before speech counts as over. See
    *  LivePluginApi.silenceDelay — ASRs differ in how often they emit, so
-   *  hosts tune it per backend. Defaults to 2s. */
+   *  hosts tune it per backend. Defaults to 6s. */
   silenceDelay?: number
 }
 
