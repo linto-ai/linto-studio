@@ -156,13 +156,39 @@ export async function apiCancelSubscription(
 }
 
 // --- Backoffice (platform sys-admin; sendRequest adds userScope=backoffice on
-// /backoffice pages) ---
+// /backoffice pages, the dev block passes backoffice: true from elsewhere) ---
+
+// The backoffice scope in the URL, for a call made outside a /backoffice page
+function adminUrl(path, backoffice) {
+  return `${CLOUD_API}/admin${path}${backoffice ? "?userScope=backoffice" : ""}`
+}
 
 // GET /cloud/admin/orgs/:orgId -> { planKey, seats, mode, subscription, usage, lots }
-export async function apiAdminGetOrgBilling(organizationId, notif = null) {
+export async function apiAdminGetOrgBilling(
+  organizationId,
+  notif = null,
+  { backoffice = false } = {},
+) {
   const res = await sendRequest(
-    `${CLOUD_API}/admin/orgs/${organizationId}`,
+    adminUrl(`/orgs/${organizationId}`, backoffice),
     { method: "get" },
+    {},
+    notif,
+  )
+  return res?.data
+}
+
+// POST /cloud/admin/orgs/:orgId/lots/:lotId/refund -> { refunded, stripeRefundId, lotId }
+// Refunds the pack at Stripe; the minutes come back through the webhook.
+export async function apiAdminRefundLot(
+  organizationId,
+  lotId,
+  notif = null,
+  { backoffice = false } = {},
+) {
+  const res = await sendRequest(
+    adminUrl(`/orgs/${organizationId}/lots/${lotId}/refund`, backoffice),
+    { method: "post" },
     {},
     notif,
   )

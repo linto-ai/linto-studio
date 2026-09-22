@@ -45,7 +45,7 @@
         @click="addSeats(count)" />
     </div>
 
-    <h3>Buy live minutes (Premium or Business only)</h3>
+    <h3>Buy live minutes (every plan, no welcome minutes on Free)</h3>
     <p class="dev-subscribe__balance">
       Live balance: <strong>{{ liveBalanceLabel }}</strong>
       <Button
@@ -57,14 +57,64 @@
     </p>
     <div class="dev-subscribe__row">
       <Button
-        v-for="pack in livePacks"
+        v-for="pack in packsOfKind('live')"
         :key="pack.packKey"
         variant="secondary"
         size="sm"
         :disabled="loading"
         :label="packLabel(pack)"
         @click="buyPack(pack.packKey)" />
-      <span v-if="livePacks.length === 0">No live pack from /cloud/packs</span>
+      <span v-if="packsOfKind('live').length === 0">
+        No live pack from /cloud/packs
+      </span>
+    </div>
+
+    <h3>Buy transcription minutes (Free only)</h3>
+    <p class="dev-subscribe__balance">
+      Import quota: <strong>{{ importQuotaLabel }}</strong>
+      <Button
+        variant="secondary"
+        size="xs"
+        :disabled="loading"
+        label="Refresh"
+        @click="loadUsage" />
+    </p>
+    <div class="dev-subscribe__row">
+      <Button
+        v-for="pack in packsOfKind('transcription')"
+        :key="pack.packKey"
+        variant="secondary"
+        size="sm"
+        :disabled="loading"
+        :label="packLabel(pack)"
+        @click="buyPack(pack.packKey)" />
+      <span v-if="packsOfKind('transcription').length === 0">
+        No transcription pack from /cloud/packs
+      </span>
+    </div>
+
+    <h3>Refund a pack (platform admin, Stripe refund + webhook)</h3>
+    <p class="dev-subscribe__balance">
+      Lots of the organization
+      <Button
+        variant="secondary"
+        size="xs"
+        :disabled="loading"
+        label="Refresh"
+        @click="loadLots" />
+    </p>
+    <div class="dev-subscribe__row">
+      <Button
+        v-for="lot in lots"
+        :key="lot._id"
+        variant="secondary"
+        size="sm"
+        :disabled="loading || lot.source !== 'stripe' || lot.remaining <= 0"
+        :label="lotLabel(lot)"
+        @click="refundLot(lot._id)" />
+      <span v-if="lots.length === 0">
+        No lot (GET /cloud/admin/orgs/:id needs a platform admin)
+      </span>
     </div>
 
     <form
@@ -102,6 +152,8 @@ import {
   apiGetPacks,
   apiGetCredits,
   apiGetUsage,
+  apiAdminGetOrgBilling,
+  apiAdminRefundLot,
 } from "@/api/cloud.js"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount.js"
 import { formsMixin } from "@/mixins/forms.js"
@@ -126,6 +178,7 @@ export default {
       packs: [],
       credits: null,
       usage: null,
+      lots: [],
       seatIncrements: [1, 2, 3],
       loading: false,
       output: "",
@@ -146,12 +199,14 @@ export default {
   async mounted() {
     this.loadCredits()
     this.loadUsage()
+    this.loadLots()
     this.packs = (await apiGetPacks()) ?? []
   },
   watch: {
     "currentOrganization._id"() {
       this.loadCredits()
       this.loadUsage()
+      this.loadLots()
     },
   },
   computed: {
@@ -175,8 +230,13 @@ export default {
       }
       return label
     },
-    livePacks() {
-      return this.packs.filter((pack) => pack.kind === "live")
+    // The import gauge and, on Free, the transcription lots topping it up
+    importQuotaLabel() {
+      const gauge = this.usage?.capabilities?.["import.minutes"]
+      if (!gauge) return "unknown (GET /cloud/usage failed)"
+      const limit = gauge.limit == null ? "unlimited" : gauge.limit
+      const bought = gauge.topUp ? ` (+${gauge.topUp.balance} min bought)` : ""
+      return `${gauge.used} / ${limit} min this period${bought}`
     },
   },
   methods: {
@@ -211,25 +271,60 @@ export default {
     async loadUsage() {
       this.usage = (await apiGetUsage(this.currentOrganization._id)) ?? null
     },
-    // The change route takes the total seat count, so add on top of the current one
-    async addSeats(count) {
-      const seats = (this.usage?.seats ?? 0) + count
+    packsOfKind(kind) {
+      return this.packs.filter((pack) => pack.kind === kind)
+    },
+    // Every lot of the org, live and transcription, through the backoffice route
+    async loadLots() {
+      const billing = await apiAdminGetOrgBilling(
+        this.currentOrganization._id,
+        null,
+        { backoffice: true },
+      )
+      this.lots = billing?.lots ?? []
+    },
+    lotLabel(lot) {
+      const pack = lot.ref?.packKey ?? lot.source
+      return `Refund ${pack} (${lot.kind}, ${lot.remaining}/${lot.minutes} min)`
+    },
+    // One call: shows the request, then the raw response or the error
+    async run(label, call) {
       this.loading = true
-      this.output = `POST /cloud/subscriptions/change seats=${seats} ...`
+      this.output = `${label} ...`
       try {
-        const res = await apiChangeSubscription(
-          this.currentOrganization._id,
-          { seats },
-          { message: "seats updated" },
-        )
+        const res = await call()
         this.output = JSON.stringify(res ?? { error: "no response" }, null, 2)
-        await this.loadUsage()
+        return res
       } catch (error) {
         console.error(error)
         this.output = String(error)
+        return null
       } finally {
         this.loading = false
       }
+    },
+    async refundLot(lotId) {
+      await this.run(`POST /cloud/admin/orgs/:id/lots/${lotId}/refund`, () =>
+        apiAdminRefundLot(
+          this.currentOrganization._id,
+          lotId,
+          { message: "refund requested at Stripe" },
+          { backoffice: true },
+        ),
+      )
+      await Promise.all([this.loadLots(), this.loadCredits(), this.loadUsage()])
+    },
+    // The change route takes the total seat count, so add on top of the current one
+    async addSeats(count) {
+      const seats = (this.usage?.seats ?? 0) + count
+      await this.run(`POST /cloud/subscriptions/change seats=${seats}`, () =>
+        apiChangeSubscription(
+          this.currentOrganization._id,
+          { seats },
+          { message: "seats updated" },
+        ),
+      )
+      await this.loadUsage()
     },
     packLabel(pack) {
       const price = formatCurrencyAmount(
@@ -241,56 +336,38 @@ export default {
     },
     // One-time payment through hosted Checkout, back here with ?type=credits
     async buyPack(packKey) {
-      this.loading = true
-      this.output = `POST /cloud/checkout/credits packKey=${packKey} ...`
-      try {
-        const res = await apiCreateCreditsCheckout(
-          this.currentOrganization._id,
-          { packKey, returnUrl: window.location.href },
-          { message: "checkout failed" },
-        )
-        this.output = JSON.stringify(res ?? { error: "no response" }, null, 2)
-        if (res?.url) window.location.assign(res.url)
-      } catch (error) {
-        console.error(error)
-        this.output = String(error)
-      } finally {
-        this.loading = false
-      }
+      const res = await this.run(
+        `POST /cloud/checkout/credits packKey=${packKey}`,
+        () =>
+          apiCreateCreditsCheckout(
+            this.currentOrganization._id,
+            { packKey, returnUrl: window.location.href },
+            { message: "redirecting to Stripe Checkout" },
+          ),
+      )
+      if (res?.url) window.location.assign(res.url)
     },
     async startCheckout(payload) {
-      this.loading = true
-      this.output = `POST /cloud/checkout ${JSON.stringify(payload)} ...`
-      try {
-        const res = await apiCreateCheckout(payload, {
-          message: "checkout failed",
-        })
-        this.output = JSON.stringify(res, null, 2)
-        if (res.url) window.location.assign(res.url)
-      } catch (error) {
-        console.error(error)
-        this.output = String(error)
-      } finally {
-        this.loading = false
-      }
+      const res = await this.run(
+        `POST /cloud/checkout ${JSON.stringify(payload)}`,
+        () =>
+          apiCreateCheckout(payload, {
+            message: "redirecting to Stripe Checkout",
+          }),
+      )
+      if (res?.url) window.location.assign(res.url)
     },
     // Updates the Stripe subscription in place, no Checkout
     async changePlan(planKey) {
-      this.loading = true
-      this.output = `POST /cloud/subscriptions/change planKey=${planKey} ...`
-      try {
-        const res = await apiChangeSubscription(
-          this.currentOrganization._id,
-          { planKey },
-          { message: "plan changed" },
-        )
-        this.output = JSON.stringify(res ?? { error: "no response" }, null, 2)
-      } catch (error) {
-        console.error(error)
-        this.output = String(error)
-      } finally {
-        this.loading = false
-      }
+      await this.run(
+        `POST /cloud/subscriptions/change planKey=${planKey}`,
+        () =>
+          apiChangeSubscription(
+            this.currentOrganization._id,
+            { planKey },
+            { message: "plan changed" },
+          ),
+      )
     },
     async subscribeFree(planKey) {
       this.loading = true
@@ -300,7 +377,7 @@ export default {
           this.currentOrganization._id,
           planKey,
           1,
-          { message: "subscription failed" },
+          { message: "subscribed" },
         )
         const json = JSON.stringify(res ?? { error: "no response" }, null, 2)
         const command = res?.clientSecret

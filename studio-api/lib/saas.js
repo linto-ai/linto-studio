@@ -34,6 +34,8 @@ function throwDenied(verdict, capability) {
     reason: verdict.reason,
     capability: verdict.capability || capability,
     remaining: verdict.remaining != null ? verdict.remaining : null,
+    // The pack that lifts a spent quota (Free import), for the front modal
+    topUp: verdict.topUp || null,
   }
   if (PAYMENT_REQUIRED.has(verdict.reason)) {
     throw new SaasQuotaExceeded(`Quota exceeded: ${capability}`, extras)
