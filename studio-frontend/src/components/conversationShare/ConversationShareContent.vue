@@ -76,7 +76,7 @@ import { mapGetters } from "vuex"
 
 import {
   apiGetUsersFromMultipleConversation,
-  apiUpdateConversation,
+  apiUpdateConversationMembersRight,
 } from "@/api/conversation.js"
 import { apiUpdateMultipleUsersInMultipleConversations } from "@/api/user.js"
 
@@ -226,11 +226,7 @@ export default {
       try {
         const ids = this.normalizedConversations.map((c) => c._id)
         const results = await Promise.all(
-          ids.map((id) =>
-            apiUpdateConversation(id, {
-              "organization.membersRight": newRight,
-            }),
-          ),
+          ids.map((id) => apiUpdateConversationMembersRight(id, newRight)),
         )
         const failed = results.some((r) => r?.status === "error")
         if (failed) {

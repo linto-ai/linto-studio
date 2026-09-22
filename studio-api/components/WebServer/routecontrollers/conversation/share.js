@@ -29,6 +29,35 @@ const { UserNotFound, UserError } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 
+// Default right of the organization members, kept out of the generic PATCH
+async function updateConversationMembersRight(req, res, next) {
+  try {
+    const membersRight = parseInt(req.body.membersRight, 10)
+    if (Number.isNaN(membersRight) || !RIGHTS.validRight(membersRight))
+      throw new ConversationMetadataRequire("A valid membersRight is required")
+
+    const conversation = await model.conversations.getById(
+      req.params.conversationId,
+    )
+    if (conversation.length !== 1) throw new ConversationNotFound()
+
+    const result = await model.conversations.update({
+      _id: req.params.conversationId,
+      "organization.membersRight": membersRight,
+    })
+    if (result.matchedCount === 0) throw new ConversationError()
+
+    if (conversation[0].type?.child_conversations?.length > 0) {
+      conversation[0].organization.membersRight = membersRight
+      await updateChildConversation(conversation[0], "RIGHTS")
+    }
+
+    res.status(200).send({ message: "Conversation members right updated" })
+  } catch (err) {
+    next(err)
+  }
+}
+
 async function getRightsByConversation(req, res, next) {
   try {
     const conversation = await model.conversations.getById(
@@ -267,6 +296,7 @@ async function listSharedConversation(req, res, next) {
 
 module.exports = {
   getRightsByConversation,
+  updateConversationMembersRight,
   updateConversationRights,
   inviteUserByEmail,
   listSharedConversation,
