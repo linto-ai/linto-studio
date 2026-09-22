@@ -73,12 +73,12 @@ export default {
 /* Recording: the chip stays red permanently (state marker); the dot is the
    live VAD feedback — red while the user speaks, grey while silent. */
 .microphone-status--recording {
-  border-color: var(--red-chart);
+  border-color: var(--danger-color);
   background: var(--danger-soft);
 }
 .microphone-status--recording.microphone-status--speaking
   .microphone-status__dot {
-  background: var(--red-chart);
+  background: var(--danger-color);
 }
 
 .microphone-status--connecting .microphone-status__dot,

@@ -53,13 +53,13 @@
     width: 15px;
     height: 15px;
     border-radius: 10px;
-    background: var(--red-chart);
+    background: var(--danger-color);
     position: absolute;
     top: -5px;
     left: 15px;
     z-index: 99;
     text-align: center;
-    color: #fff;
+    color: var(--danger-contrast);
     font-size: 13px;
     line-height: 15px;
   }

@@ -9,15 +9,22 @@
       </router-link>
       <span class="m-live-session__chip">
         <span class="m-live-session__dot"></span>
-        {{ $t("mobile.live.on_air") }}
+        <span class="m-live-session__chip-label">
+          {{ $t("mobile.live.on_air") }}
+        </span>
       </span>
       <span class="m-grow"></span>
+      <!-- No accessibility mode in the mobile app: its own shell has no dark
+           values, so opening the editor's sidebar would offer a high-contrast
+           switch that darkens the transcript inside a light bar. The wiring
+           below stays in place — uncomment when the shell follows.
       <IconButton
         v-if="editorIsMobile"
-        :icon="partialsVisible ? 'chat-circle-dots' : 'chat-circle-slash'"
-        :label="$t('mobile.live.partials')"
-        :aria-pressed="String(partialsVisible)"
-        @click="togglePartials" />
+        icon="sidebar-simple"
+        :label="$t('mobile.live.settings')"
+        :aria-expanded="String(editorSidebarOpen)"
+        @click="toggleEditorSidebar" />
+      -->
       <IconButton
         :icon="wantsRecording ? 'microphone' : 'microphone-slash'"
         :label="
@@ -45,7 +52,7 @@
         @retry-microphone="retryAudioConnection"
         @reconfigure-microphone="restartMicrophone"
         @viewport-change="editorIsMobile = $event"
-        @partials-visible="partialsVisible = $event" />
+        @sidebar-open="editorSidebarOpen = $event" />
     </div>
 
     <EndLiveSheet
@@ -79,12 +86,12 @@ export default {
       // editor is mounted: this bar shows while the session is still
       // loading, and the button must not appear before it can work.
       editorIsMobile: false,
-      partialsVisible: true,
+      editorSidebarOpen: false,
     }
   },
   methods: {
-    togglePartials() {
-      this.$refs.sessionLiveNG.togglePartials()
+    toggleEditorSidebar() {
+      this.$refs.sessionLiveNG.toggleSidebar()
     },
   },
 }
@@ -114,6 +121,15 @@ export default {
   color: var(--m-text);
 }
 
+/* Six controls in this bar since the sidebar button joined: without these,
+   flexbox takes the missing width out of whatever shrinks, and in French the
+   chip wrapped to two lines while the 44px tap targets dropped to 36px on a
+   360px phone. Nothing shrinks now — the narrow branch below frees the room
+   instead. */
+.m-live-session__bar > * {
+  flex-shrink: 0;
+}
+
 .m-live-session__chip {
   display: inline-flex;
   align-items: center;
@@ -124,6 +140,7 @@ export default {
   color: var(--m-danger);
   font-size: var(--m-font-size-sm);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .m-live-session__dot {
@@ -131,6 +148,31 @@ export default {
   height: 8px;
   border-radius: 50%;
   background: currentColor;
+}
+
+/* Below ~375px the six controls no longer fit in French (they need 367px of
+   a 304px content box). The chip gives up its label — the red dot still says
+   "recording", and the text stays for screen readers, same treatment as
+   .m-visually-hidden. */
+@media (max-width: 374px) {
+  .m-live-session__chip {
+    gap: 0;
+    padding: 4px 6px;
+  }
+
+  .m-live-session__chip-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .m-live-session__dot {
+    width: 10px;
+    height: 10px;
+  }
 }
 
 .m-live-session__end {

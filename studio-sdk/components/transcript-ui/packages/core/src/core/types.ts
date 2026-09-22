@@ -18,6 +18,10 @@ export interface CoreCapabilities {
 
 // ── Event Map ──────────────────────────────────────────────────────────
 
+/** Light is the default; dark redefines the colour tokens on the editor's
+ *  root, under the same data-theme convention the host app uses. */
+export type EditorTheme = "light" | "dark"
+
 export interface CoreEventMap {
   /** A new document was loaded via setDocument (channels rebuilt). */
   "document:change": void
@@ -40,6 +44,14 @@ export interface CoreEventMap {
   "watermark:display": { display: boolean }
   "watermark:pin": { pinned: boolean }
   "subtitle:visible": { visible: boolean; height: number }
+  /** The reading size of the transcript changed. The editor does not
+   *  remember it — a host that wants the preference to survive a reload
+   *  listens here and restores it into core.transcriptFontSize. */
+  "transcript:fontSize": { fontSize: number }
+  /** The editor switched theme. The editor applies it to itself; a host
+   *  that wants its own chrome to follow listens here (studio-frontend
+   *  sets html[data-theme] from it). */
+  "theme:change": { theme: EditorTheme }
   /** The sidebar drawer was opened or closed — by the built-in header,
    *  by the drawer's own close button, by a channel change, or by the
    *  host calling setSidebarOpen. A host rendering its own header (see
@@ -663,6 +675,19 @@ export interface Core {
   readonly speakers: SpeakersStore
   readonly channels: Map<string, ChannelStore>
   readonly activeChannel: ComputedRef<ChannelStore | undefined>
+
+  /** Reading size of the transcript text, in pixels. Chrome (buttons,
+   *  headers, the sidebar) keeps its own scale. Writable: there is nothing to
+   *  guard, and a change is announced by "transcript:fontSize". */
+  readonly transcriptFontSize: Ref<number>
+  /** Colour theme of the editor. Writable: a host can restore a stored
+   *  preference, and a change is announced by "theme:change". */
+  readonly theme: Ref<EditorTheme>
+  /** Brand colour, pushed by the host so the editor's accents match the app
+   *  around it. Null keeps the editor's own. Applied as an inline style on
+   *  the editor's root, which is the only thing that outranks the token
+   *  declarations inside the shadow tree. */
+  readonly primaryColor: Ref<string | null>
 
   // ── Layout chrome ────────────────────────────────────────────────────
   /** True while the viewport is at phone width — below the breakpoint where

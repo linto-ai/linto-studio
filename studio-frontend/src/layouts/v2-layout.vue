@@ -161,7 +161,7 @@ export default {
     background-color: var(--background-primary);
     border-radius: 4px;
     overflow: hidden;
-    border: 1px solid var(--neutral-20);
+    border: var(--border-block);
     position: absolute;
     top: 0;
     left: 0;
@@ -195,7 +195,7 @@ export default {
   .v2-layout__main {
     background-color: var(--background-primary);
     border-radius: 4px;
-    border: 1px solid var(--neutral-20);
+    border: var(--border-block);
     flex: 1 1 auto;
     min-width: 0;
     min-height: 0;

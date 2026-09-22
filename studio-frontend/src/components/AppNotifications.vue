@@ -148,15 +148,15 @@ export default {
   }
 
   &--success {
-    border-left: 4px solid var(--success-color, #10b981);
+    border-left: 4px solid var(--success-color);
   }
 
   &--error {
-    border-left: 4px solid var(--danger-color, #ef4444);
+    border-left: 4px solid var(--danger-color);
   }
 
   &--warning {
-    border-left: 4px solid var(--warning-color, #f59e0b);
+    border-left: 4px solid var(--warning-color);
   }
 
   &--info {

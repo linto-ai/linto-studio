@@ -5,6 +5,7 @@ const debug = require("debug")(
 const {
   // Create conversation based on file
   getRightsByConversation,
+  updateConversationMembersRight,
   updateConversationRights,
   listSharedConversation,
   inviteUserByEmail,
@@ -48,6 +49,13 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireConversationReadAccess: true,
       controller: getRightsByConversation,
+    },
+    {
+      path: "/:conversationId/rights",
+      method: "patch",
+      requireAuth: true,
+      requireConversationShareAccess: true,
+      controller: updateConversationMembersRight,
     },
     {
       path: "/:conversationId/users/:userId",

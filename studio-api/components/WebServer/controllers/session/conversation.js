@@ -30,8 +30,14 @@ const { sessionReq } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/offline.js`,
 )
 
-function getMembersRightFromVisibility(visibility) {
-  return visibility === "private" ? RIGHTS.UNDEFINED : DEFAULT_MEMBER_RIGHTS
+// The right chosen at session creation (meta.membersRight) wins over the
+// visibility-derived default
+function getMembersRight(session) {
+  const requested = parseInt(session.meta?.membersRight, 10)
+  if (!Number.isNaN(requested) && RIGHTS.validRight(requested)) return requested
+  return session.visibility === "private"
+    ? RIGHTS.UNDEFINED
+    : DEFAULT_MEMBER_RIGHTS
 }
 
 function extractSegmentFilter(transcriptionService) {
@@ -67,7 +73,7 @@ function initConversationMultiChannel(
     locale: "",
     organization: {
       organizationId: session.organizationId,
-      membersRight: getMembersRightFromVisibility(session.visibility),
+      membersRight: getMembersRight(session),
       customRights: [],
     },
     sharedWithUsers: [],
@@ -275,7 +281,7 @@ function initializeCaption(
     locale: channel.languages,
     organization: {
       organizationId: session.organizationId,
-      membersRight: getMembersRightFromVisibility(session.visibility),
+      membersRight: getMembersRight(session),
       customRights: [],
     },
     type: {

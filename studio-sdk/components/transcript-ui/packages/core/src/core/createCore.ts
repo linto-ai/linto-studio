@@ -1,9 +1,10 @@
-import { ref, computed, shallowReactive, type Component } from "vue"
+import { ref, computed, shallowReactive, watch, type Component } from "vue"
 import type { DownloadFormat } from "@linto-ai/transcript-ui-ui"
 import type { Channel, EditorDocument } from "../types/editor"
 import type {
   Core,
   CoreOptions,
+  EditorTheme,
   CoreEventMap,
   CoreCapabilities,
   CorePlugin,
@@ -18,6 +19,9 @@ import type { ChannelStore } from "./types"
 import { ensureDocumentSpeakers } from "./helpers/ensureDocumentSpeakers"
 import { ensureSpeakersFromTurns } from "./helpers/ensureSpeakersFromTurns"
 import * as utils from "../utils"
+
+/** 1.125rem, the --font-size-base the transcript used before it was tunable. */
+const DEFAULT_TRANSCRIPT_FONT_SIZE = 18
 
 // No backend can generate this — it's just the turns joined into text — so
 // it's the one format the core always offers and fulfills itself.
@@ -49,6 +53,23 @@ export function createCore(options: CoreOptions = {}): Core {
   // ── Event bus ──────────────────────────────────────────────────────
 
   const { on, off, emit, clear: clearEvents } = createEventBus<CoreEventMap>()
+
+  // ── Reading ────────────────────────────────────────────────────────
+
+  const transcriptFontSize = ref(DEFAULT_TRANSCRIPT_FONT_SIZE)
+  const theme = ref<EditorTheme>("light")
+  const primaryColor = ref<string | null>(null)
+  // Announced like the reading size: the editor applies the theme to its own
+  // root, and a host that wants its chrome to follow listens for it.
+  const stopThemeSync = watch(theme, (next) =>
+    emit("theme:change", { theme: next }),
+  )
+  // Announced rather than stored: the editor keeps no preferences of its own
+  // (it holds no storage at all), so a host that wants this to survive a
+  // reload listens and restores it — the same deal as the watermark.
+  const stopFontSizeSync = watch(transcriptFontSize, (fontSize) =>
+    emit("transcript:fontSize", { fontSize }),
+  )
 
   // ── Layout chrome ──────────────────────────────────────────────────
 
@@ -172,6 +193,8 @@ export function createCore(options: CoreOptions = {}): Core {
     cleanups.forEach((fn) => fn())
     cleanups.length = 0
     for (const channel of channels.values()) channel.dispose()
+    stopFontSizeSync()
+    stopThemeSync()
     viewport.destroy()
     clearEvents()
   }
@@ -194,6 +217,9 @@ export function createCore(options: CoreOptions = {}): Core {
     speakers,
     channels,
     activeChannel,
+    transcriptFontSize,
+    theme,
+    primaryColor,
     isMobile: viewport.isMobile,
     sidebarOpen,
     setSidebarOpen,

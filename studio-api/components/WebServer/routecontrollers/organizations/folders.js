@@ -134,22 +134,6 @@ function filterTreeByAccess(tree, userId, userRole) {
 
 // --- Visibility sync helpers ---
 
-async function syncConversationsRights(
-  conversationIds,
-  membersRight,
-  customRights,
-  organizationId,
-) {
-  for (const convId of conversationIds) {
-    await model.conversations.updateRights(
-      convId,
-      organizationId,
-      membersRight,
-      customRights,
-    )
-  }
-}
-
 async function syncFolderVisibility(
   folderId,
   organizationId,
@@ -694,17 +678,6 @@ async function moveConversation(req, res, next) {
       organizationId,
     )
 
-    const membersRight =
-      folder.visibility === "private" ? RIGHTS.UNDEFINED : RIGHTS.READ
-    const customRights =
-      folder.visibility === "private" ? folder.members || [] : []
-    await syncConversationsRights(
-      [conversationId],
-      membersRight,
-      customRights,
-      organizationId,
-    )
-
     if (this?.app?.components?.IoHandler) {
       this.app.components.IoHandler.emit("folders_refresh", organizationId)
       this.app.components.IoHandler.emit(
@@ -758,12 +731,6 @@ async function uncategorizeConversations(req, res, next) {
     await model.conversations.updateFolderBatch(
       conversationIds,
       null,
-      organizationId,
-    )
-    await syncConversationsRights(
-      conversationIds,
-      RIGHTS.READ,
-      [],
       organizationId,
     )
 

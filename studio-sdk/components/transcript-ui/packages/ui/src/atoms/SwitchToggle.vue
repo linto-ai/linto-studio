@@ -50,21 +50,24 @@ const inputId = props.id ?? useId()
   border: 0;
 }
 
+/* Track and outline are two roles, hence two tokens: reusing --color-border
+   for both collapsed into a white blob once that token went white for the
+   dark theme. The outline is what makes the knob readable. */
 .switch label {
   height: 20px;
   width: 40px;
   display: block;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-switch-border);
   border-radius: 20px;
   cursor: pointer;
-  background-color: var(--color-border);
+  background-color: var(--color-switch-track);
   transition: background-color var(--transition-duration);
 }
 
 .switch .switch-slider {
   height: 22px;
   width: 22px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-switch-border);
   border-radius: 50%;
   position: relative;
   top: -2px;

@@ -1373,7 +1373,7 @@
       "session_ended_link_to_inbox": "Accéder à la bibliothèque des médias",
       "session_not_started_title": "La session n'a pas encore commencé",
       "settings_button": "Paramètres",
-      "partials_button": "Afficher le texte en cours de transcription",
+      "editor_sidebar_button": "Afficher les réglages de la transcription",
       "delete_session_button": "Supprimer la session",
       "stop_button": "Arrêter et enregistrer",
       "stop_force_button": "Forcer l'arrêt",

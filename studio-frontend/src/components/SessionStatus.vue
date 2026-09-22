@@ -116,7 +116,7 @@ export default {
 .session-on-air {
   border-radius: 55px;
   //background-color: red;
-  color: var(--red-chart);
+  color: var(--danger-color);
   font-weight: bold;
   font-variant: all-petite-caps;
   .icon {
@@ -134,7 +134,7 @@ export default {
 }
 
 .session-on-air.session-on-air--off {
-  color: #62111e;
+  color: var(--led-off);
 }
 
 .session-on-air.session-on-air--paused {

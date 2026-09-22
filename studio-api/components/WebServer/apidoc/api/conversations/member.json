@@ -299,6 +299,49 @@
           "$ref": "#/components/responses/NotFound"
         }
       }
+    },
+    "patch": {
+      "tags": ["conversations member"],
+      "summary": "Update the default right of the organization members on the conversation",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["membersRight"],
+              "properties": {
+                "membersRight": {
+                  "type": "integer",
+                  "description": "Right bitmask applied to the organization members (0 = no access)"
+                }
+              }
+            },
+            "example": {
+              "membersRight": 1
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
     }
   },
   "/api/conversations/{conversationId}/download": {

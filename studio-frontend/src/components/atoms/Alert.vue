@@ -99,13 +99,13 @@ export default {
     border-color: var(--primary-color);
   }
   &.alert-warning .modal {
-    border-color: var(--warning-color, #ffb300);
+    border-color: var(--warning-color);
   }
   &.alert-danger .modal {
-    border-color: var(--danger-color, #e53935);
+    border-color: var(--danger-color);
   }
   &.alert-success .modal {
-    border-color: var(--success-color, #43a047);
+    border-color: var(--success-color);
   }
 }
 .alert-content {

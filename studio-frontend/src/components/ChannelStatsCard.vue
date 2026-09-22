@@ -234,14 +234,14 @@ export default {
   background: var(--background-primary);
   border-radius: 8px;
   border: 1px solid var(--neutral-20);
-  padding: var(--medium-gap, 1rem);
-  box-shadow: var(--shadow-2, 0 1px 3px rgba(0, 0, 0, 0.1));
+  padding: var(--medium-gap);
+  box-shadow: var(--shadow-2);
   transition:
     box-shadow 0.2s ease,
     transform 0.2s ease;
 
   &:hover {
-    box-shadow: var(--shadow-3, 0 4px 6px rgba(0, 0, 0, 0.1));
+    box-shadow: var(--shadow-3);
   }
 
   &:focus-within {
@@ -251,13 +251,13 @@ export default {
 }
 
 .channel-stats-card__header {
-  margin-bottom: var(--small-gap, 0.75rem);
+  margin-bottom: var(--small-gap);
 }
 
 .channel-stats-card__title-row {
   display: flex;
   align-items: center;
-  gap: var(--small-gap, 0.5rem);
+  gap: var(--small-gap);
   flex-wrap: wrap;
 }
 
@@ -295,13 +295,13 @@ export default {
 .channel-stats-card__stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--small-gap, 0.75rem);
-  margin-bottom: var(--medium-gap, 1rem);
+  gap: var(--small-gap);
+  margin-bottom: var(--medium-gap);
 }
 
 .channel-stats-card__timeline {
-  margin-top: var(--small-gap, 0.75rem);
-  padding-top: var(--small-gap, 0.75rem);
+  margin-top: var(--small-gap);
+  padding-top: var(--small-gap);
   border-top: 1px solid var(--neutral-10);
 }
 

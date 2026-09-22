@@ -70,26 +70,26 @@ export default {
 
 .info-row__icon {
   flex: 0 0 auto;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
 }
 
 .info-row__label {
   flex: 1;
   min-width: 0;
   font-size: 0.9rem;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
 }
 
 .info-row__value {
   font-weight: 600;
-  color: var(--text-primary, #222);
+  color: var(--text-primary);
   text-align: right;
 }
 
 .info-row__value--muted {
   font-weight: 400;
   font-style: italic;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
 }
 
 /* Array value: one item per line, right-aligned. */

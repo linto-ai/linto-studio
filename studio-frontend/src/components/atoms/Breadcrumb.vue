@@ -330,7 +330,7 @@ export default {
   h2 {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--color-text-primary, #2c3e50);
+    color: var(--text-primary);
   }
 
   li {
@@ -363,7 +363,7 @@ export default {
     &.is-active {
       .breadcrumb-text {
         font-weight: 600;
-        color: var(--color-text-primary, #2c3e50);
+        color: var(--text-primary);
       }
     }
   }
@@ -376,25 +376,25 @@ export default {
     transition: all 0.2s ease;
     text-decoration: underline;
     &:hover {
-      color: var(--color-primary, #007bff);
+      color: var(--primary-color);
       text-decoration: underline;
-      background-color: var(--color-bg-hover, #f8f9fa);
+      background-color: var(--neutral-10);
     }
 
     &:focus {
-      outline: 2px solid var(--color-primary, #007bff);
+      outline: 2px solid var(--primary-color);
       outline-offset: 2px;
     }
   }
 
   &-text {
     padding: 0.25rem 0.5rem;
-    color: var(--color-text-primary, #2c3e50);
+    color: var(--text-primary);
   }
 
   &-separator {
     margin: 0 0.5rem;
-    color: var(--color-text-muted, #6c757d);
+    color: var(--text-secondary);
     font-size: 0.875rem;
     user-select: none;
   }

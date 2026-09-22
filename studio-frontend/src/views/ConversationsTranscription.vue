@@ -1,7 +1,10 @@
 <template>
   <LayoutV2 noHeader>
     <div class="transcription-editor-wrapper">
-      <linto-editor ref="editor" :locale="$i18n.locale" />
+      <!-- no-theme-toggle: this view's chrome has no dark values, and unlike
+           the live session nothing here listens to "theme:change" — the
+           switch would darken the editor inside a light page. -->
+      <linto-editor ref="editor" :locale="$i18n.locale" no-theme-toggle />
     </div>
     <PublicationModal
       v-model="publicationModal.open"

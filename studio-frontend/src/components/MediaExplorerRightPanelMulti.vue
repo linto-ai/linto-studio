@@ -422,7 +422,7 @@ export default {
   display: block;
   font-weight: 600;
   font-size: 0.875rem;
-  color: var(--text-primary, #222);
+  color: var(--text-primary);
   line-height: 1.2;
   margin: 0;
 }
@@ -525,7 +525,7 @@ export default {
 
 .no-tags-message {
   font-size: 0.875rem;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
   font-style: italic;
 }
 </style>

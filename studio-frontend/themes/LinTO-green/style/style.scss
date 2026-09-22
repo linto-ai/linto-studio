@@ -7,8 +7,6 @@
   html[data-theme="dark"] body {
     --yellow-chart: #976400;
     --blue-chart: #479ae4;
-    --green-chart: #139177;
-    --red-chart: #c42653;
 
     --dark-100: #ccc;
     --dark-80: #aaa;
@@ -33,5 +31,10 @@
     --input-background: #1a1a1a;
 
     --selected-background: #13917833;
+
+    // The brand green only reaches 4.19:1 on --background-primary, under the
+    // 4.5:1 needed for text. Lightened here to 6.4:1, same hue.
+    --primary-color: #1bbd9b;
+    --primary-soft: #16332e;
   }
 }

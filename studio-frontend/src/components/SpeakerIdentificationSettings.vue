@@ -460,14 +460,14 @@ export default {
   &__gate-icon {
     display: flex;
     justify-content: center;
-    color: var(--orange-chart, #ff9800);
+    color: var(--warning-color);
     margin-bottom: 0.25rem;
   }
 
   &__gate-emphasis {
     padding: 0.75rem 1rem;
-    background: var(--orange-soft, #fff3e0);
-    border-left: 3px solid var(--orange-chart, #ff9800);
+    background: var(--warning-soft);
+    border-left: 3px solid var(--warning-color);
     border-radius: 4px;
     font-weight: 500;
   }
@@ -478,8 +478,8 @@ export default {
     gap: 0.5rem;
     padding: 0.75rem 1rem;
     margin: 0.5rem 0 1rem;
-    background: var(--orange-soft, #fff3e0);
-    border: 1px solid var(--orange-chart, #ff9800);
+    background: var(--warning-soft);
+    border: 1px solid var(--warning-color);
     border-radius: 6px;
     font-size: 13px;
     color: var(--text-primary);
@@ -548,7 +548,7 @@ export default {
 
     &:focus {
       outline: none;
-      border-color: var(--primary-hard);
+      border-color: var(--primary-color);
     }
   }
 
@@ -581,8 +581,8 @@ export default {
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     margin: 0.5rem 0 0;
-    background: var(--orange-soft, #fff3e0);
-    border: 1px solid var(--orange-chart, #ff9800);
+    background: var(--warning-soft);
+    border: 1px solid var(--warning-color);
     border-radius: 6px;
     font-size: 12px;
     color: var(--text-primary);

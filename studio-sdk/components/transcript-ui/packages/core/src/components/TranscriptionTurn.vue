@@ -4,7 +4,7 @@ import { computed, ref, useTemplateRef } from "vue"
 import SpeakerLabel from "./SpeakerLabel.vue"
 import MergeTurnsButton from "./molecules/MergeTurnsButton.vue"
 import SpeakerPopover from "./molecules/SpeakerPopover.vue"
-import { useCore } from "../core"
+import { useCore, CROSS_TRANSLATION_ID } from "../core"
 import { useTurnSelection } from "../composables/useTurnSelection"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import * as utils from "../utils"
@@ -47,6 +47,15 @@ const isTurnActive = computed(() => {
 
 const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 
+// On a real translation track every turn is in the same language and the
+// selector already names it. The source keeps it — a channel can be
+// multilingual — and so does cross mode, where turns alternate on purpose.
+const showLanguage = computed(() => {
+  const active = core.activeChannel.value?.activeTranslation.value
+  if (!active) return true
+  return active.isSource || active.id === CROSS_TRANSLATION_ID
+})
+
 const isSelected = computed(() => selection.isSelected(props.turn.id))
 
 const checkboxLabel = computed(() => {
@@ -77,6 +86,12 @@ const turnLock = computed(() =>
     ? undefined
     : core.transcriptionEditor?.getTurnLock(props.turn.id),
 )
+
+// Both things that can fill the header's action slot — the save/cancel pair
+// while editing, another session's lock avatar otherwise — come from the
+// transcription editor. Without that plugin (a live session) the row can
+// never host anything, so it has no height to reserve.
+const hasEditActions = computed(() => core.transcriptionEditor !== undefined)
 
 const lockedByLabel = computed(() =>
   turnLock.value
@@ -202,7 +217,11 @@ function onCheckboxChange(event: MouseEvent) {
       v-if="previousTurnId && !partial && !live"
       :first-turn-id="previousTurnId"
       :second-turn-id="turn.id" />
-    <div v-if="!partial" class="turn-header" @click="onHeaderClick">
+    <div
+      v-if="!partial"
+      class="turn-header"
+      :class="{ 'turn-header--with-actions': hasEditActions }"
+      @click="onHeaderClick">
       <EditorCheckbox
         v-if="selection.hasSelection.value"
         :model-value="isSelected"
@@ -218,6 +237,7 @@ function onCheckboxChange(event: MouseEvent) {
           :start-time="turn.startTime"
           :start-date="turn.startDate"
           :language="turn.language"
+          :show-language="showLanguage"
           interactive />
       </SpeakerPopover>
       <button
@@ -230,6 +250,7 @@ function onCheckboxChange(event: MouseEvent) {
           :start-time="turn.startTime"
           :start-date="turn.startDate"
           :language="turn.language"
+          :show-language="showLanguage"
           interactive />
       </button>
       <SpeakerLabel
@@ -237,7 +258,8 @@ function onCheckboxChange(event: MouseEvent) {
         :speaker="speaker"
         :start-time="turn.startTime"
         :start-date="turn.startDate"
-        :language="turn.language" />
+        :language="turn.language"
+        :show-language="showLanguage" />
       <div v-if="isEditing || turnLock" class="turn-edit-actions">
         <template v-if="isEditing">
           <Button
@@ -308,8 +330,13 @@ function onCheckboxChange(event: MouseEvent) {
   user-select: none;
   border-radius: var(--radius-sm);
   padding: var(--spacing-xxs) 0;
-  /* Reserve the edit-actions height (Button sm) so entering/leaving edit
-     mode never shifts the layout. */
+}
+
+/* Reserve the edit-actions height (Button sm) so entering/leaving edit mode
+   never shifts the layout — but only where those actions can appear at all.
+   Read-only, the row holds a line of metadata and has no reason to be 36px
+   tall. */
+.turn-header--with-actions {
   min-height: 36px;
 }
 
@@ -339,7 +366,7 @@ function onCheckboxChange(event: MouseEvent) {
 
 .turn-text {
   margin-top: var(--spacing-xs);
-  font-size: var(--font-size-base);
+  font-size: var(--transcript-font-size);
   line-height: var(--line-height);
   color: var(--color-text-primary);
 }

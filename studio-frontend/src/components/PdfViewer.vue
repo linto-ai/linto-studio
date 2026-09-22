@@ -163,7 +163,7 @@ export default {
   justify-content: center;
   gap: 12px;
   padding: 24px;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -181,7 +181,7 @@ export default {
   justify-content: flex-end;
   gap: 8px;
   padding: 8px 12px;
-  background: var(--background-primary, white);
+  background: var(--background-primary);
   border-top: 1px solid var(--border-color, #e0e0e0);
 }
 

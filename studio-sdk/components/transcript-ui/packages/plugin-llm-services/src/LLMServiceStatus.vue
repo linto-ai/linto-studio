@@ -41,11 +41,11 @@ const label = computed(() =>
 }
 
 .llm-service-status--ok {
-  color: var(--color-success, #2e7d32);
+  color: var(--color-success);
 }
 
 .llm-service-status--warn {
-  color: var(--color-warning, #ed6c02);
+  color: var(--color-warning);
 }
 
 .llm-service-status :deep(.editor-icon) {

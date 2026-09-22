@@ -21,6 +21,10 @@ _2026_09_18_
   - Live sessions: option to hide the text being transcribed; on phones the header button toggles it, a typing bubble shows that someone is speaking
   - Mobile app: record and live are only offered when the organization allows them
   - Mobile app: phones are only sent to `/m/` from the root, shared links and session QR codes open as is
+- Hotfix (2026_09_22)
+  - Live sessions: transcription text size setting; dark / high-contrast theme for the session view
+  - Transcript: speaker and language hidden outside edition, and when the language is already the reader's
+  - Sessions: `meta.membersRight` accepted at creation and applied to the conversation; moving a media between folders no longer rewrites its rights
 
 # 1.8.7
 

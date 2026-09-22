@@ -198,14 +198,14 @@ export default {
 .session-stats__content {
   display: flex;
   flex-direction: column;
-  gap: var(--medium-gap, 1.5rem);
+  gap: var(--medium-gap);
   animation: fadeIn 0.3s ease-out;
 }
 
 .session-stats__section {
   background: var(--background-primary);
   border-radius: 12px;
-  padding: var(--medium-gap, 1.25rem);
+  padding: var(--medium-gap);
   border: 1px solid var(--neutral-10);
 }
 
@@ -216,7 +216,7 @@ export default {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 var(--medium-gap, 1rem) 0;
+  margin: 0 0 var(--medium-gap) 0;
 
   .icon-svg {
     color: var(--primary-color);
@@ -227,7 +227,7 @@ export default {
 .session-stats__channels-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--small-gap, 1rem);
+  gap: var(--small-gap);
 }
 
 .session-stats__no-channels {

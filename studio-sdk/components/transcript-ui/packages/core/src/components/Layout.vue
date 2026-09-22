@@ -18,10 +18,12 @@ const props = withDefaults(
   defineProps<{
     showHeader?: boolean
     showVerbatim?: boolean
+    showThemeToggle?: boolean
   }>(),
   {
     showHeader: true,
     showVerbatim: true,
+    showThemeToggle: true,
   },
 )
 
@@ -202,6 +204,7 @@ function onTranslationChange(translationId: string) {
         :translations="translations"
         :selected-translation-id="activeTranslationId"
         :show-speakers="showTranscription"
+        :show-theme-toggle="props.showThemeToggle"
         @update:selected-channel-id="onChannelChange"
         @update:selected-translation-id="onTranslationChange" />
 
@@ -216,6 +219,7 @@ function onTranslationChange(translationId: string) {
           :translations="translations"
           :selected-translation-id="activeTranslationId"
           :show-speakers="showTranscription"
+        :show-theme-toggle="props.showThemeToggle"
           @update:selected-channel-id="onChannelChange"
           @update:selected-translation-id="onTranslationChange" />
       </SidebarDrawer>
