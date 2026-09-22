@@ -32,7 +32,7 @@ button#conversation-share {
 .conversation-line {
   &.error {
     .conversation-line--name > * {
-      color: var(--red-chart) !important;
+      color: var(--danger-color) !important;
     }
   }
 }

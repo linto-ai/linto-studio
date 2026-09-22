@@ -214,7 +214,7 @@ export default {
   &__display {
     padding: 0.5rem;
     border: 1px solid transparent;
-    border-radius: var(--border-radius-sm, 4px);
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
     transition: all 0.2s ease;
     min-height: 1.2em;
@@ -222,12 +222,12 @@ export default {
     line-height: 1.4;
 
     &:hover {
-      background-color: var(--neutral-10, rgba(0, 0, 0, 0.05));
-      border-color: var(--neutral-30, rgba(0, 0, 0, 0.1));
+      background-color: var(--neutral-10);
+      border-color: var(--neutral-30);
     }
 
     &--empty {
-      color: var(--text-secondary, #999);
+      color: var(--text-secondary);
       font-style: italic;
     }
 
@@ -247,18 +247,18 @@ export default {
     flex: 1;
     padding: 0.5rem;
     border: var(--border-input);
-    border-radius: var(--border-radius-sm, 4px);
+    border-radius: var(--border-radius-sm);
     font-family: inherit;
     font-size: inherit;
     line-height: 1.4;
     outline: none;
     transition: border-color 0.2s ease;
-    background-color: var(--background-primary, white);
-    color: var(--text-primary, black);
+    background-color: var(--background-primary);
+    color: var(--text-primary);
 
     &:focus {
-      border-color: var(--primary-color, #007bff);
-      box-shadow: 0 0 0 2px var(--primary-soft, rgba(0, 123, 255, 0.25));
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px var(--primary-soft);
     }
 
     &--multiline {
@@ -282,8 +282,8 @@ export default {
   /* Highlight and smooth UX during editing */
   &--editing {
     .text-input__input {
-      border-color: var(--primary-color, #007bff);
-      box-shadow: 0 0 0 3px var(--primary-soft, rgba(0, 123, 255, 0.25));
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px var(--primary-soft);
     }
 
     .text-input__actions {
@@ -310,7 +310,7 @@ export default {
     display: block;
     margin-bottom: 0.25rem;
     font-weight: 600;
-    color: var(--text-primary, #222);
+    color: var(--text-primary);
     line-height: 1.2;
   }
 
@@ -325,22 +325,22 @@ export default {
   }
 
   &__helper {
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
   }
 
   &__error {
-    color: var(--danger-color, #dc3545);
+    color: var(--danger-color);
   }
 
   &__counter {
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
     margin-left: auto;
   }
 
   /* Error state */
   &--error {
     .text-input__input {
-      border-color: var(--danger-color, #dc3545);
+      border-color: var(--danger-color);
     }
   }
 }

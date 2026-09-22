@@ -4,6 +4,7 @@ import type { Channel, EditorDocument } from "../types/editor"
 import type {
   Core,
   CoreOptions,
+  EditorTheme,
   CoreEventMap,
   CoreCapabilities,
   CorePlugin,
@@ -56,6 +57,13 @@ export function createCore(options: CoreOptions = {}): Core {
   // ── Reading ────────────────────────────────────────────────────────
 
   const transcriptFontSize = ref(DEFAULT_TRANSCRIPT_FONT_SIZE)
+  const theme = ref<EditorTheme>("light")
+  const primaryColor = ref<string | null>(null)
+  // Announced like the reading size: the editor applies the theme to its own
+  // root, and a host that wants its chrome to follow listens for it.
+  const stopThemeSync = watch(theme, (next) =>
+    emit("theme:change", { theme: next }),
+  )
   // Announced rather than stored: the editor keeps no preferences of its own
   // (it holds no storage at all), so a host that wants this to survive a
   // reload listens and restores it — the same deal as the watermark.
@@ -186,6 +194,7 @@ export function createCore(options: CoreOptions = {}): Core {
     cleanups.length = 0
     for (const channel of channels.values()) channel.dispose()
     stopFontSizeSync()
+    stopThemeSync()
     viewport.destroy()
     clearEvents()
   }
@@ -209,6 +218,8 @@ export function createCore(options: CoreOptions = {}): Core {
     channels,
     activeChannel,
     transcriptFontSize,
+    theme,
+    primaryColor,
     isMobile: viewport.isMobile,
     sidebarOpen,
     setSidebarOpen,

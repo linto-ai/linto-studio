@@ -311,7 +311,7 @@ export default {
   width: 600px;
   max-width: 100vw;
   height: 100%;
-  background: var(--background-primary, white);
+  background: var(--background-primary);
   box-shadow: -4px 0 16px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
@@ -323,7 +323,7 @@ export default {
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--dark-40, #e1e1e1);
+  border-bottom: 1px solid var(--dark-40);
   flex-shrink: 0;
 }
 
@@ -352,7 +352,7 @@ export default {
 .chat-drawer__sidebar {
   width: 180px;
   flex-shrink: 0;
-  border-right: 1px solid var(--dark-40, #e1e1e1);
+  border-right: 1px solid var(--dark-40);
   display: flex;
   flex-direction: column;
   background: var(--background-secondary, #fafafa);
@@ -369,7 +369,7 @@ export default {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--dark-70, #777);
+  color: var(--dark-70);
   letter-spacing: 0.05em;
 }
 
@@ -383,12 +383,12 @@ export default {
   background: transparent;
   border-radius: 4px;
   cursor: pointer;
-  color: var(--dark-70, #777);
+  color: var(--dark-70);
   padding: 0;
 
   &:hover {
-    background: var(--neutral-20, #e0e0e0);
-    color: var(--text-primary, #333);
+    background: var(--neutral-20);
+    color: var(--text-primary);
   }
 }
 
@@ -407,7 +407,7 @@ export default {
   transition: background 0.1s;
 
   &:hover {
-    background: var(--neutral-10, #f0f0f0);
+    background: var(--neutral-10);
 
     .chat-drawer__session-actions {
       opacity: 1;
@@ -415,8 +415,8 @@ export default {
   }
 
   &--active {
-    background: var(--primary-soft, #f2fbf8);
-    border-left-color: var(--primary-color, #11977c);
+    background: var(--primary-soft);
+    border-left-color: var(--primary-color);
   }
 }
 
@@ -447,16 +447,16 @@ export default {
   background: transparent;
   border-radius: 4px;
   cursor: pointer;
-  color: var(--dark-70, #777);
+  color: var(--dark-70);
   padding: 0;
 
   &:hover {
-    background: var(--neutral-20, #e0e0e0);
-    color: var(--text-primary, #333);
+    background: var(--neutral-20);
+    color: var(--text-primary);
   }
 
   &--delete:hover {
-    background: var(--red-soft, #fde8e8);
+    background: var(--danger-soft);
     color: var(--color-error, #d32f2f);
   }
 }
@@ -470,7 +470,7 @@ export default {
   width: 100%;
   font-size: 13px;
   padding: 2px 4px;
-  border: 1px solid var(--primary-color, #11977c);
+  border: 1px solid var(--primary-color);
   border-radius: 3px;
   outline: none;
   font-family: inherit;
@@ -492,7 +492,7 @@ export default {
   justify-content: space-between;
   gap: 8px;
   padding: 8px 16px;
-  background: var(--red-soft, #fde8e8);
+  background: var(--danger-soft);
   border-bottom: 1px solid var(--color-error, #d32f2f);
   font-size: 13px;
   flex-shrink: 0;
@@ -539,7 +539,7 @@ export default {
   justify-content: center;
   height: 100%;
   gap: 16px;
-  color: var(--dark-70, #777);
+  color: var(--dark-70);
   font-size: 14px;
 }
 
@@ -556,8 +556,8 @@ export default {
     justify-content: flex-end;
 
     .chat-drawer__message-bubble {
-      background: var(--primary-color, #11977c);
-      color: var(--primary-contrast, white);
+      background: var(--primary-color);
+      color: var(--primary-contrast);
       border-radius: 12px 12px 4px 12px;
     }
   }
@@ -566,15 +566,15 @@ export default {
     justify-content: flex-start;
 
     .chat-drawer__message-bubble {
-      background: var(--dark-20, #f5f5f5);
-      color: var(--dark-100, #333);
+      background: var(--dark-20);
+      color: var(--dark-100);
       border-radius: 12px 12px 12px 4px;
     }
   }
 
   &--streaming {
     .chat-drawer__message-bubble {
-      border: 1px solid var(--primary-color, #11977c);
+      border: 1px solid var(--primary-color);
     }
   }
 }
@@ -601,7 +601,7 @@ export default {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--primary-color, #11977c);
+    background: var(--primary-color);
     animation: chat-typing 1.2s infinite;
 
     &:nth-child(2) {
@@ -630,7 +630,7 @@ export default {
   display: flex;
   gap: 8px;
   padding: 12px 16px;
-  border-top: 1px solid var(--dark-40, #e1e1e1);
+  border-top: 1px solid var(--dark-40);
   align-items: flex-end;
   flex-shrink: 0;
 }
@@ -638,7 +638,7 @@ export default {
 .chat-drawer__textarea {
   flex: 1;
   resize: none;
-  border: 1px solid var(--dark-40, #e1e1e1);
+  border: 1px solid var(--dark-40);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 14px;
@@ -647,7 +647,7 @@ export default {
   outline: none;
 
   &:focus {
-    border-color: var(--primary-color, #11977c);
+    border-color: var(--primary-color);
   }
 
   &:disabled {
@@ -659,9 +659,9 @@ export default {
 .chat-drawer__streaming-bar {
   padding: 6px 16px;
   font-size: 12px;
-  color: var(--primary-color, #11977c);
+  color: var(--primary-color);
   text-align: center;
-  background: var(--primary-soft, rgb(242, 251, 248));
+  background: var(--primary-soft);
   flex-shrink: 0;
 }
 

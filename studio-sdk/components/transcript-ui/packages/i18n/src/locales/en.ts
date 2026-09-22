@@ -45,6 +45,8 @@ const en: Record<keyof typeof fr, string> = {
   'subtitle.showWatermark': 'Show watermark',
   'subtitle.pinWatermark': 'Pin watermark',
   'sidebar.transcription': 'Transcript',
+  'sidebar.appearance': 'Appearance',
+  'theme.highContrast': 'High contrast',
   'transcription.fontSize': 'Font size',
   'live.showPartials': 'Show in-progress text',
   'sidebar.subtitle': 'Subtitles',

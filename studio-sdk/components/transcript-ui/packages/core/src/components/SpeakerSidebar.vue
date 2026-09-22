@@ -52,6 +52,11 @@ function onToggleTts(value: boolean): void {
 // The switch is a bare checkbox with no built-in name, so the visible text
 // has to be a real <label> pointing at it.
 const partialsToggleId = useId()
+const darkThemeToggleId = useId()
+
+function onToggleDarkTheme(value: boolean): void {
+  core.theme.value = value ? "dark" : "light"
+}
 
 function onTogglePartials(value: boolean): void {
   if (!core.live) return
@@ -308,6 +313,20 @@ function onSelectVersion(versionNumber: number): void {
         </li>
       </ul>
     </section>
+    <!-- Its own section, and never gated: the theme belongs to the reader,
+         not to a plugin or to a live session. -->
+    <section class="sidebar-section">
+      <h2 class="sidebar-title">{{ t("sidebar.appearance") }}</h2>
+      <div class="subtitle-toggle">
+        <label class="subtitle-toggle-label" :for="darkThemeToggleId">
+          {{ t("theme.highContrast") }}
+        </label>
+        <SwitchToggle
+          :id="darkThemeToggleId"
+          :model-value="core.theme.value === 'dark'"
+          @update:model-value="onToggleDarkTheme" />
+      </div>
+    </section>
     <MergeDialog
       v-if="canEditSpeakers"
       v-model:open="mergeOpen"
@@ -416,7 +435,7 @@ label.subtitle-toggle-label {
 }
 
 .history-generation__status--completed {
-  color: var(--color-success, #2e7d32);
+  color: var(--color-success);
 }
 
 .history-generation__status--error {

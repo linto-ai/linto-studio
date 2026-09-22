@@ -367,7 +367,7 @@ now, let's copy them over.
     border-radius: 4px;
     padding: 1rem;
     box-shadow: var(--shadow-block);
-    border: 1px solid var(--primary-hard);
+    border: 1px solid var(--primary-color);
     display: flex;
     align-items: center;
     justify-content: center;

@@ -998,18 +998,18 @@ export default {
     margin-bottom: 0.75rem;
 
     &--ok {
-      background: var(--green-soft, #e8f5e9);
-      border-color: var(--green-chart, #4caf50);
+      background: var(--success-soft);
+      border-color: var(--success-color);
     }
 
     &--pending {
-      background: var(--primary-soft, #e3f2fd);
-      border-color: var(--primary-hard, #1976d2);
+      background: var(--primary-soft);
+      border-color: var(--primary-color);
     }
 
     &--error {
-      background: var(--red-soft, #fdecea);
-      border-color: var(--red-chart, #d32f2f);
+      background: var(--danger-soft);
+      border-color: var(--danger-color);
     }
   }
 
@@ -1039,15 +1039,15 @@ export default {
   }
 
   &__status-ok {
-    color: var(--green-chart, #4caf50);
+    color: var(--success-color);
   }
 
   &__status-error {
-    color: var(--red-chart, #d32f2f);
+    color: var(--danger-color);
   }
 
   &__status-spin {
-    color: var(--primary-hard, #1976d2);
+    color: var(--primary-color);
     animation: voice-optin-spin 1s linear infinite;
   }
 
@@ -1091,8 +1091,8 @@ export default {
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     margin: 0.5rem 0 0;
-    background: var(--primary-soft, #e3f2fd);
-    border: 1px solid var(--primary-hard, #1976d2);
+    background: var(--primary-soft);
+    border: 1px solid var(--primary-color);
     border-radius: 6px;
     font-size: 12px;
     color: var(--text-primary);
@@ -1104,8 +1104,8 @@ export default {
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     margin: 0.5rem 0 0;
-    background: var(--orange-soft, #fff3e0);
-    border: 1px solid var(--orange-chart, #ff9800);
+    background: var(--warning-soft);
+    border: 1px solid var(--warning-color);
     border-radius: 6px;
     font-size: 12px;
     color: var(--text-primary);
@@ -1211,7 +1211,7 @@ export default {
     gap: 0.25rem;
     background: none;
     border: none;
-    color: var(--primary-hard);
+    color: var(--primary-color);
     cursor: pointer;
     font-size: 13px;
     padding: 0;
@@ -1240,7 +1240,7 @@ export default {
   &__recording-indicator {
     width: 10px;
     height: 10px;
-    background: var(--red-chart);
+    background: var(--danger-color);
     border-radius: 50%;
     animation: pulse 1s infinite;
   }

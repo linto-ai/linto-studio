@@ -41,6 +41,49 @@ import { customDebug } from "@/tools/customDebug"
 
 const PAGE_SIZE = 50
 const TRANSCRIPT_FONT_SIZE_KEY = "editor.transcriptFontSize"
+const THEME_KEY = "editor.theme"
+
+// Same data-theme convention the app's own stylesheets already use.
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme
+}
+
+// The editor cannot read the app's palette through CSS (its own tokens sit
+// closer to its content than anything we set on <linto-editor>), so the brand
+// colour is pushed. It is re-read after every theme switch: each theme
+// declares its own primary for dark.
+function readBrandColor() {
+  return getComputedStyle(document.body)
+    .getPropertyValue("--primary-color")
+    .trim()
+}
+
+// Dark is scoped to the live pages, so the document goes back to its default
+// on the way out. Counted rather than cleared outright: the router creates the
+// next view before destroying this one, so a live-to-live navigation would
+// otherwise leave the page light after the new editor had already gone dark.
+let liveEditorCount = 0
+
+function clearTheme() {
+  delete document.documentElement.dataset.theme
+}
+
+function readStoredTheme() {
+  try {
+    const stored = localStorage.getItem(THEME_KEY)
+    return stored === "dark" || stored === "light" ? stored : null
+  } catch {
+    return null
+  }
+}
+
+function storeTheme(theme) {
+  try {
+    localStorage.setItem(THEME_KEY, theme)
+  } catch {
+    // ignored on purpose, see above
+  }
+}
 
 // Storage throws in a private window or with site data blocked, and a reading
 // preference is never worth breaking the session for. The band is a sanity
@@ -88,6 +131,7 @@ export default {
       offViewportChange: null,
       offSidebarOpen: null,
       offTranscriptFontSize: null,
+      offTheme: null,
       unwatchWatermarkHost: [],
       activeChannelIndex: null,
       historyOffset: 0,
@@ -126,6 +170,7 @@ export default {
     },
   },
   mounted() {
+    liveEditorCount++
     // setTimeout(() => {
     this.initEditor()
     this.aquireWakeLock()
@@ -137,6 +182,7 @@ export default {
     // }, 1000)
   },
   beforeDestroy() {
+    if (--liveEditorCount === 0) clearTheme()
     this.offChannelChange?.()
     this.offScrollTop?.()
     this.offSubtitle?.()
@@ -146,6 +192,7 @@ export default {
     this.offViewportChange?.()
     this.offSidebarOpen?.()
     this.offTranscriptFontSize?.()
+    this.offTheme?.()
     // The header outlives this component (the session may end while it is
     // open): tell it the editor's sidebar is gone rather than leaving it
     // with a button pointing at nothing.
@@ -225,6 +272,18 @@ export default {
         "transcript:fontSize",
         ({ fontSize }) => storeTranscriptFontSize(fontSize),
       )
+
+      // The editor owns the switch; the app follows so its own chrome — the
+      // layout, the header, the status banner — goes dark with it.
+      const storedTheme = readStoredTheme()
+      if (storedTheme !== null) core.theme.value = storedTheme
+      applyTheme(core.theme.value)
+      core.primaryColor.value = readBrandColor() || null
+      this.offTheme = core.on("theme:change", ({ theme }) => {
+        applyTheme(theme)
+        storeTheme(theme)
+        core.primaryColor.value = readBrandColor() || null
+      })
 
       this.livePlugin = createLivePlugin({
         tts: getEnv("VUE_APP_ENABLE_TTS") === "true",

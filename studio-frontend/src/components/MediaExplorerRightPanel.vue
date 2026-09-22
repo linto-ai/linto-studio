@@ -321,7 +321,7 @@ export default {
 .media-explorer-right-panel {
   position: relative;
   background-color: var(--background-color, #fff);
-  border-left: var(--border-block, 1px solid var(--neutral-30));
+  border-left: var(--border-block);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -343,7 +343,7 @@ export default {
 }
 
 .resize-handle:hover {
-  border-left-color: var(--primary-color, #007bff);
+  border-left-color: var(--primary-color);
 }
 
 .resize-handle::before {

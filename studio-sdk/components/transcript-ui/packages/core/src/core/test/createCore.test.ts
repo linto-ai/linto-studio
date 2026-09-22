@@ -166,3 +166,32 @@ describe("createCore — transcript font size", () => {
     expect(events).toBe(0)
   })
 })
+
+describe("createCore — theme", () => {
+  it("starts light and announces every switch", async () => {
+    const core = createCore()
+    const seen: string[] = []
+    core.on("theme:change", ({ theme }) => seen.push(theme))
+
+    expect(core.theme.value).toBe("light")
+
+    core.theme.value = "dark"
+    await nextTick()
+    core.theme.value = "light"
+    await nextTick()
+
+    expect(seen).toEqual(["dark", "light"])
+  })
+
+  it("stops announcing once destroyed", async () => {
+    const core = createCore()
+    let events = 0
+    core.on("theme:change", () => events++)
+
+    core.destroy()
+    core.theme.value = "dark"
+    await nextTick()
+
+    expect(events).toBe(0)
+  })
+})

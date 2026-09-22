@@ -43,6 +43,8 @@ const fr = {
   "subtitle.showWatermark": "Afficher le filigrane",
   "subtitle.pinWatermark": "Épingler le filigrane",
   "sidebar.transcription": "Transcription",
+  "sidebar.appearance": "Apparence",
+  "theme.highContrast": "Contraste élevé",
   "transcription.fontSize": "Taille de police",
   "live.showPartials": "Afficher le texte en cours",
   "sidebar.subtitle": "Sous-titres",

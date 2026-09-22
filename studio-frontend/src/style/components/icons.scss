@@ -136,7 +136,7 @@
     &.email-verified {
       margin: -3px 5px 0 5px;
       @include mixin.maskImage("@/../public/img/state-done.svg");
-      background-color: var(--green-chart);
+      background-color: var(--success-color);
     }
     &.send-mail {
       @include mixin.maskImage("@/../public/img/send-mail.svg");

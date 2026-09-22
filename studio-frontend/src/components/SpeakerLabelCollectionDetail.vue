@@ -405,7 +405,7 @@ export default {
     gap: 0.25rem;
     background: none;
     border: none;
-    color: var(--primary-hard);
+    color: var(--primary-color);
     cursor: pointer;
     font-size: 14px;
     padding: 0;
@@ -433,8 +433,8 @@ export default {
     gap: 0.5rem;
     padding: 0.75rem 1rem;
     margin-bottom: 1rem;
-    background: var(--primary-soft, #e3f2fd);
-    border: 1px solid var(--primary-hard, #1976d2);
+    background: var(--primary-soft);
+    border: 1px solid var(--primary-color);
     border-radius: 6px;
     font-size: 13px;
     color: var(--text-primary);
@@ -503,16 +503,16 @@ export default {
   }
 
   &__voiceprint-yes {
-    color: var(--green-chart, #4caf50);
+    color: var(--success-color);
   }
 
   &__voiceprint-no {
-    color: var(--neutral-40, #999);
+    color: var(--neutral-40);
   }
 
   &__edit-input {
     padding: 0.25rem 0.5rem;
-    border: 1px solid var(--primary-hard);
+    border: 1px solid var(--primary-color);
     border-radius: 4px;
     font-size: 14px;
     background: var(--background-primary);
@@ -546,7 +546,7 @@ export default {
 
     &:focus {
       outline: none;
-      border-color: var(--primary-hard);
+      border-color: var(--primary-color);
     }
   }
 }

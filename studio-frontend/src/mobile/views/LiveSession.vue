@@ -14,12 +14,17 @@
         </span>
       </span>
       <span class="m-grow"></span>
+      <!-- No accessibility mode in the mobile app: its own shell has no dark
+           values, so opening the editor's sidebar would offer a high-contrast
+           switch that darkens the transcript inside a light bar. The wiring
+           below stays in place — uncomment when the shell follows.
       <IconButton
         v-if="editorIsMobile"
         icon="sidebar-simple"
         :label="$t('mobile.live.settings')"
         :aria-expanded="String(editorSidebarOpen)"
         @click="toggleEditorSidebar" />
+      -->
       <IconButton
         :icon="wantsRecording ? 'microphone' : 'microphone-slash'"
         :label="

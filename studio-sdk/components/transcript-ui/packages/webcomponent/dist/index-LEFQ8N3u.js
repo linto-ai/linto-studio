@@ -9454,6 +9454,12 @@ function createCore(options = {}) {
   );
   const { on, off, emit: emit2, clear: clearEvents } = createEventBus();
   const transcriptFontSize = /* @__PURE__ */ ref(DEFAULT_TRANSCRIPT_FONT_SIZE);
+  const theme = /* @__PURE__ */ ref("light");
+  const primaryColor = /* @__PURE__ */ ref(null);
+  const stopThemeSync = watch(
+    theme,
+    (next2) => emit2("theme:change", { theme: next2 })
+  );
   const stopFontSizeSync = watch(
     transcriptFontSize,
     (fontSize) => emit2("transcript:fontSize", { fontSize })
@@ -9532,6 +9538,7 @@ function createCore(options = {}) {
     cleanups.length = 0;
     for (const channel of channels.values()) channel.dispose();
     stopFontSizeSync();
+    stopThemeSync();
     viewport.destroy();
     clearEvents();
   }
@@ -9549,6 +9556,8 @@ function createCore(options = {}) {
     channels,
     activeChannel,
     transcriptFontSize,
+    theme,
+    primaryColor,
     isMobile: viewport.isMobile,
     sidebarOpen,
     setSidebarOpen,
@@ -10236,8 +10245,8 @@ const _sfc_main$P = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$G = "\n.copy-btn--copied[data-v-5b088678] {\n  color: var(--color-success, #2e7d32);\n}\n.copy-icon-enter-active[data-v-5b088678],\n.copy-icon-leave-active[data-v-5b088678] {\n  transition:\n    opacity var(--transition-duration) ease,\n    scale var(--transition-duration) ease;\n}\n.copy-icon-enter-from[data-v-5b088678] {\n  opacity: 0;\n  scale: 0.6;\n}\n.copy-icon-leave-to[data-v-5b088678] {\n  opacity: 0;\n  scale: 0.6;\n}\n@media (prefers-reduced-motion: reduce) {\n.copy-icon-enter-active[data-v-5b088678],\n  .copy-icon-leave-active[data-v-5b088678] {\n    transition: none;\n}\n}\n";
-const CopyButton = /* @__PURE__ */ _export_sfc(_sfc_main$P, [["styles", [_style_0$G]], ["__scopeId", "data-v-5b088678"]]);
+const _style_0$G = "\n.copy-btn--copied[data-v-7cea769e] {\n  color: var(--color-success);\n}\n.copy-icon-enter-active[data-v-7cea769e],\n.copy-icon-leave-active[data-v-7cea769e] {\n  transition:\n    opacity var(--transition-duration) ease,\n    scale var(--transition-duration) ease;\n}\n.copy-icon-enter-from[data-v-7cea769e] {\n  opacity: 0;\n  scale: 0.6;\n}\n.copy-icon-leave-to[data-v-7cea769e] {\n  opacity: 0;\n  scale: 0.6;\n}\n@media (prefers-reduced-motion: reduce) {\n.copy-icon-enter-active[data-v-7cea769e],\n  .copy-icon-leave-active[data-v-7cea769e] {\n    transition: none;\n}\n}\n";
+const CopyButton = /* @__PURE__ */ _export_sfc(_sfc_main$P, [["styles", [_style_0$G]], ["__scopeId", "data-v-7cea769e"]]);
 const fr = {
   "editor.loading": "Chargement…",
   "editor.loadError": "Erreur de chargement",
@@ -10283,6 +10292,8 @@ const fr = {
   "subtitle.showWatermark": "Afficher le filigrane",
   "subtitle.pinWatermark": "Épingler le filigrane",
   "sidebar.transcription": "Transcription",
+  "sidebar.appearance": "Apparence",
+  "theme.highContrast": "Contraste élevé",
   "transcription.fontSize": "Taille de police",
   "live.showPartials": "Afficher le texte en cours",
   "sidebar.subtitle": "Sous-titres",
@@ -10425,6 +10436,8 @@ const en = {
   "subtitle.showWatermark": "Show watermark",
   "subtitle.pinWatermark": "Pin watermark",
   "sidebar.transcription": "Transcript",
+  "sidebar.appearance": "Appearance",
+  "theme.highContrast": "High contrast",
   "transcription.fontSize": "Font size",
   "live.showPartials": "Show in-progress text",
   "sidebar.subtitle": "Subtitles",
@@ -10588,7 +10601,7 @@ const _sfc_main$O = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-8mgvdBYz.js");
+        const { highlightCode } = await import("./highlight-BiiYQANx.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -21873,8 +21886,8 @@ const _sfc_main$E = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$w = "\n.switch[data-v-44d0160b] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-44d0160b] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n.switch label[data-v-44d0160b] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-border);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-44d0160b] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-44d0160b] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-44d0160b] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n.switch input:disabled + label[data-v-44d0160b] {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n";
-const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["styles", [_style_0$w]], ["__scopeId", "data-v-44d0160b"]]);
+const _style_0$w = "\n.switch[data-v-7b13995e] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-7b13995e] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n\n/* Track and outline are two roles, hence two tokens: reusing --color-border\n   for both collapsed into a white blob once that token went white for the\n   dark theme. The outline is what makes the knob readable. */\n.switch label[data-v-7b13995e] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-switch-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-switch-track);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-7b13995e] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-switch-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-7b13995e] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-7b13995e] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n.switch input:disabled + label[data-v-7b13995e] {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n";
+const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["styles", [_style_0$w]], ["__scopeId", "data-v-7b13995e"]]);
 function computeInitials(name) {
   const words = name.trim().split(/\s+/).filter(Boolean);
   if (words.length === 0) return "?";
@@ -23662,7 +23675,7 @@ const _hoisted_1$n = {
 };
 function _sfc_render(_ctx, _cache) {
   return openBlock(), createElementBlock("svg", _hoisted_1$n, [..._cache[0] || (_cache[0] = [
-    createStaticVNode('<polygon points="331.5,533.5 331.5,520.5 702.5,428.5 705.5,443.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><polygon points="564.5,469.5 555.5,452.5 544.5,455.5 542.5,472.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><path d="m 317.61655,19.99224 c 0,0 79.97514,-5.452851 101.78654,56.34612 21.81141,61.79897 72.70468,172.67359 92.69846,189.03214 19.99379,16.35855 41.80519,59.98136 38.16995,74.52229" stroke="#3f3d56" stroke-miterlimit="10" stroke-width="9.08808"></path><path d="m 329.43106,19.083431 c 0,8.532657 -9.0733,15.449743 -23.62902,15.449743 -14.55571,0 -21.8114,-6.917086 -21.8114,-15.449743 0,-8.532657 7.25569,-15.4497427 21.8114,-15.4497427 14.55572,0 23.62902,6.9170857 23.62902,15.4497427 z" fill="currentColor" style="fill:#999999;"></path><polygon points="691.5,439.5 364.5,521.5 377.5,602.5 666.5,602.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-456.32371,-492.51252)"></polygon>', 5)
+    createStaticVNode('<polygon points="331.5,533.5 331.5,520.5 702.5,428.5 705.5,443.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><polygon points="564.5,469.5 555.5,452.5 544.5,455.5 542.5,472.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><path d="m 317.61655,19.99224 c 0,0 79.97514,-5.452851 101.78654,56.34612 21.81141,61.79897 72.70468,172.67359 92.69846,189.03214 19.99379,16.35855 41.80519,59.98136 38.16995,74.52229" stroke="currentColor" stroke-miterlimit="10" stroke-width="9.08808"></path><path d="m 329.43106,19.083431 c 0,8.532657 -9.0733,15.449743 -23.62902,15.449743 -14.55571,0 -21.8114,-6.917086 -21.8114,-15.449743 0,-8.532657 7.25569,-15.4497427 21.8114,-15.4497427 14.55572,0 23.62902,6.9170857 23.62902,15.4497427 z" fill="currentColor" style="fill:currentColor;opacity:0.6;"></path><polygon points="691.5,439.5 364.5,521.5 377.5,602.5 666.5,602.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-456.32371,-492.51252)"></polygon>', 5)
   ])]);
 }
 const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render]]);
@@ -24031,8 +24044,8 @@ const _sfc_main$o = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$k = "\n.transcription-panel[data-v-d24f35da] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.scroll-container[data-v-d24f35da] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-d24f35da] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-d24f35da]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-d24f35da] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-d24f35da] {\n  width: 120px;\n}\n.history-start[data-v-d24f35da] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button — placement lives on this wrapper, never on the\n   button itself: Button.vue's `.editor-btn` base rule resets `position` via\n   `all: unset` (and, in the webcomponent build, gets re-injected a second\n   time after everything else to reach teleported popovers/dialogs — see\n   packages/webcomponent/src/index.ts), so any positioning put directly on\n   the button is one rebuild away from being silently overridden again. */\n.resume-scroll-anchor[data-v-d24f35da] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  z-index: var(--z-sticky);\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.resume-scroll-btn[data-v-d24f35da] {\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-d24f35da],\n.fade-slide-leave-active[data-v-d24f35da] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-d24f35da],\n.fade-slide-leave-to[data-v-d24f35da] {\n  opacity: 0;\n  translate: 0 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-d24f35da],\n  .fade-slide-leave-active[data-v-d24f35da] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-d24f35da] {\n    padding: var(--spacing-md);\n}\n}\n";
-const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$k]], ["__scopeId", "data-v-d24f35da"]]);
+const _style_0$k = "\n.transcription-panel[data-v-7ccbf6e4] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.scroll-container[data-v-7ccbf6e4] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-7ccbf6e4] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-7ccbf6e4]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-7ccbf6e4] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-7ccbf6e4] {\n  width: 120px;\n}\n.history-start[data-v-7ccbf6e4] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button — placement lives on this wrapper, never on the\n   button itself: Button.vue's `.editor-btn` base rule resets `position` via\n   `all: unset` (and, in the webcomponent build, gets re-injected a second\n   time after everything else to reach teleported popovers/dialogs — see\n   packages/webcomponent/src/index.ts), so any positioning put directly on\n   the button is one rebuild away from being silently overridden again. */\n.resume-scroll-anchor[data-v-7ccbf6e4] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  z-index: var(--z-sticky);\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.resume-scroll-btn[data-v-7ccbf6e4] {\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: var(--color-surface) !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-7ccbf6e4],\n.fade-slide-leave-active[data-v-7ccbf6e4] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-7ccbf6e4],\n.fade-slide-leave-to[data-v-7ccbf6e4] {\n  opacity: 0;\n  translate: 0 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-7ccbf6e4],\n  .fade-slide-leave-active[data-v-7ccbf6e4] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-7ccbf6e4] {\n    padding: var(--spacing-md);\n}\n}\n";
+const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$k]], ["__scopeId", "data-v-7ccbf6e4"]]);
 const _hoisted_1$j = { class: "verbatim-panel" };
 const _hoisted_2$g = { class: "verbatim-panel__content" };
 const _hoisted_3$c = { class: "verbatim-panel__header" };
@@ -24371,6 +24384,10 @@ const _hoisted_27 = {
 };
 const _hoisted_28 = { class: "sidebar-title" };
 const _hoisted_29 = { class: "speaker-list" };
+const _hoisted_30 = { class: "sidebar-section" };
+const _hoisted_31 = { class: "sidebar-title" };
+const _hoisted_32 = { class: "subtitle-toggle" };
+const _hoisted_33 = ["for"];
 const _sfc_main$j = /* @__PURE__ */ defineComponent({
   __name: "SpeakerSidebar",
   props: {
@@ -24399,6 +24416,10 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
       else core.live.disableTTS();
     }
     const partialsToggleId = useId$1();
+    const darkThemeToggleId = useId$1();
+    function onToggleDarkTheme(value) {
+      core.theme.value = value ? "dark" : "light";
+    }
     function onTogglePartials(value) {
       if (!core.live) return;
       if (value) core.live.showPartials();
@@ -24642,6 +24663,20 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
             }), 128))
           ])
         ])) : createCommentVNode("", true),
+        createBaseVNode("section", _hoisted_30, [
+          createBaseVNode("h2", _hoisted_31, toDisplayString(unref(t2)("sidebar.appearance")), 1),
+          createBaseVNode("div", _hoisted_32, [
+            createBaseVNode("label", {
+              class: "subtitle-toggle-label",
+              for: unref(darkThemeToggleId)
+            }, toDisplayString(unref(t2)("theme.highContrast")), 9, _hoisted_33),
+            createVNode(unref(SwitchToggle), {
+              id: unref(darkThemeToggleId),
+              "model-value": unref(core).theme.value === "dark",
+              "onUpdate:modelValue": onToggleDarkTheme
+            }, null, 8, ["id", "model-value"])
+          ])
+        ]),
         canEditSpeakers.value ? (openBlock(), createBlock(MergeDialog, {
           key: 7,
           open: mergeOpen.value,
@@ -24652,8 +24687,8 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$h = "\n.speaker-sidebar[data-v-23a0c0f6] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-23a0c0f6] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-23a0c0f6] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-23a0c0f6] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-23a0c0f6] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-23a0c0f6]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-23a0c0f6] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-23a0c0f6] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-23a0c0f6] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\nlabel.subtitle-toggle-label[data-v-23a0c0f6] {\n  cursor: pointer;\n}\n.voice-playback-hint[data-v-23a0c0f6] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-23a0c0f6] {\n  color: var(--color-danger);\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-23a0c0f6] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-23a0c0f6] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-23a0c0f6] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-23a0c0f6] {\n  color: var(--color-success, #2e7d32);\n}\n.history-generation__status--error[data-v-23a0c0f6] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-23a0c0f6],\n.history-generation__status--queued[data-v-23a0c0f6] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-23a0c0f6] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-23a0c0f6] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-23a0c0f6] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-23a0c0f6] {\n    display: none;\n}\n}\n";
-const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["styles", [_style_0$h]], ["__scopeId", "data-v-23a0c0f6"]]);
+const _style_0$h = "\n.speaker-sidebar[data-v-a9f3f09e] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-a9f3f09e] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-a9f3f09e] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-a9f3f09e] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-a9f3f09e] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-a9f3f09e]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-a9f3f09e] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-a9f3f09e] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-a9f3f09e] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\nlabel.subtitle-toggle-label[data-v-a9f3f09e] {\n  cursor: pointer;\n}\n.voice-playback-hint[data-v-a9f3f09e] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-a9f3f09e] {\n  color: var(--color-danger);\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-a9f3f09e] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-a9f3f09e] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-a9f3f09e] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-a9f3f09e] {\n  color: var(--color-success);\n}\n.history-generation__status--error[data-v-a9f3f09e] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-a9f3f09e],\n.history-generation__status--queued[data-v-a9f3f09e] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-a9f3f09e] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-a9f3f09e] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-a9f3f09e] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-a9f3f09e] {\n    display: none;\n}\n}\n";
+const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["styles", [_style_0$h]], ["__scopeId", "data-v-a9f3f09e"]]);
 const _sfc_main$i = /* @__PURE__ */ defineComponent({
   __name: "SidebarDrawer",
   props: {
@@ -25044,7 +25079,7 @@ function useEditorReady(core) {
   });
   return { isLoading, error };
 }
-const _hoisted_1$c = { class: "transcript-ui-root" };
+const _hoisted_1$c = ["data-theme"];
 const _sfc_main$d = /* @__PURE__ */ defineComponent({
   __name: "TranscriptUI",
   props: {
@@ -25064,11 +25099,21 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
     );
     const core = createCore();
     provideCore(core);
+    const brandStyle = computed(
+      () => core.primaryColor.value ? {
+        "--color-primary": core.primaryColor.value,
+        "--color-primary-hover": `color-mix(in srgb, ${core.primaryColor.value} 85%, #000)`
+      } : void 0
+    );
     const { isLoading, error } = useEditorReady(core);
     onBeforeUnmount(() => core.destroy());
     __expose({ core });
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$c, [
+      return openBlock(), createElementBlock("div", {
+        class: "transcript-ui-root",
+        "data-theme": unref(core).theme.value,
+        style: normalizeStyle(brandStyle.value)
+      }, [
         unref(core).channels.size ? (openBlock(), createBlock(Layout, {
           key: 0,
           "show-header": !props.noHeader,
@@ -25078,7 +25123,7 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
           key: 1,
           message: unref(error)
         }, null, 8, ["message"])) : unref(isLoading) ? (openBlock(), createBlock(EditorLoadingOverlay, { key: 2 })) : createCommentVNode("", true)
-      ]);
+      ], 12, _hoisted_1$c);
     };
   }
 });
@@ -25112,6 +25157,10 @@ const _style_0$c = `
  *   --color-text-muted       Muted text (labels)
  *   --color-border           Borders
  *   --color-border-light     Light borders
+ *   --color-switch-track     Filled track of a switch that is off
+ *   --color-switch-border    Outline of a switch and of its knob
+ *   --color-success          Completed / copied states
+ *   --color-warning          In-progress, degraded states
  *
  * Typography, spacing, radius, and shadows are also overridable.
  *
@@ -25151,6 +25200,15 @@ const _style_0$c = `
   --color-danger: #e53935;
   --color-danger-hover: #c62828;
   --color-danger-soft: #fdecea;
+  /* A switch carries its state in one small shape, so it gets its own pair
+     rather than borrowing --color-border for both roles — which is what
+     collapsed into a white blob when that token went white for the dark
+     theme. The outline does the reading work: 3.6:1 against the track and
+     4.69:1 against the knob, where darkening the track alone caps at 2.1:1. */
+  --color-switch-track: #dee2e6;
+  --color-switch-border: #6c757d;
+  --color-success: #2e7d32;
+  --color-warning: #ed6c02;
 
   /* Typography */
   --font-family:
@@ -25203,6 +25261,53 @@ const _style_0$c = `
      and freezes weaker machines. Keep the semi-opaque background only. */
   --glass-background: rgba(255, 255, 255, 0.8);
   --glass-border: rgba(255, 255, 255, 0.3);
+}
+
+/* Dark theme — same data-theme convention as the host app. The attribute is
+   carried by the editor's own root (TranscriptUI binds it from core.theme),
+   so a host switches it through core.theme rather than by styling the
+   element from outside: a declaration here always wins over one on the
+   custom element, since this root is the closer ancestor.
+
+   Contrast against --color-surface: text-primary 13.6:1, text-secondary
+   10.8:1, text-muted 6.2:1, primary 5.8:1, danger 4.6:1 — every pair at or
+   above its light-theme counterpart. */
+.transcript-ui-root[data-theme="dark"] {
+  /* Native controls follow: the channel and translation selectors are real
+     <select> elements, and would otherwise stay white boxes — same for
+     scrollbars and range tracks. */
+  color-scheme: dark;
+
+  --color-background: #16181d;
+  --color-surface: #1e2127;
+  --color-surface-hover: #282c34;
+  --color-text-primary: #e9ecef;
+  --color-text-secondary: #ced4da;
+  /* White rather than a grey: in high contrast, a label that ranks below its
+     content still has to be read at a glance. */
+  --color-text-muted: #ffffff;
+  --color-primary: #7d95f7;
+  --color-primary-hover: #93a7f9;
+  /* High contrast first: outlines must be unmistakable on a dark surface —
+     the sidebar's edge, inputs, switches, buttons all read from this. */
+  --color-border: #ffffff;
+  --color-border-light: #9aa1ab;
+  --color-danger: #ef5350;
+  --color-danger-hover: #f77066;
+  --color-danger-soft: #3b2220;
+  --color-switch-track: #282c34;
+  --color-switch-border: #ffffff;
+  --color-success: #66bb6a;
+  --color-warning: #ffa726;
+
+  /* --color-white and --color-black keep their literal meaning: they name a
+     colour, not a role (the checkmark on a primary fill stays white). */
+
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55);
+
+  --glass-background: rgba(30, 33, 39, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.08);
 }
 .transcript-ui-root,
 :host {
@@ -29673,8 +29778,8 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$6 = "\n.llm-service-status[data-v-f6c4d61b] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-status--ok[data-v-f6c4d61b] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-status--warn[data-v-f6c4d61b] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-status[data-v-f6c4d61b] .editor-icon {\n  flex-shrink: 0;\n}\n.llm-service-status__label[data-v-f6c4d61b] {\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
-const LLMServiceStatus = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$6]], ["__scopeId", "data-v-f6c4d61b"]]);
+const _style_0$6 = "\n.llm-service-status[data-v-c0012514] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-status--ok[data-v-c0012514] {\n  color: var(--color-success);\n}\n.llm-service-status--warn[data-v-c0012514] {\n  color: var(--color-warning);\n}\n.llm-service-status[data-v-c0012514] .editor-icon {\n  flex-shrink: 0;\n}\n.llm-service-status__label[data-v-c0012514] {\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
+const LLMServiceStatus = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$6]], ["__scopeId", "data-v-c0012514"]]);
 const _hoisted_1$5 = { class: "llm-service-panel" };
 const _hoisted_2$5 = {
   key: 0,
@@ -30727,4 +30832,4 @@ export {
   purify as p,
   register as r
 };
-//# sourceMappingURL=index-Bx56fB_C.js.map
+//# sourceMappingURL=index-LEFQ8N3u.js.map

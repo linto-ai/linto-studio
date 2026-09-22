@@ -11,8 +11,8 @@
         :text="$t('app_settings_modal.email_not_verified')"
         icon="warning"
         :position="isMobile ? 'left' : 'bottom'"
-        backgroundColor="var(--red-chart)"
-        borderColor="var(--red-chart)"
+        backgroundColor="var(--danger-color)"
+        borderColor="var(--danger-color)"
         color="white"
         :maxWidth="isMobile ? 250 : 300"
         class="email-notification-tooltip">
@@ -98,7 +98,7 @@ export default {
   .notification-badge {
     width: 12px;
     height: 12px;
-    background-color: var(--red-chart);
+    background-color: var(--danger-color);
     border-radius: 50%;
     border: 2px solid white;
     cursor: pointer;

@@ -36,7 +36,10 @@
     --success-color: #{$greenHard};
     --success-soft: #{$greenSoft};
     --danger-color: #{$redHard};
-    --red-chart: #{$redHard}; // use danger-color instead
+    // The on-air LED, lit and extinguished. Deliberately not --danger-color:
+    // the two states have to stay distinguishable, and neither is an error.
+    --led-on: var(--danger-color);
+    --led-off: #62111e;
     --danger-soft: #{$redSoft};
     --danger-contrast: white;
     --warning-color: #{$yellowHard};
@@ -129,7 +132,54 @@
   }
 
   // @media (prefers-color-scheme: dark) {}
+  html[data-theme="dark"] {
+    // Native controls follow the theme: selects, scrollbars, range tracks and
+    // date pickers would otherwise stay light on a dark page.
+    color-scheme: dark;
+  }
+
   html[data-theme="dark"] body {
+    // Soft backgrounds are tints of their status colour: pale over white in
+    // light mode, so they have to become dark tints here rather than stay
+    // near-white blocks on a dark page.
+    // The brand red falls to 2.46:1 on --background-primary — unreadable.
+    // Lightened to 5.6:1, same family. No single red can serve both roles
+    // here: one light enough to read as text on a dark surface is too light
+    // to carry white text on top of it (2.7:1). So the pairing colour flips
+    // instead — that is exactly what --danger-contrast is for.
+    --danger-color: #ff6b81;
+    --danger-contrast: #000;
+
+    // High contrast first: input and block outlines have to be unmistakable
+    // on a dark surface, where the light-theme greys disappear.
+    // The extinguished red vanishes on a dark surface — white carries the
+    // "off" state instead, against the lit red of --led-on.
+    --led-off: #fff;
+
+    // Amber text on the dark amber background: 9.5:1. The light-theme value
+    // is a dark amber, which lands at 1.3:1 here.
+    --warning-text: #ffd68a;
+
+    // The --dark-* scale is inverted above but skipped its odd steps, so
+    // these kept their light-theme value on a dark page.
+    --dark-90: #bbb;
+    --dark-70: #888;
+    --dark-50: #555;
+
+    --border-input: 1px solid #fff;
+    --border-block: 1px solid #fff;
+
+    --danger-soft: #3a2224;
+    --warning-soft: #3a2f18;
+    --success-soft: #1b3327;
+
+    // The grey scale is inverted above (100 is the lightest in dark); these
+    // four steps were simply missing from it.
+    --neutral-90: #bbb;
+    --neutral-70: #888;
+    --neutral-50: #555;
+    --neutral-30: #333;
+
     --text-disabled: #666;
     --background-disabled: #333;
     --background-inset-section: rgb(51, 51, 51);

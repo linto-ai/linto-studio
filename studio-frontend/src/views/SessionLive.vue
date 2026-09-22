@@ -35,7 +35,7 @@
               v-if="editorIsMobile"
               @click="toggleEditorSidebar"
               variant="secondary"
-              icon="sidebar-simple"
+              icon="person-simple-circle"
               :aria-expanded="String(editorSidebarOpen)"
               :aria-label="$t('session.detail_page.editor_sidebar_button')"
               :title="$t('session.detail_page.editor_sidebar_button')" />
