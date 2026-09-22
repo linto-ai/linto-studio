@@ -81,12 +81,19 @@ async function listLlmServices(
   organizationId = null,
   securityLevel = null,
   userId = null,
+  scope = null,
 ) {
   try {
     const gateway_services = process.env.LLM_GATEWAY_SERVICES
     debug("Security level requested:", securityLevel)
     // V2 API endpoint with pagination
     let host = gateway_services + "/api/v1/services?page=1&page_size=100"
+
+    // Usage scope (gateway 2.6: `scopes` on a service, "linto", "meet"…): only
+    // the services listed for that client product. Meet asks for "meet".
+    if (scope) {
+      host += `&scope=${encodeURIComponent(scope)}`
+    }
 
     // Add organization filter if provided. The gateway returns global services
     // plus those whose allowed org/user lists include the caller.
@@ -136,6 +143,9 @@ async function listLlmServices(
             service_category: service.service_category || null,
             description: service.description,
             is_active: service.is_active,
+            // Usage scopes and free metadata (e.g. an `icon` the client shows).
+            scopes: service.scopes || [],
+            metadata: service.metadata || {},
             flavors: filteredFlavors,
           }
         })

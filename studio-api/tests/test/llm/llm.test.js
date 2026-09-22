@@ -99,6 +99,37 @@ describe("LLM Gateway V2 Integration", () => {
       expect(services[0].flavors[0]).toHaveProperty("is_default", true)
     })
 
+    it("forwards the usage scope and carries scopes + metadata through", async () => {
+      mockAxios.get.mockResolvedValue({
+        items: [
+          {
+            id: "s",
+            name: "Meeting minutes",
+            route: "meeting-minutes",
+            service_type: "summary",
+            description: { en: "Minutes" },
+            is_active: true,
+            scopes: ["linto", "meet"],
+            metadata: { icon: "file-text" },
+            flavors: [{ id: "f", name: "default", is_active: true, model: {} }],
+          },
+        ],
+        total: 1,
+        page: 1,
+        page_size: 100,
+        pages: 1,
+      })
+
+      const services = await listLlmServices(null, null, null, "meet")
+
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        "http://localhost:8010/api/v1/services?page=1&page_size=100&scope=meet",
+        expect.objectContaining({ timeout: expect.any(Number) })
+      )
+      expect(services[0].scopes).toEqual(["linto", "meet"])
+      expect(services[0].metadata).toEqual({ icon: "file-text" })
+    })
+
     it("should return empty array on API failure for graceful degradation", async () => {
       // Implementation returns [] on error instead of throwing
       // This allows the page to load with just Verbatim option when LLM Gateway is down

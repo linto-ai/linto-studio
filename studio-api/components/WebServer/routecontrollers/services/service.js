@@ -41,10 +41,13 @@ async function getLlmServices(req, res, next) {
     const securityLevel = req.query.securityLevel || null
     // Authenticated user, so user-scoped services are also returned
     const userId = req.payload?.data?.userId || null
+    // ?scope=meet: only the services listed for that client product
+    const scope = req.query.scope || null
     const services = await serviceUtility.listLlmServices(
       organizationId,
       securityLevel,
       userId,
+      scope,
     )
     res.status(200).send(services)
   } catch (err) {
