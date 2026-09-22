@@ -25,6 +25,8 @@ const {
   checkSessionMatchingOrganization,
   checkTemplateMatchingOrganization,
   checkChannelsSecurityLevel,
+  checkSessionMembersRight,
+  chainBeforeResult,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -200,7 +202,10 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/quickMeeting/",
             method: ["post"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: createQuickMeeting,
+            executeBeforeResult: chainBeforeResult(
+              checkSessionMembersRight,
+              createQuickMeeting,
+            ),
           },
           {
             path: "/organizations/:organizationId/quickMeeting/:id",
@@ -244,13 +249,19 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/",
             method: ["post"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: checkChannelsSecurityLevel,
+            executeBeforeResult: chainBeforeResult(
+              checkSessionMembersRight,
+              checkChannelsSecurityLevel,
+            ),
           },
           {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["put", "patch"],
             forwardParams: proxyForwardParams,
-            executeBeforeResult: checkSessionMatchingOrganization,
+            executeBeforeResult: chainBeforeResult(
+              checkSessionMatchingOrganization,
+              checkSessionMembersRight,
+            ),
           },
           {
             path: "/organizations/:organizationId/sessions/:id",
