@@ -24,6 +24,16 @@
         @click="changePlan(planKey)" />
     </div>
 
+    <h3>Manage the subscription (Stripe Customer Portal)</h3>
+    <div class="dev-subscribe__row">
+      <Button
+        variant="secondary"
+        size="sm"
+        :disabled="loading"
+        label="Open the portal (invoices, card, cancellation)"
+        @click="openPortal" />
+    </div>
+
     <h3>Add seats (Business only)</h3>
     <p class="dev-subscribe__balance">
       Current plan: <strong>{{ usageLabel }}</strong>
@@ -148,6 +158,7 @@ import {
   apiCreateSubscription,
   apiCreateCheckout,
   apiCreateCreditsCheckout,
+  apiCreatePortalSession,
   apiChangeSubscription,
   apiGetPacks,
   apiGetCredits,
@@ -335,8 +346,8 @@ export default {
       return `${pack.minutes} min (${price})`
     },
     // One-time payment through hosted Checkout, back here with ?type=credits
-    async buyPack(packKey) {
-      const res = await this.run(
+    buyPack(packKey) {
+      return this.runAndRedirect(
         `POST /cloud/checkout/credits packKey=${packKey}`,
         () =>
           apiCreateCreditsCheckout(
@@ -345,17 +356,29 @@ export default {
             { message: "redirecting to Stripe Checkout" },
           ),
       )
+    },
+    async runAndRedirect(label, call) {
+      const res = await this.run(label, call)
       if (res?.url) window.location.assign(res.url)
     },
-    async startCheckout(payload) {
-      const res = await this.run(
+    // Back here when the user leaves the portal
+    openPortal() {
+      return this.runAndRedirect("POST /cloud/portal", () =>
+        apiCreatePortalSession(
+          this.currentOrganization._id,
+          window.location.href,
+          { message: "redirecting to the Stripe portal" },
+        ),
+      )
+    },
+    startCheckout(payload) {
+      return this.runAndRedirect(
         `POST /cloud/checkout ${JSON.stringify(payload)}`,
         () =>
           apiCreateCheckout(payload, {
             message: "redirecting to Stripe Checkout",
           }),
       )
-      if (res?.url) window.location.assign(res.url)
     },
     // Updates the Stripe subscription in place, no Checkout
     async changePlan(planKey) {

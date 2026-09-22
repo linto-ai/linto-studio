@@ -127,6 +127,24 @@ export async function apiCreateCreditsCheckout(
   return res?.data
 }
 
+// POST /cloud/portal { organizationId, returnUrl? } -> { url, sessionId }
+// Stripe Customer Portal: invoices, payment method, billing details,
+// cancellation. The caller redirects the browser to url; 409 no_stripe_customer
+// when the org never paid.
+export async function apiCreatePortalSession(
+  organizationId,
+  returnUrl = null,
+  notif = null,
+) {
+  const res = await sendRequest(
+    `${CLOUD_API}/portal`,
+    { method: "post" },
+    { organizationId, returnUrl },
+    notif,
+  )
+  return res?.data
+}
+
 // POST /cloud/subscriptions/change { organizationId, planKey?, interval?, seats? }
 // -> updated subscription. Moves a billed org between paid plans, monthly and
 // yearly, or seat counts, in place with proration.
