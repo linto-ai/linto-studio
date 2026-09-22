@@ -24,6 +24,27 @@
         @click="changePlan(planKey)" />
     </div>
 
+    <h3>Add seats (Business only)</h3>
+    <p class="dev-subscribe__balance">
+      Current plan: <strong>{{ usageLabel }}</strong>
+      <Button
+        variant="secondary"
+        size="xs"
+        :disabled="loading"
+        label="Refresh"
+        @click="loadUsage" />
+    </p>
+    <div class="dev-subscribe__row">
+      <Button
+        v-for="count in seatIncrements"
+        :key="'seats-' + count"
+        variant="secondary"
+        size="sm"
+        :disabled="loading || !isBusiness"
+        :label="'Add ' + count + ' seat' + (count > 1 ? 's' : '')"
+        @click="addSeats(count)" />
+    </div>
+
     <h3>Buy live minutes (Premium or Business only)</h3>
     <p class="dev-subscribe__balance">
       Live balance: <strong>{{ liveBalanceLabel }}</strong>
@@ -80,6 +101,7 @@ import {
   apiChangeSubscription,
   apiGetPacks,
   apiGetCredits,
+  apiGetUsage,
 } from "@/api/cloud.js"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount.js"
 import { formsMixin } from "@/mixins/forms.js"
@@ -103,6 +125,8 @@ export default {
       paidPlanKeys: ["premium", "business"],
       packs: [],
       credits: null,
+      usage: null,
+      seatIncrements: [1, 2, 3],
       loading: false,
       output: "",
       fields: ["newOrganizationName"],
@@ -121,12 +145,24 @@ export default {
   },
   async mounted() {
     this.loadCredits()
+    this.loadUsage()
     this.packs = (await apiGetPacks()) ?? []
   },
   watch: {
-    "currentOrganization._id": "loadCredits",
+    "currentOrganization._id"() {
+      this.loadCredits()
+      this.loadUsage()
+    },
   },
   computed: {
+    isBusiness() {
+      return this.usage?.planKey === "business"
+    },
+    usageLabel() {
+      if (!this.usage) return "unknown (GET /cloud/usage failed)"
+      const { planKey, mode, seats } = this.usage
+      return `${planKey} (${mode}), ${seats} seat${seats > 1 ? "s" : ""}`
+    },
     liveBalanceLabel() {
       if (!this.credits) return "unknown (GET /cloud/credits failed)"
       const { balance, expiresAt, lowBalance, admissionMinutes } = this.credits
@@ -171,6 +207,29 @@ export default {
     },
     async loadCredits() {
       this.credits = (await apiGetCredits(this.currentOrganization._id)) ?? null
+    },
+    async loadUsage() {
+      this.usage = (await apiGetUsage(this.currentOrganization._id)) ?? null
+    },
+    // The change route takes the total seat count, so add on top of the current one
+    async addSeats(count) {
+      const seats = (this.usage?.seats ?? 0) + count
+      this.loading = true
+      this.output = `POST /cloud/subscriptions/change seats=${seats} ...`
+      try {
+        const res = await apiChangeSubscription(
+          this.currentOrganization._id,
+          { seats },
+          { message: "seats updated" },
+        )
+        this.output = JSON.stringify(res ?? { error: "no response" }, null, 2)
+        await this.loadUsage()
+      } catch (error) {
+        console.error(error)
+        this.output = String(error)
+      } finally {
+        this.loading = false
+      }
     },
     packLabel(pack) {
       const price = formatCurrencyAmount(
