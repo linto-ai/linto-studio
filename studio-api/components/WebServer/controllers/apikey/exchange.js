@@ -21,7 +21,12 @@ const { ExternalIdentityInvalid, ExternalKeyRevoked } = require(
 const { EntitlementMissing } = require(
   `${process.cwd()}/components/WebServer/error/exception/entitlement`,
 )
-const { resolveEntitlement, capabilitiesFrom, hasActiveFeature } = require(
+const {
+  resolveEntitlement,
+  capabilitiesFrom,
+  hasActiveFeature,
+  hasLintoFeature,
+} = require(
   `${process.cwd()}/components/WebServer/controllers/entitlement/resolve`,
 )
 const { findLinkedKey, hasValidToken } = require(
@@ -92,13 +97,19 @@ function parseRequest(body = {}) {
  * Parse + resolve. An identity with no record, or one whose every feature is
  * off, has no entitlement at all: 404 `no_entitlement`, and the caller shows
  * "the AI option is not enabled for your account".
+ *
+ * `linto: true` asks for a feature LinTO SERVES (transcription, summary,
+ * translation): that is what a key, and a token, are for. `resolve` keeps
+ * answering any active feature — `recording` alone must still reach Meet,
+ * which gates the video recording on it.
  */
-async function resolveRequest(body) {
+async function resolveRequest(body, { linto = false } = {}) {
   const identity = parseRequest(body)
   const resolved = await resolveEntitlement(identity)
-  if (!resolved || !hasActiveFeature(resolved.features)) {
+  const active = linto ? hasLintoFeature : hasActiveFeature
+  if (!resolved || !active(resolved.features)) {
     logger.info(
-      `external exchange: no entitlement for ${identity.provider}:${identity.subject || identity.email}`,
+      `external exchange: no ${linto ? "LinTO " : ""}entitlement for ${identity.provider}:${identity.subject || identity.email}`,
     )
     throw new EntitlementMissing()
   }
@@ -192,7 +203,7 @@ async function mintExchangeToken(key, { provider, caller }) {
  * `no_entitlement`) or ExternalKeyRevoked (403, `revoked`).
  */
 async function exchangeExternalIdentity(body, caller) {
-  const { identity, resolved } = await resolveRequest(body)
+  const { identity, resolved } = await resolveRequest(body, { linto: true })
 
   let key = await findLinkedKey(identity)
   let created = false

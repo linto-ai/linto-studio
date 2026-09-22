@@ -17,7 +17,13 @@ const mockModel = {
 }
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => mockModel)
 
-const { resolveEntitlement, capabilitiesFrom, hasFeature } = require(
+const {
+  resolveEntitlement,
+  capabilitiesFrom,
+  hasFeature,
+  hasLintoFeature,
+  LINTO_FEATURES,
+} = require(
   `${process.cwd()}/components/WebServer/controllers/entitlement/resolve`,
 )
 
@@ -167,5 +173,22 @@ describe("capabilities", () => {
     expect(hasFeature(LIVE_ONLY, "transcription.async")).toBe(false)
     expect(hasFeature({}, "transcription.live")).toBe(false)
     expect(hasFeature(undefined, "summary")).toBe(false)
+  })
+
+  test("[P13] hasLintoFeature: the features LinTO serves, not `recording`", () => {
+    expect(LINTO_FEATURES).toEqual([
+      "transcription.live",
+      "transcription.async",
+      "summary",
+      "translation",
+    ])
+    expect(hasLintoFeature({ recording: true })).toBe(false)
+    expect(hasLintoFeature({ recording: true, unknown: true })).toBe(false)
+    expect(hasLintoFeature({ recording: true, summary: true })).toBe(true)
+    expect(hasLintoFeature(LIVE_ONLY)).toBe(true)
+    expect(hasLintoFeature({ transcription: { async: true } })).toBe(true)
+    expect(hasLintoFeature({ translation: true })).toBe(true)
+    expect(hasLintoFeature({})).toBe(false)
+    expect(hasLintoFeature(undefined)).toBe(false)
   })
 })

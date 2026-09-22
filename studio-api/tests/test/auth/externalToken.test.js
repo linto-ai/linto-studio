@@ -173,6 +173,44 @@ describe("resolve has no side effect", () => {
   })
 })
 
+describe("[P13] `recording: true` alone opens no LinTO right", () => {
+  test("resolve still answers it (Meet gates the video recording on it)", async () => {
+    entitleUser({ recording: true })
+    const out = await resolveExternalIdentity(
+      { provider: "twake", subject: "jdoe" },
+      CALLER,
+    )
+    expect(out.capabilities).toEqual({
+      recording: true,
+      quickMeeting: false,
+      transcription: { live: false, async: false },
+    })
+    expect(mockModel.users.createApiKey).not.toHaveBeenCalled()
+  })
+
+  test("token is 404 no_entitlement: no key is born, nothing is minted", async () => {
+    entitleUser({ recording: true })
+    mockModel.users.createApiKey.mockResolvedValue({ user_id: KEY })
+    await expect(
+      exchangeExternalIdentity({ provider: "twake", subject: "jdoe" }, CALLER),
+    ).rejects.toMatchObject({ status: 404, code: "no_entitlement" })
+    expect(mockModel.users.createApiKey).not.toHaveBeenCalled()
+    expect(mockModel.tokens.insert).not.toHaveBeenCalled()
+    expect(mockAddM2m).not.toHaveBeenCalled()
+  })
+
+  test("token comes with any LinTO-served feature next to it", async () => {
+    entitleUser({ recording: true, summary: true })
+    mockModel.users.findApiKeyByExternalIdentity.mockResolvedValue([key()])
+    const out = await exchangeExternalIdentity(
+      { provider: "twake", subject: "jdoe" },
+      CALLER,
+    )
+    expect(out.token).toBeDefined()
+    expect(out.capabilities).toMatchObject({ recording: true, summary: true })
+  })
+})
+
 describe("token for an existing key", () => {
   test("mints a 1h token verifiable with the exchange row's salt", async () => {
     entitleUser()

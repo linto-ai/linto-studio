@@ -105,9 +105,28 @@ function hasActiveFeature(features) {
   return entitlementModel().hasActiveFeature(features)
 }
 
+/**
+ * The features LinTO serves. A key is born, and a token minted, only for a
+ * person who holds one of THESE: `recording: true` alone (the video recording,
+ * LiveKit's job — Meet gates it, LinTO is never called) opens no LinTO right,
+ * so it must neither create a key nor show the panel. [P13]
+ */
+const LINTO_FEATURES = [
+  "transcription.live",
+  "transcription.async",
+  "summary",
+  "translation",
+]
+
+function hasLintoFeature(features) {
+  return LINTO_FEATURES.some((path) => hasFeature(features, path))
+}
+
 module.exports = {
   resolveEntitlement,
   capabilitiesFrom,
   hasFeature,
   hasActiveFeature,
+  hasLintoFeature,
+  LINTO_FEATURES,
 }
