@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { SpeakerIndicator, SwitchToggle, EditableText, SelectableListItem, EditorIcon, SpeakerMenu } from "@linto-ai/transcript-ui-ui"
+import { SpeakerIndicator, SwitchToggle, EditableText, SelectableListItem, EditorIcon, RangeSlider, SpeakerMenu } from "@linto-ai/transcript-ui-ui"
 import { computed, ref, useId } from "vue"
 import ChannelSelector from "./ChannelSelector.vue"
 import TranslationSelector from "./TranslationSelector.vue"
 import MergeDialog from "./molecules/MergeDialog.vue"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useCore } from "../core"
+import { useIsMobile } from "../composables/useIsMobile"
 import { renameSpeaker } from "../core/helpers"
 import type { Speaker } from "../types/editor"
 import type { LLMServiceGenerationStatus, TranslationInfo } from "../core"
@@ -29,6 +30,7 @@ defineEmits<{
 
 const core = useCore()
 const { t } = useI18n()
+const { isMobile } = useIsMobile()
 
 const canEditSpeakers = computed(
   () => core.capabilities.value.speakers === "edit",
@@ -156,8 +158,18 @@ function onSelectVersion(versionNumber: number): void {
           $emit('update:selectedTranslationId', $event)
         " />
     </section>
+    <!-- Scoped to live sessions for now: the font size is a core setting, but
+         it is only offered where it was asked for. The reading size comes
+         first — it stays meaningful the day this section shows outside a live
+         session, where the partials toggle would not. -->
     <section v-if="core.live" class="sidebar-section">
-      <h2 class="sidebar-title">{{ t("sidebar.live") }}</h2>
+      <h2 class="sidebar-title">{{ t("sidebar.transcription") }}</h2>
+      <RangeSlider
+        v-model="core.transcriptFontSize.value"
+        :label="t('transcription.fontSize')"
+        :min="14"
+        :max="28"
+        :step="2" />
       <div class="subtitle-toggle">
         <label class="subtitle-toggle-label" :for="partialsToggleId">
           {{ t("live.showPartials") }}
@@ -168,32 +180,23 @@ function onSelectVersion(versionNumber: number): void {
           @update:model-value="onTogglePartials" />
       </div>
     </section>
-    <section v-if="core.subtitle" class="sidebar-section">
+    <!-- Subtitles are a desktop surface: Layout only mounts the banner above
+         the breakpoint, and the fullscreen view is opened by the host, not
+         from here. On a phone the whole section is inert — including the font
+         size and watermark controls, which hang off the switch above them. -->
+    <section v-if="core.subtitle && !isMobile" class="sidebar-section">
       <h2 class="sidebar-title">{{ t("sidebar.subtitle") }}</h2>
       <div class="subtitle-toggle">
         <span class="subtitle-toggle-label">{{ t("subtitle.show") }}</span>
         <SwitchToggle v-model="core.subtitle.isVisible.value" />
       </div>
-      <label class="subtitle-slider">
-        <span class="subtitle-slider-label">
-          {{ t("subtitle.fontSize") }}
-          <span class="subtitle-slider-value"
-            >{{ core.subtitle.fontSize.value }}px</span
-          >
-        </span>
-        <input
-          type="range"
-          :min="20"
-          :max="80"
-          :step="2"
-          :value="core.subtitle.fontSize.value"
-          :disabled="!core.subtitle.isVisible.value"
-          @input="
-            core.subtitle!.fontSize.value = Number(
-              ($event.target as HTMLInputElement).value,
-            )
-          " />
-      </label>
+      <RangeSlider
+        v-model="core.subtitle.fontSize.value"
+        :label="t('subtitle.fontSize')"
+        :min="20"
+        :max="80"
+        :step="2"
+        :disabled="!core.subtitle.isVisible.value" />
       <div
         v-if="core.subtitle.watermark && !core.subtitle.watermark.readonly"
         class="subtitle-toggle">
@@ -389,35 +392,6 @@ label.subtitle-toggle-label {
 
 .voice-playback-hint--warning {
   color: var(--color-danger);
-}
-
-.subtitle-slider {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm);
-}
-
-.subtitle-slider-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-}
-
-.subtitle-slider-value {
-  color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.subtitle-slider input[type="range"] {
-  width: 100%;
-  accent-color: var(--color-primary);
-}
-
-.subtitle-slider input[type="range"]:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 /* ── History (LLM generations + versions) ──────────────────────────── */

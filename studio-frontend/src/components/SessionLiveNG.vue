@@ -40,6 +40,29 @@ import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
 import { customDebug } from "@/tools/customDebug"
 
 const PAGE_SIZE = 50
+const TRANSCRIPT_FONT_SIZE_KEY = "editor.transcriptFontSize"
+
+// Storage throws in a private window or with site data blocked, and a reading
+// preference is never worth breaking the session for. The band is a sanity
+// check on a value that anyone can edit by hand, not the slider's range —
+// anything outside it falls back to the editor's default.
+function readStoredTranscriptFontSize() {
+  try {
+    const stored = Number(localStorage.getItem(TRANSCRIPT_FONT_SIZE_KEY))
+    const isSane = Number.isFinite(stored) && stored >= 10 && stored <= 40
+    return isSane ? stored : null
+  } catch {
+    return null
+  }
+}
+
+function storeTranscriptFontSize(fontSize) {
+  try {
+    localStorage.setItem(TRANSCRIPT_FONT_SIZE_KEY, String(fontSize))
+  } catch {
+    // ignored on purpose, see above
+  }
+}
 
 export default {
   mixins: [sessionModelMixin],
@@ -63,6 +86,8 @@ export default {
       offWatermarkDisplay: null,
       offWatermarkPin: null,
       offViewportChange: null,
+      offSidebarOpen: null,
+      offTranscriptFontSize: null,
       unwatchWatermarkHost: [],
       activeChannelIndex: null,
       historyOffset: 0,
@@ -119,9 +144,11 @@ export default {
     this.offWatermarkDisplay?.()
     this.offWatermarkPin?.()
     this.offViewportChange?.()
+    this.offSidebarOpen?.()
+    this.offTranscriptFontSize?.()
     // The header outlives this component (the session may end while it is
-    // open): tell it the editor is gone rather than leaving it with a button
-    // pointing at nothing.
+    // open): tell it the editor's sidebar is gone rather than leaving it
+    // with a button pointing at nothing.
     this.$emit("viewport-change", false)
     this.unwatchWatermarkHost.forEach((stop) => stop())
     this.websocketInstance.unSubscribeSessionRoom()
@@ -173,15 +200,30 @@ export default {
       const { core } = el
       this.core = markRaw(core)
 
-      // At phone width the editor's sidebar is not reachable (no-header), so
-      // the host header carries the partials toggle. Its breakpoint has to be
-      // the editor's (767px), not the app's `isMobile` getter (1100px).
+      // The editor's own sidebar has no opener here (no-header), so the host
+      // header carries the button. Its breakpoint has to be the editor's
+      // (767px), not the app's `isMobile` getter (1100px), or it would show
+      // 300px too early and open a drawer that isn't mounted.
       // An event never covers "already true when subscribing", and there is
       // no crossing to report when the page opens on a phone: read it once,
-      // then follow.
+      // then follow. `sidebar:open` too, since the drawer also closes on its
+      // own (its close button, a channel change, leaving phone width).
       this.$emit("viewport-change", core.isMobile.value)
       this.offViewportChange = core.on("viewport:change", ({ isMobile }) =>
         this.$emit("viewport-change", isMobile),
+      )
+      this.offSidebarOpen = core.on("sidebar:open", ({ open }) =>
+        this.$emit("sidebar-open", open),
+      )
+
+      // The editor holds no preferences of its own, so the reading size is
+      // restored here and kept up to date from its own event.
+      const storedFontSize = readStoredTranscriptFontSize()
+      if (storedFontSize !== null)
+        core.transcriptFontSize.value = storedFontSize
+      this.offTranscriptFontSize = core.on(
+        "transcript:fontSize",
+        ({ fontSize }) => storeTranscriptFontSize(fontSize),
       )
 
       this.livePlugin = createLivePlugin({
@@ -415,12 +457,8 @@ export default {
       this.core.subtitle.enterFullscreen()
     },
 
-    togglePartials() {
-      const live = this.core.live
-      if (!live) return
-      if (live.partialsVisible.value) live.hidePartials()
-      else live.showPartials()
-      this.$emit("partials-visible", live.partialsVisible.value)
+    toggleSidebar() {
+      this.core.setSidebarOpen(!this.core.sidebarOpen.value)
     },
 
     async patchWatermark(settings) {

@@ -40,6 +40,10 @@ export interface CoreEventMap {
   "watermark:display": { display: boolean }
   "watermark:pin": { pinned: boolean }
   "subtitle:visible": { visible: boolean; height: number }
+  /** The reading size of the transcript changed. The editor does not
+   *  remember it — a host that wants the preference to survive a reload
+   *  listens here and restores it into core.transcriptFontSize. */
+  "transcript:fontSize": { fontSize: number }
   /** The sidebar drawer was opened or closed — by the built-in header,
    *  by the drawer's own close button, by a channel change, or by the
    *  host calling setSidebarOpen. A host rendering its own header (see
@@ -663,6 +667,11 @@ export interface Core {
   readonly speakers: SpeakersStore
   readonly channels: Map<string, ChannelStore>
   readonly activeChannel: ComputedRef<ChannelStore | undefined>
+
+  /** Reading size of the transcript text, in pixels. Chrome (buttons,
+   *  headers, the sidebar) keeps its own scale. Writable: there is nothing to
+   *  guard, and a change is announced by "transcript:fontSize". */
+  readonly transcriptFontSize: Ref<number>
 
   // ── Layout chrome ────────────────────────────────────────────────────
   /** True while the viewport is at phone width — below the breakpoint where

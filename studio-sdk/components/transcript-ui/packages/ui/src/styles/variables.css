@@ -68,6 +68,10 @@
   --font-size-xs: 0.875rem;
   --font-size-sm: 1rem;
   --font-size-base: 1.125rem;
+  /* Reading size of the transcript text alone — the panel overrides it
+     from core.transcriptFontSize. Chrome (buttons, headers, panels) stays
+     on the scale above. */
+  --transcript-font-size: var(--font-size-base);
   --font-size-lg: 1.25rem;
   --font-size-xl: 1.75rem;
   --line-height: 1.6;

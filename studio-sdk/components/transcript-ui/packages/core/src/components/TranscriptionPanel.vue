@@ -43,6 +43,12 @@ const partialTurn = computed(() => {
 
 const hasLiveUpdate = computed(() => core.live?.hasLiveUpdate.value ?? false)
 
+// Set here rather than on a global stylesheet: the value stays scoped to the
+// reading surface, and the partial turn inherits it like any other.
+const transcriptFontSize = computed(
+  () => `${core.transcriptFontSize.value}px`,
+)
+
 // With the partial text hidden, the panel would sit perfectly still between
 // two finalized turns — nothing left to say the session is still listening.
 // The line is kept for the whole session rather than mounted when someone
@@ -154,7 +160,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <article class="transcription-panel">
+  <article
+    class="transcription-panel"
+    :style="{ '--transcript-font-size': transcriptFontSize }">
     <div ref="scrollContainer" class="scroll-container">
       <div class="turns-container">
         <div v-if="isLoadingHistory" class="history-loading" role="status">

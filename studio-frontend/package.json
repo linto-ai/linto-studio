@@ -23,6 +23,8 @@
     "serve-dev": "vite --mode development",
     "build": "vite build --mode production && vite build --mode production --config vite.mobile.config.js",
     "preview": "vite preview --port 80",
+    "sdk:local": "node config/scripts/installLocalSdk.js",
+    "sdk:published": "rm -rf node_modules/@linto-ai/transcript-ui-webcomponent && npm i",
     "lint": "eslint --fix src",
     "test:lint": "eslint src",
     "format": "prettier src/ public/  --write",

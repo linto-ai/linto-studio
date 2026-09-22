@@ -339,7 +339,7 @@ function onCheckboxChange(event: MouseEvent) {
 
 .turn-text {
   margin-top: var(--spacing-xs);
-  font-size: var(--font-size-base);
+  font-size: var(--transcript-font-size);
   line-height: var(--line-height);
   color: var(--color-text-primary);
 }
