@@ -19,8 +19,9 @@ withDefaults(
     translations: TranslationInfo[]
     selectedTranslationId: string
     showSpeakers?: boolean
+    showThemeToggle?: boolean
   }>(),
-  { showSpeakers: true },
+  { showSpeakers: true, showThemeToggle: true },
 )
 
 defineEmits<{
@@ -315,7 +316,7 @@ function onSelectVersion(versionNumber: number): void {
     </section>
     <!-- Its own section, and never gated: the theme belongs to the reader,
          not to a plugin or to a live session. -->
-    <section class="sidebar-section">
+    <section v-if="showThemeToggle" class="sidebar-section">
       <h2 class="sidebar-title">{{ t("sidebar.appearance") }}</h2>
       <div class="subtitle-toggle">
         <label class="subtitle-toggle-label" :for="darkThemeToggleId">

@@ -16,11 +16,17 @@ const props = withDefaults(
     // tab left — see TabBar.vue) — a live session has no finished verbatim
     // to show, see SessionLiveNG.vue.
     noVerbatim?: boolean
+    // Hides the high-contrast switch. The theme it drives is the host's as
+    // much as the editor's — the host follows "theme:change" to darken its
+    // own chrome — so an app that has no dark values of its own turns the
+    // switch off rather than offering a half-dark screen.
+    noThemeToggle?: boolean
   }>(),
   {
     locale: "fr",
     noHeader: false,
     noVerbatim: false,
+    noThemeToggle: false,
   },
 )
 
@@ -72,7 +78,8 @@ defineExpose({ core })
     <Layout
       v-if="core.channels.size"
       :show-header="!props.noHeader"
-      :show-verbatim="!props.noVerbatim" />
+      :show-verbatim="!props.noVerbatim"
+      :show-theme-toggle="!props.noThemeToggle" />
     <EditorErrorOverlay v-if="error" :message="error" />
     <EditorLoadingOverlay v-else-if="isLoading" />
   </div>

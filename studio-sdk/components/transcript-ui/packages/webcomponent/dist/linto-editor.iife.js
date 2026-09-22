@@ -24386,7 +24386,10 @@ ${text2}` : text2;
   };
   const _hoisted_28 = { class: "sidebar-title" };
   const _hoisted_29 = { class: "speaker-list" };
-  const _hoisted_30 = { class: "sidebar-section" };
+  const _hoisted_30 = {
+    key: 7,
+    class: "sidebar-section"
+  };
   const _hoisted_31 = { class: "sidebar-title" };
   const _hoisted_32 = { class: "subtitle-toggle" };
   const _hoisted_33 = ["for"];
@@ -24398,7 +24401,8 @@ ${text2}` : text2;
       selectedChannelId: { type: String },
       translations: { type: Array },
       selectedTranslationId: { type: String },
-      showSpeakers: { type: Boolean, default: true }
+      showSpeakers: { type: Boolean, default: true },
+      showThemeToggle: { type: Boolean, default: true }
     },
     emits: ["update:selectedChannelId", "update:selectedTranslationId"],
     setup(__props) {
@@ -24665,7 +24669,7 @@ ${text2}` : text2;
               }), 128))
             ])
           ])) : createCommentVNode("", true),
-          createBaseVNode("section", _hoisted_30, [
+          __props.showThemeToggle ? (openBlock(), createElementBlock("section", _hoisted_30, [
             createBaseVNode("h2", _hoisted_31, toDisplayString(unref(t2)("sidebar.appearance")), 1),
             createBaseVNode("div", _hoisted_32, [
               createBaseVNode("label", {
@@ -24678,9 +24682,9 @@ ${text2}` : text2;
                 "onUpdate:modelValue": onToggleDarkTheme
               }, null, 8, ["id", "model-value"])
             ])
-          ]),
+          ])) : createCommentVNode("", true),
           canEditSpeakers.value ? (openBlock(), createBlock(MergeDialog, {
-            key: 7,
+            key: 8,
             open: mergeOpen.value,
             "onUpdate:open": _cache[7] || (_cache[7] = ($event) => mergeOpen.value = $event),
             "from-speaker-id": mergeFromId.value
@@ -24689,8 +24693,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$h = "\n.speaker-sidebar[data-v-a9f3f09e] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-a9f3f09e] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-a9f3f09e] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-a9f3f09e] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-a9f3f09e] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-a9f3f09e]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-a9f3f09e] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-a9f3f09e] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-a9f3f09e] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\nlabel.subtitle-toggle-label[data-v-a9f3f09e] {\n  cursor: pointer;\n}\n.voice-playback-hint[data-v-a9f3f09e] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-a9f3f09e] {\n  color: var(--color-danger);\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-a9f3f09e] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-a9f3f09e] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-a9f3f09e] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-a9f3f09e] {\n  color: var(--color-success);\n}\n.history-generation__status--error[data-v-a9f3f09e] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-a9f3f09e],\n.history-generation__status--queued[data-v-a9f3f09e] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-a9f3f09e] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-a9f3f09e] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-a9f3f09e] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-a9f3f09e] {\n    display: none;\n}\n}\n";
-  const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["styles", [_style_0$h]], ["__scopeId", "data-v-a9f3f09e"]]);
+  const _style_0$h = "\n.speaker-sidebar[data-v-5f882421] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-5f882421] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-5f882421] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-5f882421] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-5f882421] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-5f882421]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-5f882421] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-5f882421] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-5f882421] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\nlabel.subtitle-toggle-label[data-v-5f882421] {\n  cursor: pointer;\n}\n.voice-playback-hint[data-v-5f882421] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-5f882421] {\n  color: var(--color-danger);\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-5f882421] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-5f882421] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-5f882421] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-5f882421] {\n  color: var(--color-success);\n}\n.history-generation__status--error[data-v-5f882421] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-5f882421],\n.history-generation__status--queued[data-v-5f882421] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-5f882421] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-5f882421] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-5f882421] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-5f882421] {\n    display: none;\n}\n}\n";
+  const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["styles", [_style_0$h]], ["__scopeId", "data-v-5f882421"]]);
   const _sfc_main$i = /* @__PURE__ */ defineComponent({
     __name: "SidebarDrawer",
     props: {
@@ -24802,7 +24806,8 @@ ${text2}` : text2;
     __name: "Layout",
     props: {
       showHeader: { type: Boolean, default: true },
-      showVerbatim: { type: Boolean, default: true }
+      showVerbatim: { type: Boolean, default: true },
+      showThemeToggle: { type: Boolean, default: true }
     },
     setup(__props) {
       const props = __props;
@@ -24942,9 +24947,10 @@ ${text2}` : text2;
               translations: translations.value,
               "selected-translation-id": activeTranslationId.value,
               "show-speakers": showTranscription.value,
+              "show-theme-toggle": props.showThemeToggle,
               "onUpdate:selectedChannelId": onChannelChange,
               "onUpdate:selectedTranslationId": onTranslationChange
-            }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])) : createCommentVNode("", true),
+            }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers", "show-theme-toggle"])) : createCommentVNode("", true),
             unref(isMobile) && panels.value.length === 1 ? (openBlock(), createBlock(_sfc_main$i, {
               key: 1,
               open: unref(core).sidebarOpen.value,
@@ -24958,9 +24964,10 @@ ${text2}` : text2;
                   translations: translations.value,
                   "selected-translation-id": activeTranslationId.value,
                   "show-speakers": showTranscription.value,
+                  "show-theme-toggle": props.showThemeToggle,
                   "onUpdate:selectedChannelId": onChannelChange,
                   "onUpdate:selectedTranslationId": onTranslationChange
-                }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])
+                }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers", "show-theme-toggle"])
               ]),
               _: 1
             }, 8, ["open"])) : createCommentVNode("", true)
@@ -24992,8 +24999,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$f = "\n.editor-layout[data-v-33adc90c] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-33adc90c] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-33adc90c] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-33adc90c] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-33adc90c] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-33adc90c] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-33adc90c] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-33adc90c] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-33adc90c] {\n    grid-template-columns: 1fr;\n}\n}\n";
-  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["styles", [_style_0$f]], ["__scopeId", "data-v-33adc90c"]]);
+  const _style_0$f = "\n.editor-layout[data-v-8b1fb5fb] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-8b1fb5fb] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-8b1fb5fb] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-8b1fb5fb] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-8b1fb5fb] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-8b1fb5fb] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-8b1fb5fb] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-8b1fb5fb] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-8b1fb5fb] {\n    grid-template-columns: 1fr;\n}\n}\n";
+  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["styles", [_style_0$f]], ["__scopeId", "data-v-8b1fb5fb"]]);
   const _hoisted_1$e = {
     class: "editor-loading",
     role: "status",
@@ -25087,7 +25094,8 @@ ${text2}` : text2;
     props: {
       locale: { default: "fr", type: String },
       noHeader: { type: Boolean, default: false },
-      noVerbatim: { type: Boolean, default: false }
+      noVerbatim: { type: Boolean, default: false },
+      noThemeToggle: { type: Boolean, default: false }
     },
     setup(__props, { expose: __expose }) {
       const props = __props;
@@ -25119,8 +25127,9 @@ ${text2}` : text2;
           unref(core).channels.size ? (openBlock(), createBlock(Layout, {
             key: 0,
             "show-header": !props.noHeader,
-            "show-verbatim": !props.noVerbatim
-          }, null, 8, ["show-header", "show-verbatim"])) : createCommentVNode("", true),
+            "show-verbatim": !props.noVerbatim,
+            "show-theme-toggle": !props.noThemeToggle
+          }, null, 8, ["show-header", "show-verbatim", "show-theme-toggle"])) : createCommentVNode("", true),
           unref(error) ? (openBlock(), createBlock(EditorErrorOverlay, {
             key: 1,
             message: unref(error)

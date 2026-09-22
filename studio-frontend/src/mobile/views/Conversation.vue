@@ -7,7 +7,13 @@
       {{ $t("mobile.conversation.load_failed") }}
     </p>
     <div v-else class="m-conversation__editor">
-      <linto-editor v-if="ready" ref="editor" :locale="$i18n.locale" />
+      <!-- no-theme-toggle: same as the classic conversation view — this
+           shell has no dark values and nothing follows "theme:change". -->
+      <linto-editor
+        v-if="ready"
+        ref="editor"
+        :locale="$i18n.locale"
+        no-theme-toggle />
       <p v-else class="m-muted m-conversation__state">
         {{ $t("mobile.common.loading") }}
       </p>
