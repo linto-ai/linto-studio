@@ -10588,7 +10588,7 @@ const _sfc_main$O = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-DvkPkUkv.js");
+        const { highlightCode } = await import("./highlight-8mgvdBYz.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -22953,7 +22953,7 @@ var StickToBottom_default = /* @__PURE__ */ defineComponent({
 });
 const _hoisted_1$r = ["datetime"];
 const _hoisted_2$l = {
-  key: 2,
+  key: 3,
   class: "lang"
 };
 const _sfc_main$v = /* @__PURE__ */ defineComponent({
@@ -22963,7 +22963,8 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
     startTime: { type: Number },
     startDate: { type: Number },
     language: { type: String },
-    interactive: { type: Boolean }
+    interactive: { type: Boolean },
+    showLanguage: { type: Boolean, default: true }
   },
   setup(__props) {
     const props = __props;
@@ -22992,7 +22993,9 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
       return null;
     });
     const speakerColor = computed(() => props.speaker?.color ?? "transparent");
-    const displayName = computed(() => props.speaker?.name ?? t2("speaker.unknown"));
+    const displayName = computed(
+      () => props.speaker?.name ?? (props.interactive ? t2("speaker.unknown") : "")
+    );
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         class: normalizeClass(["speaker-label", { "speaker-label--interactive": __props.interactive }])
@@ -23001,21 +23004,22 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
           key: 0,
           color: speakerColor.value
         }, null, 8, ["color"])) : createCommentVNode("", true),
-        createBaseVNode("span", {
-          class: normalizeClass(["speaker-name", { "speaker-name--unknown": !__props.speaker }])
-        }, toDisplayString(displayName.value), 3),
-        timestamp.value ? (openBlock(), createElementBlock("time", {
+        displayName.value ? (openBlock(), createElementBlock("span", {
           key: 1,
+          class: normalizeClass(["speaker-name", { "speaker-name--unknown": !__props.speaker }])
+        }, toDisplayString(displayName.value), 3)) : createCommentVNode("", true),
+        timestamp.value ? (openBlock(), createElementBlock("time", {
+          key: 2,
           class: "timestamp",
           datetime: timestamp.value.datetime
         }, toDisplayString(timestamp.value.text), 9, _hoisted_1$r)) : createCommentVNode("", true),
-        languageName.value ? (openBlock(), createElementBlock("span", _hoisted_2$l, toDisplayString(languageName.value), 1)) : createCommentVNode("", true)
+        __props.showLanguage && languageName.value ? (openBlock(), createElementBlock("span", _hoisted_2$l, toDisplayString(languageName.value), 1)) : createCommentVNode("", true)
       ], 2);
     };
   }
 });
-const _style_0$q = "\n.speaker-label[data-v-76cb4ed6] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-76cb4ed6] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.speaker-name--unknown[data-v-76cb4ed6] {\n  font-weight: 400;\n  font-style: italic;\n  color: var(--color-text-muted);\n}\n.speaker-label--interactive:hover .speaker-name[data-v-76cb4ed6] {\n  text-decoration: underline;\n}\n.timestamp[data-v-76cb4ed6] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-76cb4ed6] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
-const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$q]], ["__scopeId", "data-v-76cb4ed6"]]);
+const _style_0$q = "\n.speaker-label[data-v-c7a3e9ae] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-c7a3e9ae] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.speaker-name--unknown[data-v-c7a3e9ae] {\n  font-weight: 400;\n  font-style: italic;\n  color: var(--color-text-muted);\n}\n.speaker-label--interactive:hover .speaker-name[data-v-c7a3e9ae] {\n  text-decoration: underline;\n}\n.timestamp[data-v-c7a3e9ae] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-c7a3e9ae] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
+const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$q]], ["__scopeId", "data-v-c7a3e9ae"]]);
 const _hoisted_1$q = {
   key: 0,
   class: "merge-turns"
@@ -23423,6 +23427,11 @@ const _sfc_main$s = /* @__PURE__ */ defineComponent({
       return time >= props.turn.startTime && time <= props.turn.endTime;
     });
     const speakerColor = computed(() => props.speaker?.color ?? "transparent");
+    const showLanguage = computed(() => {
+      const active = core.activeChannel.value?.activeTranslation.value;
+      if (!active) return true;
+      return active.isSource || active.id === CROSS_TRANSLATION_ID;
+    });
     const isSelected = computed(() => selection.isSelected(props.turn.id));
     const checkboxLabel = computed(() => {
       const name = props.speaker?.name ?? "";
@@ -23438,6 +23447,7 @@ const _sfc_main$s = /* @__PURE__ */ defineComponent({
     const turnLock = computed(
       () => isEditing.value ? void 0 : core.transcriptionEditor?.getTurnLock(props.turn.id)
     );
+    const hasEditActions = computed(() => core.transcriptionEditor !== void 0);
     const lockedByLabel = computed(
       () => turnLock.value ? t2("transcription.lockedBy").replace("{name}", turnLock.value.userName) : ""
     );
@@ -23528,7 +23538,7 @@ const _sfc_main$s = /* @__PURE__ */ defineComponent({
         }, null, 8, ["first-turn-id", "second-turn-id"])) : createCommentVNode("", true),
         !__props.partial ? (openBlock(), createElementBlock("div", {
           key: 1,
-          class: "turn-header",
+          class: normalizeClass(["turn-header", { "turn-header--with-actions": hasEditActions.value }]),
           onClick: onHeaderClick
         }, [
           unref(selection).hasSelection.value ? (openBlock(), createBlock(unref(EditorCheckbox), {
@@ -23549,8 +23559,9 @@ const _sfc_main$s = /* @__PURE__ */ defineComponent({
                 "start-time": __props.turn.startTime,
                 "start-date": __props.turn.startDate,
                 language: __props.turn.language,
+                "show-language": showLanguage.value,
                 interactive: ""
-              }, null, 8, ["speaker", "start-time", "start-date", "language"])
+              }, null, 8, ["speaker", "start-time", "start-date", "language", "show-language"])
             ]),
             _: 1
           }, 8, ["turn-id", "current-speaker-id"])) : canEditSpeakers.value ? (openBlock(), createElementBlock("button", {
@@ -23564,15 +23575,17 @@ const _sfc_main$s = /* @__PURE__ */ defineComponent({
               "start-time": __props.turn.startTime,
               "start-date": __props.turn.startDate,
               language: __props.turn.language,
+              "show-language": showLanguage.value,
               interactive: ""
-            }, null, 8, ["speaker", "start-time", "start-date", "language"])
+            }, null, 8, ["speaker", "start-time", "start-date", "language", "show-language"])
           ])) : (openBlock(), createBlock(SpeakerLabel, {
             key: 3,
             speaker: __props.speaker,
             "start-time": __props.turn.startTime,
             "start-date": __props.turn.startDate,
-            language: __props.turn.language
-          }, null, 8, ["speaker", "start-time", "start-date", "language"])),
+            language: __props.turn.language,
+            "show-language": showLanguage.value
+          }, null, 8, ["speaker", "start-time", "start-date", "language", "show-language"])),
           isEditing.value || turnLock.value ? (openBlock(), createElementBlock("div", _hoisted_2$j, [
             isEditing.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
               createVNode(unref(Button), {
@@ -23601,7 +23614,7 @@ const _sfc_main$s = /* @__PURE__ */ defineComponent({
               }, ["stop"]))
             }, null, 8, ["name", "label"]))
           ])) : createCommentVNode("", true)
-        ])) : createCommentVNode("", true),
+        ], 2)) : createCommentVNode("", true),
         isEditing.value ? (openBlock(), createBlock(unref(TurnTextEditor), {
           key: 2,
           ref: "editor",
@@ -23639,8 +23652,8 @@ const _sfc_main$s = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$n = "\n.turn[data-v-579300a5] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-579300a5] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n  /* Reserve the edit-actions height (Button sm) so entering/leaving edit\n     mode never shifts the layout. */\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-579300a5] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n\n/* Same reset as the popover's own trigger: the label IS the button. */\n.transcript-ui-root .speaker-trigger[data-v-579300a5] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-trigger[data-v-579300a5]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.turn[data-v-579300a5]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-579300a5] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--transcript-font-size);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-579300a5] {\n  cursor: text;\n}\n.turn-text--editable[data-v-579300a5]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-579300a5] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-579300a5]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-579300a5] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-579300a5] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-579300a5 200ms ease;\n}\n@keyframes partial-fade-in-579300a5 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-579300a5] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-579300a5] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-579300a5],\n  .turn--active[data-v-579300a5]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
-const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$n]], ["__scopeId", "data-v-579300a5"]]);
+const _style_0$n = "\n.turn[data-v-2b4ee8df] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-2b4ee8df] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n\n/* Reserve the edit-actions height (Button sm) so entering/leaving edit mode\n   never shifts the layout — but only where those actions can appear at all.\n   Read-only, the row holds a line of metadata and has no reason to be 36px\n   tall. */\n.turn-header--with-actions[data-v-2b4ee8df] {\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-2b4ee8df] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n\n/* Same reset as the popover's own trigger: the label IS the button. */\n.transcript-ui-root .speaker-trigger[data-v-2b4ee8df] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-trigger[data-v-2b4ee8df]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.turn[data-v-2b4ee8df]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-2b4ee8df] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--transcript-font-size);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-2b4ee8df] {\n  cursor: text;\n}\n.turn-text--editable[data-v-2b4ee8df]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-2b4ee8df] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-2b4ee8df]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-2b4ee8df] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-2b4ee8df] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-2b4ee8df 200ms ease;\n}\n@keyframes partial-fade-in-2b4ee8df {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-2b4ee8df] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-2b4ee8df] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-2b4ee8df],\n  .turn--active[data-v-2b4ee8df]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
+const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$n]], ["__scopeId", "data-v-2b4ee8df"]]);
 const _sfc_main$r = {};
 const _hoisted_1$n = {
   viewBox: "0 0 938 604",
@@ -30714,4 +30727,4 @@ export {
   purify as p,
   register as r
 };
-//# sourceMappingURL=index-CHumf_3H.js.map
+//# sourceMappingURL=index-Bx56fB_C.js.map
