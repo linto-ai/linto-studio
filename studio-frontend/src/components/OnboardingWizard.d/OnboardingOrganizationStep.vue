@@ -89,7 +89,7 @@ import OnboardingCheckoutSteps from "./OnboardingCheckoutSteps.vue"
 import OnboardingPricingRow from "./OnboardingPricingRow.vue"
 import OnboardingPricingTotal from "./OnboardingPricingTotal.vue"
 
-// Limits of POST /cloud/checkout (linto-studio-cloud-service checkout.js)
+// Limits of POST /cloud/subscriptions (createSchema in linto-studio-cloud-service routes/subscriptions.js)
 const MAX_SEATS = 500
 const MAX_ORGANIZATION_NAME_LENGTH = 200
 

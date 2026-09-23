@@ -1,27 +1,37 @@
 <template>
   <section class="dev-subscribe">
     <h2>Stripe test (dev only)</h2>
+    <p class="dev-subscribe__balance">
+      Plan, live balance and lots come from the API
+      <Button
+        variant="secondary"
+        size="xs"
+        :disabled="loading"
+        label="Refresh"
+        @click="loadAll" />
+    </p>
+    <h3>Subscribe through Checkout (organization without a subscription)</h3>
     <div class="dev-subscribe__row">
       <Button
-        v-for="planKey in planKeys"
+        v-for="planKey in paidPlanKeys"
         :key="planKey"
         variant="secondary"
         size="sm"
         :disabled="loading"
-        :label="'Plan ' + planKey"
+        :label="'Checkout ' + planKey"
         @click="subscribe(planKey)" />
     </div>
 
     <h3>Change the current plan (billed organization only)</h3>
     <div class="dev-subscribe__row">
       <Button
-        v-for="planKey in paidPlanKeys"
-        :key="'change-' + planKey"
+        v-for="target in changeTargets"
+        :key="target.label"
         variant="secondary"
         size="sm"
         :disabled="loading"
-        :label="'Switch to ' + planKey"
-        @click="changePlan(planKey)" />
+        :label="target.label"
+        @click="changePlan(target.planKey, target.immediate)" />
     </div>
 
     <h3>Manage the subscription (Stripe Customer Portal)</h3>
@@ -37,12 +47,6 @@
     <h3>Add seats (Business only)</h3>
     <p class="dev-subscribe__balance">
       Current plan: <strong>{{ usageLabel }}</strong>
-      <Button
-        variant="secondary"
-        size="xs"
-        :disabled="loading"
-        label="Refresh"
-        @click="loadUsage" />
     </p>
     <div class="dev-subscribe__row">
       <Button
@@ -58,12 +62,6 @@
     <h3>Buy live minutes (every plan, no welcome minutes on Free)</h3>
     <p class="dev-subscribe__balance">
       Live balance: <strong>{{ liveBalanceLabel }}</strong>
-      <Button
-        variant="secondary"
-        size="xs"
-        :disabled="loading"
-        label="Refresh"
-        @click="loadCredits" />
     </p>
     <div class="dev-subscribe__row">
       <Button
@@ -82,12 +80,6 @@
     <h3>Buy transcription minutes (Free only)</h3>
     <p class="dev-subscribe__balance">
       Import quota: <strong>{{ importQuotaLabel }}</strong>
-      <Button
-        variant="secondary"
-        size="xs"
-        :disabled="loading"
-        label="Refresh"
-        @click="loadUsage" />
     </p>
     <div class="dev-subscribe__row">
       <Button
@@ -104,15 +96,7 @@
     </div>
 
     <h3>Refund a pack (platform admin, Stripe refund + webhook)</h3>
-    <p class="dev-subscribe__balance">
-      Lots of the organization
-      <Button
-        variant="secondary"
-        size="xs"
-        :disabled="loading"
-        label="Refresh"
-        @click="loadLots" />
-    </p>
+    <p class="dev-subscribe__balance">Lots of the organization</p>
     <div class="dev-subscribe__row">
       <Button
         v-for="lot in lots"
@@ -152,10 +136,9 @@
 </template>
 
 <script>
-// Dev helper: POST /cloud/subscriptions for the current org, shows the raw
-// response and copies it to the clipboard (clientSecret first when present).
+// Dev helper: drives the billing routes for the current org and shows the raw
+// response.
 import {
-  apiCreateSubscription,
   apiCreateCheckout,
   apiCreateCreditsCheckout,
   apiCreatePortalSession,
@@ -184,7 +167,6 @@ export default {
   },
   data() {
     return {
-      planKeys: ["free_payg", "premium", "business"],
       paidPlanKeys: ["premium", "business"],
       packs: [],
       credits: null,
@@ -208,19 +190,26 @@ export default {
     }
   },
   async mounted() {
-    this.loadCredits()
-    this.loadUsage()
-    this.loadLots()
+    this.loadAll()
     this.packs = (await apiGetPacks()) ?? []
   },
   watch: {
     "currentOrganization._id"() {
-      this.loadCredits()
-      this.loadUsage()
-      this.loadLots()
+      this.loadAll()
     },
   },
   computed: {
+    // A free planKey cancels the subscription, at period end or right now
+    changeTargets() {
+      return [
+        ...this.paidPlanKeys.map((planKey) => ({
+          planKey,
+          label: `Switch to ${planKey}`,
+        })),
+        { planKey: "free_payg", label: "Back to free at period end" },
+        { planKey: "free_payg", immediate: true, label: "Back to free now" },
+      ]
+    },
     isBusiness() {
       return this.usage?.planKey === "business"
     },
@@ -251,14 +240,10 @@ export default {
     },
   },
   methods: {
-    // Paid plans go through hosted Checkout and come back to this page with
-    // ?type=subscription&status=success|cancel. Free binds directly.
-    async subscribe(planKey) {
-      if (planKey === "free_payg") return this.subscribeFree(planKey)
-      await this.startCheckout({
+    subscribe(planKey) {
+      return this.startCheckout({
         organizationId: this.currentOrganization._id,
         planKey,
-        returnUrl: window.location.href,
       })
     },
     // The org does not exist yet: created hidden by the API, revealed once paid
@@ -273,8 +258,14 @@ export default {
             ? Math.floor(this.seats.value)
             : undefined,
         planKey: "business",
-        returnUrl: window.location.href,
       })
+    },
+    loadAll() {
+      return Promise.all([
+        this.loadCredits(),
+        this.loadUsage(),
+        this.loadLots(),
+      ])
     },
     async loadCredits() {
       this.credits = (await apiGetCredits(this.currentOrganization._id)) ?? null
@@ -289,7 +280,6 @@ export default {
     async loadLots() {
       const billing = await apiAdminGetOrgBilling(
         this.currentOrganization._id,
-        null,
         { backoffice: true },
       )
       this.lots = billing?.lots ?? []
@@ -319,11 +309,11 @@ export default {
         apiAdminRefundLot(
           this.currentOrganization._id,
           lotId,
-          { message: "refund requested at Stripe" },
           { backoffice: true },
+          { message: "refund requested at Stripe" },
         ),
       )
-      await Promise.all([this.loadLots(), this.loadCredits(), this.loadUsage()])
+      await this.loadAll()
     },
     // The change route takes the total seat count, so add on top of the current one
     async addSeats(count) {
@@ -348,7 +338,7 @@ export default {
     // One-time payment through hosted Checkout, back here with ?type=credits
     buyPack(packKey) {
       return this.runAndRedirect(
-        `POST /cloud/checkout/credits packKey=${packKey}`,
+        `POST /cloud/credits/checkout packKey=${packKey}`,
         () =>
           apiCreateCreditsCheckout(
             this.currentOrganization._id,
@@ -366,54 +356,34 @@ export default {
       return this.runAndRedirect("POST /cloud/portal", () =>
         apiCreatePortalSession(
           this.currentOrganization._id,
-          window.location.href,
+          { returnUrl: window.location.href },
           { message: "redirecting to the Stripe portal" },
         ),
       )
     },
+    // Hosted Checkout, back to this page with ?type=subscription&status=success|cancel
     startCheckout(payload) {
+      const body = { ...payload, returnUrl: window.location.href }
       return this.runAndRedirect(
-        `POST /cloud/checkout ${JSON.stringify(payload)}`,
+        `POST /cloud/subscriptions ${JSON.stringify(payload)}`,
         () =>
-          apiCreateCheckout(payload, {
+          apiCreateCheckout(body, {
             message: "redirecting to Stripe Checkout",
           }),
       )
     },
-    // Updates the Stripe subscription in place, no Checkout
-    async changePlan(planKey) {
-      await this.run(
-        `POST /cloud/subscriptions/change planKey=${planKey}`,
+    // Updates the Stripe subscription in place, no Checkout; a free plan cancels it
+    async changePlan(planKey, immediate) {
+      const res = await this.run(
+        `POST /cloud/subscriptions/change planKey=${planKey}${immediate ? " immediate" : ""}`,
         () =>
           apiChangeSubscription(
             this.currentOrganization._id,
-            { planKey },
+            { planKey, immediate },
             { message: "plan changed" },
           ),
       )
-    },
-    async subscribeFree(planKey) {
-      this.loading = true
-      this.output = `POST /cloud/subscriptions planKey=${planKey} ...`
-      try {
-        const res = await apiCreateSubscription(
-          this.currentOrganization._id,
-          planKey,
-          1,
-          { message: "subscribed" },
-        )
-        const json = JSON.stringify(res ?? { error: "no response" }, null, 2)
-        const command = res?.clientSecret
-          ? `./stripe.sh -c ${res.clientSecret}`
-          : "# no clientSecret in the response, nothing to confirm"
-        this.output = `${command}\n\n##API info\n${json}`
-        await navigator.clipboard.writeText(this.output)
-      } catch (error) {
-        console.error(error)
-        this.output = String(error)
-      } finally {
-        this.loading = false
-      }
+      if (res) await this.loadUsage()
     },
   },
 }

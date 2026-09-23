@@ -73,35 +73,13 @@ export async function apiGetSubscriptions(organizationId, notif = null) {
   return res?.data
 }
 
-// POST /cloud/subscriptions { organizationId, planKey, seats }
-// -> { subscription, clientSecret }. Replaced by Checkout in J2.
-export async function apiCreateSubscription(
-  organizationId,
-  planKey,
-  seats = 1,
-  notif = null,
-) {
-  const res = await sendRequest(
-    `${CLOUD_API}/subscriptions`,
-    { method: "post" },
-    { organizationId, planKey, seats },
-    notif,
-  )
-  return res?.data
-}
-
-// POST /cloud/checkout. payload: { organizationId, planKey, seats?, interval?,
-// returnUrl? }, or for a plan bought with a new org { organizationName, seats?,
-// planKey, ... } where seats is the number of collaborator seats bought on a
-// per-seat plan (never below the plan floor).
-// -> { url, sessionId, organizationId } (the caller redirects the browser to
-// url; organizationId is the org the plan is bought for, created hidden for a
-// new org), or
-// { errorCode } carrying the API error code ("already_subscribed"…, null when
-// the API gave none).
+// POST /cloud/subscriptions { organizationId | organizationName, planKey, seats?, interval?, returnUrl? }
+// -> { url, sessionId, organizationId }: the Checkout page to redirect to, and the
+// org the plan is bought for (created hidden with organizationName). On refusal,
+// { errorCode } ("already_subscribed"…, null when the API gave none).
 export async function apiCreateCheckout(payload, notif = null) {
   const res = await sendRequest(
-    `${CLOUD_API}/checkout`,
+    `${CLOUD_API}/subscriptions`,
     { method: "post" },
     payload,
     notif,
@@ -110,7 +88,7 @@ export async function apiCreateCheckout(payload, notif = null) {
   return { errorCode: res?.error?.response?.data?.error ?? null }
 }
 
-// POST /cloud/checkout/credits { organizationId, packKey, returnUrl? }
+// POST /cloud/credits/checkout { organizationId, packKey, returnUrl? }
 // -> { url, sessionId }. One-time payment for a live pack; the caller redirects
 // the browser to url and comes back with ?type=credits&status=success|cancel.
 export async function apiCreateCreditsCheckout(
@@ -119,7 +97,7 @@ export async function apiCreateCreditsCheckout(
   notif = null,
 ) {
   const res = await sendRequest(
-    `${CLOUD_API}/checkout/credits`,
+    `${CLOUD_API}/credits/checkout`,
     { method: "post" },
     { organizationId, packKey, returnUrl },
     notif,
@@ -128,12 +106,11 @@ export async function apiCreateCreditsCheckout(
 }
 
 // POST /cloud/portal { organizationId, returnUrl? } -> { url, sessionId }
-// Stripe Customer Portal: invoices, payment method, billing details,
-// cancellation. The caller redirects the browser to url; 409 no_stripe_customer
-// when the org never paid.
+// Stripe Customer Portal (invoices, card, billing details, cancellation); the
+// caller redirects to url. 409 no_stripe_customer when the org never paid.
 export async function apiCreatePortalSession(
   organizationId,
-  returnUrl = null,
+  { returnUrl } = {},
   notif = null,
 ) {
   const res = await sendRequest(
@@ -145,38 +122,26 @@ export async function apiCreatePortalSession(
   return res?.data
 }
 
-// POST /cloud/subscriptions/change { organizationId, planKey?, interval?, seats? }
-// -> updated subscription. Moves a billed org between paid plans, monthly and
-// yearly, or seat counts, in place with proration.
+// POST /cloud/subscriptions/change -> updated subscription. Plan, period or
+// seats of a billed org, in place with proration; a free planKey cancels, at
+// period end unless immediate.
 export async function apiChangeSubscription(
   organizationId,
-  { planKey, interval, seats } = {},
+  { planKey, interval, seats, immediate } = {},
   notif = null,
 ) {
   const res = await sendRequest(
     `${CLOUD_API}/subscriptions/change`,
     { method: "post" },
-    { organizationId, planKey, interval, seats },
+    { organizationId, planKey, interval, seats, immediate },
     notif,
   )
   return res?.data
 }
 
-// DELETE /cloud/subscriptions/:id  (?immediate=true) -> updated subscription
-export async function apiCancelSubscription(
-  subscriptionId,
-  immediate = false,
-  notif = null,
-) {
-  const url = `${CLOUD_API}/subscriptions/${subscriptionId}${immediate ? "?immediate=true" : ""}`
-  const res = await sendRequest(url, { method: "delete" }, {}, notif)
-  return res?.data
-}
+// --- Backoffice (platform sys-admin). sendRequest adds userScope=backoffice on
+// /backoffice pages; elsewhere (the dev block) pass { backoffice: true }. ---
 
-// --- Backoffice (platform sys-admin; sendRequest adds userScope=backoffice on
-// /backoffice pages, the dev block passes backoffice: true from elsewhere) ---
-
-// The backoffice scope in the URL, for a call made outside a /backoffice page
 function adminUrl(path, backoffice) {
   return `${CLOUD_API}/admin${path}${backoffice ? "?userScope=backoffice" : ""}`
 }
@@ -184,8 +149,8 @@ function adminUrl(path, backoffice) {
 // GET /cloud/admin/orgs/:orgId -> { planKey, seats, mode, subscription, usage, lots }
 export async function apiAdminGetOrgBilling(
   organizationId,
-  notif = null,
   { backoffice = false } = {},
+  notif = null,
 ) {
   const res = await sendRequest(
     adminUrl(`/orgs/${organizationId}`, backoffice),
@@ -201,8 +166,8 @@ export async function apiAdminGetOrgBilling(
 export async function apiAdminRefundLot(
   organizationId,
   lotId,
-  notif = null,
   { backoffice = false } = {},
+  notif = null,
 ) {
   const res = await sendRequest(
     adminUrl(`/orgs/${organizationId}/lots/${lotId}/refund`, backoffice),
@@ -216,7 +181,7 @@ export async function apiAdminRefundLot(
 // POST /cloud/admin/orgs/:orgId/mode { mode: normal|comp|managed } -> { subscription }
 export async function apiAdminSetOrgMode(organizationId, mode, notif = null) {
   const res = await sendRequest(
-    `${CLOUD_API}/admin/orgs/${organizationId}/mode`,
+    adminUrl(`/orgs/${organizationId}/mode`),
     { method: "post" },
     { mode },
     notif,
@@ -231,7 +196,7 @@ export async function apiAdminGrantCredits(
   notif = null,
 ) {
   const res = await sendRequest(
-    `${CLOUD_API}/admin/orgs/${organizationId}/credits`,
+    adminUrl(`/orgs/${organizationId}/credits`),
     { method: "post" },
     { minutes, reason },
     notif,
@@ -242,7 +207,7 @@ export async function apiAdminGrantCredits(
 // POST /cloud/admin/orgs/:orgId/seats { seats } -> { updated, seats }
 export async function apiAdminSetSeats(organizationId, seats, notif = null) {
   const res = await sendRequest(
-    `${CLOUD_API}/admin/orgs/${organizationId}/seats`,
+    adminUrl(`/orgs/${organizationId}/seats`),
     { method: "post" },
     { seats },
     notif,

@@ -122,6 +122,14 @@ function buildOrganizationHooks() {
       if (rows.length !== 1) return false
       return throwIfError(await model.organizations.activatePending(orgId))
     },
+    // Anchor of a free org's monthly quotas (SPEC-SAAS §1.5): they reset on the
+    // monthly anniversary of the org, as a paid org's do on its billing day.
+    createdAt: async (orgId) => {
+      const rows = throwIfError(
+        await model.organizations.getByIdFilter(orgId, { created: 1 }),
+      )
+      return rows.length === 1 ? rows[0].created || null : null
+    },
   }
 }
 
