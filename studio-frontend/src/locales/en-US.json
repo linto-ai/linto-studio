@@ -1250,6 +1250,7 @@
       "errors": {
         "default": "Could not start the payment. Please try again in a moment.",
         "already_subscribed": "This organization already has a paid subscription.",
+        "plan_requires_personal_organization": "This organization cannot move to Premium: it is not a personal organization. Premium is an individual plan, choose Business for a team.",
         "organization_creation_not_supported": "Organization creation is not available right now.",
         "plan_not_synced_to_stripe": "This plan cannot be purchased yet."
       }

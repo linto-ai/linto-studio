@@ -1244,6 +1244,7 @@
       "errors": {
         "default": "Impossible de lancer le paiement. Réessayez dans un instant.",
         "already_subscribed": "Cette organisation a déjà un abonnement payant.",
+        "plan_requires_personal_organization": "Cette organisation ne peut pas passer en Premium : ce n'est pas une organisation personnelle. Premium est une offre individuelle, choisissez Business pour une équipe.",
         "organization_creation_not_supported": "La création d'organisation n'est pas disponible pour le moment.",
         "plan_not_synced_to_stripe": "Cette offre n'est pas encore disponible au paiement."
       }

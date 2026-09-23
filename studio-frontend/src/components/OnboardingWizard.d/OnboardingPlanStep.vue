@@ -454,8 +454,11 @@ export default {
   color: var(--text-secondary);
 }
 
+/* Its own line under the note and the actions, so they never move when it appears */
 .onboarding-plan__error {
   margin: 0;
+  flex-basis: 100%;
+  order: 1;
   font-size: var(--text-sm);
   color: var(--danger-color);
 }
