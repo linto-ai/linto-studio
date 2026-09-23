@@ -97,19 +97,21 @@ export class StudioApiService {
     )(args)
   }
 
-  async getTemplatePlaceholders({ templateId } = {}) {
-    return await this.#withToken(this.#getTemplatePlaceholders)({
-      templateId,
-    })
+  async getTemplatePlaceholders({ templateId, organizationId } = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#getTemplatePlaceholders.bind(this))
+    )({ templateId, organizationId })
   }
 
   async exportWithTemplate({
+    conversationId,
     jobId,
     format = "pdf",
     templateId,
     versionNumber,
   } = {}) {
     return await this.#withToken(this.#exportWithTemplate)({
+      conversationId,
       jobId,
       format,
       templateId,
@@ -647,26 +649,38 @@ export class StudioApiService {
     })
   }
 
-  async #getPublicationTemplates({ token, organizationId }) {
-    const url = `${this.baseApiUrl}/publication/templates?organization_id=${encodeURIComponent(organizationId)}`
+  // Studio scopes these routes since 2026-07-24 (studio-api 44e4cccb2):
+  // templates under the organization, an export under its conversation.
+
+  async #getPublicationTemplates({ token, organizationId, serviceId }) {
+    let url = `${this.baseApiUrl}/publication/organizations/${encodeURIComponent(organizationId)}/templates`
+    if (serviceId !== undefined && serviceId !== null && serviceId !== "") {
+      url += `?service_id=${encodeURIComponent(serviceId)}`
+    }
     const req = prepareRequest(url, "GET", { token })
     return await sendRequest(req)
   }
 
-  async #getTemplatePlaceholders({ token, templateId }) {
-    const url = `${this.baseApiUrl}/publication/templates/${templateId}/placeholders`
+  async #getTemplatePlaceholders({ token, organizationId, templateId }) {
+    const url = `${this.baseApiUrl}/publication/organizations/${encodeURIComponent(organizationId)}/templates/${templateId}/placeholders`
     const req = prepareRequest(url, "GET", { token })
     return await sendRequest(req)
   }
 
   async #exportWithTemplate({
     token,
+    conversationId,
     jobId,
     format,
     templateId,
     versionNumber,
   }) {
-    let url = `${this.baseApiUrl}/publication/${jobId}/export/${format}`
+    if (!conversationId) {
+      throw new Error(
+        "conversationId is required: Studio serves exports under /publication/conversations/{conversationId}/jobs/{jobId}/export/{format}"
+      )
+    }
+    let url = `${this.baseApiUrl}/publication/conversations/${encodeURIComponent(conversationId)}/jobs/${jobId}/export/${format}`
     const params = []
     if (templateId !== undefined && templateId !== null && templateId !== "") {
       params.push(`templateId=${encodeURIComponent(templateId)}`)

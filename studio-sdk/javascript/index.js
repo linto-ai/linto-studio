@@ -165,10 +165,13 @@ class LinTO {
   /**
    * List publication templates available on the organization.
    *
+   * @param {Object} [options]
+   * @param {string} [options.serviceId] - Only the templates linked to that
+   *   LLM Gateway service (id or route).
    * @returns {Promise<Array<Object>>}
    */
-  async getPublicationTemplates() {
-    return await this.apiService.getPublicationTemplates()
+  async getPublicationTemplates({ serviceId } = {}) {
+    return await this.apiService.getPublicationTemplates({ serviceId })
   }
 
   /**
@@ -185,7 +188,9 @@ class LinTO {
    * Render a publication template to a downloadable document.
    *
    * @param {string} jobId - Source export job id.
-   * @param {Object} [options]
+   * @param {Object} options
+   * @param {string} options.conversationId - Conversation the job belongs to
+   *   (Studio scopes the export by it).
    * @param {string} [options.format="pdf"] - Output format.
    * @param {string} [options.templateId] - Publication template id.
    * @param {number} [options.versionNumber] - Template version.
@@ -193,9 +198,10 @@ class LinTO {
    */
   async exportWithTemplate(
     jobId,
-    { format = "pdf", templateId, versionNumber } = {}
+    { conversationId, format = "pdf", templateId, versionNumber } = {}
   ) {
     return await this.apiService.exportWithTemplate({
+      conversationId,
       jobId,
       format,
       templateId,

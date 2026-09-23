@@ -1,5 +1,6 @@
 
 import aiohttp
+from urllib.parse import quote
 import json
 import logging
 from datetime import datetime
@@ -381,24 +382,46 @@ class StudioApiService:
 
     # --- Publication methods ---
 
+    # Studio scopes these routes since 2026-07-24 (studio-api 44e4cccb2): templates
+    # live under the organization, an export under its conversation.
+
     @with_token
     @with_organization_id
-    async def get_publication_templates(self, **kwargs):
-        """Get available publication templates for the organization."""
+    async def get_publication_templates(self, serviceId=None, **kwargs):
+        """Get available publication templates for the organization.
+
+        ``serviceId`` (an LLM Gateway service id or route) narrows the list to
+        the templates the administrator linked to that service.
+        """
         org_id = kwargs["organizationId"]
-        url = f"{self.base_api_url}/publication/templates?organization_id={org_id}"
+        url = f"{self.base_api_url}/publication/organizations/{org_id}/templates"
+        if serviceId:
+            url += f"?service_id={quote(str(serviceId), safe='')}"
         return await self._send_request("GET", url, **kwargs)
 
     @with_token
+    @with_organization_id
     async def get_template_placeholders(self, templateId, **kwargs):
         """Get placeholders for a specific publication template."""
-        url = f"{self.base_api_url}/publication/templates/{templateId}/placeholders"
+        org_id = kwargs["organizationId"]
+        url = (
+            f"{self.base_api_url}/publication/organizations/{org_id}"
+            f"/templates/{templateId}/placeholders"
+        )
         return await self._send_request("GET", url, **kwargs)
 
     @with_token
-    async def export_with_template(self, jobId, format, templateId=None, versionNumber=None, **kwargs):
-        """Export a document using a publication template. Returns binary content (PDF/DOCX)."""
-        url = f"{self.base_api_url}/publication/{jobId}/export/{format}"
+    async def export_with_template(
+        self, conversationId, jobId, format, templateId=None, versionNumber=None, **kwargs
+    ):
+        """Export a document using a publication template. Returns binary content (PDF/DOCX).
+
+        The export is scoped by the conversation the job belongs to.
+        """
+        url = (
+            f"{self.base_api_url}/publication/conversations/{conversationId}"
+            f"/jobs/{jobId}/export/{format}"
+        )
         params = []
         if templateId:
             params.append(f"templateId={templateId}")
