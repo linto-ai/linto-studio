@@ -84,7 +84,10 @@ export default {
   computed: {
     ...mapGetters("user", ["needsOnboarding", "getUserId"]),
     ...mapGetters("billing", ["plans", "upgradeModalOpen"]),
-    ...mapGetters("organizations", ["getOrganizationsAsArray"]),
+    ...mapGetters("organizations", [
+      "getOrganizationsAsArray",
+      "getCurrentOrganizationScope",
+    ]),
     ...mapGetters("system", { appLoading: "isLoading" }),
     // Shown for a brand-new account (server truth, can't be dismissed) or
     // whenever something asks to upgrade (footer button, quota/feature gate,
@@ -148,7 +151,7 @@ export default {
           this.step = "organization"
           break
         default:
-          this.checkoutPersonalOrganization()
+          this.checkoutCurrentOrganization()
       }
     },
     backToPlans(draft) {
@@ -156,12 +159,17 @@ export default {
       this.checkoutError = ""
       this.step = "plan"
     },
-    checkoutPersonalOrganization() {
-      if (!this.personalOrganizationId) {
+    // Premium goes to the organization the wizard was opened from; the API
+    // refuses a team organization (plan_requires_personal_organization). On a
+    // brand-new account there is no current org yet: the personal one.
+    checkoutCurrentOrganization() {
+      const organizationId =
+        this.getCurrentOrganizationScope || this.personalOrganizationId
+      if (!organizationId) {
         this.checkoutError = this.$t("onboarding.checkout.errors.default")
         return
       }
-      this.startCheckout({ organizationId: this.personalOrganizationId })
+      this.startCheckout({ organizationId })
     },
     checkoutBusiness(draft) {
       this.organizationDraft = draft

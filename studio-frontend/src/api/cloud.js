@@ -161,6 +161,38 @@ export async function apiAdminGetOrgBilling(
   return res?.data
 }
 
+// GET /cloud/admin/orgs?enriched&limit&offset -> [subscription row], most
+// recent first; enriched adds usage, the org summary (live, gauges, locked).
+export async function apiAdminListOrgs(
+  query = {},
+  { backoffice = false } = {},
+  notif = null,
+) {
+  const res = await sendRequest(
+    adminUrl(`/orgs`, backoffice),
+    { method: "get" },
+    query,
+    notif,
+  )
+  return res?.data
+}
+
+// GET /cloud/admin/ledger.csv?from&to&format -> CSV text, or { from, to, rows }
+// with format=json
+export async function apiAdminGetLedgerExport(
+  query = {},
+  { backoffice = false } = {},
+  notif = null,
+) {
+  const res = await sendRequest(
+    adminUrl(`/ledger.csv`, backoffice),
+    { method: "get" },
+    query,
+    notif,
+  )
+  return res?.data
+}
+
 // POST /cloud/admin/orgs/:orgId/lots/:lotId/refund -> { refunded, stripeRefundId, lotId }
 // Refunds the pack at Stripe; the minutes come back through the webhook.
 export async function apiAdminRefundLot(
@@ -187,6 +219,26 @@ export async function apiAdminSetOrgMode(organizationId, mode, notif = null) {
     notif,
   )
   return res?.data
+}
+
+// POST /cloud/admin/orgs/:orgId/plan { planKey, seats?, until?, reason? }
+// -> { updated, subscription } ; 409 { reason } when Stripe bills the org or
+// its mode is not normal. A plan billed outside Stripe; free_payg takes any
+// non-Stripe plan off (200 { reason: "already_free" } when there is none).
+export async function apiAdminSetManualPlan(
+  organizationId,
+  payload,
+  { backoffice = false } = {},
+  notif = null,
+) {
+  const res = await sendRequest(
+    adminUrl(`/orgs/${organizationId}/plan`, backoffice),
+    { method: "post" },
+    payload,
+    notif,
+  )
+  // A refusal is an answer too: { updated: false, reason } comes back as is
+  return res?.data ?? res?.error?.response?.data
 }
 
 // POST /cloud/admin/orgs/:orgId/credits { minutes, reason } -> { granted, balance }

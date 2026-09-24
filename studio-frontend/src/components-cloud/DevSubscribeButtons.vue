@@ -127,6 +127,71 @@
         label="Checkout Business, new organization" />
     </form>
 
+    <form class="dev-subscribe__form" @submit="setManualPlan">
+      <h3>Manual plan (platform admin, billed outside Stripe)</h3>
+      <p class="dev-subscribe__balance">
+        Current plan: <strong>{{ usageLabel }}</strong>
+        <span v-if="manualPlanLabel">, {{ manualPlanLabel }}</span>
+      </p>
+      <label for="dev-manual-plan-key"
+        >Plan (free removes the manual plan)</label
+      >
+      <select id="dev-manual-plan-key" v-model="manualPlan.planKey">
+        <option
+          v-for="planKey in manualPlanKeys"
+          :key="planKey"
+          :value="planKey">
+          {{ planKey }}
+        </option>
+      </select>
+      <FormInput :field="manualPlanSeats" v-model="manualPlanSeats.value" />
+      <FormInput :field="manualPlanUntil" v-model="manualPlanUntil.value" />
+      <FormInput :field="manualPlanReason" v-model="manualPlanReason.value" />
+      <Button
+        type="submit"
+        variant="primary"
+        size="sm"
+        :disabled="loading"
+        label="Set the manual plan" />
+    </form>
+
+    <h3>Backoffice list (platform admin)</h3>
+    <div class="dev-subscribe__row">
+      <Button
+        variant="secondary"
+        size="sm"
+        :disabled="loading"
+        label="List subscriptions (raw, latest)"
+        @click="listOrganizations(false)" />
+      <Button
+        variant="secondary"
+        size="sm"
+        :disabled="loading"
+        label="List with usage and live balance (enriched)"
+        @click="listOrganizations(true)" />
+    </div>
+
+    <form class="dev-subscribe__form" @submit.prevent="showLedgerExport('csv')">
+      <h3>Accounting export (platform admin, ledger.csv)</h3>
+      <FormInput :field="ledgerFrom" v-model="ledgerFrom.value" />
+      <FormInput :field="ledgerTo" v-model="ledgerTo.value" />
+      <div class="dev-subscribe__row">
+        <Button
+          type="submit"
+          variant="primary"
+          size="sm"
+          :disabled="loading"
+          label="Show the CSV" />
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          :disabled="loading"
+          label="Show the rows (JSON)"
+          @click="showLedgerExport('json')" />
+      </div>
+    </form>
+
     <textarea
       class="dev-subscribe__output"
       readonly
@@ -148,8 +213,13 @@ import {
   apiGetUsage,
   apiAdminGetOrgBilling,
   apiAdminRefundLot,
+  apiAdminSetManualPlan,
+  apiAdminListOrgs,
+  apiAdminGetLedgerExport,
 } from "@/api/cloud.js"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount.js"
+import { buildManualPlanPayload } from "@/tools/buildManualPlanPayload.js"
+import { buildLedgerExportQuery } from "@/tools/buildLedgerExportQuery.js"
 import { formsMixin } from "@/mixins/forms.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testName } from "@/tools/fields/testName"
@@ -171,6 +241,8 @@ export default {
       packs: [],
       credits: null,
       usage: null,
+      // The subscription row, for the manual plan block (source, validUntil)
+      subscription: null,
       lots: [],
       seatIncrements: [1, 2, 3],
       loading: false,
@@ -186,6 +258,33 @@ export default {
         label: "Seats (the plan floor applies server-side)",
         type: "number",
         value: "2",
+      },
+      manualPlanKeys: ["premium", "business", "free_payg"],
+      manualPlan: { planKey: "business" },
+      manualPlanSeats: {
+        ...EMPTY_FIELD,
+        label: "Seats (empty: the plan floor)",
+        type: "number",
+        value: "5",
+      },
+      manualPlanUntil: {
+        ...EMPTY_FIELD,
+        label: "Valid until (empty: open-ended)",
+        type: "date",
+      },
+      manualPlanReason: {
+        ...EMPTY_FIELD,
+        label: "Reason (quote, public contract...)",
+      },
+      ledgerFrom: {
+        ...EMPTY_FIELD,
+        label: "From (empty: first day of this month)",
+        type: "date",
+      },
+      ledgerTo: {
+        ...EMPTY_FIELD,
+        label: "To (empty: now)",
+        type: "date",
       },
     }
   },
@@ -229,6 +328,15 @@ export default {
         label += ` (low, ${admissionMinutes} min per language needed to start)`
       }
       return label
+    },
+    // Source and end of the current row, when it is a manual plan
+    manualPlanLabel() {
+      if (this.subscription?.source !== "manual") return ""
+      const { validUntil } = this.subscription
+      const until = validUntil
+        ? `until ${new Date(validUntil).toLocaleDateString()}`
+        : "open-ended"
+      return `manual plan ${until}`
     },
     // The import gauge and, on Free, the transcription lots topping it up
     importQuotaLabel() {
@@ -276,13 +384,65 @@ export default {
     packsOfKind(kind) {
       return this.packs.filter((pack) => pack.kind === kind)
     },
-    // Every lot of the org, live and transcription, through the backoffice route
+    // Every lot of the org, live and transcription, and the subscription row,
+    // through the backoffice route
     async loadLots() {
       const billing = await apiAdminGetOrgBilling(
         this.currentOrganization._id,
         { backoffice: true },
       )
       this.lots = billing?.lots ?? []
+      this.subscription = billing?.subscription ?? null
+    },
+    // Plan billed outside Stripe: 409 when Stripe bills the org or its mode
+    // is not normal, the raw response says why
+    async setManualPlan(event) {
+      event.preventDefault()
+      const payload = buildManualPlanPayload({
+        planKey: this.manualPlan.planKey,
+        seats: this.manualPlanSeats.value,
+        until: this.manualPlanUntil.value,
+        reason: this.manualPlanReason.value,
+      })
+      const res = await this.run(
+        `POST /cloud/admin/orgs/:id/plan ${JSON.stringify(payload)}`,
+        () =>
+          apiAdminSetManualPlan(
+            this.currentOrganization._id,
+            payload,
+            { backoffice: true },
+            { message: "manual plan set" },
+          ),
+      )
+      if (res) await this.loadAll()
+    },
+    listOrganizations(enriched) {
+      const query = { enriched, limit: 20 }
+      return this.run(`GET /cloud/admin/orgs ${JSON.stringify(query)}`, () =>
+        apiAdminListOrgs(
+          query,
+          { backoffice: true },
+          { message: "organizations listed" },
+        ),
+      )
+    },
+    showLedgerExport(format) {
+      const query = {
+        ...buildLedgerExportQuery({
+          from: this.ledgerFrom.value,
+          to: this.ledgerTo.value,
+        }),
+        format,
+      }
+      return this.run(
+        `GET /cloud/admin/ledger.csv ${JSON.stringify(query)}`,
+        () =>
+          apiAdminGetLedgerExport(
+            query,
+            { backoffice: true },
+            { message: "ledger exported" },
+          ),
+      )
     },
     lotLabel(lot) {
       const pack = lot.ref?.packKey ?? lot.source
@@ -294,7 +454,11 @@ export default {
       this.output = `${label} ...`
       try {
         const res = await call()
-        this.output = JSON.stringify(res ?? { error: "no response" }, null, 2)
+        if (typeof res === "string") {
+          this.output = res
+        } else {
+          this.output = JSON.stringify(res ?? { error: "no response" }, null, 2)
+        }
         return res
       } catch (error) {
         console.error(error)
