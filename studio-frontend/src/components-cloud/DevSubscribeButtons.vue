@@ -155,6 +155,43 @@
         label="Set the manual plan" />
     </form>
 
+    <h3>Backoffice list (platform admin)</h3>
+    <div class="dev-subscribe__row">
+      <Button
+        variant="secondary"
+        size="sm"
+        :disabled="loading"
+        label="List subscriptions (raw, latest)"
+        @click="listOrganizations(false)" />
+      <Button
+        variant="secondary"
+        size="sm"
+        :disabled="loading"
+        label="List with usage and live balance (enriched)"
+        @click="listOrganizations(true)" />
+    </div>
+
+    <form class="dev-subscribe__form" @submit.prevent="showLedgerExport('csv')">
+      <h3>Accounting export (platform admin, ledger.csv)</h3>
+      <FormInput :field="ledgerFrom" v-model="ledgerFrom.value" />
+      <FormInput :field="ledgerTo" v-model="ledgerTo.value" />
+      <div class="dev-subscribe__row">
+        <Button
+          type="submit"
+          variant="primary"
+          size="sm"
+          :disabled="loading"
+          label="Show the CSV" />
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          :disabled="loading"
+          label="Show the rows (JSON)"
+          @click="showLedgerExport('json')" />
+      </div>
+    </form>
+
     <textarea
       class="dev-subscribe__output"
       readonly
@@ -177,9 +214,12 @@ import {
   apiAdminGetOrgBilling,
   apiAdminRefundLot,
   apiAdminSetManualPlan,
+  apiAdminListOrgs,
+  apiAdminGetLedgerExport,
 } from "@/api/cloud.js"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount.js"
 import { buildManualPlanPayload } from "@/tools/buildManualPlanPayload.js"
+import { buildLedgerExportQuery } from "@/tools/buildLedgerExportQuery.js"
 import { formsMixin } from "@/mixins/forms.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testName } from "@/tools/fields/testName"
@@ -235,6 +275,16 @@ export default {
       manualPlanReason: {
         ...EMPTY_FIELD,
         label: "Reason (quote, public contract...)",
+      },
+      ledgerFrom: {
+        ...EMPTY_FIELD,
+        label: "From (empty: first day of this month)",
+        type: "date",
+      },
+      ledgerTo: {
+        ...EMPTY_FIELD,
+        label: "To (empty: now)",
+        type: "date",
       },
     }
   },
@@ -366,6 +416,34 @@ export default {
       )
       if (res) await this.loadAll()
     },
+    listOrganizations(enriched) {
+      const query = { enriched, limit: 20 }
+      return this.run(`GET /cloud/admin/orgs ${JSON.stringify(query)}`, () =>
+        apiAdminListOrgs(
+          query,
+          { backoffice: true },
+          { message: "organizations listed" },
+        ),
+      )
+    },
+    showLedgerExport(format) {
+      const query = {
+        ...buildLedgerExportQuery({
+          from: this.ledgerFrom.value,
+          to: this.ledgerTo.value,
+        }),
+        format,
+      }
+      return this.run(
+        `GET /cloud/admin/ledger.csv ${JSON.stringify(query)}`,
+        () =>
+          apiAdminGetLedgerExport(
+            query,
+            { backoffice: true },
+            { message: "ledger exported" },
+          ),
+      )
+    },
     lotLabel(lot) {
       const pack = lot.ref?.packKey ?? lot.source
       return `Refund ${pack} (${lot.kind}, ${lot.remaining}/${lot.minutes} min)`
@@ -376,7 +454,11 @@ export default {
       this.output = `${label} ...`
       try {
         const res = await call()
-        this.output = JSON.stringify(res ?? { error: "no response" }, null, 2)
+        if (typeof res === "string") {
+          this.output = res
+        } else {
+          this.output = JSON.stringify(res ?? { error: "no response" }, null, 2)
+        }
         return res
       } catch (error) {
         console.error(error)
