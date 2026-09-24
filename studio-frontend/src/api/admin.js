@@ -2,6 +2,7 @@ import { sendRequest } from "../tools/sendRequest"
 
 import { getEnv } from "@/tools/getEnv"
 import { sendMultipartFormData } from "@/tools/sendMultipartFormData"
+import stripHiddenTranscriberProfileSecrets from "@/tools/stripHiddenTranscriberProfileSecrets.js"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 const DEFAULT_PAGE_SIZE = 10
@@ -306,12 +307,9 @@ export async function apiAdminUpdateTranscriberProfile(
   notif,
 ) {
   const dataCopy = structuredClone(data)
-  if (dataCopy.config.key === "Secret key is hidden") {
-    delete dataCopy.config.key
-  }
-  if (dataCopy.config.credentials === "Secret credentials are hidden") {
-    delete dataCopy.config.credentials
-  }
+  // Never send a "hidden" placeholder back: the Session-API would store it as
+  // the new secret. Omitting the field keeps the stored one.
+  dataCopy.config = stripHiddenTranscriberProfileSecrets(dataCopy.config)
   delete dataCopy.config.availableTranslations?.external
 
   return await sendRequest(
@@ -442,7 +440,7 @@ export async function apiAdminUpdateAmazonTranscriberProfile(
 ) {
   const formData = new FormData()
 
-  const config = {
+  const config = stripHiddenTranscriberProfileSecrets({
     type: "amazon",
     name: data.config.name,
     description: data.config.description || "",
@@ -450,12 +448,14 @@ export async function apiAdminUpdateAmazonTranscriberProfile(
     region: data.config.region,
     availableTranslations: data.config.availableTranslations || [],
     passphrase: data.config.passphrase || "",
+    // Placeholder stripped by stripHiddenTranscriberProfileSecrets(): without
+    // new certificate/privateKey files the Session-API keeps the stored ones.
     credentials: data.config.credentials,
     trustAnchorArn: data.config.trustAnchorArn,
     profileArn: data.config.profileArn,
     roleArn: data.config.roleArn,
     quickMeeting: data.quickMeeting,
-  }
+  })
 
   delete config.availableTranslations?.external
 
