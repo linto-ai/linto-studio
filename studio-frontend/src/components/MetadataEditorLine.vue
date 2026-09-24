@@ -18,7 +18,12 @@
       <template v-slot:content-after-input> </template
     ></FormInput>
     <div>
-      <Button @click="deleteRow" variant="secondary" icon="trash" />
+      <Button
+        @click="deleteRow"
+        variant="secondary"
+        icon="trash"
+        size=""
+        intent="destructive" />
     </div>
   </div>
 </template>

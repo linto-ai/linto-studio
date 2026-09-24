@@ -23,7 +23,7 @@
     <!-- Destination still to be decided: the button is shown, the event is not
          wired to anything yet. -->
     <Button
-      variant="primary"
+      variant="secondary"
       icon="gear"
       :label="$t('seats.panel.manage')"
       @click="$emit('manage')" />
@@ -40,6 +40,13 @@ export default {
   props: {
     used: { type: Number, required: true },
     capacity: { type: Number, required: true },
+  },
+  computed: {
+    // Emphasis follows the situation: the button only shouts when there is
+    // nothing left to give.
+    isFull() {
+      return this.used >= this.capacity
+    },
   },
 }
 </script>

@@ -36,6 +36,7 @@
     <form class="organization-users__search" role="search" @submit.prevent>
       <SearchInput
         v-model="search"
+        v-if="visibleRows.length > 0"
         :label="$t('seats.search_label')"
         :placeholder="$t('seats.search_placeholder')" />
     </form>
@@ -91,14 +92,14 @@
             v-if="rightsOf(element).canGrantSeat"
             size="sm"
             variant="secondary"
-            icon="arrow-fat-up"
+            icon="identification-badge"
             :label="$t('seats.row.give_seat')"
             @click="openGrantSeats([element])" />
           <Button
             v-if="rightsOf(element).canLeave"
             size="sm"
             icon="sign-out"
-            variant="secondary"
+            variant="text"
             intent="destructive"
             :title="$t('organisation.user.leave_button')"
             :aria-label="$t('organisation.user.leave_button')"
@@ -107,7 +108,7 @@
             v-else-if="rightsOf(element).canRemove"
             size="sm"
             icon="trash"
-            variant="secondary"
+            variant="text"
             intent="destructive"
             :title="$t('organisation.user.remove_button')"
             :aria-label="removeLabel(element)"
@@ -215,7 +216,7 @@ export default {
       // Role changes in flight, by member id. The table reads through them, so
       // the counters move at once and fall back on their own when a call fails.
       pendingRoleByUserId: {},
-      activeTab: MEMBERS_TAB,
+      activeTab: SEATS_TAB,
       search: "",
       selectedIds: [],
       // One sort state per tab: their columns differ, and GenericTable requires

@@ -21,7 +21,7 @@
     <Button
       variant="primary"
       size="sm"
-      icon="arrow-fat-up"
+      icon="identification-badge"
       :label="$t('seats.bar.grant')"
       :disabled="disabled"
       @click="$emit('grant')" />

@@ -13,8 +13,7 @@
       <template #trigger>
         <Button
           :label="$t('invite_user.button')"
-          variant="secondary"
-          size="sm"
+          variant="primary"
           @click="showList = !showList" />
         <!-- <button
           @click="showList = !showList"

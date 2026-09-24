@@ -16,7 +16,9 @@
   --btn-bg: transparent;
   --btn-border-color: transparent;
   text-decoration: underline;
-  padding: 0.25rem 0.5rem;
+  // No padding of its own: a variant says how a button looks, never how big it
+  // is. This file is unlayered, so a hard padding here used to beat the size
+  // scale in @layer base and broke the height of every text button.
 
   &:hover:not([disabled]):not(.disabled) {
     opacity: 0.8;

@@ -58,7 +58,7 @@
           @input="onTranslationsInput(element, $event)"
           :items="translationOptionsFor(element)">
           <template #trigger="{ open }">
-            <Button :icon-right="open ? 'caret-up' : 'caret-down'" size="sm">
+            <Button :icon-right="open ? 'caret-up' : 'caret-down'">
               {{
                 $tc(
                   "session.profile_selector.n_translations_selected",
@@ -92,6 +92,7 @@
         v-if="from === 'formCreateSession'"
         @click="removeChannel(channelsList.indexOf(element))"
         icon="trash"
+        size="sm"
         :label="$t('session.channels_list.remove')"
         variant="secondary"
         intent="destructive" />
