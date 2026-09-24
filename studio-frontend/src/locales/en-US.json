@@ -122,7 +122,17 @@
       "lot_remaining": "Remaining",
       "lot_expires": "Expires",
       "set_seats": "Override seats",
-      "saved": "Saved"
+      "saved": "Saved",
+      "load_error": "Could not load this organization's billing.",
+      "seats_unchanged": "Seats were not changed ({reason}).",
+      "status": "Status",
+      "renews": "Renews",
+      "cancel_scheduled": "cancellation scheduled",
+      "lot_refund": "Refund",
+      "refund_confirm_title": "Refund this lot?",
+      "refund_confirm_body": "The payment is refunded at Stripe and the matching {minutes} are taken back from the organization's balance. This cannot be undone.",
+      "refund_done": "Refund requested at Stripe.",
+      "refund_failed": "The refund did not go through ({reason})."
     }
   },
   "seats": {

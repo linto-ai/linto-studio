@@ -2,6 +2,15 @@
   <section class="bo-billing">
     <h2 class="bo-billing__h2">{{ $t("billing.backoffice.title") }}</h2>
 
+    <NotificationBanner
+      v-if="loadFailed"
+      variant="error"
+      icon="warning-circle"
+      align="start"
+      class="bo-billing__banner">
+      {{ $t("billing.backoffice.load_error") }}
+    </NotificationBanner>
+
     <div v-if="billing" class="bo-billing__grid">
       <div class="bo-billing__row">
         <span class="bo-billing__k">{{ $t("billing.backoffice.plan") }}</span>
@@ -19,6 +28,23 @@
         <span class="bo-billing__k">{{ $t("billing.backoffice.seats") }}</span>
         <span class="bo-billing__v">{{ billing.seats }}</span>
       </div>
+      <div class="bo-billing__row" v-if="subscription">
+        <span class="bo-billing__k">{{ $t("billing.backoffice.status") }}</span>
+        <span class="bo-billing__v">
+          {{ subscription.status }}
+          <span
+            v-if="subscription.cancelAtPeriodEnd"
+            class="bo-billing__tag bo-billing__tag--managed"
+            >{{ $t("billing.backoffice.cancel_scheduled") }}</span
+          >
+        </span>
+      </div>
+      <div class="bo-billing__row" v-if="subscription?.currentPeriodEnd">
+        <span class="bo-billing__k">{{ $t("billing.backoffice.renews") }}</span>
+        <span class="bo-billing__v">{{
+          formatDate(subscription.currentPeriodEnd)
+        }}</span>
+      </div>
       <div class="bo-billing__row" v-for="m in meters" :key="m.key">
         <span class="bo-billing__k">{{ $t(m.label) }}</span>
         <span class="bo-billing__v">
@@ -30,13 +56,22 @@
           $t("billing.backoffice.live_balance")
         }}</span>
         <span class="bo-billing__v">
-          {{ live.unmetered ? "∞" : fmtMinutes(live.balance) }}
+          {{ live.unmetered ? "∞" : formatMinutes(live.balance) }}
         </span>
       </div>
     </div>
 
+    <NotificationBanner
+      v-if="locked"
+      variant="warning"
+      icon="warning-circle"
+      align="start"
+      class="bo-billing__banner">
+      {{ $t("billing.team_plan_required") }}
+    </NotificationBanner>
+
     <!-- Mode: normal (SaaS org), comp (offered access), managed (hosted customer) -->
-    <div class="bo-billing__block">
+    <div v-if="billing" class="bo-billing__block">
       <div class="bo-billing__block-text">
         <strong>{{ $t("billing.backoffice.mode") }}</strong>
         <p>{{ $t("billing.backoffice.mode_hint") }}</p>
@@ -58,7 +93,7 @@
     </div>
 
     <!-- Live minutes grant, with a mandatory reason (traced in the activity log) -->
-    <div class="bo-billing__block">
+    <div v-if="billing" class="bo-billing__block">
       <div class="bo-billing__block-text">
         <strong>{{ $t("billing.backoffice.credits_title") }}</strong>
         <p>{{ $t("billing.backoffice.credits_hint") }}</p>
@@ -90,14 +125,40 @@
             <th>{{ $t("billing.backoffice.lot_minutes") }}</th>
             <th>{{ $t("billing.backoffice.lot_remaining") }}</th>
             <th>{{ $t("billing.backoffice.lot_expires") }}</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="lot in lots" :key="lot._id">
-            <td>{{ lot.source }}<span v-if="lot.reason"> · {{ lot.reason }}</span></td>
-            <td>{{ fmtMinutes(lot.minutes) }}</td>
-            <td>{{ fmtMinutes(lot.remaining) }}</td>
+            <td>
+              {{ lot.source }}<span v-if="lot.reason"> · {{ lot.reason }}</span>
+            </td>
+            <td>{{ formatMinutes(lot.minutes) }}</td>
+            <td>{{ formatMinutes(lot.remaining) }}</td>
             <td>{{ formatDate(lot.expiresAt) }}</td>
+            <td>
+              <Alert
+                v-if="isRefundable(lot)"
+                type="danger"
+                :title="$t('billing.backoffice.refund_confirm_title')"
+                :message="
+                  $t('billing.backoffice.refund_confirm_body', {
+                    minutes: formatMinutes(lot.minutes),
+                  })
+                "
+                :confirmText="$t('billing.backoffice.lot_refund')"
+                :cancelText="$t('modal.cancel')"
+                @confirm="refundLot(lot)">
+                <Button
+                  size="sm"
+                  variant="text"
+                  intent="destructive"
+                  icon="arrow-u-up-left"
+                  :disabled="busy"
+                  :title="$t('billing.backoffice.lot_refund')"
+                  :aria-label="$t('billing.backoffice.lot_refund')" />
+              </Alert>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -124,13 +185,18 @@
 </template>
 
 <script>
+import { bus } from "@/main.js"
 import {
   apiAdminGetOrgBilling,
   apiAdminSetSeats,
   apiAdminSetOrgMode,
   apiAdminGrantCredits,
+  apiAdminRefundLot,
 } from "@/api/cloud"
-import Button from "@/components/atoms/Button.vue"
+import { formatDateOrDash } from "@/tools/formatDate"
+import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
+import Alert from "@/components/atoms/Alert.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 
 const MODES = ["normal", "comp", "managed"]
 
@@ -143,7 +209,7 @@ const METER_LABEL = {
 
 export default {
   name: "BackofficeOrgBilling",
-  components: { Button },
+  components: { Alert, NotificationBanner },
   props: {
     organizationId: { type: String, required: true },
   },
@@ -151,6 +217,7 @@ export default {
     return {
       MODES,
       billing: null,
+      loadFailed: false,
       busy: false,
       seatsInput: 1,
       modeInput: "normal",
@@ -177,18 +244,28 @@ export default {
     lots() {
       return this.billing?.lots || []
     },
+    subscription() {
+      return this.billing?.subscription || null
+    },
+    // A team org whose plan no longer grants collaboration: every gated call is
+    // refused server-side until it is back on a team plan.
+    locked() {
+      return this.billing?.usage?.locked === true
+    },
   },
   mounted() {
     this.load()
   },
   methods: {
     async load() {
-      this.billing = await apiAdminGetOrgBilling(this.organizationId)
-      if (this.billing) {
-        if (typeof this.billing.seats === "number")
-          this.seatsInput = this.billing.seats
-        this.modeInput = this.billing.mode || "normal"
-      }
+      const billing = await apiAdminGetOrgBilling(this.organizationId)
+      // sendRequest answers undefined on failure and raises nothing without a
+      // notif: without this the panel would just vanish, unexplained.
+      this.loadFailed = !billing
+      if (!billing) return
+      this.billing = billing
+      if (typeof billing.seats === "number") this.seatsInput = billing.seats
+      this.modeInput = billing.mode || "normal"
     },
     async saveMode() {
       this.busy = true
@@ -218,41 +295,65 @@ export default {
         this.busy = false
       }
     },
+    // The seat route answers 200 with { updated: false, reason } when the org
+    // has no active subscription or its plan is missing — so a success toast
+    // cannot be left to sendRequest here.
     async saveSeats() {
       this.busy = true
       try {
-        await apiAdminSetSeats(
+        const res = await apiAdminSetSeats(
           this.organizationId,
           Math.max(1, this.seatsInput || 1),
-          { message: this.$t("billing.backoffice.saved") },
         )
+        if (res && res.updated) {
+          this.notify("success", this.$t("billing.backoffice.saved"))
+        } else {
+          this.notify(
+            "error",
+            this.$t("billing.backoffice.seats_unchanged", {
+              reason: res?.reason || "unknown",
+            }),
+          )
+        }
+        await this.load()
+      } finally {
+        this.busy = false
+      }
+    },
+    notify(status, message) {
+      bus.$emit("app_notif", { status, message })
+    },
+    // Only a pack actually paid at Stripe can be given back.
+    isRefundable(lot) {
+      return lot.source === "stripe" && !!lot.ref?.stripePaymentIntentId
+    },
+    async refundLot(lot) {
+      this.busy = true
+      try {
+        const res = await apiAdminRefundLot(this.organizationId, lot._id)
+        if (res && res.refunded) {
+          this.notify("success", this.$t("billing.backoffice.refund_done"))
+        } else {
+          this.notify(
+            "error",
+            this.$t("billing.backoffice.refund_failed", {
+              reason: res?.reason || "unknown",
+            }),
+          )
+        }
         await this.load()
       } finally {
         this.busy = false
       }
     },
     fmt(m, v) {
-      return m.unit === "minutes" ? this.fmtMinutes(v) : v
+      return m.unit === "minutes" ? this.formatMinutes(v) : v
     },
-    fmtMinutes(min) {
-      min = Math.round(min || 0)
-      const neg = min < 0
-      min = Math.abs(min)
-      const h = Math.floor(min / 60)
-      const mn = min % 60
-      const s = h > 0 ? `${h}h${mn > 0 ? mn + "min" : ""}` : `${mn}min`
-      return neg ? `-${s}` : s
+    formatMinutes(minutes) {
+      return formatMinutesDuration(minutes)
     },
     formatDate(iso) {
-      try {
-        return new Date(iso).toLocaleDateString(this.$i18n?.locale || "fr-FR", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        })
-      } catch (e) {
-        return ""
-      }
+      return formatDateOrDash(iso, this.$i18n?.locale)
     },
   },
 }
@@ -262,6 +363,9 @@ export default {
 .bo-billing {
   &__h2 {
     margin-bottom: 0.75em;
+  }
+  &__banner {
+    margin-bottom: 1em;
   }
   &__grid {
     border: 1px solid var(--neutral-30);

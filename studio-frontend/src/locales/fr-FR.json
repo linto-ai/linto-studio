@@ -122,7 +122,17 @@
       "lot_remaining": "Restant",
       "lot_expires": "Expire le",
       "set_seats": "Forcer les licences",
-      "saved": "Enregistré"
+      "saved": "Enregistré",
+      "load_error": "Impossible de charger la facturation de cette organisation.",
+      "seats_unchanged": "Les sièges n'ont pas été modifiés ({reason}).",
+      "status": "Statut",
+      "renews": "Renouvellement",
+      "cancel_scheduled": "résiliation programmée",
+      "lot_refund": "Rembourser",
+      "refund_confirm_title": "Rembourser ce lot ?",
+      "refund_confirm_body": "Le paiement est remboursé chez Stripe et les {minutes} correspondantes sont retirées du solde de l'organisation. Action irréversible.",
+      "refund_done": "Remboursement demandé chez Stripe.",
+      "refund_failed": "Le remboursement n'a pas abouti ({reason})."
     }
   },
   "seats": {
