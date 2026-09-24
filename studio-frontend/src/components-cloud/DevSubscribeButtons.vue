@@ -5,7 +5,7 @@
       Plan, live balance and lots come from the API
       <Button
         variant="secondary"
-        size="xs"
+        size="sm"
         :disabled="loading"
         label="Refresh"
         @click="loadAll" />
@@ -122,7 +122,7 @@
       <Button
         type="submit"
         variant="primary"
-        size="sm"
+        size="md"
         :disabled="loading"
         label="Checkout Business, new organization" />
     </form>

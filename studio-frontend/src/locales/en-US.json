@@ -125,6 +125,72 @@
       "saved": "Saved"
     }
   },
+  "seats": {
+    "tabs": {
+      "seats": "Collaborators",
+      "members": "Members"
+    },
+    "search_label": "Search a member",
+    "search_placeholder": "Search name or email",
+    "member_hint": "Member · read-only, holds no seat",
+    "empty_members": "Every member of this organization is a collaborator.",
+    "empty_seats": "No collaborator yet.",
+    "empty_search": "No member matches this search.",
+    "row": {
+      "give_seat": "Give a seat"
+    },
+    "panel": {
+      "used": "seats used",
+      "manage": "Manage seats",
+      "helper": "one seat per collaborator, members are free"
+    },
+    "bar": {
+      "region_label": "Selected members",
+      "selected": "{count} selected | {count} selected",
+      "caption_capacity": "{needed} of {available} free seats",
+      "clear": "Clear",
+      "grant": "Give seats"
+    },
+    "grant": {
+      "title": "Give a seat to 1 user | Give seats to {count} users",
+      "role_label": "Role for {name}",
+      "drop": "Remove from the batch",
+      "done": "Seat given",
+      "not_attempted": "Not attempted",
+      "running": "{done} of {total} processed",
+      "apply": "Assign 1 seat | Assign {count} seats",
+      "apply_no_seat": "Update 1 role | Update {count} roles",
+      "retry_failed": "Retry 1 failure | Retry {count} failures",
+      "close": "Close",
+      "error_seats_full": "No seat left in the plan: the remaining members were not processed.",
+      "success_notification": "1 seat given | {count} seats given",
+      "extra_helper": "{count} extra seat will be added to your subscription · about {price} billed today, prorated | {count} extra seats will be added to your subscription · about {price} billed today, prorated",
+      "extra_helper_unknown_price": "{count} extra seat will be added to your subscription, billed prorated | {count} extra seats will be added to your subscription, billed prorated",
+      "cannot_buy": "Every seat is taken, and your role cannot add more. Ask an organization administrator.",
+      "apply_and_pay": "Assign and pay",
+      "purchase_failed": "Adding seats failed: no seat was assigned."
+    },
+    "notification": {
+      "role_updated": "Role updated."
+    },
+    "manage": {
+      "title": "Manage seats",
+      "stepper_label": "Number of seats",
+      "decrement": "Remove a seat",
+      "increment": "Add a seat",
+      "floor_hint": "Minimum {count} — remove collaborators first to go lower.",
+      "increase_notice": "{count} seat added · about {price} billed today, prorated | {count} seats added · about {price} billed today, prorated",
+      "increase_notice_unknown_price": "{count} seat added, billed prorated | {count} seats added, billed prorated",
+      "decrease_notice": "{count} seat removed · a credit will be applied to your next invoice | {count} seats removed · a credit will be applied to your next invoice",
+      "estimate_note": "Estimated amount: the exact proration is computed when the charge is made.",
+      "unchanged": "No change",
+      "cannot_manage": "Your role cannot change seats. Ask an organization administrator.",
+      "failed": "The change did not go through.",
+      "success": "Your plan now has {count} seat. | Your plan now has {count} seats.",
+      "apply": "Confirm",
+      "apply_and_pay": "Confirm and pay"
+    }
+  },
   "apply": "Apply",
   "cancel": "Cancel",
   "activity_list": {
@@ -1212,16 +1278,16 @@
       "step_organization": "Organization",
       "step_payment": "Payment",
       "title": "Create your organization",
-      "description": "Only collaborators are billed. Read-only members are free and unlimited.",
+      "description": "Only collaborator seats are billed. Read-only members are free and unlimited.",
       "name_label": "Organization name",
       "name_placeholder": "e.g. Communications department",
-      "collaborators_title": "Collaborators",
-      "collaborators_description": "Can import media and transcribe live · min. {min}",
-      "collaborators_admin": "You are one of them, as the administrator.",
+      "collaborators_title": "Collaborator seats",
+      "collaborators_description": "To import media and transcribe live · min. {min}",
+      "collaborators_admin": "One seat is yours, as the administrator.",
       "seat_price_monthly": "{price} / month each",
       "seat_price_yearly": "{price} / year each",
-      "remove_seat": "Remove a collaborator",
-      "add_seat": "Add a collaborator",
+      "remove_seat": "Remove a seat",
+      "add_seat": "Add a seat",
       "members_title": "Members",
       "members_description": "View, search and export transcriptions",
       "members_unlimited": "Unlimited",
@@ -1230,7 +1296,7 @@
       "total_yearly": "Yearly total",
       "total_monthly_detail": "{seats} × {price} · charged every month, cancel anytime",
       "total_yearly_detail": "{seats} × {price} · charged every year, cancel anytime",
-      "seats_note": "Nothing is set in stone: add or remove collaborators at any time from the settings, billing is prorated.",
+      "seats_note": "Nothing is set in stone: add or remove seats at any time from the settings, billing is prorated.",
       "back": "Plans",
       "submit": "Continue to payment"
     },

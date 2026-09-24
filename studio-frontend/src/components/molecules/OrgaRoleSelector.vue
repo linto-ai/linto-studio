@@ -16,6 +16,12 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Optional subset of roles to offer (seat roles only, capped at what the
+    // viewer may grant…). Defaults to every organization role.
+    roles: {
+      type: Array,
+      default: null,
+    },
   },
   computed: {
     _value: {
@@ -27,7 +33,7 @@ export default {
       },
     },
     items() {
-      return this.userRoles.map((role) => ({
+      return (this.roles || this.userRoles).map((role) => ({
         name: role.name,
         description: role.description,
         value: role.value,

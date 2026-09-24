@@ -1,6 +1,11 @@
 <template>
   <div class="flex col">
-    <select :value="valueKey(value)" @input="input">
+    <select
+      :id="p_id"
+      :value="valueKey(value)"
+      :disabled="disabled"
+      :aria-label="ariaLabel || undefined"
+      @input="input">
       <option
         v-for="o in planOptions"
         :value="valueKey(o.value)"
@@ -35,6 +40,8 @@ export default {
     buttonClass: { type: String, default: "" },
     id: { type: String, default: null },
     disabled: { type: Boolean, default: false },
+    // Accessible name when no visible <label> points at the select.
+    ariaLabel: { type: String, default: "" },
     valueKey: { type: Function, default: (value) => value },
   },
   data() {

@@ -24,6 +24,7 @@
           canStartConversationInCurrentOrganization &&
           $route.name !== 'conversations create'
         "
+        size="lg"
         @click="startConversation"
         :label="$t('navigation.conversation.start')"
         variant="primary"

@@ -34,10 +34,6 @@ export default {
     textActionApply: { type: String, default: i18n.t("modal.apply") },
     textActionCancel: { type: String, default: i18n.t("modal.cancel") },
     textActionDelete: { type: String, default: "Delete" },
-    customClassClose: { type: String, default: "" },
-    customClassActionApply: { type: String, default: "" },
-    customClassActionCancel: { type: String, default: "" },
-    customClassActionDelete: { type: String, default: "" },
     disabledActions: { type: Boolean, default: false },
     disabledActionDelete: { type: Boolean, default: false },
     disabledActionCancel: { type: Boolean, default: false },
@@ -46,9 +42,6 @@ export default {
     iconActionApply: { type: String, default: "check" },
     iconActionCancel: { type: String, default: "x-circle" },
     iconActionDelete: { type: String, default: "trash" },
-    colorActionApply: { type: String, default: "primary" },
-    colorActionCancel: { type: String, default: "var(--neutral-40)" },
-    colorActionDelete: { type: String, default: "var(--danger-color)" },
   },
   data() {
     return {
@@ -86,24 +79,24 @@ export default {
             props: this.$props,
             slots: {
               default: () =>
-                this.$scopedSlots.content
+                (this.$scopedSlots.content
                   ? this.$scopedSlots.content()
-                  : this.$slots.content || this.$slots.default || [],
+                  : this.$slots.content || this.$slots.default) || [],
               actions: () =>
-                this.$scopedSlots.actions
+                (this.$scopedSlots.actions
                   ? this.$scopedSlots.actions()
-                  : this.$slots.actions || [],
+                  : this.$slots.actions) || [],
               "actions-left": () =>
                 this.$scopedSlots["actions-left"]
-                  ? this.$scopedSlots["actions-left"]()
+                  ? this.$scopedSlots["actions-left"]() || []
                   : this.$slots["actions-left"] || [],
               "actions-right": () =>
                 this.$scopedSlots["actions-right"]
-                  ? this.$scopedSlots["actions-right"]()
+                  ? this.$scopedSlots["actions-right"]() || []
                   : this.$slots["actions-right"] || [],
               "header-actions": () =>
                 this.$scopedSlots["header-actions"]
-                  ? this.$scopedSlots["header-actions"]()
+                  ? this.$scopedSlots["header-actions"]() || []
                   : this.$slots["header-actions"] || [],
             },
             triggerEl: this.triggerEl,
@@ -121,24 +114,24 @@ export default {
       if (popup && popup.rendererInstance) {
         popup.slots = {
           default: () =>
-            this.$scopedSlots.content
+            (this.$scopedSlots.content
               ? this.$scopedSlots.content()
-              : this.$slots.content || this.$slots.default || [],
+              : this.$slots.content || this.$slots.default) || [],
           actions: () =>
-            this.$scopedSlots.actions
+            (this.$scopedSlots.actions
               ? this.$scopedSlots.actions()
-              : this.$slots.actions || [],
+              : this.$slots.actions) || [],
           "actions-left": () =>
             this.$scopedSlots["actions-left"]
-              ? this.$scopedSlots["actions-left"]()
+              ? this.$scopedSlots["actions-left"]() || []
               : this.$slots["actions-left"] || [],
           "actions-right": () =>
             this.$scopedSlots["actions-right"]
-              ? this.$scopedSlots["actions-right"]()
+              ? this.$scopedSlots["actions-right"]() || []
               : this.$slots["actions-right"] || [],
           "header-actions": () =>
             this.$scopedSlots["header-actions"]
-              ? this.$scopedSlots["header-actions"]()
+              ? this.$scopedSlots["header-actions"]() || []
               : this.$slots["header-actions"] || [],
         }
         popup.rendererInstance.$forceUpdate()

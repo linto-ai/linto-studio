@@ -28,6 +28,7 @@
         :selectedRows="selectedRows"
         :idKey="idKey"
         :rowClass="rowClass"
+        :selectableRowIds="selectableRowIds"
         @update:selectedRows="updateSelectedRows">
         <template v-for="(_, slot) in $scopedSlots" #[slot]="props">
           <slot

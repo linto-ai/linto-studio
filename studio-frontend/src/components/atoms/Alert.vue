@@ -13,8 +13,6 @@
     :customModalClass="`alert-modal alert-${type}`"
     :iconActionApply="iconActionApply"
     iconActionCancel="x-circle"
-    colorActionApply="tertiary"
-    colorActionCancel="primary"
     @input="internalVisible = $event"
     @confirm="onConfirm"
     @close="onCancel"

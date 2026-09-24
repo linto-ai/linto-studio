@@ -9,7 +9,8 @@
       <slot name="trigger" :open="open">
         <Button
           :iconRight="open ? 'caret-up' : 'caret-down'"
-          :label="currentItem.name" />
+          :title="currentLabel"
+          :label="currentLabel" />
       </slot>
     </template>
     <template #content>
@@ -21,7 +22,7 @@
   </Popover>
   <Tooltip v-else maxWidth="400px" position="bottom">
     <div class="role-selector-container--readonly">
-      {{ currentItem.name }}
+      {{ currentLabel }}
     </div>
     <template #content>
       <SelectorDescriptionContent
@@ -64,6 +65,11 @@ export default {
     },
     currentItem() {
       return this.items.find((ur) => ur.value === this.value)
+    },
+    // The value can sit outside the offered items (a filtered list, a role the
+    // viewer may not grant): render nothing rather than throwing.
+    currentLabel() {
+      return this.currentItem?.name ?? ""
     },
   },
   components: {

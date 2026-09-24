@@ -109,5 +109,5 @@ export default {
 
   // True when any quota is exhausted (drives the upsell emphasis).
   needsUpgrade: (s, g) =>
-    g.meters.some((m) => !m.unlimited && m.remaining <= 0),
+    g.meters.some((m) => !m.unlimited && m.remaining != null && m.remaining <= 0),
 }

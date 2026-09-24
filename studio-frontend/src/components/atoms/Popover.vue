@@ -350,6 +350,11 @@ export default {
 .popover-trigger {
   display: flex;
   width: fit-content;
+  // fit-content alone lets the trigger grow past a narrow container (a table
+  // cell), taking the slotted control with it: max-width gives the child
+  // something finite to resolve its own 100% against.
+  max-width: 100%;
+  min-width: 0;
 
   &--full-width {
     width: 100%;

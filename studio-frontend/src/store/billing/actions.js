@@ -3,6 +3,7 @@ import {
   apiGetUsage,
   apiGetUsageByMember,
   apiGetSubscriptions,
+  apiChangeSubscription,
 } from "@/api/cloud"
 
 function currentOrg(rootGetters, orgId) {
@@ -53,6 +54,23 @@ export default {
   },
   closeUpgradeModal({ commit }) {
     commit("closeUpgradeModal")
+  },
+
+  // Seat capacity of a per-seat plan, bought and released in place. `seats` is
+  // the TOTAL, never a delta, and the API floors it at the org's current
+  // collaborators and at the plan's included seats — so the caller reads the
+  // seat count back from the refreshed usage, never from what it asked for.
+  // Stripe invoices the prorated difference right away (proration_behavior
+  // "always_invoice"). Org admin only; null when the change is refused.
+  async changeSeats({ dispatch, rootGetters }, payload = {}) {
+    const { seats, orgId } = payload
+    const organizationId = currentOrg(rootGetters, orgId)
+    if (!organizationId || typeof seats !== "number") return null
+    const subscription = await apiChangeSubscription(organizationId, { seats })
+    if (!subscription) return null
+    await dispatch("refresh", organizationId)
+    await dispatch("fetchSubscriptions", organizationId)
+    return subscription
   },
 
   // What every member may load: the catalog and the org's usage summary.

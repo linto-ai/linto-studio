@@ -66,7 +66,7 @@
         <Button
           v-if="org.isFree"
           variant="primary"
-          size="xs"
+          size="sm"
           icon="sparkle"
           @click="$emit('upgrade')">
           {{ $t("billing.account.upgrade_premium") }}
@@ -74,7 +74,7 @@
         <Button
           v-if="org.isPaid"
           variant="link"
-          size="xs"
+          size="sm"
           intent="destructive"
           @click="onCancelClick">
           {{ $t("billing.account.cancel_subscription") }}

@@ -35,7 +35,7 @@
       <Button
         type="submit"
         variant="primary"
-        size="sm"
+        size="md"
         :label="$t('user_settings.notifications.submit_button')" />
       <!-- <button type="submit" class="btn small-margin primary">
         <ph-icon name="check" size="md" class="icon" />

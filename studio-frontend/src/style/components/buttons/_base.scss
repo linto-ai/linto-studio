@@ -60,6 +60,8 @@
   }
 
   &[multiline] {
+    padding-block: 0.35em;
+
     .label {
       white-space: normal;
       text-align: left;
