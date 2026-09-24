@@ -189,6 +189,26 @@ export async function apiAdminSetOrgMode(organizationId, mode, notif = null) {
   return res?.data
 }
 
+// POST /cloud/admin/orgs/:orgId/plan { planKey, seats?, until?, reason? }
+// -> { updated, subscription } ; 409 { reason } when Stripe bills the org or
+// its mode is not normal. A plan billed outside Stripe; free_payg takes any
+// non-Stripe plan off (200 { reason: "already_free" } when there is none).
+export async function apiAdminSetManualPlan(
+  organizationId,
+  payload,
+  { backoffice = false } = {},
+  notif = null,
+) {
+  const res = await sendRequest(
+    adminUrl(`/orgs/${organizationId}/plan`, backoffice),
+    { method: "post" },
+    payload,
+    notif,
+  )
+  // A refusal is an answer too: { updated: false, reason } comes back as is
+  return res?.data ?? res?.error?.response?.data
+}
+
 // POST /cloud/admin/orgs/:orgId/credits { minutes, reason } -> { granted, balance }
 export async function apiAdminGrantCredits(
   organizationId,

@@ -127,6 +127,34 @@
         label="Checkout Business, new organization" />
     </form>
 
+    <form class="dev-subscribe__form" @submit="setManualPlan">
+      <h3>Manual plan (platform admin, billed outside Stripe)</h3>
+      <p class="dev-subscribe__balance">
+        Current plan: <strong>{{ usageLabel }}</strong>
+        <span v-if="manualPlanLabel">, {{ manualPlanLabel }}</span>
+      </p>
+      <label for="dev-manual-plan-key"
+        >Plan (free removes the manual plan)</label
+      >
+      <select id="dev-manual-plan-key" v-model="manualPlan.planKey">
+        <option
+          v-for="planKey in manualPlanKeys"
+          :key="planKey"
+          :value="planKey">
+          {{ planKey }}
+        </option>
+      </select>
+      <FormInput :field="manualPlanSeats" v-model="manualPlanSeats.value" />
+      <FormInput :field="manualPlanUntil" v-model="manualPlanUntil.value" />
+      <FormInput :field="manualPlanReason" v-model="manualPlanReason.value" />
+      <Button
+        type="submit"
+        variant="primary"
+        size="sm"
+        :disabled="loading"
+        label="Set the manual plan" />
+    </form>
+
     <textarea
       class="dev-subscribe__output"
       readonly
@@ -148,8 +176,10 @@ import {
   apiGetUsage,
   apiAdminGetOrgBilling,
   apiAdminRefundLot,
+  apiAdminSetManualPlan,
 } from "@/api/cloud.js"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount.js"
+import { buildManualPlanPayload } from "@/tools/buildManualPlanPayload.js"
 import { formsMixin } from "@/mixins/forms.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testName } from "@/tools/fields/testName"
@@ -171,6 +201,8 @@ export default {
       packs: [],
       credits: null,
       usage: null,
+      // The subscription row, for the manual plan block (source, validUntil)
+      subscription: null,
       lots: [],
       seatIncrements: [1, 2, 3],
       loading: false,
@@ -186,6 +218,23 @@ export default {
         label: "Seats (the plan floor applies server-side)",
         type: "number",
         value: "2",
+      },
+      manualPlanKeys: ["premium", "business", "free_payg"],
+      manualPlan: { planKey: "business" },
+      manualPlanSeats: {
+        ...EMPTY_FIELD,
+        label: "Seats (empty: the plan floor)",
+        type: "number",
+        value: "5",
+      },
+      manualPlanUntil: {
+        ...EMPTY_FIELD,
+        label: "Valid until (empty: open-ended)",
+        type: "date",
+      },
+      manualPlanReason: {
+        ...EMPTY_FIELD,
+        label: "Reason (quote, public contract...)",
       },
     }
   },
@@ -229,6 +278,15 @@ export default {
         label += ` (low, ${admissionMinutes} min per language needed to start)`
       }
       return label
+    },
+    // Source and end of the current row, when it is a manual plan
+    manualPlanLabel() {
+      if (this.subscription?.source !== "manual") return ""
+      const { validUntil } = this.subscription
+      const until = validUntil
+        ? `until ${new Date(validUntil).toLocaleDateString()}`
+        : "open-ended"
+      return `manual plan ${until}`
     },
     // The import gauge and, on Free, the transcription lots topping it up
     importQuotaLabel() {
@@ -276,13 +334,37 @@ export default {
     packsOfKind(kind) {
       return this.packs.filter((pack) => pack.kind === kind)
     },
-    // Every lot of the org, live and transcription, through the backoffice route
+    // Every lot of the org, live and transcription, and the subscription row,
+    // through the backoffice route
     async loadLots() {
       const billing = await apiAdminGetOrgBilling(
         this.currentOrganization._id,
         { backoffice: true },
       )
       this.lots = billing?.lots ?? []
+      this.subscription = billing?.subscription ?? null
+    },
+    // Plan billed outside Stripe: 409 when Stripe bills the org or its mode
+    // is not normal, the raw response says why
+    async setManualPlan(event) {
+      event.preventDefault()
+      const payload = buildManualPlanPayload({
+        planKey: this.manualPlan.planKey,
+        seats: this.manualPlanSeats.value,
+        until: this.manualPlanUntil.value,
+        reason: this.manualPlanReason.value,
+      })
+      const res = await this.run(
+        `POST /cloud/admin/orgs/:id/plan ${JSON.stringify(payload)}`,
+        () =>
+          apiAdminSetManualPlan(
+            this.currentOrganization._id,
+            payload,
+            { backoffice: true },
+            { message: "manual plan set" },
+          ),
+      )
+      if (res) await this.loadAll()
     },
     lotLabel(lot) {
       const pack = lot.ref?.packKey ?? lot.source
