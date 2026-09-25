@@ -123,9 +123,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("userInfos", { user: "getUserInfos" }),
+    ...mapGetters("user", { userId: "getUserId" }),
     ...mapGetters("organizations", {
       orgUsers: "getCurrentOrganizationUsers",
+      storeScope: "getStoreScope",
     }),
     orgUserRoleById() {
       return new Map(this.orgUsers.map((u) => [u._id, u.role]))
@@ -194,14 +195,17 @@ export default {
   methods: {
     async refresh() {
       this.loading = true
-      this.verifyConversationsList()
-      if (
-        this.normalizedConversations.length > 0 &&
-        this.conversationsInError.length === 0
-      ) {
-        await this.loadUsersRights()
+      try {
+        this.verifyConversationsList()
+        if (
+          this.normalizedConversations.length > 0 &&
+          this.conversationsInError.length === 0
+        ) {
+          await this.loadUsersRights()
+        }
+      } finally {
+        this.loading = false
       }
-      this.loading = false
     },
     verifyConversationsList() {
       this.conversationsInError = this.normalizedConversations.filter(
@@ -209,8 +213,16 @@ export default {
       )
     },
     conversationCanBeShared(conversation) {
-      const userRight = getUserRightFromConversation(conversation)
-      return this.hasShareRight(userRight) || this.isAtLeastMaintainer
+      return (
+        this.hasShareRight(this.selfRight(conversation)) ||
+        this.isAtLeastMaintainer
+      )
+    },
+    selfRight(conversation) {
+      const getSelfMediaRight =
+        this.$store.getters[`${this.storeScope}/getSelfMediaRight`]
+      if (getSelfMediaRight) return getSelfMediaRight(conversation._id)
+      return getUserRightFromConversation(conversation, this.userId)
     },
     async loadUsersRights() {
       const convIds = this.normalizedConversations.map((c) => c._id)

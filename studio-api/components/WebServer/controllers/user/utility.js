@@ -4,6 +4,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const CONVERSATION_RIGHTS = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
 )
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
 const { UserError } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
@@ -59,6 +60,7 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
     }
 
     for (const oUser of organiaztion.users) {
+      if (oUser.type === USER_TYPE.M2M) continue
       let user = await model.users.getById(oUser.userId)
       if (user.length !== 1) {
         logger.info("User not found", { userId: oUser.userId })
