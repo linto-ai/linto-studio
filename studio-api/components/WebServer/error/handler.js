@@ -18,6 +18,8 @@ function buildErrorBody(err) {
   if (err.reason !== undefined) body.reason = err.reason
   if (err.capability !== undefined) body.capability = err.capability
   if (err.remaining !== undefined) body.remaining = err.remaining
+  // The pack that lifts a spent quota, for the front's packs modal
+  if (err.topUp !== undefined) body.topUp = err.topUp
   return body
 }
 
