@@ -264,7 +264,6 @@ export default {
       const seatsCount = members.filter((u) =>
         isCollaboratorRole(u.role),
       ).length
-      const isOrgAdmin = org.role >= ORGANIZATION_ROLES.ADMINISTRATOR
 
       let subtitleLabel
       if (org.personal) {
@@ -304,9 +303,7 @@ export default {
               })
             : this.$t("billing.account.price_per_month"),
         meters: displayMeters,
-        liveCredit: usage?.live
-          ? this.computeLiveCredit(usage.live, isOrgAdmin)
-          : null,
+        liveCredit: usage?.live ? this.computeLiveCredit(usage.live) : null,
         resetDateLabel: resetAt ? this.formatFullDate(resetAt) : null,
         renewalAt: subscription?.currentPeriodEnd || null,
         renewalLabel: this.computeRenewalLabel(subscription, isPerSeat, seats),
@@ -316,18 +313,14 @@ export default {
     // usage.live is an org-wide prepaid credit balance (not a per-seat,
     // per-period quota), so it's kept as its own view model rather than
     // folded into the used/limit meters above.
-    computeLiveCredit(live, isOrgAdmin) {
+    computeLiveCredit(live) {
       return {
         balance: live.balance,
         expiresAtLabel: live.expiresAt
           ? this.formatFullDate(live.expiresAt)
           : null,
-        lowBalance: live.lowBalance,
         unmetered: live.unmetered,
-        admissionMinutes: live.admissionMinutes,
-        overdraftMinutes: live.overdraftMinutes,
         purchasable: live.purchasable,
-        isOrgAdmin,
       }
     },
     computeRenewalLabel(subscription, isPerSeat, seats) {
