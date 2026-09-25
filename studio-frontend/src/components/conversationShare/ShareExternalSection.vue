@@ -92,7 +92,7 @@ export default {
 
   border-radius: 4px;
   padding: 0.75rem;
-  border: 1px solid var(--neutral-20);
+  border: var(--border-block);
   box-shadow: var(--shadow-1);
   background-color: var(--background-primary);
 }

@@ -8,12 +8,27 @@
     <div
       v-else-if="conversationsInError.length > 0"
       class="share-content__error">
-      <h3>{{ $t("share_menu.conversation_error_title") }}</h3>
-      <ul>
-        <li v-for="conv in conversationsInError" :key="conv._id">
-          {{ conv.name }}
-        </li>
-      </ul>
+      <NotificationBanner variant="error" align="start" icon="lock-simple">
+        {{ errorMessage }}
+      </NotificationBanner>
+      <template v-if="normalizedConversations.length > 1">
+        <ul class="share-content__error-list">
+          <li
+            v-for="conv in conversationsInError"
+            :key="conv._id"
+            :title="conv.name">
+            {{ conv.name }}
+          </li>
+        </ul>
+        <Button
+          v-if="hasShareableConversations"
+          class="share-content__unselect"
+          variant="secondary"
+          size="sm"
+          icon="minus-circle"
+          :label="$t('share_menu.unselect_unshareable')"
+          @click="$emit('unselect', conversationsInErrorIds)" />
+      </template>
     </div>
 
     <div
@@ -44,6 +59,7 @@
         v-if="searchValue.trim().length > 0"
         :searchValue="searchValue"
         :sharedUsers="sharedUsers"
+        :ownerId="ownerId"
         :defaultRight="defaultRight"
         :usersLoading="usersLoading"
         :inviteEnabled="enableInvitation"
@@ -51,6 +67,8 @@
         @invite="onInviteByEmail" />
 
       <template v-else>
+        <ShareOwnerSection v-if="ownerId" :ownerId="ownerId" :owner="owner" />
+
         <ShareOrgSection
           :defaultRight="defaultRight"
           :members="orgMembers"
@@ -84,13 +102,16 @@ import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
 import { getUserRightFromConversation } from "@/tools/getUserRightFromConversation.js"
 import { indexConversationRightByUsers } from "@/tools/indexConversationRightByUsers.js"
+import { computeCommonOwnerId } from "@/tools/computeCommonOwnerId.js"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
 
 import Loading from "@/components/atoms/Loading.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
+import ShareOwnerSection from "./ShareOwnerSection.vue"
 import ShareOrgSection from "./ShareOrgSection.vue"
 import ShareExternalSection from "./ShareExternalSection.vue"
 import ShareSearchResults from "./ShareSearchResults.vue"
@@ -103,7 +124,9 @@ export default {
   name: "ConversationShareContent",
   components: {
     Loading,
+    NotificationBanner,
     FormInput,
+    ShareOwnerSection,
     ShareOrgSection,
     ShareExternalSection,
     ShareSearchResults,
@@ -137,6 +160,24 @@ export default {
       }
       return Array.from(this.selectedConversations.values()).filter(Boolean)
     },
+    conversationsInErrorIds() {
+      return this.conversationsInError.map((c) => c._id)
+    },
+    hasShareableConversations() {
+      return (
+        this.conversationsInError.length < this.normalizedConversations.length
+      )
+    },
+    errorMessage() {
+      if (this.normalizedConversations.length === 1) {
+        return this.$t("share_menu.cannot_share_single")
+      }
+      if (!this.hasShareableConversations) {
+        return this.$t("share_menu.cannot_share_all")
+      }
+      const count = this.conversationsInError.length
+      return this.$tc("share_menu.cannot_share_some", count, { count })
+    },
     enableInvitation() {
       return getEnv("VUE_APP_DISABLE_USER_INVITATION") !== "true"
     },
@@ -148,8 +189,14 @@ export default {
       const first = values[0]
       return values.every((v) => v === first) ? first : MULTIPLE_VALUE
     },
+    ownerId() {
+      return computeCommonOwnerId(this.normalizedConversations)
+    },
+    owner() {
+      return this.sharedUsers.find((u) => u._id === this.ownerId) ?? null
+    },
     orgMembersWithRole() {
-      return this.userRights.organization_members.map((u) => ({
+      return this.orgMembersWithoutOwner.map((u) => ({
         ...u,
         role: this.orgUserRoleById.get(u._id) ?? null,
       }))
@@ -167,8 +214,15 @@ export default {
     orgExceptions() {
       return this.orgMembers.filter((u) => u.right !== this.defaultRight)
     },
+    orgMembersWithoutOwner() {
+      return this.userRights.organization_members.filter(
+        (u) => u._id !== this.ownerId,
+      )
+    },
     externalMembers() {
-      return this.userRights.external_members
+      return this.userRights.external_members.filter(
+        (u) => u._id !== this.ownerId,
+      )
     },
     searchField() {
       return {
@@ -322,8 +376,7 @@ export default {
   padding: 1rem;
 
   &__loading,
-  &__empty,
-  &__error {
+  &__empty {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -333,13 +386,29 @@ export default {
   }
 
   &__error {
-    color: var(--danger-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
+  &__error-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    max-height: 10rem;
+    overflow-y: auto;
+    border: var(--border-block);
+    border-radius: 4px;
+
+    li {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+  }
+
+  &__unselect {
+    align-self: flex-start;
   }
 }
 </style>

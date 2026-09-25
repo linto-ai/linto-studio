@@ -20,7 +20,8 @@
     <template #content>
       <ConversationShareContent
         :selectedConversations="selectedConversations"
-        :currentOrganizationScope="currentOrganizationScope" />
+        :currentOrganizationScope="currentOrganizationScope"
+        @unselect="$emit('unselect', $event)" />
     </template>
   </Modal>
 </template>
