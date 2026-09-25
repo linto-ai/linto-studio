@@ -97,8 +97,15 @@ const loadMiddlewares = (route) => {
     middlewares.push(platform_middlewares.isPlatformSystemAdministrator)
   if (route.requireSessionOperator)
     middlewares.push(platform_middlewares.isPlatformSessionOperator)
+  // In cloud mode organizations are bought, not created: the controller
+  // answers with the SaaS refusal instead of studio's platform-role one.
+  // Decided per request: the plugin loads after the routes are built.
   if (route.requireOrganizationInitiatorAccess)
-    middlewares.push(platform_middlewares.isPlatformOrganizationInitiator)
+    middlewares.push((req, res, next) =>
+      saas.enabled()
+        ? next()
+        : platform_middlewares.isPlatformOrganizationInitiator(req, res, next),
+    )
 
   if (route.requireConversationReadAccess)
     middlewares.push(conversation_middlewares.asReadAccess)
