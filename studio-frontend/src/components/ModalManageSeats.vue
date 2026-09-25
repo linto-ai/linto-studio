@@ -2,7 +2,7 @@
   <Modal
     v-model="_value"
     :title="$t('seats.manage.title')"
-    size="sm"
+    size="md"
     :withActionApply="false"
     :withActionCancel="false"
     :withClose="false"

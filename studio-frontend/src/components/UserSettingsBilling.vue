@@ -290,6 +290,9 @@ export default {
         icon: org.icon,
         isFree,
         isPaid: !isFree,
+        // Premium is only sold to personal orgs; free team orgs get no
+        // plan action until their offer is decided.
+        canUpgradeToPremium: isFree && !!org.personal,
         planLabel: plan?.displayName || this.$t("billing.page.free_plan"),
         subtitleLabel,
         priceCents,

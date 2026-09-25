@@ -32,14 +32,11 @@
           :unit="meter.unit" />
       </div>
 
-      <!-- Not wired yet: per-org member usage detail (MemberUsageTable) needs
-           a target/route decision. -->
-      <a
+      <router-link
         v-if="org.showMemberConsumptionLink"
-        href="#"
+        :to="memberConsumptionRoute"
         class="org-billing-card__member-link"
-        @click.prevent
-        >{{ $t("billing.account.member_consumption_link") }} →</a
+        >{{ $t("billing.account.member_consumption_link") }} →</router-link
       >
     </div>
 
@@ -62,7 +59,7 @@
         {{ $t("billing.live.buy") }}
       </Button>
       <Button
-        v-if="org.isFree"
+        v-if="org.canUpgradeToPremium"
         variant="primary"
         size="sm"
         icon="sparkle"
@@ -82,6 +79,7 @@
 
 <script>
 import { bus } from "@/main.js"
+import { SETTINGS_QUERY_PARAM } from "@/const/settingsQueryParam"
 import LiveCreditStatus from "@/components/molecules/LiveCreditStatus.vue"
 
 export default {
@@ -92,6 +90,15 @@ export default {
     open: { type: Boolean, default: false },
   },
   computed: {
+    // Member usage lives in the org's Members settings tab: switching org
+    // goes through the route, like ModalSwitchOrg does.
+    memberConsumptionRoute() {
+      return {
+        name: "explore",
+        params: { organizationId: this.org.id },
+        query: { [SETTINGS_QUERY_PARAM]: "members" },
+      }
+    },
     canBuyLivePack() {
       return !!this.org.liveCredit && !this.org.liveCredit.unmetered
     },
