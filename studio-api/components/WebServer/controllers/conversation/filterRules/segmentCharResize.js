@@ -51,6 +51,8 @@ module.exports = function (segments, segmentCharResize) {
             }
           }
           if (add_extra) words.push(...tmp_extra_words)
+          if (last_word_added === segment.words.length - 1)
+            is_last_word_added = true
         }
 
         const first_start_word = words[0].start

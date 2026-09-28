@@ -1,0 +1,110 @@
+{
+ "confidence": 0.9,
+ "raw_transcription": "de libre et gratuit en fait On dit que nos solutions elles parce que",
+ "segments": [
+  {
+   "duration": 3.92,
+   "end": 4.02,
+   "start": 0.1,
+   "spk_id": "spk1",
+   "raw_segment": "de libre et gratuit en fait On dit que nos solutions elles",
+   "segment": "... de libre et gratuit, en fait. On dit que nos solutions, elles",
+   "words": [
+    {
+     "conf": 0.31,
+     "end": 0.98,
+     "start": 0.1,
+     "word": "de"
+    },
+    {
+     "conf": 0.82,
+     "end": 1.38,
+     "start": 0.98,
+     "word": "libre"
+    },
+    {
+     "conf": 1,
+     "end": 1.6,
+     "start": 1.38,
+     "word": "et"
+    },
+    {
+     "conf": 0.66,
+     "end": 2.02,
+     "start": 1.6,
+     "word": "gratuit"
+    },
+    {
+     "conf": 0.99,
+     "end": 2.56,
+     "start": 2.36,
+     "word": "en"
+    },
+    {
+     "conf": 1,
+     "end": 2.64,
+     "start": 2.56,
+     "word": "fait"
+    },
+    {
+     "conf": 1,
+     "end": 2.9,
+     "start": 2.78,
+     "word": "On"
+    },
+    {
+     "conf": 1,
+     "end": 3.08,
+     "start": 2.9,
+     "word": "dit"
+    },
+    {
+     "conf": 1,
+     "end": 3.22,
+     "start": 3.08,
+     "word": "que"
+    },
+    {
+     "conf": 1,
+     "end": 3.38,
+     "start": 3.22,
+     "word": "nos"
+    },
+    {
+     "conf": 1,
+     "end": 3.82,
+     "start": 3.38,
+     "word": "solutions"
+    },
+    {
+     "conf": 1,
+     "end": 4.02,
+     "start": 3.86,
+     "word": "elles"
+    }
+   ]
+  },
+  {
+   "duration": 0.5,
+   "end": 20.6,
+   "start": 20.1,
+   "spk_id": "spk2",
+   "raw_segment": "parce que",
+   "segment": "parce que ...",
+   "words": [
+    {
+     "conf": 0.9,
+     "start": 20.1,
+     "end": 20.4,
+     "word": "parce"
+    },
+    {
+     "conf": 0.95,
+     "start": 20.4,
+     "end": 20.6,
+     "word": "que"
+    }
+   ]
+  }
+ ]
+}

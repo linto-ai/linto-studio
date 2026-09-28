@@ -28,5 +28,4 @@ function notFound(segment_text, words) {
 
 module.exports = {
   rules_sequences: [correctSegmentText, simplePunctuation, notFound],
-  rules: [correctSegmentText, simplePunctuation, notFound],
 }

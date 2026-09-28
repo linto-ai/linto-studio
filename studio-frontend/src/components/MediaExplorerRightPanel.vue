@@ -52,7 +52,8 @@
       <ConversationShareContent
         v-else-if="activeTab === 'share'"
         :selectedConversations="selectedMedias"
-        :currentOrganizationScope="currentOrganizationScope" />
+        :currentOrganizationScope="currentOrganizationScope"
+        @unselect="unselectMedias" />
     </div>
   </div>
 </template>
@@ -181,6 +182,12 @@ export default {
     }
   },
   methods: {
+    unselectMedias(mediaIds) {
+      this.$emit(
+        "update:selectedMediaIds",
+        this.selectedMediaIds.filter((id) => !mediaIds.includes(id)),
+      )
+    },
     close(e) {
       this.$emit("update:selectedMediaIds", [])
     },

@@ -1,0 +1,110 @@
+{
+ "confidence": 0.9,
+ "raw_transcription": "il a dit bonjour à tous les amis on reprend la salle hier soir",
+ "segments": [
+  {
+   "duration": 3.1,
+   "start": 1.0,
+   "end": 4.1,
+   "spk_id": "spk1",
+   "raw_segment": "il a dit bonjour à tous les amis",
+   "segment": "il a dit « bonjour à tous » les amis.",
+   "words": [
+    {
+     "conf": 0.9,
+     "start": 1.0,
+     "end": 1.3,
+     "word": "il"
+    },
+    {
+     "conf": 0.9,
+     "start": 1.4,
+     "end": 1.7,
+     "word": "a"
+    },
+    {
+     "conf": 0.9,
+     "start": 1.8,
+     "end": 2.1,
+     "word": "dit"
+    },
+    {
+     "conf": 0.9,
+     "start": 2.2,
+     "end": 2.5,
+     "word": "bonjour"
+    },
+    {
+     "conf": 0.9,
+     "start": 2.6,
+     "end": 2.9,
+     "word": "à"
+    },
+    {
+     "conf": 0.9,
+     "start": 3.0,
+     "end": 3.3,
+     "word": "tous"
+    },
+    {
+     "conf": 0.9,
+     "start": 3.4,
+     "end": 3.7,
+     "word": "les"
+    },
+    {
+     "conf": 0.9,
+     "start": 3.8,
+     "end": 4.1,
+     "word": "amis"
+    }
+   ]
+  },
+  {
+   "duration": 2.3,
+   "start": 10.0,
+   "end": 12.3,
+   "spk_id": "spk2",
+   "raw_segment": "on reprend la salle hier soir",
+   "segment": "🎵 on reprend – la salle – hier soir.",
+   "words": [
+    {
+     "conf": 0.9,
+     "start": 10.0,
+     "end": 10.3,
+     "word": "on"
+    },
+    {
+     "conf": 0.9,
+     "start": 10.4,
+     "end": 10.7,
+     "word": "reprend"
+    },
+    {
+     "conf": 0.9,
+     "start": 10.8,
+     "end": 11.1,
+     "word": "la"
+    },
+    {
+     "conf": 0.9,
+     "start": 11.2,
+     "end": 11.5,
+     "word": "salle"
+    },
+    {
+     "conf": 0.9,
+     "start": 11.6,
+     "end": 11.9,
+     "word": "hier"
+    },
+    {
+     "conf": 0.9,
+     "start": 12.0,
+     "end": 12.3,
+     "word": "soir"
+    }
+   ]
+  }
+ ]
+}

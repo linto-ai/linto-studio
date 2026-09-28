@@ -24,7 +24,8 @@
               <ConversationShareMultiple
                 :selectedConversations="selectedMedias"
                 :currentOrganizationScope="currentOrganizationScope"
-                :userInfo="userInfo" />
+                :userInfo="userInfo"
+                @unselect="unselectMedias" />
               <Button
                 @click="showDeleteModal = true"
                 :label="$t('media_explorer.delete')"
@@ -254,6 +255,11 @@ export default {
     handleDetailsAction(mediaId) {
       // The selection watcher lands on the default "overview" tab
       this.selectedMediaIds = [mediaId]
+    },
+    unselectMedias(mediaIds) {
+      this.selectedMediaIds = this.selectedMediaIds.filter(
+        (id) => !mediaIds.includes(id),
+      )
     },
     reset() {
       this.selectedMediaIds = []
