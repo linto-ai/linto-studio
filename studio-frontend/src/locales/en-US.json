@@ -1,49 +1,98 @@
 {
   "billing": {
-    "account": {
-      "title": "Billing",
-      "subtitle": "Plans, quotas and invoices for your organizations.",
-      "total_monthly": "Total monthly",
-      "summary_free": "{n} organization · free plan | {n} organizations · free plan",
-      "summary_paid": "{n} organization · next charge on {date} | {n} organizations · next charge on {date}",
-      "your_organizations": "Your organizations",
-      "create_business_org": "Create a business organization",
-      "personal_org_subtitle": "Personal organization · {n} member | Personal organization · {n} members",
-      "members_subtitle": "{n} member | {n} members",
-      "seats_subtitle": "{n} seat · per-seat quota | {n} seats · per-seat quota",
-      "price_per_month": "per month",
-      "price_per_seat_detail": "{seats} × {unitPrice} / month",
-      "reset_on": "Quotas reset on {date}",
-      "member_consumption_link": "View usage per member",
-      "renews": "Auto-renews on {date}",
-      "renews_seats": "Auto-renews on {date} · {n} seat | Auto-renews on {date} · {n} seats",
-      "manage_subscription": "Manage subscription",
-      "billing_history": "Billing history",
-      "payment_method": "Account payment method: {method}",
-      "payment_method_edit": "Edit",
-      "table_date": "Date",
-      "table_organization": "Organization",
-      "table_amount": "Amount",
-      "table_invoice": "Invoice",
-      "no_invoice": "No invoice yet. The free plan isn't billed.",
-      "need_more_minutes": "Need more minutes?",
-      "upsell_hint": "Premium unlocks more transcription minutes for your personal space. Business adds unlimited offline transcription and seats for your team.",
-      "upgrade_premium": "Upgrade to Premium",
+    "settings": {
+      "free_plan": "Free",
+      "retry": "Retry",
+      "upcoming": {
+        "title": "Next invoice",
+        "charged_on": "Charged on {date}",
+        "amount_due": "Amount charged after your account balance: {amount}",
+        "details": "Details",
+        "tax": "Tax",
+        "total": "Total incl. tax",
+        "ends_on": "Subscription cancelled: it ends on {date}, no further invoice will be issued."
+      },
+      "usage": {
+        "title": "Usage",
+        "load_error": "Couldn't load the organization's usage and plan.",
+        "renews_on": "Renews on {date}",
+        "renews_and_resets_on": "Renews and resets quotas on {date}",
+        "quota_reset_on": "Quotas reset on {date}",
+        "member_consumption_link": "View usage per member"
+      },
       "meter": {
-        "offline": "Offline transcription",
-        "ai_summary": "AI summaries",
+        "import": "File transcription",
+        "ai": "AI summaries",
         "chat": "Chat messages"
-      }
+      },
+      "buy_pack": "Buy a pack",
+      "no_pack_available": "No pack is offered with this organization's plan.",
+      "upgrade_premium": "Upgrade to Premium",
+      "manage_subscription": "Manage subscription",
+      "stripe_error": "Couldn't open the payment page. Please try again in a moment.",
+      "pack_bought": "Payment received: the minutes will be credited shortly.",
+      "pack_cancelled": "Purchase cancelled, you were not charged.",
+      "packs": {
+        "title": "Buy a pack",
+        "subtitle": "One-time payment, no subscription.",
+        "subtitle_with_validity": "One-time payment, no subscription · minutes valid for {validity}.",
+        "confirm": "Continue to payment",
+        "pay": "Pay {price}",
+        "price_excl_tax": "{price} excl. tax",
+        "per_hour": "{price} / h",
+        "saving": "−{percent}%",
+        "group": {
+          "live": "Live transcription",
+          "transcription": "File transcription"
+        },
+        "hint": {
+          "transcription": "Used once the monthly quota is spent."
+        }
+      },
+      "overview_load_error": "Couldn't load payment details and invoices.",
+      "payment": {
+        "title": "Payment",
+        "none": "No payment method on file",
+        "expires": "Expires {expiry}",
+        "update": "Update",
+        "type": {
+          "card": "Card",
+          "sepa_debit": "SEPA Direct Debit",
+          "paypal": "PayPal",
+          "link": "Link",
+          "other": "Other payment method"
+        }
+      },
+      "invoices": {
+        "title": "Invoices",
+        "empty": "No invoice yet.",
+        "date": "Date",
+        "number": "Number",
+        "amount": "Amount",
+        "status_header": "Status",
+        "document": "Document",
+        "download_pdf": "PDF",
+        "download_pdf_of": "Download invoice {name} as PDF",
+        "view": "View",
+        "view_of": "View invoice {name}",
+        "status": {
+          "paid": "Paid",
+          "open": "Due",
+          "void": "Void",
+          "uncollectible": "Uncollectible"
+        },
+        "pay": "Pay",
+        "pay_of": "Pay invoice {name}"
+      },
+      "admin_only": "Only the organization's administrators can access billing."
     },
     "unlimited": "Unlimited",
     "quota_limit_this_month": "of {limit} this month",
     "price_flat": "{price} / month",
     "price_per_seat": "{price} / seat / month",
-    "used_of": "{used} of {total}",
     "reset_on": "Resets on {date}",
     "upgrade_cta": "See plans",
     "upgrade_title": "Choose a plan",
-    "upgrade_subtitle": "Higher fair-use limits, team features and prepaid live minutes.",
     "upgrade_pending_payment": "Subscription created, payment to complete. Stripe Checkout arrives with the next milestone.",
     "cancel": "Cancel",
     "confirm_upgrade": "Subscribe",
@@ -68,14 +117,9 @@
       "api": "API calls"
     },
     "live": {
-      "title": "Live minutes",
-      "balance": "Balance",
+      "title": "Live transcription",
       "expires": "Next expiry",
-      "low": "Low balance. Credits don't renew — you top up with packs.",
       "no_renewal": "Prepaid, doesn't renew",
-      "buy": "Buy a pack",
-      "buy_soon": "Live packs are bought through Stripe Checkout (next milestone).",
-      "not_purchasable": "Live packs are available on paid plans.",
       "unmetered": "Live minutes are not metered for this organization."
     },
     "member_usage": {
@@ -85,21 +129,6 @@
       "seat": "Seat",
       "billable": "Billable seat (role >= uploader)",
       "empty": "No members yet."
-    },
-    "page": {
-      "manage": "Manage subscription",
-      "title": "Subscription & usage",
-      "free_plan": "Free",
-      "usage": "Usage this period",
-      "your_plan": "Your plan",
-      "no_usage": "No usage recorded yet.",
-      "seats": "Billable seats",
-      "renews": "Renews on",
-      "status": "Status",
-      "cancels_at_period_end": "Cancels at period end",
-      "admin_only": "Only an organization admin can change the plan.",
-      "unmetered_hint": "This organization is not metered (complimentary or managed). Managed from the backoffice.",
-      "portal_soon": "Invoices, card and cancellation move to the Stripe customer portal (next milestone)."
     },
     "seats_usage": "{used} / {total} seats used",
     "seats_full": "All seats are taken. Add seats to give a member a contributor role.",
@@ -536,7 +565,6 @@
     "transcriberProfiles": "Transcriber Profiles",
     "users": "Users",
     "userSettings": "Profile settings",
-    "billing": "Subscription",
     "processing": "Processing"
   },
   "conversation": {

@@ -44,12 +44,6 @@
                 <span>{{ $t("app_settings_modal.notifications") }}</span>
               </a>
             </li>
-            <li :class="{ active: selectedTab === 'billing' }">
-              <a href="#" @click="selectTab('billing')">
-                <ph-icon name="credit-card" weight="bold"></ph-icon>
-                <span>{{ $t("app_settings_modal.billing") }}</span>
-              </a>
-            </li>
             <li
               v-if="speakerIdentificationEnabled"
               :class="{ active: selectedTab === 'speakerRecognition' }">
@@ -86,14 +80,16 @@
                   }}</span>
                 </a>
               </li>
-              <!-- <is-cloud>
-              <li :class="{ active: selectedTab === 'billing' }">
-                <a href="#" @click="selectTab('billing')">
-                  <ph-icon name="credit-card" weight="bold"></ph-icon>
-                  <span>{{ $t("app_settings_modal.billing") }}</span>
-                </a>
-              </li>
-            </is-cloud> -->
+              <is-cloud>
+                <li
+                  v-if="canSeeBilling"
+                  :class="{ active: selectedTab === 'billing' }">
+                  <a href="#" @click="selectTab('billing')">
+                    <ph-icon name="credit-card" weight="bold"></ph-icon>
+                    <span>{{ $t("app_settings_modal.billing") }}</span>
+                  </a>
+                </li>
+              </is-cloud>
               <li :class="{ active: selectedTab === 'tags' }">
                 <a href="#" @click="selectTab('tags')">
                   <ph-icon name="tag" weight="bold"></ph-icon>
@@ -192,11 +188,21 @@
           </HasEntitlement>
         </div>
       </template>
+      <!-- Outside the impersonation block: the tab can be requested from the
+           usage footer or a ?settings=billing link by someone who cannot see
+           it, who gets an explanation instead of an empty pane. -->
+      <is-cloud>
+        <div v-if="selectedTab === 'billing'" class="app-settings__section">
+          <OrganizationSettingsBilling
+            v-if="canSeeBilling"
+            :currentOrganization="currentOrganization" />
+          <p v-else class="app-settings__notice">
+            {{ $t("billing.settings.admin_only") }}
+          </p>
+        </div>
+      </is-cloud>
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
-      </div>
-      <div v-if="selectedTab === 'billing'" class="app-settings__section">
-        <UserSettingsBilling v-if="isAuthenticated" />
       </div>
     </div>
   </Modal>
@@ -227,7 +233,7 @@ import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import SpeakerIdentificationSettings from "@/components/SpeakerIdentificationSettings.vue"
 import UserSettingsVoiceOptIn from "@/components/UserSettingsVoiceOptIn.vue"
-import UserSettingsBilling from "@/components/UserSettingsBilling.vue"
+import OrganizationSettingsBilling from "@/components-cloud/OrganizationSettingsBilling.vue"
 
 export default {
   name: "AppSettingsModal",
@@ -251,7 +257,7 @@ export default {
     ApiTokenSettings,
     SpeakerIdentificationSettings,
     UserSettingsVoiceOptIn,
-    UserSettingsBilling,
+    OrganizationSettingsBilling,
   },
   data() {
     return {
@@ -271,6 +277,11 @@ export default {
     }),
     ...mapGetters("system", ["isMobile"]),
     ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
+    // Billing is the org's Stripe account: its admins only, and not while
+    // impersonating (the whole org block is hidden then).
+    canSeeBilling() {
+      return this.isAdmin && !this.isImpersonatingCurrentOrganization
+    },
     speakerIdentificationEnabled() {
       return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"
     },
@@ -298,11 +309,17 @@ export default {
   watch: {
     // Reacts whether the modal was closed or already open, so a shortcut
     // like the billing one still lands on the right tab either way.
-    requestedTab(tab) {
-      if (!tab) return
-      this.selectTab(tab)
-      // Consume it so a later plain "open settings" doesn't land here again.
-      this.$store.dispatch("settings/setRequestedTab", null)
+    // Immediate: on a full page load (e.g. back from Stripe with
+    // ?settings=billing) the router requests the tab before this component
+    // is created.
+    requestedTab: {
+      handler(tab) {
+        if (!tab) return
+        this.selectTab(tab)
+        // Consume it so a later plain "open settings" doesn't land here again.
+        this.$store.dispatch("settings/setRequestedTab", null)
+      },
+      immediate: true,
     },
   },
   methods: {
@@ -413,6 +430,11 @@ export default {
         }
       }
     }
+  }
+
+  &__notice {
+    margin: 0;
+    color: var(--text-secondary);
   }
 
   &__section {

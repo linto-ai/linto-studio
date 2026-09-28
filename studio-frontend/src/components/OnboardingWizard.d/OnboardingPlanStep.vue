@@ -33,6 +33,7 @@
         radio-name="onboarding-plan"
         :radio-value="plan.key"
         :selected-value="selectedPlan"
+        :disabled="plan.disabled"
         @select="$emit('select-plan', $event)" />
     </div>
     <p class="onboarding-plan__fair-use-note">
@@ -78,7 +79,8 @@ import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 
 // Plan catalog keys (linto-studio-cloud-service/src/plans/catalog.js), in
 // display order. "free_payg" is the engine's historical slug for Free.
-const PLAN_ORDER = ["free_payg", "premium", "business"]
+const FREE_PLAN_KEY = "free_payg"
+const PLAN_ORDER = [FREE_PLAN_KEY, "premium", "business"]
 const PLAN_ICON = {
   free_payg: "prohibit",
   premium: "sparkle",
@@ -161,6 +163,9 @@ export default {
         ),
         badge:
           plan.planKey === "premium" ? this.$t("onboarding.most_popular") : "",
+        // Opened for an upgrade (not the first-run onboarding): staying on
+        // Free is no upgrade, the card is only there for comparison.
+        disabled: !this.needsOnboarding && plan.planKey === FREE_PLAN_KEY,
         ...this.buildPriceDisplay(plan),
         features: this.buildFeatures(plan),
       }

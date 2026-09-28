@@ -1,49 +1,98 @@
 {
   "billing": {
-    "account": {
-      "title": "Facturation",
-      "subtitle": "Plans, quotas et factures de vos organisations.",
-      "total_monthly": "Total mensuel",
-      "summary_free": "{n} organisation · plan gratuit | {n} organisations · plan gratuit",
-      "summary_paid": "{n} organisation · prochain prélèvement le {date} | {n} organisations · prochain prélèvement le {date}",
-      "your_organizations": "Vos organisations",
-      "create_business_org": "Créer une organisation business",
-      "personal_org_subtitle": "Organisation personnelle · {n} membre | Organisation personnelle · {n} membres",
-      "members_subtitle": "{n} membre | {n} membres",
-      "seats_subtitle": "{n} licence · quota par licence | {n} licences · quota par licence",
-      "price_per_month": "par mois",
-      "price_per_seat_detail": "{seats} × {unitPrice} / mois",
-      "reset_on": "Quotas remis à zéro le {date}",
-      "member_consumption_link": "Voir la consommation par membre",
-      "renews": "Renouvellement automatique le {date}",
-      "renews_seats": "Renouvellement automatique le {date} · {n} licence | Renouvellement automatique le {date} · {n} licences",
-      "manage_subscription": "Gérer l'abonnement",
-      "billing_history": "Historique de facturation",
-      "payment_method": "Moyen de paiement du compte : {method}",
-      "payment_method_edit": "Modifier",
-      "table_date": "Date",
-      "table_organization": "Organisation",
-      "table_amount": "Montant",
-      "table_invoice": "Facture",
-      "no_invoice": "Aucune facture. Le plan gratuit n'est pas facturé.",
-      "need_more_minutes": "Besoin de plus de minutes ?",
-      "upsell_hint": "Premium débloque plus de minutes de transcription pour votre espace personnel. Business ajoute la transcription offline illimitée et des licences pour votre équipe.",
-      "upgrade_premium": "Passer en Premium",
+    "settings": {
+      "free_plan": "Gratuit",
+      "retry": "Réessayer",
+      "upcoming": {
+        "title": "Prochaine facture",
+        "charged_on": "Prélevée le {date}",
+        "amount_due": "Montant prélevé après déduction de votre solde : {amount}",
+        "details": "Détail",
+        "tax": "TVA",
+        "total": "Total TTC",
+        "ends_on": "Abonnement résilié : il prend fin le {date}, aucune autre facture ne sera émise."
+      },
+      "usage": {
+        "title": "Consommation",
+        "load_error": "Impossible de charger la consommation et l'offre de l'organisation.",
+        "renews_on": "Renouvellement le {date}",
+        "renews_and_resets_on": "Renouvellement et remise à zéro des quotas le {date}",
+        "quota_reset_on": "Quotas remis à zéro le {date}",
+        "member_consumption_link": "Voir la consommation par membre"
+      },
       "meter": {
-        "offline": "Transcription offline",
-        "ai_summary": "Résumés IA",
+        "import": "Transcription de fichiers",
+        "ai": "Résumés IA",
         "chat": "Messages de chat"
-      }
+      },
+      "buy_pack": "Acheter un pack",
+      "no_pack_available": "Aucun pack n'est proposé avec l'offre de cette organisation.",
+      "upgrade_premium": "Passer en Premium",
+      "manage_subscription": "Gérer l'abonnement",
+      "stripe_error": "Impossible d'ouvrir la page de paiement. Réessayez dans un instant.",
+      "pack_bought": "Paiement reçu : les minutes seront créditées dans quelques instants.",
+      "pack_cancelled": "Achat annulé, aucun montant n'a été débité.",
+      "packs": {
+        "title": "Acheter un pack",
+        "subtitle": "Paiement unique, sans abonnement.",
+        "subtitle_with_validity": "Paiement unique, sans abonnement · minutes valables {validity}.",
+        "confirm": "Continuer vers le paiement",
+        "pay": "Payer {price}",
+        "price_excl_tax": "{price} HT",
+        "per_hour": "{price} / h",
+        "saving": "−{percent} %",
+        "group": {
+          "live": "Transcription en direct",
+          "transcription": "Transcription de fichiers"
+        },
+        "hint": {
+          "transcription": "Utilisées une fois le quota mensuel épuisé."
+        }
+      },
+      "overview_load_error": "Impossible de charger le paiement et les factures.",
+      "payment": {
+        "title": "Paiement",
+        "none": "Aucun moyen de paiement enregistré",
+        "expires": "Expire fin {expiry}",
+        "update": "Mettre à jour",
+        "type": {
+          "card": "Carte bancaire",
+          "sepa_debit": "Prélèvement SEPA",
+          "paypal": "PayPal",
+          "link": "Link",
+          "other": "Autre moyen de paiement"
+        }
+      },
+      "invoices": {
+        "title": "Factures",
+        "empty": "Aucune facture pour le moment.",
+        "date": "Date",
+        "number": "Numéro",
+        "amount": "Montant",
+        "status_header": "Statut",
+        "document": "Document",
+        "download_pdf": "PDF",
+        "download_pdf_of": "Télécharger la facture {name} en PDF",
+        "view": "Voir",
+        "view_of": "Voir la facture {name}",
+        "status": {
+          "paid": "Payée",
+          "open": "À régler",
+          "void": "Annulée",
+          "uncollectible": "Impayée"
+        },
+        "pay": "Payer",
+        "pay_of": "Payer la facture {name}"
+      },
+      "admin_only": "Seuls les administrateurs de l'organisation ont accès à la facturation."
     },
     "unlimited": "Illimité",
     "quota_limit_this_month": "sur {limit} ce mois",
     "price_flat": "{price} / mois",
     "price_per_seat": "{price} / licence / mois",
-    "used_of": "{used} sur {total}",
     "reset_on": "Réinitialisé le {date}",
     "upgrade_cta": "Voir les offres",
     "upgrade_title": "Choisir une offre",
-    "upgrade_subtitle": "Des plafonds plus hauts, le travail en équipe et des minutes de live prépayées.",
     "upgrade_pending_payment": "Abonnement créé, paiement à finaliser. Stripe Checkout arrive au prochain jalon.",
     "cancel": "Annuler",
     "confirm_upgrade": "Souscrire",
@@ -68,14 +117,9 @@
       "api": "Appels API"
     },
     "live": {
-      "title": "Minutes de live",
-      "balance": "Solde",
+      "title": "Transcription en direct",
       "expires": "Prochaine expiration",
-      "low": "Solde bas. Les crédits ne se renouvellent pas, ils s'achètent par packs.",
       "no_renewal": "Prépayé, ne se renouvelle pas",
-      "buy": "Acheter un pack",
-      "buy_soon": "Les packs de live s'achètent via Stripe Checkout (prochain jalon).",
-      "not_purchasable": "Les packs de live sont réservés aux offres payantes.",
       "unmetered": "Les minutes de live ne sont pas comptées pour cette organisation."
     },
     "member_usage": {
@@ -85,21 +129,6 @@
       "seat": "Licence",
       "billable": "Licence facturée (rôle >= uploader)",
       "empty": "Aucun membre."
-    },
-    "page": {
-      "manage": "Gérer l'abonnement",
-      "title": "Abonnement & usage",
-      "free_plan": "Gratuit",
-      "usage": "Usage de la période",
-      "your_plan": "Votre offre",
-      "no_usage": "Aucun usage enregistré pour l'instant.",
-      "seats": "Licences facturées",
-      "renews": "Renouvellement le",
-      "status": "Statut",
-      "cancels_at_period_end": "Résiliation en fin de période",
-      "admin_only": "Seul un administrateur de l'organisation peut changer l'offre.",
-      "unmetered_hint": "Cette organisation n'est pas comptée (offert ou managé). Géré depuis le backoffice.",
-      "portal_soon": "Factures, carte et résiliation passent par le portail client Stripe (prochain jalon)."
     },
     "seats_usage": "{used} / {total} licences utilisées",
     "seats_full": "Toutes les licences sont utilisées. Ajoutez des licences pour donner un rôle contributeur à un membre.",
@@ -537,7 +566,6 @@
     "users": "Utilisateurs",
     "userSettings": "Paramètres utilisateur",
     "createorganization": "Créer une organisation",
-    "billing": "Abonnement",
     "processing": "En traitement"
   },
   "conversation": {

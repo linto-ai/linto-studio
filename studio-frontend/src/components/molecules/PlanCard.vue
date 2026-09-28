@@ -7,6 +7,7 @@
     :class="{
       'plan-card--selected': isSelected,
       'plan-card--featured': badge,
+      'plan-card--disabled': disabled,
     }">
     <span v-if="badge" class="plan-card__badge">{{ badge }}</span>
     <header
@@ -23,6 +24,7 @@
         :name="radioName"
         :value="selectedValue"
         :radio-value="radioValue"
+        :disabled="disabled"
         @input="$emit('select', $event)" />
     </header>
 
@@ -83,6 +85,8 @@ export default {
     radioName: { type: String, required: true },
     radioValue: { type: [String, Number], required: true },
     selectedValue: { type: [String, Number], default: null },
+    // Shown but not selectable (e.g. Free when upgrading)
+    disabled: { type: Boolean, default: false },
   },
   computed: {
     radioId() {
@@ -114,6 +118,14 @@ export default {
   // featured plan isn't necessarily the selected one), so they can combine:
   // the selected border wins when both apply.
   &--featured {
+  }
+
+  // Greyed out as a whole, icons included: the plan stays readable for
+  // comparison but can't be picked.
+  &--disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    filter: grayscale(1);
   }
 }
 

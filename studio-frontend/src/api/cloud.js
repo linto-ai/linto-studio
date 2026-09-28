@@ -105,18 +105,33 @@ export async function apiCreateCreditsCheckout(
   return res?.data
 }
 
-// POST /cloud/portal { organizationId, returnUrl? } -> { url, sessionId }
+// POST /cloud/portal { organizationId, returnUrl?, flow? } -> { url, sessionId }
 // Stripe Customer Portal (invoices, card, billing details, cancellation); the
-// caller redirects to url. 409 no_stripe_customer when the org never paid.
+// caller redirects to url. flow "payment_method_update" lands straight on the
+// card update screen. 409 no_stripe_customer when the org never paid.
 export async function apiCreatePortalSession(
   organizationId,
-  { returnUrl } = {},
+  { returnUrl, flow } = {},
   notif = null,
 ) {
   const res = await sendRequest(
     `${CLOUD_API}/portal`,
     { method: "post" },
-    { organizationId, returnUrl },
+    { organizationId, returnUrl, flow },
+    notif,
+  )
+  return res?.data
+}
+
+// GET /cloud/billing?organizationId=... (org admin) -> { paymentMethod,
+// upcomingInvoice, invoices }, read from Stripe. upcomingInvoice carries
+// proration and tax: the only amount to show for the next charge. An org that
+// never paid gets { paymentMethod: null, upcomingInvoice: null, invoices: [] }.
+export async function apiGetBillingOverview(organizationId, notif = null) {
+  const res = await sendRequest(
+    `${CLOUD_API}/billing`,
+    { method: "get" },
+    { organizationId },
     notif,
   )
   return res?.data
