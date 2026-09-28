@@ -42,7 +42,7 @@
         "per_hour": "{price} / h",
         "saving": "−{percent} %",
         "group": {
-          "live": "Transcription en direct",
+          "live": "Microphone et visioconférence",
           "transcription": "Transcription de fichiers"
         },
         "hint": {
@@ -117,7 +117,7 @@
       "api": "Appels API"
     },
     "live": {
-      "title": "Transcription en direct",
+      "title": "Microphone et visioconférence",
       "expires": "Prochaine expiration",
       "no_renewal": "Prépayé, ne se renouvelle pas",
       "unmetered": "Les minutes de live ne sont pas comptées pour cette organisation."
@@ -160,6 +160,17 @@
       "refund_confirm_body": "Le paiement est remboursé chez Stripe et les {minutes} correspondantes sont retirées du solde de l'organisation. Action irréversible.",
       "refund_done": "Remboursement demandé chez Stripe.",
       "refund_failed": "Le remboursement n'a pas abouti ({reason})."
+    },
+    "refusal": {
+      "live_credit": "Crédit « Microphone et visioconférence » insuffisant pour démarrer.",
+      "import_exhausted": "Quota de transcription de fichiers épuisé.",
+      "import_too_long": "Ce fichier dépasse le temps de transcription restant ({remaining}).",
+      "import_file_too_long": "« {name} » dépasse le temps de transcription restant ({remaining}).",
+      "import_reset": "Le quota sera remis à zéro le {date}.",
+      "email_not_verified": "Vérifiez votre adresse e-mail pour utiliser cette fonctionnalité.",
+      "not_available": "Cette fonctionnalité n'est pas incluse dans l'offre de cette organisation.",
+      "contact_admin": "Contactez un administrateur de l'organisation.",
+      "unknown": "Impossible de vérifier l'offre de cette organisation pour le moment. Réessayez dans un instant."
     }
   },
   "seats": {
@@ -586,6 +597,7 @@
       "sending": "En cours..."
     },
     "conversation_creation_error_multiple_unknown": "Une erreur est survenue lors de l'envoi de {total} fichiers audio. {count} fichier(s) transféré(s). Veuillez réessayer ultérieurement.",
+    "conversation_creation_partially_sent": "{count} fichier sur {total} a déjà été envoyé. | {count} fichiers sur {total} ont déjà été envoyés.",
     "conversation_creation_loading_multiple": "Envoi du fichier {count} sur {total}. Cette opération peut prendre plusieurs minutes.",
     "folder_selection_title": "Dossier",
     "folder_selection_label": "Importer dans le dossier",
@@ -1916,7 +1928,8 @@
       "offline_transcription_label": "Transcription après l'enregistrement",
       "only_offline_available": "Seule la transcription après l'enregistrement est disponible dans votre organisation",
       "keep_audio_disabled_because_offline": "L'audio doit être conservé pour permettre la transcription après l'enregistrement",
-      "live_or_offline_should_be_selected": "Au moins une option de transcription doit être sélectionnée"
+      "live_or_offline_should_be_selected": "Au moins une option de transcription doit être sélectionnée",
+      "start_error": "Impossible de démarrer la session. Réessayez dans un instant."
     },
     "setup_microphone": {
       "waiting_permission_title": "En attente des permissions pour accéder au microphone",
@@ -1949,7 +1962,8 @@
         "bigbluebutton": "Le bot rejoint comme invité ; un modérateur doit l'admettre si la salle exige une approbation.",
         "teams": "La réunion doit être publique ; le bot arrive dans le hall d'attente et doit être admis manuellement par un participant.",
         "visio": "Le bot se connecte comme participant standard ; vérifiez que l'accès invité est autorisé sans approbation."
-      }
+      },
+      "bot_error": "Impossible de connecter le bot à la visioconférence. Vérifiez le lien et réessayez."
     },
     "live": {
       "default_name": "Enregistrement sans titre",

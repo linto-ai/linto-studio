@@ -1,6 +1,8 @@
 <template>
   <LayoutV2 customClass="explore-next">
-    <div class="flex col flex1 medium-margin">
+    <!-- The first tab is picked once the billing mode is known (created) -->
+    <Loading v-if="!currentTab" block />
+    <div v-else class="flex col flex1 medium-margin">
       <Tabs
         v-model="currentTab"
         :tabs="mainTabs"
@@ -101,37 +103,48 @@
             v-model="fieldTranscriptionService.value" />
         </section>
 
-        <div class="flex gap-small align-center conversation-create-footer">
-          <div
-            class="conversation-create-footer__summary"
-            v-if="audioFiles.length">
-            <span class="conversation-create-footer__icon">
-              <ph-icon name="music-note" size="md" />
-            </span>
-            <div class="conversation-create-footer__text">
-              <span
-                class="conversation-create-footer__file"
-                :title="footerFileLabel">
-                {{ footerFileLabel }}
+        <!-- Submit bar: a SaaS refusal explained on its own line, its
+             purchase beside the submit button -->
+        <div class="flex col gap-small conversation-create-footer">
+          <SaasRefusalMessage
+            v-if="saasRefusalView"
+            :refusal="saasRefusalView" />
+          <div class="flex gap-small align-center">
+            <div
+              class="conversation-create-footer__summary"
+              v-if="audioFiles.length">
+              <span class="conversation-create-footer__icon">
+                <ph-icon name="music-note" size="md" />
               </span>
-              <span
-                v-if="serviceSummary"
-                class="conversation-create-footer__model"
-                :title="serviceSummary">
-                {{ serviceSummary }}
-              </span>
+              <div class="conversation-create-footer__text">
+                <span
+                  class="conversation-create-footer__file"
+                  :title="footerFileLabel">
+                  {{ footerFileLabel }}
+                </span>
+                <span
+                  v-if="serviceSummary"
+                  class="conversation-create-footer__model"
+                  :title="serviceSummary">
+                  {{ serviceSummary }}
+                </span>
+              </div>
             </div>
+            <div class="flex1"></div>
+            <div class="error-field" v-if="formError">{{ formError }}</div>
+            <Button
+              type="submit"
+              :variant="hasSaasRefusalPurchase ? 'secondary' : 'primary'"
+              icon="play"
+              iconWeight="fill"
+              :disabled="audioFiles.length === 0"
+              :loading="formState === 'sending'"
+              :label="formSubmitLabel"></Button>
+            <SaasRefusalAction
+              v-if="saasRefusalView"
+              :refusal="saasRefusalView"
+              :error-data="saasRefusal" />
           </div>
-          <div class="flex1"></div>
-          <div class="error-field" v-if="formError">{{ formError }}</div>
-          <Button
-            type="submit"
-            variant="primary"
-            icon="play"
-            iconWeight="fill"
-            :disabled="audioFiles.length === 0"
-            :loading="formState === 'sending'"
-            :label="formSubmitLabel"></Button>
         </div>
       </form>
 
@@ -186,6 +199,8 @@ import VisioCreateContent from "@/components/VisioCreateContent.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import FolderSelector from "@/components/FolderSelector.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
+import SaasRefusalMessage from "@/components-cloud/SaasRefusalMessage.vue"
+import SaasRefusalAction from "@/components-cloud/SaasRefusalAction.vue"
 
 export default {
   mixins: [
@@ -226,6 +241,14 @@ export default {
     }
   },
   async created() {
+    // The session tab depends on the org's billing mode: know it before
+    // picking the first tab or giving up on an org without any tab.
+    if (getEnv("VUE_APP_MODE") === "cloud") {
+      await this.$store.dispatch(
+        "billing/fetchUsage",
+        this.currentOrganizationScope,
+      )
+    }
     if (this.mainTabs.length === 0) {
       this.$router.push({ name: "not_found" })
       return
@@ -253,6 +276,11 @@ export default {
       if (count === 0) return ""
       if (count === 1) return this.audioFiles[0].value
       return this.$tc("conversation.transcription.file_count", count, { count })
+    },
+    // An upload stops at the first refused file, which stays first in
+    // line; its name only helps among several (saasRefusalFormMixin).
+    saasRefusalFileName() {
+      return this.audioFiles.length > 1 ? this.audioFiles[0].value : null
     },
     // Sticky-footer model summary, emitted by the selected service card.
     serviceSummary() {
@@ -299,7 +327,7 @@ export default {
         res.push(
           {
             name: "file",
-            label: "Media",
+            label: this.$t("navigation.sections.media"),
             icon: "file-audio",
             img: "/img/We10X-icon-theme/audio-x-generic.svg",
           },
@@ -343,7 +371,8 @@ export default {
       }
       if (
         this.isAtLeastMeetingManager &&
-        this.canSessionInCurrentOrganization
+        this.canSessionInCurrentOrganization &&
+        !this.isSessionOfferExcluded
       ) {
         res.push({
           name: "session",
@@ -354,6 +383,16 @@ export default {
       }
 
       return res
+    },
+    // Sessions are a separate offer in SaaS, not part of any plan: an org in
+    // the normal (self-serve) mode doesn't see the tab; comp and managed
+    // orgs, set up by hand, keep it. An unknown mode (usage not loaded or
+    // failed) hides nothing: the server still refuses what isn't sold.
+    isSessionOfferExcluded() {
+      return (
+        getEnv("VUE_APP_MODE") === "cloud" &&
+        this.$store.getters["billing/usage"]?.mode === "normal"
+      )
     },
     // A user can only have one quick session at a time: when one already
     // exists, the live/visio creation forms are replaced by a placeholder.
@@ -432,6 +471,8 @@ export default {
     SecurityLevelSelector,
     FolderSelector,
     FormInput,
+    SaasRefusalMessage,
+    SaasRefusalAction,
   },
 }
 </script>

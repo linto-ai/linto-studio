@@ -60,11 +60,13 @@ export default {
       "planLabel",
       "primaryMeter",
     ]),
+    // An unlimited quota has nothing to count against: the word says it all
     usageLabel() {
       const meter = this.primaryMeter
+      if (meter.unlimited) return this.$t("billing.unlimited")
       return this.$t("billing.footer.usage", {
         used: this.formatMeterAmount(meter.used),
-        total: meter.unlimited ? "∞" : this.formatMeterAmount(meter.limit),
+        total: this.formatMeterAmount(meter.limit),
       })
     },
     progressValue() {

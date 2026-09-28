@@ -42,7 +42,7 @@
         "per_hour": "{price} / h",
         "saving": "−{percent}%",
         "group": {
-          "live": "Live transcription",
+          "live": "Microphone and video conferencing",
           "transcription": "File transcription"
         },
         "hint": {
@@ -117,7 +117,7 @@
       "api": "API calls"
     },
     "live": {
-      "title": "Live transcription",
+      "title": "Microphone and video conferencing",
       "expires": "Next expiry",
       "no_renewal": "Prepaid, doesn't renew",
       "unmetered": "Live minutes are not metered for this organization."
@@ -160,6 +160,17 @@
       "refund_confirm_body": "The payment is refunded at Stripe and the matching {minutes} are taken back from the organization's balance. This cannot be undone.",
       "refund_done": "Refund requested at Stripe.",
       "refund_failed": "The refund did not go through ({reason})."
+    },
+    "refusal": {
+      "live_credit": "Not enough “Microphone and video conferencing” credit to start.",
+      "import_exhausted": "File transcription quota used up.",
+      "import_too_long": "This file is longer than the transcription time left ({remaining}).",
+      "import_file_too_long": "“{name}” is longer than the transcription time left ({remaining}).",
+      "import_reset": "The quota resets on {date}.",
+      "email_not_verified": "Verify your email address to use this feature.",
+      "not_available": "This feature isn't included in this organization's plan.",
+      "contact_admin": "Contact an administrator of the organization.",
+      "unknown": "Couldn't check this organization's plan right now. Please try again in a moment."
     }
   },
   "seats": {
@@ -585,6 +596,7 @@
       "sending": "Sending..."
     },
     "conversation_creation_error_multiple_unknown": "An error occurred while uploading {total} audio files. {count} have already been uploaded. Try again later.",
+    "conversation_creation_partially_sent": "{count} file out of {total} was already sent. | {count} files out of {total} were already sent.",
     "conversation_creation_loading_multiple": "Uploading audio {count} of {total}. This can take several minutes.",
     "folder_selection_title": "Folder",
     "folder_selection_label": "Upload to folder",
@@ -1922,7 +1934,8 @@
       "offline_transcription_label": "Offline transcription",
       "only_offline_available": "Only offline transcription is available in your organisation",
       "keep_audio_disabled_because_offline": "Audio should be saved when offline transcription is enabled",
-      "live_or_offline_should_be_selected": "You must select either live or offline transcription"
+      "live_or_offline_should_be_selected": "You must select either live or offline transcription",
+      "start_error": "Couldn't start the session. Please try again in a moment."
     },
     "setup_microphone": {
       "waiting_permission_title": "Waiting permission to access your microphone",
@@ -1955,7 +1968,8 @@
         "bigbluebutton": "The bot joins as a guest; a moderator must admit it if the room requires approval.",
         "teams": "The meeting must be public; the bot lands in the lobby and must be admitted manually by a participant.",
         "visio": "The bot connects as a standard participant; make sure guest access is allowed without approval."
-      }
+      },
+      "bot_error": "Couldn't connect the bot to the video conference. Check the link and try again."
     },
     "live": {
       "default_name": "Untitled record",
