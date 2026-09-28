@@ -200,6 +200,45 @@ describe('normalize conversation segment from a reduced linstt transcription', (
     })
     testTimeStamp(normalizeTranscription)
   })
+
+  it('segment with punctuation-only tokens without timed word (normalize-orphan-punctuation)', () => {
+    mock_transcription = require(`${process.cwd()}/tests/data/transcription/reduce/normalize-orphan-punctuation.json`)
+    conversation = require(`${process.cwd()}/tests/data/conversation/normalize/reduce/conversation-orphan-punctuation.json`)
+
+    const normalizeTranscription = segmentNormalizeText(mock_transcription, LANG)
+    normalizeTranscription.segments.map((segment, index_seg) => {
+      testNormalize(conversation, segment, index_seg)
+    })
+    testTimeStamp(normalizeTranscription)
+  })
+
+  it('segment with punctuation-only tokens and non-breaking spaces, language auto (normalize-orphan-punctuation-ruleless)', () => {
+    mock_transcription = require(`${process.cwd()}/tests/data/transcription/reduce/normalize-orphan-punctuation-ruleless.json`)
+    conversation = require(`${process.cwd()}/tests/data/conversation/normalize/reduce/conversation-orphan-punctuation-ruleless.json`)
+
+    const normalizeTranscription = segmentNormalizeText(mock_transcription, "*")
+    normalizeTranscription.segments.map((segment, index_seg) => {
+      testNormalize(conversation, segment, index_seg)
+    })
+    testTimeStamp(normalizeTranscription)
+  })
+
+  it('segment resize when the punctuation look-ahead reaches the last word (normalize-simple-punctuation, segmentCharSize)', () => {
+    mock_transcription = require(`${process.cwd()}/tests/data/transcription/reduce/normalize-simple-punctuation.json`)
+    const total_words = mock_transcription.segments.reduce((count, segment) => count + segment.words.length, 0)
+
+    const filter_error = jest.spyOn(console, 'error').mockImplementation(() => { })
+    const normalizeTranscription = segmentNormalizeText(mock_transcription, LANG, { ...DEFAULT_FILTER })
+    expect(filter_error).not.toHaveBeenCalled()
+    filter_error.mockRestore()
+
+    const kept_words = normalizeTranscription.segments.reduce((count, segment) => count + segment.words.length, 0)
+    expect(kept_words).toEqual(total_words)
+    normalizeTranscription.segments.map((segment) => {
+      expect(segment.segment).toEqual(segment.words.map((word) => word.word).join(" "))
+    })
+    testTimeStamp(normalizeTranscription)
+  })
 })
 
 function testNormalize(conversation, segment, index_seg) {
