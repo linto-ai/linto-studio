@@ -64,23 +64,17 @@
             </div>
           </div>
         </router-link>
-        <!-- Creating an extra organization is a team-plan capability in cloud
-             mode. The backend gates it on the caller's PERSONAL org (the billing
-             subject); the front shows the lock from the CURRENT org's plan, which
-             is the same org for the common case and only a hint otherwise. Always
-             rendered in OSS builds. -->
-        <HasEntitlement capability="organization.create">
-          <div class="modal-switch-org__list__item new-org">
-            <Button
-              v-if="isOrganizationInitiator"
-              :label="$t('modal_switch_org.create_organization')"
-              icon="plus"
-              size="sm"
-              variant="primary"
-              color="primary"
-              @click="isCreateModalOpen = true" />
-          </div>
-        </HasEntitlement>
+        <div
+          v-if="canCreateOrganization"
+          class="modal-switch-org__list__item new-org">
+          <Button
+            :label="$t('modal_switch_org.create_organization')"
+            icon="plus"
+            size="sm"
+            variant="primary"
+            color="primary"
+            @click="createOrganization" />
+        </div>
       </div>
       <ModalCreateOrganization
         v-model="isCreateModalOpen"
@@ -94,9 +88,11 @@ import { mapGetters, mapActions } from "vuex"
 import Modal from "@/components/molecules/Modal.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
 import FavoriteStar from "@/components/atoms/FavoriteStar.vue"
-import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+import { getEnv } from "@/tools/getEnv"
+
+const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 
 export default {
   name: "ModalSwitchOrg",
@@ -104,7 +100,6 @@ export default {
     Modal,
     ModalCreateOrganization,
     FavoriteStar,
-    HasEntitlement,
   },
   mixins: [platformRoleMixin, orgaRoleMixin],
   props: {
@@ -128,6 +123,11 @@ export default {
       isFavoriteOrganization: "isFavoriteOrganization",
     }),
     ...mapGetters("system", ["isMobile"]),
+    // In SaaS a new organization is a Business subscription: anyone can buy
+    // one. Elsewhere it takes the platform role.
+    canCreateOrganization() {
+      return IS_MODE_CLOUD || this.isOrganizationInitiator
+    },
     isOpen: {
       get() {
         return this.value
@@ -161,6 +161,17 @@ export default {
   },
   methods: {
     ...mapActions("user", ["toggleFavoriteOrganization"]),
+    ...mapActions("billing", ["openUpgradeModalOnPlan"]),
+    // SaaS: the organization is created by the Business checkout, from the
+    // wizard's organization step.
+    createOrganization() {
+      if (!IS_MODE_CLOUD) {
+        this.isCreateModalOpen = true
+        return
+      }
+      this.close()
+      this.openUpgradeModalOnPlan("business")
+    },
     close() {
       this.$emit("close")
     },

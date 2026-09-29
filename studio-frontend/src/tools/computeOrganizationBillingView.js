@@ -2,6 +2,17 @@ import { computeQuotaMeters } from "./billingMeters.js"
 
 const FREE_PLAN_KEY = "free_payg"
 
+// comp and managed orgs are billed outside the SaaS: whatever plan the
+// backoffice set, they read like a free plan with no plan action at all.
+const UNMETERED_PLAN = {
+  isFree: true,
+  isPerSeat: false,
+  canUpgradeToPremium: false,
+  canManageSubscription: false,
+  renewalAt: null,
+  cancelsAtPeriodEnd: false,
+}
+
 // Quotas shown on the billing tab, in display order, with their label.
 // api.calls is left out: it only matters to API integrators.
 const DISPLAYED_METERS = [
@@ -32,12 +43,14 @@ export function computeOrganizationBillingView({
   const plan = (plans || []).find((p) => p.planKey === planKey) || null
   const isFree = planKey === FREE_PLAN_KEY
   const meters = computeDisplayedMeters(usage?.capabilities)
+  const mode = usage?.mode || "normal"
 
-  return {
+  const view = {
     planKey,
     plan,
+    mode,
     isFree,
-    isUnmetered: !!usage?.mode && usage.mode !== "normal",
+    isUnmetered: mode !== "normal",
     isLocked: usage?.locked === true,
     isPerSeat: plan?.pricing?.perSeat === true,
     // Premium is only sold to personal orgs; free team orgs get no plan
@@ -52,6 +65,7 @@ export function computeOrganizationBillingView({
     renewalAt: subscription?.currentPeriodEnd || null,
     cancelsAtPeriodEnd: subscription?.cancelAtPeriodEnd === true,
   }
+  return view.isUnmetered ? { ...view, ...UNMETERED_PLAN } : view
 }
 
 function computeDisplayedMeters(capabilities) {

@@ -52,6 +52,12 @@ export default {
   openUpgradeModal({ commit }, reason = null) {
     commit("openUpgradeModal", reason)
   },
+  // Opens the wizard straight on one plan's own step. The catalog is loaded
+  // first: the wizard renders nothing for a plan it doesn't know yet.
+  async openUpgradeModalOnPlan({ commit, dispatch, state }, planKey) {
+    if (!state.plans.length) await dispatch("fetchPlans")
+    commit("openUpgradeModalOnPlan", planKey)
+  },
   closeUpgradeModal({ commit }) {
     commit("closeUpgradeModal")
   },

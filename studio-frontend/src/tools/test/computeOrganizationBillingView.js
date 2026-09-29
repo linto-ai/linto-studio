@@ -76,16 +76,47 @@ test("a plan billed by Stripe is managed through the portal", (t) => {
   t.false(view.cancelsAtPeriodEnd)
 })
 
-test("a plan set outside Stripe has no portal to open", (t) => {
+test("a comp organization reads like a free plan with no plan action", (t) => {
   const view = computeOrganizationBillingView({
     organization: { personal: false },
     usage: usageFor("business", { mode: "comp" }),
-    subscription: { planKey: "business", source: "manual" },
+    subscription: {
+      planKey: "business",
+      source: "manual",
+      currentPeriodEnd: "2026-10-28T10:00:00.000Z",
+    },
     plans: PLANS,
   })
-  t.false(view.canManageSubscription)
+  t.is(view.mode, "comp")
   t.true(view.isUnmetered)
-  t.true(view.isPerSeat)
+  t.true(view.isFree)
+  t.false(view.isPerSeat)
+  t.false(view.canUpgradeToPremium)
+  t.false(view.canManageSubscription)
+  t.is(view.renewalAt, null)
+})
+
+test("a managed personal organization on Free is not offered Premium", (t) => {
+  const view = computeOrganizationBillingView({
+    organization: { personal: true },
+    usage: usageFor("free_payg", { mode: "managed" }),
+    subscription: null,
+    plans: PLANS,
+  })
+  t.is(view.mode, "managed")
+  t.true(view.isUnmetered)
+  t.false(view.canUpgradeToPremium)
+})
+
+test("an organization without a mode is a normal one", (t) => {
+  const view = computeOrganizationBillingView({
+    organization: { personal: true },
+    usage: usageFor("free_payg", { mode: undefined }),
+    subscription: null,
+    plans: PLANS,
+  })
+  t.is(view.mode, "normal")
+  t.false(view.isUnmetered)
 })
 
 test("a cancellation at period end is reported", (t) => {

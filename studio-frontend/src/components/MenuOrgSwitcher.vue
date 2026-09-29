@@ -11,7 +11,10 @@
           class="menu-org-switcher__org-line flex row align-center gap-small">
           <span class="menu-org-switcher__org-name">{{ orgName }}</span>
           <IsCloud>
-            <Chip :value="planLabel" class="menu-org-switcher__plan" />
+            <Chip
+              v-if="!isUnmetered"
+              :value="planLabel"
+              class="menu-org-switcher__plan" />
           </IsCloud>
         </span>
         <span class="menu-org-switcher__role">{{ currentRoleToString }}</span>
@@ -64,7 +67,7 @@ export default {
       currentOrgScope: "getCurrentOrganizationScope",
       orgName: "getCurrentOrganizationDisplayName",
     }),
-    ...mapGetters("billing", ["planLabel"]),
+    ...mapGetters("billing", ["planLabel", "isUnmetered"]),
     userAvatar() {
       return userAvatar(this.userInfo)
     },

@@ -233,6 +233,8 @@ export default {
       })
     },
     planName() {
+      if (this.view.isUnmetered)
+        return this.$t(`billing.mode.${this.view.mode}`)
       return (
         this.view.plan?.displayName || this.$t("billing.settings.free_plan")
       )

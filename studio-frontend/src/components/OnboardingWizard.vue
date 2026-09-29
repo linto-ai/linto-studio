@@ -25,7 +25,9 @@
         :draft="organizationDraft"
         :loading="checkoutLoading"
         :error="checkoutError"
+        :can-change-plan="!upgradePlanKey"
         @back="backToPlans"
+        @cancel="isOpen = false"
         @submit="checkoutBusiness" />
       <OnboardingPaymentStep
         v-else-if="step === 'payment'"
@@ -83,7 +85,7 @@ export default {
   },
   computed: {
     ...mapGetters("user", ["needsOnboarding", "getUserId"]),
-    ...mapGetters("billing", ["plans", "upgradeModalOpen"]),
+    ...mapGetters("billing", ["plans", "upgradeModalOpen", "upgradePlanKey"]),
     ...mapGetters("organizations", [
       "getOrganizationsAsArray",
       "getCurrentOrganizationScope",
@@ -132,6 +134,9 @@ export default {
       },
       immediate: true,
     },
+    upgradePlanKey(planKey) {
+      if (planKey) this.openOnPlan(planKey)
+    },
   },
   methods: {
     ...mapActions("billing", ["openUpgradeModal", "closeUpgradeModal"]),
@@ -153,6 +158,12 @@ export default {
         default:
           this.checkoutCurrentOrganization()
       }
+    },
+    // Business has its own step (organization name, seats); any other plan
+    // is simply preselected in the list.
+    openOnPlan(planKey) {
+      this.selectPlan(planKey)
+      this.step = planKey === "business" ? "organization" : "plan"
     },
     backToPlans(draft) {
       this.organizationDraft = draft

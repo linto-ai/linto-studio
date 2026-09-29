@@ -241,8 +241,8 @@ export default {
     }
   },
   async created() {
-    // The session tab depends on the org's billing mode: know it before
-    // picking the first tab or giving up on an org without any tab.
+    // The session tab depends on the org's billing mode and the quick session
+    // tabs on its live balance: know them before any tab renders.
     if (getEnv("VUE_APP_MODE") === "cloud") {
       await this.$store.dispatch(
         "billing/fetchUsage",
@@ -261,7 +261,10 @@ export default {
     }
   },
   computed: {
+    // Without live minutes left, no profile: the quick session forms fall
+    // back to offline transcription only.
     transcriberProfilesQuickMeeting() {
+      if (this.isLiveCreditExhausted) return []
       return this.transcriberProfiles.filter((t) => t.quickMeeting)
     },
     // Number of transcription models available (for the section subtitle).
@@ -371,8 +374,8 @@ export default {
       }
       if (
         this.isAtLeastMeetingManager &&
-        this.canSessionInCurrentOrganization &&
-        !this.isSessionOfferExcluded
+        this.canSessionInCurrentOrganization
+        //&&!this.isSessionOfferExcluded
       ) {
         res.push({
           name: "session",
@@ -404,6 +407,7 @@ export default {
       )
     },
     ...mapGetters("quickSession", ["quickSession"]),
+    ...mapGetters("billing", ["isLiveCreditExhausted"]),
   },
   methods: {
     createConversation(event) {

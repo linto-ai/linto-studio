@@ -59,12 +59,21 @@
         {{ error }}
       </p>
       <Button
+        v-if="canChangePlan"
         type="button"
         variant="secondary"
         icon="arrow-left"
         :disabled="loading"
         @click="$emit('back', computeDraft())">
         {{ $t("onboarding.organization.back") }}
+      </Button>
+      <Button
+        v-else
+        type="button"
+        variant="secondary"
+        :disabled="loading"
+        @click="$emit('cancel')">
+        {{ $t("billing.cancel") }}
       </Button>
       <Button
         type="submit"
@@ -111,6 +120,9 @@ export default {
     draft: { type: Object, required: true },
     loading: { type: Boolean, default: false },
     error: { type: String, default: "" },
+    // false when the wizard was opened on Business directly: no plan list to
+    // go back to, only a way out
+    canChangePlan: { type: Boolean, default: true },
   },
   data() {
     return {

@@ -1,4 +1,5 @@
 import { isQuotaUnlimited } from "@/tools/billingMeters"
+import { isLiveCreditExhausted } from "@/tools/isLiveCreditExhausted"
 
 // i18n label per metered capability (quota rules of the catalog).
 const METER_LABEL = {
@@ -16,6 +17,7 @@ export default {
   loading: (s) => s.loading,
   upgradeModalOpen: (s) => s.upgradeModalOpen,
   upgradeReason: (s) => s.upgradeReason,
+  upgradePlanKey: (s) => s.upgradePlanKey,
   planKey: (s) => s.usage?.planKey || s.subscription?.planKey || "free_payg",
   // normal | comp | managed
   mode: (s) => s.usage?.mode || s.subscription?.mode || "normal",
@@ -58,6 +60,9 @@ export default {
   seats: (s) => s.usage?.seats || s.subscription?.seats || 1,
   // Live balance block of the usage summary (null until loaded).
   live: (s) => s.usage?.live || null,
+  // No live minutes left: live transcription would be refused.
+  isLiveCreditExhausted: (s, g) =>
+    !g.isUnmetered && isLiveCreditExhausted(g.live),
 
   // Is a capability available on the current plan? Drives UI locks. The usage
   // summary is authoritative (it already applies the org mode); the catalog is

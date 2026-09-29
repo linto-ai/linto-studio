@@ -6,7 +6,11 @@
       variant="info"
       icon="info"
       v-if="transcriberProfiles.length === 0">
-      {{ $t("quick_session.creation.only_offline_available") }}
+      {{
+        isLiveCreditExhausted
+          ? $t("quick_session.creation.only_offline_live_credit_exhausted")
+          : $t("quick_session.creation.only_offline_available")
+      }}
     </NotificationBanner>
     <section>
       <FormCheckbox
@@ -96,6 +100,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from "vuex"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { testService } from "@/tools/fields/testService.js"
 import { getEnv } from "@/tools/getEnv"
@@ -330,6 +335,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters("billing", ["isLiveCreditExhausted"]),
     isCompatibleWithDiarization() {
       return this.selectedProfile?.config?.hasDiarization
     },
