@@ -13,11 +13,13 @@
 const RESYNC_GRAM = 8
 const RESYNC_WINDOWS = [64, 512, 4096]
 
+// Lowercase first: "İ" lowercases to "i" plus a combining dot, stripped here
 function wordChars(text) {
   return text
     .normalize("NFC")
-    .replace(/[^\p{L}\p{N}]/gu, "")
     .toLowerCase()
+    .replace(/ς/g, "σ")
+    .replace(/[^\p{L}\p{N}]/gu, "")
 }
 
 // One entry per letter/digit: which item it belongs to and its offset in it

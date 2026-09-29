@@ -459,3 +459,22 @@ describe('normalize never loses text nor breaks timestamps', () => {
 function cleanedTokens(text) {
   return text.replace(' \', ', '\'').replace(/' /g, '\'').split(/\s+/).filter(Boolean)
 }
+
+describe.each([
+  ['ja, no spaces', '今日は、いい天気ですね。', [['今日', 0, 0.4], ['は', 0.4, 0.5], ['いい', 0.6, 0.8], ['天気', 0.8, 1.2], ['です', 1.2, 1.4], ['ね', 1.4, 1.6]], [[0, 1.6]]],
+  ['zh, no spaces', '你好，世界！ 再见。', [['你好', 0, 0.5], ['世界', 0.5, 1], ['再', 1.5, 1.7], ['见', 1.7, 2]], [[0, 1], [1.5, 2]]],
+  ['th, syllable words', 'สวัสดี ครับ', [['สวัส', 0, 0.3], ['ดี', 0.3, 0.6], ['ครับ', 0.7, 1]], [[0, 0.6], [0.7, 1]]],
+  ['ar', 'مرحبا، كيف حالك؟', [['مرحبا', 0, 0.5], ['كيف', 0.6, 0.8], ['حالك', 0.8, 1.2]], [[0, 0.5], [0.6, 0.8], [0.8, 1.2]]],
+  ['hi', 'नमस्ते, आप कैसे हैं?', [['नमस्ते', 0, 0.6], ['आप', 0.7, 0.9], ['कैसे', 0.9, 1.2], ['हैं', 1.2, 1.4]], [[0, 0.6], [0.7, 0.9], [0.9, 1.2], [1.2, 1.4]]],
+  ['ko', '안녕하세요, 반갑습니다.', [['안녕', 0, 0.3], ['하세요', 0.3, 0.7], ['반갑습니다', 0.8, 1.5]], [[0, 0.7], [0.8, 1.5]]],
+  ['ru, case differs', 'Привет, как ДЕЛА?', [['привет', 0, 0.5], ['как', 0.6, 0.8], ['дела', 0.8, 1.2]], [[0, 0.5], [0.6, 0.8], [0.8, 1.2]]],
+  ['el, final sigma', 'ΟΔΟΣ Αθηνάς.', [['οδοσ', 0, 0.5], ['αθηνάσ', 0.6, 1.2]], [[0, 0.5], [0.6, 1.2]]],
+  ['tr, dotted capital I', 'İstanbul\'da kaldım.', [['istanbul', 0, 0.6], ['\'da', 0.6, 0.8], ['kaldım', 0.9, 1.3]], [[0, 0.8], [0.9, 1.3]]],
+  ['vi, NFD timed words', 'Việt Nam, xin chào.', [['Việt'.normalize('NFD'), 0, 0.4], ['Nam', 0.4, 0.7], ['xin', 0.8, 1], ['chào'.normalize('NFD'), 1, 1.4]], [[0, 0.4], [0.4, 0.7], [0.8, 1], [1, 1.4]]],
+])('normalize %s', (_, text, timed, times) => {
+  it('keeps every token with the time of the words it covers', () => {
+    const normalized = segmentNormalizeText(transcriptionOf(text, timed), '*')
+    expect(normalized.segments[0].words.map((word) => word.word)).toEqual(cleanedTokens(text))
+    expect(normalized.segments[0].words.map((word) => [word.start, word.end])).toEqual(times)
+  })
+})
