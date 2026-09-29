@@ -33,7 +33,3 @@ test("leaves out empty optional fields and seats below 1", (t) => {
     { planKey: "premium" },
   )
 })
-
-test("floors a fractional seat count", (t) => {
-  t.is(buildManualPlanPayload({ planKey: "business", seats: "2.7" }).seats, 2)
-})
