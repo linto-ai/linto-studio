@@ -13,13 +13,12 @@ const {
   `${process.cwd()}/components/WebServer/routecontrollers/conversation/chat.js`,
 )
 
-const model = require(`${process.cwd()}/lib/mongodb/models`)
+const organizationUtility = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
 
-// SaaS: the chat session carries the organization the message is billed to.
-const chatOrg = async (req) => {
-  const sessions = await model.chatSessions.getById(req.params.sessionId)
-  return sessions && sessions[0] ? sessions[0].organizationId : null
-}
+// SaaS: a chat message is billed to the conversation's organization.
+const chatOrg = (req) => organizationUtility.getOrgaIdFromReq(req)
 
 module.exports = (webserver) => {
   return [

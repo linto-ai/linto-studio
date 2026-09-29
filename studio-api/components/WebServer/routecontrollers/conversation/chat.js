@@ -10,6 +10,9 @@ const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 const { ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
+const organizationUtility = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
 
 /**
  * Build plain text transcript from conversation turns
@@ -91,10 +94,7 @@ async function createSession(req, res, next) {
   try {
     const { conversationId } = req.params
     const userId = req.payload.data.userId
-    const organizationId =
-      req.payload.organizationId ||
-      req.payload.conversationOrganizationId ||
-      null
+    const organizationId = await organizationUtility.getOrgaIdFromReq(req)
 
     let flavorId = req.body.flavorId || null
     const title = req.body.title || "New chat"
@@ -329,6 +329,8 @@ async function sendMessage(req, res, next) {
         .status(403)
         .json({ error: "Session does not belong to this conversation" })
     }
+    // Billed org: the conversation's, the one the entitlement gate checked
+    const organizationId = conversation.organization?.organizationId
 
     // 6. Guard: reject if session has no flavor configured
     if (!session.flavorId) {
@@ -355,7 +357,7 @@ async function sendMessage(req, res, next) {
         },
       },
       session_id: sessionId,
-      organization_id: session.organizationId || undefined,
+      organization_id: organizationId,
     }
 
     // 8. SSE headers
@@ -447,7 +449,7 @@ async function sendMessage(req, res, next) {
 
       // SaaS metering: one chat message answered. No-op in OSS.
       await saas.record({
-        orgId: session.organizationId,
+        orgId: organizationId,
         userId: req.payload.data.userId,
         capability: "ai.chat",
         value: 1,

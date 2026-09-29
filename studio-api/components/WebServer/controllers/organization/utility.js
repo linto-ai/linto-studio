@@ -259,6 +259,7 @@ async function getOrgaIdFromReq(req) {
   if (organizationId === undefined) {
     const conversation = await model.conversations.getById(
       req.params.conversationId,
+      ["organization"],
     )
     if (conversation.length !== 1) throw new ConversationNotFound()
 
