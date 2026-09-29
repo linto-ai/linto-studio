@@ -11,6 +11,7 @@ import {
 import { useStickToBottom } from "vue-stick-to-bottom"
 import TranscriptionTurn from "./TranscriptionTurn.vue"
 import TranscriptionEmpty from "./TranscriptionEmpty.vue"
+import SpeechActivityIndicator from "./SpeechActivityIndicator.vue"
 import { useCore } from "../core"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useFollowPlayback } from "../composables/useFollowPlayback"
@@ -41,6 +42,23 @@ const partialTurn = computed(() => {
 })
 
 const hasLiveUpdate = computed(() => core.live?.hasLiveUpdate.value ?? false)
+
+// Set here rather than on a global stylesheet: the value stays scoped to the
+// reading surface, and the partial turn inherits it like any other.
+const transcriptFontSize = computed(
+  () => `${core.transcriptFontSize.value}px`,
+)
+
+// With the partial text hidden, the panel would sit perfectly still between
+// two finalized turns — nothing left to say the session is still listening.
+// The line is kept for the whole session rather than mounted when someone
+// speaks: useStickToBottom watches .turns-container, so anything appearing
+// and disappearing in there drags the transcript with it (the indicator
+// hides in place instead — see SpeechActivityIndicator).
+const showSpeechIndicator = computed(
+  () => core.live !== undefined && core.live.partialsVisible.value === false,
+)
+const isSpeechActive = computed(() => core.live?.isSpeechActive.value === true)
 const isPlaying = computed(() => core.audio?.isPlaying.value ?? false)
 
 const activeTranslation = computed(
@@ -142,7 +160,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <article class="transcription-panel">
+  <article
+    class="transcription-panel"
+    :style="{ '--transcript-font-size': transcriptFontSize }">
     <div ref="scrollContainer" class="scroll-container">
       <div class="turns-container">
         <div v-if="isLoadingHistory" class="history-loading" role="status">
@@ -173,18 +193,22 @@ onBeforeUnmount(() => {
           key="__partial__"
           :turn="partialTurn"
           partial />
+        <SpeechActivityIndicator
+          v-if="showSpeechIndicator"
+          :active="isSpeechActive" />
       </div>
 
       <Transition name="fade-slide">
-        <Button
-          v-if="showResumeButton"
-          size="sm"
-          icon="arrow-down"
-          class="resume-scroll-btn"
-          :aria-label="t('transcription.resumeScroll')"
-          @click="onResumeClick">
-          {{ t("transcription.resumeScroll") }}
-        </Button>
+        <div v-if="showResumeButton" class="resume-scroll-anchor">
+          <Button
+            size="sm"
+            icon="arrow-down"
+            class="resume-scroll-btn"
+            :aria-label="t('transcription.resumeScroll')"
+            @click="onResumeClick">
+            {{ t("transcription.resumeScroll") }}
+          </Button>
+        </div>
       </Transition>
     </div>
   </article>
@@ -231,17 +255,26 @@ onBeforeUnmount(() => {
   font-size: var(--font-size-sm);
 }
 
-/* Resume scroll button */
-.resume-scroll-btn {
+/* Resume scroll button — placement lives on this wrapper, never on the
+   button itself: Button.vue's `.editor-btn` base rule resets `position` via
+   `all: unset` (and, in the webcomponent build, gets re-injected a second
+   time after everything else to reach teleported popovers/dialogs — see
+   packages/webcomponent/src/index.ts), so any positioning put directly on
+   the button is one rebuild away from being silently overridden again. */
+.resume-scroll-anchor {
   position: sticky;
   bottom: var(--spacing-lg);
-  left: 50%;
-  translate: -50% 0;
   z-index: var(--z-sticky);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.resume-scroll-btn {
   /* No backdrop-filter: this button is sticky inside the tall scroll
      container, where a backdrop-filter makes WebRender allocate a render
      target spanning the whole scroll height — multi-GB on a long transcript. */
-  background: white !important;
+  background: var(--color-surface) !important;
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
 }
@@ -257,7 +290,7 @@ onBeforeUnmount(() => {
 .fade-slide-enter-from,
 .fade-slide-leave-to {
   opacity: 0;
-  translate: -50% 8px;
+  translate: 0 8px;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -383,7 +383,7 @@ describe("API Contract Conformance", () => {
 
       // Implementation includes timeout option for reliability
       expect(mockAxios.get).toHaveBeenCalledWith(
-        "http://localhost:8010/api/v1/services?page=1&page_size=100",
+        "http://localhost:8010/api/v1/services?page=1&page_size=100&scope=linto",
         expect.objectContaining({ timeout: expect.any(Number) })
       )
     })

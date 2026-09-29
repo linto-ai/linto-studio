@@ -41,7 +41,9 @@
 
         <!-- Media tags -->
         <div class="media-section">
-          <h4 class="section-title field-label">{{ $t("media_explorer.panel.tags") }}</h4>
+          <h4 class="section-title field-label">
+            {{ $t("media_explorer.panel.tags") }}
+          </h4>
           <div class="tags-container">
             <InputSelector
               v-if="!readOnly"
@@ -486,7 +488,7 @@ export default {
 
 .open-media-hint {
   font-size: 0.8125rem;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
 }
 
 /* Typographic identity comes from the shared .field-label utility class —
@@ -510,7 +512,7 @@ export default {
 
 .no-tags-message {
   font-size: 0.875rem;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
   font-style: italic;
 }
 

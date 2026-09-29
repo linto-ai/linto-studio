@@ -1,11 +1,15 @@
 <template>
   <LayoutV2 noHeader>
     <div class="transcription-editor-wrapper">
-      <linto-editor ref="editor" :locale="$i18n.locale" />
+      <!-- no-theme-toggle: this view's chrome has no dark values, and unlike
+           the live session nothing here listens to "theme:change" — the
+           switch would darken the editor inside a light page. -->
+      <linto-editor ref="editor" :locale="$i18n.locale" no-theme-toggle />
     </div>
     <PublicationModal
       v-model="publicationModal.open"
       :jobId="publicationModal.jobId"
+      :serviceId="publicationModal.serviceId"
       :conversationId="conversationId"
       :organizationId="organizationId"
       :conversationName="conversationName" />
@@ -59,7 +63,7 @@ export default {
       chatDispose: null,
       editListeners: [],
       canWrite: false,
-      publicationModal: { open: false, jobId: null },
+      publicationModal: { open: false, jobId: null, serviceId: null },
       verbatimFormats: [
         { format: "docx", labelKey: "format.docx" },
         { format: "pdf", labelKey: "format.pdf" },
@@ -201,8 +205,8 @@ export default {
         t: (key, params) => this.$t(key, params),
         notify: (type, message) =>
           this.$store.dispatch("system/addNotification", { type, message }),
-        openPublication: ({ jobId }) => {
-          this.publicationModal = { open: true, jobId }
+        openPublication: ({ jobId, serviceId }) => {
+          this.publicationModal = { open: true, jobId, serviceId }
         },
       }).dispose
 

@@ -321,7 +321,7 @@ export default {
     gap: 0.25rem;
     background: none;
     border: none;
-    color: var(--primary-hard);
+    color: var(--primary-color);
     cursor: pointer;
     font-size: 14px;
     padding: 0;
@@ -408,7 +408,7 @@ export default {
 
   &__edit-input {
     padding: 0.25rem 0.5rem;
-    border: 1px solid var(--primary-hard);
+    border: 1px solid var(--primary-color);
     border-radius: 4px;
     font-size: 1em;
     background: var(--background-primary);

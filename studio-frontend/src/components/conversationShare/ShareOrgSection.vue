@@ -207,7 +207,7 @@ export default {
 
   border-radius: 4px;
   padding: 0.75rem;
-  border: 1px solid var(--neutral-20);
+  border: var(--border-block);
   box-shadow: var(--shadow-1);
   background-color: var(--background-primary);
 
@@ -251,7 +251,7 @@ export default {
     flex-direction: column;
     gap: 0.5rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--neutral-20);
+    border-top: var(--border-block);
   }
 
   &__disclosure-summary {

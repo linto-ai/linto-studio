@@ -47,6 +47,9 @@ DEFAULT_SEGMENT_WORD_SIZE=
 # LLM Gateway V2 Config
 # HTTP API endpoint (e.g., http://localhost:8010)
 LLM_GATEWAY_SERVICES=
+# Usage scope of the services listed in Studio (services carry a list of
+# scopes on the gateway: linto, meet, twake...). Default: linto
+LLM_GATEWAY_SCOPE=
 # Chat service ID from LLM Gateway (required for chat feature)
 LLM_CHAT_SERVICE_ID=
 # WebSocket URL is automatically derived from LLM_GATEWAY_SERVICES

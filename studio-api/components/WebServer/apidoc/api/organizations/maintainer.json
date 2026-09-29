@@ -182,7 +182,7 @@
     "delete": {
       "tags": ["organizations maintainers"],
       "summary": "Delete the selected conversations of an organization",
-      "description": "Deletes the conversations and their associated data (subtitles, conversation-scoped categories and tags, audio file when no longer referenced).",
+      "description": "Deletes the conversations and their associated data (subtitles, conversation-scoped categories and tags, audio file when no longer referenced). Conversations must belong to the organization. Maintainers can delete any of them, members only those they own or hold a delete right on.",
       "parameters": [
         {
           "$ref": "#/components/parameters/OrganizationId"

@@ -106,7 +106,7 @@ export default {
 }
 
 .microphone-placeholder__circle:enabled:hover {
-  background: var(--neutral-10, rgba(128, 128, 128, 0.08));
+  background: var(--neutral-10);
 }
 
 .microphone-placeholder__circle:focus-visible {
@@ -133,8 +133,8 @@ export default {
 }
 
 .microphone-placeholder--recording .microphone-placeholder__circle {
-  border-color: var(--red-chart);
-  color: var(--red-chart);
+  border-color: var(--danger-color);
+  color: var(--danger-color);
 }
 
 .microphone-placeholder--connecting .microphone-placeholder__circle,
@@ -156,7 +156,7 @@ export default {
 
 @keyframes microphone-placeholder-sonar {
   0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--red-chart) 35%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger-color) 35%, transparent);
   }
   100% {
     box-shadow: 0 0 0 18px transparent;

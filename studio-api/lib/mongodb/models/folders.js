@@ -119,6 +119,7 @@ class FolderModel extends MongoModel {
             },
             "organization.membersRight": { $bitsAnySet: 1 },
           },
+          { owner: userId },
         ]
       }
 

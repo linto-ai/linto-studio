@@ -40,18 +40,11 @@ function doublePunctuation(seg_text, words, loop_data) {
     else if (loop_data.word_index !== 0)
       timestamp = loop_data.words[loop_data.word_index - 1].start
 
-    //count number if space in the segment
-    let spacesCount = (seg_text.lowercase.match(/ /g) || []).length
-
-    if (/[0-9a-zA-ZÀ-ÿ]/.test(seg_text.lowercase)) skip_words = spacesCount
-    else skip_words = -1
-
     return {
       start: timestamp,
       end: timestamp,
       word: seg_text.original,
       conf: 1,
-      skip_words: skip_words,
     }
   }
 }
@@ -185,25 +178,6 @@ function notFound(segment_text, words) {
   return words
 }
 
-//Should only be trigger on special case and last word
-function lastWord(segment_text, words, loop_data) {
-  // In case of last word is a double punctuation,
-  // It can be desync with the words array depending of the transcription services
-  if (
-    segment_text.lowercase.length === 1 &&
-    /[?!:;«»–—]$/.test(segment_text.lowercase)
-  ) {
-    let last_word_index = loop_data.words.length - 1
-
-    return {
-      ...loop_data.words[last_word_index],
-      start: loop_data.words[last_word_index].end,
-      word: segment_text.original,
-    }
-  }
-  return undefined
-}
-
 module.exports = {
   rules_sequences: [
     correctSegmentText,
@@ -213,15 +187,5 @@ module.exports = {
     apostropheNormalize,
     numberNormalize,
     notFound,
-  ],
-  rules: [
-    correctSegmentText,
-    simplePunctuation,
-    diminutivePunctuation,
-    doublePunctuation,
-    apostropheNormalize,
-    numberNormalize,
-    notFound,
-    lastWord,
   ],
 }

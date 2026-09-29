@@ -177,7 +177,7 @@ async function access(req, next, organizationId, userId, right) {
       )
       if (conv.length >= 1) {
         return next()
-      }
+      } else return next(new OrganizationForbidden())
     }
     return next(new OrganizationForbidden())
   } catch (err) {

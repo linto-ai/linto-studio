@@ -10,5 +10,6 @@ export function onExport({ store, t, notify, openPublication }, { id }) {
     )
     return
   }
-  openPublication({ serviceId: id, jobId: entry.jobId })
+  // The SDK id is the service route; publication needs the gateway UUID
+  openPublication({ serviceId: entry.serviceId || id, jobId: entry.jobId })
 }

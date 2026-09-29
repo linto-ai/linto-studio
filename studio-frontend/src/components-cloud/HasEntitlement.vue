@@ -1,7 +1,7 @@
 <template>
   <fragment v-if="allowed"><slot /></fragment>
   <fragment v-else-if="$scopedSlots.locked">
-    <slot name="locked" :plan="lockedPlan" />
+    <slot name="locked" :plan="lockedPlan" :showUpgrade="showUpgrade" />
   </fragment>
   <fragment v-else-if="lockedPlaceholder">
     <div
@@ -39,7 +39,7 @@ const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 //                       entry standing in for the real one); receives the
 //                       cheapest plan that grants the capability as `plan`
 //                       (null while the catalog is still loading, or if none
-//                       does).
+//                       does) and `showUpgrade` to open the upgrade modal.
 //   lockedPlaceholder — generic icon+message+upgrade-button panel, for callers
 //                       that just want "this is locked" with no custom layout.
 //   neither           — renders nothing.

@@ -410,10 +410,12 @@ export default {
     },
     clearExploreSelectedTags({ commit }) {
       commit("clearExploreSelectedTags")
-      // Also clear tags from URL
+      // Also clear tags from URL. Replace, not push: this runs on every
+      // explore load and a push duplicated the current entry, so "back"
+      // stayed on the same page (and vue-router kept its history state).
       const url = new URL(window.location.href)
       url.searchParams.delete("tags")
-      window.history.pushState({}, "", url)
+      window.history.replaceState(window.history.state, "", url)
     },
     addExploreSelectedTag({ commit, state }, tag) {
       commit("setExploreSelectedTags", [...state.exploreSelectedTags, tag])

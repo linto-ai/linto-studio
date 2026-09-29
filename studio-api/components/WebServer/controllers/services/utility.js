@@ -76,6 +76,10 @@ async function getTranscriptionServiceByEndpoint(endpoint) {
  *   Flavors are filtered by model.security_level, services with no remaining flavors are removed
  * @param {string} [userId] - Optional user ID; also returns services whose allowed
  *   user list includes this user (in addition to global + org services)
+ *
+ * Only services listed for the LLM_GATEWAY_SCOPE usage scope (default "linto",
+ * the LinTO Studio scope) are returned: the gateway also serves other client
+ * products (LinTO Meet, Twake) with their own services.
  */
 async function listLlmServices(
   organizationId = null,
@@ -85,8 +89,11 @@ async function listLlmServices(
   try {
     const gateway_services = process.env.LLM_GATEWAY_SERVICES
     debug("Security level requested:", securityLevel)
-    // V2 API endpoint with pagination
-    let host = gateway_services + "/api/v1/services?page=1&page_size=100"
+    // V2 API endpoint with pagination, restricted to the Studio usage scope
+    const scope = process.env.LLM_GATEWAY_SCOPE || "linto"
+    let host =
+      gateway_services +
+      `/api/v1/services?page=1&page_size=100&scope=${encodeURIComponent(scope)}`
 
     // Add organization filter if provided. The gateway returns global services
     // plus those whose allowed org/user lists include the caller.

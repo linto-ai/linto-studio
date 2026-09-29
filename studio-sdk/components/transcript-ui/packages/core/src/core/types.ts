@@ -18,6 +18,10 @@ export interface CoreCapabilities {
 
 // ── Event Map ──────────────────────────────────────────────────────────
 
+/** Light is the default; dark redefines the colour tokens on the editor's
+ *  root, under the same data-theme convention the host app uses. */
+export type EditorTheme = "light" | "dark"
+
 export interface CoreEventMap {
   /** A new document was loaded via setDocument (channels rebuilt). */
   "document:change": void
@@ -30,12 +34,35 @@ export interface CoreEventMap {
   "speaker:add": { speaker: Speaker }
   "speaker:remove": { speakerId: string }
   "scroll:top": { translationId: string }
+  /** A seek was requested through core.audio.seekTo (widget scrub or
+   *  click-to-read) — the explicit "take me to this instant" gesture that
+   *  should resume follow-playback scrolling. */
+  "audio:seek": { time: number }
   "translation:sync": { translationId: string }
   "channel:sync": { channelId: string }
   "channel:reset": { channelId: string }
   "watermark:display": { display: boolean }
   "watermark:pin": { pinned: boolean }
   "subtitle:visible": { visible: boolean; height: number }
+  /** The reading size of the transcript changed. The editor does not
+   *  remember it — a host that wants the preference to survive a reload
+   *  listens here and restores it into core.transcriptFontSize. */
+  "transcript:fontSize": { fontSize: number }
+  /** The editor switched theme. The editor applies it to itself; a host
+   *  that wants its own chrome to follow listens here (studio-frontend
+   *  sets html[data-theme] from it). */
+  "theme:change": { theme: EditorTheme }
+  /** The sidebar drawer was opened or closed — by the built-in header,
+   *  by the drawer's own close button, by a channel change, or by the
+   *  host calling setSidebarOpen. A host rendering its own header (see
+   *  TranscriptUI's no-header) listens to this to keep its button in
+   *  sync, since it is not the only thing that moves the drawer. */
+  "sidebar:open": { open: boolean }
+  /** The viewport crossed the phone-width breakpoint. Same information as
+   *  core.isMobile, pushed: a host that can't subscribe to a Vue 3 ref (a
+   *  Vue 2 app, or plain JS around the web component) follows this to show
+   *  or hide its own sidebar button. */
+  "viewport:change": { isMobile: boolean }
   "llmService:regenerate": { id: string }
   "llmService:export": { id: string }
   "llmService:active": { id: string | null }
@@ -548,6 +575,20 @@ export interface LiveTranslationEventData {
 
 export interface LivePluginApi {
   partial: ShallowRef<string | null>
+  /** Whether the provisional text of the turn being spoken reaches the
+   *  screen at all — it feeds both the transcription panel and the live
+   *  subtitles, so turning it off silences the two of them. */
+  partialsVisible: Ref<boolean>
+  showPartials(): void
+  hidePartials(): void
+  /** True while partials keep arriving — the only sign anyone is talking,
+   *  and the one the UI falls back on once the text itself is hidden. Stays
+   *  on for silenceDelay after the last partial. */
+  isSpeechActive: Ref<boolean>
+  /** Milliseconds without a partial before speech counts as over. ASRs
+   *  differ in how often they emit — one per word, or one every few
+   *  seconds — so a host tunes this to its backend. */
+  silenceDelay: Ref<number>
   hasLiveUpdate: Ref<boolean>
   ttsAvailable: boolean
   ttsEnabled: Ref<boolean>
@@ -634,6 +675,35 @@ export interface Core {
   readonly speakers: SpeakersStore
   readonly channels: Map<string, ChannelStore>
   readonly activeChannel: ComputedRef<ChannelStore | undefined>
+
+  /** Reading size of the transcript text, in pixels. Chrome (buttons,
+   *  headers, the sidebar) keeps its own scale. Writable: there is nothing to
+   *  guard, and a change is announced by "transcript:fontSize". */
+  readonly transcriptFontSize: Ref<number>
+  /** Colour theme of the editor. Writable: a host can restore a stored
+   *  preference, and a change is announced by "theme:change". */
+  readonly theme: Ref<EditorTheme>
+  /** Brand colour, pushed by the host so the editor's accents match the app
+   *  around it. Null keeps the editor's own. Applied as an inline style on
+   *  the editor's root, which is the only thing that outranks the token
+   *  declarations inside the shadow tree. */
+  readonly primaryColor: Ref<string | null>
+
+  // ── Layout chrome ────────────────────────────────────────────────────
+  /** True while the viewport is at phone width — below the breakpoint where
+   *  Layout swaps the permanent sidebar for the drawer. Read it instead of
+   *  duplicating the media query: a host rendering its own header needs the
+   *  exact same threshold to know when its sidebar button is worth showing. */
+  readonly isMobile: Readonly<Ref<boolean>>
+  /** Whether the sidebar drawer is open. Only the mobile, single-panel
+   *  layout mounts that drawer — on desktop the sidebar is permanent and in
+   *  split view there is none. */
+  readonly sidebarOpen: Readonly<Ref<boolean>>
+  /** Opens or closes that drawer. Opening is refused, silently and without
+   *  an event, while the viewport is wider than the breakpoint: there is no
+   *  drawer to open, and a stored "open" would spring it on the next resize.
+   *  Closing always applies. */
+  setSidebarOpen(open: boolean): void
 
   // ── Navigation ───────────────────────────────────────────────────────
   setDocument(doc: EditorDocument): void

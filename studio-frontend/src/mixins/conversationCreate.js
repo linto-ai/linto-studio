@@ -275,7 +275,7 @@ export default {
             {
               name: convName,
               description: "",
-              membersRights: this.organizationMemberAccess
+              membersRight: this.organizationMemberAccess
                 ? parseInt(this.membersRight.value)
                 : 0,
               securityLevel: this.securityLevel,

@@ -3,14 +3,37 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { TagError, TagConflict, TagUnsupportedMediaType } = require(
+const { TagError, TagConflict, TagNotFound, TagUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/tag`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const { categoryBelongsToOrganization, getCategoryInOrganization } = require(
+  `${process.cwd()}/components/WebServer/controllers/taxonomy/organizationScope`,
+)
+
+async function getTagInOrganization(tagId, organizationId) {
+  const tag = await model.tags.getById(tagId)
+  if (tag.length === 0) throw new TagNotFound()
+  const category = await model.categories.getById(tag[0].categoryId)
+  if (
+    category.length !== 1 ||
+    !(await categoryBelongsToOrganization(category[0], organizationId))
+  )
+    throw new TagNotFound()
+  return tag[0]
+}
 
 function checkBody(req, res, next) {
-  requireParam(req.body.organizationId, TagUnsupportedMediaType, "organizationId is required")
-  requireParam(req.body.categoryId, TagUnsupportedMediaType, "categoryId is required")
+  requireParam(
+    req.body.organizationId,
+    TagUnsupportedMediaType,
+    "organizationId is required",
+  )
+  requireParam(
+    req.body.categoryId,
+    TagUnsupportedMediaType,
+    "categoryId is required",
+  )
   if (req.body.name && !req.body.name.match(/^[a-zA-Z0-9]{1,255}$/))
     throw new TagUnsupportedMediaType(
       "name must be alphanumeric and less than 255 characters",
@@ -65,15 +88,19 @@ async function assertTagNameAvailable(
 
 async function createTag(req, res, next) {
   try {
+    req.body.organizationId = req.params.organizationId
+    await getCategoryInOrganization(
+      req.body.categoryId,
+      req.params.organizationId,
+      TagError,
+    )
+
     if (req.body.name)
       await assertTagNameAvailable(
         req.body.organizationId,
         req.body.categoryId,
         req.body.name,
       )
-
-    let category = await model.categories.getById(req.body.categoryId)
-    if (category.length === 0) throw new TagError("categoryId not found")
 
     const result = await model.tags.create({
       ...req.body,
@@ -91,8 +118,9 @@ async function createTag(req, res, next) {
 
 async function updateTag(req, res, next) {
   try {
-    const tag = await model.tags.getById(req.params.tagId)
-    if (tag.length === 0) throw new TagError("Tag not found")
+    const tag = [
+      await getTagInOrganization(req.params.tagId, req.params.organizationId),
+    ]
 
     if (req.body.name) {
       await assertTagNameAvailable(
@@ -104,8 +132,11 @@ async function updateTag(req, res, next) {
       tag[0].name = req.body.name
     }
     if (req.body.categoryId) {
-      const category = await model.categories.getById(req.body.categoryId)
-      if (category.length === 0) throw new TagError("categoryId not found")
+      await getCategoryInOrganization(
+        req.body.categoryId,
+        req.params.organizationId,
+        TagError,
+      )
       tag[0].categoryId = req.body.categoryId
     }
     if (req.body.description) tag[0].description = req.body.description
@@ -126,8 +157,7 @@ async function updateTag(req, res, next) {
 
 async function deleteTag(req, res, next) {
   try {
-    let tag = await model.tags.getById(req.params.tagId)
-    if (tag.length === 0) throw new TagError("Tag not found")
+    await getTagInOrganization(req.params.tagId, req.params.organizationId)
 
     const result = await model.tags.delete(req.params.tagId)
     if (result.deletedCount !== 1)

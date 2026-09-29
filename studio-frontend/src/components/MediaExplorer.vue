@@ -24,7 +24,8 @@
               <ConversationShareMultiple
                 :selectedConversations="selectedMedias"
                 :currentOrganizationScope="currentOrganizationScope"
-                :userInfo="userInfo" />
+                :userInfo="userInfo"
+                @unselect="unselectMedias" />
               <Button
                 @click="showDeleteModal = true"
                 :label="$t('media_explorer.delete')"
@@ -255,6 +256,11 @@ export default {
       // The selection watcher lands on the default "overview" tab
       this.selectedMediaIds = [mediaId]
     },
+    unselectMedias(mediaIds) {
+      this.selectedMediaIds = this.selectedMediaIds.filter(
+        (id) => !mediaIds.includes(id),
+      )
+    },
     reset() {
       this.selectedMediaIds = []
     },
@@ -332,7 +338,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  border-bottom: var(--border-block, 1px solid var(--neutral-30));
+  border-bottom: var(--border-block);
   background-color: var(--background-color, #fff);
 }
 
@@ -369,7 +375,7 @@ export default {
   // bottom: 0;
   // z-index: 1000;
   background-color: var(--background-color, #fff);
-  border-left: var(--border-block, 1px solid var(--neutral-30));
+  border-left: var(--border-block);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
   width: var(--right-panel-width, 500px);
@@ -410,12 +416,12 @@ export default {
 
 .bulk-actions-hint {
   font-size: 0.875rem;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
   font-style: italic;
   padding: 0.25rem 0.5rem;
-  background-color: var(--primary-soft, #f8f9fa);
+  background-color: var(--primary-soft);
   border-radius: 4px;
-  border: 1px solid var(--primary-color, #007bff);
+  border: 1px solid var(--primary-color);
 }
 
 @media only screen and (max-width: 1500px) {
@@ -435,7 +441,7 @@ export default {
     min-width: unset !important;
     max-width: unset !important;
     border-left: none;
-    border-top: var(--border-block, 1px solid var(--neutral-30));
+    border-top: var(--border-block);
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
     max-height: 50vh;
   }

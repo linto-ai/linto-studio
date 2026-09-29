@@ -1,0 +1,113 @@
+{
+ "speakers": [],
+ "text": [
+  {
+   "raw_segment": "de libre et gratuit en fait on dit que nos solutions elles",
+   "segment": "... de libre et gratuit, en fait. On dit que nos solutions, elles",
+   "words": [
+    {
+     "stime": 0.1,
+     "etime": 0.1,
+     "word": "...",
+     "confidence": 1
+    },
+    {
+     "stime": 0.1,
+     "etime": 0.98,
+     "word": "de",
+     "confidence": 0.31
+    },
+    {
+     "stime": 0.98,
+     "etime": 1.38,
+     "word": "libre",
+     "confidence": 0.82
+    },
+    {
+     "stime": 1.38,
+     "etime": 1.6,
+     "word": "et",
+     "confidence": 1
+    },
+    {
+     "stime": 1.6,
+     "etime": 2.02,
+     "word": "gratuit,",
+     "confidence": 0.66
+    },
+    {
+     "stime": 2.36,
+     "etime": 2.56,
+     "word": "en",
+     "confidence": 0.99
+    },
+    {
+     "stime": 2.56,
+     "etime": 2.64,
+     "word": "fait.",
+     "confidence": 1
+    },
+    {
+     "stime": 2.78,
+     "etime": 2.9,
+     "word": "On",
+     "confidence": 1
+    },
+    {
+     "stime": 2.9,
+     "etime": 3.08,
+     "word": "dit",
+     "confidence": 1
+    },
+    {
+     "stime": 3.08,
+     "etime": 3.22,
+     "word": "que",
+     "confidence": 1
+    },
+    {
+     "stime": 3.22,
+     "etime": 3.38,
+     "word": "nos",
+     "confidence": 1
+    },
+    {
+     "stime": 3.38,
+     "etime": 3.82,
+     "word": "solutions,",
+     "confidence": 1
+    },
+    {
+     "stime": 3.86,
+     "etime": 4.02,
+     "word": "elles",
+     "confidence": 1
+    }
+   ]
+  },
+  {
+   "raw_segment": "parce que",
+   "segment": "parce que ...",
+   "words": [
+    {
+     "stime": 20.1,
+     "etime": 20.4,
+     "word": "parce",
+     "confidence": 0.9
+    },
+    {
+     "stime": 20.4,
+     "etime": 20.6,
+     "word": "que",
+     "confidence": 0.95
+    },
+    {
+     "stime": 20.6,
+     "etime": 20.6,
+     "word": "...",
+     "confidence": 0.95
+    }
+   ]
+  }
+ ]
+}

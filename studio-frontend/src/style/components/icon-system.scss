@@ -88,15 +88,15 @@
   button,
   .btn {
     &.primary .icon-svg {
-      color: var(--primary-contrast, #fff);
+      color: var(--primary-contrast);
     }
 
     &.secondary .icon-svg {
-      color: var(--primary-contrast, #fff);
+      color: var(--primary-contrast);
     }
 
     &.tertiary .icon-svg {
-      color: var(--primary-contrast, #fff);
+      color: var(--primary-contrast);
     }
 
     &:hover {
@@ -127,15 +127,15 @@
 
     &:hover {
       &.primary-outline .icon-svg {
-        color: var(--primary-contrast, #fff);
+        color: var(--primary-contrast);
       }
 
       &.secondary-outline .icon-svg {
-        color: var(--primary-contrast, #fff);
+        color: var(--primary-contrast);
       }
 
       &.tertiary-outline .icon-svg {
-        color: var(--primary-contrast, #fff);
+        color: var(--primary-contrast);
       }
     }
   }

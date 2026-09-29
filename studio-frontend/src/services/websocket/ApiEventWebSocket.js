@@ -1,7 +1,7 @@
 import io from "socket.io-client"
 import Vue from "vue"
 import { customDebug } from "@/tools/customDebug"
-import { bus } from "@/main"
+import { bus } from "@/tools/eventBus.js"
 import { getCookie } from "@/tools/getCookie"
 import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"

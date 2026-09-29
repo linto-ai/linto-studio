@@ -3523,6 +3523,23 @@ var LintoEditor = (function(exports) {
     }
     return ret;
   }
+  function createSlots(slots, dynamicSlots) {
+    for (let i2 = 0; i2 < dynamicSlots.length; i2++) {
+      const slot = dynamicSlots[i2];
+      if (isArray(slot)) {
+        for (let j2 = 0; j2 < slot.length; j2++) {
+          slots[slot[j2].name] = slot[j2].fn;
+        }
+      } else if (slot) {
+        slots[slot.name] = slot.key ? (...args) => {
+          const res = slot.fn(...args);
+          if (res) res.key = slot.key;
+          return res;
+        } : slot.fn;
+      }
+    }
+    return slots;
+  }
   function renderSlot(slots, name, props, fallback, noSlotted, branchKey) {
     if (props == null) props = {};
     if (currentRenderingInstance.ce || currentRenderingInstance.parent && isAsyncWrapper(currentRenderingInstance.parent) && currentRenderingInstance.parent.ce) {
@@ -8604,6 +8621,27 @@ var LintoEditor = (function(exports) {
     }
     return { on, off, emit: emit2, clear };
   }
+  const MOBILE_BREAKPOINT = "(max-width: 767px)";
+  function createViewport(onChange) {
+    const isMobile = /* @__PURE__ */ ref(false);
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      return { isMobile, destroy() {
+      } };
+    }
+    const query = window.matchMedia(MOBILE_BREAKPOINT);
+    isMobile.value = query.matches;
+    function onQueryChange(event) {
+      isMobile.value = event.matches;
+      onChange(event.matches);
+    }
+    query.addEventListener("change", onQueryChange);
+    return {
+      isMobile,
+      destroy() {
+        query.removeEventListener("change", onQueryChange);
+      }
+    };
+  }
   const SPEAKER_COLORS = [
     "#4E79A7",
     // bleu
@@ -9399,6 +9437,7 @@ var LintoEditor = (function(exports) {
     wordsFromApi: wordsFromApi$2,
     wordsFromText: wordsFromText$1
   }, Symbol.toStringTag, { value: "Module" }));
+  const DEFAULT_TRANSCRIPT_FONT_SIZE = 18;
   const DEFAULT_VERBATIM_FORMATS = [
     { format: "txt", labelKey: "format.txt" }
   ];
@@ -9416,6 +9455,29 @@ var LintoEditor = (function(exports) {
       () => verbatimFormats.value === DEFAULT_VERBATIM_FORMATS
     );
     const { on, off, emit: emit2, clear: clearEvents } = createEventBus();
+    const transcriptFontSize = /* @__PURE__ */ ref(DEFAULT_TRANSCRIPT_FONT_SIZE);
+    const theme = /* @__PURE__ */ ref("light");
+    const primaryColor = /* @__PURE__ */ ref(null);
+    const stopThemeSync = watch(
+      theme,
+      (next2) => emit2("theme:change", { theme: next2 })
+    );
+    const stopFontSizeSync = watch(
+      transcriptFontSize,
+      (fontSize) => emit2("transcript:fontSize", { fontSize })
+    );
+    const viewport = createViewport(onViewportChange);
+    const sidebarOpen = /* @__PURE__ */ ref(false);
+    function setSidebarOpen(open) {
+      if (open && !viewport.isMobile.value) return;
+      if (open === sidebarOpen.value) return;
+      sidebarOpen.value = open;
+      emit2("sidebar:open", { open });
+    }
+    function onViewportChange(isMobile) {
+      emit2("viewport:change", { isMobile });
+      if (!isMobile) setSidebarOpen(false);
+    }
     const speakersInternal = createSpeakersStore(emit2);
     const speakers = speakersInternal;
     const channels = /* @__PURE__ */ shallowReactive(/* @__PURE__ */ new Map());
@@ -9477,6 +9539,9 @@ var LintoEditor = (function(exports) {
       cleanups.forEach((fn) => fn());
       cleanups.length = 0;
       for (const channel of channels.values()) channel.dispose();
+      stopFontSizeSync();
+      stopThemeSync();
+      viewport.destroy();
       clearEvents();
     }
     if (options.document) {
@@ -9492,6 +9557,12 @@ var LintoEditor = (function(exports) {
       speakers,
       channels,
       activeChannel,
+      transcriptFontSize,
+      theme,
+      primaryColor,
+      isMobile: viewport.isMobile,
+      sidebarOpen,
+      setSidebarOpen,
       components,
       onActiveTranslation,
       setDocument,
@@ -9516,8 +9587,8 @@ var LintoEditor = (function(exports) {
     }
     return core;
   }
-  const _hoisted_1$H = ["aria-label"];
-  const _sfc_main$O = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$K = ["aria-label"];
+  const _sfc_main$S = /* @__PURE__ */ defineComponent({
     __name: "Badge",
     props: {
       ariaLabel: { type: String }
@@ -9529,11 +9600,11 @@ var LintoEditor = (function(exports) {
           "aria-label": __props.ariaLabel
         }, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true)
-        ], 8, _hoisted_1$H);
+        ], 8, _hoisted_1$K);
       };
     }
   });
-  const _style_0$G = "\n.editor-badge[data-v-392808cc] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
+  const _style_0$J = "\n.editor-badge[data-v-392808cc] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
@@ -9541,7 +9612,7 @@ var LintoEditor = (function(exports) {
     }
     return target;
   };
-  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["styles", [_style_0$G]], ["__scopeId", "data-v-392808cc"]]);
+  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$S, [["styles", [_style_0$J]], ["__scopeId", "data-v-392808cc"]]);
   const hasA11yProp = (props) => {
     for (const prop in props) {
       if (prop.startsWith("aria-") || prop === "role" || prop === "title") {
@@ -10004,12 +10075,12 @@ var LintoEditor = (function(exports) {
     md: 20,
     lg: 24
   };
-  const _hoisted_1$G = {
+  const _hoisted_1$J = {
     key: 1,
     class: "editor-icon editor-icon--missing",
     "aria-hidden": "true"
   };
-  const _sfc_main$N = /* @__PURE__ */ defineComponent({
+  const _sfc_main$R = /* @__PURE__ */ defineComponent({
     __name: "EditorIcon",
     props: {
       name: { type: String },
@@ -10028,18 +10099,18 @@ var LintoEditor = (function(exports) {
           style: normalizeStyle(style.value),
           class: normalizeClass(["editor-icon", { "editor-icon--spin": __props.spin }]),
           "aria-hidden": "true"
-        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$G, "?"));
+        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$J, "?"));
       };
     }
   });
-  const _style_0$F = "\n.editor-icon[data-v-bdd2a2df] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-bdd2a2df] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-bdd2a2df] {\n  animation: editor-icon-spin-bdd2a2df 1s linear infinite;\n}\n@keyframes editor-icon-spin-bdd2a2df {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-bdd2a2df] {\n    animation: none;\n}\n}\n";
-  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["styles", [_style_0$F]], ["__scopeId", "data-v-bdd2a2df"]]);
-  const _hoisted_1$F = ["type", "disabled", "aria-disabled", "aria-label"];
-  const _hoisted_2$v = {
+  const _style_0$I = "\n.editor-icon[data-v-bdd2a2df] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-bdd2a2df] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-bdd2a2df] {\n  animation: editor-icon-spin-bdd2a2df 1s linear infinite;\n}\n@keyframes editor-icon-spin-bdd2a2df {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-bdd2a2df] {\n    animation: none;\n}\n}\n";
+  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$R, [["styles", [_style_0$I]], ["__scopeId", "data-v-bdd2a2df"]]);
+  const _hoisted_1$I = ["type", "disabled", "aria-disabled", "aria-label"];
+  const _hoisted_2$x = {
     key: 3,
     class: "editor-btn__label"
   };
-  const _sfc_main$M = /* @__PURE__ */ defineComponent({
+  const _sfc_main$Q = /* @__PURE__ */ defineComponent({
     __name: "Button",
     props: {
       label: { type: String },
@@ -10092,7 +10163,7 @@ var LintoEditor = (function(exports) {
             name: __props.icon,
             size: iconSize.value
           }, null, 8, ["name", "size"])) : _ctx.$slots.icon ? renderSlot(_ctx.$slots, "icon", {}, void 0, true, 2) : createCommentVNode("", true),
-          hasLabel.value ? (openBlock(), createElementBlock("span", _hoisted_2$v, [
+          hasLabel.value ? (openBlock(), createElementBlock("span", _hoisted_2$x, [
             renderSlot(_ctx.$slots, "default", {}, () => [
               createTextVNode(toDisplayString(__props.label), 1)
             ], true)
@@ -10102,13 +10173,13 @@ var LintoEditor = (function(exports) {
             name: __props.iconRight,
             size: iconSize.value
           }, null, 8, ["name", "size"])) : _ctx.$slots["icon-right"] ? renderSlot(_ctx.$slots, "icon-right", {}, void 0, true, 5) : createCommentVNode("", true)
-        ], 10, _hoisted_1$F);
+        ], 10, _hoisted_1$I);
       };
     }
   });
-  const _style_0$E = "\n.transcript-ui-root .editor-btn[data-v-050bd95b] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  /* Same reset as every other custom button in this codebase (see\n     EditableText, EditorCheckbox, Tabs, SpeakerPopover, TranscriptionTurn):\n     `all: unset` clears the UA button chrome (margin, appearance, inherited\n     font mismatches on Safari/Firefox, the Firefox ::-moz-focus-inner\n     padding) that the previous per-property overrides below left in place.\n     Every property the button actually needs is re-declared after it. */\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled {\n  cursor: not-allowed;\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-050bd95b] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes.\n   .transcript-ui-root prefix here too — not because Nextcloud could ever\n   target --btn-* directly, but because these vars are read by the BASE\n   .editor-btn rule (also prefixed, so specificity (0,3,0)): if a variant\n   rule sets the same custom property at a lower specificity (0,2,0), the\n   base rule's default wins over it regardless of source order, silently\n   breaking every variant. All rules touching --btn-* must stay at the same\n   specificity as the base rule. */\n.transcript-ui-root .editor-btn--sm[data-v-050bd95b] {\n  /* defaults */\n}\n.transcript-ui-root .editor-btn--md[data-v-050bd95b] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.transcript-ui-root .editor-btn--lg[data-v-050bd95b] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.transcript-ui-root .editor-btn--icon-only[data-v-050bd95b] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.transcript-ui-root .editor-btn--block[data-v-050bd95b] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.transcript-ui-root .editor-btn--primary[data-v-050bd95b] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--secondary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--tertiary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.transcript-ui-root .editor-btn--transparent[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Literal theme inversion: background = the theme's text color and\n   vice-versa — high contrast in both light and dark themes without\n   borrowing the primary color's semantics. */\n.transcript-ui-root .editor-btn--inverse[data-v-050bd95b] {\n  --btn-bg: var(--color-text-primary);\n  --btn-text: var(--color-background);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-text-secondary);\n  --btn-hover-text: var(--color-background);\n}\n\n/* Destructive intent overrides */\n.transcript-ui-root .editor-btn--destructive.editor-btn--primary[data-v-050bd95b] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--destructive.editor-btn--secondary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--destructive.editor-btn--tertiary[data-v-050bd95b],\n.transcript-ui-root .editor-btn--destructive.editor-btn--transparent[data-v-050bd95b] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n\n/* The transparent variant has no chrome when enabled — disabling it must not\n   ADD a box; the muted text alone carries the disabled signal. */\n.transcript-ui-root .editor-btn--transparent[data-v-050bd95b]:disabled {\n  --btn-bg: transparent;\n  --btn-border-color: transparent;\n  --btn-hover-bg: transparent;\n}\n\n/* Inverse stays a filled, borderless chip when disabled — dimmed, but the\n   silhouette must not change. */\n.transcript-ui-root .editor-btn--inverse[data-v-050bd95b]:disabled {\n  --btn-bg: var(--color-surface-hover);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n}\n";
-  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$E]], ["__scopeId", "data-v-050bd95b"]]);
-  const _sfc_main$L = /* @__PURE__ */ defineComponent({
+  const _style_0$H = "\n.transcript-ui-root .editor-btn[data-v-050bd95b] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  /* Same reset as every other custom button in this codebase (see\n     EditableText, EditorCheckbox, Tabs, SpeakerPopover, TranscriptionTurn):\n     `all: unset` clears the UA button chrome (margin, appearance, inherited\n     font mismatches on Safari/Firefox, the Firefox ::-moz-focus-inner\n     padding) that the previous per-property overrides below left in place.\n     Every property the button actually needs is re-declared after it. */\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled {\n  cursor: not-allowed;\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-050bd95b] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes.\n   .transcript-ui-root prefix here too — not because Nextcloud could ever\n   target --btn-* directly, but because these vars are read by the BASE\n   .editor-btn rule (also prefixed, so specificity (0,3,0)): if a variant\n   rule sets the same custom property at a lower specificity (0,2,0), the\n   base rule's default wins over it regardless of source order, silently\n   breaking every variant. All rules touching --btn-* must stay at the same\n   specificity as the base rule. */\n.transcript-ui-root .editor-btn--sm[data-v-050bd95b] {\n  /* defaults */\n}\n.transcript-ui-root .editor-btn--md[data-v-050bd95b] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.transcript-ui-root .editor-btn--lg[data-v-050bd95b] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.transcript-ui-root .editor-btn--icon-only[data-v-050bd95b] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.transcript-ui-root .editor-btn--block[data-v-050bd95b] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.transcript-ui-root .editor-btn--primary[data-v-050bd95b] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--secondary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--tertiary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.transcript-ui-root .editor-btn--transparent[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Literal theme inversion: background = the theme's text color and\n   vice-versa — high contrast in both light and dark themes without\n   borrowing the primary color's semantics. */\n.transcript-ui-root .editor-btn--inverse[data-v-050bd95b] {\n  --btn-bg: var(--color-text-primary);\n  --btn-text: var(--color-background);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-text-secondary);\n  --btn-hover-text: var(--color-background);\n}\n\n/* Destructive intent overrides */\n.transcript-ui-root .editor-btn--destructive.editor-btn--primary[data-v-050bd95b] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--destructive.editor-btn--secondary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--destructive.editor-btn--tertiary[data-v-050bd95b],\n.transcript-ui-root .editor-btn--destructive.editor-btn--transparent[data-v-050bd95b] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n\n/* The transparent variant has no chrome when enabled — disabling it must not\n   ADD a box; the muted text alone carries the disabled signal. */\n.transcript-ui-root .editor-btn--transparent[data-v-050bd95b]:disabled {\n  --btn-bg: transparent;\n  --btn-border-color: transparent;\n  --btn-hover-bg: transparent;\n}\n\n/* Inverse stays a filled, borderless chip when disabled — dimmed, but the\n   silhouette must not change. */\n.transcript-ui-root .editor-btn--inverse[data-v-050bd95b]:disabled {\n  --btn-bg: var(--color-surface-hover);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n}\n";
+  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$Q, [["styles", [_style_0$H]], ["__scopeId", "data-v-050bd95b"]]);
+  const _sfc_main$P = /* @__PURE__ */ defineComponent({
     __name: "CopyButton",
     props: {
       icon: { default: "copy", type: String },
@@ -10176,8 +10247,8 @@ var LintoEditor = (function(exports) {
       };
     }
   });
-  const _style_0$D = "\n.copy-btn--copied[data-v-5b088678] {\n  color: var(--color-success, #2e7d32);\n}\n.copy-icon-enter-active[data-v-5b088678],\n.copy-icon-leave-active[data-v-5b088678] {\n  transition:\n    opacity var(--transition-duration) ease,\n    scale var(--transition-duration) ease;\n}\n.copy-icon-enter-from[data-v-5b088678] {\n  opacity: 0;\n  scale: 0.6;\n}\n.copy-icon-leave-to[data-v-5b088678] {\n  opacity: 0;\n  scale: 0.6;\n}\n@media (prefers-reduced-motion: reduce) {\n.copy-icon-enter-active[data-v-5b088678],\n  .copy-icon-leave-active[data-v-5b088678] {\n    transition: none;\n}\n}\n";
-  const CopyButton = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$D]], ["__scopeId", "data-v-5b088678"]]);
+  const _style_0$G = "\n.copy-btn--copied[data-v-7cea769e] {\n  color: var(--color-success);\n}\n.copy-icon-enter-active[data-v-7cea769e],\n.copy-icon-leave-active[data-v-7cea769e] {\n  transition:\n    opacity var(--transition-duration) ease,\n    scale var(--transition-duration) ease;\n}\n.copy-icon-enter-from[data-v-7cea769e] {\n  opacity: 0;\n  scale: 0.6;\n}\n.copy-icon-leave-to[data-v-7cea769e] {\n  opacity: 0;\n  scale: 0.6;\n}\n@media (prefers-reduced-motion: reduce) {\n.copy-icon-enter-active[data-v-7cea769e],\n  .copy-icon-leave-active[data-v-7cea769e] {\n    transition: none;\n}\n}\n";
+  const CopyButton = /* @__PURE__ */ _export_sfc(_sfc_main$P, [["styles", [_style_0$G]], ["__scopeId", "data-v-7cea769e"]]);
   const fr = {
     "editor.loading": "Chargement…",
     "editor.loadError": "Erreur de chargement",
@@ -10222,6 +10293,11 @@ var LintoEditor = (function(exports) {
     "subtitle.fontSize": "Taille de police",
     "subtitle.showWatermark": "Afficher le filigrane",
     "subtitle.pinWatermark": "Épingler le filigrane",
+    "sidebar.transcription": "Transcription",
+    "sidebar.appearance": "Apparence",
+    "theme.highContrast": "Contraste élevé",
+    "transcription.fontSize": "Taille de police",
+    "live.showPartials": "Afficher le texte en cours",
     "sidebar.subtitle": "Sous-titres",
     "sidebar.voicePlayback": "Lecture vocale",
     "voicePlayback.enable": "Lire à voix haute",
@@ -10235,6 +10311,7 @@ var LintoEditor = (function(exports) {
     "sidebar.statusProcessing": "En cours",
     "sidebar.statusQueued": "En attente",
     "transcription.empty": "Aucune transcription pour le moment",
+    "transcription.speaking": "Une personne parle…",
     "transcription.historyStart": "Début de la transcription",
     "transcription.editTurn": "Modifier le texte",
     "transcription.saveEdit": "Enregistrer la modification",
@@ -10360,6 +10437,11 @@ var LintoEditor = (function(exports) {
     "subtitle.fontSize": "Font size",
     "subtitle.showWatermark": "Show watermark",
     "subtitle.pinWatermark": "Pin watermark",
+    "sidebar.transcription": "Transcript",
+    "sidebar.appearance": "Appearance",
+    "theme.highContrast": "High contrast",
+    "transcription.fontSize": "Font size",
+    "live.showPartials": "Show in-progress text",
     "sidebar.subtitle": "Subtitles",
     "sidebar.voicePlayback": "Voice playback",
     "voicePlayback.enable": "Read aloud",
@@ -10373,6 +10455,7 @@ var LintoEditor = (function(exports) {
     "sidebar.statusProcessing": "Processing",
     "sidebar.statusQueued": "Queued",
     "transcription.empty": "No transcription yet",
+    "transcription.speaking": "Someone is speaking…",
     "transcription.historyStart": "Beginning of transcription",
     "transcription.editTurn": "Edit text",
     "transcription.saveEdit": "Save edit",
@@ -10494,10 +10577,10 @@ var LintoEditor = (function(exports) {
       locale: fallbackLocale
     };
   }
-  const _hoisted_1$E = { class: "code-block" };
-  const _hoisted_2$u = ["innerHTML"];
-  const _hoisted_3$n = { key: 1 };
-  const _sfc_main$K = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$H = { class: "code-block" };
+  const _hoisted_2$w = ["innerHTML"];
+  const _hoisted_3$p = { key: 1 };
+  const _sfc_main$O = /* @__PURE__ */ defineComponent({
     __name: "CodeBlock",
     props: {
       code: { type: String },
@@ -10526,7 +10609,7 @@ var LintoEditor = (function(exports) {
         { immediate: true }
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$E, [
+        return openBlock(), createElementBlock("div", _hoisted_1$H, [
           !__props.streaming ? (openBlock(), createBlock(CopyButton, {
             key: 0,
             class: "code-block__copy",
@@ -10539,13 +10622,13 @@ var LintoEditor = (function(exports) {
             highlighted.value ? (openBlock(), createElementBlock("code", {
               key: 0,
               innerHTML: highlighted.value
-            }, null, 8, _hoisted_2$u)) : (openBlock(), createElementBlock("code", _hoisted_3$n, toDisplayString(__props.code), 1))
+            }, null, 8, _hoisted_2$w)) : (openBlock(), createElementBlock("code", _hoisted_3$p, toDisplayString(__props.code), 1))
           ])
         ]);
       };
     }
   });
-  const _style_0$C = "\n.code-block[data-v-ad87d1e4] {\n  position: relative;\n}\n.code-block__copy[data-v-ad87d1e4] {\n  position: absolute;\n  top: var(--spacing-xs);\n  right: var(--spacing-xs);\n  opacity: 0;\n  transition: opacity 0.15s ease;\n}\n.code-block:hover .code-block__copy[data-v-ad87d1e4],\n.code-block:focus-within .code-block__copy[data-v-ad87d1e4] {\n  opacity: 1;\n}\n.code-block pre[data-v-ad87d1e4] {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.code-block pre code[data-v-ad87d1e4] {\n  padding: 0;\n  background: none;\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n}\n@media (prefers-reduced-motion: reduce) {\n.code-block__copy[data-v-ad87d1e4] {\n    transition: none;\n}\n}\n";
+  const _style_0$F = "\n.code-block[data-v-ad87d1e4] {\n  position: relative;\n}\n.code-block__copy[data-v-ad87d1e4] {\n  position: absolute;\n  top: var(--spacing-xs);\n  right: var(--spacing-xs);\n  opacity: 0;\n  transition: opacity 0.15s ease;\n}\n.code-block:hover .code-block__copy[data-v-ad87d1e4],\n.code-block:focus-within .code-block__copy[data-v-ad87d1e4] {\n  opacity: 1;\n}\n.code-block pre[data-v-ad87d1e4] {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.code-block pre code[data-v-ad87d1e4] {\n  padding: 0;\n  background: none;\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n}\n@media (prefers-reduced-motion: reduce) {\n.code-block__copy[data-v-ad87d1e4] {\n    transition: none;\n}\n}\n";
   const _style_1 = `/**
  * prism.js default theme for JavaScript, CSS and HTML
  * Based on dabblet (http://dabblet.com)
@@ -10671,20 +10754,20 @@ pre[class*="language-"] {
 	cursor: help;
 }
 `;
-  const CodeBlock = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$C, _style_1]], ["__scopeId", "data-v-ad87d1e4"]]);
-  const _hoisted_1$D = {
+  const CodeBlock = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["styles", [_style_0$F, _style_1]], ["__scopeId", "data-v-ad87d1e4"]]);
+  const _hoisted_1$G = {
     key: 0,
     class: "form-field__header"
   };
-  const _hoisted_2$t = ["for"];
-  const _hoisted_3$m = {
+  const _hoisted_2$v = ["for"];
+  const _hoisted_3$o = {
     key: 0,
     class: "form-field__required",
     "aria-hidden": "true"
   };
-  const _hoisted_4$c = { class: "form-field__input-wrapper" };
-  const _hoisted_5$b = ["id", "disabled", "required", "aria-required", "aria-invalid", "aria-describedby"];
-  const _hoisted_6$9 = ["value"];
+  const _hoisted_4$f = { class: "form-field__input-wrapper" };
+  const _hoisted_5$d = ["id", "disabled", "required", "aria-required", "aria-invalid", "aria-describedby"];
+  const _hoisted_6$a = ["value"];
   const _hoisted_7$5 = ["type", "id", "disabled", "readonly", "placeholder", "autocomplete", "required", "aria-required", "aria-invalid", "aria-describedby"];
   const _hoisted_8$3 = {
     key: 3,
@@ -10697,7 +10780,7 @@ pre[class*="language-"] {
   };
   const _hoisted_10$3 = ["id"];
   const _hoisted_11$2 = { class: "form-field__error" };
-  const _sfc_main$J = /* @__PURE__ */ defineComponent({
+  const _sfc_main$N = /* @__PURE__ */ defineComponent({
     __name: "FormInput",
     props: {
       field: { type: Object },
@@ -10807,17 +10890,17 @@ pre[class*="language-"] {
         return openBlock(), createElementBlock("div", {
           class: normalizeClass(rootClasses.value)
         }, [
-          __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$D, [
+          __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$G, [
             createBaseVNode("label", {
               class: "form-field__label",
               for: id.value
             }, [
               createTextVNode(toDisplayString(__props.field.label) + " ", 1),
-              isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$m, "*")) : createCommentVNode("", true)
-            ], 8, _hoisted_2$t),
+              isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$o, "*")) : createCommentVNode("", true)
+            ], 8, _hoisted_2$v),
             renderSlot(_ctx.$slots, "content-after-label", {}, void 0, true)
           ])) : createCommentVNode("", true),
-          createBaseVNode("div", _hoisted_4$c, [
+          createBaseVNode("div", _hoisted_4$f, [
             renderSlot(_ctx.$slots, "default", {}, void 0, true),
             _ctx.$slots["custom-input"] ? renderSlot(_ctx.$slots, "custom-input", {
               id: id.value,
@@ -10843,9 +10926,9 @@ pre[class*="language-"] {
                 return openBlock(), createElementBlock("option", {
                   key: opt.value,
                   value: opt.value
-                }, toDisplayString(opt.label), 9, _hoisted_6$9);
+                }, toDisplayString(opt.label), 9, _hoisted_6$a);
               }), 128))
-            ], 16, _hoisted_5$b)), [
+            ], 16, _hoisted_5$d)), [
               [vModelSelect, draft.value]
             ]) : withDirectives((openBlock(), createElementBlock("input", mergeProps({
               key: 2,
@@ -10904,10 +10987,10 @@ pre[class*="language-"] {
       };
     }
   });
-  const _style_0$B = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-863d0b18] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-863d0b18] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-863d0b18] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-863d0b18] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-863d0b18] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-863d0b18] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-863d0b18] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-863d0b18] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-863d0b18] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-863d0b18] {\n  flex: 1;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-863d0b18]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-863d0b18]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-863d0b18]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-863d0b18]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-863d0b18] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-863d0b18] {\n  cursor: pointer;\n  appearance: auto;\n}\n.form-field__input--error[data-v-863d0b18] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-863d0b18]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-863d0b18] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-863d0b18] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-863d0b18] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-863d0b18] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-863d0b18] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-863d0b18] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-863d0b18] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-863d0b18] {\n    transition: none;\n}\n}\n";
-  const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["styles", [_style_0$B]], ["__scopeId", "data-v-863d0b18"]]);
-  const _hoisted_1$C = ["disabled", "aria-label"];
-  const _sfc_main$I = /* @__PURE__ */ defineComponent({
+  const _style_0$E = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-863d0b18] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-863d0b18] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-863d0b18] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-863d0b18] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-863d0b18] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-863d0b18] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-863d0b18] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-863d0b18] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-863d0b18] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-863d0b18] {\n  flex: 1;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-863d0b18]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-863d0b18]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-863d0b18]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-863d0b18]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-863d0b18] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-863d0b18] {\n  cursor: pointer;\n  appearance: auto;\n}\n.form-field__input--error[data-v-863d0b18] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-863d0b18]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-863d0b18] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-863d0b18] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-863d0b18] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-863d0b18] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-863d0b18] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-863d0b18] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-863d0b18] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-863d0b18] {\n    transition: none;\n}\n}\n";
+  const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["styles", [_style_0$E]], ["__scopeId", "data-v-863d0b18"]]);
+  const _hoisted_1$F = ["disabled", "aria-label"];
+  const _sfc_main$M = /* @__PURE__ */ defineComponent({
     __name: "EditableText",
     props: {
       modelValue: { type: String },
@@ -10981,12 +11064,12 @@ pre[class*="language-"] {
           disabled: __props.disabled,
           "aria-label": __props.ariaLabel,
           onClick: startEdit
-        }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$C));
+        }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$F));
       };
     }
   });
-  const _style_0$A = "\n.transcript-ui-root .editable-text-display[data-v-ff6456c8] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.transcript-ui-root .editable-text-display[data-v-ff6456c8]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.transcript-ui-root .editable-text-display[data-v-ff6456c8]:disabled {\n  cursor: default;\n}\n";
-  const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["styles", [_style_0$A]], ["__scopeId", "data-v-ff6456c8"]]);
+  const _style_0$D = "\n.transcript-ui-root .editable-text-display[data-v-ff6456c8] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.transcript-ui-root .editable-text-display[data-v-ff6456c8]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.transcript-ui-root .editable-text-display[data-v-ff6456c8]:disabled {\n  cursor: default;\n}\n";
+  const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$D]], ["__scopeId", "data-v-ff6456c8"]]);
   function serialize(input) {
     if (typeof input === "string") return `'${input}'`;
     return new Serializer().serialize(input);
@@ -15403,7 +15486,7 @@ pre[class*="language-"] {
       update
     };
   }
-  const _hoisted_1$B = ["dir"];
+  const _hoisted_1$E = ["dir"];
   const PopperContentPropsDefaultValue = {
     side: "bottom",
     sideOffset: 0,
@@ -15696,7 +15779,7 @@ pre[class*="language-"] {
           "data-align",
           "dir",
           "style"
-        ]))], 12, _hoisted_1$B);
+        ]))], 12, _hoisted_1$E);
       };
     }
   });
@@ -17514,7 +17597,7 @@ pre[class*="language-"] {
     }
   });
   var DropdownMenuTrigger_default = DropdownMenuTrigger_vue_vue_type_script_setup_true_lang_default;
-  const _sfc_main$H = /* @__PURE__ */ defineComponent({
+  const _sfc_main$L = /* @__PURE__ */ defineComponent({
     __name: "EditorCheckbox",
     props: {
       modelValue: { type: Boolean },
@@ -17547,8 +17630,8 @@ pre[class*="language-"] {
       };
     }
   });
-  const _style_0$z = '\n.transcript-ui-root .checkbox[data-v-ed0978f7] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .checkbox[data-v-ed0978f7]:hover {\n  border-color: var(--color-primary);\n}\n.transcript-ui-root .checkbox[data-v-ed0978f7]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.transcript-ui-root .checkbox[data-state="checked"][data-v-ed0978f7] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-ed0978f7] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
-  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["styles", [_style_0$z]], ["__scopeId", "data-v-ed0978f7"]]);
+  const _style_0$C = '\n.transcript-ui-root .checkbox[data-v-ed0978f7] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .checkbox[data-v-ed0978f7]:hover {\n  border-color: var(--color-primary);\n}\n.transcript-ui-root .checkbox[data-v-ed0978f7]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.transcript-ui-root .checkbox[data-state="checked"][data-v-ed0978f7] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-ed0978f7] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
+  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$C]], ["__scopeId", "data-v-ed0978f7"]]);
   function extend(destination) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = arguments[i2];
@@ -18316,118 +18399,118 @@ pre[class*="language-"] {
   function A() {
     return { async: false, breaks: false, extensions: null, gfm: true, hooks: null, pedantic: false, renderer: null, silent: false, tokenizer: null, walkTokens: null };
   }
-  var R = A();
-  function j(l2) {
-    R = l2;
+  var T = A();
+  function j(u2) {
+    T = u2;
   }
-  var z = { exec: () => null };
-  function I(l2) {
+  var E$1 = { exec: () => null };
+  function I(u2) {
     let e2 = [];
     return (t2) => {
       let n2 = Math.max(0, Math.min(3, t2 - 1)), s2 = e2[n2];
-      return s2 || (s2 = l2(n2), e2[n2] = s2), s2;
+      return s2 || (s2 = u2(n2), e2[n2] = s2), s2;
     };
   }
-  function k(l2, e2 = "") {
-    let t2 = typeof l2 == "string" ? l2 : l2.source, n2 = { replace: (s2, r2) => {
-      let i2 = typeof r2 == "string" ? r2 : r2.source;
-      return i2 = i2.replace(m$1.caret, "$1"), t2 = t2.replace(s2, i2), n2;
+  function k(u2, e2 = "") {
+    let t2 = typeof u2 == "string" ? u2 : u2.source, n2 = { replace: (s2, r2) => {
+      let o2 = typeof r2 == "string" ? r2 : r2.source;
+      return o2 = o2.replace(m$1.caret, "$1"), t2 = t2.replace(s2, o2), n2;
     }, getRegex: () => new RegExp(t2, e2) };
     return n2;
   }
-  var Oe = ((l2 = "") => {
+  var Te = ((u2 = "") => {
     try {
-      return !!new RegExp("(?<=1)(?<!1)" + l2);
+      return !!new RegExp("(?<=1)(?<!1)" + u2);
     } catch {
       return false;
     }
-  })(), m$1 = { codeRemoveIndent: /^(?: {1,4}| {0,3}\t)/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (l2) => new RegExp(`^( {0,3}${l2})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: I((l2) => new RegExp(`^ {0,${l2}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`)), hrRegex: I((l2) => new RegExp(`^ {0,${l2}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`)), fencesBeginRegex: I((l2) => new RegExp(`^ {0,${l2}}(?:\`\`\`|~~~)`)), headingBeginRegex: I((l2) => new RegExp(`^ {0,${l2}}#`)), htmlBeginRegex: I((l2) => new RegExp(`^ {0,${l2}}<(?:[a-z].*>|!--)`, "i")), blockquoteBeginRegex: I((l2) => new RegExp(`^ {0,${l2}}>`)) }, Te = /^(?:[ \t]*(?:\n|$))+/, we = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, ye = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, q = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, Pe = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, U = / {0,3}(?:[*+-]|\d{1,9}[.)])/, oe = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, ae = k(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Se = k(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), K = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table|[ \t]+\n)[^\n]+)*)/, _e = /^[^\n]+/, W = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, $e = k(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", W).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), Le = k(/^(bull)([ \t][^\n]*?)?(?:\n|$)/).replace(/bull/g, U).getRegex(), Q = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", X = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, Ee = k("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n*|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>[^\\n]*\\n*|$)|<![A-Z][\\s\\S]*?(?:>[^\\n]*\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>[^\\n]*\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", X).replace("tag", Q).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), le = (l2) => k(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", l2).replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), ze = le(/ {0,3}(?:[*+-]|1[.)])[ \t]+[^ \t\n]/), Me = le(/ {0,3}(?:[*+-]|\d{1,9}[.)])(?:[ \t]|\n|$)/), Ae = k(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", Me).getRegex(), J = { blockquote: Ae, code: we, def: $e, fences: ye, heading: Pe, hr: q, html: Ee, lheading: ae, list: Le, newline: Te, paragraph: ze, table: z, text: _e }, se = k("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), Ie = { ...J, lheading: Se, table: se, paragraph: k(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", se).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]+[^ \\t\\n]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex() }, Ce = { ...J, html: k(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", X).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: z, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: k(K).replace("hr", q).replace("heading", ` *#{1,6} *[^
-]`).replace("lheading", ae).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Be = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, De = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, ue = /^( {2,}|\\)\n(?!\s*$)/, qe = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, _ = /[\p{P}\p{S}]/u, C$1 = /[\s\p{P}\p{S}]/u, v$1 = /[^\s\p{P}\p{S}]/u, ve = k(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, C$1).getRegex(), He = /[\p{Pi}\p{Ps}"']/u, pe = /(?!~)[\p{P}\p{S}]/u, Ze = /(?!~)[\s\p{P}\p{S}]/u, Ge = /(?:[^\s\p{P}\p{S}]|~)/u, Qe = k(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", Oe ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), ce = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, Ne = k(ce, "u").replace(/punct/g, _).getRegex(), je = k(ce, "u").replace(/punct/g, pe).getRegex(), Fe = /^(?:\*+(?:((?!\*)(?!openQuote)punct)|([^\s*]))?)|^_+(?:((?!_)(?!openQuote)punct)|([^\s_]))?/, Ue = k(Fe, "u").replace(/openQuote/g, He).replace(/punct/g, _).getRegex(), he = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", Ke = k(he, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), We = k(he, "gu").replace(/notPunctSpace/g, Ge).replace(/punctSpace/g, Ze).replace(/punct/g, pe).getRegex(), Xe = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)[\\s](\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|(?:(?!\\*)punct|notPunctSpace)(\\*+)(?!\\*)(?=notPunctSpace)", Je = k(Xe, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), Ve = k("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), Ye = "^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)[\\s](_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)|(?:(?!_)punct|notPunctSpace)(_+)(?!_)(?=notPunctSpace)", et = k(Ye, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), tt = k(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, _).getRegex(), nt = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", rt = k(nt, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), st = k(/\\(punct)/, "gu").replace(/punct/g, _).getRegex(), it = k(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), ot = k(X).replace("(?:-->|$)", "-->").getRegex(), at = k("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", ot).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), G = /(?:\[(?:\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/, lt = k(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", G).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]+|(?=\))/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), ke = k(/^!?\[(label)\]\[(ref)\]/).replace("label", G).replace("ref", W).getRegex(), de = k(/^!?\[(ref)\](?:\[\])?/).replace("ref", W).getRegex(), ut = k("reflink|nolink(?!\\()", "g").replace("reflink", ke).replace("nolink", de).getRegex(), ie = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, V = { _backpedal: z, anyPunctuation: st, autolink: it, blockSkip: Qe, br: ue, code: De, del: z, delLDelim: z, delRDelim: z, emStrongLDelim: Ne, emStrongRDelimAst: Ke, emStrongRDelimUnd: Ve, escape: Be, link: lt, nolink: de, punctuation: ve, reflink: ke, reflinkSearch: ut, tag: at, text: qe, url: z }, pt = { ...V, emStrongLDelim: Ue, emStrongRDelimAst: Je, emStrongRDelimUnd: et, link: k(/^!?\[(label)\]\((.*?)\)/).replace("label", G).getRegex(), reflink: k(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", G).getRegex() }, F = { ...V, emStrongRDelimAst: We, emStrongLDelim: je, delLDelim: tt, delRDelim: rt, url: k(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("protocol", ie).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: k(/^(`+|~+|[^`~])(?:(?=[`~])|(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace("protocol", ie).getRegex() }, ct = { ...F, br: k(ue).replace("{2,}", "*").getRegex(), text: k(F.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, H = { normal: J, gfm: Ie, pedantic: Ce }, B = { normal: V, gfm: F, breaks: ct, pedantic: pt };
-  var ht = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }, ge = (l2) => ht[l2];
-  function T(l2, e2) {
+  })(), m$1 = { codeRemoveIndent: /^(?: {1,4}| {0,3}\t)/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, endingSpaceTabChar: /[ \t]$/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (u2) => new RegExp(`^( {0,3}${u2})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: I((u2) => new RegExp(`^ {0,${u2}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`)), hrRegex: I((u2) => new RegExp(`^ {0,${u2}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`)), fencesBeginRegex: I((u2) => new RegExp(`^ {0,${u2}}(?:\`\`\`|~~~)`)), headingBeginRegex: I((u2) => new RegExp(`^ {0,${u2}}#`)), htmlBeginRegex: I((u2) => new RegExp(`^ {0,${u2}}<(?:[a-z].*>|!--)`, "i")), blockquoteBeginRegex: I((u2) => new RegExp(`^ {0,${u2}}>`)) }, Oe = /^(?:[ \t]*(?:\n|$))+/, we = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, ye = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, q = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, Pe = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, U = / {0,3}(?:[*+-]|\d{1,9}[.)])/, oe = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, ae = k(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Se = k(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), K = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table|[ \t]+\n)[^\n]+)*)/, _e = /^[^\n]+/, W = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, $e = k(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", W).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), Le = k(/^(bull)([ \t][^\n]*?)?(?:\n|$)/).replace(/bull/g, U).getRegex(), Q = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", X = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, ze = k("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n*|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>[^\\n]*\\n*|$)|<![A-Z][\\s\\S]*?(?:>[^\\n]*\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>[^\\n]*\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][a-z0-9-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][a-z0-9-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", X).replace("tag", Q).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), le = (u2) => k(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", u2).replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), Ee = le(/ {0,3}(?:[*+-]|1[.)])[ \t]+[^ \t\n]/), Me = le(/ {0,3}(?:[*+-]|\d{1,9}[.)])(?:[ \t]|\n|$)/), Ae = k(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", Me).getRegex(), J = { blockquote: Ae, code: we, def: $e, fences: ye, heading: Pe, hr: q, html: ze, lheading: ae, list: Le, newline: Oe, paragraph: Ee, table: E$1, text: _e }, se = k("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), Ie = { ...J, lheading: Se, table: se, paragraph: k(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", se).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]+[^ \\t\\n]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex() }, Ce = { ...J, html: k(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", X).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: E$1, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: k(K).replace("hr", q).replace("heading", ` *#{1,6} *[^
+]`).replace("lheading", ae).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Be = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, De = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, ue = /^( {2,}|\\)\n(?!\s*$)/, qe = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, _ = /[\p{P}\p{S}]/u, C$1 = /[\s\p{P}\p{S}]/u, v$1 = /[^\s\p{P}\p{S}]/u, ve = k(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, C$1).getRegex(), He = /[\p{Pi}\p{Ps}"']/u, pe = /(?!~)[\p{P}\p{S}]/u, Ze = /(?!~)[\s\p{P}\p{S}]/u, Ge = /(?:[^\s\p{P}\p{S}]|~)/u, Qe = k(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", Te ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), ce = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, Ne = k(ce, "u").replace(/punct/g, _).getRegex(), je = k(ce, "u").replace(/punct/g, pe).getRegex(), Fe = /^(?:\*+(?:((?!\*)(?!openQuote)punct)|([^\s*]))?)|^_+(?:((?!_)(?!openQuote)punct)|([^\s_]))?/, Ue = k(Fe, "u").replace(/openQuote/g, He).replace(/punct/g, _).getRegex(), he = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", Ke = k(he, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), We = k(he, "gu").replace(/notPunctSpace/g, Ge).replace(/punctSpace/g, Ze).replace(/punct/g, pe).getRegex(), Xe = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)[\\s](\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|(?:(?!\\*)punct|notPunctSpace)(\\*+)(?!\\*)(?=notPunctSpace)", Je = k(Xe, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), Ve = k("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), Ye = "^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)[\\s](_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)|(?:(?!_)punct|notPunctSpace)(_+)(?!_)(?=notPunctSpace)", et = k(Ye, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), tt = k(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, _).getRegex(), nt = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", rt = k(nt, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), st = k(/\\(punct)/, "gu").replace(/punct/g, _).getRegex(), it = k(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), ot = k(X).replace("(?:-->|$)", "-->").getRegex(), at = k("^comment|^</[a-zA-Z][a-zA-Z0-9-]*\\s*>|^<[a-zA-Z][a-zA-Z0-9-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", ot).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), lt = /\[(?:\\[\s\S]|[^\[\]\\])*\]/, G = k(/(?:\[(?:brackets|\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/).replace("brackets", lt).getRegex(), ut = k(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", G).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]+|(?=\))/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), ke = k(/^!?\[(label)\]\[(ref)\]/).replace("label", G).replace("ref", W).getRegex(), de = k(/^!?\[(ref)\](?:\[\])?/).replace("ref", W).getRegex(), pt = k("reflink|nolink(?!\\()", "g").replace("reflink", ke).replace("nolink", de).getRegex(), ie = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, V = { _backpedal: E$1, anyPunctuation: st, autolink: it, blockSkip: Qe, br: ue, code: De, del: E$1, delLDelim: E$1, delRDelim: E$1, emStrongLDelim: Ne, emStrongRDelimAst: Ke, emStrongRDelimUnd: Ve, escape: Be, link: ut, nolink: de, punctuation: ve, reflink: ke, reflinkSearch: pt, tag: at, text: qe, url: E$1 }, ct = { ...V, emStrongLDelim: Ue, emStrongRDelimAst: Je, emStrongRDelimUnd: et, link: k(/^!?\[(label)\]\((.*?)\)/).replace("label", G).getRegex(), reflink: k(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", G).getRegex() }, F = { ...V, emStrongRDelimAst: We, emStrongLDelim: je, delLDelim: tt, delRDelim: rt, url: k(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("protocol", ie).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![\w-])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: k(/^(`+|~+|[^`~])(?:(?=[`~])|(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace("protocol", ie).getRegex() }, ht = { ...F, br: k(ue).replace("{2,}", "*").getRegex(), text: k(F.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, H = { normal: J, gfm: Ie, pedantic: Ce }, B = { normal: V, gfm: F, breaks: ht, pedantic: ct };
+  var kt = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }, ge = (u2) => kt[u2];
+  function R(u2, e2) {
     if (e2) {
-      if (m$1.escapeTest.test(l2)) return l2.replace(m$1.escapeReplace, ge);
-    } else if (m$1.escapeTestNoEncode.test(l2)) return l2.replace(m$1.escapeReplaceNoEncode, ge);
-    return l2;
+      if (m$1.escapeTest.test(u2)) return u2.replace(m$1.escapeReplace, ge);
+    } else if (m$1.escapeTestNoEncode.test(u2)) return u2.replace(m$1.escapeReplaceNoEncode, ge);
+    return u2;
   }
-  function Y(l2) {
+  function Y(u2) {
     try {
-      l2 = encodeURI(l2).replace(m$1.percentDecode, "%");
+      u2 = encodeURI(u2).replace(m$1.percentDecode, "%");
     } catch {
       return null;
     }
-    return l2;
+    return u2;
   }
-  function ee(l2, e2) {
-    let t2 = l2.replace(m$1.findPipe, (r2, i2, o2) => {
-      let u2 = false, a2 = i2;
-      for (; --a2 >= 0 && o2[a2] === "\\"; ) u2 = !u2;
-      return u2 ? "|" : " |";
+  function ee(u2, e2) {
+    let t2 = u2.replace(m$1.findPipe, (r2, o2, i2) => {
+      let l2 = false, a2 = o2;
+      for (; --a2 >= 0 && i2[a2] === "\\"; ) l2 = !l2;
+      return l2 ? "|" : " |";
     }), n2 = t2.split(m$1.splitPipe), s2 = 0;
     if (n2[0].trim() || n2.shift(), n2.length > 0 && !n2.at(-1)?.trim() && n2.pop(), e2) if (n2.length > e2) n2.splice(e2);
     else for (; n2.length < e2; ) n2.push("");
     for (; s2 < n2.length; s2++) n2[s2] = n2[s2].trim().replace(m$1.slashPipe, "|");
     return n2;
   }
-  function $(l2, e2, t2) {
-    let n2 = l2.length;
+  function $(u2, e2, t2) {
+    let n2 = u2.length;
     if (n2 === 0) return "";
     let s2 = 0;
     for (; s2 < n2; ) {
-      let r2 = l2.charAt(n2 - s2 - 1);
+      let r2 = u2.charAt(n2 - s2 - 1);
       if (r2 === e2 && true) s2++;
       else break;
     }
-    return l2.slice(0, n2 - s2);
+    return u2.slice(0, n2 - s2);
   }
-  function te(l2) {
-    let e2 = l2.split(`
+  function te(u2) {
+    let e2 = u2.split(`
 `), t2 = e2.length - 1;
     for (; t2 >= 0 && m$1.blankLine.test(e2[t2]); ) t2--;
-    return e2.length - t2 <= 2 ? l2 : e2.slice(0, t2 + 1).join(`
+    return e2.length - t2 <= 2 ? u2 : e2.slice(0, t2 + 1).join(`
 `);
   }
-  function fe(l2, e2) {
-    if (l2.indexOf(e2[1]) === -1) return -1;
+  function fe(u2, e2) {
+    if (u2.indexOf(e2[1]) === -1) return -1;
     let t2 = 0;
-    for (let n2 = 0; n2 < l2.length; n2++) if (l2[n2] === "\\") n2++;
-    else if (l2[n2] === e2[0]) t2++;
-    else if (l2[n2] === e2[1] && (t2--, t2 < 0)) return n2;
+    for (let n2 = 0; n2 < u2.length; n2++) if (u2[n2] === "\\") n2++;
+    else if (u2[n2] === e2[0]) t2++;
+    else if (u2[n2] === e2[1] && (t2--, t2 < 0)) return n2;
     return t2 > 0 ? -2 : -1;
   }
-  function me(l2, e2 = 0) {
+  function me(u2, e2 = 0) {
     let t2 = e2, n2 = "";
-    for (let s2 of l2) if (s2 === "	") {
+    for (let s2 of u2) if (s2 === "	") {
       let r2 = 4 - t2 % 4;
       n2 += " ".repeat(r2), t2 += r2;
     } else n2 += s2, t2++;
     return n2;
   }
-  function xe(l2, e2, t2, n2, s2) {
-    let r2 = e2.href, i2 = e2.title || null, o2 = l2[1].replace(s2.other.outputLinkReplace, "$1"), u2 = l2[0].charAt(0) === "!";
+  function xe(u2, e2, t2, n2, s2) {
+    let r2 = e2.href, o2 = e2.title || null, i2 = u2[1].replace(s2.other.outputLinkReplace, "$1"), l2 = u2[0].charAt(0) === "!";
     n2.state.inLink = true;
     let a2 = n2.state.linkEmitted, p2 = n2.state.inRawBlock;
     n2.state.linkEmitted = false;
-    let c2 = n2.inlineTokens(o2), h2 = n2.state.linkEmitted;
-    if (n2.state.linkEmitted = a2, n2.state.inLink = false, !u2) {
+    let c2 = n2.inlineTokens(i2), h2 = n2.state.linkEmitted;
+    if (n2.state.linkEmitted = a2, n2.state.inLink = false, !l2) {
       if (h2) {
         n2.state.inRawBlock = p2;
         return;
       }
       n2.state.linkEmitted = true;
     }
-    return { type: u2 ? "image" : "link", raw: t2, href: r2, title: i2, text: o2, tokens: c2 };
+    return { type: l2 ? "image" : "link", raw: t2, href: r2, title: o2, text: i2, tokens: c2 };
   }
-  function kt(l2, e2, t2) {
-    let n2 = l2.match(t2.other.indentCodeCompensation);
+  function dt(u2, e2, t2) {
+    let n2 = u2.match(t2.other.indentCodeCompensation);
     if (n2 === null) return e2;
     let s2 = n2[1];
     return e2.split(`
 `).map((r2) => {
-      let i2 = r2.match(t2.other.beginningSpace);
-      if (i2 === null) return r2;
-      let [o2] = i2;
-      return o2.length >= s2.length ? r2.slice(s2.length) : r2;
+      let o2 = r2.match(t2.other.beginningSpace);
+      if (o2 === null) return r2;
+      let [i2] = o2;
+      return r2.slice(Math.min(i2.length, s2.length));
     }).join(`
 `);
   }
@@ -18436,7 +18519,7 @@ pre[class*="language-"] {
     rules;
     lexer;
     constructor(e2) {
-      this.options = e2 || R;
+      this.options = e2 || T;
     }
     space(e2) {
       let t2 = this.rules.block.newline.exec(e2);
@@ -18452,7 +18535,7 @@ pre[class*="language-"] {
     fences(e2) {
       let t2 = this.rules.block.fences.exec(e2);
       if (t2) {
-        let n2 = t2[0], s2 = kt(n2, t2[3] || "", this.rules);
+        let n2 = t2[0], s2 = dt(n2, t2[3] || "", this.rules);
         return { type: "code", raw: n2, lang: t2[2] ? t2[2].trim().replace(this.rules.inline.anyPunctuation, "$1") : t2[2], text: s2 };
       }
     }
@@ -18462,7 +18545,7 @@ pre[class*="language-"] {
         let n2 = t2[2].trim();
         if (this.rules.other.endingHash.test(n2)) {
           let s2 = $(n2, "#");
-          (this.options.pedantic || !s2 || this.rules.other.endingSpaceChar.test(s2)) && (n2 = s2.trim());
+          (this.options.pedantic || !s2 || this.rules.other.endingSpaceTabChar.test(s2)) && (n2 = s2.trim());
         }
         return { type: "heading", raw: $(t2[0], `
 `), depth: t2[1].length, text: n2, tokens: this.lexer.inline(n2) };
@@ -18478,40 +18561,40 @@ pre[class*="language-"] {
       if (t2) {
         let n2 = $(t2[0], `
 `).split(`
-`), s2 = "", r2 = "", i2 = [];
+`), s2 = "", r2 = "", o2 = [];
         for (; n2.length > 0; ) {
-          let o2 = false, u2 = [], a2;
-          for (a2 = 0; a2 < n2.length; a2++) if (this.rules.other.blockquoteStart.test(n2[a2])) u2.push(n2[a2]), o2 = true;
-          else if (!o2) u2.push(n2[a2]);
+          let i2 = false, l2 = [], a2;
+          for (a2 = 0; a2 < n2.length; a2++) if (this.rules.other.blockquoteStart.test(n2[a2])) l2.push(n2[a2]), i2 = true;
+          else if (!i2) l2.push(n2[a2]);
           else break;
           n2 = n2.slice(a2);
-          let p2 = u2.join(`
+          let p2 = l2.join(`
 `), c2 = p2.replace(this.rules.other.blockquoteSetextReplace, `
     $1`).replace(this.rules.other.blockquoteSetextReplace2, "");
           s2 = s2 ? `${s2}
 ${p2}` : p2, r2 = r2 ? `${r2}
 ${c2}` : c2;
           let h2 = this.lexer.state.top;
-          if (this.lexer.state.top = true, this.lexer.blockTokens(c2, i2, true), this.lexer.state.top = h2, n2.length === 0) break;
-          let d2 = i2.at(-1);
+          if (this.lexer.state.top = true, this.lexer.blockTokens(c2, o2, true), this.lexer.state.top = h2, n2.length === 0) break;
+          let d2 = o2.at(-1);
           if (d2?.type === "code") break;
           if (d2?.type === "blockquote") {
             let O = d2, g2 = n2.join(`
 `), w2 = O.raw + `
-` + g2.replace(this.rules.other.blockquoteSetextReplace2, ""), E2 = this.blockquote(w2);
-            i2[i2.length - 1] = E2, s2 = `${s2}
-${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
+` + g2.replace(this.rules.other.blockquoteSetextReplace2, ""), z = this.blockquote(w2);
+            o2[o2.length - 1] = z, s2 = `${s2}
+${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + z.text;
             break;
           } else if (d2?.type === "list") {
             let O = d2, g2 = O.raw + `
 ` + n2.join(`
 `), w2 = this.list(g2);
-            i2[i2.length - 1] = w2, s2 = s2.substring(0, s2.length - d2.raw.length) + w2.raw, r2 = r2.substring(0, r2.length - O.raw.length) + w2.raw, n2 = g2.substring(i2.at(-1).raw.length).split(`
+            o2[o2.length - 1] = w2, s2 = s2.substring(0, s2.length - d2.raw.length) + w2.raw, r2 = r2.substring(0, r2.length - O.raw.length) + w2.raw, n2 = g2.substring(o2.at(-1).raw.length).split(`
 `);
             continue;
           }
         }
-        return { type: "blockquote", raw: s2, tokens: i2, text: r2 };
+        return { type: "blockquote", raw: s2, tokens: o2, text: r2 };
       }
     }
     list(e2) {
@@ -18519,25 +18602,25 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       if (t2) {
         let n2 = t2[1].trim(), s2 = n2.length > 1, r2 = { type: "list", raw: "", ordered: s2, start: s2 ? +n2.slice(0, -1) : "", loose: false, items: [] };
         n2 = s2 ? `\\d{1,9}\\${n2.slice(-1)}` : `\\${n2}`, this.options.pedantic && (n2 = s2 ? n2 : "[*+-]");
-        let i2 = this.rules.other.listItemRegex(n2), o2 = false;
+        let o2 = this.rules.other.listItemRegex(n2), i2 = false;
         for (; e2; ) {
           let a2 = false, p2 = "", c2 = "";
-          if (!(t2 = i2.exec(e2)) || this.rules.block.hr.test(e2)) break;
+          if (!(t2 = o2.exec(e2)) || this.rules.block.hr.test(e2)) break;
           p2 = t2[0], e2 = e2.substring(p2.length);
           let h2 = me(t2[2].split(`
 `, 1)[0], t2[1].length), d2 = e2.split(`
 `, 1)[0], O = !h2.trim(), g2 = 0;
           if (this.options.pedantic ? (g2 = 2, c2 = h2.trimStart()) : O ? g2 = t2[1].length + 1 : (g2 = h2.search(this.rules.other.nonSpaceChar), g2 = g2 > 4 ? 1 : g2, c2 = h2.slice(g2), g2 += t2[1].length), O && this.rules.other.blankLine.test(d2) && (p2 += d2 + `
 `, e2 = e2.substring(d2.length + 1), a2 = true), !a2) {
-            let w2 = this.rules.other.nextBulletRegex(g2), E2 = this.rules.other.hrRegex(g2), ne = this.rules.other.fencesBeginRegex(g2), re = this.rules.other.headingBeginRegex(g2), be = this.rules.other.htmlBeginRegex(g2), Re = this.rules.other.blockquoteBeginRegex(g2);
+            let w2 = this.rules.other.nextBulletRegex(g2), z = this.rules.other.hrRegex(g2), ne = this.rules.other.fencesBeginRegex(g2), re = this.rules.other.headingBeginRegex(g2), be = this.rules.other.htmlBeginRegex(g2), Re = this.rules.other.blockquoteBeginRegex(g2);
             for (; e2; ) {
               let N = e2.split(`
 `, 1)[0], D;
-              if (d2 = N, this.options.pedantic ? (d2 = d2.replace(this.rules.other.listReplaceNesting, "  "), D = d2) : D = d2.replace(this.rules.other.tabCharGlobal, "    "), ne.test(d2) || re.test(d2) || be.test(d2) || Re.test(d2) || w2.test(d2) || E2.test(d2)) break;
+              if (d2 = N, this.options.pedantic ? (d2 = d2.replace(this.rules.other.listReplaceNesting, "  "), D = d2) : D = d2.replace(this.rules.other.tabCharGlobal, "    "), ne.test(d2) || re.test(d2) || be.test(d2) || Re.test(d2) || w2.test(d2) || z.test(d2)) break;
               if (D.search(this.rules.other.nonSpaceChar) >= g2 || !d2.trim()) c2 += `
 ` + D.slice(g2);
               else {
-                if (O || h2.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || ne.test(h2) || re.test(h2) || E2.test(h2)) break;
+                if (O || h2.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || ne.test(h2) || re.test(h2) || z.test(h2)) break;
                 c2 += `
 ` + d2;
               }
@@ -18545,10 +18628,10 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
 `, e2 = e2.substring(N.length + 1), h2 = D.slice(g2);
             }
           }
-          r2.loose || (o2 ? r2.loose = true : this.rules.other.doubleBlankLine.test(p2) && (o2 = true)), r2.items.push({ type: "list_item", raw: p2, task: !!this.options.gfm && this.rules.other.listIsTask.test(c2), loose: false, text: c2, tokens: [] }), r2.raw += p2;
+          r2.loose || (i2 ? r2.loose = true : this.rules.other.doubleBlankLine.test(p2) && (i2 = true)), r2.items.push({ type: "list_item", raw: p2, task: !!this.options.gfm && this.rules.other.listIsTask.test(c2), loose: false, text: c2, tokens: [] }), r2.raw += p2;
         }
-        let u2 = r2.items.at(-1);
-        if (u2) u2.raw = u2.raw.trimEnd(), u2.text = u2.text.trimEnd();
+        let l2 = r2.items.at(-1);
+        if (l2) l2.raw = l2.raw.trimEnd(), l2.text = l2.text.trimEnd();
         else return;
         r2.raw = r2.raw.trimEnd();
         for (let a2 of r2.items) if (this.lexer.state.top = false, a2.tokens = this.lexer.blockTokens(a2.text, []), !r2.loose) {
@@ -18596,13 +18679,13 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       let t2 = this.rules.block.table.exec(e2);
       if (!t2 || !this.rules.other.tableDelimiter.test(t2[2])) return;
       let n2 = ee(t2[1]), s2 = t2[2].replace(this.rules.other.tableAlignChars, "").split("|"), r2 = t2[3]?.trim() ? t2[3].replace(this.rules.other.tableRowBlankLine, "").split(`
-`) : [], i2 = { type: "table", raw: $(t2[0], `
+`) : [], o2 = { type: "table", raw: $(t2[0], `
 `), header: [], align: [], rows: [] };
       if (n2.length === s2.length) {
-        for (let o2 of s2) this.rules.other.tableAlignRight.test(o2) ? i2.align.push("right") : this.rules.other.tableAlignCenter.test(o2) ? i2.align.push("center") : this.rules.other.tableAlignLeft.test(o2) ? i2.align.push("left") : i2.align.push(null);
-        for (let o2 = 0; o2 < n2.length; o2++) i2.header.push({ text: n2[o2], tokens: this.lexer.inline(n2[o2]), header: true, align: i2.align[o2] });
-        for (let o2 of r2) i2.rows.push(ee(o2, i2.header.length).map((u2, a2) => ({ text: u2, tokens: this.lexer.inline(u2), header: false, align: i2.align[a2] })));
-        return i2;
+        for (let i2 of s2) this.rules.other.tableAlignRight.test(i2) ? o2.align.push("right") : this.rules.other.tableAlignCenter.test(i2) ? o2.align.push("center") : this.rules.other.tableAlignLeft.test(i2) ? o2.align.push("left") : o2.align.push(null);
+        for (let i2 = 0; i2 < n2.length; i2++) o2.header.push({ text: n2[i2], tokens: this.lexer.inline(n2[i2]), header: true, align: o2.align[i2] });
+        for (let i2 of r2) o2.rows.push(ee(i2, o2.header.length).map((l2, a2) => ({ text: l2, tokens: this.lexer.inline(l2), header: false, align: o2.align[a2] })));
+        return o2;
       }
     }
     lheading(e2) {
@@ -18639,20 +18722,20 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
         let n2 = t2[2].trim();
         if (!this.options.pedantic && this.rules.other.startAngleBracket.test(n2)) {
           if (!this.rules.other.endAngleBracket.test(n2)) return;
-          let i2 = $(n2.slice(0, -1), "\\");
-          if ((n2.length - i2.length) % 2 === 0) return;
+          let o2 = $(n2.slice(0, -1), "\\");
+          if ((n2.length - o2.length) % 2 === 0) return;
         } else {
-          let i2 = fe(t2[2], "()");
-          if (i2 === -2) return;
-          if (i2 > -1) {
-            let u2 = (t2[0].indexOf("!") === 0 ? 5 : 4) + t2[1].length + i2;
-            t2[2] = t2[2].substring(0, i2), t2[0] = t2[0].substring(0, u2).trim(), t2[3] = "";
+          let o2 = fe(t2[2], "()");
+          if (o2 === -2) return;
+          if (o2 > -1) {
+            let l2 = (t2[0].indexOf("!") === 0 ? 5 : 4) + t2[1].length + o2;
+            t2[2] = t2[2].substring(0, o2), t2[0] = t2[0].substring(0, l2).trim(), t2[3] = "";
           }
         }
         let s2 = t2[2], r2 = "";
         if (this.options.pedantic) {
-          let i2 = this.rules.other.pedanticHrefTitle.exec(s2);
-          i2 && (s2 = i2[1], r2 = i2[3]);
+          let o2 = this.rules.other.pedanticHrefTitle.exec(s2);
+          o2 && (s2 = o2[1], r2 = o2[3]);
         } else r2 = t2[3] ? t2[3].slice(1, -1) : "";
         return s2 = s2.trim(), this.rules.other.startAngleBracket.test(s2) && (this.options.pedantic && !this.rules.other.endAngleBracket.test(n2) ? s2 = s2.slice(1) : s2 = s2.slice(1, -1)), xe(t2, { href: s2 && s2.replace(this.rules.inline.anyPunctuation, "$1"), title: r2 && r2.replace(this.rules.inline.anyPunctuation, "$1") }, t2[0], this.lexer, this.rules);
       }
@@ -18662,8 +18745,8 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       if ((n2 = this.rules.inline.reflink.exec(e2)) || (n2 = this.rules.inline.nolink.exec(e2))) {
         let s2 = (n2[2] || n2[1]).replace(this.rules.other.multipleSpaceGlobal, " "), r2 = t2[s2.toLowerCase()];
         if (!r2) {
-          let i2 = n2[0].charAt(0);
-          return { type: "text", raw: i2, text: i2 };
+          let o2 = n2[0].charAt(0);
+          return { type: "text", raw: o2, text: o2 };
         }
         return xe(n2, r2, n2[0], this.lexer, this.rules);
       }
@@ -18672,25 +18755,25 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       let s2 = this.rules.inline.emStrongLDelim.exec(e2);
       if (!s2 || !s2[1] && !s2[2] && !s2[3] && !s2[4] || s2[4] && n2.match(this.rules.other.unicodeAlphaNumeric)) return;
       if (!(s2[1] || s2[3] || "") || !n2 || this.rules.inline.punctuation.exec(n2)) {
-        let i2 = [...s2[0]].length - 1, o2, u2, a2 = i2, p2 = 0, c2 = s2[0][0], h2 = n2 === c2, d2 = c2 === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
-        for (d2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + i2); (s2 = d2.exec(t2)) !== null; ) {
-          if (o2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !o2) continue;
-          if (u2 = [...o2].length, s2[3] || s2[4]) {
-            a2 += u2;
+        let o2 = [...s2[0]].length - 1, i2, l2, a2 = o2, p2 = 0, c2 = s2[0][0], h2 = n2 === c2, d2 = c2 === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
+        for (d2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + o2); (s2 = d2.exec(t2)) !== null; ) {
+          if (i2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !i2) continue;
+          if (l2 = [...i2].length, s2[3] || s2[4]) {
+            a2 += l2;
             continue;
           } else if (s2[5] || s2[6]) {
-            if (i2 % 3 && !((i2 + u2) % 3)) {
-              p2 += u2;
+            if (o2 % 3 && !((o2 + l2) % 3)) {
+              p2 += l2;
               continue;
             }
             if (h2) break;
           }
-          if (a2 -= u2, a2 > 0) continue;
-          u2 = Math.min(u2, u2 + a2 + p2);
-          let O = [...s2[0]][0].length, g2 = e2.slice(0, i2 + s2.index + O + u2);
-          if (Math.min(i2, u2) % 2) {
-            let E2 = g2.slice(1, -1);
-            return { type: "em", raw: g2, text: E2, tokens: this.lexer.inlineTokens(E2) };
+          if (a2 -= l2, a2 > 0) continue;
+          l2 = Math.min(l2, l2 + a2 + p2);
+          let O = [...s2[0]][0].length, g2 = e2.slice(0, o2 + s2.index + O + l2);
+          if (Math.min(o2, l2) % 2) {
+            let z = g2.slice(1, -1);
+            return { type: "em", raw: g2, text: z, tokens: this.lexer.inlineTokens(z) };
           }
           let w2 = g2.slice(2, -2);
           return { type: "strong", raw: g2, text: w2, tokens: this.lexer.inlineTokens(w2) };
@@ -18712,16 +18795,16 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       let s2 = this.rules.inline.delLDelim.exec(e2);
       if (!s2) return;
       if (!(s2[1] || "") || !n2 || this.rules.inline.punctuation.exec(n2)) {
-        let i2 = [...s2[0]].length - 1, o2, u2, a2 = i2, p2 = this.rules.inline.delRDelim;
-        for (p2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + i2); (s2 = p2.exec(t2)) !== null; ) {
-          if (o2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !o2 || (u2 = [...o2].length, u2 !== i2)) continue;
+        let o2 = [...s2[0]].length - 1, i2, l2, a2 = o2, p2 = this.rules.inline.delRDelim;
+        for (p2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + o2); (s2 = p2.exec(t2)) !== null; ) {
+          if (i2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !i2 || (l2 = [...i2].length, l2 !== o2)) continue;
           if (s2[3] || s2[4]) {
-            a2 += u2;
+            a2 += l2;
             continue;
           }
-          if (a2 -= u2, a2 > 0) continue;
-          u2 = Math.min(u2, u2 + a2);
-          let c2 = [...s2[0]][0].length, h2 = e2.slice(0, i2 + s2.index + c2 + u2), d2 = h2.slice(i2, -i2);
+          if (a2 -= l2, a2 > 0) continue;
+          l2 = Math.min(l2, l2 + a2);
+          let c2 = [...s2[0]][0].length, h2 = e2.slice(0, o2 + s2.index + c2 + l2), d2 = h2.slice(o2, -o2);
           return { type: "del", raw: h2, text: d2, tokens: this.lexer.inlineTokens(d2) };
         }
       }
@@ -18730,7 +18813,7 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       let t2 = this.rules.inline.autolink.exec(e2);
       if (t2) {
         let n2, s2;
-        return t2[2] === "@" ? (n2 = t2[1], s2 = "mailto:" + n2) : (n2 = t2[1], s2 = n2), { type: "link", raw: t2[0], text: n2, href: s2, tokens: [{ type: "text", raw: n2, text: n2 }] };
+        return t2[2] === "@" ? (n2 = t2[1], s2 = "mailto:" + n2) : (n2 = t2[1], s2 = n2), { type: "link", raw: t2[0], text: n2, href: s2, autolink: true, tokens: [{ type: "text", raw: n2, text: n2 }] };
       }
     }
     url(e2) {
@@ -18745,7 +18828,7 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
           while (r2 !== t2[0]);
           n2 = t2[0], t2[1] === "www." ? s2 = "http://" + t2[0] : s2 = t2[0];
         }
-        return { type: "link", raw: t2[0], text: n2, href: s2, tokens: [{ type: "text", raw: n2, text: n2 }] };
+        return { type: "link", raw: t2[0], text: n2, href: s2, autolink: true, tokens: [{ type: "text", raw: n2, text: n2 }] };
       }
     }
     inlineText(e2) {
@@ -18756,14 +18839,14 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       }
     }
   };
-  var x = class l2 {
+  var x = class u2 {
     tokens;
     options;
     state;
     inlineQueue;
     tokenizer;
     constructor(e2) {
-      this.tokens = [], this.tokens.links = /* @__PURE__ */ Object.create(null), this.options = e2 || R, this.options.tokenizer = this.options.tokenizer || new y$1(), this.tokenizer = this.options.tokenizer, this.tokenizer.options = this.options, this.tokenizer.lexer = this, this.inlineQueue = [], this.state = { inLink: false, inRawBlock: false, linkEmitted: false, top: true };
+      this.tokens = [], this.tokens.links = /* @__PURE__ */ Object.create(null), this.options = e2 || T, this.options.tokenizer = this.options.tokenizer || new y$1(), this.tokenizer = this.options.tokenizer, this.tokenizer.options = this.options, this.tokenizer.lexer = this, this.inlineQueue = [], this.state = { inLink: false, inRawBlock: false, linkEmitted: false, top: true };
       let t2 = { other: m$1, block: H.normal, inline: B.normal };
       this.options.pedantic ? (t2.block = H.pedantic, t2.inline = B.pedantic) : this.options.gfm && (t2.block = H.gfm, this.options.breaks ? t2.inline = B.breaks : t2.inline = B.gfm), this.tokenizer.rules = t2;
     }
@@ -18771,10 +18854,10 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       return { block: H, inline: B };
     }
     static lex(e2, t2) {
-      return new l2(t2).lex(e2);
+      return new u2(t2).lex(e2);
     }
     static lexInline(e2, t2) {
-      return new l2(t2).inlineTokens(e2);
+      return new u2(t2).inlineTokens(e2);
     }
     lex(e2) {
       e2 = e2.replace(m$1.carriageReturn, `
@@ -18795,21 +18878,21 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
           break;
         }
         let r2;
-        if (this.options.extensions?.block?.some((o2) => (r2 = o2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(r2.raw.length), t2.push(r2), true) : false)) continue;
+        if (this.options.extensions?.block?.some((i2) => (r2 = i2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(r2.raw.length), t2.push(r2), true) : false)) continue;
         if (r2 = this.tokenizer.space(e2)) {
           e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          r2.raw.length === 1 && o2 !== void 0 ? o2.raw += `
+          let i2 = t2.at(-1);
+          r2.raw.length === 1 && i2 !== void 0 ? i2.raw += `
 ` : t2.push(r2);
           continue;
         }
         if (r2 = this.tokenizer.code(e2)) {
           e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          o2?.type === "paragraph" || o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
+          let i2 = t2.at(-1);
+          i2?.type === "paragraph" || i2?.type === "text" ? (i2.raw += (i2.raw.endsWith(`
 `) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.text, this.inlineQueue.at(-1).src = o2.text) : t2.push(r2);
+`) + r2.raw, i2.text += `
+` + r2.text, this.inlineQueue.at(-1).src = i2.text) : t2.push(r2);
           continue;
         }
         if (r2 = this.tokenizer.fences(e2)) {
@@ -18838,11 +18921,11 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
         }
         if (r2 = this.tokenizer.def(e2)) {
           e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          o2?.type === "paragraph" || o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
+          let i2 = t2.at(-1);
+          i2?.type === "paragraph" || i2?.type === "text" ? (i2.raw += (i2.raw.endsWith(`
 `) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.raw, this.inlineQueue.at(-1).src = o2.text) : this.tokens.links[r2.tag] || (this.tokens.links[r2.tag] = { href: r2.href, title: r2.title }, t2.push(r2));
+`) + r2.raw, i2.text += `
+` + r2.raw, this.inlineQueue.at(-1).src = i2.text) : this.tokens.links[r2.tag] || (this.tokens.links[r2.tag] = { href: r2.href, title: r2.title }, t2.push(r2));
           continue;
         }
         if (r2 = this.tokenizer.table(e2)) {
@@ -18853,28 +18936,28 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
           e2 = e2.substring(r2.raw.length), t2.push(r2);
           continue;
         }
-        let i2 = e2;
+        let o2 = e2;
         if (this.options.extensions?.startBlock) {
-          let o2 = 1 / 0, u2 = e2.slice(1), a2;
+          let i2 = 1 / 0, l2 = e2.slice(1), a2;
           this.options.extensions.startBlock.forEach((p2) => {
-            a2 = p2.call({ lexer: this }, u2), typeof a2 == "number" && a2 >= 0 && (o2 = Math.min(o2, a2));
-          }), o2 < 1 / 0 && o2 >= 0 && (i2 = e2.substring(0, o2 + 1));
+            a2 = p2.call({ lexer: this }, l2), typeof a2 == "number" && a2 >= 0 && (i2 = Math.min(i2, a2));
+          }), i2 < 1 / 0 && i2 >= 0 && (o2 = e2.substring(0, i2 + 1));
         }
-        if (this.state.top && (r2 = this.tokenizer.paragraph(i2))) {
-          let o2 = t2.at(-1);
-          n2 && o2?.type === "paragraph" ? (o2.raw += (o2.raw.endsWith(`
+        if (this.state.top && (r2 = this.tokenizer.paragraph(o2))) {
+          let i2 = t2.at(-1);
+          n2 && i2?.type === "paragraph" ? (i2.raw += (i2.raw.endsWith(`
 `) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = o2.text) : t2.push(r2), n2 = i2.length !== e2.length, e2 = e2.substring(r2.raw.length);
+`) + r2.raw, i2.text += `
+` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = i2.text) : t2.push(r2), n2 = o2.length !== e2.length, e2 = e2.substring(r2.raw.length);
           continue;
         }
         if (r2 = this.tokenizer.text(e2)) {
           e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
+          let i2 = t2.at(-1);
+          i2?.type === "text" ? (i2.raw += (i2.raw.endsWith(`
 `) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = o2.text) : t2.push(r2);
+`) + r2.raw, i2.text += `
+` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = i2.text) : t2.push(r2);
           continue;
         }
         if (e2) {
@@ -18901,84 +18984,84 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       this.tokenizer.lexer = this;
       let n2 = e2;
       if (this.tokens.links && e2.includes("[")) {
-        let o2 = this.tokenizer.rules.inline.reflinkSearch, u2 = (a2) => {
+        let i2 = this.tokenizer.rules.inline.reflinkSearch, l2 = (a2) => {
           let p2 = a2.lastIndexOf("[");
           if (!Object.hasOwn(this.tokens.links, a2.slice(p2 + 1, -1))) return a2;
           if (p2 > 1 && a2.charAt(0) !== "!") {
             let c2 = a2.slice(1, p2 - 1);
-            if (this.linkInText(c2)) return "[" + c2.replace(o2, u2) + "][" + "a".repeat(a2.length - p2 - 2) + "]";
+            if (this.linkInText(c2)) return "[" + c2.replace(i2, l2) + "][" + "a".repeat(a2.length - p2 - 2) + "]";
           }
           return "[" + "a".repeat(a2.length - 2) + "]";
         };
-        n2 = n2.replace(o2, u2);
+        n2 = n2.replace(i2, l2);
       }
-      n2 = n2.replace(this.tokenizer.rules.inline.anyPunctuation, (o2) => "+".repeat(o2.length)), n2 = n2.replace(this.tokenizer.rules.inline.blockSkip, (o2, u2, a2) => {
+      n2 = n2.replace(this.tokenizer.rules.inline.anyPunctuation, (i2) => "+".repeat(i2.length)), n2 = n2.replace(this.tokenizer.rules.inline.blockSkip, (i2, l2, a2) => {
         let p2 = a2 ? a2.length : 0;
-        return o2.slice(0, p2) + "[" + "a".repeat(o2.length - p2 - 2) + "]";
+        return i2.slice(0, p2) + "[" + "a".repeat(i2.length - p2 - 2) + "]";
       }), n2 = this.options.hooks?.emStrongMask?.call({ lexer: this }, n2) ?? n2;
-      let s2 = false, r2 = "", i2 = 1 / 0;
+      let s2 = false, r2 = "", o2 = 1 / 0;
       for (; e2; ) {
-        if (e2.length < i2) i2 = e2.length;
+        if (e2.length < o2) o2 = e2.length;
         else {
           this.infiniteLoopError(e2.charCodeAt(0));
           break;
         }
         s2 || (r2 = ""), s2 = false;
-        let o2;
-        if (this.options.extensions?.inline?.some((a2) => (o2 = a2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(o2.raw.length), t2.push(o2), true) : false)) continue;
-        if (o2 = this.tokenizer.escape(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        let i2;
+        if (this.options.extensions?.inline?.some((a2) => (i2 = a2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(i2.raw.length), t2.push(i2), true) : false)) continue;
+        if (i2 = this.tokenizer.escape(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.tag(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.tag(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.link(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.link(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.reflink(e2, this.tokens.links)) {
-          e2 = e2.substring(o2.raw.length);
+        if (i2 = this.tokenizer.reflink(e2, this.tokens.links)) {
+          e2 = e2.substring(i2.raw.length);
           let a2 = t2.at(-1);
-          o2.type === "text" && a2?.type === "text" ? (a2.raw += o2.raw, a2.text += o2.text) : t2.push(o2);
+          i2.type === "text" && a2?.type === "text" ? (a2.raw += i2.raw, a2.text += i2.text) : t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.emStrong(e2, n2, r2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.emStrong(e2, n2, r2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.codespan(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.codespan(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.br(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.br(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.del(e2, n2, r2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.del(e2, n2, r2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.autolink(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.autolink(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (!this.state.inLink && (o2 = this.tokenizer.url(e2))) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (!this.state.inLink && (i2 = this.tokenizer.url(e2))) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        let u2 = e2;
+        let l2 = e2;
         if (this.options.extensions?.startInline) {
           let a2 = 1 / 0, p2 = e2.slice(1), c2;
           this.options.extensions.startInline.forEach((h2) => {
             c2 = h2.call({ lexer: this }, p2), typeof c2 == "number" && c2 >= 0 && (a2 = Math.min(a2, c2));
-          }), a2 < 1 / 0 && a2 >= 0 && (u2 = e2.substring(0, a2 + 1));
+          }), a2 < 1 / 0 && a2 >= 0 && (l2 = e2.substring(0, a2 + 1));
         }
-        if (o2 = this.tokenizer.inlineText(u2)) {
-          e2 = e2.substring(o2.raw.length), o2.raw.slice(-1) !== "_" && (r2 = o2.raw.slice(-1)), s2 = true;
+        if (i2 = this.tokenizer.inlineText(l2)) {
+          e2 = e2.substring(i2.raw.length), i2.raw.slice(-1) !== "_" && (r2 = i2.raw.slice(-1)), s2 = true;
           let a2 = t2.at(-1);
-          a2?.type === "text" ? (a2.raw += o2.raw, a2.text += o2.text) : t2.push(o2);
+          a2?.type === "text" ? (a2.raw += i2.raw, a2.text += i2.text) : t2.push(i2);
           continue;
         }
         if (e2) {
@@ -18998,16 +19081,16 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
     options;
     parser;
     constructor(e2) {
-      this.options = e2 || R;
+      this.options = e2 || T;
     }
     space(e2) {
       return "";
     }
     code({ text: e2, lang: t2, escaped: n2 }) {
-      let s2 = (t2 || "").match(m$1.notSpaceStart)?.[0], r2 = e2.replace(m$1.endingNewline, "") + `
-`;
-      return s2 ? '<pre><code class="language-' + T(s2) + '">' + (n2 ? r2 : T(r2, true)) + `</code></pre>
-` : "<pre><code>" + (n2 ? r2 : T(r2, true)) + `</code></pre>
+      let s2 = (t2 || "").match(m$1.notSpaceStart)?.[0], r2 = e2 ? e2.replace(m$1.endingNewline, "") + `
+` : "";
+      return s2 ? '<pre><code class="language-' + R(s2) + '">' + (n2 ? r2 : R(r2, true)) + `</code></pre>
+` : "<pre><code>" + (n2 ? r2 : R(r2, true)) + `</code></pre>
 `;
     }
     blockquote({ tokens: e2 }) {
@@ -19031,12 +19114,12 @@ ${this.parser.parse(e2)}</blockquote>
     }
     list(e2) {
       let t2 = e2.ordered, n2 = e2.start, s2 = "";
-      for (let o2 = 0; o2 < e2.items.length; o2++) {
-        let u2 = e2.items[o2];
-        s2 += this.listitem(u2);
+      for (let i2 = 0; i2 < e2.items.length; i2++) {
+        let l2 = e2.items[i2];
+        s2 += this.listitem(l2);
       }
-      let r2 = t2 ? "ol" : "ul", i2 = t2 && n2 !== 1 ? ' start="' + n2 + '"' : "";
-      return "<" + r2 + i2 + `>
+      let r2 = t2 ? "ol" : "ul", o2 = t2 && n2 !== 1 ? ' start="' + n2 + '"' : "";
+      return "<" + r2 + o2 + `>
 ` + s2 + "</" + r2 + `>
 `;
     }
@@ -19057,9 +19140,9 @@ ${this.parser.parse(e2)}</blockquote>
       t2 += this.tablerow({ text: n2 });
       let s2 = "";
       for (let r2 = 0; r2 < e2.rows.length; r2++) {
-        let i2 = e2.rows[r2];
+        let o2 = e2.rows[r2];
         n2 = "";
-        for (let o2 = 0; o2 < i2.length; o2++) n2 += this.tablecell(i2[o2]);
+        for (let i2 = 0; i2 < o2.length; i2++) n2 += this.tablecell(o2[i2]);
         s2 += this.tablerow({ text: n2 });
       }
       return s2 && (s2 = `<tbody>${s2}</tbody>`), `<table>
@@ -19085,7 +19168,7 @@ ${e2}</tr>
       return `<em>${this.parser.parseInline(e2)}</em>`;
     }
     codespan({ text: e2 }) {
-      return `<code>${T(e2, true)}</code>`;
+      return `<code>${R(e2, true)}</code>`;
     }
     br(e2) {
       return "<br>";
@@ -19093,23 +19176,23 @@ ${e2}</tr>
     del({ tokens: e2 }) {
       return `<del>${this.parser.parseInline(e2)}</del>`;
     }
-    link({ href: e2, title: t2, tokens: n2 }) {
-      let s2 = this.parser.parseInline(n2), r2 = Y(e2);
-      if (r2 === null) return s2;
-      e2 = r2;
-      let i2 = '<a href="' + e2 + '"';
-      return t2 && (i2 += ' title="' + T(t2) + '"'), i2 += ">" + s2 + "</a>", i2;
+    link({ href: e2, title: t2, text: n2, tokens: s2, autolink: r2 }) {
+      let o2 = r2 ? R(n2, true) : this.parser.parseInline(s2), i2 = Y(e2);
+      if (i2 === null) return o2;
+      e2 = R(i2, r2);
+      let l2 = '<a href="' + e2 + '"';
+      return t2 && (l2 += ' title="' + R(t2) + '"'), l2 += ">" + o2 + "</a>", l2;
     }
     image({ href: e2, title: t2, text: n2, tokens: s2 }) {
       s2 && (n2 = this.parser.parseInline(s2, this.parser.textRenderer));
       let r2 = Y(e2);
-      if (r2 === null) return T(n2);
+      if (r2 === null) return R(n2);
       e2 = r2;
-      let i2 = `<img src="${e2}" alt="${T(n2)}"`;
-      return t2 && (i2 += ` title="${T(t2)}"`), i2 += ">", i2;
+      let o2 = `<img src="${R(e2)}" alt="${R(n2)}"`;
+      return t2 && (o2 += ` title="${R(t2)}"`), o2 += ">", o2;
     }
     text(e2) {
-      return "tokens" in e2 && e2.tokens ? this.parser.parseInline(e2.tokens) : "escaped" in e2 && e2.escaped ? e2.text : T(e2.text);
+      return "tokens" in e2 && e2.tokens ? this.parser.parseInline(e2.tokens) : "escaped" in e2 && e2.escaped ? e2.text : R(e2.text);
     }
   };
   var L = class {
@@ -19144,18 +19227,18 @@ ${e2}</tr>
       return e2;
     }
   };
-  var b$1 = class l2 {
+  var b$1 = class u2 {
     options;
     renderer;
     textRenderer;
     constructor(e2) {
-      this.options = e2 || R, this.options.renderer = this.options.renderer || new P$1(), this.renderer = this.options.renderer, this.renderer.options = this.options, this.renderer.parser = this, this.textRenderer = new L();
+      this.options = e2 || T, this.options.renderer = this.options.renderer || new P$1(), this.renderer = this.options.renderer, this.renderer.options = this.options, this.renderer.parser = this, this.textRenderer = new L();
     }
     static parse(e2, t2) {
-      return new l2(t2).parse(e2);
+      return new u2(t2).parse(e2);
     }
     static parseInline(e2, t2) {
-      return new l2(t2).parseInline(e2);
+      return new u2(t2).parseInline(e2);
     }
     parse(e2) {
       this.renderer.parser = this;
@@ -19163,9 +19246,9 @@ ${e2}</tr>
       for (let n2 = 0; n2 < e2.length; n2++) {
         let s2 = e2[n2];
         if (this.options.extensions?.renderers?.[s2.type]) {
-          let i2 = s2, o2 = this.options.extensions.renderers[i2.type].call({ parser: this }, i2);
-          if (o2 !== false || !["space", "hr", "heading", "code", "table", "blockquote", "list", "checkbox", "html", "def", "paragraph", "text"].includes(i2.type)) {
-            t2 += o2 || "";
+          let o2 = s2, i2 = this.options.extensions.renderers[o2.type].call({ parser: this }, o2);
+          if (i2 !== false || !["space", "hr", "heading", "code", "table", "blockquote", "list", "checkbox", "html", "def", "paragraph", "text"].includes(o2.type)) {
+            t2 += i2 || "";
             continue;
           }
         }
@@ -19220,9 +19303,9 @@ ${e2}</tr>
             break;
           }
           default: {
-            let i2 = 'Token with "' + r2.type + '" type was not found.';
-            if (this.options.silent) return console.error(i2), "";
-            throw new Error(i2);
+            let o2 = 'Token with "' + r2.type + '" type was not found.';
+            if (this.options.silent) return console.error(o2), "";
+            throw new Error(o2);
           }
         }
       }
@@ -19234,62 +19317,62 @@ ${e2}</tr>
       for (let s2 = 0; s2 < e2.length; s2++) {
         let r2 = e2[s2];
         if (this.options.extensions?.renderers?.[r2.type]) {
-          let o2 = this.options.extensions.renderers[r2.type].call({ parser: this }, r2);
-          if (o2 !== false || !["escape", "html", "link", "image", "checkbox", "strong", "em", "codespan", "br", "del", "text"].includes(r2.type)) {
-            n2 += o2 || "";
+          let i2 = this.options.extensions.renderers[r2.type].call({ parser: this }, r2);
+          if (i2 !== false || !["escape", "html", "link", "image", "checkbox", "strong", "em", "codespan", "br", "del", "text"].includes(r2.type)) {
+            n2 += i2 || "";
             continue;
           }
         }
-        let i2 = r2;
-        switch (i2.type) {
+        let o2 = r2;
+        switch (o2.type) {
           case "escape": {
-            n2 += t2.text(i2);
+            n2 += t2.text(o2);
             break;
           }
           case "html": {
-            n2 += t2.html(i2);
+            n2 += t2.html(o2);
             break;
           }
           case "link": {
-            n2 += t2.link(i2);
+            n2 += t2.link(o2);
             break;
           }
           case "image": {
-            n2 += t2.image(i2);
+            n2 += t2.image(o2);
             break;
           }
           case "checkbox": {
-            n2 += t2.checkbox(i2);
+            n2 += t2.checkbox(o2);
             break;
           }
           case "strong": {
-            n2 += t2.strong(i2);
+            n2 += t2.strong(o2);
             break;
           }
           case "em": {
-            n2 += t2.em(i2);
+            n2 += t2.em(o2);
             break;
           }
           case "codespan": {
-            n2 += t2.codespan(i2);
+            n2 += t2.codespan(o2);
             break;
           }
           case "br": {
-            n2 += t2.br(i2);
+            n2 += t2.br(o2);
             break;
           }
           case "del": {
-            n2 += t2.del(i2);
+            n2 += t2.del(o2);
             break;
           }
           case "text": {
-            n2 += t2.text(i2);
+            n2 += t2.text(o2);
             break;
           }
           default: {
-            let o2 = 'Token with "' + i2.type + '" type was not found.';
-            if (this.options.silent) return console.error(o2), "";
-            throw new Error(o2);
+            let i2 = 'Token with "' + o2.type + '" type was not found.';
+            if (this.options.silent) return console.error(i2), "";
+            throw new Error(i2);
           }
         }
       }
@@ -19300,7 +19383,7 @@ ${e2}</tr>
     options;
     block;
     constructor(e2) {
-      this.options = e2 || R;
+      this.options = e2 || T;
     }
     static passThroughHooks = /* @__PURE__ */ new Set(["preprocess", "postprocess", "processAllTokens", "emStrongMask"]);
     static passThroughHooksRespectAsync = /* @__PURE__ */ new Set(["preprocess", "postprocess", "processAllTokens"]);
@@ -19342,8 +19425,8 @@ ${e2}</tr>
       for (let s2 of e2) switch (n2 = n2.concat(t2.call(this, s2)), s2.type) {
         case "table": {
           let r2 = s2;
-          for (let i2 of r2.header) n2 = n2.concat(this.walkTokens(i2.tokens, t2));
-          for (let i2 of r2.rows) for (let o2 of i2) n2 = n2.concat(this.walkTokens(o2.tokens, t2));
+          for (let o2 of r2.header) n2 = n2.concat(this.walkTokens(o2.tokens, t2));
+          for (let o2 of r2.rows) for (let i2 of o2) n2 = n2.concat(this.walkTokens(i2.tokens, t2));
           break;
         }
         case "list": {
@@ -19353,9 +19436,9 @@ ${e2}</tr>
         }
         default: {
           let r2 = s2;
-          this.defaults.extensions?.childTokens?.[r2.type] ? this.defaults.extensions.childTokens[r2.type].forEach((i2) => {
-            let o2 = r2[i2].flat(1 / 0);
-            n2 = n2.concat(this.walkTokens(o2, t2));
+          this.defaults.extensions?.childTokens?.[r2.type] ? this.defaults.extensions.childTokens[r2.type].forEach((o2) => {
+            let i2 = r2[o2].flat(1 / 0);
+            n2 = n2.concat(this.walkTokens(i2, t2));
           }) : r2.tokens && (n2 = n2.concat(this.walkTokens(r2.tokens, t2)));
         }
       }
@@ -19368,26 +19451,26 @@ ${e2}</tr>
         if (s2.async = this.defaults.async || s2.async || false, n2.extensions && (n2.extensions.forEach((r2) => {
           if (!r2.name) throw new Error("extension name required");
           if ("renderer" in r2) {
-            let i2 = t2.renderers[r2.name];
-            i2 ? t2.renderers[r2.name] = function(...o2) {
-              let u2 = r2.renderer.apply(this, o2);
-              return u2 === false && (u2 = i2.apply(this, o2)), u2;
+            let o2 = t2.renderers[r2.name];
+            o2 ? t2.renderers[r2.name] = function(...i2) {
+              let l2 = r2.renderer.apply(this, i2);
+              return l2 === false && (l2 = o2.apply(this, i2)), l2;
             } : t2.renderers[r2.name] = r2.renderer;
           }
           if ("tokenizer" in r2) {
             if (!r2.level || r2.level !== "block" && r2.level !== "inline") throw new Error("extension level must be 'block' or 'inline'");
-            let i2 = t2[r2.level];
-            i2 ? i2.unshift(r2.tokenizer) : t2[r2.level] = [r2.tokenizer], r2.start && (r2.level === "block" ? t2.startBlock ? t2.startBlock.push(r2.start) : t2.startBlock = [r2.start] : r2.level === "inline" && (t2.startInline ? t2.startInline.push(r2.start) : t2.startInline = [r2.start]));
+            let o2 = t2[r2.level];
+            o2 ? o2.unshift(r2.tokenizer) : t2[r2.level] = [r2.tokenizer], r2.start && (r2.level === "block" ? t2.startBlock ? t2.startBlock.push(r2.start) : t2.startBlock = [r2.start] : r2.level === "inline" && (t2.startInline ? t2.startInline.push(r2.start) : t2.startInline = [r2.start]));
           }
           "childTokens" in r2 && r2.childTokens && (t2.childTokens[r2.name] = r2.childTokens);
         }), s2.extensions = t2), n2.renderer) {
           let r2 = this.defaults.renderer || new P$1(this.defaults);
-          for (let i2 in n2.renderer) {
-            if (!(i2 in r2)) throw new Error(`renderer '${i2}' does not exist`);
-            if (["options", "parser"].includes(i2)) continue;
-            let o2 = i2, u2 = n2.renderer[o2], a2 = r2[o2];
-            r2[o2] = (...p2) => {
-              let c2 = u2.apply(r2, p2);
+          for (let o2 in n2.renderer) {
+            if (!(o2 in r2)) throw new Error(`renderer '${o2}' does not exist`);
+            if (["options", "parser"].includes(o2)) continue;
+            let i2 = o2, l2 = n2.renderer[i2], a2 = r2[i2];
+            r2[i2] = (...p2) => {
+              let c2 = l2.apply(r2, p2);
               return c2 === false && (c2 = a2.apply(r2, p2)), c2 || "";
             };
           }
@@ -19395,12 +19478,12 @@ ${e2}</tr>
         }
         if (n2.tokenizer) {
           let r2 = this.defaults.tokenizer || new y$1(this.defaults);
-          for (let i2 in n2.tokenizer) {
-            if (!(i2 in r2)) throw new Error(`tokenizer '${i2}' does not exist`);
-            if (["options", "rules", "lexer"].includes(i2)) continue;
-            let o2 = i2, u2 = n2.tokenizer[o2], a2 = r2[o2];
-            r2[o2] = (...p2) => {
-              let c2 = u2.apply(r2, p2);
+          for (let o2 in n2.tokenizer) {
+            if (!(o2 in r2)) throw new Error(`tokenizer '${o2}' does not exist`);
+            if (["options", "rules", "lexer"].includes(o2)) continue;
+            let i2 = o2, l2 = n2.tokenizer[i2], a2 = r2[i2];
+            r2[i2] = (...p2) => {
+              let c2 = l2.apply(r2, p2);
               return c2 === false && (c2 = a2.apply(r2, p2)), c2;
             };
           }
@@ -19408,33 +19491,33 @@ ${e2}</tr>
         }
         if (n2.hooks) {
           let r2 = this.defaults.hooks || new S$1();
-          for (let i2 in n2.hooks) {
-            if (!(i2 in r2)) throw new Error(`hook '${i2}' does not exist`);
-            if (["options", "block"].includes(i2)) continue;
-            let o2 = i2, u2 = n2.hooks[o2], a2 = r2[o2];
-            S$1.passThroughHooks.has(i2) ? r2[o2] = (p2) => {
-              if (this.defaults.async && S$1.passThroughHooksRespectAsync.has(i2)) return (async () => {
-                let h2 = await u2.call(r2, p2);
+          for (let o2 in n2.hooks) {
+            if (!(o2 in r2)) throw new Error(`hook '${o2}' does not exist`);
+            if (["options", "block"].includes(o2)) continue;
+            let i2 = o2, l2 = n2.hooks[i2], a2 = r2[i2];
+            S$1.passThroughHooks.has(o2) ? r2[i2] = (p2) => {
+              if (this.defaults.async && S$1.passThroughHooksRespectAsync.has(o2)) return (async () => {
+                let h2 = await l2.call(r2, p2);
                 return a2.call(r2, h2);
               })();
-              let c2 = u2.call(r2, p2);
+              let c2 = l2.call(r2, p2);
               return a2.call(r2, c2);
-            } : r2[o2] = (...p2) => {
+            } : r2[i2] = (...p2) => {
               if (this.defaults.async) return (async () => {
-                let h2 = await u2.apply(r2, p2);
+                let h2 = await l2.apply(r2, p2);
                 return h2 === false && (h2 = await a2.apply(r2, p2)), h2;
               })();
-              let c2 = u2.apply(r2, p2);
+              let c2 = l2.apply(r2, p2);
               return c2 === false && (c2 = a2.apply(r2, p2)), c2;
             };
           }
           s2.hooks = r2;
         }
         if (n2.walkTokens) {
-          let r2 = this.defaults.walkTokens, i2 = n2.walkTokens;
-          s2.walkTokens = function(o2) {
-            let u2 = [];
-            return u2.push(i2.call(this, o2)), r2 && (u2 = u2.concat(r2.call(this, o2))), u2;
+          let r2 = this.defaults.walkTokens, o2 = n2.walkTokens;
+          s2.walkTokens = function(i2) {
+            let l2 = [];
+            return l2.push(o2.call(this, i2)), r2 && (l2 = l2.concat(r2.call(this, i2))), l2;
           };
         }
         this.defaults = { ...this.defaults, ...s2 };
@@ -19451,24 +19534,24 @@ ${e2}</tr>
     }
     parseMarkdown(e2) {
       return (n2, s2) => {
-        let r2 = { ...s2 }, i2 = { ...this.defaults, ...r2 }, o2 = this.onError(!!i2.silent, !!i2.async);
-        if (this.defaults.async === true && r2.async === false) return o2(new Error("marked(): The async option was set to true by an extension. Remove async: false from the parse options object to return a Promise."));
-        if (typeof n2 > "u" || n2 === null) return o2(new Error("marked(): input parameter is undefined or null"));
-        if (typeof n2 != "string") return o2(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(n2) + ", string expected"));
-        if (i2.hooks && (i2.hooks.options = i2, i2.hooks.block = e2), i2.async) return (async () => {
-          let u2 = i2.hooks ? await i2.hooks.preprocess(n2) : n2, p2 = await (i2.hooks ? await i2.hooks.provideLexer(e2) : e2 ? x.lex : x.lexInline)(u2, i2), c2 = i2.hooks ? await i2.hooks.processAllTokens(p2) : p2;
-          i2.walkTokens && await Promise.all(this.walkTokens(c2, i2.walkTokens));
-          let d2 = await (i2.hooks ? await i2.hooks.provideParser(e2) : e2 ? b$1.parse : b$1.parseInline)(c2, i2);
-          return i2.hooks ? await i2.hooks.postprocess(d2) : d2;
-        })().catch(o2);
+        let r2 = { ...s2 }, o2 = { ...this.defaults, ...r2 }, i2 = this.onError(!!o2.silent, !!o2.async);
+        if (this.defaults.async === true && r2.async === false) return i2(new Error("marked(): The async option was set to true by an extension. Remove async: false from the parse options object to return a Promise."));
+        if (typeof n2 > "u" || n2 === null) return i2(new Error("marked(): input parameter is undefined or null"));
+        if (typeof n2 != "string") return i2(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(n2) + ", string expected"));
+        if (o2.hooks && (o2.hooks.options = o2, o2.hooks.block = e2), o2.async) return (async () => {
+          let l2 = o2.hooks ? await o2.hooks.preprocess(n2) : n2, p2 = await (o2.hooks ? await o2.hooks.provideLexer(e2) : e2 ? x.lex : x.lexInline)(l2, o2), c2 = o2.hooks ? await o2.hooks.processAllTokens(p2) : p2;
+          o2.walkTokens && await Promise.all(this.walkTokens(c2, o2.walkTokens));
+          let d2 = await (o2.hooks ? await o2.hooks.provideParser(e2) : e2 ? b$1.parse : b$1.parseInline)(c2, o2);
+          return o2.hooks ? await o2.hooks.postprocess(d2) : d2;
+        })().catch(i2);
         try {
-          i2.hooks && (n2 = i2.hooks.preprocess(n2));
-          let a2 = (i2.hooks ? i2.hooks.provideLexer(e2) : e2 ? x.lex : x.lexInline)(n2, i2);
-          i2.hooks && (a2 = i2.hooks.processAllTokens(a2)), i2.walkTokens && this.walkTokens(a2, i2.walkTokens);
-          let c2 = (i2.hooks ? i2.hooks.provideParser(e2) : e2 ? b$1.parse : b$1.parseInline)(a2, i2);
-          return i2.hooks && (c2 = i2.hooks.postprocess(c2)), c2;
-        } catch (u2) {
-          return o2(u2);
+          o2.hooks && (n2 = o2.hooks.preprocess(n2));
+          let a2 = (o2.hooks ? o2.hooks.provideLexer(e2) : e2 ? x.lex : x.lexInline)(n2, o2);
+          o2.hooks && (a2 = o2.hooks.processAllTokens(a2)), o2.walkTokens && this.walkTokens(a2, o2.walkTokens);
+          let c2 = (o2.hooks ? o2.hooks.provideParser(e2) : e2 ? b$1.parse : b$1.parseInline)(a2, o2);
+          return o2.hooks && (c2 = o2.hooks.postprocess(c2)), c2;
+        } catch (l2) {
+          return i2(l2);
         }
       };
     }
@@ -19476,7 +19559,7 @@ ${e2}</tr>
       return (n2) => {
         if (n2.message += `
 Please report this to https://github.com/markedjs/marked.`, e2) {
-          let s2 = "<p>An error occurred:</p><pre>" + T(n2.message + "", true) + "</pre>";
+          let s2 = "<p>An error occurred:</p><pre>" + R(n2.message + "", true) + "</pre>";
           return t2 ? Promise.resolve(s2) : s2;
         }
         if (t2) return Promise.reject(n2);
@@ -19485,20 +19568,20 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
   };
   var M = new Z();
-  function f$1(l2, e2) {
-    return M.parse(l2, e2);
+  function f$1(u2, e2) {
+    return M.parse(u2, e2);
   }
-  f$1.options = f$1.setOptions = function(l2) {
-    return M.setOptions(l2), f$1.defaults = M.defaults, j(f$1.defaults), f$1;
+  f$1.options = f$1.setOptions = function(u2) {
+    return M.setOptions(u2), f$1.defaults = M.defaults, j(f$1.defaults), f$1;
   };
   f$1.getDefaults = A;
-  f$1.defaults = R;
-  function dt(...l2) {
-    return M.use(...l2), f$1.defaults = M.defaults, j(f$1.defaults), f$1;
+  f$1.defaults = T;
+  function gt(...u2) {
+    return M.use(...u2), f$1.defaults = M.defaults, j(f$1.defaults), f$1;
   }
-  f$1.use = dt;
-  f$1.walkTokens = function(l2, e2) {
-    return M.walkTokens(l2, e2);
+  f$1.use = gt;
+  f$1.walkTokens = function(u2, e2) {
+    return M.walkTokens(u2, e2);
   };
   f$1.parseInline = M.parseInline;
   f$1.Parser = b$1;
@@ -19847,7 +19930,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   function createDOMPurify() {
     let window2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : getGlobal();
     const DOMPurify = (root2) => createDOMPurify(root2);
-    DOMPurify.version = "3.4.14";
+    DOMPurify.version = "3.4.15";
     DOMPurify.removed = [];
     if (!window2 || !window2.document || window2.document.nodeType !== NODE_TYPE.document || !window2.Element) {
       DOMPurify.isSupported = false;
@@ -19864,6 +19947,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     const ElementPrototype = Element2.prototype;
     const cloneNode = lookupGetter(ElementPrototype, "cloneNode");
     const remove2 = lookupGetter(ElementPrototype, "remove");
+    const removeAttributeNode = lookupGetter(ElementPrototype, "removeAttributeNode");
     const getNextSibling = lookupGetter(ElementPrototype, "nextSibling");
     const getChildNodes = lookupGetter(ElementPrototype, "childNodes");
     const getParentNode2 = lookupGetter(ElementPrototype, "parentNode");
@@ -20297,7 +20381,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     };
     const _stripAttributeNode = function _stripAttributeNode2(element, attribute, name) {
       try {
-        element.removeAttributeNode(attribute);
+        removeAttributeNode(element, attribute);
       } catch (_2) {
         try {
           element.removeAttribute(name);
@@ -20345,7 +20429,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       });
       try {
         if (attr) {
-          element.removeAttributeNode(attr);
+          removeAttributeNode(element, attr);
         } else {
           element.removeAttribute(name);
         }
@@ -20533,7 +20617,16 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       // makes the direct read diverge from the cached read; a clean form
       // (same-realm OR foreign-realm) has both reads pointing at the same
       // canonical NamedNodeMap.
-      element.attributes !== getAttributes(element) || typeof element.removeAttribute !== "function" || typeof element.setAttribute !== "function" || typeof element.namespaceURI !== "string" || typeof element.insertBefore !== "function" || typeof element.hasChildNodes !== "function" || // NodeType clobbering probe. Cached Node.prototype.nodeType getter
+      element.attributes !== getAttributes(element) || typeof element.removeAttribute !== "function" || // A form descendant named "removeAttributeNode" or "getAttributeNode"
+      // shadows these Attr-node methods via [LegacyOverrideBuiltIns].
+      // _removeAttribute() / _stripAttributeNode() reach for
+      // element.removeAttributeNode(attr) first; when it is shadowed the call
+      // throws and the name-based fallback element.removeAttribute(name)
+      // ASCII-lowercases its lookup key in an HTML document, silently missing
+      // a case-preserved event-handler attribute (e.g. an ONANIMATIONSTART
+      // that reached the sanitizer through an XML/XHTML parse). Flag the form
+      // so it is removed wholesale, exactly as for the other shadowed methods.
+      typeof element.removeAttributeNode !== "function" || typeof element.getAttributeNode !== "function" || typeof element.setAttribute !== "function" || typeof element.namespaceURI !== "string" || typeof element.insertBefore !== "function" || typeof element.hasChildNodes !== "function" || // NodeType clobbering probe. Cached Node.prototype.nodeType getter
       // returns the integer 1 for any Element regardless of realm; direct
       // read on a clobbered form (e.g. <input name="nodeType">) returns
       // the named child element. Cheap addition — nodeType is read from
@@ -20759,11 +20852,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
         if (_isClobbered(currentNode)) {
           _forceRemove(currentNode);
-        } else {
-          arrayPop(DOMPurify.removed);
+          return false;
         }
+        return true;
       } catch (_2) {
         _removeAttribute(name, currentNode);
+        return false;
       }
     };
     const _sanitizeAttributes = function _sanitizeAttributes2(currentNode) {
@@ -20788,6 +20882,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         const lcName = transformCaseFunc(name);
         const initValue = attrValue;
         let value = name === "value" ? initValue : stringTrim(initValue);
+        let recreatedNamedProp = false;
         hookEvent.attrName = lcName;
         hookEvent.attrValue = value;
         hookEvent.keepAttr = true;
@@ -20797,6 +20892,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         if (SANITIZE_NAMED_PROPS && (lcName === "id" || lcName === "name") && stringIndexOf(value, SANITIZE_NAMED_PROPS_PREFIX) !== 0) {
           _removeAttribute(name, currentNode, attr);
           value = SANITIZE_NAMED_PROPS_PREFIX + value;
+          recreatedNamedProp = true;
         }
         if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/i, value)) {
           _removeAttribute(name, currentNode, attr);
@@ -20826,7 +20922,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
         value = _applyTrustedTypesToAttribute(lcTag, lcName, namespaceURI, value);
         if (value !== initValue) {
-          _setAttributeValue(currentNode, name, namespaceURI, value);
+          const cleanWrite = _setAttributeValue(currentNode, name, namespaceURI, value);
+          if (cleanWrite && recreatedNamedProp) {
+            arrayPop(DOMPurify.removed);
+          }
         }
       }
       _executeHooks(hooks.afterSanitizeAttributes, currentNode, null);
@@ -20964,7 +21063,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         } else {
           body.appendChild(importedNode);
         }
-        _sanitizeAttachedShadowRoots(importedNode);
+        _sanitizeAttachedShadowRoots(body);
       } else {
         if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && // eslint-disable-next-line unicorn/prefer-includes
         dirty.indexOf("<") === -1) {
@@ -21101,17 +21200,23 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     const tokens = f$1.lexer(md);
     const segments = [];
     let buffer = [];
-    const flush = () => {
+    function renderGroup(group) {
+      const list = group;
+      list.links = tokens.links;
+      return purify.sanitize(f$1.parser(list));
+    }
+    function flush() {
       if (buffer.length === 0) return;
-      const group = buffer;
-      group.links = tokens.links;
-      segments.push({ type: "html", html: purify.sanitize(f$1.parser(group)) });
+      segments.push({ type: "html", html: renderGroup(buffer) });
       buffer = [];
-    };
+    }
     for (const token of tokens) {
       if (token.type === "code") {
         flush();
         segments.push({ type: "code", code: token.text, lang: token.lang ?? "" });
+      } else if (token.type === "table") {
+        flush();
+        segments.push({ type: "table", html: renderGroup([token]) });
       } else {
         buffer.push(token);
       }
@@ -21148,10 +21253,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   function getShadowRootSelection(root2) {
     return root2.getSelection?.() ?? null;
   }
-  const _hoisted_1$A = { class: "markdown-editor" };
-  const _hoisted_2$s = ["aria-label"];
-  const _hoisted_3$l = ["contenteditable"];
-  const _sfc_main$G = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$D = { class: "markdown-editor" };
+  const _hoisted_2$u = ["aria-label"];
+  const _hoisted_3$n = ["contenteditable"];
+  const _sfc_main$K = /* @__PURE__ */ defineComponent({
     __name: "MarkdownEditor",
     props: {
       modelValue: { type: String },
@@ -21372,7 +21477,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$A, [
+        return openBlock(), createElementBlock("div", _hoisted_1$D, [
           !__props.disabled ? (openBlock(), createElementBlock("div", {
             key: 0,
             class: "markdown-editor__toolbar",
@@ -21483,7 +21588,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               title: unref(t2)("mdToolbar.redo"),
               onClick: _cache[8] || (_cache[8] = ($event) => execCmd("redo"))
             }, null, 8, ["aria-label", "title"])
-          ], 8, _hoisted_2$s)) : createCommentVNode("", true),
+          ], 8, _hoisted_2$u)) : createCommentVNode("", true),
           createBaseVNode("div", {
             ref: "editorEl",
             class: "markdown-editor__content",
@@ -21493,16 +21598,17 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             onPaste,
             onFocus: startSelectionListener,
             onBlur: stopSelectionListener
-          }, null, 40, _hoisted_3$l)
+          }, null, 40, _hoisted_3$n)
         ]);
       };
     }
   });
-  const _style_0$y = "\n.markdown-editor[data-v-b3d64419] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-b3d64419] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: 49px;\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-b3d64419] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-b3d64419] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-b3d64419] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-b3d64419] h1,\n.markdown-editor__content[data-v-b3d64419] h2,\n.markdown-editor__content[data-v-b3d64419] h3,\n.markdown-editor__content[data-v-b3d64419] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-b3d64419] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-b3d64419] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-b3d64419] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-b3d64419] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-b3d64419] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-b3d64419] ul,\n.markdown-editor__content[data-v-b3d64419] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-b3d64419] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-b3d64419] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-b3d64419] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-b3d64419] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-b3d64419] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-b3d64419] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-b3d64419] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-b3d64419] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-b3d64419] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-b3d64419] th,\n.markdown-editor__content[data-v-b3d64419] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-b3d64419] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-  const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$y]], ["__scopeId", "data-v-b3d64419"]]);
-  const _hoisted_1$z = { class: "markdown-view" };
-  const _hoisted_2$r = ["innerHTML"];
-  const _sfc_main$F = /* @__PURE__ */ defineComponent({
+  const _style_0$B = "\n.markdown-editor[data-v-a278828c] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-a278828c] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: var(--document-toolbar-height, 0px);\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-a278828c] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-a278828c] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-a278828c] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-a278828c] h1,\n.markdown-editor__content[data-v-a278828c] h2,\n.markdown-editor__content[data-v-a278828c] h3,\n.markdown-editor__content[data-v-a278828c] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-a278828c] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-a278828c] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-a278828c] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-a278828c] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-a278828c] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-a278828c] ul,\n.markdown-editor__content[data-v-a278828c] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-a278828c] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-a278828c] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-a278828c] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-a278828c] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-a278828c] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-a278828c] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-a278828c] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-a278828c] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-a278828c] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-a278828c] th,\n.markdown-editor__content[data-v-a278828c] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-a278828c] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+  const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$B]], ["__scopeId", "data-v-a278828c"]]);
+  const _hoisted_1$C = { class: "markdown-view" };
+  const _hoisted_2$t = ["innerHTML"];
+  const _hoisted_3$m = ["innerHTML"];
+  const _sfc_main$J = /* @__PURE__ */ defineComponent({
     __name: "MarkdownView",
     props: {
       source: { type: String },
@@ -21512,15 +21618,19 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const props = __props;
       const segments = computed(() => renderMarkdownSegments(props.source));
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$z, [
+        return openBlock(), createElementBlock("div", _hoisted_1$C, [
           (openBlock(true), createElementBlock(Fragment, null, renderList(segments.value, (seg, i2) => {
             return openBlock(), createElementBlock(Fragment, { key: i2 }, [
               seg.type === "html" ? (openBlock(), createElementBlock("div", {
                 key: 0,
                 class: "markdown-view__html",
                 innerHTML: seg.html
-              }, null, 8, _hoisted_2$r)) : (openBlock(), createBlock(CodeBlock, {
+              }, null, 8, _hoisted_2$t)) : seg.type === "table" ? (openBlock(), createElementBlock("div", {
                 key: 1,
+                class: "markdown-view__table",
+                innerHTML: seg.html
+              }, null, 8, _hoisted_3$m)) : (openBlock(), createBlock(CodeBlock, {
+                key: 2,
                 code: seg.code,
                 lang: seg.lang,
                 streaming: __props.streaming
@@ -21531,18 +21641,18 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$x = "\n.markdown-view[data-v-6e1cc74b] {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n\n/* No box: block children flow as direct children of .markdown-view so margin\n   collapsing keeps working across html/code segment boundaries. */\n.markdown-view__html[data-v-6e1cc74b] {\n  display: contents;\n}\n\n/* Trim the outer margins of the first/last rendered block (reach through the\n   display:contents wrapper to the real content element). */\n.markdown-view > .markdown-view__html[data-v-6e1cc74b]:first-child >  :first-child {\n  margin-top: 0;\n}\n.markdown-view > .markdown-view__html[data-v-6e1cc74b]:last-child >  :last-child {\n  margin-bottom: 0;\n}\n.markdown-view[data-v-6e1cc74b] h1,\n.markdown-view[data-v-6e1cc74b] h2,\n.markdown-view[data-v-6e1cc74b] h3,\n.markdown-view[data-v-6e1cc74b] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-6e1cc74b] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-view[data-v-6e1cc74b] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-view[data-v-6e1cc74b] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-view[data-v-6e1cc74b] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-view[data-v-6e1cc74b] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-view[data-v-6e1cc74b] ul,\n.markdown-view[data-v-6e1cc74b] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-view[data-v-6e1cc74b] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-view[data-v-6e1cc74b] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n\n/* Inline code only — fenced blocks render via <CodeBlock>. Scoped to the html\n   wrapper so it never reaches into the CodeBlock component. */\n.markdown-view__html[data-v-6e1cc74b] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n\n/* Fallback for raw <pre> written as literal HTML (not fenced code). */\n.markdown-view__html[data-v-6e1cc74b] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.markdown-view__html[data-v-6e1cc74b] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-view[data-v-6e1cc74b] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-view[data-v-6e1cc74b] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-view[data-v-6e1cc74b] strong {\n  font-weight: 700;\n}\n.markdown-view[data-v-6e1cc74b] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-view[data-v-6e1cc74b] th,\n.markdown-view[data-v-6e1cc74b] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-view[data-v-6e1cc74b] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-  const MarkdownView = /* @__PURE__ */ _export_sfc(_sfc_main$F, [["styles", [_style_0$x]], ["__scopeId", "data-v-6e1cc74b"]]);
-  const _hoisted_1$y = {
+  const _style_0$A = "\n.markdown-view[data-v-b6eeece0] {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  /* Long URLs and identifiers wrap instead of running past a narrow\n     column (phones, chat), where the overflow would just be clipped. */\n  overflow-wrap: break-word;\n}\n\n/* No box: block children flow as direct children of .markdown-view so margin\n   collapsing keeps working across html/code segment boundaries. */\n.markdown-view__html[data-v-b6eeece0] {\n  display: contents;\n}\n\n/* Trim the outer margins of the first/last rendered block (reach through the\n   display:contents wrapper to the real content element). */\n.markdown-view > .markdown-view__html[data-v-b6eeece0]:first-child >  :first-child {\n  margin-top: 0;\n}\n.markdown-view > .markdown-view__html[data-v-b6eeece0]:last-child >  :last-child {\n  margin-bottom: 0;\n}\n.markdown-view > .markdown-view__table[data-v-b6eeece0]:first-child {\n  margin-top: 0;\n}\n.markdown-view > .markdown-view__table[data-v-b6eeece0]:last-child {\n  margin-bottom: 0;\n}\n.markdown-view[data-v-b6eeece0] h1,\n.markdown-view[data-v-b6eeece0] h2,\n.markdown-view[data-v-b6eeece0] h3,\n.markdown-view[data-v-b6eeece0] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-b6eeece0] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-view[data-v-b6eeece0] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-view[data-v-b6eeece0] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-view[data-v-b6eeece0] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-view[data-v-b6eeece0] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-view[data-v-b6eeece0] ul,\n.markdown-view[data-v-b6eeece0] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-view[data-v-b6eeece0] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-view[data-v-b6eeece0] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n\n/* Inline code only — fenced blocks render via <CodeBlock>. Scoped to the html\n   wrapper so it never reaches into the CodeBlock component. */\n.markdown-view__html[data-v-b6eeece0] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n\n/* Fallback for raw <pre> written as literal HTML (not fenced code). */\n.markdown-view__html[data-v-b6eeece0] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.markdown-view__html[data-v-b6eeece0] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-view[data-v-b6eeece0] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-view[data-v-b6eeece0] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-view[data-v-b6eeece0] strong {\n  font-weight: 700;\n}\n.markdown-view[data-v-b6eeece0] img {\n  max-width: 100%;\n  height: auto;\n}\n\n/* A table wider than the column scrolls on its own, the text around it\n   keeps the column width. */\n.markdown-view__table[data-v-b6eeece0] {\n  margin: var(--spacing-md) 0;\n  overflow-x: auto;\n}\n.markdown-view[data-v-b6eeece0] table {\n  border-collapse: collapse;\n}\n.markdown-view[data-v-b6eeece0] th,\n.markdown-view[data-v-b6eeece0] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-view[data-v-b6eeece0] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+  const MarkdownView = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["styles", [_style_0$A]], ["__scopeId", "data-v-b6eeece0"]]);
+  const _hoisted_1$B = {
     key: 0,
     class: "transcript-ui-popover-list__items"
   };
-  const _hoisted_2$q = {
+  const _hoisted_2$s = {
     key: 0,
     class: "transcript-ui-popover-list__divider"
   };
-  const _hoisted_3$k = { class: "transcript-ui-popover-list__footer" };
-  const _sfc_main$E = /* @__PURE__ */ defineComponent({
+  const _hoisted_3$l = { class: "transcript-ui-popover-list__footer" };
+  const _sfc_main$I = /* @__PURE__ */ defineComponent({
     __name: "PopoverList",
     props: {
       items: { type: Array },
@@ -21595,7 +21705,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                   "side-offset": __props.sideOffset
                 }, {
                   default: withCtx(() => [
-                    __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$y, [
+                    __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$B, [
                       (openBlock(true), createElementBlock(Fragment, null, renderList(__props.items, (item, index) => {
                         return openBlock(), createBlock(unref(DropdownMenuItem_default), {
                           key: keyFor(item, index),
@@ -21611,8 +21721,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                       }), 128))
                     ])) : createCommentVNode("", true),
                     _ctx.$slots.footer ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
-                      __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$q)) : createCommentVNode("", true),
-                      createBaseVNode("div", _hoisted_3$k, [
+                      __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$s)) : createCommentVNode("", true),
+                      createBaseVNode("div", _hoisted_3$l, [
                         renderSlot(_ctx.$slots, "footer")
                       ])
                     ], 64)) : createCommentVNode("", true)
@@ -21628,21 +21738,63 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$x = ["disabled", "aria-current"];
-  const _hoisted_2$p = {
+  const _hoisted_1$A = { class: "range-slider" };
+  const _hoisted_2$r = { class: "range-slider__label" };
+  const _hoisted_3$k = { class: "range-slider__value" };
+  const _hoisted_4$e = ["min", "max", "step", "value", "disabled"];
+  const _sfc_main$H = /* @__PURE__ */ defineComponent({
+    __name: "RangeSlider",
+    props: {
+      modelValue: { type: Number },
+      label: { type: String },
+      min: { type: Number },
+      max: { type: Number },
+      step: { default: 1, type: Number },
+      unit: { default: "px", type: String },
+      disabled: { type: Boolean, default: false }
+    },
+    emits: ["update:modelValue"],
+    setup(__props, { emit: __emit }) {
+      const emit2 = __emit;
+      function onInput(event) {
+        emit2("update:modelValue", Number(event.target.value));
+      }
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("label", _hoisted_1$A, [
+          createBaseVNode("span", _hoisted_2$r, [
+            createTextVNode(toDisplayString(__props.label) + " ", 1),
+            createBaseVNode("span", _hoisted_3$k, toDisplayString(__props.modelValue) + toDisplayString(__props.unit), 1)
+          ]),
+          createBaseVNode("input", {
+            type: "range",
+            min: __props.min,
+            max: __props.max,
+            step: __props.step,
+            value: __props.modelValue,
+            disabled: __props.disabled,
+            onInput
+          }, null, 40, _hoisted_4$e)
+        ]);
+      };
+    }
+  });
+  const _style_0$z = '\n.range-slider[data-v-a6e9d302] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.range-slider__label[data-v-a6e9d302] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.range-slider__value[data-v-a6e9d302] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.range-slider input[type="range"][data-v-a6e9d302] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.range-slider input[type="range"][data-v-a6e9d302]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n';
+  const RangeSlider = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["styles", [_style_0$z]], ["__scopeId", "data-v-a6e9d302"]]);
+  const _hoisted_1$z = ["disabled", "aria-current"];
+  const _hoisted_2$q = {
     key: 0,
     class: "selectable-list-item__leading"
   };
   const _hoisted_3$j = { class: "selectable-list-item__label" };
-  const _hoisted_4$b = {
+  const _hoisted_4$d = {
     key: 1,
     class: "selectable-list-item__trailing"
   };
-  const _hoisted_5$a = {
+  const _hoisted_5$c = {
     key: 0,
     class: "selectable-list-item__actions"
   };
-  const _sfc_main$D = /* @__PURE__ */ defineComponent({
+  const _sfc_main$G = /* @__PURE__ */ defineComponent({
     __name: "SelectableListItem",
     props: {
       current: { type: Boolean },
@@ -21667,7 +21819,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             "aria-current": __props.current ? "true" : void 0,
             onClick: _cache[0] || (_cache[0] = ($event) => emit2("select"))
           }, [
-            _ctx.$slots.leading ? (openBlock(), createElementBlock("span", _hoisted_2$p, [
+            _ctx.$slots.leading ? (openBlock(), createElementBlock("span", _hoisted_2$q, [
               renderSlot(_ctx.$slots, "leading", {}, void 0, true)
             ])) : createCommentVNode("", true),
             createBaseVNode("span", _hoisted_3$j, [
@@ -21675,20 +21827,20 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                 createTextVNode(toDisplayString(__props.label), 1)
               ], true)
             ]),
-            _ctx.$slots.trailing ? (openBlock(), createElementBlock("span", _hoisted_4$b, [
+            _ctx.$slots.trailing ? (openBlock(), createElementBlock("span", _hoisted_4$d, [
               renderSlot(_ctx.$slots, "trailing", {}, void 0, true)
             ])) : createCommentVNode("", true)
-          ], 8, _hoisted_1$x),
-          _ctx.$slots.actions ? (openBlock(), createElementBlock("div", _hoisted_5$a, [
+          ], 8, _hoisted_1$z),
+          _ctx.$slots.actions ? (openBlock(), createElementBlock("div", _hoisted_5$c, [
             renderSlot(_ctx.$slots, "actions", {}, void 0, true)
           ])) : createCommentVNode("", true)
         ], 2);
       };
     }
   });
-  const _style_0$w = "\n.selectable-list-item[data-v-46747619] {\n  position: relative;\n  display: flex;\n  border: 1px solid transparent;\n  transition:\n    background-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.selectable-list-item--md[data-v-46747619] {\n  font-size: var(--font-size-sm);\n}\n.selectable-list-item--sm[data-v-46747619] {\n  font-size: var(--font-size-xs);\n}\n.selectable-list-item[data-v-46747619]:hover {\n  background-color: var(--color-surface-hover);\n}\n.selectable-list-item--current[data-v-46747619],\n.selectable-list-item--current[data-v-46747619]:hover {\n  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);\n  box-shadow: inset 2px 0 0 var(--color-primary);\n}\n\n/* ── The selectable button ── */\n.transcript-ui-root .selectable-list-item__main[data-v-46747619] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (background/border/font only) left margin,\n     padding, and appearance to whatever the host page's UA/global styles\n     happened to set. */\n  all: unset;\n  box-sizing: border-box;\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font: inherit;\n  color: var(--color-text-primary);\n  text-align: left;\n  cursor: pointer;\n}\n.transcript-ui-root .selectable-list-item--md .selectable-list-item__main[data-v-46747619] {\n  padding: var(--spacing-sm);\n}\n.transcript-ui-root .selectable-list-item--sm .selectable-list-item__main[data-v-46747619] {\n  padding: var(--spacing-xs) var(--spacing-sm);\n  color: var(--color-text-secondary);\n}\n.transcript-ui-root .selectable-list-item__main[data-v-46747619]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.transcript-ui-root .selectable-list-item__main[data-v-46747619]:disabled {\n  cursor: not-allowed;\n}\n.transcript-ui-root .selectable-list-item--current .selectable-list-item__main[data-v-46747619] {\n  color: var(--color-primary);\n  font-weight: 600;\n}\n.selectable-list-item__label[data-v-46747619] {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.selectable-list-item__leading[data-v-46747619],\n.selectable-list-item__trailing[data-v-46747619] {\n  display: inline-flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n/* Trailing content (hints, dates) stays muted even on the active row. */\n.selectable-list-item__trailing[data-v-46747619] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n\n/* ── Trailing actions (hover / focus reveal, overlaying the row) ── */\n.selectable-list-item__actions[data-v-46747619] {\n  position: absolute;\n  inset-block: 0;\n  inset-inline-end: 0;\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding-inline: var(--spacing-md) var(--spacing-xs);\n  /* Fade the label out behind the actions, matching the row surface. */\n  background: linear-gradient(\n    to right,\n    transparent,\n    var(--color-surface-hover) var(--spacing-md)\n  );\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity var(--transition-duration);\n}\n.selectable-list-item:hover .selectable-list-item__actions[data-v-46747619],\n.selectable-list-item:focus-within .selectable-list-item__actions[data-v-46747619] {\n  opacity: 1;\n  pointer-events: auto;\n}\n\n/* Match the fade to the selected surface on the active row. */\n.selectable-list-item--current .selectable-list-item__actions[data-v-46747619] {\n  background: linear-gradient(\n    to right,\n    transparent,\n    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-hover))\n      var(--spacing-md)\n  );\n}\n@media (prefers-reduced-motion: reduce) {\n.selectable-list-item[data-v-46747619],\n  .selectable-list-item__actions[data-v-46747619] {\n    transition: none;\n}\n}\n";
-  const SelectableListItem = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$w]], ["__scopeId", "data-v-46747619"]]);
-  const _sfc_main$C = /* @__PURE__ */ defineComponent({
+  const _style_0$y = "\n.selectable-list-item[data-v-46747619] {\n  position: relative;\n  display: flex;\n  border: 1px solid transparent;\n  transition:\n    background-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.selectable-list-item--md[data-v-46747619] {\n  font-size: var(--font-size-sm);\n}\n.selectable-list-item--sm[data-v-46747619] {\n  font-size: var(--font-size-xs);\n}\n.selectable-list-item[data-v-46747619]:hover {\n  background-color: var(--color-surface-hover);\n}\n.selectable-list-item--current[data-v-46747619],\n.selectable-list-item--current[data-v-46747619]:hover {\n  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);\n  box-shadow: inset 2px 0 0 var(--color-primary);\n}\n\n/* ── The selectable button ── */\n.transcript-ui-root .selectable-list-item__main[data-v-46747619] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (background/border/font only) left margin,\n     padding, and appearance to whatever the host page's UA/global styles\n     happened to set. */\n  all: unset;\n  box-sizing: border-box;\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font: inherit;\n  color: var(--color-text-primary);\n  text-align: left;\n  cursor: pointer;\n}\n.transcript-ui-root .selectable-list-item--md .selectable-list-item__main[data-v-46747619] {\n  padding: var(--spacing-sm);\n}\n.transcript-ui-root .selectable-list-item--sm .selectable-list-item__main[data-v-46747619] {\n  padding: var(--spacing-xs) var(--spacing-sm);\n  color: var(--color-text-secondary);\n}\n.transcript-ui-root .selectable-list-item__main[data-v-46747619]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.transcript-ui-root .selectable-list-item__main[data-v-46747619]:disabled {\n  cursor: not-allowed;\n}\n.transcript-ui-root .selectable-list-item--current .selectable-list-item__main[data-v-46747619] {\n  color: var(--color-primary);\n  font-weight: 600;\n}\n.selectable-list-item__label[data-v-46747619] {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.selectable-list-item__leading[data-v-46747619],\n.selectable-list-item__trailing[data-v-46747619] {\n  display: inline-flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n/* Trailing content (hints, dates) stays muted even on the active row. */\n.selectable-list-item__trailing[data-v-46747619] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n\n/* ── Trailing actions (hover / focus reveal, overlaying the row) ── */\n.selectable-list-item__actions[data-v-46747619] {\n  position: absolute;\n  inset-block: 0;\n  inset-inline-end: 0;\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding-inline: var(--spacing-md) var(--spacing-xs);\n  /* Fade the label out behind the actions, matching the row surface. */\n  background: linear-gradient(\n    to right,\n    transparent,\n    var(--color-surface-hover) var(--spacing-md)\n  );\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity var(--transition-duration);\n}\n.selectable-list-item:hover .selectable-list-item__actions[data-v-46747619],\n.selectable-list-item:focus-within .selectable-list-item__actions[data-v-46747619] {\n  opacity: 1;\n  pointer-events: auto;\n}\n\n/* Match the fade to the selected surface on the active row. */\n.selectable-list-item--current .selectable-list-item__actions[data-v-46747619] {\n  background: linear-gradient(\n    to right,\n    transparent,\n    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-hover))\n      var(--spacing-md)\n  );\n}\n@media (prefers-reduced-motion: reduce) {\n.selectable-list-item[data-v-46747619],\n  .selectable-list-item__actions[data-v-46747619] {\n    transition: none;\n}\n}\n";
+  const SelectableListItem = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$y]], ["__scopeId", "data-v-46747619"]]);
+  const _sfc_main$F = /* @__PURE__ */ defineComponent({
     __name: "SpeakerIndicator",
     props: {
       color: { type: String }
@@ -21703,12 +21855,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$v = "\n.speaker-indicator[data-v-324978c0] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
-  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$v]], ["__scopeId", "data-v-324978c0"]]);
-  const _hoisted_1$w = { class: "switch" };
-  const _hoisted_2$o = ["id", "checked", "disabled"];
+  const _style_0$x = "\n.speaker-indicator[data-v-324978c0] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
+  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$F, [["styles", [_style_0$x]], ["__scopeId", "data-v-324978c0"]]);
+  const _hoisted_1$y = { class: "switch" };
+  const _hoisted_2$p = ["id", "checked", "disabled"];
   const _hoisted_3$i = ["for"];
-  const _sfc_main$B = /* @__PURE__ */ defineComponent({
+  const _sfc_main$E = /* @__PURE__ */ defineComponent({
     __name: "SwitchToggle",
     props: {
       modelValue: { type: Boolean },
@@ -21721,14 +21873,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const emit2 = __emit;
       const inputId = props.id ?? useId$1();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$w, [
+        return openBlock(), createElementBlock("div", _hoisted_1$y, [
           createBaseVNode("input", {
             type: "checkbox",
             id: unref(inputId),
             checked: __props.modelValue,
             disabled: __props.disabled,
             onChange: _cache[0] || (_cache[0] = ($event) => emit2("update:modelValue", $event.target.checked))
-          }, null, 40, _hoisted_2$o),
+          }, null, 40, _hoisted_2$p),
           createBaseVNode("label", { for: unref(inputId) }, [..._cache[1] || (_cache[1] = [
             createBaseVNode("div", { class: "switch-slider" }, null, -1)
           ])], 8, _hoisted_3$i)
@@ -21736,15 +21888,15 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$u = "\n.switch[data-v-44d0160b] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-44d0160b] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n.switch label[data-v-44d0160b] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-border);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-44d0160b] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-44d0160b] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-44d0160b] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n.switch input:disabled + label[data-v-44d0160b] {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n";
-  const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["styles", [_style_0$u]], ["__scopeId", "data-v-44d0160b"]]);
+  const _style_0$w = "\n.switch[data-v-7b13995e] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-7b13995e] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n\n/* Track and outline are two roles, hence two tokens: reusing --color-border\n   for both collapsed into a white blob once that token went white for the\n   dark theme. The outline is what makes the knob readable. */\n.switch label[data-v-7b13995e] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-switch-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-switch-track);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-7b13995e] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-switch-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-7b13995e] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-7b13995e] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n.switch input:disabled + label[data-v-7b13995e] {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n";
+  const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["styles", [_style_0$w]], ["__scopeId", "data-v-7b13995e"]]);
   function computeInitials(name) {
     const words = name.trim().split(/\s+/).filter(Boolean);
     if (words.length === 0) return "?";
     return words.slice(0, 2).map((w2) => w2[0].toUpperCase()).join("");
   }
-  const _hoisted_1$v = ["title", "aria-label"];
-  const _sfc_main$A = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$x = ["title", "aria-label"];
+  const _sfc_main$D = /* @__PURE__ */ defineComponent({
     __name: "UserAvatar",
     props: {
       name: { type: String },
@@ -21760,22 +21912,22 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           role: "img",
           title: title.value,
           "aria-label": title.value
-        }, toDisplayString(initials.value), 9, _hoisted_1$v);
+        }, toDisplayString(initials.value), 9, _hoisted_1$x);
       };
     }
   });
-  const _style_0$t = "\n.user-avatar[data-v-977a8d17] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  user-select: none;\n  cursor: default;\n}\n";
-  const UserAvatar = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$t]], ["__scopeId", "data-v-977a8d17"]]);
-  const _hoisted_1$u = ["data-status"];
-  const _hoisted_2$n = {
+  const _style_0$v = "\n.user-avatar[data-v-977a8d17] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  user-select: none;\n  cursor: default;\n}\n";
+  const UserAvatar = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$v]], ["__scopeId", "data-v-977a8d17"]]);
+  const _hoisted_1$w = ["data-status"];
+  const _hoisted_2$o = {
     key: 0,
     class: "document-article__toolbar",
     role: "toolbar"
   };
   const _hoisted_3$h = { class: "document-article__toolbar-left" };
-  const _hoisted_4$a = { class: "document-article__toolbar-center" };
-  const _hoisted_5$9 = { class: "document-article__toolbar-right" };
-  const _hoisted_6$8 = { class: "document-article__body" };
+  const _hoisted_4$c = { class: "document-article__toolbar-center" };
+  const _hoisted_5$b = { class: "document-article__toolbar-right" };
+  const _hoisted_6$9 = { class: "document-article__body" };
   const _hoisted_7$4 = {
     key: 0,
     class: "document-article__center document-article__center--processing",
@@ -21793,7 +21945,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     role: "alert"
   };
   const _hoisted_11$1 = { class: "document-article__error-text" };
-  const _sfc_main$z = /* @__PURE__ */ defineComponent({
+  const _sfc_main$C = /* @__PURE__ */ defineComponent({
     __name: "DocumentArticle",
     props: {
       status: { default: "done", type: String },
@@ -21818,18 +21970,18 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           class: "document-article",
           "data-status": props.status
         }, [
-          _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", _hoisted_2$n, [
+          _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", _hoisted_2$o, [
             createBaseVNode("div", _hoisted_3$h, [
               renderSlot(_ctx.$slots, "toolbar-left", {}, void 0, true)
             ]),
-            createBaseVNode("div", _hoisted_4$a, [
+            createBaseVNode("div", _hoisted_4$c, [
               renderSlot(_ctx.$slots, "toolbar-center", {}, void 0, true)
             ]),
-            createBaseVNode("div", _hoisted_5$9, [
+            createBaseVNode("div", _hoisted_5$b, [
               renderSlot(_ctx.$slots, "toolbar-right", {}, void 0, true)
             ])
           ])) : createCommentVNode("", true),
-          createBaseVNode("div", _hoisted_6$8, [
+          createBaseVNode("div", _hoisted_6$9, [
             props.status === "processing" ? (openBlock(), createElementBlock("div", _hoisted_7$4, [
               createVNode(EditorIcon, {
                 name: "spinner",
@@ -21856,13 +22008,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               })
             ])) : renderSlot(_ctx.$slots, "default", {}, void 0, true, 2)
           ])
-        ], 8, _hoisted_1$u);
+        ], 8, _hoisted_1$w);
       };
     }
   });
-  const _style_0$s = "\n.document-article[data-v-e3f4ca33] {\n  width: min(1088px, calc(100% - 16px));\n  max-width: 1088px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-e3f4ca33] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-e3f4ca33],\n.document-article__toolbar-right[data-v-e3f4ca33] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-e3f4ca33] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-e3f4ca33] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-e3f4ca33] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-e3f4ca33] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-e3f4ca33] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-e3f4ca33] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-e3f4ca33] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n.document-article__error-text[data-v-e3f4ca33] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
-  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$s]], ["__scopeId", "data-v-e3f4ca33"]]);
-  const _sfc_main$y = /* @__PURE__ */ defineComponent({
+  const _style_0$u = "\n.document-article[data-v-dda12eb4] {\n  /* One row of buttons plus padding and border. Declared rather than\n     measured: slot content must stay on one line (truncate, don't wrap), and\n     content stuck right under the toolbar (the markdown editor's toolbar)\n     reads this value as its offset. */\n  --document-toolbar-height: 49px;\n\n  width: min(1088px, calc(100% - 16px));\n  max-width: 1088px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-dda12eb4] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  height: var(--document-toolbar-height);\n  padding: 0 var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-dda12eb4],\n.document-article__toolbar-right[data-v-dda12eb4] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-dda12eb4] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-dda12eb4] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-dda12eb4] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-dda12eb4] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-dda12eb4] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-dda12eb4] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-dda12eb4] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n@media (max-width: 767px) {\n.document-article[data-v-dda12eb4] {\n    margin: var(--spacing-sm) auto;\n}\n}\n.document-article__error-text[data-v-dda12eb4] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
+  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$C, [["styles", [_style_0$u]], ["__scopeId", "data-v-dda12eb4"]]);
+  const _sfc_main$B = /* @__PURE__ */ defineComponent({
     __name: "DownloadMenu",
     props: {
       formats: { type: Array },
@@ -21878,7 +22030,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         emit2("select", item.format);
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(_sfc_main$E, {
+        return openBlock(), createBlock(_sfc_main$I, {
           items: props.formats,
           "item-key": (f2) => f2.format,
           align: "end",
@@ -21906,7 +22058,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _sfc_main$x = /* @__PURE__ */ defineComponent({
+  const _sfc_main$A = /* @__PURE__ */ defineComponent({
     __name: "SpeakerMenu",
     emits: ["merge"],
     setup(__props, { emit: __emit }) {
@@ -21919,7 +22071,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         if (action.id === "merge") emit2("merge");
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(_sfc_main$E, {
+        return openBlock(), createBlock(_sfc_main$I, {
           items: items.value,
           "item-key": (a2) => a2.id,
           align: "end",
@@ -21940,20 +22092,34 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$t = ["aria-label"];
-  const _hoisted_2$m = ["aria-selected", "aria-disabled", "disabled", "onClick"];
+  const _hoisted_1$v = ["aria-label"];
+  const _hoisted_2$n = ["aria-selected", "aria-disabled", "disabled", "onClick"];
   const _hoisted_3$g = { class: "tab__label" };
-  const _sfc_main$w = /* @__PURE__ */ defineComponent({
+  const _hoisted_4$b = ["aria-selected", "aria-label"];
+  const _hoisted_5$a = { class: "tab__label" };
+  const _hoisted_6$8 = { class: "tab__menu-item" };
+  const _sfc_main$z = /* @__PURE__ */ defineComponent({
     __name: "Tabs",
     props: {
       tabs: { type: Array },
       modelValue: { type: null },
-      ariaLabel: { type: String }
+      ariaLabel: { type: String },
+      collapseFrom: { type: Number }
     },
     emits: ["update:modelValue"],
     setup(__props, { emit: __emit }) {
       const props = __props;
       const emit2 = __emit;
+      const { t: t2 } = useI18n();
+      const inlineTabs = computed(
+        () => props.collapseFrom === void 0 ? props.tabs : props.tabs.slice(0, props.collapseFrom)
+      );
+      const collapsedTabs = computed(
+        () => props.collapseFrom === void 0 ? [] : props.tabs.slice(props.collapseFrom)
+      );
+      const activeCollapsedTab = computed(
+        () => collapsedTabs.value.find((tab) => tab.value === props.modelValue) ?? null
+      );
       function onSelect(tab) {
         if (tab.disabled) return;
         if (tab.value === props.modelValue) return;
@@ -21965,7 +22131,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           role: "tablist",
           "aria-label": __props.ariaLabel
         }, [
-          (openBlock(true), createElementBlock(Fragment, null, renderList(__props.tabs, (tab) => {
+          (openBlock(true), createElementBlock(Fragment, null, renderList(inlineTabs.value, (tab) => {
             return openBlock(), createElementBlock("button", {
               key: tab.value,
               type: "button",
@@ -21992,14 +22158,65 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                 ]),
                 _: 2
               }, 1024)) : createCommentVNode("", true)
-            ], 10, _hoisted_2$m);
-          }), 128))
-        ], 8, _hoisted_1$t);
+            ], 10, _hoisted_2$n);
+          }), 128)),
+          collapsedTabs.value.length > 0 ? (openBlock(), createBlock(_sfc_main$I, {
+            key: 0,
+            items: collapsedTabs.value,
+            "item-key": (tab) => tab.value,
+            "is-current": (tab) => tab.value === __props.modelValue,
+            align: "end",
+            onSelect
+          }, {
+            trigger: withCtx(() => [
+              createBaseVNode("button", {
+                type: "button",
+                role: "tab",
+                class: normalizeClass(["tab tab--more", { "tab--active": activeCollapsedTab.value !== null }]),
+                "aria-selected": activeCollapsedTab.value !== null,
+                "aria-label": unref(t2)("tabs.moreLabel")
+              }, [
+                createBaseVNode("span", _hoisted_5$a, toDisplayString(activeCollapsedTab.value ? activeCollapsedTab.value.label : unref(t2)("tabs.moreLabel")), 1),
+                activeCollapsedTab.value?.badge ? (openBlock(), createBlock(Badge, {
+                  key: 0,
+                  class: "tab__badge"
+                }, {
+                  default: withCtx(() => [
+                    createTextVNode(toDisplayString(activeCollapsedTab.value.badge), 1)
+                  ]),
+                  _: 1
+                })) : createCommentVNode("", true),
+                createVNode(EditorIcon, {
+                  name: "chevron-down",
+                  size: 14,
+                  class: "tab__chevron"
+                })
+              ], 10, _hoisted_4$b)
+            ]),
+            item: withCtx(({ item }) => [
+              createBaseVNode("span", _hoisted_6$8, [
+                unref(resolveIcon)(item.icon) ? (openBlock(), createBlock(EditorIcon, {
+                  key: 0,
+                  name: item.icon,
+                  size: 16
+                }, null, 8, ["name"])) : createCommentVNode("", true),
+                createBaseVNode("span", null, toDisplayString(item.label), 1),
+                item.badge ? (openBlock(), createBlock(Badge, { key: 1 }, {
+                  default: withCtx(() => [
+                    createTextVNode(toDisplayString(item.badge), 1)
+                  ]),
+                  _: 2
+                }, 1024)) : createCommentVNode("", true)
+              ])
+            ]),
+            _: 1
+          }, 8, ["items", "item-key", "is-current"])) : createCommentVNode("", true)
+        ], 8, _hoisted_1$v);
       };
     }
   });
-  const _style_0$r = "\n.tabs[data-v-b17b8689] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.transcript-ui-root .tab[data-v-b17b8689] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .tab[data-v-b17b8689]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.transcript-ui-root .tab[data-v-b17b8689]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .tab--active[data-v-b17b8689] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.transcript-ui-root .tab[disabled][data-v-b17b8689] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-b17b8689] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-b17b8689] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-b17b8689] {\n  margin-left: var(--spacing-xs);\n}\n";
-  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$r]], ["__scopeId", "data-v-b17b8689"]]);
+  const _style_0$t = '\n.tabs[data-v-30747b8d] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.transcript-ui-root .tab[data-v-30747b8d] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .tab[data-v-30747b8d]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.transcript-ui-root .tab[data-v-30747b8d]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .tab--active[data-v-30747b8d] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.transcript-ui-root .tab[disabled][data-v-30747b8d] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-30747b8d] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-30747b8d] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-30747b8d] {\n  margin-left: var(--spacing-xs);\n}\n.tab__chevron[data-v-30747b8d] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__menu-item[data-v-30747b8d] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n\n/* Phone: the inline tabs share the width, labels shrink with an ellipsis,\n   icons go, nothing scrolls sideways (the rest lives in the "More" menu). */\n@media (max-width: 767px) {\n.tabs[data-v-30747b8d] {\n    padding: 0 var(--spacing-sm);\n    overflow-x: hidden;\n}\n.transcript-ui-root .tab[data-v-30747b8d] {\n    flex: 1;\n    min-width: 0;\n    justify-content: center;\n    padding: 0 var(--spacing-xs);\n    font-size: var(--font-size-xs);\n}\n.tab__icon[data-v-30747b8d] {\n    display: none;\n}\n.tab__label[data-v-30747b8d] {\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n}\n';
+  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$t]], ["__scopeId", "data-v-30747b8d"]]);
   const TEXT_NODE$1 = 3;
   function placeCaretAt(element, offset2) {
     element.focus({ preventScroll: true });
@@ -22056,8 +22273,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     if (!focus2 || !container.contains(focus2.node)) return null;
     return computeTextOffsetInContainer(container, focus2.node, focus2.offset);
   }
-  const _hoisted_1$s = ["aria-label", "textContent"];
-  const _sfc_main$v = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$u = ["aria-label", "textContent"];
+  const _sfc_main$y = /* @__PURE__ */ defineComponent({
     __name: "TurnTextEditor",
     props: {
       text: { type: String },
@@ -22111,22 +22328,22 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           onKeydown,
           onBlur,
           textContent: toDisplayString(__props.text)
-        }, null, 40, _hoisted_1$s);
+        }, null, 40, _hoisted_1$u);
       };
     }
   });
-  const _style_0$q = "\n.turn-text-editor[data-v-597e2575] {\n  margin: 0;\n  white-space: pre-wrap;\n  overflow-wrap: anywhere;\n  cursor: text;\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  padding: 0;\n}\n";
-  const TurnTextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$q]], ["__scopeId", "data-v-597e2575"]]);
-  const _hoisted_1$r = { class: "editor-header" };
-  const _hoisted_2$l = { class: "header-main" };
+  const _style_0$s = "\n.turn-text-editor[data-v-597e2575] {\n  margin: 0;\n  white-space: pre-wrap;\n  overflow-wrap: anywhere;\n  cursor: text;\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  padding: 0;\n}\n";
+  const TurnTextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["styles", [_style_0$s]], ["__scopeId", "data-v-597e2575"]]);
+  const _hoisted_1$t = { class: "editor-header" };
+  const _hoisted_2$m = { class: "header-main" };
   const _hoisted_3$f = { class: "document-title" };
-  const _hoisted_4$9 = {
+  const _hoisted_4$a = {
     key: 0,
     class: "document-meta"
   };
-  const _hoisted_5$8 = { class: "header-right" };
+  const _hoisted_5$9 = { class: "header-right" };
   const _hoisted_6$7 = { key: 0 };
-  const _sfc_main$u = /* @__PURE__ */ defineComponent({
+  const _sfc_main$x = /* @__PURE__ */ defineComponent({
     __name: "Header",
     props: {
       title: { type: String },
@@ -22160,10 +22377,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         ].filter(Boolean)
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("header", _hoisted_1$r, [
-          createBaseVNode("div", _hoisted_2$l, [
+        return openBlock(), createElementBlock("header", _hoisted_1$t, [
+          createBaseVNode("div", _hoisted_2$m, [
             createBaseVNode("h1", _hoisted_3$f, toDisplayString(formattedTitle.value), 1),
-            metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$9, [
+            metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$a, [
               (openBlock(true), createElementBlock(Fragment, null, renderList(metaParts.value, (part, i2) => {
                 return openBlock(), createElementBlock("span", {
                   key: i2,
@@ -22172,7 +22389,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               }), 128))
             ])) : createCommentVNode("", true)
           ]),
-          createBaseVNode("div", _hoisted_5$8, [
+          createBaseVNode("div", _hoisted_5$9, [
             __props.isMobile ? (openBlock(), createBlock(unref(Button), {
               key: 0,
               variant: "transparent",
@@ -22187,34 +22404,36 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               ]),
               _: 1
             }, 8, ["aria-label"])) : createCommentVNode("", true),
-            createVNode(unref(Button), {
-              variant: "secondary",
-              "aria-label": unref(t2)("header.undo"),
-              disabled: !props.canUndo,
-              onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("undo"))
-            }, {
-              icon: withCtx(() => [
-                createVNode(unref(EditorIcon), {
-                  name: "undo",
-                  size: 16
-                })
-              ]),
-              _: 1
-            }, 8, ["aria-label", "disabled"]),
-            createVNode(unref(Button), {
-              variant: "secondary",
-              "aria-label": unref(t2)("header.redo"),
-              disabled: !props.canRedo,
-              onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("redo"))
-            }, {
-              icon: withCtx(() => [
-                createVNode(unref(EditorIcon), {
-                  name: "redo",
-                  size: 16
-                })
-              ]),
-              _: 1
-            }, 8, ["aria-label", "disabled"]),
+            props.canUndo || props.canRedo ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+              createVNode(unref(Button), {
+                variant: "secondary",
+                "aria-label": unref(t2)("header.undo"),
+                disabled: !props.canUndo,
+                onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("undo"))
+              }, {
+                icon: withCtx(() => [
+                  createVNode(unref(EditorIcon), {
+                    name: "undo",
+                    size: 16
+                  })
+                ]),
+                _: 1
+              }, 8, ["aria-label", "disabled"]),
+              createVNode(unref(Button), {
+                variant: "secondary",
+                "aria-label": unref(t2)("header.redo"),
+                disabled: !props.canRedo,
+                onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("redo"))
+              }, {
+                icon: withCtx(() => [
+                  createVNode(unref(EditorIcon), {
+                    name: "redo",
+                    size: 16
+                  })
+                ]),
+                _: 1
+              }, 8, ["aria-label", "disabled"])
+            ], 64)) : createCommentVNode("", true),
             createVNode(unref(Button), {
               variant: "primary",
               "aria-label": unref(t2)("header.ask"),
@@ -22237,11 +22456,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$p = '\n.editor-header[data-v-6464a453] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-6464a453] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-6464a453] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-6464a453] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-6464a453] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-6464a453]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-6464a453] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-6464a453] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-6464a453] {\n    font-size: var(--font-size-base);\n}\n}\n';
-  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-6464a453"]]);
+  const _style_0$r = '\n.editor-header[data-v-491cf8ab] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-491cf8ab] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-491cf8ab] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-491cf8ab] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-491cf8ab] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-491cf8ab]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-491cf8ab] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-491cf8ab] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-491cf8ab] {\n    font-size: var(--font-size-base);\n}\n}\n';
+  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["styles", [_style_0$r]], ["__scopeId", "data-v-491cf8ab"]]);
   const TRANSCRIPTION_TAB = "__transcription__";
   const VERBATIM_TAB = "__verbatim__";
-  const _sfc_main$t = /* @__PURE__ */ defineComponent({
+  function useIsMobile() {
+    return { isMobile: useCore().isMobile };
+  }
+  const _sfc_main$w = /* @__PURE__ */ defineComponent({
     __name: "TabBar",
     props: {
       modelValue: { type: String },
@@ -22253,6 +22475,11 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const emit2 = __emit;
       const core = useCore();
       const { t: t2 } = useI18n();
+      const { isMobile } = useIsMobile();
+      const collapseFrom = computed(() => {
+        if (!isMobile.value) return void 0;
+        return props.showVerbatim ? 2 : 1;
+      });
       const tabs = computed(() => {
         const services = core.llmServices?.list.value ?? [];
         return [
@@ -22284,8 +22511,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           key: 0,
           tabs: tabs.value,
           "model-value": __props.modelValue,
+          "collapse-from": collapseFrom.value,
           "onUpdate:modelValue": onSelect
-        }, null, 8, ["tabs", "model-value"])) : createCommentVNode("", true);
+        }, null, 8, ["tabs", "model-value", "collapse-from"])) : createCommentVNode("", true);
       };
     }
   });
@@ -22655,7 +22883,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     };
   }
   var StickToBottomKey = /* @__PURE__ */ Symbol("StickToBottom");
-  var _hoisted_1$q = { style: {
+  var _hoisted_1$s = { style: {
     "position": "relative",
     "height": "100%",
     "width": "100%",
@@ -22721,7 +22949,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         stopScroll
       }));
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", null, [createBaseVNode("div", _hoisted_1$q, [createBaseVNode("div", {
+        return openBlock(), createElementBlock("div", null, [createBaseVNode("div", _hoisted_1$s, [createBaseVNode("div", {
           ref_key: "scrollRef",
           ref: scrollRef,
           style: normalizeStyle({
@@ -22738,19 +22966,20 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$p = ["datetime"];
-  const _hoisted_2$k = {
-    key: 2,
+  const _hoisted_1$r = ["datetime"];
+  const _hoisted_2$l = {
+    key: 3,
     class: "lang"
   };
-  const _sfc_main$s = /* @__PURE__ */ defineComponent({
+  const _sfc_main$v = /* @__PURE__ */ defineComponent({
     __name: "SpeakerLabel",
     props: {
       speaker: { type: Object },
       startTime: { type: Number },
       startDate: { type: Number },
       language: { type: String },
-      interactive: { type: Boolean }
+      interactive: { type: Boolean },
+      showLanguage: { type: Boolean, default: true }
     },
     setup(__props) {
       const props = __props;
@@ -22779,7 +23008,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         return null;
       });
       const speakerColor = computed(() => props.speaker?.color ?? "transparent");
-      const displayName = computed(() => props.speaker?.name ?? t2("speaker.unknown"));
+      const displayName = computed(
+        () => props.speaker?.name ?? (props.interactive ? t2("speaker.unknown") : "")
+      );
       return (_ctx, _cache) => {
         return openBlock(), createElementBlock("div", {
           class: normalizeClass(["speaker-label", { "speaker-label--interactive": __props.interactive }])
@@ -22788,26 +23019,27 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             key: 0,
             color: speakerColor.value
           }, null, 8, ["color"])) : createCommentVNode("", true),
-          createBaseVNode("span", {
-            class: normalizeClass(["speaker-name", { "speaker-name--unknown": !__props.speaker }])
-          }, toDisplayString(displayName.value), 3),
-          timestamp.value ? (openBlock(), createElementBlock("time", {
+          displayName.value ? (openBlock(), createElementBlock("span", {
             key: 1,
+            class: normalizeClass(["speaker-name", { "speaker-name--unknown": !__props.speaker }])
+          }, toDisplayString(displayName.value), 3)) : createCommentVNode("", true),
+          timestamp.value ? (openBlock(), createElementBlock("time", {
+            key: 2,
             class: "timestamp",
             datetime: timestamp.value.datetime
-          }, toDisplayString(timestamp.value.text), 9, _hoisted_1$p)) : createCommentVNode("", true),
-          languageName.value ? (openBlock(), createElementBlock("span", _hoisted_2$k, toDisplayString(languageName.value), 1)) : createCommentVNode("", true)
+          }, toDisplayString(timestamp.value.text), 9, _hoisted_1$r)) : createCommentVNode("", true),
+          __props.showLanguage && languageName.value ? (openBlock(), createElementBlock("span", _hoisted_2$l, toDisplayString(languageName.value), 1)) : createCommentVNode("", true)
         ], 2);
       };
     }
   });
-  const _style_0$o = "\n.speaker-label[data-v-76cb4ed6] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-76cb4ed6] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.speaker-name--unknown[data-v-76cb4ed6] {\n  font-weight: 400;\n  font-style: italic;\n  color: var(--color-text-muted);\n}\n.speaker-label--interactive:hover .speaker-name[data-v-76cb4ed6] {\n  text-decoration: underline;\n}\n.timestamp[data-v-76cb4ed6] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-76cb4ed6] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
-  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$o]], ["__scopeId", "data-v-76cb4ed6"]]);
-  const _hoisted_1$o = {
+  const _style_0$q = "\n.speaker-label[data-v-c7a3e9ae] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-c7a3e9ae] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.speaker-name--unknown[data-v-c7a3e9ae] {\n  font-weight: 400;\n  font-style: italic;\n  color: var(--color-text-muted);\n}\n.speaker-label--interactive:hover .speaker-name[data-v-c7a3e9ae] {\n  text-decoration: underline;\n}\n.timestamp[data-v-c7a3e9ae] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-c7a3e9ae] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
+  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$q]], ["__scopeId", "data-v-c7a3e9ae"]]);
+  const _hoisted_1$q = {
     key: 0,
     class: "merge-turns"
   };
-  const _sfc_main$r = /* @__PURE__ */ defineComponent({
+  const _sfc_main$u = /* @__PURE__ */ defineComponent({
     __name: "MergeTurnsButton",
     props: {
       firstTurnId: { type: String },
@@ -22827,7 +23059,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         core.transcriptionEditor.mergeTurns(props.firstTurnId, props.secondTurnId);
       }
       return (_ctx, _cache) => {
-        return canShow.value ? (openBlock(), createElementBlock("div", _hoisted_1$o, [
+        return canShow.value ? (openBlock(), createElementBlock("div", _hoisted_1$q, [
           createVNode(unref(Button), {
             size: "sm",
             variant: "inverse",
@@ -22840,8 +23072,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$n = "\n.merge-turns[data-v-8d977feb] {\n  display: flex;\n  justify-content: center;\n}\n\n/* Compact: the control sits in the gap between turns without inflating it. */\n.merge-turns[data-v-8d977feb] .editor-btn {\n  --btn-height: 22px;\n}\n";
-  const MergeTurnsButton = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-8d977feb"]]);
+  const _style_0$p = "\n.merge-turns[data-v-8d977feb] {\n  display: flex;\n  justify-content: center;\n}\n\n/* Compact: the control sits in the gap between turns without inflating it. */\n.merge-turns[data-v-8d977feb] .editor-btn {\n  --btn-height: 22px;\n}\n";
+  const MergeTurnsButton = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-8d977feb"]]);
   function renameSpeaker$1(core, speakerId, newName) {
     const trimmed = newName.trim();
     const existing = core.speakers.all.get(speakerId);
@@ -22904,12 +23136,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     switchTurnSpeaker: switchTurnSpeaker$1,
     updateTurnWords
   }, Symbol.toStringTag, { value: "Module" }));
-  const _hoisted_1$n = {
+  const _hoisted_1$p = {
     type: "button",
     class: "speaker-popover-trigger"
   };
-  const _hoisted_2$j = { class: "speaker-popover-name" };
-  const _sfc_main$q = /* @__PURE__ */ defineComponent({
+  const _hoisted_2$k = { class: "speaker-popover-name" };
+  const _sfc_main$t = /* @__PURE__ */ defineComponent({
     __name: "SpeakerPopover",
     props: {
       turnId: { type: String },
@@ -22975,7 +23207,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         isCreatingNew.value = false;
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(unref(_sfc_main$E), {
+        return openBlock(), createBlock(unref(_sfc_main$I), {
           open: isOpen.value,
           "onUpdate:open": _cache[1] || (_cache[1] = ($event) => isOpen.value = $event),
           items: speakers.value,
@@ -22984,7 +23216,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           onSelect: onPickExisting
         }, {
           trigger: withCtx(() => [
-            createBaseVNode("button", _hoisted_1$n, [
+            createBaseVNode("button", _hoisted_1$p, [
               renderSlot(_ctx.$slots, "default", {}, void 0, true)
             ])
           ]),
@@ -22992,7 +23224,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             createVNode(unref(SpeakerIndicator), {
               color: item.color
             }, null, 8, ["color"]),
-            createBaseVNode("span", _hoisted_2$j, toDisplayString(item.name), 1)
+            createBaseVNode("span", _hoisted_2$k, toDisplayString(item.name), 1)
           ]),
           footer: withCtx(() => [
             !isCreatingNew.value ? (openBlock(), createBlock(unref(Button), {
@@ -23025,8 +23257,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$m = "\n.transcript-ui-root .speaker-popover-trigger[data-v-0679fde9] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-popover-trigger[data-v-0679fde9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.speaker-popover-name[data-v-0679fde9] {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
-  const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$m]], ["__scopeId", "data-v-0679fde9"]]);
+  const _style_0$o = "\n.transcript-ui-root .speaker-popover-trigger[data-v-0679fde9] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-popover-trigger[data-v-0679fde9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.speaker-popover-name[data-v-0679fde9] {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
+  const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$o]], ["__scopeId", "data-v-0679fde9"]]);
   const turnSelectionKey = /* @__PURE__ */ Symbol("turnSelection");
   function getTurnText(turn) {
     if (turn.words.length > 0) {
@@ -23172,14 +23404,14 @@ ${text2}` : text2;
       (w2) => w2.charStart != null && w2.charEnd != null && w2.charStart <= offset2 && offset2 < w2.charEnd
     );
   }
-  const _hoisted_1$m = ["data-turn-active", "aria-selected"];
-  const _hoisted_2$i = {
+  const _hoisted_1$o = ["data-turn-active", "aria-selected"];
+  const _hoisted_2$j = {
     key: 4,
     class: "turn-edit-actions"
   };
   const _hoisted_3$e = ["role", "tabindex", "aria-label", "aria-disabled"];
-  const _hoisted_4$8 = ["data-word-active"];
-  const _sfc_main$p = /* @__PURE__ */ defineComponent({
+  const _hoisted_4$9 = ["data-word-active"];
+  const _sfc_main$s = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionTurn",
     props: {
       turn: { type: Object },
@@ -23210,6 +23442,11 @@ ${text2}` : text2;
         return time >= props.turn.startTime && time <= props.turn.endTime;
       });
       const speakerColor = computed(() => props.speaker?.color ?? "transparent");
+      const showLanguage = computed(() => {
+        const active = core.activeChannel.value?.activeTranslation.value;
+        if (!active) return true;
+        return active.isSource || active.id === CROSS_TRANSLATION_ID;
+      });
       const isSelected = computed(() => selection.isSelected(props.turn.id));
       const checkboxLabel = computed(() => {
         const name = props.speaker?.name ?? "";
@@ -23225,6 +23462,7 @@ ${text2}` : text2;
       const turnLock = computed(
         () => isEditing.value ? void 0 : core.transcriptionEditor?.getTurnLock(props.turn.id)
       );
+      const hasEditActions = computed(() => core.transcriptionEditor !== void 0);
       const lockedByLabel = computed(
         () => turnLock.value ? t2("transcription.lockedBy").replace("{name}", turnLock.value.userName) : ""
       );
@@ -23315,7 +23553,7 @@ ${text2}` : text2;
           }, null, 8, ["first-turn-id", "second-turn-id"])) : createCommentVNode("", true),
           !__props.partial ? (openBlock(), createElementBlock("div", {
             key: 1,
-            class: "turn-header",
+            class: normalizeClass(["turn-header", { "turn-header--with-actions": hasEditActions.value }]),
             onClick: onHeaderClick
           }, [
             unref(selection).hasSelection.value ? (openBlock(), createBlock(unref(EditorCheckbox), {
@@ -23336,8 +23574,9 @@ ${text2}` : text2;
                   "start-time": __props.turn.startTime,
                   "start-date": __props.turn.startDate,
                   language: __props.turn.language,
+                  "show-language": showLanguage.value,
                   interactive: ""
-                }, null, 8, ["speaker", "start-time", "start-date", "language"])
+                }, null, 8, ["speaker", "start-time", "start-date", "language", "show-language"])
               ]),
               _: 1
             }, 8, ["turn-id", "current-speaker-id"])) : canEditSpeakers.value ? (openBlock(), createElementBlock("button", {
@@ -23351,16 +23590,18 @@ ${text2}` : text2;
                 "start-time": __props.turn.startTime,
                 "start-date": __props.turn.startDate,
                 language: __props.turn.language,
+                "show-language": showLanguage.value,
                 interactive: ""
-              }, null, 8, ["speaker", "start-time", "start-date", "language"])
+              }, null, 8, ["speaker", "start-time", "start-date", "language", "show-language"])
             ])) : (openBlock(), createBlock(SpeakerLabel, {
               key: 3,
               speaker: __props.speaker,
               "start-time": __props.turn.startTime,
               "start-date": __props.turn.startDate,
-              language: __props.turn.language
-            }, null, 8, ["speaker", "start-time", "start-date", "language"])),
-            isEditing.value || turnLock.value ? (openBlock(), createElementBlock("div", _hoisted_2$i, [
+              language: __props.turn.language,
+              "show-language": showLanguage.value
+            }, null, 8, ["speaker", "start-time", "start-date", "language", "show-language"])),
+            isEditing.value || turnLock.value ? (openBlock(), createElementBlock("div", _hoisted_2$j, [
               isEditing.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
                 createVNode(unref(Button), {
                   size: "sm",
@@ -23388,7 +23629,7 @@ ${text2}` : text2;
                 }, ["stop"]))
               }, null, 8, ["name", "label"]))
             ])) : createCommentVNode("", true)
-          ])) : createCommentVNode("", true),
+          ], 2)) : createCommentVNode("", true),
           isEditing.value ? (openBlock(), createBlock(unref(TurnTextEditor), {
             key: 2,
             ref: "editor",
@@ -23415,50 +23656,73 @@ ${text2}` : text2;
                 createBaseVNode("span", {
                   class: normalizeClass({ "word--active": word.id === activeWordId.value }),
                   "data-word-active": word.id === activeWordId.value || void 0
-                }, toDisplayString(word.text), 11, _hoisted_4$8),
+                }, toDisplayString(word.text), 11, _hoisted_4$9),
                 createTextVNode(toDisplayString(i2 < __props.turn.words.length - 1 ? " " : ""), 1)
               ], 64);
             }), 128)) : __props.turn.text ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
               createTextVNode(toDisplayString(__props.turn.text), 1)
             ], 64)) : createCommentVNode("", true)
           ], 42, _hoisted_3$e))
-        ], 14, _hoisted_1$m);
+        ], 14, _hoisted_1$o);
       };
     }
   });
-  const _style_0$l = "\n.turn[data-v-5a13b85e] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-5a13b85e] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n  /* Reserve the edit-actions height (Button sm) so entering/leaving edit\n     mode never shifts the layout. */\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-5a13b85e] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n\n/* Same reset as the popover's own trigger: the label IS the button. */\n.transcript-ui-root .speaker-trigger[data-v-5a13b85e] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-trigger[data-v-5a13b85e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.turn[data-v-5a13b85e]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-5a13b85e] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-5a13b85e] {\n  cursor: text;\n}\n.turn-text--editable[data-v-5a13b85e]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-5a13b85e] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-5a13b85e]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-5a13b85e] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-5a13b85e] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-5a13b85e 200ms ease;\n}\n@keyframes partial-fade-in-5a13b85e {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-5a13b85e] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-5a13b85e] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-5a13b85e],\n  .turn--active[data-v-5a13b85e]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
-  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$l]], ["__scopeId", "data-v-5a13b85e"]]);
-  const _sfc_main$o = {};
-  const _hoisted_1$l = {
+  const _style_0$n = "\n.turn[data-v-2b4ee8df] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-2b4ee8df] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n\n/* Reserve the edit-actions height (Button sm) so entering/leaving edit mode\n   never shifts the layout — but only where those actions can appear at all.\n   Read-only, the row holds a line of metadata and has no reason to be 36px\n   tall. */\n.turn-header--with-actions[data-v-2b4ee8df] {\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-2b4ee8df] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n\n/* Same reset as the popover's own trigger: the label IS the button. */\n.transcript-ui-root .speaker-trigger[data-v-2b4ee8df] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-trigger[data-v-2b4ee8df]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.turn[data-v-2b4ee8df]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-2b4ee8df] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--transcript-font-size);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-2b4ee8df] {\n  cursor: text;\n}\n.turn-text--editable[data-v-2b4ee8df]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-2b4ee8df] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-2b4ee8df]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-2b4ee8df] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-2b4ee8df] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-2b4ee8df 200ms ease;\n}\n@keyframes partial-fade-in-2b4ee8df {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-2b4ee8df] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-2b4ee8df] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-2b4ee8df],\n  .turn--active[data-v-2b4ee8df]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
+  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$n]], ["__scopeId", "data-v-2b4ee8df"]]);
+  const _sfc_main$r = {};
+  const _hoisted_1$n = {
     viewBox: "0 0 938 604",
     fill: "none",
     xmlns: "http://www.w3.org/2000/svg"
   };
   function _sfc_render(_ctx, _cache) {
-    return openBlock(), createElementBlock("svg", _hoisted_1$l, [..._cache[0] || (_cache[0] = [
-      createStaticVNode('<polygon points="331.5,533.5 331.5,520.5 702.5,428.5 705.5,443.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><polygon points="564.5,469.5 555.5,452.5 544.5,455.5 542.5,472.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><path d="m 317.61655,19.99224 c 0,0 79.97514,-5.452851 101.78654,56.34612 21.81141,61.79897 72.70468,172.67359 92.69846,189.03214 19.99379,16.35855 41.80519,59.98136 38.16995,74.52229" stroke="#3f3d56" stroke-miterlimit="10" stroke-width="9.08808"></path><path d="m 329.43106,19.083431 c 0,8.532657 -9.0733,15.449743 -23.62902,15.449743 -14.55571,0 -21.8114,-6.917086 -21.8114,-15.449743 0,-8.532657 7.25569,-15.4497427 21.8114,-15.4497427 14.55572,0 23.62902,6.9170857 23.62902,15.4497427 z" fill="currentColor" style="fill:#999999;"></path><polygon points="691.5,439.5 364.5,521.5 377.5,602.5 666.5,602.5" fill="#3f3d56" transform="matrix(1.8176168,0,0,1.8176168,-456.32371,-492.51252)"></polygon>', 5)
+    return openBlock(), createElementBlock("svg", _hoisted_1$n, [..._cache[0] || (_cache[0] = [
+      createStaticVNode('<polygon points="331.5,533.5 331.5,520.5 702.5,428.5 705.5,443.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><polygon points="564.5,469.5 555.5,452.5 544.5,455.5 542.5,472.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><path d="m 317.61655,19.99224 c 0,0 79.97514,-5.452851 101.78654,56.34612 21.81141,61.79897 72.70468,172.67359 92.69846,189.03214 19.99379,16.35855 41.80519,59.98136 38.16995,74.52229" stroke="currentColor" stroke-miterlimit="10" stroke-width="9.08808"></path><path d="m 329.43106,19.083431 c 0,8.532657 -9.0733,15.449743 -23.62902,15.449743 -14.55571,0 -21.8114,-6.917086 -21.8114,-15.449743 0,-8.532657 7.25569,-15.4497427 21.8114,-15.4497427 14.55572,0 23.62902,6.9170857 23.62902,15.4497427 z" fill="currentColor" style="fill:currentColor;opacity:0.6;"></path><polygon points="691.5,439.5 364.5,521.5 377.5,602.5 666.5,602.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-456.32371,-492.51252)"></polygon>', 5)
     ])]);
   }
-  const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render]]);
-  const _hoisted_1$k = { class: "transcription-empty" };
-  const _hoisted_2$h = { class: "message" };
-  const _sfc_main$n = /* @__PURE__ */ defineComponent({
+  const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render]]);
+  const _hoisted_1$m = { class: "transcription-empty" };
+  const _hoisted_2$i = { class: "message" };
+  const _sfc_main$q = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionEmpty",
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$k, [
+        return openBlock(), createElementBlock("div", _hoisted_1$m, [
           createVNode(MicrophoneIllustration, {
             class: "illustration",
             "aria-hidden": "true"
           }),
-          createBaseVNode("p", _hoisted_2$h, toDisplayString(unref(t2)("transcription.empty")), 1)
+          createBaseVNode("p", _hoisted_2$i, toDisplayString(unref(t2)("transcription.empty")), 1)
         ]);
       };
     }
   });
-  const _style_0$k = "\n.transcription-empty[data-v-585c4f2b] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-xl);\n}\n.illustration[data-v-585c4f2b] {\n  width: 180px;\n  height: auto;\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.message[data-v-585c4f2b] {\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n  margin: 0;\n}\n";
-  const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["styles", [_style_0$k]], ["__scopeId", "data-v-585c4f2b"]]);
+  const _style_0$m = "\n.transcription-empty[data-v-585c4f2b] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-xl);\n}\n.illustration[data-v-585c4f2b] {\n  width: 180px;\n  height: auto;\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.message[data-v-585c4f2b] {\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n  margin: 0;\n}\n";
+  const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$m]], ["__scopeId", "data-v-585c4f2b"]]);
+  const _hoisted_1$l = ["aria-label"];
+  const _sfc_main$p = /* @__PURE__ */ defineComponent({
+    __name: "SpeechActivityIndicator",
+    props: {
+      active: { type: Boolean }
+    },
+    setup(__props) {
+      const { t: t2 } = useI18n();
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("p", {
+          class: normalizeClass(["speech-activity", { "speech-activity--idle": !__props.active }]),
+          role: "img",
+          "aria-label": unref(t2)("transcription.speaking")
+        }, [..._cache[0] || (_cache[0] = [
+          createBaseVNode("span", { class: "speech-activity-dot" }, null, -1),
+          createBaseVNode("span", { class: "speech-activity-dot" }, null, -1),
+          createBaseVNode("span", { class: "speech-activity-dot" }, null, -1)
+        ])], 10, _hoisted_1$l);
+      };
+    }
+  });
+  const _style_0$l = "\n/* Typing bubble, as in messaging apps. The box never changes size, only the\n   dots move inside it, so the transcript above stays still. */\n.speech-activity[data-v-c0396c58] {\n  display: flex;\n  align-items: center;\n  gap: 5px;\n  width: fit-content;\n  margin: var(--spacing-sm) var(--spacing-lg);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg)\n    var(--radius-sm);\n  background-color: var(--color-surface-hover);\n  transition:\n    opacity 0.4s ease,\n    visibility 0.4s;\n}\n.speech-activity-dot[data-v-c0396c58] {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  background-color: var(--color-text-muted);\n  animation: speech-activity-hop-c0396c58 1.2s infinite ease-in-out;\n}\n.speech-activity-dot[data-v-c0396c58]:nth-child(2) {\n  animation-delay: 0.15s;\n}\n.speech-activity-dot[data-v-c0396c58]:nth-child(3) {\n  animation-delay: 0.3s;\n}\n@keyframes speech-activity-hop-c0396c58 {\n0%,\n  60%,\n  100% {\n    transform: translateY(0);\n    opacity: 0.55;\n}\n30% {\n    transform: translateY(-5px);\n    opacity: 1;\n}\n}\n.speech-activity--idle[data-v-c0396c58] {\n  opacity: 0;\n  visibility: hidden;\n}\n@media (prefers-reduced-motion: reduce) {\n.speech-activity-dot[data-v-c0396c58] {\n    animation: none;\n    opacity: 0.8;\n}\n}\n@media (max-width: 767px) {\n.speech-activity[data-v-c0396c58] {\n    margin-inline: var(--spacing-md);\n}\n}\n";
+  const SpeechActivityIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$l]], ["__scopeId", "data-v-c0396c58"]]);
   function activeWordRange(root2, core, wordId2) {
     const parsed = parseWordId(wordId2);
     if (!parsed) return null;
@@ -23555,6 +23819,9 @@ ${text2}` : text2;
         if (playing) isFollowing.value = true;
       }
     );
+    const stopSeekListener = core.on("audio:seek", () => {
+      isFollowing.value = true;
+    });
     function onManualScroll() {
       isFollowing.value = false;
     }
@@ -23568,7 +23835,6 @@ ${text2}` : text2;
       if (!el) return;
       el.addEventListener("wheel", handler, { passive: true });
       el.addEventListener("touchstart", handler, { passive: true });
-      el.addEventListener("pointerdown", handler, { passive: true });
       el.addEventListener("keydown", checkKeyDownIsScroll);
     }
     function downScrollListener(handler) {
@@ -23576,7 +23842,6 @@ ${text2}` : text2;
       if (!el) return;
       el.removeEventListener("wheel", handler);
       el.removeEventListener("touchstart", handler);
-      el.removeEventListener("pointerdown", handler);
       el.removeEventListener("keydown", checkKeyDownIsScroll);
     }
     onMounted(() => {
@@ -23584,6 +23849,7 @@ ${text2}` : text2;
     });
     onBeforeUnmount(() => {
       downScrollListener(onManualScroll);
+      stopSeekListener();
     });
     function resumeFollow() {
       isFollowing.value = true;
@@ -23591,22 +23857,25 @@ ${text2}` : text2;
     }
     return { isFollowing, resumeFollow };
   }
-  const _hoisted_1$j = { class: "transcription-panel" };
-  const _hoisted_2$g = {
+  const _hoisted_1$k = {
     ref: "scrollContainer",
     class: "scroll-container"
   };
-  const _hoisted_3$d = { class: "turns-container" };
-  const _hoisted_4$7 = {
+  const _hoisted_2$h = { class: "turns-container" };
+  const _hoisted_3$d = {
     key: 0,
     class: "history-loading",
     role: "status"
   };
-  const _hoisted_5$7 = {
+  const _hoisted_4$8 = {
     key: 1,
     class: "history-start"
   };
-  const _sfc_main$m = /* @__PURE__ */ defineComponent({
+  const _hoisted_5$8 = {
+    key: 0,
+    class: "resume-scroll-anchor"
+  };
+  const _sfc_main$o = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionPanel",
     props: {
       turns: { type: Array },
@@ -23631,6 +23900,13 @@ ${text2}` : text2;
         };
       });
       const hasLiveUpdate = computed(() => core.live?.hasLiveUpdate.value ?? false);
+      const transcriptFontSize = computed(
+        () => `${core.transcriptFontSize.value}px`
+      );
+      const showSpeechIndicator = computed(
+        () => core.live !== void 0 && core.live.partialsVisible.value === false
+      );
+      const isSpeechActive = computed(() => core.live?.isSpeechActive.value === true);
       const isPlaying = computed(() => core.audio?.isPlaying.value ?? false);
       const activeTranslation = computed(
         () => core.activeChannel.value?.activeTranslation.value
@@ -23703,13 +23979,16 @@ ${text2}` : text2;
         scrollContainerRef.value?.removeEventListener("scroll", onScrollTop);
       });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("article", _hoisted_1$j, [
-          createBaseVNode("div", _hoisted_2$g, [
-            createBaseVNode("div", _hoisted_3$d, [
-              isLoadingHistory.value ? (openBlock(), createElementBlock("div", _hoisted_4$7, [..._cache[2] || (_cache[2] = [
+        return openBlock(), createElementBlock("article", {
+          class: "transcription-panel",
+          style: normalizeStyle({ "--transcript-font-size": transcriptFontSize.value })
+        }, [
+          createBaseVNode("div", _hoisted_1$k, [
+            createBaseVNode("div", _hoisted_2$h, [
+              isLoadingHistory.value ? (openBlock(), createElementBlock("div", _hoisted_3$d, [..._cache[2] || (_cache[2] = [
                 createBaseVNode("progress", null, null, -1)
               ])])) : createCommentVNode("", true),
-              !hasMoreHistory.value && __props.turns.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_5$7, toDisplayString(unref(t2)("transcription.historyStart")), 1)) : createCommentVNode("", true),
+              !hasMoreHistory.value && __props.turns.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_4$8, toDisplayString(unref(t2)("transcription.historyStart")), 1)) : createCommentVNode("", true),
               __props.turns.length === 0 && !isLoadingHistory.value && !partialTurn.value ? (openBlock(), createBlock(TranscriptionEmpty, {
                 key: 2,
                 class: "transcription-empty"
@@ -23737,38 +24016,43 @@ ${text2}` : text2;
                 key: "__partial__",
                 turn: partialTurn.value,
                 partial: ""
-              }, null, 8, ["turn"])) : createCommentVNode("", true)
+              }, null, 8, ["turn"])) : createCommentVNode("", true),
+              showSpeechIndicator.value ? (openBlock(), createBlock(SpeechActivityIndicator, {
+                key: 4,
+                active: isSpeechActive.value
+              }, null, 8, ["active"])) : createCommentVNode("", true)
             ]),
             createVNode(Transition, { name: "fade-slide" }, {
               default: withCtx(() => [
-                showResumeButton.value ? (openBlock(), createBlock(unref(Button), {
-                  key: 0,
-                  size: "sm",
-                  icon: "arrow-down",
-                  class: "resume-scroll-btn",
-                  "aria-label": unref(t2)("transcription.resumeScroll"),
-                  onClick: onResumeClick
-                }, {
-                  default: withCtx(() => [
-                    createTextVNode(toDisplayString(unref(t2)("transcription.resumeScroll")), 1)
-                  ]),
-                  _: 1
-                }, 8, ["aria-label"])) : createCommentVNode("", true)
+                showResumeButton.value ? (openBlock(), createElementBlock("div", _hoisted_5$8, [
+                  createVNode(unref(Button), {
+                    size: "sm",
+                    icon: "arrow-down",
+                    class: "resume-scroll-btn",
+                    "aria-label": unref(t2)("transcription.resumeScroll"),
+                    onClick: onResumeClick
+                  }, {
+                    default: withCtx(() => [
+                      createTextVNode(toDisplayString(unref(t2)("transcription.resumeScroll")), 1)
+                    ]),
+                    _: 1
+                  }, 8, ["aria-label"])
+                ])) : createCommentVNode("", true)
               ]),
               _: 1
             })
           ], 512)
-        ]);
+        ], 4);
       };
     }
   });
-  const _style_0$j = "\n.transcription-panel[data-v-7f4303ed] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.scroll-container[data-v-7f4303ed] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-7f4303ed] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-7f4303ed]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-7f4303ed] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-7f4303ed] {\n  width: 120px;\n}\n.history-start[data-v-7f4303ed] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button */\n.resume-scroll-btn[data-v-7f4303ed] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  left: 50%;\n  translate: -50% 0;\n  z-index: var(--z-sticky);\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: white !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-7f4303ed],\n.fade-slide-leave-active[data-v-7f4303ed] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-7f4303ed],\n.fade-slide-leave-to[data-v-7f4303ed] {\n  opacity: 0;\n  translate: -50% 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-7f4303ed],\n  .fade-slide-leave-active[data-v-7f4303ed] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-7f4303ed] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["styles", [_style_0$j]], ["__scopeId", "data-v-7f4303ed"]]);
-  const _hoisted_1$i = { class: "verbatim-panel" };
-  const _hoisted_2$f = { class: "verbatim-panel__content" };
+  const _style_0$k = "\n.transcription-panel[data-v-7ccbf6e4] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.scroll-container[data-v-7ccbf6e4] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-7ccbf6e4] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-7ccbf6e4]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-7ccbf6e4] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-7ccbf6e4] {\n  width: 120px;\n}\n.history-start[data-v-7ccbf6e4] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button — placement lives on this wrapper, never on the\n   button itself: Button.vue's `.editor-btn` base rule resets `position` via\n   `all: unset` (and, in the webcomponent build, gets re-injected a second\n   time after everything else to reach teleported popovers/dialogs — see\n   packages/webcomponent/src/index.ts), so any positioning put directly on\n   the button is one rebuild away from being silently overridden again. */\n.resume-scroll-anchor[data-v-7ccbf6e4] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  z-index: var(--z-sticky);\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.resume-scroll-btn[data-v-7ccbf6e4] {\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: var(--color-surface) !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-7ccbf6e4],\n.fade-slide-leave-active[data-v-7ccbf6e4] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-7ccbf6e4],\n.fade-slide-leave-to[data-v-7ccbf6e4] {\n  opacity: 0;\n  translate: 0 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-7ccbf6e4],\n  .fade-slide-leave-active[data-v-7ccbf6e4] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-7ccbf6e4] {\n    padding: var(--spacing-md);\n}\n}\n";
+  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$k]], ["__scopeId", "data-v-7ccbf6e4"]]);
+  const _hoisted_1$j = { class: "verbatim-panel" };
+  const _hoisted_2$g = { class: "verbatim-panel__content" };
   const _hoisted_3$c = { class: "verbatim-panel__header" };
-  const _hoisted_4$6 = { class: "verbatim-panel__doc-title" };
-  const _hoisted_5$6 = { class: "verbatim-panel__turns" };
+  const _hoisted_4$7 = { class: "verbatim-panel__doc-title" };
+  const _hoisted_5$7 = { class: "verbatim-panel__turns" };
   const _hoisted_6$6 = { class: "verbatim-panel__turn-header" };
   const _hoisted_7$3 = { class: "verbatim-panel__speaker-name" };
   const _hoisted_8$1 = {
@@ -23780,7 +24064,7 @@ ${text2}` : text2;
     class: "verbatim-panel__meta"
   };
   const _hoisted_10$1 = { class: "verbatim-panel__text" };
-  const _sfc_main$l = /* @__PURE__ */ defineComponent({
+  const _sfc_main$n = /* @__PURE__ */ defineComponent({
     __name: "VerbatimPanel",
     setup(__props) {
       const core = useCore();
@@ -23826,20 +24110,20 @@ ${text2}` : text2;
         core.emit("verbatim:export", { format: format2 });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("section", _hoisted_1$i, [
+        return openBlock(), createElementBlock("section", _hoisted_1$j, [
           createVNode(unref(DocumentArticle), null, {
             "toolbar-right": withCtx(() => [
-              createVNode(unref(_sfc_main$y), {
+              createVNode(unref(_sfc_main$B), {
                 formats: unref(core).verbatimFormats.value,
                 onSelect: onExport
               }, null, 8, ["formats"])
             ]),
             default: withCtx(() => [
-              createBaseVNode("article", _hoisted_2$f, [
+              createBaseVNode("article", _hoisted_2$g, [
                 createBaseVNode("header", _hoisted_3$c, [
-                  createBaseVNode("h1", _hoisted_4$6, toDisplayString(title.value), 1)
+                  createBaseVNode("h1", _hoisted_4$7, toDisplayString(title.value), 1)
                 ]),
-                createBaseVNode("ul", _hoisted_5$6, [
+                createBaseVNode("ul", _hoisted_5$7, [
                   (openBlock(true), createElementBlock(Fragment, null, renderList(turns.value, (turn) => {
                     return openBlock(), createElementBlock("li", {
                       key: turn.id,
@@ -23874,9 +24158,9 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$i = "\n.verbatim-panel[data-v-4bbe16ed] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.verbatim-panel__content[data-v-4bbe16ed] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n}\n.verbatim-panel__header[data-v-4bbe16ed] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-4bbe16ed] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-4bbe16ed] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-4bbe16ed] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-4bbe16ed] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-4bbe16ed] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-4bbe16ed] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-4bbe16ed] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-4bbe16ed] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n\n";
-  const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-4bbe16ed"]]);
-  const _sfc_main$k = /* @__PURE__ */ defineComponent({
+  const _style_0$j = "\n.verbatim-panel[data-v-7a077f5a] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.verbatim-panel__content[data-v-7a077f5a] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n}\n.verbatim-panel__header[data-v-7a077f5a] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-7a077f5a] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-7a077f5a] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-7a077f5a] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-7a077f5a] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-7a077f5a] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-7a077f5a] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-7a077f5a] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-7a077f5a] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n\n";
+  const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["styles", [_style_0$j]], ["__scopeId", "data-v-7a077f5a"]]);
+  const _sfc_main$m = /* @__PURE__ */ defineComponent({
     __name: "ChannelSelector",
     props: {
       channels: { type: Array },
@@ -23902,7 +24186,7 @@ ${text2}` : text2;
       };
     }
   });
-  const _sfc_main$j = /* @__PURE__ */ defineComponent({
+  const _sfc_main$l = /* @__PURE__ */ defineComponent({
     __name: "TranslationSelector",
     props: {
       translations: { type: Array },
@@ -23934,10 +24218,10 @@ ${text2}` : text2;
       };
     }
   });
-  const _hoisted_1$h = { class: "merge-dialog-title" };
-  const _hoisted_2$e = { class: "merge-dialog-description" };
+  const _hoisted_1$i = { class: "merge-dialog-title" };
+  const _hoisted_2$f = { class: "merge-dialog-description" };
   const _hoisted_3$b = { class: "merge-dialog-actions" };
-  const _sfc_main$i = /* @__PURE__ */ defineComponent({
+  const _sfc_main$k = /* @__PURE__ */ defineComponent({
     __name: "MergeDialog",
     props: {
       open: { type: Boolean },
@@ -24005,8 +24289,8 @@ ${text2}` : text2;
             class: "merge-dialog-form",
             onSubmit: withModifiers(onConfirm, ["prevent"])
           }, [
-            createBaseVNode("h2", _hoisted_1$h, toDisplayString(unref(t2)("mergeDialog.title")), 1),
-            createBaseVNode("p", _hoisted_2$e, [
+            createBaseVNode("h2", _hoisted_1$i, toDisplayString(unref(t2)("mergeDialog.title")), 1),
+            createBaseVNode("p", _hoisted_2$f, [
               createBaseVNode("strong", null, toDisplayString(fromSpeaker.value.name), 1),
               createTextVNode(" · " + toDisplayString(affectedCount.value) + " " + toDisplayString(unref(t2)("mergeDialog.turnsAffected")), 1)
             ]),
@@ -24044,30 +24328,33 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$h = "\n.merge-dialog[data-v-e658bcd0] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-e658bcd0]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-e658bcd0] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-e658bcd0] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-e658bcd0] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-e658bcd0] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
-  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["styles", [_style_0$h]], ["__scopeId", "data-v-e658bcd0"]]);
-  const _hoisted_1$g = { class: "speaker-sidebar" };
-  const _hoisted_2$d = {
+  const _style_0$i = "\n.merge-dialog[data-v-e658bcd0] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-e658bcd0]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-e658bcd0] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-e658bcd0] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-e658bcd0] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-e658bcd0] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
+  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["styles", [_style_0$i]], ["__scopeId", "data-v-e658bcd0"]]);
+  const _hoisted_1$h = { class: "speaker-sidebar" };
+  const _hoisted_2$e = {
     key: 0,
     class: "sidebar-section sidebar-section--selector"
   };
   const _hoisted_3$a = { class: "sidebar-title" };
-  const _hoisted_4$5 = {
+  const _hoisted_4$6 = {
     key: 1,
     class: "sidebar-section sidebar-section--selector"
   };
-  const _hoisted_5$5 = { class: "sidebar-title" };
+  const _hoisted_5$6 = { class: "sidebar-title" };
   const _hoisted_6$5 = {
     key: 2,
     class: "sidebar-section"
   };
   const _hoisted_7$2 = { class: "sidebar-title" };
   const _hoisted_8 = { class: "subtitle-toggle" };
-  const _hoisted_9 = { class: "subtitle-toggle-label" };
-  const _hoisted_10 = { class: "subtitle-slider" };
-  const _hoisted_11 = { class: "subtitle-slider-label" };
-  const _hoisted_12 = { class: "subtitle-slider-value" };
-  const _hoisted_13 = ["value", "disabled"];
+  const _hoisted_9 = ["for"];
+  const _hoisted_10 = {
+    key: 3,
+    class: "sidebar-section"
+  };
+  const _hoisted_11 = { class: "sidebar-title" };
+  const _hoisted_12 = { class: "subtitle-toggle" };
+  const _hoisted_13 = { class: "subtitle-toggle-label" };
   const _hoisted_14 = {
     key: 0,
     class: "subtitle-toggle"
@@ -24079,7 +24366,7 @@ ${text2}` : text2;
   };
   const _hoisted_17 = { class: "subtitle-toggle-label" };
   const _hoisted_18 = {
-    key: 3,
+    key: 4,
     class: "sidebar-section"
   };
   const _hoisted_19 = { class: "sidebar-title" };
@@ -24094,12 +24381,19 @@ ${text2}` : text2;
   };
   const _hoisted_26 = ["datetime"];
   const _hoisted_27 = {
-    key: 5,
+    key: 6,
     class: "sidebar-section"
   };
   const _hoisted_28 = { class: "sidebar-title" };
   const _hoisted_29 = { class: "speaker-list" };
-  const _sfc_main$h = /* @__PURE__ */ defineComponent({
+  const _hoisted_30 = {
+    key: 7,
+    class: "sidebar-section"
+  };
+  const _hoisted_31 = { class: "sidebar-title" };
+  const _hoisted_32 = { class: "subtitle-toggle" };
+  const _hoisted_33 = ["for"];
+  const _sfc_main$j = /* @__PURE__ */ defineComponent({
     __name: "SpeakerSidebar",
     props: {
       speakers: { type: Array },
@@ -24107,12 +24401,14 @@ ${text2}` : text2;
       selectedChannelId: { type: String },
       translations: { type: Array },
       selectedTranslationId: { type: String },
-      showSpeakers: { type: Boolean, default: true }
+      showSpeakers: { type: Boolean, default: true },
+      showThemeToggle: { type: Boolean, default: true }
     },
     emits: ["update:selectedChannelId", "update:selectedTranslationId"],
     setup(__props) {
       const core = useCore();
       const { t: t2 } = useI18n();
+      const { isMobile } = useIsMobile();
       const canEditSpeakers = computed(
         () => core.capabilities.value.speakers === "edit"
       );
@@ -24124,6 +24420,16 @@ ${text2}` : text2;
         if (!core.live || !ttsReady.value) return;
         if (value) core.live.enableTTS();
         else core.live.disableTTS();
+      }
+      const partialsToggleId = useId$1();
+      const darkThemeToggleId = useId$1();
+      function onToggleDarkTheme(value) {
+        core.theme.value = value ? "dark" : "light";
+      }
+      function onTogglePartials(value) {
+        if (!core.live) return;
+        if (value) core.live.showPartials();
+        else core.live.hidePartials();
       }
       const mergeOpen = /* @__PURE__ */ ref(false);
       const mergeFromId = /* @__PURE__ */ ref(null);
@@ -24184,54 +24490,68 @@ ${text2}` : text2;
         core.emit("llmService:selectVersion", { id: service.id, versionNumber });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("aside", _hoisted_1$g, [
-          __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$d, [
+        return openBlock(), createElementBlock("aside", _hoisted_1$h, [
+          __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$e, [
             createBaseVNode("h2", _hoisted_3$a, toDisplayString(unref(t2)("sidebar.channel")), 1),
-            createVNode(_sfc_main$k, {
+            createVNode(_sfc_main$m, {
               channels: __props.channels,
               "selected-channel-id": __props.selectedChannelId,
               "onUpdate:selectedChannelId": _cache[0] || (_cache[0] = ($event) => _ctx.$emit("update:selectedChannelId", $event))
             }, null, 8, ["channels", "selected-channel-id"])
           ])) : createCommentVNode("", true),
-          __props.translations.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_4$5, [
-            createBaseVNode("h2", _hoisted_5$5, toDisplayString(unref(t2)("sidebar.translation")), 1),
-            createVNode(_sfc_main$j, {
+          __props.translations.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_4$6, [
+            createBaseVNode("h2", _hoisted_5$6, toDisplayString(unref(t2)("sidebar.translation")), 1),
+            createVNode(_sfc_main$l, {
               translations: __props.translations,
               "selected-translation-id": __props.selectedTranslationId,
               "onUpdate:selectedTranslationId": _cache[1] || (_cache[1] = ($event) => _ctx.$emit("update:selectedTranslationId", $event))
             }, null, 8, ["translations", "selected-translation-id"])
           ])) : createCommentVNode("", true),
-          unref(core).subtitle ? (openBlock(), createElementBlock("section", _hoisted_6$5, [
-            createBaseVNode("h2", _hoisted_7$2, toDisplayString(unref(t2)("sidebar.subtitle")), 1),
+          unref(core).live ? (openBlock(), createElementBlock("section", _hoisted_6$5, [
+            createBaseVNode("h2", _hoisted_7$2, toDisplayString(unref(t2)("sidebar.transcription")), 1),
+            createVNode(unref(RangeSlider), {
+              modelValue: unref(core).transcriptFontSize.value,
+              "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => unref(core).transcriptFontSize.value = $event),
+              label: unref(t2)("transcription.fontSize"),
+              min: 14,
+              max: 28,
+              step: 2
+            }, null, 8, ["modelValue", "label"]),
             createBaseVNode("div", _hoisted_8, [
-              createBaseVNode("span", _hoisted_9, toDisplayString(unref(t2)("subtitle.show")), 1),
+              createBaseVNode("label", {
+                class: "subtitle-toggle-label",
+                for: unref(partialsToggleId)
+              }, toDisplayString(unref(t2)("live.showPartials")), 9, _hoisted_9),
+              createVNode(unref(SwitchToggle), {
+                id: unref(partialsToggleId),
+                "model-value": unref(core).live.partialsVisible.value,
+                "onUpdate:modelValue": onTogglePartials
+              }, null, 8, ["id", "model-value"])
+            ])
+          ])) : createCommentVNode("", true),
+          unref(core).subtitle && !unref(isMobile) ? (openBlock(), createElementBlock("section", _hoisted_10, [
+            createBaseVNode("h2", _hoisted_11, toDisplayString(unref(t2)("sidebar.subtitle")), 1),
+            createBaseVNode("div", _hoisted_12, [
+              createBaseVNode("span", _hoisted_13, toDisplayString(unref(t2)("subtitle.show")), 1),
               createVNode(unref(SwitchToggle), {
                 modelValue: unref(core).subtitle.isVisible.value,
-                "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => unref(core).subtitle.isVisible.value = $event)
+                "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => unref(core).subtitle.isVisible.value = $event)
               }, null, 8, ["modelValue"])
             ]),
-            createBaseVNode("label", _hoisted_10, [
-              createBaseVNode("span", _hoisted_11, [
-                createTextVNode(toDisplayString(unref(t2)("subtitle.fontSize")) + " ", 1),
-                createBaseVNode("span", _hoisted_12, toDisplayString(unref(core).subtitle.fontSize.value) + "px", 1)
-              ]),
-              createBaseVNode("input", {
-                type: "range",
-                min: 20,
-                max: 80,
-                step: 2,
-                value: unref(core).subtitle.fontSize.value,
-                disabled: !unref(core).subtitle.isVisible.value,
-                onInput: _cache[3] || (_cache[3] = ($event) => unref(core).subtitle.fontSize.value = Number(
-                  $event.target.value
-                ))
-              }, null, 40, _hoisted_13)
-            ]),
+            createVNode(unref(RangeSlider), {
+              modelValue: unref(core).subtitle.fontSize.value,
+              "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => unref(core).subtitle.fontSize.value = $event),
+              label: unref(t2)("subtitle.fontSize"),
+              min: 20,
+              max: 80,
+              step: 2,
+              disabled: !unref(core).subtitle.isVisible.value
+            }, null, 8, ["modelValue", "label", "disabled"]),
             unref(core).subtitle.watermark && !unref(core).subtitle.watermark.readonly ? (openBlock(), createElementBlock("div", _hoisted_14, [
               createBaseVNode("span", _hoisted_15, toDisplayString(unref(t2)("subtitle.showWatermark")), 1),
               createVNode(unref(SwitchToggle), {
                 modelValue: unref(core).subtitle.watermark.display.value,
-                "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => unref(core).subtitle.watermark.display.value = $event),
+                "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => unref(core).subtitle.watermark.display.value = $event),
                 disabled: !unref(core).subtitle.isVisible.value
               }, null, 8, ["modelValue", "disabled"])
             ])) : createCommentVNode("", true),
@@ -24239,7 +24559,7 @@ ${text2}` : text2;
               createBaseVNode("span", _hoisted_17, toDisplayString(unref(t2)("subtitle.pinWatermark")), 1),
               createVNode(unref(SwitchToggle), {
                 modelValue: unref(core).subtitle.watermark.pinned.value,
-                "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => unref(core).subtitle.watermark.pinned.value = $event),
+                "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => unref(core).subtitle.watermark.pinned.value = $event),
                 disabled: !unref(core).subtitle.isVisible.value
               }, null, 8, ["modelValue", "disabled"])
             ])) : createCommentVNode("", true)
@@ -24259,7 +24579,7 @@ ${text2}` : text2;
             }, toDisplayString(ttsHint.value), 3)
           ])) : createCommentVNode("", true),
           activeService.value && generations.value.length ? (openBlock(), createElementBlock("section", {
-            key: 4,
+            key: 5,
             class: normalizeClass(["sidebar-section", { "sidebar-section--busy": serviceBusy.value }])
           }, [
             createBaseVNode("h2", _hoisted_22, toDisplayString(unref(t2)("sidebar.history")), 1),
@@ -24340,7 +24660,7 @@ ${text2}` : text2;
                     "aria-label": unref(t2)("sidebar.renameSpeaker"),
                     onCommit: ($event) => onRename(speaker.id, $event)
                   }, null, 8, ["model-value", "disabled", "aria-label", "onCommit"]),
-                  canEditSpeakers.value && __props.speakers.length > 1 ? (openBlock(), createBlock(unref(_sfc_main$x), {
+                  canEditSpeakers.value && __props.speakers.length > 1 ? (openBlock(), createBlock(unref(_sfc_main$A), {
                     key: 0,
                     "speaker-name": speaker.name,
                     onMerge: ($event) => onOpenMerge(speaker.id)
@@ -24349,19 +24669,33 @@ ${text2}` : text2;
               }), 128))
             ])
           ])) : createCommentVNode("", true),
+          __props.showThemeToggle ? (openBlock(), createElementBlock("section", _hoisted_30, [
+            createBaseVNode("h2", _hoisted_31, toDisplayString(unref(t2)("sidebar.appearance")), 1),
+            createBaseVNode("div", _hoisted_32, [
+              createBaseVNode("label", {
+                class: "subtitle-toggle-label",
+                for: unref(darkThemeToggleId)
+              }, toDisplayString(unref(t2)("theme.highContrast")), 9, _hoisted_33),
+              createVNode(unref(SwitchToggle), {
+                id: unref(darkThemeToggleId),
+                "model-value": unref(core).theme.value === "dark",
+                "onUpdate:modelValue": onToggleDarkTheme
+              }, null, 8, ["id", "model-value"])
+            ])
+          ])) : createCommentVNode("", true),
           canEditSpeakers.value ? (openBlock(), createBlock(MergeDialog, {
-            key: 6,
+            key: 8,
             open: mergeOpen.value,
-            "onUpdate:open": _cache[6] || (_cache[6] = ($event) => mergeOpen.value = $event),
+            "onUpdate:open": _cache[7] || (_cache[7] = ($event) => mergeOpen.value = $event),
             "from-speaker-id": mergeFromId.value
           }, null, 8, ["open", "from-speaker-id"])) : createCommentVNode("", true)
         ]);
       };
     }
   });
-  const _style_0$g = '\n.speaker-sidebar[data-v-3b1e278f] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-3b1e278f] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-3b1e278f] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-3b1e278f] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-3b1e278f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-3b1e278f]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-3b1e278f] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-3b1e278f] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-3b1e278f] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.voice-playback-hint[data-v-3b1e278f] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-3b1e278f] {\n  color: var(--color-danger);\n}\n.subtitle-slider[data-v-3b1e278f] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.subtitle-slider-label[data-v-3b1e278f] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.subtitle-slider-value[data-v-3b1e278f] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.subtitle-slider input[type="range"][data-v-3b1e278f] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.subtitle-slider input[type="range"][data-v-3b1e278f]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-3b1e278f] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-3b1e278f] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-3b1e278f] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-3b1e278f] {\n  color: var(--color-success, #2e7d32);\n}\n.history-generation__status--error[data-v-3b1e278f] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-3b1e278f],\n.history-generation__status--queued[data-v-3b1e278f] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-3b1e278f] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-3b1e278f] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-3b1e278f] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-3b1e278f] {\n    display: none;\n}\n}\n';
-  const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$g]], ["__scopeId", "data-v-3b1e278f"]]);
-  const _sfc_main$g = /* @__PURE__ */ defineComponent({
+  const _style_0$h = "\n.speaker-sidebar[data-v-5f882421] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-5f882421] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-5f882421] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-5f882421] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-5f882421] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-5f882421]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-5f882421] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-5f882421] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-5f882421] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\nlabel.subtitle-toggle-label[data-v-5f882421] {\n  cursor: pointer;\n}\n.voice-playback-hint[data-v-5f882421] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-5f882421] {\n  color: var(--color-danger);\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-5f882421] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-5f882421] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-5f882421] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-5f882421] {\n  color: var(--color-success);\n}\n.history-generation__status--error[data-v-5f882421] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-5f882421],\n.history-generation__status--queued[data-v-5f882421] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-5f882421] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-5f882421] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-5f882421] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-5f882421] {\n    display: none;\n}\n}\n";
+  const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["styles", [_style_0$h]], ["__scopeId", "data-v-5f882421"]]);
+  const _sfc_main$i = /* @__PURE__ */ defineComponent({
     __name: "SidebarDrawer",
     props: {
       "open": { type: Boolean, ...{ required: true } },
@@ -24410,10 +24744,10 @@ ${text2}` : text2;
       };
     }
   });
-  const _hoisted_1$f = ["aria-label"];
-  const _hoisted_2$c = { class: "selection-count" };
+  const _hoisted_1$g = ["aria-label"];
+  const _hoisted_2$d = { class: "selection-count" };
   const _hoisted_3$9 = { class: "selection-actions" };
-  const _sfc_main$f = /* @__PURE__ */ defineComponent({
+  const _sfc_main$h = /* @__PURE__ */ defineComponent({
     __name: "SelectionActionBar",
     setup(__props) {
       const selection = useTurnSelection();
@@ -24425,7 +24759,7 @@ ${text2}` : text2;
           role: "toolbar",
           "aria-label": unref(t2)("selection.count")
         }, [
-          createBaseVNode("span", _hoisted_2$c, toDisplayString(unref(selection).count.value) + " " + toDisplayString(unref(t2)("selection.count")), 1),
+          createBaseVNode("span", _hoisted_2$d, toDisplayString(unref(selection).count.value) + " " + toDisplayString(unref(t2)("selection.count")), 1),
           createBaseVNode("div", _hoisted_3$9, [
             createVNode(unref(CopyButton), {
               icon: "clipboard-type",
@@ -24457,45 +24791,28 @@ ${text2}` : text2;
               _: 1
             })
           ])
-        ], 8, _hoisted_1$f)) : createCommentVNode("", true);
+        ], 8, _hoisted_1$g)) : createCommentVNode("", true);
       };
     }
   });
-  const _style_0$f = "\n.selection-bar[data-v-9bad1410] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  /* No backdrop-filter: it forces a WebRender backdrop render target sized to\n     the content behind, a heavy GPU-memory cost on long transcripts. The\n     semi-opaque glass background stays legible without the blur. */\n  background: var(--glass-background);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-9bad1410 var(--transition-duration) ease;\n}\n.selection-count[data-v-9bad1410] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-9bad1410] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-9bad1410 {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-9bad1410] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-9bad1410] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
-  const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$f]], ["__scopeId", "data-v-9bad1410"]]);
-  const MOBILE_BREAKPOINT = "(max-width: 767px)";
-  function useIsMobile() {
-    const isMobile = /* @__PURE__ */ ref(false);
-    let mql = null;
-    function onChange(e2) {
-      isMobile.value = e2.matches;
-    }
-    onMounted(() => {
-      mql = window.matchMedia(MOBILE_BREAKPOINT);
-      isMobile.value = mql.matches;
-      mql.addEventListener("change", onChange);
-    });
-    onBeforeUnmount(() => {
-      mql?.removeEventListener("change", onChange);
-    });
-    return { isMobile };
-  }
-  const _hoisted_1$e = { class: "editor-layout" };
-  const _hoisted_2$b = {
+  const _style_0$g = "\n.selection-bar[data-v-9bad1410] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  /* No backdrop-filter: it forces a WebRender backdrop render target sized to\n     the content behind, a heavy GPU-memory cost on long transcripts. The\n     semi-opaque glass background stays legible without the blur. */\n  background: var(--glass-background);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-9bad1410 var(--transition-duration) ease;\n}\n.selection-count[data-v-9bad1410] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-9bad1410] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-9bad1410 {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-9bad1410] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-9bad1410] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
+  const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$g]], ["__scopeId", "data-v-9bad1410"]]);
+  const _hoisted_1$f = { class: "editor-layout" };
+  const _hoisted_2$c = {
     key: 6,
     class: "mobile-selectors"
   };
-  const _sfc_main$e = /* @__PURE__ */ defineComponent({
+  const _sfc_main$g = /* @__PURE__ */ defineComponent({
     __name: "Layout",
     props: {
       showHeader: { type: Boolean, default: true },
-      showVerbatim: { type: Boolean, default: true }
+      showVerbatim: { type: Boolean, default: true },
+      showThemeToggle: { type: Boolean, default: true }
     },
     setup(__props) {
       const props = __props;
       const core = useCore();
       const { isMobile } = useIsMobile();
-      const isSidebarOpen = /* @__PURE__ */ ref(false);
       const shownPanels = /* @__PURE__ */ ref([TRANSCRIPTION_TAB]);
       const activeTab = computed(() => shownPanels.value[0] ?? TRANSCRIPTION_TAB);
       const isSplit = computed({
@@ -24527,6 +24844,9 @@ ${text2}` : text2;
       );
       const speakerList = computed(() => Array.from(speakers.values()));
       const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB);
+      watch(isMobile, (mobile) => {
+        if (mobile && isSplit.value) isSplit.value = false;
+      });
       watch(activeTab, (id) => {
         if (!core.llmServices) return;
         if (id === TRANSCRIPTION_TAB || id === VERBATIM_TAB) {
@@ -24547,7 +24867,9 @@ ${text2}` : text2;
         () => props.showVerbatim,
         (canShow) => {
           if (canShow) return;
-          const withoutVerbatim = shownPanels.value.filter((id) => id !== VERBATIM_TAB);
+          const withoutVerbatim = shownPanels.value.filter(
+            (id) => id !== VERBATIM_TAB
+          );
           shownPanels.value = withoutVerbatim.length > 0 ? withoutVerbatim : [TRANSCRIPTION_TAB];
         }
       );
@@ -24559,7 +24881,7 @@ ${text2}` : text2;
             core.audio.currentTime.value = 0;
             core.audio.isPlaying.value = false;
           }
-          isSidebarOpen.value = false;
+          core.setSidebarOpen(false);
         }
       );
       watch(showTranscription, (visible) => {
@@ -24572,7 +24894,7 @@ ${text2}` : text2;
         core.activeChannel.value?.setActiveTranslation(translationId);
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$e, [
+        return openBlock(), createElementBlock("div", _hoisted_1$f, [
           props.showHeader ? (openBlock(), createBlock(Header, {
             key: 0,
             title: unref(core).title.value,
@@ -24583,12 +24905,12 @@ ${text2}` : text2;
             "can-ask": !!unref(core).chat,
             "can-undo": unref(core).transcriptionEditor?.canUndo.value ?? false,
             "can-redo": unref(core).transcriptionEditor?.canRedo.value ?? false,
-            onToggleSidebar: _cache[0] || (_cache[0] = ($event) => isSidebarOpen.value = !isSidebarOpen.value),
+            onToggleSidebar: _cache[0] || (_cache[0] = ($event) => unref(core).setSidebarOpen(!unref(core).sidebarOpen.value)),
             onOpenChat: _cache[1] || (_cache[1] = ($event) => unref(core).chat?.setDrawerOpen(true)),
             onUndo: _cache[2] || (_cache[2] = ($event) => unref(core).transcriptionEditor?.undo()),
             onRedo: _cache[3] || (_cache[3] = ($event) => unref(core).transcriptionEditor?.redo())
           }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask", "can-undo", "can-redo"])) : createCommentVNode("", true),
-          createVNode(_sfc_main$t, {
+          createVNode(_sfc_main$w, {
             "model-value": activeTab.value,
             "show-verbatim": props.showVerbatim,
             "onUpdate:modelValue": _cache[4] || (_cache[4] = (tab) => shownPanels.value = [tab])
@@ -24625,13 +24947,14 @@ ${text2}` : text2;
               translations: translations.value,
               "selected-translation-id": activeTranslationId.value,
               "show-speakers": showTranscription.value,
+              "show-theme-toggle": props.showThemeToggle,
               "onUpdate:selectedChannelId": onChannelChange,
               "onUpdate:selectedTranslationId": onTranslationChange
-            }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])) : createCommentVNode("", true),
-            unref(isMobile) && panels.value.length === 1 ? (openBlock(), createBlock(_sfc_main$g, {
+            }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers", "show-theme-toggle"])) : createCommentVNode("", true),
+            unref(isMobile) && panels.value.length === 1 ? (openBlock(), createBlock(_sfc_main$i, {
               key: 1,
-              open: isSidebarOpen.value,
-              "onUpdate:open": _cache[6] || (_cache[6] = ($event) => isSidebarOpen.value = $event)
+              open: unref(core).sidebarOpen.value,
+              "onUpdate:open": _cache[6] || (_cache[6] = ($event) => unref(core).setSidebarOpen($event))
             }, {
               default: withCtx(() => [
                 createVNode(SpeakerSidebar, {
@@ -24641,9 +24964,10 @@ ${text2}` : text2;
                   translations: translations.value,
                   "selected-translation-id": activeTranslationId.value,
                   "show-speakers": showTranscription.value,
+                  "show-theme-toggle": props.showThemeToggle,
                   "onUpdate:selectedChannelId": onChannelChange,
                   "onUpdate:selectedTranslationId": onTranslationChange
-                }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers"])
+                }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers", "show-theme-toggle"])
               ]),
               _: 1
             }, 8, ["open"])) : createCommentVNode("", true)
@@ -24657,14 +24981,14 @@ ${text2}` : text2;
           unref(core).subtitle?.isVisible.value && !unref(isMobile) && !unref(core).subtitle.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleBanner), { key: 3 })) : createCommentVNode("", true),
           unref(core).subtitle?.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleFullscreen), { key: 4 })) : createCommentVNode("", true),
           unref(core).chat ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.chatDrawer), { key: 5 })) : createCommentVNode("", true),
-          unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_2$b, [
-            channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$k, {
+          unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_2$c, [
+            channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$m, {
               key: 0,
               channels: channels.value,
               "selected-channel-id": unref(core).activeChannelId.value,
               "onUpdate:selectedChannelId": onChannelChange
             }, null, 8, ["channels", "selected-channel-id"])) : createCommentVNode("", true),
-            translations.value.length > 1 ? (openBlock(), createBlock(_sfc_main$j, {
+            translations.value.length > 1 ? (openBlock(), createBlock(_sfc_main$l, {
               key: 1,
               translations: translations.value,
               "selected-translation-id": activeTranslationId.value,
@@ -24675,41 +24999,41 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$e = "\n.editor-layout[data-v-540cad68] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-540cad68] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-540cad68] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-540cad68] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-540cad68] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-540cad68] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-540cad68] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-540cad68] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-540cad68] {\n    grid-template-columns: 1fr;\n}\n}\n";
-  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$e]], ["__scopeId", "data-v-540cad68"]]);
-  const _hoisted_1$d = {
+  const _style_0$f = "\n.editor-layout[data-v-8b1fb5fb] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-8b1fb5fb] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-8b1fb5fb] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-8b1fb5fb] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-8b1fb5fb] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-8b1fb5fb] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-8b1fb5fb] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-8b1fb5fb] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-8b1fb5fb] {\n    grid-template-columns: 1fr;\n}\n}\n";
+  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["styles", [_style_0$f]], ["__scopeId", "data-v-8b1fb5fb"]]);
+  const _hoisted_1$e = {
     class: "editor-loading",
     role: "status",
     "aria-live": "polite"
   };
-  const _hoisted_2$a = { class: "editor-loading__label" };
-  const _sfc_main$d = /* @__PURE__ */ defineComponent({
+  const _hoisted_2$b = { class: "editor-loading__label" };
+  const _sfc_main$f = /* @__PURE__ */ defineComponent({
     __name: "EditorLoadingOverlay",
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$d, [
+        return openBlock(), createElementBlock("div", _hoisted_1$e, [
           _cache[0] || (_cache[0] = createBaseVNode("span", {
             class: "editor-loading__spinner",
             "aria-hidden": "true"
           }, null, -1)),
-          createBaseVNode("span", _hoisted_2$a, toDisplayString(unref(t2)("editor.loading")), 1)
+          createBaseVNode("span", _hoisted_2$b, toDisplayString(unref(t2)("editor.loading")), 1)
         ]);
       };
     }
   });
-  const _style_0$d = "\n.editor-loading[data-v-f56c39db] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  /* Opaque so the half-built layout never flashes behind while collab syncs.\n     No backdrop-filter: it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  color: var(--color-text-secondary);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n}\n.editor-loading__spinner[data-v-f56c39db] {\n  width: 32px;\n  height: 32px;\n  border: 3px solid var(--color-border);\n  border-top-color: var(--color-primary);\n  border-radius: 50%;\n  animation: editor-loading-spin-f56c39db 0.8s linear infinite;\n}\n@keyframes editor-loading-spin-f56c39db {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-loading__spinner[data-v-f56c39db] {\n    animation: none;\n}\n}\n";
-  const EditorLoadingOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$d]], ["__scopeId", "data-v-f56c39db"]]);
-  const _hoisted_1$c = {
+  const _style_0$e = "\n.editor-loading[data-v-f56c39db] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  /* Opaque so the half-built layout never flashes behind while collab syncs.\n     No backdrop-filter: it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  color: var(--color-text-secondary);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n}\n.editor-loading__spinner[data-v-f56c39db] {\n  width: 32px;\n  height: 32px;\n  border: 3px solid var(--color-border);\n  border-top-color: var(--color-primary);\n  border-radius: 50%;\n  animation: editor-loading-spin-f56c39db 0.8s linear infinite;\n}\n@keyframes editor-loading-spin-f56c39db {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-loading__spinner[data-v-f56c39db] {\n    animation: none;\n}\n}\n";
+  const EditorLoadingOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$e]], ["__scopeId", "data-v-f56c39db"]]);
+  const _hoisted_1$d = {
     class: "editor-error",
     role: "alert"
   };
-  const _hoisted_2$9 = { class: "editor-error__title" };
+  const _hoisted_2$a = { class: "editor-error__title" };
   const _hoisted_3$8 = {
     key: 0,
     class: "editor-error__detail"
   };
-  const _sfc_main$c = /* @__PURE__ */ defineComponent({
+  const _sfc_main$e = /* @__PURE__ */ defineComponent({
     __name: "EditorErrorOverlay",
     props: {
       message: { type: [String, null] }
@@ -24717,20 +25041,20 @@ ${text2}` : text2;
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$c, [
+        return openBlock(), createElementBlock("div", _hoisted_1$d, [
           createVNode(unref(EditorIcon), {
             name: "warning",
             size: 40,
             class: "editor-error__icon"
           }),
-          createBaseVNode("p", _hoisted_2$9, toDisplayString(unref(t2)("editor.loadError")), 1),
+          createBaseVNode("p", _hoisted_2$a, toDisplayString(unref(t2)("editor.loadError")), 1),
           __props.message ? (openBlock(), createElementBlock("p", _hoisted_3$8, toDisplayString(__props.message), 1)) : createCommentVNode("", true)
         ]);
       };
     }
   });
-  const _style_0$c = "\n.editor-error[data-v-eefc2d23] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl);\n  text-align: center;\n  /* Opaque so the half-built layout never shows behind. No backdrop-filter:\n     it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  font-family: var(--font-family);\n}\n.editor-error__icon[data-v-eefc2d23] {\n  color: var(--color-danger);\n}\n.editor-error__title[data-v-eefc2d23] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.editor-error__detail[data-v-eefc2d23] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n}\n";
-  const EditorErrorOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$c]], ["__scopeId", "data-v-eefc2d23"]]);
+  const _style_0$d = "\n.editor-error[data-v-eefc2d23] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl);\n  text-align: center;\n  /* Opaque so the half-built layout never shows behind. No backdrop-filter:\n     it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  font-family: var(--font-family);\n}\n.editor-error__icon[data-v-eefc2d23] {\n  color: var(--color-danger);\n}\n.editor-error__title[data-v-eefc2d23] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.editor-error__detail[data-v-eefc2d23] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n}\n";
+  const EditorErrorOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$d]], ["__scopeId", "data-v-eefc2d23"]]);
   const READY_TIMEOUT_MS = 2e4;
   function useEditorReady(core) {
     const isLoading = /* @__PURE__ */ ref(true);
@@ -24764,13 +25088,14 @@ ${text2}` : text2;
     });
     return { isLoading, error };
   }
-  const _hoisted_1$b = { class: "transcript-ui-root" };
-  const _sfc_main$b = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$c = ["data-theme"];
+  const _sfc_main$d = /* @__PURE__ */ defineComponent({
     __name: "TranscriptUI",
     props: {
       locale: { default: "fr", type: String },
       noHeader: { type: Boolean, default: false },
-      noVerbatim: { type: Boolean, default: false }
+      noVerbatim: { type: Boolean, default: false },
+      noThemeToggle: { type: Boolean, default: false }
     },
     setup(__props, { expose: __expose }) {
       const props = __props;
@@ -24784,25 +25109,36 @@ ${text2}` : text2;
       );
       const core = createCore();
       provideCore(core);
+      const brandStyle = computed(
+        () => core.primaryColor.value ? {
+          "--color-primary": core.primaryColor.value,
+          "--color-primary-hover": `color-mix(in srgb, ${core.primaryColor.value} 85%, #000)`
+        } : void 0
+      );
       const { isLoading, error } = useEditorReady(core);
       onBeforeUnmount(() => core.destroy());
       __expose({ core });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$b, [
+        return openBlock(), createElementBlock("div", {
+          class: "transcript-ui-root",
+          "data-theme": unref(core).theme.value,
+          style: normalizeStyle(brandStyle.value)
+        }, [
           unref(core).channels.size ? (openBlock(), createBlock(Layout, {
             key: 0,
             "show-header": !props.noHeader,
-            "show-verbatim": !props.noVerbatim
-          }, null, 8, ["show-header", "show-verbatim"])) : createCommentVNode("", true),
+            "show-verbatim": !props.noVerbatim,
+            "show-theme-toggle": !props.noThemeToggle
+          }, null, 8, ["show-header", "show-verbatim", "show-theme-toggle"])) : createCommentVNode("", true),
           unref(error) ? (openBlock(), createBlock(EditorErrorOverlay, {
             key: 1,
             message: unref(error)
           }, null, 8, ["message"])) : unref(isLoading) ? (openBlock(), createBlock(EditorLoadingOverlay, { key: 2 })) : createCommentVNode("", true)
-        ]);
+        ], 12, _hoisted_1$c);
       };
     }
   });
-  const _style_0$b = `
+  const _style_0$c = `
 /* NOT fonts.css: a @font-face declared inside a shadow root isn't reliably
  * applied by browsers (document.fonts never registers it) — dead weight in
  * the webcomponent bundle specifically, which always runs shadow-DOM'd. The
@@ -24832,6 +25168,10 @@ ${text2}` : text2;
  *   --color-text-muted       Muted text (labels)
  *   --color-border           Borders
  *   --color-border-light     Light borders
+ *   --color-switch-track     Filled track of a switch that is off
+ *   --color-switch-border    Outline of a switch and of its knob
+ *   --color-success          Completed / copied states
+ *   --color-warning          In-progress, degraded states
  *
  * Typography, spacing, radius, and shadows are also overridable.
  *
@@ -24871,6 +25211,15 @@ ${text2}` : text2;
   --color-danger: #e53935;
   --color-danger-hover: #c62828;
   --color-danger-soft: #fdecea;
+  /* A switch carries its state in one small shape, so it gets its own pair
+     rather than borrowing --color-border for both roles — which is what
+     collapsed into a white blob when that token went white for the dark
+     theme. The outline does the reading work: 3.6:1 against the track and
+     4.69:1 against the knob, where darkening the track alone caps at 2.1:1. */
+  --color-switch-track: #dee2e6;
+  --color-switch-border: #6c757d;
+  --color-success: #2e7d32;
+  --color-warning: #ed6c02;
 
   /* Typography */
   --font-family:
@@ -24879,6 +25228,10 @@ ${text2}` : text2;
   --font-size-xs: 0.875rem;
   --font-size-sm: 1rem;
   --font-size-base: 1.125rem;
+  /* Reading size of the transcript text alone — the panel overrides it
+     from core.transcriptFontSize. Chrome (buttons, headers, panels) stays
+     on the scale above. */
+  --transcript-font-size: var(--font-size-base);
   --font-size-lg: 1.25rem;
   --font-size-xl: 1.75rem;
   --line-height: 1.6;
@@ -24919,6 +25272,53 @@ ${text2}` : text2;
      and freezes weaker machines. Keep the semi-opaque background only. */
   --glass-background: rgba(255, 255, 255, 0.8);
   --glass-border: rgba(255, 255, 255, 0.3);
+}
+
+/* Dark theme — same data-theme convention as the host app. The attribute is
+   carried by the editor's own root (TranscriptUI binds it from core.theme),
+   so a host switches it through core.theme rather than by styling the
+   element from outside: a declaration here always wins over one on the
+   custom element, since this root is the closer ancestor.
+
+   Contrast against --color-surface: text-primary 13.6:1, text-secondary
+   10.8:1, text-muted 6.2:1, primary 5.8:1, danger 4.6:1 — every pair at or
+   above its light-theme counterpart. */
+.transcript-ui-root[data-theme="dark"] {
+  /* Native controls follow: the channel and translation selectors are real
+     <select> elements, and would otherwise stay white boxes — same for
+     scrollbars and range tracks. */
+  color-scheme: dark;
+
+  --color-background: #16181d;
+  --color-surface: #1e2127;
+  --color-surface-hover: #282c34;
+  --color-text-primary: #e9ecef;
+  --color-text-secondary: #ced4da;
+  /* White rather than a grey: in high contrast, a label that ranks below its
+     content still has to be read at a glance. */
+  --color-text-muted: #ffffff;
+  --color-primary: #7d95f7;
+  --color-primary-hover: #93a7f9;
+  /* High contrast first: outlines must be unmistakable on a dark surface —
+     the sidebar's edge, inputs, switches, buttons all read from this. */
+  --color-border: #ffffff;
+  --color-border-light: #9aa1ab;
+  --color-danger: #ef5350;
+  --color-danger-hover: #f77066;
+  --color-danger-soft: #3b2220;
+  --color-switch-track: #282c34;
+  --color-switch-border: #ffffff;
+  --color-success: #66bb6a;
+  --color-warning: #ffa726;
+
+  /* --color-white and --color-black keep their literal meaning: they name a
+     colour, not a role (the checkmark on a primary fill stays white). */
+
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55);
+
+  --glass-background: rgba(30, 33, 39, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.08);
 }
 .transcript-ui-root,
 :host {
@@ -25129,7 +25529,7 @@ section.turn:has([data-state="open"]) {
   height: 100%;
 }
 `;
-  const TranscriptUI = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$b]]]);
+  const TranscriptUI = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$c]]]);
   function mapApiTurns(apiTurns) {
     return apiTurns.map((t2) => {
       const words = wordsFromApi$2(t2.turn_id, t2.words);
@@ -25240,6 +25640,7 @@ section.turn:has([data-state="open"]) {
     };
   }
   const { isSameLanguage, speakText, stopTTS, unlockTTS, isTTSSupported, hasVoices } = utils;
+  const DEFAULT_SILENCE_DELAY = 6e3;
   function finalEventToSourceTurn(event) {
     const hasWords = event.words.length > 0;
     return {
@@ -25275,6 +25676,10 @@ section.turn:has([data-state="open"]) {
       name: "live",
       install(core) {
         const partial = /* @__PURE__ */ shallowRef(null);
+        const partialsVisible = /* @__PURE__ */ ref(true);
+        const isSpeechActive = /* @__PURE__ */ ref(false);
+        const silenceDelay = /* @__PURE__ */ ref(options.silenceDelay ?? DEFAULT_SILENCE_DELAY);
+        let silenceTimeout = null;
         const hasLiveUpdate = /* @__PURE__ */ ref(false);
         const ttsEnabled = /* @__PURE__ */ ref(false);
         const ttsSupported = isTTSSupported();
@@ -25288,9 +25693,32 @@ section.turn:has([data-state="open"]) {
         }
         let lastOriginalPartialEvent = null;
         hasLiveUpdate.value = true;
+        function markSpeechActivity() {
+          isSpeechActive.value = true;
+          if (silenceTimeout !== null) clearTimeout(silenceTimeout);
+          silenceTimeout = setTimeout(endSpeechActivity, silenceDelay.value);
+        }
+        function endSpeechActivity() {
+          if (silenceTimeout !== null) {
+            clearTimeout(silenceTimeout);
+            silenceTimeout = null;
+          }
+          isSpeechActive.value = false;
+        }
         function clearPartial() {
           partial.value = null;
           lastOriginalPartialEvent = null;
+        }
+        function setPartial(text2) {
+          if (!partialsVisible.value) return;
+          partial.value = text2;
+        }
+        function showPartials() {
+          partialsVisible.value = true;
+        }
+        function hidePartials() {
+          partialsVisible.value = false;
+          immediateClearPartial();
         }
         function isTranslationTrackFor(active, language) {
           if (active.isSource) return false;
@@ -25300,10 +25728,11 @@ section.turn:has([data-state="open"]) {
           if (core.activeChannelId.value !== channelId) return;
           const channel = core.activeChannel.value;
           if (!channel) return;
+          markSpeechActivity();
           lastOriginalPartialEvent = event;
           const activeTranslation = channel.activeTranslation.value;
           if (activeTranslation.isSource && event.text != null) {
-            partial.value = event.text;
+            setPartial(event.text);
           }
         }
         let clearPartialTimeout = null;
@@ -25411,15 +25840,16 @@ section.turn:has([data-state="open"]) {
           if (!channel) return;
           const activeTranslation = channel.activeTranslation.value;
           if (!_event.final) {
+            markSpeechActivity();
             if (activeTranslation.id === CROSS_TRANSLATION_ID) {
               if (_event.turnId === lastOriginalPartialEvent?.turnId && !isSameLanguage(
                 _event.language,
                 lastOriginalPartialEvent?.language
               )) {
-                partial.value = _event.text;
+                setPartial(_event.text);
               }
             } else if (isTranslationTrackFor(activeTranslation, _event.language)) {
-              partial.value = _event.text;
+              setPartial(_event.text);
             }
             return;
           }
@@ -25452,6 +25882,11 @@ section.turn:has([data-state="open"]) {
         }
         const api = {
           partial,
+          partialsVisible,
+          isSpeechActive,
+          silenceDelay,
+          showPartials,
+          hidePartials,
           hasLiveUpdate,
           ttsAvailable,
           ttsEnabled,
@@ -25480,6 +25915,7 @@ section.turn:has([data-state="open"]) {
         core.live = api;
         return () => {
           immediateClearPartial();
+          endSpeechActivity();
           stopTTS();
           if (ttsSupported) {
             window.speechSynthesis.removeEventListener(
@@ -25496,14 +25932,14 @@ section.turn:has([data-state="open"]) {
       }
     };
   }
-  const _hoisted_1$a = { class: "player-controls" };
-  const _hoisted_2$8 = { class: "controls-left" };
+  const _hoisted_1$b = { class: "player-controls" };
+  const _hoisted_2$9 = { class: "controls-left" };
   const _hoisted_3$7 = { class: "controls-time" };
-  const _hoisted_4$4 = { class: "time-display" };
-  const _hoisted_5$4 = { class: "time-display" };
+  const _hoisted_4$5 = { class: "time-display" };
+  const _hoisted_5$5 = { class: "time-display" };
   const _hoisted_6$4 = { class: "controls-right" };
   const _hoisted_7$1 = ["value", "aria-label", "disabled"];
-  const _sfc_main$a = /* @__PURE__ */ defineComponent({
+  const _sfc_main$c = /* @__PURE__ */ defineComponent({
     __name: "AudioPlayerControls",
     props: {
       isPlaying: { type: Boolean },
@@ -25524,8 +25960,8 @@ section.turn:has([data-state="open"]) {
         emit2("update:volume", parseFloat(target.value));
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$a, [
-          createBaseVNode("div", _hoisted_2$8, [
+        return openBlock(), createElementBlock("div", _hoisted_1$b, [
+          createBaseVNode("div", _hoisted_2$9, [
             createVNode(unref(Button), {
               variant: "transparent",
               size: "md",
@@ -25573,9 +26009,9 @@ section.turn:has([data-state="open"]) {
             }, 8, ["aria-label", "disabled"])
           ]),
           createBaseVNode("div", _hoisted_3$7, [
-            createBaseVNode("time", _hoisted_4$4, toDisplayString(__props.currentTime), 1),
+            createBaseVNode("time", _hoisted_4$5, toDisplayString(__props.currentTime), 1),
             _cache[7] || (_cache[7] = createBaseVNode("span", { class: "time-separator" }, "/", -1)),
-            createBaseVNode("time", _hoisted_5$4, toDisplayString(__props.duration), 1)
+            createBaseVNode("time", _hoisted_5$5, toDisplayString(__props.duration), 1)
           ]),
           createBaseVNode("div", _hoisted_6$4, [
             createBaseVNode("div", {
@@ -25633,8 +26069,8 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0$a = "\n.player-controls[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xs) var(--spacing-lg);\n  height: 44px;\n}\n.controls-left[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.controls-time[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xxs);\n  font-family: var(--font-family-mono);\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n  user-select: none;\n}\n.time-separator[data-v-fb293305] {\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.controls-right[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.volume-group[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.volume-slider[data-v-fb293305] {\n  width: 80px;\n  height: 4px;\n  accent-color: var(--color-primary);\n  cursor: pointer;\n}\n.volume-slider[data-v-fb293305]:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n.play-button[data-v-fb293305] {\n  width: 40px;\n  height: 40px;\n}\n.speed-button[data-v-fb293305] {\n  font-size: var(--font-size-sm);\n  font-family: var(--font-family-mono);\n}\n@media (max-width: 767px) {\n.skip-button[data-v-fb293305] {\n    display: none;\n}\n.volume-slider[data-v-fb293305] {\n    display: none;\n}\n.player-controls[data-v-fb293305] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    gap: var(--spacing-sm);\n}\n}\n";
-  const AudioPlayerControls = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$a]], ["__scopeId", "data-v-fb293305"]]);
+  const _style_0$b = "\n.player-controls[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xs) var(--spacing-lg);\n  height: 44px;\n}\n.controls-left[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.controls-time[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xxs);\n  font-family: var(--font-family-mono);\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n  user-select: none;\n}\n.time-separator[data-v-fb293305] {\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.controls-right[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.volume-group[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.volume-slider[data-v-fb293305] {\n  width: 80px;\n  height: 4px;\n  accent-color: var(--color-primary);\n  cursor: pointer;\n}\n.volume-slider[data-v-fb293305]:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n.play-button[data-v-fb293305] {\n  width: 40px;\n  height: 40px;\n}\n.speed-button[data-v-fb293305] {\n  font-size: var(--font-size-sm);\n  font-family: var(--font-family-mono);\n}\n@media (max-width: 767px) {\n.skip-button[data-v-fb293305] {\n    display: none;\n}\n.volume-slider[data-v-fb293305] {\n    display: none;\n}\n.player-controls[data-v-fb293305] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    gap: var(--spacing-sm);\n}\n}\n";
+  const AudioPlayerControls = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$b]], ["__scopeId", "data-v-fb293305"]]);
   function t$1(t2, e2, i2, n2) {
     return new (i2 || (i2 = Promise))((function(s2, r2) {
       function o2(t3) {
@@ -25801,7 +26237,7 @@ section.turn:has([data-state="open"]) {
       i2 && (i2(), i2 = void 0), s2.forEach(((t3) => t3()));
     };
   }
-  class u extends e$1 {
+  let d$1 = class d extends e$1 {
     get isPlayingSignal() {
       return this._isPlaying;
     }
@@ -25932,8 +26368,8 @@ section.turn:has([data-state="open"]) {
     setSinkId(t2) {
       return this.media.setSinkId(t2);
     }
-  }
-  function d$1({ maxTop: t2, maxBottom: e2, halfHeight: i2, vScale: n2, barMinHeight: s2 = 0, barAlign: r2 }) {
+  };
+  function u({ maxTop: t2, maxBottom: e2, halfHeight: i2, vScale: n2, barMinHeight: s2 = 0, barAlign: r2 }) {
     let o2 = Math.round(t2 * i2 * n2);
     let a2 = o2 + Math.round(e2 * i2 * n2) || 1;
     return a2 < s2 && (a2 = s2, r2 || (o2 = a2 / 2)), { topHeight: o2, totalHeight: a2 };
@@ -26026,16 +26462,16 @@ section.turn:has([data-state="open"]) {
           if (o2.has(e3.pointerId)) return;
           if (o2.set(e3.pointerId, e3), o2.size > 1) return;
           const l2 = e3.pointerId;
-          let c3 = e3.clientX, u2 = e3.clientY, d2 = false;
+          let c3 = e3.clientX, d2 = e3.clientY, u2 = false;
           const p2 = Date.now(), m2 = t3.getBoundingClientRect(), { left: g2, top: f2 } = m2, v2 = (t4) => {
             if (t4.pointerId !== l2) return;
             if (t4.defaultPrevented || o2.size > 1) return;
             if (a2 && Date.now() - p2 < s2) return;
-            const e4 = t4.clientX, n3 = t4.clientY, h3 = e4 - c3, m3 = n3 - u2;
-            (d2 || Math.abs(h3) > i2 || Math.abs(m3) > i2) && (t4.preventDefault(), t4.stopPropagation(), d2 || (r2.set({ type: "start", x: c3 - g2, y: u2 - f2 }), d2 = true), r2.set({ type: "move", x: e4 - g2, y: n3 - f2, deltaX: h3, deltaY: m3 }), c3 = e4, u2 = n3);
+            const e4 = t4.clientX, n3 = t4.clientY, h3 = e4 - c3, m3 = n3 - d2;
+            (u2 || Math.abs(h3) > i2 || Math.abs(m3) > i2) && (t4.preventDefault(), t4.stopPropagation(), u2 || (r2.set({ type: "start", x: c3 - g2, y: d2 - f2 }), u2 = true), r2.set({ type: "move", x: e4 - g2, y: n3 - f2, deltaX: h3, deltaY: m3 }), c3 = e4, d2 = n3);
           }, b2 = (t4) => {
             if (o2.delete(t4.pointerId)) {
-              if (t4.pointerId === l2 && d2) {
+              if (t4.pointerId === l2 && u2) {
                 const e4 = t4.clientX, i3 = t4.clientY;
                 r2.set({ type: "end", x: e4 - g2, y: i3 - f2 });
               }
@@ -26044,9 +26480,9 @@ section.turn:has([data-state="open"]) {
           }, y2 = (t4) => {
             t4.relatedTarget && t4.relatedTarget !== document.documentElement || b2(t4);
           }, C2 = (t4) => {
-            d2 && (t4.stopPropagation(), t4.preventDefault());
+            u2 && (t4.stopPropagation(), t4.preventDefault());
           }, S2 = (t4) => {
-            t4.defaultPrevented || o2.size > 1 || d2 && t4.preventDefault();
+            t4.defaultPrevented || o2.size > 1 || u2 && t4.preventDefault();
           };
           document.addEventListener("pointermove", v2), document.addEventListener("pointerup", b2), document.addEventListener("pointerout", y2), document.addEventListener("pointercancel", y2), document.addEventListener("touchmove", S2, { passive: false }), document.addEventListener("click", C2, { capture: true }), h2 = () => {
             document.removeEventListener("pointermove", v2), document.removeEventListener("pointerup", b2), document.removeEventListener("pointerout", y2), document.removeEventListener("pointercancel", y2), document.removeEventListener("touchmove", S2), setTimeout((() => {
@@ -26219,23 +26655,23 @@ section.turn:has([data-state="open"]) {
       var t2;
     }
     renderBarWaveform(t2, e2, i2, n2) {
-      const { width: s2, height: r2 } = i2.canvas, { halfHeight: o2, barWidth: a2, barRadius: l2, barIndexScale: h2, barSpacing: c2, barMinHeight: u2 } = (function({ width: t3, height: e3, length: i3, options: n3, pixelRatio: s3 }) {
+      const { width: s2, height: r2 } = i2.canvas, { halfHeight: o2, barWidth: a2, barRadius: l2, barIndexScale: h2, barSpacing: c2, barMinHeight: d2 } = (function({ width: t3, height: e3, length: i3, options: n3, pixelRatio: s3 }) {
         const r3 = e3 / 2, o3 = n3.barWidth ? n3.barWidth * s3 : 1, a3 = n3.barGap ? n3.barGap * s3 : n3.barWidth ? o3 / 2 : 0, l3 = o3 + a3 || 1;
         return { halfHeight: r3, barWidth: o3, barGap: a3, barRadius: n3.barRadius || 0, barMinHeight: n3.barMinHeight ? n3.barMinHeight * s3 : 0, barIndexScale: i3 > 0 ? t3 / l3 / i3 : 0, barSpacing: l3 };
       })({ width: s2, height: r2, length: (t2[0] || []).length, options: e2, pixelRatio: this.getPixelRatio() }), m2 = (function({ channelData: t3, barIndexScale: e3, barSpacing: i3, barWidth: n3, halfHeight: s3, vScale: r3, canvasHeight: o3, barAlign: a3, barMinHeight: l3 }) {
-        const h3 = t3[0] || [], c3 = t3[1] || h3, u3 = h3.length, m3 = [];
+        const h3 = t3[0] || [], c3 = t3[1] || h3, d3 = h3.length, m3 = [];
         let g2 = 0, f2 = 0, v2 = 0;
-        for (let t4 = 0; t4 <= u3; t4++) {
-          const u4 = Math.round(t4 * e3);
-          if (u4 > g2) {
-            const { topHeight: t5, totalHeight: e4 } = d$1({ maxTop: f2, maxBottom: v2, halfHeight: s3, vScale: r3, barMinHeight: l3, barAlign: a3 }), h4 = p({ barAlign: a3, halfHeight: s3, topHeight: t5, totalHeight: e4, canvasHeight: o3 });
-            m3.push({ x: g2 * i3, y: h4, width: n3, height: e4 }), g2 = u4, f2 = 0, v2 = 0;
+        for (let t4 = 0; t4 <= d3; t4++) {
+          const d4 = Math.round(t4 * e3);
+          if (d4 > g2) {
+            const { topHeight: t5, totalHeight: e4 } = u({ maxTop: f2, maxBottom: v2, halfHeight: s3, vScale: r3, barMinHeight: l3, barAlign: a3 }), h4 = p({ barAlign: a3, halfHeight: s3, topHeight: t5, totalHeight: e4, canvasHeight: o3 });
+            m3.push({ x: g2 * i3, y: h4, width: n3, height: e4 }), g2 = d4, f2 = 0, v2 = 0;
           }
           const b2 = Math.abs(h3[t4] || 0), y2 = Math.abs(c3[t4] || 0);
           b2 > f2 && (f2 = b2), y2 > v2 && (v2 = y2);
         }
         return m3;
-      })({ channelData: t2, barIndexScale: h2, barSpacing: c2, barWidth: a2, halfHeight: o2, vScale: n2, canvasHeight: r2, barAlign: e2.barAlign, barMinHeight: u2 });
+      })({ channelData: t2, barIndexScale: h2, barSpacing: c2, barWidth: a2, halfHeight: o2, vScale: n2, canvasHeight: r2, barAlign: e2.barAlign, barMinHeight: d2 });
       i2.beginPath();
       for (const t3 of m2) l2 && "roundRect" in i2 ? i2.roundRect(t3.x, t3.y, t3.width, t3.height, l2) : i2.rect(t3.x, t3.y, t3.width, t3.height);
       i2.fill(), i2.closePath();
@@ -26245,15 +26681,15 @@ section.turn:has([data-state="open"]) {
         const s3 = i3 / 2, r3 = t3[0] || [];
         return [r3, t3[1] || r3].map(((t4, i4) => {
           const r4 = t4.length, o3 = r4 ? e3 / r4 : 0, a2 = s3, l2 = 0 === i4 ? -1 : 1, h2 = [{ x: 0, y: a2 }];
-          let c2 = 0, u2 = 0;
+          let c2 = 0, d2 = 0;
           for (let e4 = 0; e4 <= r4; e4++) {
             const i5 = Math.round(e4 * o3);
             if (i5 > c2) {
-              const t5 = a2 + (Math.round(u2 * s3 * n3) || 1) * l2;
-              h2.push({ x: c2, y: t5 }), c2 = i5, u2 = 0;
+              const t5 = a2 + (Math.round(d2 * s3 * n3) || 1) * l2;
+              h2.push({ x: c2, y: t5 }), c2 = i5, d2 = 0;
             }
             const r5 = Math.abs(t4[e4] || 0);
-            r5 > u2 && (u2 = r5);
+            r5 > d2 && (d2 = r5);
           }
           return h2.push({ x: c2, y: a2 }), h2;
         }));
@@ -26300,29 +26736,29 @@ section.turn:has([data-state="open"]) {
       })({ clientWidth: a2, totalWidth: l2, options: e2 });
       let c2 = {};
       if (0 === h2) return;
-      const u2 = (i3) => {
-        if (i3 < 0 || i3 >= d2) return;
+      const d2 = (i3) => {
+        if (i3 < 0 || i3 >= u2) return;
         if (c2[i3]) return;
         c2[i3] = true;
         const o3 = i3 * h2;
         let a3 = Math.min(l2 - o3, h2);
         if (a3 = f(a3, e2), a3 <= 0) return;
-        const u3 = (function({ channelData: t3, offset: e3, clampedWidth: i4, totalWidth: n3 }) {
+        const d3 = (function({ channelData: t3, offset: e3, clampedWidth: i4, totalWidth: n3 }) {
           return t3.map(((t4) => {
             const s3 = Math.floor(e3 / n3 * t4.length), r3 = Math.floor((e3 + i4) / n3 * t4.length);
             return t4.slice(s3, r3);
           }));
         })({ channelData: t2, offset: o3, clampedWidth: a3, totalWidth: l2 });
-        this.renderSingleCanvas(u3, e2, a3, n2, o3, s2, r2);
-      }, d2 = Math.ceil(l2 / h2);
+        this.renderSingleCanvas(d3, e2, a3, n2, o3, s2, r2);
+      }, u2 = Math.ceil(l2 / h2);
       if (!this.isScrollable) {
-        for (let t3 = 0; t3 < d2; t3++) u2(t3);
+        for (let t3 = 0; t3 < u2; t3++) d2(t3);
         return;
       }
-      if (v({ scrollLeft: this.scrollContainer.scrollLeft, totalWidth: l2, numCanvases: d2 }).forEach(((t3) => u2(t3))), d2 > 1) {
+      if (v({ scrollLeft: this.scrollContainer.scrollLeft, totalWidth: l2, numCanvases: u2 }).forEach(((t3) => d2(t3))), u2 > 1) {
         const t3 = this.on("scroll", (() => {
           const { scrollLeft: t4 } = this.scrollContainer;
-          Object.keys(c2).length > 10 && (s2.innerHTML = "", r2.innerHTML = "", c2 = {}), v({ scrollLeft: t4, totalWidth: l2, numCanvases: d2 }).forEach(((t5) => u2(t5)));
+          Object.keys(c2).length > 10 && (s2.innerHTML = "", r2.innerHTML = "", c2 = {}), v({ scrollLeft: t4, totalWidth: l2, numCanvases: u2 }).forEach(((t5) => d2(t5)));
         }));
         this.unsubscribeOnScroll.push(t3);
       }
@@ -26585,7 +27021,7 @@ section.turn:has([data-state="open"]) {
     }
   }
   const P = { waveColor: "#999", progressColor: "#555", cursorWidth: 1, minPxPerSec: 0, fillParent: true, interact: true, dragToSeek: false, autoScroll: true, autoCenter: true, sampleRate: 8e3 };
-  class w extends u {
+  class w extends d$1 {
     static create(t2) {
       return new w(t2);
     }
@@ -26597,19 +27033,19 @@ section.turn:has([data-state="open"]) {
     }
     constructor(t2) {
       const e2 = t2.media || ("WebAudio" === t2.backend ? new E() : void 0);
-      super({ media: e2, mediaControls: t2.mediaControls, autoplay: t2.autoplay, playbackRate: t2.audioRate }), this.plugins = [], this.decodedData = null, this.stopAtPosition = null, this.subscriptions = [], this.mediaSubscriptions = [], this.abortController = null, this._isDestroyed = false, this._loadVersion = 0, this.reactiveCleanups = [], this.options = Object.assign({}, P, t2);
+      super({ media: e2, mediaControls: t2.mediaControls, autoplay: t2.autoplay, playbackRate: t2.audioRate }), this.plugins = [], this.decodedData = null, this.stopAtPosition = null, this.subscriptions = [], this.mediaSubscriptions = [], this.abortController = null, this._isDestroyed = false, this._loadVersion = 0, this.options = Object.assign({}, P, t2);
       const { state: i2, actions: n2 } = (function(t3) {
         var e3, i3, n3, s3, r3, o2;
-        const a2 = null !== (e3 = null == t3 ? void 0 : t3.currentTime) && void 0 !== e3 ? e3 : l$1(0), c2 = null !== (i3 = null == t3 ? void 0 : t3.duration) && void 0 !== i3 ? i3 : l$1(0), u2 = null !== (n3 = null == t3 ? void 0 : t3.isPlaying) && void 0 !== n3 ? n3 : l$1(false), d2 = null !== (s3 = null == t3 ? void 0 : t3.isSeeking) && void 0 !== s3 ? s3 : l$1(false), p2 = null !== (r3 = null == t3 ? void 0 : t3.volume) && void 0 !== r3 ? r3 : l$1(1), m2 = null !== (o2 = null == t3 ? void 0 : t3.playbackRate) && void 0 !== o2 ? o2 : l$1(1), g2 = l$1(null), f2 = l$1(null), v2 = l$1(""), b2 = l$1(0), y2 = l$1(0), C2 = h$1((() => !u2.value), [u2]), S2 = h$1((() => null !== g2.value), [g2]), E2 = h$1((() => S2.value && c2.value > 0), [S2, c2]), P2 = h$1((() => a2.value), [a2]), w2 = h$1((() => c2.value > 0 ? a2.value / c2.value : 0), [a2, c2]);
-        return { state: { currentTime: a2, duration: c2, isPlaying: u2, isPaused: C2, isSeeking: d2, volume: p2, playbackRate: m2, audioBuffer: g2, peaks: f2, url: v2, zoom: b2, scrollPosition: y2, canPlay: S2, isReady: E2, progress: P2, progressPercent: w2 }, actions: { setCurrentTime: (t4) => {
+        const a2 = null !== (e3 = null == t3 ? void 0 : t3.currentTime) && void 0 !== e3 ? e3 : l$1(0), c2 = null !== (i3 = null == t3 ? void 0 : t3.duration) && void 0 !== i3 ? i3 : l$1(0), d2 = null !== (n3 = null == t3 ? void 0 : t3.isPlaying) && void 0 !== n3 ? n3 : l$1(false), u2 = null !== (s3 = null == t3 ? void 0 : t3.isSeeking) && void 0 !== s3 ? s3 : l$1(false), p2 = null !== (r3 = null == t3 ? void 0 : t3.volume) && void 0 !== r3 ? r3 : l$1(1), m2 = null !== (o2 = null == t3 ? void 0 : t3.playbackRate) && void 0 !== o2 ? o2 : l$1(1), g2 = l$1(null), f2 = l$1(null), v2 = l$1(""), b2 = l$1(0), y2 = l$1(0), C2 = h$1((() => !d2.value), [d2]), S2 = h$1((() => null !== g2.value), [g2]), E2 = h$1((() => S2.value && c2.value > 0), [S2, c2]), P2 = h$1((() => a2.value), [a2]), w2 = h$1((() => c2.value > 0 ? a2.value / c2.value : 0), [a2, c2]);
+        return { state: { currentTime: a2, duration: c2, isPlaying: d2, isPaused: C2, isSeeking: u2, volume: p2, playbackRate: m2, audioBuffer: g2, peaks: f2, url: v2, zoom: b2, scrollPosition: y2, canPlay: S2, isReady: E2, progress: P2, progressPercent: w2 }, actions: { setCurrentTime: (t4) => {
           const e4 = Math.max(0, Math.min(c2.value || 1 / 0, t4));
           a2.set(e4);
         }, setDuration: (t4) => {
           c2.set(Math.max(0, t4));
         }, setPlaying: (t4) => {
-          u2.set(t4);
-        }, setSeeking: (t4) => {
           d2.set(t4);
+        }, setSeeking: (t4) => {
+          u2.set(t4);
         }, setVolume: (t4) => {
           const e4 = Math.max(0, Math.min(1, t4));
           p2.set(e4);
@@ -26630,7 +27066,7 @@ section.turn:has([data-state="open"]) {
       })({ isPlaying: this.isPlayingSignal, currentTime: this.currentTimeSignal, duration: this.durationSignal, volume: this.volumeSignal, playbackRate: this.playbackRateSignal, isSeeking: this.seekingSignal });
       this.wavesurferState = i2, this.wavesurferActions = n2, this.timer = new S();
       const s2 = e2 ? void 0 : this.getMediaElement();
-      this.renderer = new C(this.options, s2), this.initPlayerEvents(), this.initRendererEvents(), this.initTimerEvents(), this.initReactiveState(), this.initPlugins();
+      this.renderer = new C(this.options, s2), this.initPlayerEvents(), this.initRendererEvents(), this.initTimerEvents(), this.initPlugins();
       const r2 = this.options.url || this.getSrc() || "";
       Promise.resolve().then((() => {
         this.emit("init");
@@ -26652,36 +27088,6 @@ section.turn:has([data-state="open"]) {
           }
         }
       })));
-    }
-    initReactiveState() {
-      this.reactiveCleanups.push((function(t2, e2) {
-        const i2 = [];
-        i2.push(c((() => {
-          const i3 = t2.isPlaying.value;
-          e2.emit(i3 ? "play" : "pause");
-        }), [t2.isPlaying])), i2.push(c((() => {
-          const i3 = t2.currentTime.value;
-          e2.emit("timeupdate", i3), t2.isPlaying.value && e2.emit("audioprocess", i3);
-        }), [t2.currentTime, t2.isPlaying])), i2.push(c((() => {
-          t2.isSeeking.value && e2.emit("seeking", t2.currentTime.value);
-        }), [t2.isSeeking, t2.currentTime]));
-        let n2 = false;
-        i2.push(c((() => {
-          t2.isReady.value && !n2 && (n2 = true, e2.emit("ready", t2.duration.value));
-        }), [t2.isReady, t2.duration])), i2.push(c((() => {
-          null === t2.audioBuffer.value && (n2 = false);
-        }), [t2.audioBuffer]));
-        let s2 = false;
-        return i2.push(c((() => {
-          const i3 = t2.isPlaying.value, n3 = t2.currentTime.value, r2 = t2.duration.value, o2 = r2 > 0 && n3 >= r2;
-          s2 && !i3 && o2 && e2.emit("finish"), s2 = i3 && o2;
-        }), [t2.isPlaying, t2.currentTime, t2.duration])), i2.push(c((() => {
-          const i3 = t2.zoom.value;
-          i3 > 0 && e2.emit("zoom", i3);
-        }), [t2.zoom])), () => {
-          i2.forEach(((t3) => t3()));
-        };
-      })(this.wavesurferState, { emit: this.emit.bind(this) }));
     }
     initPlayerEvents() {
       this.isPlaying() && (this.emit("play"), this.timer.start()), this.mediaSubscriptions.push(this.onMediaEvent("timeupdate", (() => {
@@ -26902,7 +27308,7 @@ section.turn:has([data-state="open"]) {
     }
     destroy() {
       var t2;
-      this._isDestroyed = true, this.emit("destroy"), null === (t2 = this.abortController) || void 0 === t2 || t2.abort(), this.plugins.forEach(((t3) => t3.destroy())), this.subscriptions.forEach(((t3) => t3())), this.unsubscribePlayerEvents(), this.reactiveCleanups.forEach(((t3) => t3())), this.reactiveCleanups = [], this.timer.destroy(), this.renderer.destroy(), super.destroy();
+      this._isDestroyed = true, this.emit("destroy"), null === (t2 = this.abortController) || void 0 === t2 || t2.abort(), this.plugins.forEach(((t3) => t3.destroy())), this.subscriptions.forEach(((t3) => t3())), this.unsubscribePlayerEvents(), this.timer.destroy(), this.renderer.destroy(), super.destroy();
     }
   }
   w.BasePlugin = class extends e$1 {
@@ -27596,8 +28002,8 @@ section.turn:has([data-state="open"]) {
       toggleMute
     };
   }
-  const _hoisted_1$9 = { class: "audio-player" };
-  const _sfc_main$9 = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$a = { class: "audio-player" };
+  const _sfc_main$b = /* @__PURE__ */ defineComponent({
     __name: "AudioPlayer",
     props: {
       audioSrc: { type: String }
@@ -27627,7 +28033,7 @@ section.turn:has([data-state="open"]) {
       });
       __expose({ seekTo, pause });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("footer", _hoisted_1$9, [
+        return openBlock(), createElementBlock("footer", _hoisted_1$a, [
           createBaseVNode("div", {
             ref_key: "waveformRef",
             ref: waveformRef,
@@ -27652,8 +28058,8 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0$9 = "\n.audio-player[data-v-580c393d] {\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.transcript-ui-waveform-container[data-v-580c393d] {\n  min-height: 32px;\n}\n.transcript-ui-waveform-container--loading[data-v-580c393d] {\n  background: linear-gradient(\n    90deg,\n    var(--color-border-light, var(--color-border)) 25%,\n    var(--color-border) 50%,\n    var(--color-border-light, var(--color-border)) 75%\n  );\n  background-size: 200% 100%;\n  animation: shimmer-580c393d 1.5s ease-in-out infinite;\n  border-radius: var(--radius-sm);\n}\n@keyframes shimmer-580c393d {\n0% {\n    background-position: 200% 0;\n}\n100% {\n    background-position: -200% 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.transcript-ui-waveform-container--loading[data-v-580c393d] {\n    animation: none;\n}\n}\n";
-  const AudioPlayer = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$9]], ["__scopeId", "data-v-580c393d"]]);
+  const _style_0$a = "\n.audio-player[data-v-580c393d] {\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.transcript-ui-waveform-container[data-v-580c393d] {\n  min-height: 32px;\n}\n.transcript-ui-waveform-container--loading[data-v-580c393d] {\n  background: linear-gradient(\n    90deg,\n    var(--color-border-light, var(--color-border)) 25%,\n    var(--color-border) 50%,\n    var(--color-border-light, var(--color-border)) 75%\n  );\n  background-size: 200% 100%;\n  animation: shimmer-580c393d 1.5s ease-in-out infinite;\n  border-radius: var(--radius-sm);\n}\n@keyframes shimmer-580c393d {\n0% {\n    background-position: 200% 0;\n}\n100% {\n    background-position: -200% 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.transcript-ui-waveform-container--loading[data-v-580c393d] {\n    animation: none;\n}\n}\n";
+  const AudioPlayer = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$a]], ["__scopeId", "data-v-580c393d"]]);
   const { findActiveWord, firstWordStart, lastWordEnd } = utils;
   const WORD_TRACK_INTERVAL = 0.05;
   function createAudioPlugin(options = {}) {
@@ -27729,6 +28135,7 @@ section.turn:has([data-state="open"]) {
         });
         function seekTo(time) {
           seekHandler?.(time);
+          core.emit("audio:seek", { time });
         }
         function setSeekHandler(fn) {
           seekHandler = fn;
@@ -28193,6 +28600,14 @@ section.turn:has([data-state="open"]) {
       );
       this.draw();
     }
+    /** Drops the provisional line being built and repaints without it — the
+     *  last finalized line stays up. What the canvas showed just before the
+     *  partial started, in other words. */
+    clearPartial() {
+      if (this.isResizing) return;
+      this.currentState = { previousText: "", previousIndexes: [] };
+      this.draw();
+    }
     newFinal(text2) {
       if (this.isResizing) return;
       this.currentState = splitPartialSubtitles(
@@ -28273,6 +28688,12 @@ section.turn:has([data-state="open"]) {
       () => core.live?.partial.value,
       (text2) => {
         if (text2 && scroller) scroller.newPartial(text2);
+      }
+    );
+    watch(
+      () => core.live?.partialsVisible.value,
+      (visible) => {
+        if (visible === false) scroller?.clearPartial();
       }
     );
     const unsubTurnAdd = core.onActiveTranslation("turn:add", ({ turn }) => {
@@ -28370,14 +28791,14 @@ section.turn:has([data-state="open"]) {
     }
     return parts;
   }
-  const _hoisted_1$8 = {
+  const _hoisted_1$9 = {
     key: 0,
     class: "watermark",
     "aria-hidden": "true"
   };
-  const _hoisted_2$7 = ["src", "alt"];
+  const _hoisted_2$8 = ["src", "alt"];
   const _hoisted_3$6 = { key: 1 };
-  const _sfc_main$8 = /* @__PURE__ */ defineComponent({
+  const _sfc_main$a = /* @__PURE__ */ defineComponent({
     __name: "SubtitleWatermark",
     props: {
       visible: { type: Boolean }
@@ -28392,7 +28813,7 @@ section.turn:has([data-state="open"]) {
       return (_ctx, _cache) => {
         return openBlock(), createBlock(Transition, { name: "watermark" }, {
           default: withCtx(() => [
-            __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$8, [
+            __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$9, [
               (openBlock(true), createElementBlock(Fragment, null, renderList(parts.value, (part, i2) => {
                 return openBlock(), createElementBlock(Fragment, { key: i2 }, [
                   part.type === "token" ? (openBlock(), createElementBlock("img", {
@@ -28400,7 +28821,7 @@ section.turn:has([data-state="open"]) {
                     src: part.src,
                     alt: part.alt,
                     class: "watermark__img"
-                  }, null, 8, _hoisted_2$7)) : (openBlock(), createElementBlock("span", _hoisted_3$6, toDisplayString(part.value), 1))
+                  }, null, 8, _hoisted_2$8)) : (openBlock(), createElementBlock("span", _hoisted_3$6, toDisplayString(part.value), 1))
                 ], 64);
               }), 128))
             ])) : createCommentVNode("", true)
@@ -28410,10 +28831,10 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0$8 = "\n.watermark[data-v-eb604a8e] {\n  position: absolute;\n  right: var(--spacing-md, 16px);\n  bottom: 4px;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25em;\n  font-size: 1.2rem;\n  color: var(--color-white, #fff);\n  pointer-events: none;\n  line-height: 1;\n}\n.watermark__img[data-v-eb604a8e] {\n  height: 1em;\n  vertical-align: middle;\n}\n.watermark-enter-active[data-v-eb604a8e],\n.watermark-leave-active[data-v-eb604a8e] {\n  transition:\n    opacity 0.4s ease,\n    transform 0.4s ease;\n}\n.watermark-enter-from[data-v-eb604a8e],\n.watermark-leave-to[data-v-eb604a8e] {\n  opacity: 0;\n  transform: translate(6px, 6px);\n}\n@media (prefers-reduced-motion: reduce) {\n.watermark-enter-active[data-v-eb604a8e],\n  .watermark-leave-active[data-v-eb604a8e] {\n    transition: opacity 0.01s;\n    transform: none;\n}\n}\n";
-  const SubtitleWatermark = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$8]], ["__scopeId", "data-v-eb604a8e"]]);
-  const _hoisted_1$7 = ["height"];
-  const _sfc_main$7 = /* @__PURE__ */ defineComponent({
+  const _style_0$9 = "\n.watermark[data-v-eb604a8e] {\n  position: absolute;\n  right: var(--spacing-md, 16px);\n  bottom: 4px;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25em;\n  font-size: 1.2rem;\n  color: var(--color-white, #fff);\n  pointer-events: none;\n  line-height: 1;\n}\n.watermark__img[data-v-eb604a8e] {\n  height: 1em;\n  vertical-align: middle;\n}\n.watermark-enter-active[data-v-eb604a8e],\n.watermark-leave-active[data-v-eb604a8e] {\n  transition:\n    opacity 0.4s ease,\n    transform 0.4s ease;\n}\n.watermark-enter-from[data-v-eb604a8e],\n.watermark-leave-to[data-v-eb604a8e] {\n  opacity: 0;\n  transform: translate(6px, 6px);\n}\n@media (prefers-reduced-motion: reduce) {\n.watermark-enter-active[data-v-eb604a8e],\n  .watermark-leave-active[data-v-eb604a8e] {\n    transition: opacity 0.01s;\n    transform: none;\n}\n}\n";
+  const SubtitleWatermark = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$9]], ["__scopeId", "data-v-eb604a8e"]]);
+  const _hoisted_1$8 = ["height"];
+  const _sfc_main$9 = /* @__PURE__ */ defineComponent({
     __name: "SubtitleBanner",
     setup(__props) {
       const core = useCore();
@@ -28447,20 +28868,20 @@ section.turn:has([data-state="open"]) {
             ref: "canvas",
             class: normalizeClass(["subtitle-canvas", { "subtitle-canvas--shrunk": unref(watermarkVisible) }]),
             height: canvasHeight.value
-          }, null, 10, _hoisted_1$7),
+          }, null, 10, _hoisted_1$8),
           createVNode(SubtitleWatermark, { visible: unref(watermarkVisible) }, null, 8, ["visible"])
         ], 4);
       };
     }
   });
-  const _style_0$7 = "\n.subtitle-banner[data-v-6b9b2fb2] {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n  z-index: 1001;\n}\n.subtitle-canvas[data-v-6b9b2fb2] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-6b9b2fb2] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-6b9b2fb2] {\n    transition: none;\n}\n}\n";
-  const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$7]], ["__scopeId", "data-v-6b9b2fb2"]]);
-  const _hoisted_1$6 = {
+  const _style_0$8 = "\n.subtitle-banner[data-v-6b9b2fb2] {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n  z-index: 1001;\n}\n.subtitle-canvas[data-v-6b9b2fb2] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-6b9b2fb2] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-6b9b2fb2] {\n    transition: none;\n}\n}\n";
+  const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$8]], ["__scopeId", "data-v-6b9b2fb2"]]);
+  const _hoisted_1$7 = {
     ref: "container",
     class: "subtitle-fullscreen"
   };
-  const _hoisted_2$6 = ["aria-label"];
-  const _sfc_main$6 = /* @__PURE__ */ defineComponent({
+  const _hoisted_2$7 = ["aria-label"];
+  const _sfc_main$8 = /* @__PURE__ */ defineComponent({
     __name: "SubtitleFullscreen",
     setup(__props) {
       const core = useCore();
@@ -28518,14 +28939,14 @@ section.turn:has([data-state="open"]) {
         }
       });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$6, [
+        return openBlock(), createElementBlock("div", _hoisted_1$7, [
           createBaseVNode("button", {
             class: "subtitle-fullscreen__close",
             "aria-label": unref(t2)("subtitle.exitFullscreen"),
             onClick: close
           }, [
             createVNode(unref(X$1), { size: 24 })
-          ], 8, _hoisted_2$6),
+          ], 8, _hoisted_2$7),
           createBaseVNode("canvas", {
             ref: "canvas",
             class: normalizeClass(["subtitle-fullscreen__canvas", { "subtitle-fullscreen__canvas--shrunk": unref(watermarkVisible) }])
@@ -28535,8 +28956,8 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0$6 = "\n.subtitle-fullscreen[data-v-4dac7247] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (border/background only) left margin, padding,\n     and appearance to whatever the host page's UA/global styles set. */\n  all: unset;\n  box-sizing: border-box;\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247]:hover,\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-4dac7247] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-4dac7247] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-4dac7247],\n  .subtitle-fullscreen__canvas[data-v-4dac7247] {\n    transition: none;\n}\n}\n";
-  const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$6]], ["__scopeId", "data-v-4dac7247"]]);
+  const _style_0$7 = "\n.subtitle-fullscreen[data-v-4dac7247] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (border/background only) left margin, padding,\n     and appearance to whatever the host page's UA/global styles set. */\n  all: unset;\n  box-sizing: border-box;\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247]:hover,\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-4dac7247] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-4dac7247] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-4dac7247],\n  .subtitle-fullscreen__canvas[data-v-4dac7247] {\n    transition: none;\n}\n}\n";
+  const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$7]], ["__scopeId", "data-v-4dac7247"]]);
   function createSubtitlePlugin(options = {}) {
     return {
       name: "subtitle",
@@ -29338,6 +29759,38 @@ section.turn:has([data-state="open"]) {
       }
     };
   }
+  const _hoisted_1$6 = ["title"];
+  const _hoisted_2$6 = { class: "llm-service-status__label" };
+  const _sfc_main$7 = /* @__PURE__ */ defineComponent({
+    __name: "LLMServiceStatus",
+    props: {
+      isUpdated: { type: Boolean }
+    },
+    setup(__props) {
+      const props = __props;
+      const { t: t2 } = useI18n();
+      const label = computed(
+        () => props.isUpdated ? t2("llmService.statusUpdated") : t2("llmService.statusOutdated")
+      );
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("span", {
+          class: normalizeClass([
+            "llm-service-status",
+            __props.isUpdated ? "llm-service-status--ok" : "llm-service-status--warn"
+          ]),
+          title: label.value
+        }, [
+          createVNode(unref(EditorIcon), {
+            name: __props.isUpdated ? "check" : "warning",
+            size: 14
+          }, null, 8, ["name"]),
+          createBaseVNode("span", _hoisted_2$6, toDisplayString(label.value), 1)
+        ], 10, _hoisted_1$6);
+      };
+    }
+  });
+  const _style_0$6 = "\n.llm-service-status[data-v-c0012514] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-status--ok[data-v-c0012514] {\n  color: var(--color-success);\n}\n.llm-service-status--warn[data-v-c0012514] {\n  color: var(--color-warning);\n}\n.llm-service-status[data-v-c0012514] .editor-icon {\n  flex-shrink: 0;\n}\n.llm-service-status__label[data-v-c0012514] {\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
+  const LLMServiceStatus = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$6]], ["__scopeId", "data-v-c0012514"]]);
   const _hoisted_1$5 = { class: "llm-service-panel" };
   const _hoisted_2$5 = {
     key: 0,
@@ -29345,7 +29798,9 @@ section.turn:has([data-state="open"]) {
     role: "status"
   };
   const _hoisted_3$5 = { class: "llm-service-panel__empty-text" };
-  const _sfc_main$5 = /* @__PURE__ */ defineComponent({
+  const _hoisted_4$4 = { class: "llm-service-panel__reading-status" };
+  const _hoisted_5$4 = { class: "llm-service-panel__reading-actions" };
+  const _sfc_main$6 = /* @__PURE__ */ defineComponent({
     __name: "LLMServicePanel",
     props: {
       service: { type: Object },
@@ -29357,6 +29812,8 @@ section.turn:has([data-state="open"]) {
       const emit2 = __emit;
       const core = useCore();
       const { t: t2 } = useI18n();
+      const { isMobile } = useIsMobile();
+      const isReadOnly = computed(() => isMobile.value);
       function toggleSplit() {
         emit2("update:split", !props.split);
       }
@@ -29423,62 +29880,7 @@ section.turn:has([data-state="open"]) {
             status: articleStatus.value,
             progress: progress.value,
             onRetry: onRegenerate
-          }, {
-            "toolbar-left": withCtx(() => [
-              createVNode(unref(Button), {
-                variant: "primary",
-                icon: "save",
-                disabled: !dirty.value || busy.value,
-                "aria-label": unref(t2)("llmService.save"),
-                title: unref(t2)("llmService.save"),
-                onClick: onSave
-              }, null, 8, ["disabled", "aria-label", "title"]),
-              createVNode(unref(Button), {
-                variant: "secondary",
-                icon: "refresh-cw",
-                loading: articleStatus.value === "processing",
-                disabled: isUpdated.value || busy.value || articleStatus.value === "processing",
-                "aria-label": unref(t2)("llmService.regenerate"),
-                title: unref(t2)("llmService.regenerate"),
-                onClick: onRegenerate
-              }, null, 8, ["loading", "disabled", "aria-label", "title"])
-            ]),
-            "toolbar-center": withCtx(() => [
-              createBaseVNode("span", {
-                class: normalizeClass(["llm-service-panel__status", [
-                  isUpdated.value ? "llm-service-panel__status--ok" : "llm-service-panel__status--warn"
-                ]])
-              }, [
-                createVNode(unref(EditorIcon), {
-                  name: isUpdated.value ? "check" : "warning",
-                  size: 14
-                }, null, 8, ["name"]),
-                createBaseVNode("span", null, toDisplayString(isUpdated.value ? unref(t2)("llmService.statusUpdated") : unref(t2)("llmService.statusOutdated")), 1)
-              ], 2)
-            ]),
-            "toolbar-right": withCtx(() => [
-              createVNode(unref(Button), {
-                variant: "primary",
-                icon: "download",
-                disabled: articleStatus.value === "processing" || !hasContent.value,
-                "aria-label": unref(t2)("llmService.download"),
-                title: unref(t2)("llmService.download"),
-                onClick: onExport
-              }, {
-                default: withCtx(() => [
-                  createTextVNode(toDisplayString(unref(t2)("llmService.download")), 1)
-                ]),
-                _: 1
-              }, 8, ["disabled", "aria-label", "title"]),
-              createVNode(unref(Button), {
-                variant: __props.split ? "primary" : "secondary",
-                icon: "panel-right",
-                "aria-pressed": !!__props.split,
-                "aria-label": unref(t2)("llmService.split"),
-                title: unref(t2)("llmService.split"),
-                onClick: toggleSplit
-              }, null, 8, ["variant", "aria-pressed", "aria-label", "title"])
-            ]),
+          }, createSlots({
             default: withCtx(() => [
               isEmpty.value ? (openBlock(), createElementBlock("div", _hoisted_2$5, [
                 createBaseVNode("p", _hoisted_3$5, toDisplayString(unref(t2)("llmService.empty")), 1),
@@ -29493,21 +29895,108 @@ section.turn:has([data-state="open"]) {
                   ]),
                   _: 1
                 }, 8, ["disabled"])
-              ])) : (openBlock(), createBlock(unref(MarkdownEditor), {
+              ])) : !isReadOnly.value ? (openBlock(), createBlock(unref(MarkdownEditor), {
                 key: 1,
                 modelValue: draft.value,
                 "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => draft.value = $event),
                 disabled: busy.value
-              }, null, 8, ["modelValue", "disabled"]))
+              }, null, 8, ["modelValue", "disabled"])) : (openBlock(), createElementBlock(Fragment, { key: 2 }, [
+                createBaseVNode("div", _hoisted_4$4, [
+                  createVNode(LLMServiceStatus, { "is-updated": isUpdated.value }, null, 8, ["is-updated"]),
+                  createBaseVNode("div", _hoisted_5$4, [
+                    !isUpdated.value ? (openBlock(), createBlock(unref(Button), {
+                      key: 0,
+                      variant: "secondary",
+                      icon: "refresh-cw",
+                      disabled: busy.value,
+                      onClick: onRegenerate
+                    }, {
+                      default: withCtx(() => [
+                        createTextVNode(toDisplayString(unref(t2)("llmService.regenerate")), 1)
+                      ]),
+                      _: 1
+                    }, 8, ["disabled"])) : createCommentVNode("", true),
+                    createVNode(unref(Button), {
+                      variant: "primary",
+                      icon: "download",
+                      "aria-label": unref(t2)("llmService.download"),
+                      title: unref(t2)("llmService.download"),
+                      onClick: onExport
+                    }, null, 8, ["aria-label", "title"])
+                  ])
+                ]),
+                createVNode(unref(MarkdownView), {
+                  class: "llm-service-panel__reading",
+                  source: draft.value
+                }, null, 8, ["source"])
+              ], 64))
             ]),
-            _: 1
-          }, 8, ["status", "progress"])
+            _: 2
+          }, [
+            !isReadOnly.value ? {
+              name: "toolbar-left",
+              fn: withCtx(() => [
+                createVNode(unref(Button), {
+                  variant: "primary",
+                  icon: "save",
+                  disabled: !dirty.value || busy.value,
+                  "aria-label": unref(t2)("llmService.save"),
+                  title: unref(t2)("llmService.save"),
+                  onClick: onSave
+                }, null, 8, ["disabled", "aria-label", "title"]),
+                createVNode(unref(Button), {
+                  variant: "secondary",
+                  icon: "refresh-cw",
+                  loading: articleStatus.value === "processing",
+                  disabled: isUpdated.value || busy.value || articleStatus.value === "processing",
+                  "aria-label": unref(t2)("llmService.regenerate"),
+                  title: unref(t2)("llmService.regenerate"),
+                  onClick: onRegenerate
+                }, null, 8, ["loading", "disabled", "aria-label", "title"])
+              ]),
+              key: "0"
+            } : void 0,
+            !isReadOnly.value ? {
+              name: "toolbar-center",
+              fn: withCtx(() => [
+                createVNode(LLMServiceStatus, { "is-updated": isUpdated.value }, null, 8, ["is-updated"])
+              ]),
+              key: "1"
+            } : void 0,
+            !isReadOnly.value ? {
+              name: "toolbar-right",
+              fn: withCtx(() => [
+                createVNode(unref(Button), {
+                  variant: "primary",
+                  icon: "download",
+                  disabled: articleStatus.value === "processing" || !hasContent.value,
+                  "aria-label": unref(t2)("llmService.download"),
+                  title: unref(t2)("llmService.download"),
+                  onClick: onExport
+                }, {
+                  default: withCtx(() => [
+                    createTextVNode(toDisplayString(unref(t2)("llmService.download")), 1)
+                  ]),
+                  _: 1
+                }, 8, ["disabled", "aria-label", "title"]),
+                createVNode(unref(Button), {
+                  variant: __props.split ? "primary" : "secondary",
+                  icon: "panel-right",
+                  "aria-pressed": !!__props.split,
+                  "aria-label": unref(t2)("llmService.split"),
+                  title: unref(t2)("llmService.split"),
+                  onClick: toggleSplit
+                }, null, 8, ["variant", "aria-pressed", "aria-label", "title"])
+              ]),
+              key: "2"
+            } : void 0
+          ]), 1032, ["status", "progress"])
         ]);
       };
     }
   });
-  const _style_0$5 = "\n.llm-service-panel[data-v-0222a168] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n}\n.llm-service-panel__status[data-v-0222a168] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-panel__status--ok[data-v-0222a168] {\n  color: var(--color-success, #2e7d32);\n}\n.llm-service-panel__status--warn[data-v-0222a168] {\n  color: var(--color-warning, #ed6c02);\n}\n.llm-service-panel__empty[data-v-0222a168] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-0222a168] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n@media (max-width: 767px) {\n.llm-service-panel[data-v-0222a168] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$5]], ["__scopeId", "data-v-0222a168"]]);
+  const _style_0$5 = "\n.llm-service-panel[data-v-2d38dcc6] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.llm-service-panel__reading-status[data-v-2d38dcc6] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.llm-service-panel__reading-actions[data-v-2d38dcc6] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.llm-service-panel__reading[data-v-2d38dcc6] {\n  padding: var(--spacing-xl) var(--spacing-lg);\n}\n.llm-service-panel__empty[data-v-2d38dcc6] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-2d38dcc6] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n";
+  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$5]], ["__scopeId", "data-v-2d38dcc6"]]);
   function createService(init) {
     return {
       id: init.id,
@@ -29708,7 +30197,7 @@ section.turn:has([data-state="open"]) {
     class: "chat-session-confirm"
   };
   const _hoisted_6$3 = { class: "chat-session-confirm__text" };
-  const _sfc_main$4 = /* @__PURE__ */ defineComponent({
+  const _sfc_main$5 = /* @__PURE__ */ defineComponent({
     __name: "ChatSessionList",
     props: {
       sessions: { type: Array },
@@ -29840,7 +30329,48 @@ section.turn:has([data-state="open"]) {
     }
   });
   const _style_0$4 = "\n.chat-session-list[data-v-c13478f0] {\n  width: var(--chat-session-list-width, 200px);\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  border-right: 1px solid var(--color-border);\n  background-color: var(--color-surface-hover);\n  transition: width 0.2s ease;\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-session-list[data-v-c13478f0] {\n    transition: none;\n}\n}\n.chat-session-list__header[data-v-c13478f0] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm) var(--spacing-md);\n}\n.chat-session-list__title[data-v-c13478f0] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-muted);\n}\n.chat-session-list__items[data-v-c13478f0] {\n  flex: 1;\n  margin: 0;\n  padding: 0;\n  list-style: none;\n  overflow-y: auto;\n}\n\n/* Delete confirmation row */\n.chat-session-confirm[data-v-c13478f0] {\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.chat-session-confirm__text[data-v-c13478f0] {\n  flex: 1;\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  color: var(--color-danger);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n";
-  const ChatSessionList = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["styles", [_style_0$4]], ["__scopeId", "data-v-c13478f0"]]);
+  const ChatSessionList = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["styles", [_style_0$4]], ["__scopeId", "data-v-c13478f0"]]);
+  function computeSessionOptions(sessions, activeSessionId, newSessionLabel) {
+    const options = sessions.map((session) => ({
+      value: session.id,
+      label: session.title || newSessionLabel
+    }));
+    const isActiveListed = sessions.some((s2) => s2.id === activeSessionId);
+    if (isActiveListed) return options;
+    return [{ value: activeSessionId ?? "", label: newSessionLabel }, ...options];
+  }
+  const _sfc_main$4 = /* @__PURE__ */ defineComponent({
+    __name: "ChatSessionSelect",
+    props: {
+      sessions: { type: Array },
+      activeSessionId: { type: [String, null] }
+    },
+    emits: ["select"],
+    setup(__props, { emit: __emit }) {
+      const props = __props;
+      const emit2 = __emit;
+      const { t: t2 } = useI18n();
+      const options = computed(
+        () => computeSessionOptions(props.sessions, props.activeSessionId, t2("chat.newChat"))
+      );
+      const field = computed(() => ({
+        customParams: { "aria-label": t2("chat.history") }
+      }));
+      function onChange(sessionId) {
+        if (sessionId && sessionId !== props.activeSessionId) emit2("select", sessionId);
+      }
+      return (_ctx, _cache) => {
+        return openBlock(), createBlock(unref(FormInput), {
+          select: "",
+          "full-width": "",
+          field: field.value,
+          options: options.value,
+          "model-value": __props.activeSessionId ?? "",
+          "onUpdate:modelValue": onChange
+        }, null, 8, ["field", "options", "model-value"]);
+      };
+    }
+  });
   const _hoisted_1$3 = {
     key: 0,
     class: "chat-message chat-message--user"
@@ -30023,6 +30553,7 @@ section.turn:has([data-state="open"]) {
             class: "chat-composer__textarea",
             placeholder: unref(t2)("chat.placeholder"),
             disabled: __props.disabled,
+            enterkeyhint: "send",
             rows: "2",
             ref: "chat-composer__textarea",
             onKeydown
@@ -30041,8 +30572,8 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0$1 = "\n.chat-composer[data-v-05dbe7e6] {\n  display: flex;\n  align-items: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  flex-shrink: 0;\n  /* Match the message column width when the panel is expanded. */\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n.chat-composer__textarea[data-v-05dbe7e6] {\n  flex: 1;\n  resize: none;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-sm) var(--spacing-md);\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-surface);\n  outline: none;\n}\n.chat-composer__textarea[data-v-05dbe7e6]:focus {\n  border-color: var(--color-primary);\n}\n.chat-composer__textarea[data-v-05dbe7e6]:disabled {\n  opacity: 0.6;\n  cursor: not-allowed;\n}\n";
-  const ChatComposer = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["styles", [_style_0$1]], ["__scopeId", "data-v-05dbe7e6"]]);
+  const _style_0$1 = "\n.chat-composer[data-v-037fb976] {\n  display: flex;\n  align-items: flex-end;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  flex-shrink: 0;\n  /* Match the message column width when the panel is expanded. */\n  width: 100%;\n  max-width: var(--chat-content-max-width, 760px);\n  margin-inline: auto;\n}\n.chat-composer__textarea[data-v-037fb976] {\n  flex: 1;\n  resize: none;\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  padding: var(--spacing-sm) var(--spacing-md);\n  font-family: inherit;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  background-color: var(--color-surface);\n  outline: none;\n}\n.chat-composer__textarea[data-v-037fb976]:focus {\n  border-color: var(--color-primary);\n}\n.chat-composer__textarea[data-v-037fb976]:disabled {\n  opacity: 0.6;\n  cursor: not-allowed;\n}\n";
+  const ChatComposer = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["styles", [_style_0$1]], ["__scopeId", "data-v-037fb976"]]);
   const _hoisted_1 = ["aria-labelledby"];
   const _hoisted_2 = { class: "chat-drawer__header" };
   const _hoisted_3 = ["id"];
@@ -30054,6 +30585,7 @@ section.turn:has([data-state="open"]) {
     setup(__props) {
       const core = useCore();
       const { t: t2 } = useI18n();
+      const { isMobile } = useIsMobile();
       const chat = core.chat;
       const titleId = useId$1();
       const expanded = /* @__PURE__ */ ref(false);
@@ -30103,7 +30635,7 @@ section.turn:has([data-state="open"]) {
               onClick: withModifiers(close, ["self"])
             }, [
               createBaseVNode("aside", {
-                class: normalizeClass(["chat-drawer", { "chat-drawer--expanded": expanded.value }]),
+                class: normalizeClass(["chat-drawer", { "chat-drawer--expanded": expanded.value && !unref(isMobile) }]),
                 role: "dialog",
                 "aria-modal": "true",
                 "aria-labelledby": unref(titleId)
@@ -30111,23 +30643,37 @@ section.turn:has([data-state="open"]) {
                 createBaseVNode("header", _hoisted_2, [
                   createBaseVNode("h2", {
                     id: unref(titleId),
-                    class: "chat-drawer__title"
+                    class: normalizeClass(["chat-drawer__title", { "transcript-ui-sr-only": unref(isMobile) }])
                   }, [
                     createVNode(unref(EditorIcon), {
                       name: "sparkles",
                       size: 18
                     }),
                     createTextVNode(" " + toDisplayString(unref(t2)("chat.title")), 1)
-                  ], 8, _hoisted_3),
+                  ], 10, _hoisted_3),
+                  unref(isMobile) ? (openBlock(), createBlock(_sfc_main$4, {
+                    key: 0,
+                    class: "chat-drawer__session-select",
+                    sessions: unref(chat).sessions.value,
+                    "active-session-id": unref(chat).activeSessionId.value,
+                    onSelect
+                  }, null, 8, ["sessions", "active-session-id"])) : createCommentVNode("", true),
                   createBaseVNode("div", _hoisted_4, [
-                    createVNode(unref(Button), {
-                      class: "chat-drawer__expand",
+                    unref(isMobile) ? (openBlock(), createBlock(unref(Button), {
+                      key: 0,
+                      icon: "plus",
+                      variant: "tertiary",
+                      size: "sm",
+                      "aria-label": unref(t2)("chat.newChat"),
+                      onClick: onCreate
+                    }, null, 8, ["aria-label"])) : (openBlock(), createBlock(unref(Button), {
+                      key: 1,
                       icon: expanded.value ? "minimize" : "maximize",
                       variant: "tertiary",
                       size: "sm",
                       "aria-label": expanded.value ? unref(t2)("chat.collapse") : unref(t2)("chat.expand"),
                       onClick: toggleExpanded
-                    }, null, 8, ["icon", "aria-label"]),
+                    }, null, 8, ["icon", "aria-label"])),
                     createVNode(unref(Button), {
                       icon: "x",
                       variant: "tertiary",
@@ -30138,14 +30684,15 @@ section.turn:has([data-state="open"]) {
                   ])
                 ]),
                 createBaseVNode("div", _hoisted_5, [
-                  createVNode(ChatSessionList, {
+                  !unref(isMobile) ? (openBlock(), createBlock(ChatSessionList, {
+                    key: 0,
                     sessions: unref(chat).sessions.value,
                     "active-session-id": unref(chat).activeSessionId.value,
                     onSelect,
                     onCreate,
                     onRename,
                     onDelete
-                  }, null, 8, ["sessions", "active-session-id"]),
+                  }, null, 8, ["sessions", "active-session-id"])) : createCommentVNode("", true),
                   createBaseVNode("div", _hoisted_6, [
                     createVNode(ChatMessageList, {
                       messages: unref(chat).allMessages.value,
@@ -30166,8 +30713,8 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0 = "\n.chat-overlay[data-v-673d2314] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-drawer);\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  justify-content: flex-end;\n}\n.chat-drawer[data-v-673d2314] {\n  /* Centered reading column for messages + composer; cascades to the child\n     components through the DOM regardless of scoped styles. */\n  --chat-content-max-width: 760px;\n  --chat-session-list-width: 200px;\n  width: min(620px, 100vw);\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n  transition: width 0.2s ease;\n}\n\n/* Near-full-width: keeps a backdrop strip on the left so click-outside still\n   closes the panel. */\n.chat-drawer--expanded[data-v-673d2314] {\n  width: min(1400px, 96vw);\n  --chat-session-list-width: 300px;\n}\n.chat-drawer__header[data-v-673d2314] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-drawer__title[data-v-673d2314] {\n  margin: 0;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font-size: var(--font-size-base);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.chat-drawer__title[data-v-673d2314] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-drawer__actions[data-v-673d2314] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n\n/* The expand toggle is desktop-only: on phones the panel is already full-width. */\n@media (max-width: 640px) {\n.chat-drawer__expand[data-v-673d2314] {\n    display: none;\n}\n}\n.chat-drawer__body[data-v-673d2314] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n}\n.chat-drawer__main[data-v-673d2314] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n/* ── Slide + fade transition ── */\n.chat-drawer-enter-active[data-v-673d2314],\n.chat-drawer-leave-active[data-v-673d2314] {\n  transition: opacity 0.2s ease;\n}\n.chat-drawer-enter-active .chat-drawer[data-v-673d2314],\n.chat-drawer-leave-active .chat-drawer[data-v-673d2314] {\n  transition: transform 0.25s ease;\n}\n.chat-drawer-enter-from[data-v-673d2314],\n.chat-drawer-leave-to[data-v-673d2314] {\n  opacity: 0;\n}\n.chat-drawer-enter-from .chat-drawer[data-v-673d2314],\n.chat-drawer-leave-to .chat-drawer[data-v-673d2314] {\n  transform: translateX(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-drawer[data-v-673d2314],\n  .chat-drawer-enter-active[data-v-673d2314],\n  .chat-drawer-leave-active[data-v-673d2314],\n  .chat-drawer-enter-active .chat-drawer[data-v-673d2314],\n  .chat-drawer-leave-active .chat-drawer[data-v-673d2314] {\n    transition: none;\n}\n}\n";
-  const ChatDrawer = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-673d2314"]]);
+  const _style_0 = "\n.chat-overlay[data-v-25f4e0cf] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-drawer);\n  background-color: rgba(0, 0, 0, 0.4);\n  display: flex;\n  justify-content: flex-end;\n}\n.chat-drawer[data-v-25f4e0cf] {\n  /* Centered reading column for messages + composer; cascades to the child\n     components through the DOM regardless of scoped styles. */\n  --chat-content-max-width: 760px;\n  --chat-session-list-width: 200px;\n  width: min(620px, 100vw);\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--color-surface);\n  box-shadow: var(--shadow-md);\n  transition: width 0.2s ease;\n}\n\n/* Near-full-width: keeps a backdrop strip on the left so click-outside still\n   closes the panel. */\n.chat-drawer--expanded[data-v-25f4e0cf] {\n  width: min(1400px, 96vw);\n  --chat-session-list-width: 300px;\n}\n.chat-drawer__header[data-v-25f4e0cf] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  flex-shrink: 0;\n}\n.chat-drawer__title[data-v-25f4e0cf] {\n  margin: 0;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font-size: var(--font-size-base);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.chat-drawer__title[data-v-25f4e0cf] .editor-icon {\n  color: var(--color-primary);\n}\n.chat-drawer__session-select[data-v-25f4e0cf] {\n  flex: 1;\n  min-width: 0;\n}\n.chat-drawer__actions[data-v-25f4e0cf] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.chat-drawer__body[data-v-25f4e0cf] {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n}\n.chat-drawer__main[data-v-25f4e0cf] {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n\n/* ── Slide + fade transition ── */\n.chat-drawer-enter-active[data-v-25f4e0cf],\n.chat-drawer-leave-active[data-v-25f4e0cf] {\n  transition: opacity 0.2s ease;\n}\n.chat-drawer-enter-active .chat-drawer[data-v-25f4e0cf],\n.chat-drawer-leave-active .chat-drawer[data-v-25f4e0cf] {\n  transition: transform 0.25s ease;\n}\n.chat-drawer-enter-from[data-v-25f4e0cf],\n.chat-drawer-leave-to[data-v-25f4e0cf] {\n  opacity: 0;\n}\n.chat-drawer-enter-from .chat-drawer[data-v-25f4e0cf],\n.chat-drawer-leave-to .chat-drawer[data-v-25f4e0cf] {\n  transform: translateX(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.chat-drawer[data-v-25f4e0cf],\n  .chat-drawer-enter-active[data-v-25f4e0cf],\n  .chat-drawer-leave-active[data-v-25f4e0cf],\n  .chat-drawer-enter-active .chat-drawer[data-v-25f4e0cf],\n  .chat-drawer-leave-active .chat-drawer[data-v-25f4e0cf] {\n    transition: none;\n}\n}\n";
+  const ChatDrawer = /* @__PURE__ */ _export_sfc(_sfc_main, [["styles", [_style_0]], ["__scopeId", "data-v-25f4e0cf"]]);
   const STREAMING_MESSAGE_ID = "__streaming__";
   function createChatPlugin() {
     return {

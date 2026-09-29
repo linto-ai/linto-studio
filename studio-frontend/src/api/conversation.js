@@ -323,7 +323,9 @@ export async function apiCreateConversation(
       onUploadProgress,
     )
 
-    if (req.status === "success") return { success: true }
+    if (req.status === "success") {
+      return { success: true, conversationId: req.data?.conversationId }
+    }
     return {
       success: false,
       errorCode: req.error?.response?.data?.code,
@@ -597,6 +599,19 @@ export async function apiGetUserRightFromConversation(conversationId, notif) {
     notif,
   )
   return res.data
+}
+
+export async function apiUpdateConversationMembersRight(
+  conversationId,
+  membersRight,
+  notif,
+) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/rights`,
+    { method: "patch" },
+    { membersRight },
+    notif,
+  )
 }
 
 export async function apiGetUsersFromMultipleConversation(

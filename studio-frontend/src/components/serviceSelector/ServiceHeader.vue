@@ -150,7 +150,7 @@ export default {
 
     &--1 {
       background: var(--warning-soft);
-      color: var(--warning-text, var(--warning-color));
+      color: var(--warning-text);
     }
 
     &--2 {

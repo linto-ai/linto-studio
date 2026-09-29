@@ -1,50 +1,63 @@
 <h1 align="center">LinTO Studio</h1>
 
-<h4 align="center">Open Source AI driven recording, transcription and media management solution
+<h4 align="center">Open source transcription, live subtitling and meeting summarization
 <br/>
-<a href="https://studio.linto.app" target="_blank" rel="noopener noreferrer">Demo</a> •
-<a href="https://linto.app" target="_blank" rel="noopener noreferrer">Get the android application  </a>
+<a href="https://studio.linto.ai" target="_blank" rel="noopener noreferrer">Hosted version</a> •
+<a href="https://linto.ai" target="_blank" rel="noopener noreferrer">linto.ai</a> •
+<a href="https://github.com/linto-ai" target="_blank" rel="noopener noreferrer">All LinTO repositories</a>
 </h4>
 
-![screenshot of linto.app](doc/Studio.png)
+![screenshot of LinTO Studio](doc/Studio.png)
 
+LinTO Studio is the web application of the LinTO platform. Upload or record media, get a transcript with speaker separation and word-level timestamps, edit it with your team, generate minutes and summaries, and export to your own document templates. It also runs live sessions: subtitles and translation for meetings and events, from a microphone, a meeting bot or a broadcast stream.
 
 ## Features
 
-- Media management platform
-- Advanced transcription features (speaker identification, ...)
-- Auto timestamp alignement
-- NLP and AI features
-- Closed caption edition
+- Transcription of audio and video files with speaker separation and word-level timestamps
+- Speaker identification across recordings from voice signatures, managed per organization
+- Collaborative transcript editor with real-time sync, undo, and audio following
+- Summaries, minutes and chat over the transcript, with the LLM of your choice through [llm-gateway](https://github.com/linto-ai/llm-gateway)
+- Exports in several formats and your own DOCX templates
+- Subtitle editing and export for videos
+- Live sessions: microphone recording from the browser, meeting bots (Teams, Jitsi, BigBlueButton, Visio), SRT/RTMP streams through [linto-studio-plugins](https://github.com/linto-ai/linto-studio-plugins)
+- Organizations, roles, sharing, tags and search
+- REST API with [JavaScript and Python SDKs](studio-sdk/), OAuth and OIDC login
 
-## With a companion app
+## Repository layout
 
-<div align="center">
-<img src="doc/app.gif" alt="drawing" width="200"/>
-</div>
+| Directory | What it is |
+|---|---|
+| `studio-api/` | REST API (Express, MongoDB), authentication, organizations, media, transcription jobs |
+| `studio-frontend/` | Web application (Vue) |
+| `studio-websocket/` | Real-time collaboration server (Socket.io, Yjs) |
+| `studio-sdk/` | JavaScript and Python client libraries, and the transcript editor as a standalone component |
+| `doc/` | Screenshots and API documentation |
 
-- Record on the go
-- Synchronize your media with LinTO studio
+Development happens on `next`. `master` holds releases. Release notes are in [RELEASE.md](RELEASE.md).
 
-## Installation and Usage
+## Installation
 
-Since LinTO Studio relies on a complex set of LinTO services, such as transcription services, we **highly recommend** using our deployment tool:
+LinTO Studio depends on other LinTO services (speech-to-text, speaker separation, LLM gateway, live plugins). To install the whole stack on a Kubernetes cluster, use the deployment tool:
 
-[https://github.com/linto-ai/linto](https://github.com/linto-ai/linto)
+[https://github.com/linto-ai/linto-deploy](https://github.com/linto-ai/linto-deploy)
 
-Alternatively, you can use Docker Compose to run the app directly (web interface and API), but note that it won't be fully functional.
+To run only the web application and its API locally, for development:
 
+```bash
+docker compose up -d
 ```
-docker-compose up -d
-```
 
-then open your web browser to http://localhost:8003
+Then open http://localhost:8003. The API listens on port 8001 and the websocket server on 8002. Transcription, summarization and live features need the corresponding services to be configured (see below).
+
+Each package also has its own README for native development with `npm run dev`.
 
 ## Configuration
 
-### SMTP configuration
+Configuration is done through environment variables. Copy `studio-api/.envdefault` to `studio-api/.env` and adjust it. The main settings:
 
-You can configure an smtp server, for improving sharing and account verification.
+### SMTP
+
+Used for account verification, invitations and sharing.
 
 ```
 SMTP_HOST=mail.example.com
@@ -56,11 +69,28 @@ SMTP_PSWD=password
 NO_REPLY_EMAIL=noreply@mail.example.com
 ```
 
-### Transcription Service
+### Transcription services
 
-By default, LinTO Studio uses the LinTO API Gateway for transcription. If you want to use Studio with a different gateway, set the environment variable as follows:
+Studio talks to the LinTO API gateway, which exposes the transcription, speaker separation and speaker identification services:
 
+```
+GATEWAY_SERVICES=https://<your-gateway-domain>
+```
 
-For more information, visit: [https://github.com/linto-ai/linto](https://github.com/linto-ai/linto)
+### LLM gateway
 
+Summaries, minutes and chat go through [llm-gateway](https://github.com/linto-ai/llm-gateway):
 
+```
+LLM_GATEWAY_SERVICES=https://<your-llm-gateway-domain>
+```
+
+See `studio-api/.envdefault` for the full list, including authentication providers, live sessions and speaker identification.
+
+## Contributing
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request, and [SECURITY.md](SECURITY.md) to report a vulnerability.
+
+## License
+
+[AGPL-3.0](LICENSE)

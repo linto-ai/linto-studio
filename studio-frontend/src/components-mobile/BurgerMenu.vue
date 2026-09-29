@@ -178,7 +178,7 @@ export default {
 
   .org-cloud {
     padding: 1em;
-    background-color: #f5f5f5;
+    background-color: var(--background-app);
     border-top: 1px solid var(--primary-soft);
     border-radius: 4px;
     border-top-left-radius: 0;
@@ -197,7 +197,7 @@ export default {
       flex-direction: column;
       gap: 0.5em;
       padding: 1em;
-      background-color: #fff;
+      background-color: var(--background-primary);
       border-radius: 4px;
       margin-top: 1em;
     }

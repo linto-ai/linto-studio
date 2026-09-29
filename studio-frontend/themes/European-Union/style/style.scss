@@ -9,10 +9,8 @@
     --font-family: "Arial", "Noto Sans", "sans-serif";
     --font-size: 15px;
     --blue-chart: #143fd9;
-    --red-chart: #c01431;
 
     --primary-color: #143fd9;
-    --primary-hard: #143fd9;
     --primary-soft: oklch(0.948 0.021 266.7);
     --primary-contrast: #fff;
   }
@@ -34,6 +32,17 @@
     // Dark theme text colors
     --text-primary: #ffffff;
     --text-secondary: #cccccc;
+
+    // The EU blue reads at 2:1 on this background — lightened to 4.98:1,
+    // same hue. The pairing colour has to flip with it: white on the lighter
+    // blue drops to 3.08:1, black rises to 6.82:1. And the pale --primary-soft
+    // of the light theme would be a near-white block here.
+    // These live in the theme layer on purpose: it wins over the base layer,
+    // so the socle's dark values never reach a token a theme declares.
+    --primary-color: #6b8cff;
+    --primary-contrast: #000;
+    --primary-soft: #161f3a;
+    --blue-chart: #6b8cff;
   }
 
   @media (max-width: 768px) {

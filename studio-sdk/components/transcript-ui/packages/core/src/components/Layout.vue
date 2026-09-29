@@ -18,16 +18,17 @@ const props = withDefaults(
   defineProps<{
     showHeader?: boolean
     showVerbatim?: boolean
+    showThemeToggle?: boolean
   }>(),
   {
     showHeader: true,
     showVerbatim: true,
+    showThemeToggle: true,
   },
 )
 
 const core = useCore()
 const { isMobile } = useIsMobile()
-const isSidebarOpen = ref(false)
 
 const shownPanels = ref<string[]>([TRANSCRIPTION_TAB])
 // The ?? never actually triggers — every shownPanels mutation keeps at least one entry — it's just satisfying noUncheckedIndexedAccess.
@@ -87,6 +88,11 @@ const speakerList = computed(() => Array.from(speakers.values()))
 
 const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB)
 
+// remove split when shrinking in mobile view
+watch(isMobile, (mobile) => {
+  if (mobile && isSplit.value) isSplit.value = false
+})
+
 watch(activeTab, (id) => {
   if (!core.llmServices) return
   if (id === TRANSCRIPTION_TAB || id === VERBATIM_TAB) {
@@ -117,8 +123,11 @@ watch(
   () => props.showVerbatim,
   (canShow) => {
     if (canShow) return
-    const withoutVerbatim = shownPanels.value.filter((id) => id !== VERBATIM_TAB)
-    shownPanels.value = withoutVerbatim.length > 0 ? withoutVerbatim : [TRANSCRIPTION_TAB]
+    const withoutVerbatim = shownPanels.value.filter(
+      (id) => id !== VERBATIM_TAB,
+    )
+    shownPanels.value =
+      withoutVerbatim.length > 0 ? withoutVerbatim : [TRANSCRIPTION_TAB]
   },
 )
 
@@ -130,7 +139,7 @@ watch(
       core.audio.currentTime.value = 0
       core.audio.isPlaying.value = false
     }
-    isSidebarOpen.value = false
+    core.setSidebarOpen(false)
   },
 )
 
@@ -159,7 +168,7 @@ function onTranslationChange(translationId: string) {
       :can-ask="!!core.chat"
       :can-undo="core.transcriptionEditor?.canUndo.value ?? false"
       :can-redo="core.transcriptionEditor?.canRedo.value ?? false"
-      @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
+      @toggle-sidebar="core.setSidebarOpen(!core.sidebarOpen.value)"
       @open-chat="core.chat?.setDrawerOpen(true)"
       @undo="core.transcriptionEditor?.undo()"
       @redo="core.transcriptionEditor?.redo()" />
@@ -195,12 +204,14 @@ function onTranslationChange(translationId: string) {
         :translations="translations"
         :selected-translation-id="activeTranslationId"
         :show-speakers="showTranscription"
+        :show-theme-toggle="props.showThemeToggle"
         @update:selected-channel-id="onChannelChange"
         @update:selected-translation-id="onTranslationChange" />
 
       <SidebarDrawer
         v-if="isMobile && panels.length === 1"
-        v-model:open="isSidebarOpen">
+        :open="core.sidebarOpen.value"
+        @update:open="core.setSidebarOpen($event)">
         <SpeakerSidebar
           :speakers="speakerList"
           :channels="channels"
@@ -208,6 +219,7 @@ function onTranslationChange(translationId: string) {
           :translations="translations"
           :selected-translation-id="activeTranslationId"
           :show-speakers="showTranscription"
+        :show-theme-toggle="props.showThemeToggle"
           @update:selected-channel-id="onChannelChange"
           @update:selected-translation-id="onTranslationChange" />
       </SidebarDrawer>

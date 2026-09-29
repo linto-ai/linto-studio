@@ -249,15 +249,15 @@ export default {
     font-size: 0.85em;
     color: var(--text-secondary);
     padding: 0.6em 0.8em;
-    background-color: var(--neutral-10, #f5f5f5);
-    border-left: 3px solid var(--neutral-40, #999);
+    background-color: var(--neutral-10);
+    border-left: 3px solid var(--neutral-40);
     border-radius: 2px;
     margin: 0;
 
     &--blocked {
-      color: var(--warning-color, #b45309);
-      background-color: var(--warning-soft, #fef3c7);
-      border-left-color: var(--warning-color, #b45309);
+      color: var(--warning-color);
+      background-color: var(--warning-soft);
+      border-left-color: var(--warning-color);
     }
 
     &--info {

@@ -9,31 +9,62 @@
 # never actually uploads). Pass --live to really publish.
 #
 # Usage:
-#   ./scripts/publish-all.sh 1.0.0          # dry run — safe to try anytime
-#   ./scripts/publish-all.sh 1.0.0 --live   # the real thing
+#   ./scripts/publish-all.sh 1.0.0                 # dry run — safe to try anytime
+#   ./scripts/publish-all.sh 1.0.0 --live          # the real thing
+#   ./scripts/publish-all.sh 1.0.0 --live --yes    # no confirmation prompt (CI)
+#   ./scripts/publish-all.sh 1.0.0-unstable.42 --live --tag latest-unstable
+#
+# --tag sets the npm dist-tag (default "latest"); prereleases must use another
+# tag so they never become what a plain `npm install` resolves to.
 set -euo pipefail
 
-version="${1:-}"
-mode="${2:-}"
-
-if [ -z "$version" ]; then
-  echo "Usage: $0 <version> [--live]" >&2
+usage() {
+  echo "Usage: $0 <version> [--live] [--tag <dist-tag>] [--yes]" >&2
   exit 1
-fi
+}
+
+version=""
+mode=""
+dist_tag="latest"
+assume_yes=""
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --live) mode="--live" ;;
+    --yes|-y) assume_yes="1" ;;
+    --tag)
+      [ $# -ge 2 ] || usage
+      dist_tag="$2"
+      shift
+      ;;
+    --tag=*) dist_tag="${1#--tag=}" ;;
+    -*) usage ;;
+    *)
+      [ -z "$version" ] || usage
+      version="$1"
+      ;;
+  esac
+  shift
+done
+
+[ -n "$version" ] || usage
+[ -n "$dist_tag" ] || usage
 
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 publish_flag="--dry-run"
 if [ "$mode" = "--live" ]; then
   publish_flag=""
-  echo "LIVE mode — this will actually publish to the npm registry."
-  read -r -p "Publish version $version for real? [y/N] " confirm
-  if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
-    echo "Aborted."
-    exit 1
+  echo "LIVE mode — this will actually publish to the npm registry (dist-tag: $dist_tag)."
+  if [ -z "$assume_yes" ]; then
+    read -r -p "Publish version $version for real? [y/N] " confirm
+    if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
+      echo "Aborted."
+      exit 1
+    fi
   fi
 else
-  echo "Dry run (pass --live to actually publish) — version $version"
+  echo "Dry run (pass --live to actually publish) — version $version, dist-tag $dist_tag"
 fi
 
 # Leaf-first publish order. Always run the full set: root's own
@@ -102,7 +133,7 @@ publish_dir() {
   fi
   echo
   echo "--- publishing $(basename "$dir") ---"
-  (cd "$dir" && NODE_OPTIONS="--dns-result-order=ipv4first --no-network-family-autoselection" bun publish $publish_flag)
+  (cd "$dir" && NODE_OPTIONS="--dns-result-order=ipv4first --no-network-family-autoselection" bun publish --tag "$dist_tag" $publish_flag)
 }
 
 for name in "${order[@]}"; do

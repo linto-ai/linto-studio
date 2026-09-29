@@ -40,11 +40,63 @@ def buildDockerfile(folder_name, version, commit_sha, tagSuffix = '', context = 
     }
 }
 
+// npm publish of the transcript-ui SDK: master ships package.json's version as "latest" (skipped if already
+// on the registry), next ships <version>-unstable.<UTC timestamp> as "latest-unstable".
+def publishSdk(distTag) {
+    def sdkDir = 'studio-sdk/components/transcript-ui'
+    def sdkPackage = '@linto-ai/transcript-ui'
+    def baseVersion = sh(
+        returnStdout: true,
+        script: "grep -m1 '\"version\"' ${sdkDir}/package.json | sed -E 's/.*\"version\": *\"([^\"]+)\".*/\\1/'"
+    ).trim()
+
+    def version = baseVersion
+    if (distTag == 'latest-unstable') {
+        def stamp = sh(returnStdout: true, script: 'date -u +%Y%m%d%H%M').trim()
+        version = "${baseVersion}-unstable.${stamp}"
+    } else {
+        def alreadyPublished = sh(
+            returnStatus: true,
+            script: "curl -sf -o /dev/null https://registry.npmjs.org/${sdkPackage.replace('/', '%2F')}/${baseVersion}"
+        ) == 0
+        if (alreadyPublished) {
+            echo "SDK ${sdkPackage}@${baseVersion} is already on npm, skipping (bump ${sdkDir}/package.json)."
+            return
+        }
+    }
+
+    echo "Publishing SDK ${sdkPackage}@${version} to npm (dist-tag: ${distTag})..."
+    // "npm-linto-jenkins": secret text credential holding an npm granular access token with publish rights
+    withCredentials([string(credentialsId: 'npm-linto-jenkins', variable: 'NPM_CONFIG_TOKEN')]) {
+        try {
+            // no node on the Jenkins host: run in the official node image, bun comes from npm (package.json engines)
+            def image = docker.image('node:24')
+            image.pull()
+            image.inside('-e HOME=/tmp -e NPM_CONFIG_PREFIX=/tmp/npm-global') {
+                sh """
+                    npm install -g bun
+                    export PATH=/tmp/npm-global/bin:\$PATH
+                    node --version && bun --version
+                    cd ${sdkDir} && bash scripts/publish-all.sh ${version} --live --tag ${distTag} --yes
+                """
+            }
+        } finally {
+            // the publish script bumps every package.json, regenerates bun.lock and installs node_modules in place
+            sh "git checkout -- ${sdkDir} && git clean -fdxq ${sdkDir}"
+        }
+    }
+}
+
 // For linto studio, the folder name have the same name of the docker image
 def performBuildForFile(changedFiles, version, commit_sha) {
     if (changedFiles.contains('studio-api')) {
         echo 'Files in studio-api path are modified. Running specific build steps for studio-api...'
         buildDockerfile('studio-api', version, commit_sha)
+    }
+
+    if (changedFiles.contains('studio-sdk/components/transcript-ui')) {
+        echo 'Files in studio-sdk/components/transcript-ui path are modified. Publishing the SDK to npm...'
+        publishSdk(version == 'latest-unstable' ? 'latest-unstable' : 'latest')
     }
 
     if (changedFiles.contains('studio-frontend') || changedFiles.contains('studio-sdk')) {

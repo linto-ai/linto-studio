@@ -4,19 +4,15 @@
     :with-actions="false"
     :title="$t('app_settings_modal.title')"
     :size="computedSize">
-    <div v-if="user.emailIsVerified === false">
-      <div class="app-settings-verify-email">
-        <p>{{ $t("app_settings_modal.email_not_verified") }}</p>
+    <div class="app-settings-verify-email" v-if="verifyEmailMessage">
+      <p>{{ verifyEmailMessage }}</p>
 
-        <Button size="sm" @click="sendVerificationEmail()">
-          <ph-icon name="paper-plane-tilt" size="md" />
-          <!-- <span
-            :class="['icon', sendingEmail ? 'loading' : 'send-mail']"></span> -->
-          <span class="label">{{
-            $t("user_settings.send_verification_link")
-          }}</span>
-        </Button>
-      </div>
+      <Button size="sm" @click="sendVerificationEmail()">
+        <ph-icon name="paper-plane-tilt" size="md" />
+        <span class="label">{{
+          $t("user_settings.send_verification_link")
+        }}</span>
+      </Button>
     </div>
 
     <div class="app-settings flex1">
@@ -266,6 +262,17 @@ export default {
     }
   },
   computed: {
+    verifyEmailMessage() {
+      if (this.user.pendingEmail) {
+        return this.$t("app_settings_modal.pending_email", {
+          email: this.user.pendingEmail,
+        })
+      }
+      if (this.user.emailIsVerified === false) {
+        return this.$t("app_settings_modal.email_not_verified")
+      }
+      return null
+    },
     ...mapGetters({
       user: "user/getUserInfos",
       isAuthenticated: "user/isAuthenticated",
@@ -345,17 +352,12 @@ export default {
       this.closeModal()
       document.location.reload()
     },
-    async sendVerificationEmail() {
-      this.sendingEmail = true
-      const sendLink = await apiSendVerificationLink({
+    sendVerificationEmail() {
+      return apiSendVerificationLink({
+        message: this.$t("user_settings.verification_link_sent"),
         timeout: 3000,
         redirect: false,
       })
-
-      if (sendLink.status === "success") {
-        this.sendingEmail = false
-        this.emailSent = true
-      }
     },
   },
 }
@@ -370,8 +372,8 @@ export default {
     border-radius: 4px;
     padding: 0.5em;
     margin-bottom: 0.5em;
-    border: 1px solid var(--red-chart);
-    color: var(--red-chart);
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
     font-size: 14px;
     font-weight: bold;
 
@@ -417,7 +419,7 @@ export default {
           border-color: var(--neutral-20);
           border-right-color: transparent;
           a {
-            color: var(--primary-hard);
+            color: var(--primary-color);
             font-weight: bold;
           }
         }
@@ -458,13 +460,13 @@ export default {
       padding: 0;
       font-size: 1.2em;
       font-weight: bold;
-      color: var(--primary-hard);
+      color: var(--primary-color);
     }
 
     hr {
       margin: 1em 0;
       border: 0;
-      border-top: 1px solid var(--primary-hard);
+      border-top: 1px solid var(--primary-color);
     }
 
     &__table {
@@ -546,12 +548,12 @@ export default {
 
           &.active {
             background-color: var(--primary-soft);
-            border-color: var(--primary-hard);
+            border-color: var(--primary-color);
             transform: translateY(-1px);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
             a {
-              color: var(--primary-hard);
+              color: var(--primary-color);
               font-weight: 600;
             }
           }

@@ -530,6 +530,7 @@ class ConvoModel extends MongoModel {
               },
             },
           },
+          { owner: userId },
         ],
       }
 
@@ -621,6 +622,7 @@ class ConvoModel extends MongoModel {
 
   async listConvFromConvIds(
     convIds,
+    organizationId,
     userId,
     userRole,
     desiredAccess = 1,
@@ -636,6 +638,7 @@ class ConvoModel extends MongoModel {
         _id: {
           $in: convIds,
         },
+        "organization.organizationId": organizationId,
         "type.mode": TYPE.CANONICAL,
         $or: [
           {
@@ -663,6 +666,7 @@ class ConvoModel extends MongoModel {
               },
             },
           },
+          { owner: userId },
         ],
       }
 
@@ -807,6 +811,11 @@ class ConvoModel extends MongoModel {
           query["$or"][2]["organization.membersRight"] = {
             $bitsAnySet: desiredAccess,
           }
+
+        query["$or"].push({
+          "organization.organizationId": orgaId,
+          owner: userId,
+        })
       }
 
       /* ------------------------ TAG & SEARCH filters --------------------------- */
@@ -832,25 +841,6 @@ class ConvoModel extends MongoModel {
       }
 
       return await this.mongoRequest(query, projectionAcc)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
-  async listConvFromOwner(convIds, userId) {
-    try {
-      const objectIds = convIds
-        .split(",")
-        .map((id) => (typeof id === "string" ? this.getObjectId(id) : id))
-      const query = {
-        _id: { $in: objectIds },
-        owner: userId.toString(),
-      }
-
-      const result = await this.mongoRequest(query, {})
-      if (result.length === objectIds.length) return result
-      else return []
     } catch (error) {
       console.error(error)
       return error

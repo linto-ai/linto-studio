@@ -1,0 +1,52 @@
+/* Design tokens of the mobile app. Brand values (green, fonts) match the
+   classic Studio theme; everything else is specific to a thumb-driven UI. */
+:root {
+  --m-font: "Noto Sans", Arial, Helvetica, sans-serif;
+  --m-font-size: 16px;
+  --m-font-size-sm: 13px;
+  --m-font-size-lg: 18px;
+  --m-font-size-xl: 22px;
+
+  --m-primary: #11977c;
+  --m-primary-soft: rgb(242, 251, 248);
+  --m-on-primary: #ffffff;
+  --m-danger: oklch(0.517 0.204 10.7);
+  --m-danger-soft: oklch(0.95 0.025 10.7);
+  --m-warning: #feb11d;
+  --m-warning-soft: oklch(0.95 0.041 76.2);
+  --m-warning-text: oklch(0.45 0.13 76.2);
+  --m-info: #1c83d6;
+  --m-info-soft: oklch(0.95 0.023 249.1);
+
+  --m-bg: oklch(97% 0.006 160);
+  --m-surface: #ffffff;
+  --m-surface-muted: oklch(98.5% 0 0);
+  --m-text: #333333;
+  --m-text-muted: #666666;
+  --m-text-disabled: #999999;
+  --m-border: oklch(87% 0 0);
+  --m-divider: oklch(94% 0 0);
+  --m-scrim: rgba(0, 0, 0, 0.3);
+
+  --m-radius-sm: 10px;
+  --m-radius: 14px;
+  --m-radius-lg: 20px;
+  --m-radius-round: 999px;
+
+  --m-shadow-1: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  --m-shadow-2: 0px 2px 4px rgba(0, 0, 0, 0.08);
+  --m-shadow-3: 0px 8px 16px rgba(0, 0, 0, 0.12);
+  --m-shadow-sheet: 0px 16px 32px rgba(0, 0, 0, 0.16);
+
+  --m-space-1: 4px;
+  --m-space-2: 8px;
+  --m-space-3: 12px;
+  --m-space-4: 16px;
+  --m-space-5: 20px;
+  --m-space-6: 24px;
+
+  --m-tap: 44px;
+  --m-header-height: 60px;
+  --m-safe-top: env(safe-area-inset-top, 0px);
+  --m-safe-bottom: env(safe-area-inset-bottom, 0px);
+}

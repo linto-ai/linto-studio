@@ -5,15 +5,22 @@ import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import * as utils from "../utils"
 import type { Speaker } from "../types/editor"
 
-const props = defineProps<{
-  speaker?: Speaker
-  startTime?: number
-  startDate?: number
-  language: string
-  /** The label is wrapped in a clickable trigger (speaker assignment):
-   *  show the hover affordance on the name. */
-  interactive?: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    speaker?: Speaker
+    startTime?: number
+    startDate?: number
+    language: string
+    /** The label is wrapped in a clickable trigger (speaker assignment):
+     *  show the hover affordance on the name, and the placeholder that
+     *  invites the click when nobody is assigned yet. */
+    interactive?: boolean
+    /** False on a translation track, where every turn is in the same language
+     *  and the selector already names it. */
+    showLanguage?: boolean
+  }>(),
+  { showLanguage: true },
+)
 
 const { t, locale } = useI18n()
 
@@ -44,9 +51,12 @@ const timestamp = computed<{ text: string; datetime: string } | null>(() => {
 
 const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 
-// A turn always shows a speaker: unnamed ones get an explicit placeholder
-// (assignment lands with the speakers iteration).
-const displayName = computed(() => props.speaker?.name ?? t("speaker.unknown"))
+// The placeholder for an unnamed speaker is an invitation to assign one, so it
+// belongs where the label is a trigger. Read-only — a live session has no
+// speaker assignment — it would only be noise nobody can act on.
+const displayName = computed(
+  () => props.speaker?.name ?? (props.interactive ? t("speaker.unknown") : ""),
+)
 </script>
 
 <template>
@@ -54,13 +64,18 @@ const displayName = computed(() => props.speaker?.name ?? t("speaker.unknown"))
     class="speaker-label"
     :class="{ 'speaker-label--interactive': interactive }">
     <SpeakerIndicator v-if="speaker" :color="speakerColor" />
-    <span class="speaker-name" :class="{ 'speaker-name--unknown': !speaker }">{{
-      displayName
-    }}</span>
+    <span
+      v-if="displayName"
+      class="speaker-name"
+      :class="{ 'speaker-name--unknown': !speaker }"
+      >{{ displayName }}</span
+    >
     <time v-if="timestamp" class="timestamp" :datetime="timestamp.datetime">{{
       timestamp.text
     }}</time>
-    <span v-if="languageName" class="lang">{{ languageName }}</span>
+    <span v-if="showLanguage && languageName" class="lang">{{
+      languageName
+    }}</span>
   </div>
 </template>
 

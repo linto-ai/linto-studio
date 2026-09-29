@@ -420,7 +420,7 @@ watch(
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-surface);
   position: sticky;
-  top: 49px;
+  top: var(--document-toolbar-height, 0px);
   z-index: 1;
 }
 

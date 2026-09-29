@@ -6,6 +6,14 @@ const logger = require(`${process.cwd()}/lib/logger/logger`)
 const rules = require("./langueRules/index")
 const filterRules = require("./filterRules/index")
 
+const HAS_WORD_CHAR = /[\p{L}\p{N}]/u
+
+// STT services drop punctuation-only tokens from the timed words but keep them in the text
+function isOrphanPunctuation(token, word) {
+  if (HAS_WORD_CHAR.test(token)) return false
+  return word === undefined || HAS_WORD_CHAR.test(word.word)
+}
+
 function* ruleSequenceGenerator(segments, lang) {
   let i = 0
   let word_skip_count = 0
@@ -28,11 +36,26 @@ function* ruleSequenceGenerator(segments, lang) {
         lowercase: segments.segment_array[i].toLowerCase(),
       }
 
-      if (segments.raw_words[j - 1] !== undefined) {
+      const raw_word = segments.raw_words[j - 1]
+
+      if (isOrphanPunctuation(segment_text.original, raw_word)) {
+        const timestamp = loop_data.last_endtime ?? raw_word?.start ?? 0
+        // A trailing token inherits the confidence of the last timed word
+        const conf =
+          raw_word === undefined ? segments.raw_words.at(-1)?.conf : 1
+        loop_data.last_endtime = timestamp
+        word_skip_count -= 1
+        yield {
+          start: timestamp,
+          end: timestamp,
+          word: segment_text.original,
+          conf: conf ?? 1,
+        }
+      } else if (raw_word !== undefined) {
         let seg_words = rules.executeLangRule(
           lang,
           segment_text,
-          segments.raw_words[j - 1],
+          raw_word,
           loop_data,
         )
 
@@ -60,16 +83,6 @@ function* ruleSequenceGenerator(segments, lang) {
           yield seg_words
           loop_data.last_endtime = seg_words.end
         }
-      } else if (segment_text !== undefined) {
-        // Still one last word, can have a desync with raw_words
-        let last_word = rules.executeRulesByName(
-          lang,
-          "lastWord",
-          segment_text,
-          undefined,
-          loop_data,
-        )
-        if (last_word !== undefined) yield last_word
       }
       i++
     }
@@ -78,6 +91,7 @@ function* ruleSequenceGenerator(segments, lang) {
   }
 }
 
+// Removing space after an apostrophe from a LinSTT transcription service
 function cleanSegment(segment) {
   return segment.replace(" ', ", "'").replace(/' /g, "'")
 }
@@ -108,14 +122,9 @@ function segmentNormalizeText(transcription, lang, filter = undefined) {
     segments.raw_words = [...segments.words]
     segments.words = []
 
-    // Removing space after an apostrophe from a LinSTT transcription service
-    segments.segment_array = segments.segment.split(" ")
+    segments.segment_array = segments.segment.split(/\s+/).filter(Boolean)
 
     if (segments.language) lang = segments.language
-
-    if (segments.segment_array.length > 0 && segments.segment_array[0] === "") {
-      segments.segment_array.shift()
-    }
 
     for (let words_sequence of ruleSequenceGenerator(segments, lang, filter)) {
       segments.words.push(words_sequence)

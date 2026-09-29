@@ -96,7 +96,7 @@ export const sessionModelMixin = {
     visibility() {
       const baseVisibity = this?.session?.visibility ?? "private"
       if (baseVisibity === "public") {
-        return this.sessionAliases?.[0]?.password ? "password" : "public"
+        return this.sessionAliases?.[0]?.hasPassword ? "password" : "public"
       }
       return baseVisibity
     },

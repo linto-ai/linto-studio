@@ -65,20 +65,22 @@ const metaParts = computed(() =>
         @click="$emit('toggleSidebar')">
         <template #icon><EditorIcon name="users" :size="16" /></template>
       </Button>
-      <Button
-        variant="secondary"
-        :aria-label="t('header.undo')"
-        :disabled="!props.canUndo"
-        @click="$emit('undo')">
-        <template #icon><EditorIcon name="undo" :size="16" /></template>
-      </Button>
-      <Button
-        variant="secondary"
-        :aria-label="t('header.redo')"
-        :disabled="!props.canRedo"
-        @click="$emit('redo')">
-        <template #icon><EditorIcon name="redo" :size="16" /></template>
-      </Button>
+      <template v-if="props.canUndo || props.canRedo">
+        <Button
+          variant="secondary"
+          :aria-label="t('header.undo')"
+          :disabled="!props.canUndo"
+          @click="$emit('undo')">
+          <template #icon><EditorIcon name="undo" :size="16" /></template>
+        </Button>
+        <Button
+          variant="secondary"
+          :aria-label="t('header.redo')"
+          :disabled="!props.canRedo"
+          @click="$emit('redo')">
+          <template #icon><EditorIcon name="redo" :size="16" /></template>
+        </Button>
+      </template>
       <Button
         variant="primary"
         :aria-label="t('header.ask')"

@@ -73,8 +73,11 @@
                 "scope": {
                   "type": "string",
                   "enum": ["personal", "organization"],
-                  "default": "personal",
-                  "description": "Visibility scope of the template"
+                  "description": "personal (default) or organization (maintainers/admins only)"
+                },
+                "service_id": {
+                  "type": "string",
+                  "description": "LLM service the template is uploaded for; the template is linked to it"
                 }
               },
               "required": ["file", "name_fr"]
@@ -125,6 +128,99 @@
           "description": "OK",
           "content": {
             "application/json": {}
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    },
+    "patch": {
+      "tags": ["publication"],
+      "summary": "Share a template with the organization or make it personal again (owner, maintainer/admin)",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "templateId",
+          "type": "string",
+          "required": true,
+          "description": "Template ID"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "scope": {
+                  "type": "string",
+                  "enum": ["personal", "organization"]
+                }
+              },
+              "required": ["scope"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "The updated template",
+          "content": {
+            "application/json": {}
+          }
+        },
+        "400": {
+          "description": "Invalid scope"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "503": {
+          "description": "LLM gateway unreachable"
+        }
+      }
+    }
+  },
+  "/api/publication/organizations/{organizationId}/templates/{templateId}/download": {
+    "get": {
+      "tags": ["publication"],
+      "summary": "Download the DOCX file of a template, to customize it",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "templateId",
+          "type": "string",
+          "required": true,
+          "description": "Template ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The DOCX file",
+          "content": {
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {}
           }
         },
         "401": {

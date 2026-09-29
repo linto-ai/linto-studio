@@ -86,6 +86,12 @@ const progressValue = computed(() => {
 
 <style scoped>
 .document-article {
+  /* One row of buttons plus padding and border. Declared rather than
+     measured: slot content must stay on one line (truncate, don't wrap), and
+     content stuck right under the toolbar (the markdown editor's toolbar)
+     reads this value as its offset. */
+  --document-toolbar-height: 49px;
+
   width: min(1088px, calc(100% - 16px));
   max-width: 1088px;
   margin: var(--spacing-lg) auto;
@@ -100,7 +106,8 @@ const progressValue = computed(() => {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+  height: var(--document-toolbar-height);
+  padding: 0 var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
@@ -157,6 +164,12 @@ const progressValue = computed(() => {
   font-size: var(--font-size-xs);
   font-variant-numeric: tabular-nums;
   color: var(--color-text-muted);
+}
+
+@media (max-width: 767px) {
+  .document-article {
+    margin: var(--spacing-sm) auto;
+  }
 }
 
 .document-article__error-text {

@@ -79,8 +79,8 @@ export default {
     height: 100%;
     font-size: 10px;
     font-weight: 600;
-    color: var(--text-secondary, #666);
-    background-color: var(--primary-soft, #e3f2fd);
+    color: var(--text-secondary);
+    background-color: var(--primary-soft);
     text-transform: uppercase;
   }
 }

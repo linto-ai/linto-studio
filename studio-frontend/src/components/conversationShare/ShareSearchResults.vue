@@ -40,7 +40,7 @@
         <RightSelect
           v-else
           :value="element.effectiveRight"
-          :readonly="element.isPrivileged"
+          :readonly="element.isOwner || element.isPrivileged"
           @input="
             $emit('update:userRight', { user: element, right: $event })
           " />
@@ -69,6 +69,7 @@ import RightSelect from "./RightSelect.vue"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
 import { isValidEmail } from "@/tools/isValidEmail.js"
 
+const FULL_RIGHTS = 31
 const ADMIN_RIGHT = 31
 const MAINTAINER_RIGHT = 23
 
@@ -85,6 +86,7 @@ export default {
   props: {
     searchValue: { type: String, required: true },
     sharedUsers: { type: Array, default: () => [] },
+    ownerId: { type: String, default: null },
     defaultRight: { type: Number, required: true },
     usersLoading: { type: Object, default: () => ({}) },
     inviteEnabled: { type: Boolean, default: true },
@@ -126,9 +128,12 @@ export default {
         const shared = this.sharedById.get(user._id)
         const inOrg = this.orgUserIds.has(user._id)
         const role = this.orgUserRoleById.get(user._id) ?? null
+        const isOwner = user._id === this.ownerId
         const isPrivileged = role >= ORGANIZATION_ROLES.MAINTAINER
         let effectiveRight
-        if (isPrivileged) {
+        if (isOwner) {
+          effectiveRight = FULL_RIGHTS
+        } else if (isPrivileged) {
           effectiveRight =
             role === ORGANIZATION_ROLES.ADMINISTRATOR
               ? ADMIN_RIGHT
@@ -145,6 +150,7 @@ export default {
           role,
           effectiveRight,
           inOrg,
+          isOwner,
           isPrivileged,
         }
       })

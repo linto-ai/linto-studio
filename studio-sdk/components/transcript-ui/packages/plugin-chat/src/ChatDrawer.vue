@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { Button, EditorIcon } from "@linto-ai/transcript-ui-ui"
 import { ref, watch, onUnmounted, useId } from "vue"
-import { useCore } from "@linto-ai/transcript-ui-core"
+import { useCore, useIsMobile } from "@linto-ai/transcript-ui-core"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import ChatSessionList from "./ChatSessionList.vue"
+import ChatSessionSelect from "./ChatSessionSelect.vue"
 import ChatMessageList from "./ChatMessageList.vue"
 import ChatComposer from "./ChatComposer.vue"
 
 const core = useCore()
 const { t } = useI18n()
+// Phones open straight on the conversation, full width: the history list
+// becomes a select in the header, and the expand toggle has nothing to do.
+const { isMobile } = useIsMobile()
 // ChatDrawer is only rendered when the chat plugin is installed.
 const chat = core.chat!
 const titleId = useId()
@@ -69,18 +73,36 @@ function onSend(content: string): void {
       @click.self="close">
       <aside
         class="chat-drawer"
-        :class="{ 'chat-drawer--expanded': expanded }"
+        :class="{ 'chat-drawer--expanded': expanded && !isMobile }"
         role="dialog"
         aria-modal="true"
         :aria-labelledby="titleId">
         <header class="chat-drawer__header">
-          <h2 :id="titleId" class="chat-drawer__title">
+          <!-- Kept on phones as the dialog's accessible name, the select
+               takes its place on screen. -->
+          <h2
+            :id="titleId"
+            class="chat-drawer__title"
+            :class="{ 'transcript-ui-sr-only': isMobile }">
             <EditorIcon name="sparkles" :size="18" />
             {{ t("chat.title") }}
           </h2>
+          <ChatSessionSelect
+            v-if="isMobile"
+            class="chat-drawer__session-select"
+            :sessions="chat.sessions.value"
+            :active-session-id="chat.activeSessionId.value"
+            @select="onSelect" />
           <div class="chat-drawer__actions">
             <Button
-              class="chat-drawer__expand"
+              v-if="isMobile"
+              icon="plus"
+              variant="tertiary"
+              size="sm"
+              :aria-label="t('chat.newChat')"
+              @click="onCreate" />
+            <Button
+              v-else
               :icon="expanded ? 'minimize' : 'maximize'"
               variant="tertiary"
               size="sm"
@@ -97,6 +119,7 @@ function onSend(content: string): void {
 
         <div class="chat-drawer__body">
           <ChatSessionList
+            v-if="!isMobile"
             :sessions="chat.sessions.value"
             :active-session-id="chat.activeSessionId.value"
             @select="onSelect"
@@ -175,17 +198,15 @@ function onSend(content: string): void {
   color: var(--color-primary);
 }
 
+.chat-drawer__session-select {
+  flex: 1;
+  min-width: 0;
+}
+
 .chat-drawer__actions {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-}
-
-/* The expand toggle is desktop-only: on phones the panel is already full-width. */
-@media (max-width: 640px) {
-  .chat-drawer__expand {
-    display: none;
-  }
 }
 
 .chat-drawer__body {

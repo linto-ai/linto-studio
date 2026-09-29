@@ -13,7 +13,7 @@
         :conversationName="conversationName"
         :versionNumber="versionNumber"
         hideHeader
-        @preview-close="proxy = false" />
+        @export-success="proxy = false" />
     </template>
   </Modal>
 </template>
