@@ -22,6 +22,7 @@ const PublicToken = require(
 )
 
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const crypto = require("crypto")
@@ -260,6 +261,35 @@ async function checkChannelsSecurityLevel(req, next) {
   }
 }
 
+// meta.membersRight is stored on the session and applied to the conversation on stop
+async function checkSessionMembersRight(req, next) {
+  try {
+    const meta = req.body?.meta
+    if (!meta || meta.membersRight === undefined || meta.membersRight === null)
+      return next()
+
+    const membersRight = parseInt(meta.membersRight, 10)
+    if (Number.isNaN(membersRight) || !RIGHTS.validRight(membersRight))
+      throw new SessionError("Invalid membersRight value")
+
+    meta.membersRight = membersRight
+    next()
+  } catch (err) {
+    next(err)
+  }
+}
+
+// Run several executeBeforeResult handlers in sequence
+function chainBeforeResult(...handlers) {
+  return (req, next, res) => {
+    const runFrom = (index) => (err) => {
+      if (err || index === handlers.length) return next(err)
+      handlers[index](req, runFrom(index + 1), res)
+    }
+    runFrom(0)()
+  }
+}
+
 function checkResourceMatchingOrganization(resource) {
   return async (req, next) => {
     try {
@@ -321,6 +351,8 @@ module.exports = {
   checkSessionMatchingOrganization,
   checkTemplateMatchingOrganization,
   checkChannelsSecurityLevel,
+  checkSessionMembersRight,
+  chainBeforeResult,
   cleanPublicSessionContent,
   cleanPublicChannelContent,
 }

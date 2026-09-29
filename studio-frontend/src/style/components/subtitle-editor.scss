@@ -106,7 +106,7 @@
 
     &.playing {
       // border-radius: 10px;
-      // border: 1px solid var(--green-chart);
+      // border: 1px solid var(--primary-color);
       color: var(--primary-color);
       border-color: var(--primary-color);
     }
@@ -149,7 +149,7 @@
   }
 
   #current-screen-label {
-    color: var(--green-chart);
+    color: var(--primary-color);
   }
 
   #screen-list {

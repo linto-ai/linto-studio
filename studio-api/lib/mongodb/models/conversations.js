@@ -530,6 +530,7 @@ class ConvoModel extends MongoModel {
               },
             },
           },
+          { owner: userId },
         ],
       }
 
@@ -810,6 +811,11 @@ class ConvoModel extends MongoModel {
           query["$or"][2]["organization.membersRight"] = {
             $bitsAnySet: desiredAccess,
           }
+
+        query["$or"].push({
+          "organization.organizationId": orgaId,
+          owner: userId,
+        })
       }
 
       /* ------------------------ TAG & SEARCH filters --------------------------- */

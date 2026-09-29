@@ -191,8 +191,8 @@ export default {
   position: sticky;
   top: 0;
   z-index: 5;
-  background-color: var(--primary-soft, #f8f9fa);
-  border-bottom: var(--border-block, 1px solid #e0e0e0);
+  background-color: var(--primary-soft);
+  border-bottom: var(--border-block);
   transition: box-shadow 0.2s ease-in-out;
 }
 
@@ -234,7 +234,7 @@ export default {
 .sort-select {
   font-size: 0.8rem;
   padding: 0.25rem 0.4rem;
-  border: 1px solid var(--neutral-30, #e0e0e0);
+  border: 1px solid var(--neutral-30);
   border-radius: 0.25rem;
   background: var(--background-color, #fff);
   color: var(--text-color, #333);
@@ -243,11 +243,11 @@ export default {
 }
 
 .sort-select:hover {
-  border-color: var(--neutral-50, #aaa);
+  border-color: var(--neutral-50);
 }
 
 .sort-select:focus {
-  border-color: var(--primary-color, #007bff);
+  border-color: var(--primary-color);
 }
 
 .media-explorer-header__actions {
@@ -273,12 +273,12 @@ export default {
 }
 
 .select-all-control:hover {
-  background-color: var(--neutral-30, #e8e8e8);
+  background-color: var(--neutral-30);
 }
 
 .select-all-control.active {
-  background-color: var(--primary-color, #007bff);
-  border-color: var(--primary-color, #007bff);
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
   color: white;
 }
 
@@ -302,8 +302,8 @@ export default {
 .input-item {
   padding: 0;
   padding-left: 0.25rem;
-  border: 1px solid var(--neutral-40, #d0d0d0);
-  background-color: var(--neutral-10, #f5f5f5);
+  border: 1px solid var(--neutral-40);
+  background-color: var(--neutral-10);
 }
 
 /* Responsive design */

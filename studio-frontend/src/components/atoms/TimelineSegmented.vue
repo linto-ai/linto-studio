@@ -233,21 +233,21 @@ export default {
     background: linear-gradient(
       90deg,
       var(--primary-color),
-      var(--primary-hard, var(--primary-color))
+      var(--primary-color)
     );
   }
 
   // Type variants
   &--success {
-    background: var(--success-color, #22c55e);
+    background: var(--success-color);
   }
 
   &--warning {
-    background: var(--warning-color, #f59e0b);
+    background: var(--warning-color);
   }
 
   &--danger {
-    background: var(--danger-color, #ef4444);
+    background: var(--danger-color);
   }
 }
 

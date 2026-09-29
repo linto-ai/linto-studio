@@ -28,9 +28,12 @@ jest.mock(
 )
 
 // storeFile would do filesystem/audio I/O; the chosen payload never reaches it.
-jest.mock(`${process.cwd()}/components/WebServer/controllers/files/store`, () => ({
-  storeFile: jest.fn(),
-}))
+jest.mock(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+  () => ({
+    storeFile: jest.fn(),
+  }),
+)
 
 const { initCaptionsForConversation } = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
@@ -163,7 +166,9 @@ describe("initCaptionsForConversation wiring (dual-recognizer)", () => {
     const texts = translation.text.map((t) => t.raw_segment).sort()
     expect(texts).toEqual(["hallo", "wie gehts"])
     expect(translation.speakers).toHaveLength(1)
-    expect(translation.speakers[0].speaker_name).toEqual("Automatic Translation")
+    expect(translation.speakers[0].speaker_name).toEqual(
+      "Automatic Translation",
+    )
     expect(translation.parentCaptionId).toEqual(canonical.captionId)
   })
 
@@ -182,5 +187,36 @@ describe("initCaptionsForConversation wiring (dual-recognizer)", () => {
       expect(turn.raw_segment).not.toEqual("")
       expect(turn.segment).toEqual(turn.raw_segment)
     }
+  })
+})
+
+describe("initCaptionsForConversation members right", () => {
+  test("defaults to read and comment for a non private session", async () => {
+    const captions = await initCaptionsForConversation(
+      buildDualRecognizerSession(),
+    )
+    for (const caption of captions) {
+      expect(caption.organization.membersRight).toEqual(3)
+    }
+  })
+
+  test("keeps the right chosen at session creation, including none", async () => {
+    const session = {
+      ...buildDualRecognizerSession(),
+      meta: { membersRight: 0 },
+    }
+    const captions = await initCaptionsForConversation(session)
+    for (const caption of captions) {
+      expect(caption.organization.membersRight).toEqual(0)
+    }
+  })
+
+  test("ignores an invalid requested right", async () => {
+    const session = {
+      ...buildDualRecognizerSession(),
+      meta: { membersRight: 99 },
+    }
+    const captions = await initCaptionsForConversation(session)
+    expect(captions[0].organization.membersRight).toEqual(3)
   })
 })

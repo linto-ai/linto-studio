@@ -1,4 +1,11 @@
+import RIGHTS from "../const/userRights.js"
+
+const OWNER_RIGHT =
+  RIGHTS.READ + RIGHTS.COMMENT + RIGHTS.WRITE + RIGHTS.DELETE + RIGHTS.SHARE
+
 export function getUserRightFromConversation(conversation, userId) {
+  if (userId && conversation.owner === userId) return OWNER_RIGHT
+
   if (conversation.userAccess && conversation.userAccess.right) {
     return conversation.userAccess.right
   }

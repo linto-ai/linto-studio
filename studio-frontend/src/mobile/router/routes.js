@@ -1,5 +1,7 @@
-// Every route is private unless it carries meta.public. The guard
-// (authGuard.js) reads that flag; views never check authentication.
+// Every route is private unless it carries meta.public. Routes carrying
+// meta.upload or meta.live also need those rights in the current
+// organization. The guard (authGuard.js) reads these flags; views never check
+// access themselves.
 export const MOBILE_ROUTES = [
   {
     path: "/",
@@ -15,6 +17,7 @@ export const MOBILE_ROUTES = [
   {
     path: "/record",
     name: "record",
+    meta: { upload: true },
     component: () => import("@/mobile/views/Record.vue"),
   },
   {
@@ -30,11 +33,13 @@ export const MOBILE_ROUTES = [
   {
     path: "/live",
     name: "live",
+    meta: { live: true },
     component: () => import("@/mobile/views/LivePrepare.vue"),
   },
   {
     path: "/live/session",
     name: "live-session",
+    meta: { live: true },
     component: () => import("@/mobile/views/LiveSession.vue"),
   },
   {

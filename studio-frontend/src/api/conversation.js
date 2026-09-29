@@ -601,6 +601,19 @@ export async function apiGetUserRightFromConversation(conversationId, notif) {
   return res.data
 }
 
+export async function apiUpdateConversationMembersRight(
+  conversationId,
+  membersRight,
+  notif,
+) {
+  return await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/rights`,
+    { method: "patch" },
+    { membersRight },
+    notif,
+  )
+}
+
 export async function apiGetUsersFromMultipleConversation(
   conversationsId,
   notif,

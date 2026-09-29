@@ -81,7 +81,7 @@ export default {
 
 .notification-banner.warning {
   border-color: var(--warning-color);
-  color: var(--dark-90);
+  color: var(--warning-text);
   background: var(--warning-soft);
 }
 

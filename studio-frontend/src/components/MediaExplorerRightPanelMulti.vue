@@ -520,7 +520,7 @@ export default {
 
 .no-tags-message {
   font-size: 0.875rem;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
   font-style: italic;
 }
 </style>

@@ -1,0 +1,131 @@
+{
+ "speakers": [],
+ "text": [
+  {
+   "raw_segment": "il a dit bonjour à tous les amis",
+   "segment": "il a dit « bonjour à tous » les amis.",
+   "words": [
+    {
+     "stime": 1,
+     "etime": 1.3,
+     "word": "il",
+     "confidence": 0.9
+    },
+    {
+     "stime": 1.4,
+     "etime": 1.7,
+     "word": "a",
+     "confidence": 0.9
+    },
+    {
+     "stime": 1.8,
+     "etime": 2.1,
+     "word": "dit",
+     "confidence": 0.9
+    },
+    {
+     "stime": 2.1,
+     "etime": 2.1,
+     "word": "«",
+     "confidence": 1
+    },
+    {
+     "stime": 2.2,
+     "etime": 2.5,
+     "word": "bonjour",
+     "confidence": 0.9
+    },
+    {
+     "stime": 2.6,
+     "etime": 2.9,
+     "word": "à",
+     "confidence": 0.9
+    },
+    {
+     "stime": 3,
+     "etime": 3.3,
+     "word": "tous",
+     "confidence": 0.9
+    },
+    {
+     "stime": 3.3,
+     "etime": 3.3,
+     "word": "»",
+     "confidence": 1
+    },
+    {
+     "stime": 3.4,
+     "etime": 3.7,
+     "word": "les",
+     "confidence": 0.9
+    },
+    {
+     "stime": 3.8,
+     "etime": 4.1,
+     "word": "amis.",
+     "confidence": 0.9
+    }
+   ]
+  },
+  {
+   "raw_segment": "on reprend la salle hier soir",
+   "segment": "🎵 on reprend – la salle – hier soir.",
+   "words": [
+    {
+     "stime": 10,
+     "etime": 10,
+     "word": "🎵",
+     "confidence": 1
+    },
+    {
+     "stime": 10,
+     "etime": 10.3,
+     "word": "on",
+     "confidence": 0.9
+    },
+    {
+     "stime": 10.4,
+     "etime": 10.7,
+     "word": "reprend",
+     "confidence": 0.9
+    },
+    {
+     "stime": 10.7,
+     "etime": 10.7,
+     "word": "–",
+     "confidence": 1
+    },
+    {
+     "stime": 10.8,
+     "etime": 11.1,
+     "word": "la",
+     "confidence": 0.9
+    },
+    {
+     "stime": 11.2,
+     "etime": 11.5,
+     "word": "salle",
+     "confidence": 0.9
+    },
+    {
+     "stime": 11.5,
+     "etime": 11.5,
+     "word": "–",
+     "confidence": 1
+    },
+    {
+     "stime": 11.6,
+     "etime": 11.9,
+     "word": "hier",
+     "confidence": 0.9
+    },
+    {
+     "stime": 12,
+     "etime": 12.3,
+     "word": "soir.",
+     "confidence": 0.9
+    }
+   ]
+  }
+ ]
+}

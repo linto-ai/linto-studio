@@ -40,7 +40,8 @@
       },
       "meta": {
         "type": "json",
-        "default": null
+        "default": null,
+        "description": "Free metadata. `membersRight` (0 to 31) sets the organization members right of the conversation created when the session stops; without it the right follows the session visibility."
       },
       "channels": {
         "type": "array",

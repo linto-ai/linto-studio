@@ -21,9 +21,15 @@ import {
   KEYPOINTS_MARKDOWN,
   REPLY_MARKDOWN,
 } from "./placeholderContent"
-//import { createLivePlugin } from "@linto-ai/transcript-ui-plugin-live"
-//import { createSubtitlePlugin } from "@linto-ai/transcript-ui-plugin-subtitle"
+import { createLivePlugin } from "@linto-ai/transcript-ui-plugin-live"
+import { createSubtitlePlugin } from "@linto-ai/transcript-ui-plugin-subtitle"
 import type { LivePartialEvent, LiveFinalEvent } from "@linto-ai/transcript-ui-plugin-live"
+
+// Live demo mode, `?live=1`: installs the live and subtitle plugins and lets
+// the simulated feed below run. Off by default, so the playground still opens
+// on a finished transcript.
+const isLiveMode =
+  new URLSearchParams(window.location.search).get("live") === "1"
 
 // TranscriptUI owns its core (creation, i18n, loading/error overlay,
 // destroy-on-unmount) — we just reach into it once mounted to activate
@@ -393,8 +399,10 @@ onMounted(async () => {
   core.use(createTranscriptionEditorPlugin())
   core.use(createLLMServicesPlugin())
   core.use(createChatPlugin())
-  //core.use(createLivePlugin())
-  //core.use(createSubtitlePlugin())
+  if (isLiveMode) {
+    core.use(createLivePlugin())
+    core.use(createSubtitlePlugin())
+  }
 
   setupChatMock()
   setupLLMMock()

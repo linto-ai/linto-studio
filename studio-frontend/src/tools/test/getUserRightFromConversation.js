@@ -76,3 +76,19 @@ test("get user right from share", (t) => {
 
   t.deepEqual(right, 5)
 })
+
+test("owner gets full right regardless of members right", (t) => {
+  const conv = {
+    owner: "63564b251f7639bf4dabc876",
+    organization: {
+      organizationId: "63525d431f7639bf4deee86f",
+      membersRight: 0,
+      customRights: [],
+    },
+    _id: "6492c5bcb02e450c2952635e",
+  }
+
+  const right = getUserRightFromConversation(conv, "63564b251f7639bf4dabc876")
+
+  t.deepEqual(right, 31)
+})

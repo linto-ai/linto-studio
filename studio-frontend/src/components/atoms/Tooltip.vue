@@ -61,11 +61,11 @@ export default {
     },
     color: {
       type: String,
-      default: "var(--primary-hard)",
+      default: "var(--primary-color)",
     },
     borderColor: {
       type: String,
-      default: "var(--primary-hard)",
+      default: "var(--primary-color)",
     },
     backgroundColor: {
       type: String,

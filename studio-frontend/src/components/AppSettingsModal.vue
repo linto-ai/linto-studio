@@ -352,8 +352,8 @@ export default {
     border-radius: 4px;
     padding: 0.5em;
     margin-bottom: 0.5em;
-    border: 1px solid var(--red-chart);
-    color: var(--red-chart);
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
     font-size: 14px;
     font-weight: bold;
 
@@ -399,7 +399,7 @@ export default {
           border-color: var(--neutral-20);
           border-right-color: transparent;
           a {
-            color: var(--primary-hard);
+            color: var(--primary-color);
             font-weight: bold;
           }
         }
@@ -435,13 +435,13 @@ export default {
       padding: 0;
       font-size: 1.2em;
       font-weight: bold;
-      color: var(--primary-hard);
+      color: var(--primary-color);
     }
 
     hr {
       margin: 1em 0;
       border: 0;
-      border-top: 1px solid var(--primary-hard);
+      border-top: 1px solid var(--primary-color);
     }
 
     &__table {
@@ -523,12 +523,12 @@ export default {
 
           &.active {
             background-color: var(--primary-soft);
-            border-color: var(--primary-hard);
+            border-color: var(--primary-color);
             transform: translateY(-1px);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
             a {
-              color: var(--primary-hard);
+              color: var(--primary-color);
               font-weight: 600;
             }
           }

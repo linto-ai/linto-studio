@@ -20,6 +20,10 @@
  *   --color-text-muted       Muted text (labels)
  *   --color-border           Borders
  *   --color-border-light     Light borders
+ *   --color-switch-track     Filled track of a switch that is off
+ *   --color-switch-border    Outline of a switch and of its knob
+ *   --color-success          Completed / copied states
+ *   --color-warning          In-progress, degraded states
  *
  * Typography, spacing, radius, and shadows are also overridable.
  *
@@ -60,6 +64,15 @@
   --color-danger: #e53935;
   --color-danger-hover: #c62828;
   --color-danger-soft: #fdecea;
+  /* A switch carries its state in one small shape, so it gets its own pair
+     rather than borrowing --color-border for both roles — which is what
+     collapsed into a white blob when that token went white for the dark
+     theme. The outline does the reading work: 3.6:1 against the track and
+     4.69:1 against the knob, where darkening the track alone caps at 2.1:1. */
+  --color-switch-track: #dee2e6;
+  --color-switch-border: #6c757d;
+  --color-success: #2e7d32;
+  --color-warning: #ed6c02;
 
   /* Typography */
   --font-family:
@@ -68,6 +81,10 @@
   --font-size-xs: 0.875rem;
   --font-size-sm: 1rem;
   --font-size-base: 1.125rem;
+  /* Reading size of the transcript text alone — the panel overrides it
+     from core.transcriptFontSize. Chrome (buttons, headers, panels) stays
+     on the scale above. */
+  --transcript-font-size: var(--font-size-base);
   --font-size-lg: 1.25rem;
   --font-size-xl: 1.75rem;
   --line-height: 1.6;
@@ -108,6 +125,53 @@
      and freezes weaker machines. Keep the semi-opaque background only. */
   --glass-background: rgba(255, 255, 255, 0.8);
   --glass-border: rgba(255, 255, 255, 0.3);
+}
+
+/* Dark theme — same data-theme convention as the host app. The attribute is
+   carried by the editor's own root (TranscriptUI binds it from core.theme),
+   so a host switches it through core.theme rather than by styling the
+   element from outside: a declaration here always wins over one on the
+   custom element, since this root is the closer ancestor.
+
+   Contrast against --color-surface: text-primary 13.6:1, text-secondary
+   10.8:1, text-muted 6.2:1, primary 5.8:1, danger 4.6:1 — every pair at or
+   above its light-theme counterpart. */
+.transcript-ui-root[data-theme="dark"] {
+  /* Native controls follow: the channel and translation selectors are real
+     <select> elements, and would otherwise stay white boxes — same for
+     scrollbars and range tracks. */
+  color-scheme: dark;
+
+  --color-background: #16181d;
+  --color-surface: #1e2127;
+  --color-surface-hover: #282c34;
+  --color-text-primary: #e9ecef;
+  --color-text-secondary: #ced4da;
+  /* White rather than a grey: in high contrast, a label that ranks below its
+     content still has to be read at a glance. */
+  --color-text-muted: #ffffff;
+  --color-primary: #7d95f7;
+  --color-primary-hover: #93a7f9;
+  /* High contrast first: outlines must be unmistakable on a dark surface —
+     the sidebar's edge, inputs, switches, buttons all read from this. */
+  --color-border: #ffffff;
+  --color-border-light: #9aa1ab;
+  --color-danger: #ef5350;
+  --color-danger-hover: #f77066;
+  --color-danger-soft: #3b2220;
+  --color-switch-track: #282c34;
+  --color-switch-border: #ffffff;
+  --color-success: #66bb6a;
+  --color-warning: #ffa726;
+
+  /* --color-white and --color-black keep their literal meaning: they name a
+     colour, not a role (the checkmark on a primary fill stays white). */
+
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55);
+
+  --glass-background: rgba(30, 33, 39, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.08);
 }
 
 .transcript-ui-root,

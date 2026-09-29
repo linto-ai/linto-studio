@@ -210,7 +210,7 @@ export default {
     box-shadow 0.15s;
 
   &:hover {
-    border-color: var(--primary-hard);
+    border-color: var(--primary-color);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   }
 
@@ -267,13 +267,13 @@ export default {
     }
 
     &--embeddings {
-      background: var(--green-soft, #e8f5e9);
-      color: var(--green-chart, #4caf50);
+      background: var(--success-soft);
+      color: var(--success-color);
     }
 
     &--org {
-      background: var(--neutral-10, #f5f5f5);
-      color: var(--text-secondary, #666);
+      background: var(--neutral-10);
+      color: var(--text-secondary);
     }
   }
 
@@ -338,7 +338,7 @@ export default {
     width: 4.5rem;
     height: 0.9rem;
     border-radius: 4px;
-    background: var(--neutral-10, #f5f5f5);
+    background: var(--neutral-10);
   }
 }
 </style>

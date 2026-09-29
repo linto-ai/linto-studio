@@ -9,6 +9,7 @@
 
     <main class="m-page__content m-home">
       <ActionButton
+        v-if="uploadAllowed"
         :to="{ name: 'record' }"
         icon="microphone"
         :title="$t('mobile.home.record_title')"
@@ -25,6 +26,7 @@
         :title="$t('mobile.home.media_title')"
         :subtitle="$t('mobile.home.media_subtitle')" />
       <ActionButton
+        v-if="liveAllowed"
         :to="{ name: 'live' }"
         icon="broadcast"
         :title="$t('mobile.home.live_title')"
@@ -73,6 +75,8 @@ import { currentUserMixin } from "@/mobile/mixins/currentUser.js"
 import { installMixin } from "@/mobile/mixins/install.js"
 import { getEnv } from "@/tools/getEnv"
 import { listUserOrganizations } from "@/mobile/tools/listUserOrganizations.js"
+import { canStartLive } from "@/mobile/tools/canStartLive.js"
+import { canUploadMedia } from "@/mobile/tools/canUploadMedia.js"
 
 export default {
   name: "MobileHome",
@@ -107,6 +111,21 @@ export default {
       )
     },
     ...mapGetters("mobileRecordings", ["pendingCount"]),
+    // Organization and role rights: the action is not offered at all when
+    // they are missing.
+    uploadAllowed() {
+      return canUploadMedia(
+        this.currentOrganization?.permissions,
+        this.organizationRole,
+      )
+    },
+    liveAllowed() {
+      return canStartLive(
+        this.currentOrganization?.permissions,
+        this.organizationRole,
+      )
+    },
+    // Instance flag: shown disabled, with the reason as subtitle.
     liveEnabled() {
       return getEnv("VUE_APP_ENABLE_SESSION") === "true"
     },

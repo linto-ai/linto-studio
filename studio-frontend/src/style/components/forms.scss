@@ -30,7 +30,7 @@
     background-color: var(--input-background);
     color: var(--text-primary);
     &.error {
-      border-color: var(--red-chart);
+      border-color: var(--danger-color);
     }
 
     &:focus,
@@ -129,7 +129,7 @@
       }
     }
     &.focused {
-      //border-color: var(--green-chart);
+      //border-color: var(--primary-color);
       background-color: var(--background-primary);
       //border: none;
       box-shadow: none;
@@ -175,7 +175,7 @@
     // display: block;
     font-weight: 600;
     font-size: 0.875rem;
-    // color: var(--text-primary, #222);
+    // color: var(--text-primary);
     line-height: 1.2;
     // margin: 0;
   }
@@ -184,7 +184,7 @@
     display: block;
     font-weight: 600;
     font-size: 0.875rem;
-    color: var(--text-primary, #222);
+    color: var(--text-primary);
     line-height: 1.2;
     margin: 0;
   }
@@ -222,7 +222,7 @@
 
   .error-field {
     display: inline-block;
-    color: var(--red-chart);
+    color: var(--danger-color);
   }
 
   // Utility class to match standard input height
@@ -433,7 +433,7 @@
 
   .service-box label:hover,
   fieldset[role="listbox"].selectable:hover {
-    border-color: var(--green-chart);
+    border-color: var(--primary-color);
   }
 
   fieldset[role="listbox"] {
@@ -502,13 +502,13 @@
 
   .user-settings-notification {
     padding: 5px 10px;
-    border: 1px solid var(--red-chart);
+    border: 1px solid var(--danger-color);
     border-radius: 3px;
     margin: 5px 0;
     .content {
       font-size: 13px;
       font-weight: 500;
-      color: var(--red-chart);
+      color: var(--danger-color);
     }
     .btn {
       margin: 0 0 0 10px;
@@ -524,8 +524,8 @@
     padding: 5px 10px;
     font-size: 12px;
     font-weight: 500;
-    color: var(--green-chart);
-    border: 1px solid var(--green-chart);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
     font-style: italic;
     border-radius: 3px;
     margin: 5px 0;

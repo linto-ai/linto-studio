@@ -69,7 +69,7 @@ const iconSize = computed(() => ICON_SIZES[props.size ?? "sm"])
 
 <style scoped>
 .copy-btn--copied {
-  color: var(--color-success, #2e7d32);
+  color: var(--color-success);
 }
 
 .copy-icon-enter-active,

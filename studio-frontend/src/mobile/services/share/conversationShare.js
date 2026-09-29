@@ -1,6 +1,6 @@
 import {
   apiGetUsersFromMultipleConversation,
-  apiUpdateConversation,
+  apiUpdateConversationMembersRight,
 } from "@/api/conversation.js"
 import {
   apiUpdateMultipleUsersInMultipleConversations,
@@ -24,9 +24,7 @@ export async function loadConversationShare(conversationId) {
 }
 
 export async function setDefaultRight(conversationId, right) {
-  const result = await apiUpdateConversation(conversationId, {
-    "organization.membersRight": right,
-  })
+  const result = await apiUpdateConversationMembersRight(conversationId, right)
   return result?.status === "success"
 }
 

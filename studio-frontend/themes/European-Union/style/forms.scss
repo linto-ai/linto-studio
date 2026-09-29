@@ -24,7 +24,7 @@ progress.hoverInput,
   height: 40px;
 
   &.error {
-    border: 1px solid var(--red-chart);
+    border: 1px solid var(--danger-color);
   }
 
   &[disabled] {
@@ -73,7 +73,7 @@ input[type="radio"] {
 .error-field {
   padding: 3px 0;
   font-size: 13px;
-  color: var(--red-chart);
+  color: var(--danger-color);
 }
 
 form[disabled] .form-label,

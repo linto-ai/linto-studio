@@ -40,6 +40,72 @@ import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
 import { customDebug } from "@/tools/customDebug"
 
 const PAGE_SIZE = 50
+const TRANSCRIPT_FONT_SIZE_KEY = "editor.transcriptFontSize"
+const THEME_KEY = "editor.theme"
+
+// Same data-theme convention the app's own stylesheets already use.
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme
+}
+
+// The editor cannot read the app's palette through CSS (its own tokens sit
+// closer to its content than anything we set on <linto-editor>), so the brand
+// colour is pushed. It is re-read after every theme switch: each theme
+// declares its own primary for dark.
+function readBrandColor() {
+  return getComputedStyle(document.body)
+    .getPropertyValue("--primary-color")
+    .trim()
+}
+
+// Dark is scoped to the live pages, so the document goes back to its default
+// on the way out. Counted rather than cleared outright: the router creates the
+// next view before destroying this one, so a live-to-live navigation would
+// otherwise leave the page light after the new editor had already gone dark.
+let liveEditorCount = 0
+
+function clearTheme() {
+  delete document.documentElement.dataset.theme
+}
+
+function readStoredTheme() {
+  try {
+    const stored = localStorage.getItem(THEME_KEY)
+    return stored === "dark" || stored === "light" ? stored : null
+  } catch {
+    return null
+  }
+}
+
+function storeTheme(theme) {
+  try {
+    localStorage.setItem(THEME_KEY, theme)
+  } catch {
+    // ignored on purpose, see above
+  }
+}
+
+// Storage throws in a private window or with site data blocked, and a reading
+// preference is never worth breaking the session for. The band is a sanity
+// check on a value that anyone can edit by hand, not the slider's range —
+// anything outside it falls back to the editor's default.
+function readStoredTranscriptFontSize() {
+  try {
+    const stored = Number(localStorage.getItem(TRANSCRIPT_FONT_SIZE_KEY))
+    const isSane = Number.isFinite(stored) && stored >= 10 && stored <= 40
+    return isSane ? stored : null
+  } catch {
+    return null
+  }
+}
+
+function storeTranscriptFontSize(fontSize) {
+  try {
+    localStorage.setItem(TRANSCRIPT_FONT_SIZE_KEY, String(fontSize))
+  } catch {
+    // ignored on purpose, see above
+  }
+}
 
 export default {
   mixins: [sessionModelMixin],
@@ -62,6 +128,10 @@ export default {
       offScrollTop: null,
       offWatermarkDisplay: null,
       offWatermarkPin: null,
+      offViewportChange: null,
+      offSidebarOpen: null,
+      offTranscriptFontSize: null,
+      offTheme: null,
       unwatchWatermarkHost: [],
       activeChannelIndex: null,
       historyOffset: 0,
@@ -100,6 +170,7 @@ export default {
     },
   },
   mounted() {
+    liveEditorCount++
     // setTimeout(() => {
     this.initEditor()
     this.aquireWakeLock()
@@ -111,12 +182,21 @@ export default {
     // }, 1000)
   },
   beforeDestroy() {
+    if (--liveEditorCount === 0) clearTheme()
     this.offChannelChange?.()
     this.offScrollTop?.()
     this.offSubtitle?.()
     document.documentElement.style.removeProperty("--subtitle-reserve")
     this.offWatermarkDisplay?.()
     this.offWatermarkPin?.()
+    this.offViewportChange?.()
+    this.offSidebarOpen?.()
+    this.offTranscriptFontSize?.()
+    this.offTheme?.()
+    // The header outlives this component (the session may end while it is
+    // open): tell it the editor's sidebar is gone rather than leaving it
+    // with a button pointing at nothing.
+    this.$emit("viewport-change", false)
     this.unwatchWatermarkHost.forEach((stop) => stop())
     this.websocketInstance.unSubscribeSessionRoom()
     this.releaseWakeLock()
@@ -166,6 +246,44 @@ export default {
       const el = this.$refs.editor
       const { core } = el
       this.core = markRaw(core)
+
+      // The editor's own sidebar has no opener here (no-header), so the host
+      // header carries the button. Its breakpoint has to be the editor's
+      // (767px), not the app's `isMobile` getter (1100px), or it would show
+      // 300px too early and open a drawer that isn't mounted.
+      // An event never covers "already true when subscribing", and there is
+      // no crossing to report when the page opens on a phone: read it once,
+      // then follow. `sidebar:open` too, since the drawer also closes on its
+      // own (its close button, a channel change, leaving phone width).
+      this.$emit("viewport-change", core.isMobile.value)
+      this.offViewportChange = core.on("viewport:change", ({ isMobile }) =>
+        this.$emit("viewport-change", isMobile),
+      )
+      this.offSidebarOpen = core.on("sidebar:open", ({ open }) =>
+        this.$emit("sidebar-open", open),
+      )
+
+      // The editor holds no preferences of its own, so the reading size is
+      // restored here and kept up to date from its own event.
+      const storedFontSize = readStoredTranscriptFontSize()
+      if (storedFontSize !== null)
+        core.transcriptFontSize.value = storedFontSize
+      this.offTranscriptFontSize = core.on(
+        "transcript:fontSize",
+        ({ fontSize }) => storeTranscriptFontSize(fontSize),
+      )
+
+      // The editor owns the switch; the app follows so its own chrome — the
+      // layout, the header, the status banner — goes dark with it.
+      const storedTheme = readStoredTheme()
+      if (storedTheme !== null) core.theme.value = storedTheme
+      applyTheme(core.theme.value)
+      core.primaryColor.value = readBrandColor() || null
+      this.offTheme = core.on("theme:change", ({ theme }) => {
+        applyTheme(theme)
+        storeTheme(theme)
+        core.primaryColor.value = readBrandColor() || null
+      })
 
       this.livePlugin = createLivePlugin({
         tts: getEnv("VUE_APP_ENABLE_TTS") === "true",
@@ -396,6 +514,10 @@ export default {
 
     showMobileSubtitles() {
       this.core.subtitle.enterFullscreen()
+    },
+
+    toggleSidebar() {
+      this.core.setSidebarOpen(!this.core.sidebarOpen.value)
     },
 
     async patchWatermark(settings) {

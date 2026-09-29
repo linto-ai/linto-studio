@@ -193,6 +193,7 @@
     "on_air": "En direct",
     "mute": "Couper le micro",
     "unmute": "Rétablir le micro",
+    "settings": "Réglages de la transcription",
     "end": "Terminer",
     "end_title": "Terminer le direct",
     "end_text": "La session devient une conversation dans vos médias.",
