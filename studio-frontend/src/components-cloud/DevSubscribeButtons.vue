@@ -219,6 +219,7 @@ import {
 } from "@/api/cloud.js"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount.js"
 import { buildManualPlanPayload } from "@/tools/buildManualPlanPayload.js"
+import { parseSeatCount } from "@/tools/parseSeatCount.js"
 import { buildLedgerExportQuery } from "@/tools/buildLedgerExportQuery.js"
 import { formsMixin } from "@/mixins/forms.js"
 import EMPTY_FIELD from "@/const/emptyField"
@@ -361,10 +362,7 @@ export default {
       await this.startCheckout({
         organizationName: this.newOrganizationName.value.trim(),
         // Not a positive integer: left out, the API applies the plan floor
-        seats:
-          Number(this.seats.value) >= 1
-            ? Math.floor(this.seats.value)
-            : undefined,
+        seats: parseSeatCount(this.seats.value) ?? undefined,
         planKey: "business",
       })
     },

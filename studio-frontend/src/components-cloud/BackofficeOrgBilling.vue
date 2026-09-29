@@ -28,6 +28,14 @@
         <span class="bo-billing__k">{{ $t("billing.backoffice.seats") }}</span>
         <span class="bo-billing__v">{{ billing.seats }}</span>
       </div>
+      <div class="bo-billing__row" v-if="billing.mode === 'managed'">
+        <span class="bo-billing__k">{{
+          $t("billing.backoffice.seats_max")
+        }}</span>
+        <span class="bo-billing__v">
+          {{ billing.seatsMax ?? $t("billing.backoffice.seats_max_none") }}
+        </span>
+      </div>
       <div class="bo-billing__row" v-if="subscription">
         <span class="bo-billing__k">{{ $t("billing.backoffice.status") }}</span>
         <span class="bo-billing__v">
@@ -70,11 +78,15 @@
       {{ $t("billing.team_plan_required") }}
     </NotificationBanner>
 
-    <!-- Mode: normal (SaaS org), comp (offered access), managed (hosted customer) -->
-    <div v-if="billing" class="bo-billing__block">
+    <!-- Mode: normal (SaaS org), comp (offered access), managed (hosted
+         customer, optionally capped by the seats of its contract) -->
+    <form v-if="billing" class="bo-billing__block" @submit.prevent="saveMode">
       <div class="bo-billing__block-text">
         <strong>{{ $t("billing.backoffice.mode") }}</strong>
         <p>{{ $t("billing.backoffice.mode_hint") }}</p>
+        <p v-if="modeInput === 'managed'">
+          {{ $t("billing.backoffice.seats_max_hint") }}
+        </p>
       </div>
       <div class="bo-billing__inline">
         <select v-model="modeInput" class="bo-billing__select">
@@ -82,15 +94,24 @@
             {{ $t("billing.mode." + m) }}
           </option>
         </select>
+        <input
+          v-if="modeInput === 'managed'"
+          type="number"
+          min="1"
+          step="1"
+          v-model.number="seatsMaxInput"
+          class="bo-billing__input bo-billing__input--num"
+          :placeholder="$t('billing.backoffice.seats_max_none')"
+          :aria-label="$t('billing.backoffice.seats_max')" />
         <Button
+          type="submit"
           variant="primary"
           :loading="busy"
-          :disabled="!billing || modeInput === billing.mode"
-          @click="saveMode">
+          :disabled="!modeChanged">
           {{ $t("apply") }}
         </Button>
       </div>
-    </div>
+    </form>
 
     <!-- Live minutes grant, with a mandatory reason (traced in the activity log) -->
     <div v-if="billing" class="bo-billing__block">
@@ -195,6 +216,7 @@ import {
 } from "@/api/cloud"
 import { formatDateOrDash } from "@/tools/formatDate"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
+import { buildOrgModePayload } from "@/tools/buildOrgModePayload"
 import Alert from "@/components/atoms/Alert.vue"
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 
@@ -221,6 +243,7 @@ export default {
       busy: false,
       seatsInput: 1,
       modeInput: "normal",
+      seatsMaxInput: "",
       creditMinutes: null,
       creditReason: "",
     }
@@ -247,6 +270,22 @@ export default {
     subscription() {
       return this.billing?.subscription || null
     },
+    // What the mode form would send, so the button only lights up when it
+    // differs from what the org already has.
+    modePayload() {
+      return buildOrgModePayload({
+        mode: this.modeInput,
+        seatsMax: this.seatsMaxInput,
+      })
+    },
+    modeChanged() {
+      if (!this.billing) return false
+      const current = buildOrgModePayload(this.billing)
+      return (
+        current.mode !== this.modePayload.mode ||
+        current.seatsMax !== this.modePayload.seatsMax
+      )
+    },
     // A team org whose plan no longer grants collaboration: every gated call is
     // refused server-side until it is back on a team plan.
     locked() {
@@ -266,11 +305,12 @@ export default {
       this.billing = billing
       if (typeof billing.seats === "number") this.seatsInput = billing.seats
       this.modeInput = billing.mode || "normal"
+      this.seatsMaxInput = billing.seatsMax ?? ""
     },
     async saveMode() {
       this.busy = true
       try {
-        await apiAdminSetOrgMode(this.organizationId, this.modeInput, {
+        await apiAdminSetOrgMode(this.organizationId, this.modePayload, {
           message: this.$t("billing.backoffice.saved"),
         })
         await this.load()

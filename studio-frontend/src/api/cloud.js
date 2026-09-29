@@ -161,7 +161,7 @@ function adminUrl(path, backoffice) {
   return `${CLOUD_API}/admin${path}${backoffice ? "?userScope=backoffice" : ""}`
 }
 
-// GET /cloud/admin/orgs/:orgId -> { planKey, seats, mode, subscription, usage, lots }
+// GET /cloud/admin/orgs/:orgId -> { planKey, seats, mode, seatsMax, subscription, usage, lots }
 export async function apiAdminGetOrgBilling(
   organizationId,
   { backoffice = false } = {},
@@ -225,12 +225,17 @@ export async function apiAdminRefundLot(
   return res?.data
 }
 
-// POST /cloud/admin/orgs/:orgId/mode { mode: normal|comp|managed } -> { subscription }
-export async function apiAdminSetOrgMode(organizationId, mode, notif = null) {
+// POST /cloud/admin/orgs/:orgId/mode { mode: normal|comp|managed, seatsMax? } -> { subscription }
+// seatsMax (managed only): the contract's seat cap, null lifts it.
+export async function apiAdminSetOrgMode(
+  organizationId,
+  payload,
+  notif = null,
+) {
   const res = await sendRequest(
     adminUrl(`/orgs/${organizationId}/mode`),
     { method: "post" },
-    { mode },
+    payload,
     notif,
   )
   return res?.data
