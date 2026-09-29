@@ -347,3 +347,115 @@ describe.each(['fr-FR', '*'])('normalize text and timed words that do not split 
     expect(wordsOf(normalized)).toEqual([['...', 125.4, 125.4]])
   })
 })
+
+describe('normalize never loses text nor breaks timestamps', () => {
+  it('digits in the text against words from the STT (Kaldi convert_numbers)', () => {
+    const text = 'il a 25 ans, voilà'
+    const normalized = segmentNormalizeText(transcriptionOf(text, [['il', 0, 0.2], ['a', 0.2, 0.3], ['vingt', 0.4, 0.7], ['cinq', 0.7, 1], ['ans', 1, 1.3], ['voilà', 1.5, 1.9]]), 'fr-FR')
+    expect(wordsOf(normalized)).toEqual([['il', 0, 0.2], ['a', 0.2, 0.3], ['25', 0.4, 1], ['ans,', 1, 1.3], ['voilà', 1.5, 1.9]])
+  })
+
+  it('one timed word split into two tokens shares its time', () => {
+    const normalized = segmentNormalizeText(transcriptionOf('ma grand mère', [['ma', 0, 0.2], ['grand-mère', 0.2, 1.1]]), 'fr-FR')
+    expect(wordsOf(normalized)).toEqual([['ma', 0, 0.2], ['grand', 0.2, 0.7], ['mère', 0.7, 1.1]])
+  })
+
+  it('overlapping and unordered STT timings come out monotonic', () => {
+    const normalized = segmentNormalizeText(transcriptionOf('un deux trois quatre', [['un', 1, 2], ['deux', 1.5, 1.8], ['trois', 1.2, 1.1], ['quatre', 3, 4]]), 'fr-FR')
+    expect(normalized.segments[0].words.map((word) => word.word)).toEqual(['un', 'deux', 'trois', 'quatre'])
+    testTimeStamp(normalized)
+  })
+
+  it('missing STT timings do not produce NaN', () => {
+    const normalized = segmentNormalizeText(transcriptionOf('un deux', [['un', undefined, undefined], ['deux', 1, 1.5]], 0.5), 'fr-FR')
+    normalized.segments[0].words.forEach((word) => {
+      expect(Number.isFinite(word.start)).toBe(true)
+      expect(Number.isFinite(word.end)).toBe(true)
+    })
+    testTimeStamp(normalized)
+  })
+
+  it('segment text without any timed word is kept at the segment start', () => {
+    const normalized = segmentNormalizeText(transcriptionOf('bonjour à tous', [], 42), '*')
+    expect(wordsOf(normalized)).toEqual([['bonjour', 42, 42], ['à', 42, 42], ['tous', 42, 42]])
+  })
+
+  it('timed words with an empty text are kept', () => {
+    const normalized = segmentNormalizeText(transcriptionOf('', [['bonjour', 0, 0.5]]), '*')
+    expect(wordsOf(normalized)).toEqual([['bonjour', 0, 0.5]])
+  })
+
+  it('segment without raw_segment still gets one', () => {
+    const transcription = transcriptionOf('bonjour', [['bonjour', 0, 0.5]])
+    delete transcription.segments[0].raw_segment
+    const normalized = segmentNormalizeText(transcription, '*')
+    expect(normalized.segments[0].raw_segment).toEqual('bonjour')
+  })
+
+  it('word and char resize together keep every word and every raw word', () => {
+    const timed = Array.from({ length: 50 }, (_, index) => [`mot${index}`, index, index + 0.5])
+    const text = timed.map(([word], index) => (index % 7 === 6 ? `${word}.` : word)).join(' ')
+    const normalized = segmentNormalizeText(transcriptionOf(text, timed), 'fr-FR', { segmentWordSize: 12, segmentCharSize: 20 })
+    expect(normalized.segments.length).toBeGreaterThan(4)
+    expectTextKept(text, normalized)
+    expect(normalized.segments.map((segment) => segment.raw_segment).join(' ')).toEqual(timed.map(([word]) => word).join(' '))
+    normalized.segments.forEach((segment) => {
+      expect(segment.segment).toEqual(segment.words.map((word) => word.word).join(' '))
+      expect(segment.raw_words).toBeUndefined()
+    })
+  })
+
+  it('invalid resize sizes leave the segments whole', () => {
+    const text = 'un deux trois'
+    const normalized = segmentNormalizeText(transcriptionOf(text, [['un', 0, 1], ['deux', 1, 2], ['trois', 2, 3]]), 'fr-FR', { segmentWordSize: '0', segmentCharSize: 'abc' })
+    expect(normalized.segments.length).toEqual(1)
+    expectTextKept(text, normalized)
+  })
+
+  it('empty segments survive the resize', () => {
+    const transcription = transcriptionOf('', [], 3)
+    transcription.segments.push(transcriptionOf('bonjour à tous', [['bonjour', 4, 4.5], ['à', 4.5, 4.6], ['tous', 4.6, 5]]).segments[0])
+    const normalized = segmentNormalizeText(transcription, 'fr-FR', { segmentCharSize: 5 })
+    expect(normalized.segments.flatMap((segment) => segment.words.map((word) => word.word))).toEqual(['bonjour', 'à', 'tous'])
+  })
+
+  it('random text/word mismatches never lose a token nor break the timeline', () => {
+    let seed = 12345
+    const random = () => ((seed = (seed * 1103515245 + 12345) % 2 ** 31) / 2 ** 31)
+    const pick = (list) => list[Math.floor(random() * list.length)]
+    const vocabulary = ['qu\'', 'il', 'c\'est', 'aujourd\'hui', '25', '%', 'été', 'ST\'', '501', 'Œuvre', 'ça', 'l\'homme', '②', 'déjà-vu', 'OK']
+    const punctuation = ['', '', '', ',', '.', '?', '...', ' ?', ' «', ' »', ' —']
+
+    for (let run = 0; run < 300; run++) {
+      let time = random() * 100
+      const timed = []
+      const tokens = []
+      for (let index = 0; index < 1 + Math.floor(random() * 60); index++) {
+        const word = pick(vocabulary)
+        const start = time
+        time += random() * 0.8
+        if (random() > 0.05) timed.push([random() > 0.9 ? word.toUpperCase() : word, start, random() > 0.97 ? start - 1 : time])
+        tokens.push(word + pick(punctuation))
+      }
+      if (random() > 0.8) tokens.splice(Math.floor(random() * tokens.length), 0, 'inventé')
+      const text = tokens.join(random() > 0.7 ? ' ' : '  ')
+      const expected = cleanedTokens(text)
+
+      const normalized = segmentNormalizeText(transcriptionOf(text, timed, timed[0]?.[1] ?? 0), pick(['fr-FR', 'en-US', '*']), random() > 0.5 ? { segmentCharSize: 10 + Math.floor(random() * 40) } : {})
+      const words = normalized.segments.flatMap((segment) => segment.words)
+      expect(words.map((word) => word.word)).toEqual(expected)
+      let previous_end = -Infinity
+      words.forEach((word) => {
+        expect(Number.isFinite(word.start) && Number.isFinite(word.end)).toBe(true)
+        expect(word.start).toBeGreaterThanOrEqual(previous_end)
+        expect(word.end).toBeGreaterThanOrEqual(word.start)
+        previous_end = word.end
+      })
+    }
+  })
+})
+
+// Tokens as the import sees them, after the LinSTT apostrophe cleanup
+function cleanedTokens(text) {
+  return text.replace(' \', ', '\'').replace(/' /g, '\'').split(/\s+/).filter(Boolean)
+}

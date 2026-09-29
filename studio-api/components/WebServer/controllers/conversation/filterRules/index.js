@@ -1,26 +1,23 @@
-const debug = require("debug")(
-  "linto:components:WebServer:controllers:conversation:filterRules:index",
-)
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 
 const segmentWordResize = require("./segmentWordResize")
 const segmentCharResize = require("./segmentCharResize")
 
+const RESIZERS = [
+  ["segmentWordSize", segmentWordResize],
+  ["segmentCharSize", segmentCharResize],
+]
+
 function executeFilterRule(segments, filter) {
-  let segment_filtered = []
-
-  try {
-    if (filter.segmentWordSize) {
-      segment_filtered = segmentWordResize(segments, filter.segmentWordSize)
+  for (const [key, resize] of RESIZERS) {
+    if (!filter[key]) continue
+    try {
+      segments = resize(segments, filter[key])
+    } catch (err) {
+      logger.warn(`Segment resize ${key} failed, keeping the segments:`, err)
     }
-    if (filter.segmentCharSize) {
-      segment_filtered = segmentCharResize(segments, filter.segmentCharSize)
-    }
-
-    return segment_filtered
-  } catch (err) {
-    console.error(err)
-    return segments
   }
+  return segments.map(({ raw_words, ...segment }) => segment)
 }
 
 module.exports = {
