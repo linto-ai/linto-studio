@@ -37,7 +37,9 @@
         @select="$emit('select-plan', $event)" />
     </div>
     <p class="onboarding-plan__fair-use-note">
-      {{ $t("onboarding.fair_use_note") }}
+      <a href="https://linto.ai/cgv/" target="_blank" rel="noopener noreferrer">
+        {{ $t("onboarding.fair_use_note") }}
+      </a>
     </p>
 
     <footer class="onboarding-plan__footer">

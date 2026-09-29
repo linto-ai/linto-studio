@@ -181,8 +181,6 @@ export default {
     async startCheckout(target) {
       this.checkoutLoading = true
       this.checkoutError = ""
-      // Keeps the modal open once onboarding is marked done below.
-      this.openUpgradeModal()
       const { url, organizationId, errorCode } = await apiCreateCheckout({
         ...target,
         planKey: this.selectedPlan,
@@ -196,7 +194,6 @@ export default {
           organizationId,
           organization: this.organizationDraft,
         })
-        await this.dismissOnboarding()
         window.location.assign(url)
         return
       }
@@ -224,6 +221,9 @@ export default {
       }
       if (status === "success") {
         this.step = "payment"
+        // Onboarding ends on a paid plan only: a canceled checkout brings the
+        // first-run wizard back (Free selectable, not dismissable).
+        this.dismissOnboarding()
       } else {
         clearCheckoutDraft()
         this.step = draft.planKey === "business" ? "organization" : "plan"
