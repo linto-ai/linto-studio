@@ -29829,12 +29829,12 @@ section.turn:has([data-state="open"]) {
   });
   const _style_0$6 = "\n.llm-service-status[data-v-c0012514] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-status--ok[data-v-c0012514] {\n  color: var(--color-success);\n}\n.llm-service-status--warn[data-v-c0012514] {\n  color: var(--color-warning);\n}\n.llm-service-status[data-v-c0012514] .editor-icon {\n  flex-shrink: 0;\n}\n.llm-service-status__label[data-v-c0012514] {\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
   const LLMServiceStatus = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$6]], ["__scopeId", "data-v-c0012514"]]);
-  function computeIsUpToDate(transcriptionModifiedAt, reportCreatedAt) {
+  function computeIsUpToDate(transcriptionModifiedAt, generatedAt) {
     if (transcriptionModifiedAt == null || !Number.isFinite(transcriptionModifiedAt)) {
       return true;
     }
-    if (reportCreatedAt == null || !Number.isFinite(reportCreatedAt)) return true;
-    return reportCreatedAt >= transcriptionModifiedAt;
+    if (generatedAt == null || !Number.isFinite(generatedAt)) return true;
+    return generatedAt >= transcriptionModifiedAt;
   }
   const _hoisted_1$5 = { class: "llm-service-panel" };
   const _hoisted_2$5 = {
@@ -29873,9 +29873,6 @@ section.turn:has([data-state="open"]) {
       const busy = computed(() => props.service.busy.value);
       const dirty = computed(() => props.service.dirty.value);
       const versions = computed(() => props.service.versions.value);
-      const activeVersionNumber = computed(
-        () => props.service.activeVersionNumber.value
-      );
       const hasContent = computed(
         () => !!content.value || versions.value.length > 0
       );
@@ -29885,11 +29882,13 @@ section.turn:has([data-state="open"]) {
       });
       const isUpdated = computed(() => {
         const transcriptionModifiedAt = core.activeChannel.value?.sourceTranslation.lastModifiedAt.value ?? null;
-        const activeVersion = versions.value.find(
-          (v2) => v2.versionNumber === activeVersionNumber.value
+        const currentGeneration = props.service.generations.value.find(
+          (g2) => g2.generationId === props.service.currentGenerationId.value
         );
-        const reportCreatedAt = activeVersion?.createdAt ?? props.service.lastUpdate.value;
-        return computeIsUpToDate(transcriptionModifiedAt, reportCreatedAt);
+        return computeIsUpToDate(
+          transcriptionModifiedAt,
+          currentGeneration?.createdAt ?? null
+        );
       });
       const draft = /* @__PURE__ */ ref(content.value);
       watch(content, (next2) => {
@@ -30035,8 +30034,8 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0$5 = "\n.llm-service-panel[data-v-4a960542] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.llm-service-panel__reading-status[data-v-4a960542] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.llm-service-panel__reading-actions[data-v-4a960542] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.llm-service-panel__reading[data-v-4a960542] {\n  padding: var(--spacing-xl) var(--spacing-lg);\n}\n.llm-service-panel__empty[data-v-4a960542] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-4a960542] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n";
-  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$5]], ["__scopeId", "data-v-4a960542"]]);
+  const _style_0$5 = "\n.llm-service-panel[data-v-3458a200] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.llm-service-panel__reading-status[data-v-3458a200] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.llm-service-panel__reading-actions[data-v-3458a200] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.llm-service-panel__reading[data-v-3458a200] {\n  padding: var(--spacing-xl) var(--spacing-lg);\n}\n.llm-service-panel__empty[data-v-3458a200] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-3458a200] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n";
+  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$5]], ["__scopeId", "data-v-3458a200"]]);
   function createService(init) {
     return {
       id: init.id,

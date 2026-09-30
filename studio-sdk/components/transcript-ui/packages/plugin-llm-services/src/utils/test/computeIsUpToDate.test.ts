@@ -2,12 +2,12 @@ import { describe, expect, it } from "bun:test"
 import { computeIsUpToDate } from "../computeIsUpToDate"
 
 describe("computeIsUpToDate", () => {
-  it("is up to date when the report is newer than or as recent as the transcription", () => {
+  it("is up to date when the generation is newer than or as recent as the transcription", () => {
     expect(computeIsUpToDate(1000, 2000)).toBe(true)
     expect(computeIsUpToDate(1000, 1000)).toBe(true)
   })
 
-  it("is outdated when the transcription was modified after the report", () => {
+  it("is outdated when the transcription was modified after the generation", () => {
     expect(computeIsUpToDate(2000, 1000)).toBe(false)
   })
 

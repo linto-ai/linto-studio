@@ -47,9 +47,6 @@ const content = computed(() => props.service.content.value)
 const busy = computed(() => props.service.busy.value)
 const dirty = computed(() => props.service.dirty.value)
 const versions = computed(() => props.service.versions.value)
-const activeVersionNumber = computed(
-  () => props.service.activeVersionNumber.value,
-)
 
 // Nothing generated yet AND no saved version to fall back to — regardless
 // of status (covers "error" with nothing generated too, not just "done").
@@ -65,20 +62,23 @@ const isEmpty = computed<boolean>(() => {
   return !hasContent.value
 })
 
-// "Up to date" = the current version is more recent than the transcription's
-// last server-side modification. When either date is missing, default to up
-// to date (no negative signal to show).
+// "Up to date" = the displayed generation is at least as recent as the
+// transcription's last server-side modification. The generation date, not
+// the version date: editing and saving the report by hand creates a version
+// but does not make it reflect the transcription. When either date is missing,
+// default to up to date (no negative signal to show).
 const isUpdated = computed<boolean>(() => {
   // Reports are generated from the channel conversation, i.e. its source
   // track, whatever track is displayed.
   const transcriptionModifiedAt =
     core.activeChannel.value?.sourceTranslation.lastModifiedAt.value ?? null
-  const activeVersion = versions.value.find(
-    (v) => v.versionNumber === activeVersionNumber.value,
+  const currentGeneration = props.service.generations.value.find(
+    (g) => g.generationId === props.service.currentGenerationId.value,
   )
-  const reportCreatedAt =
-    activeVersion?.createdAt ?? props.service.lastUpdate.value
-  return computeIsUpToDate(transcriptionModifiedAt, reportCreatedAt)
+  return computeIsUpToDate(
+    transcriptionModifiedAt,
+    currentGeneration?.createdAt ?? null,
+  )
 })
 
 const draft = ref(content.value)
