@@ -35,9 +35,6 @@ const { Unauthorized, UnauthorizedProxy } = require(
 )
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
-const { liveLanguages, offlineMinutes } = require(
-  `${process.cwd()}/components/WebServer/controllers/session/saasChannels.js`,
-)
 
 module.exports = (webServer) => {
   return {
@@ -194,16 +191,9 @@ module.exports = (webServer) => {
       {
         //quick meeting access (microphone)
         scrapPath: /^\/organizations\/[^/]+/,
-        // SaaS admission on POST only, no-op in OSS: a live channel needs prepaid
-        // minutes, an offline one some import quota (metered when the session ends).
-        requireEntitlement: [
-          { liveAdmit: true, methods: ["post"], languagesFrom: liveLanguages },
-          {
-            capability: "import.minutes",
-            methods: ["post"],
-            valueFrom: offlineMinutes,
-          },
-        ],
+        // SaaS: admission of the session on POST, decided by the plugin from
+        // the requested channels. No-op in OSS.
+        requireEntitlement: { liveAdmit: true, methods: ["post"] },
         paths: [
           {
             path: "/organizations/:organizationId/quickMeeting/",

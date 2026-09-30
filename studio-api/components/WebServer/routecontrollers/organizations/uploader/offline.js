@@ -126,14 +126,13 @@ async function sessionReq(conversationId) {
     const sessionId = conversation.type?.from_session_id
     const processed = await offline(conversation, false)
 
-    // SaaS metering: the session's audio is ingested like an upload, on the
-    // duration of the converted file. No-op in OSS.
-    const seconds = processed?.metadata?.audio?.duration || 0
+    // SaaS metering: the session's converted audio is ingested like an upload.
+    // No-op in OSS.
     await saas.record({
       orgId,
       userId,
       capability: "import.minutes",
-      value: Math.round((seconds / 60) * 100) / 100,
+      seconds: processed?.metadata?.audio?.duration || 0,
       ref: { conversationId: String(conversationId), sessionId },
     })
   } catch (err) {

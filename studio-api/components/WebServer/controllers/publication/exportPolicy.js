@@ -1,15 +1,5 @@
-const debug = require("debug")(
-  "linto:components:WebServer:controllers:publication:exportPolicy",
-)
-
 const saas = require(`${process.cwd()}/lib/saas`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const { SaasFeatureLocked } = require(
-  `${process.cwd()}/components/WebServer/error/exception/saas`,
-)
-
-const FOOTER_NOTE = "Généré avec LinTO Studio · linto.ai"
-const EDITABLE_FORMATS = new Set(["docx", "html", "odt"])
 
 async function conversationOrgId(conversationId) {
   const conversation = await model.conversations.getById(conversationId)
@@ -18,10 +8,9 @@ async function conversationOrgId(conversationId) {
 }
 
 /**
- * SaaS rules for a file export of an AI report, decided by the plan of the
- * organization that owns the conversation. Throws 403 for an editable format
- * or a non-system template off plan, returns the gateway params that lock and
- * mark the PDF otherwise. No-op without the SaaS plugin.
+ * What the SaaS plan imposes on a file export of an AI report, decided by the
+ * plugin on the organization that owns the conversation: a refusal (403), or
+ * the gateway params of a locked, marked PDF. No-op without the plugin.
  */
 async function exportRestrictions({
   conversationId,
@@ -30,34 +19,14 @@ async function exportRestrictions({
   templateScope,
 }) {
   if (!saas.enabled()) return {}
-  const orgId = await conversationOrgId(conversationId)
-  if (!orgId) {
-    throw new SaasFeatureLocked("No organization to gate against", {
-      reason: "no_org",
-      capability: "publication.docx_export",
-    })
-  }
-  if (EDITABLE_FORMATS.has(format)) {
-    await saas.enforce({
-      orgId,
-      capability: "publication.docx_export",
-      userId,
-    })
-  }
-  if (templateScope && templateScope !== "system") {
-    await saas.enforce({
-      orgId,
-      capability: "publication.custom_templates",
-      userId,
-    })
-  }
-  if (format !== "pdf") return {}
-  const unlocked = await saas.allowed({
-    orgId,
-    capability: "publication.docx_export",
+  const policy = await saas.decide("publicationExport", {
+    orgId: await conversationOrgId(conversationId),
     userId,
+    format,
+    templateScope,
   })
-  return unlocked ? {} : { pdf_lock: "true", pdf_footer_note: FOOTER_NOTE }
+  if (!policy.pdfFooterNote) return {}
+  return { pdf_lock: "true", pdf_footer_note: policy.pdfFooterNote }
 }
 
-module.exports = { exportRestrictions, FOOTER_NOTE }
+module.exports = { exportRestrictions }

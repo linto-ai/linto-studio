@@ -10,9 +10,6 @@ const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const { OrganizationError, OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
-const { SaasFeatureLocked } = require(
-  `${process.cwd()}/components/WebServer/error/exception/saas`,
-)
 const saas = require(`${process.cwd()}/lib/saas`)
 const platform = require(
   `${process.cwd()}/components/WebServer/middlewares/access/platform`,
@@ -23,15 +20,12 @@ async function createOrganization(req, res, next) {
   try {
     requireParam(req.body.name, OrganizationUnsupportedMediaType)
 
-    // SaaS: organizations are bought, not created. A team org comes with its
-    // Business plan (POST /cloud/subscriptions with organizationName); only a
-    // platform admin in the backoffice creates one by hand, for a plan posed
-    // outside Stripe. No-op in OSS.
-    if (saas.enabled() && !(await platform.isSystemAdministrator(req))) {
-      throw new SaasFeatureLocked(
-        "Organizations are created with a Business plan",
-        { reason: "checkout_required", capability: "organization.create" },
-      )
+    // SaaS: organizations are bought, not created, a platform admin aside; the
+    // plugin decides. No-op in OSS.
+    if (saas.enabled()) {
+      await saas.decide("organizationCreate", {
+        platformAdmin: await platform.isSystemAdministrator(req),
+      })
     }
 
     const organization = {

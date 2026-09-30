@@ -93,7 +93,7 @@ describe("sessionReq: offline transcription of a session is metered", () => {
       orgId: "org-1",
       userId: "user-1",
       capability: "import.minutes",
-      value: 1.5,
+      seconds: 90,
       ref: { conversationId: "conv-1", sessionId: "sess-1" },
     })
   })

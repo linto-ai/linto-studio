@@ -35,11 +35,6 @@ const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
-// A never-paid org is dropped once every Checkout session that could still
-// reference it has expired (Stripe expires them after 24 h).
-const PENDING_ORG_MAX_AGE_MS = 48 * 3600 * 1000
-const PENDING_ORG_SWEEP_MS = 3600 * 1000
-
 const ROLE_MAP = {
   member: ROLES.MEMBER,
   uploader: ROLES.UPLOADER,
@@ -130,21 +125,15 @@ function buildOrganizationHooks() {
       )
       return rows.length === 1 ? rows[0].created || null : null
     },
-  }
-}
-
-async function sweepPendingOrganizations() {
-  const before = new Date(Date.now() - PENDING_ORG_MAX_AGE_MS)
-  const rows = throwIfError(await model.organizations.listPendingBefore(before))
-  for (const org of rows) {
-    try {
-      await orgaUtility.deleteOrganizationCascade(org._id.toString())
-      logger.info(`[saas] dropped never-paid organization ${org._id}`)
-    } catch (err) {
-      logger.error(
-        `[saas] could not drop never-paid organization ${org._id}: ${err && err.message}`,
+    // The plugin sweeps the never-paid organizations: those still hidden
+    // since before a date, and the way to drop one.
+    pendingBefore: async (before) => {
+      const rows = throwIfError(
+        await model.organizations.listPendingBefore(before),
       )
-    }
+      return rows.map((org) => org._id.toString())
+    },
+    remove: (orgId) => orgaUtility.deleteOrganizationCascade(orgId),
   }
 }
 
@@ -188,6 +177,7 @@ class CloudService extends Component {
       resolveRequester,
       organizations: buildOrganizationHooks(),
     })
+    saas.register(this.paymentProcessor)
 
     // Init runs in the background. A failure leaves the plugin loaded and every
     // gate fail-closed (402/403 everywhere); make it impossible to miss.
@@ -216,15 +206,6 @@ class CloudService extends Component {
       "/cloud",
       this.paymentProcessor.apiRouter(buildGuards()),
     )
-
-    this.pendingOrgSweep = setInterval(() => {
-      sweepPendingOrganizations().catch((err) =>
-        logger.error(
-          `[saas] pending organization sweep failed: ${err && err.message}`,
-        ),
-      )
-    }, PENDING_ORG_SWEEP_MS)
-    if (this.pendingOrgSweep.unref) this.pendingOrgSweep.unref()
 
     return this
   }

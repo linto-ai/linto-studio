@@ -1,35 +1,30 @@
 // Bridge to the private `linto-saas` plugin. Every function is a no-op when the
 // plugin is absent (open-source build) so the core behaves exactly as before.
-// SaaS mode = CloudService in COMPONENTS and the `linto-saas` package installed.
+// Studio states facts, the plugin holds the rules (SPEC-SAAS §4.3).
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const { SaasQuotaExceeded, SaasFeatureLocked } = require(
   `${process.cwd()}/components/WebServer/error/exception/saas`,
 )
 
-let mod = null
-try {
-  mod = require("linto-saas")
-} catch (e) {
-  mod = null
+// SaaS mode is the CloudService component: it hands the plugin it started over
+// here. Without it in COMPONENTS nothing is registered and nothing is loaded.
+let registered = null
+
+function register(paymentProcessor) {
+  registered = paymentProcessor
 }
 
 // The running PaymentProcessor, or null when SaaS is off.
 function plugin() {
-  if (!mod) return null
-  try {
-    return mod.getInstance()
-  } catch (e) {
-    return null
-  }
+  return registered
 }
 
 function enabled() {
   return plugin() != null
 }
 
-const PAYMENT_REQUIRED = new Set(["quota_exceeded", "credit_exhausted"])
-
-function throwDenied(verdict, capability) {
+// A refusal as studio's 402 (paying lifts it) or 403; the plugin says which.
+function throwDenied(pp, verdict, capability) {
   const extras = {
     reason: verdict.reason,
     capability: verdict.capability || capability,
@@ -37,7 +32,7 @@ function throwDenied(verdict, capability) {
     // The pack that lifts a spent quota (Free import), for the front modal
     topUp: verdict.topUp || null,
   }
-  if (PAYMENT_REQUIRED.has(verdict.reason)) {
+  if (pp.statusOf(verdict) === 402) {
     throw new SaasQuotaExceeded(`Quota exceeded: ${capability}`, extras)
   }
   throw new SaasFeatureLocked(`Not on your plan: ${capability}`, extras)
@@ -46,34 +41,35 @@ function throwDenied(verdict, capability) {
 // Gate a call site. The plugin resolves userId (resolver injected by
 // CloudService) and refuses an unverified email or a missing userId. Throws 402
 // (quota, credit) or 403 (feature, caller) on deny; fail-closed inside the plugin.
-async function enforce({ orgId, capability, value, userId }) {
+async function enforce(args) {
   const pp = plugin()
   if (!pp) return null
-  const v = await pp.entitlements.check({ orgId, capability, value, userId })
-  if (!v.allowed) throwDenied(v, capability)
+  const v = await pp.entitlements.check(args)
+  if (!v.allowed) throwDenied(pp, v, args.capability)
   return v
 }
 
 // Verdict without throwing, for a controller that adapts its answer instead of
 // refusing (list filtering, locked PDF). True when SaaS is off, false on error.
-async function allowed({ orgId, capability, userId }) {
+async function allowed(args) {
   const pp = plugin()
   if (!pp) return true
   try {
-    const v = await pp.entitlements.check({ orgId, capability, userId })
+    const v = await pp.entitlements.check(args)
     return Boolean(v && v.allowed)
   } catch (e) {
     return false
   }
 }
 
-// Admission of a live (microphone, bot): balance >= admission x languages.
-// Throws 402 on an empty balance, 403 on an unverified caller.
-async function liveAdmit({ orgId, languages, userId }) {
+// A decision the plugin takes on raw facts, by name: a route's flag
+// ("gateRoute"), an export ("publicationExport"), an organization creation
+// ("organizationCreate"). Returns its verdict, throws 402 or 403 on deny.
+async function decide(point, ...facts) {
   const pp = plugin()
   if (!pp) return null
-  const v = await pp.entitlements.liveAdmit({ orgId, languages, userId })
-  if (!v.allowed) throwDenied(v, "live.minutes")
+  const v = await pp.decide(point, ...facts)
+  if (!v.allowed) throwDenied(pp, v, point)
   return v
 }
 
@@ -127,7 +123,7 @@ async function enforceSeats(organization, { fromRole = null, toRole }) {
     orgId: organization._id.toString(),
     used: countCollaborators(organization),
   })
-  if (!v.allowed) throwDenied(v, "seats")
+  if (!v.allowed) throwDenied(pp, v, "seats")
   return v
 }
 
@@ -155,11 +151,12 @@ async function purgeUser(userId) {
 }
 
 module.exports = {
+  register,
   plugin,
   enabled,
   enforce,
   allowed,
-  liveAdmit,
+  decide,
   record,
   afterAuth,
   isCollaboratorRole,
