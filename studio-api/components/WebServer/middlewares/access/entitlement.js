@@ -31,7 +31,8 @@ function defaultOrg(req) {
  * Runs after auth and org-access middlewares. Gating a feature is a rule in the
  * plugin catalog plus this flag. The authenticated user goes with every
  * verdict: the plugin refuses an unverified email. No-op when the plugin is
- * absent.
+ * absent. A `languagesFrom` or `valueFrom` that resolves to 0 means the
+ * request asks nothing of that capability: the gate is skipped.
  */
 function build(spec) {
   const specs = Array.isArray(spec) ? spec : [spec]
@@ -65,6 +66,7 @@ function build(spec) {
           const languages = cfg.languagesFrom
             ? await resolve(cfg.languagesFrom, req)
             : 1
+          if (languages === 0) continue
           await saas.liveAdmit({ orgId: String(orgId), languages, userId })
           continue
         }
@@ -72,6 +74,7 @@ function build(spec) {
           cfg.valueFrom !== undefined
             ? await resolve(cfg.valueFrom, req)
             : cfg.value
+        if (cfg.valueFrom !== undefined && value === 0) continue
         await saas.enforce({
           orgId: String(orgId),
           capability: cfg.capability,

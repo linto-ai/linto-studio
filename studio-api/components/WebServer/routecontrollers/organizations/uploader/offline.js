@@ -23,6 +23,7 @@ const { applySpeakerIdentification } = require(
 
 const fs = require("fs")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const saas = require(`${process.cwd()}/lib/saas`)
 
 async function offline(conversation, isConversation = true) {
   try {
@@ -119,7 +120,22 @@ async function sessionReq(conversationId) {
       attempts++
     }
     if (attempts === maxAttempts) return
-    offline(conversation, false)
+    // Read before offline(): the model update it runs strips the conversation's _id.
+    const orgId = conversation.organization?.organizationId?.toString()
+    const userId = conversation.owner?.toString()
+    const sessionId = conversation.type?.from_session_id
+    const processed = await offline(conversation, false)
+
+    // SaaS metering: the session's audio is ingested like an upload, on the
+    // duration of the converted file. No-op in OSS.
+    const seconds = processed?.metadata?.audio?.duration || 0
+    await saas.record({
+      orgId,
+      userId,
+      capability: "import.minutes",
+      value: Math.round((seconds / 60) * 100) / 100,
+      ref: { conversationId: String(conversationId), sessionId },
+    })
   } catch (err) {
     debug(err)
   }

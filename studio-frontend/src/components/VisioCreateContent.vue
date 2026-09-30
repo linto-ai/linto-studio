@@ -85,6 +85,7 @@ import {
   apiDeleteQuickSession,
 } from "@/api/session.js"
 import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSettings"
+import { buildQuickSessionChannel } from "@/tools/buildQuickSessionChannel.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
@@ -223,24 +224,7 @@ export default {
       if (this.testFields()) {
         this.formState = "sending"
         const settings = this.quickSessionSettingsField.value
-        const channels = [
-          {
-            name: "Main",
-            diarization: settings.diarization ?? false,
-            keepAudio: settings.keepAudio,
-            compressAudio: !settings.offlineTranscription,
-            enableLiveTranscripts: settings.subInStudio,
-            //async: settings.offlineTranscription,
-            meta: {
-              transcriptionService: settings.transcriptionService,
-            },
-          },
-        ]
-        // No profile when the org only has offline transcription
-        if (settings.selectedProfile) {
-          channels[0].transcriberProfileId = settings.selectedProfile.id
-          channels[0].translations = settings.selectedProfile.translations ?? []
-        }
+        const channels = [buildQuickSessionChannel(settings)]
         const requestSession = await apiCreateQuickSession(
           this.currentOrganizationScope,
           {

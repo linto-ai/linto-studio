@@ -76,6 +76,7 @@ import { isSaasRefusal } from "@/tools/isSaasRefusal"
 import SaasRefusalMessage from "@/components-cloud/SaasRefusalMessage.vue"
 import SaasRefusalAction from "@/components-cloud/SaasRefusalAction.vue"
 import { saasRefusalFormMixin } from "@/mixins/saasRefusalForm.js"
+import { buildQuickSessionChannel } from "@/tools/buildQuickSessionChannel.js"
 
 export default {
   mixins: [formsMixin, organizationSecurityLevelMixin, saasRefusalFormMixin],
@@ -179,24 +180,7 @@ export default {
       if (this.testFields()) {
         this.formState = "sending"
         const settings = this.quickSessionSettingsField.value
-        const channels = [
-          {
-            name: "Main",
-            diarization: settings.diarization ?? false,
-            keepAudio: settings.keepAudio,
-            compressAudio: !settings.offlineTranscription,
-            // async: settings.offlineTranscription,
-            enableLiveTranscripts: settings.subInStudio,
-            meta: {
-              transcriptionService: settings.transcriptionService,
-            },
-          },
-        ]
-
-        if (settings.selectedProfile) {
-          channels[0].transcriberProfileId = settings.selectedProfile?.id
-          channels[0].translations = settings.selectedProfile?.translations
-        }
+        const channels = [buildQuickSessionChannel(settings)]
         const res = await apiCreateQuickSession(this.currentOrganizationScope, {
           channels: channels,
           meta: {

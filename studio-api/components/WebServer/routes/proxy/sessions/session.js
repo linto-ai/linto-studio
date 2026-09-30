@@ -35,22 +35,9 @@ const { Unauthorized, UnauthorizedProxy } = require(
 )
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
-
-// Language-minutes a live will consume per minute: one per channel plus one per
-// translation on that channel. Drives the SaaS admission check.
-const liveLanguages = (req) => {
-  const channels = Array.isArray(req.body && req.body.channels)
-    ? req.body.channels
-    : []
-  const n = channels.reduce(
-    (sum, c) =>
-      sum +
-      1 +
-      (Array.isArray(c && c.translations) ? c.translations.length : 0),
-    0,
-  )
-  return n || 1
-}
+const { liveLanguages, offlineMinutes } = require(
+  `${process.cwd()}/components/WebServer/controllers/session/saasChannels.js`,
+)
 
 module.exports = (webServer) => {
   return {
@@ -207,12 +194,16 @@ module.exports = (webServer) => {
       {
         //quick meeting access (microphone)
         scrapPath: /^\/organizations\/[^/]+/,
-        // SaaS: a live needs prepaid minutes (admission on POST only). No-op in OSS.
-        requireEntitlement: {
-          liveAdmit: true,
-          methods: ["post"],
-          languagesFrom: liveLanguages,
-        },
+        // SaaS admission on POST only, no-op in OSS: a live channel needs prepaid
+        // minutes, an offline one some import quota (metered when the session ends).
+        requireEntitlement: [
+          { liveAdmit: true, methods: ["post"], languagesFrom: liveLanguages },
+          {
+            capability: "import.minutes",
+            methods: ["post"],
+            valueFrom: offlineMinutes,
+          },
+        ],
         paths: [
           {
             path: "/organizations/:organizationId/quickMeeting/",
