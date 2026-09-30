@@ -34,9 +34,9 @@ export interface CoreEventMap {
   "speaker:add": { speaker: Speaker }
   "speaker:remove": { speakerId: string }
   "scroll:top": { translationId: string }
-  /** A seek was requested through core.audio.seekTo (widget scrub or
-   *  click-to-read) — the explicit "take me to this instant" gesture that
-   *  should resume follow-playback scrolling. */
+  /** An explicit "take me to this instant" gesture that should resume
+   *  follow-playback scrolling: core.audio.seekTo (click-to-read) or a
+   *  click/drag on the player's waveform. */
   "audio:seek": { time: number }
   "translation:sync": { translationId: string }
   "channel:sync": { channelId: string }

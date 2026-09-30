@@ -317,11 +317,6 @@ module.exports = (webServer) => {
             forwardParams: proxyForwardParams,
             executeBeforeResult: checkSessionMatchingOrganization,
           },
-          {
-            path: "/organizations/:organizationId/sessions/purge",
-            method: ["post"],
-            forwardParams: proxyForwardParams,
-          },
         ],
         requireAuth: true,
         orgaPermissionAccess: PERMISSIONS.SESSION,
