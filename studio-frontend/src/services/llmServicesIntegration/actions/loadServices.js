@@ -10,6 +10,9 @@ import { computeEpochMs } from "@/tools/computeEpochMs.js"
 import { loadVersions } from "../loadVersions.js"
 import { loadGenerations } from "../loadGenerations.js"
 
+// Registers the services of the conversation and hydrates their jobs.
+// Resolves to true once the job list is known: a failed fetch must not make
+// every service look never generated.
 export async function loadServices({
   core,
   store,
@@ -24,19 +27,21 @@ export async function loadServices({
     services = await getLLMService(organizationId, securityLevel)
   } catch (e) {
     console.error("[llm] getLLMService failed", e)
-    return
+    return false
   }
-  if (state.destroyed) return
+  if (state.destroyed) return false
 
   services = filterLLMServicesBySecurityLevel(services, securityLevel)
 
-  let jobs = []
+  let jobs = null
   try {
-    jobs = (await apiGetMetadataLLMService(conversationId)) || []
+    jobs = await apiGetMetadataLLMService(conversationId)
   } catch (e) {
     console.error("[llm] apiGetMetadataLLMService failed", e)
   }
-  if (state.destroyed) return
+  if (state.destroyed) return false
+  const jobsLoaded = jobs !== null
+  jobs = jobs ?? []
 
   const hydrationTargets = []
 
@@ -108,4 +113,5 @@ export async function loadServices({
       loadGenerations({ core, store, state, conversationId, id }),
     ]),
   )
+  return jobsLoaded
 }
