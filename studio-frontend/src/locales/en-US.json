@@ -42,7 +42,7 @@
         "per_hour": "{price} / h",
         "saving": "−{percent}%",
         "group": {
-          "live": "Microphone and video conferencing",
+          "live": "Live microphone and video conferencing",
           "transcription": "File transcription"
         },
         "hint": {

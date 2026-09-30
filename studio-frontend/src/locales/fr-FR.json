@@ -42,7 +42,7 @@
         "per_hour": "{price} / h",
         "saving": "−{percent} %",
         "group": {
-          "live": "Microphone et visioconférence",
+          "live": "Microphone et visioconférence en direct",
           "transcription": "Transcription de fichiers"
         },
         "hint": {
