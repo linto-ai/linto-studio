@@ -6,8 +6,7 @@ import {
   apiGetUserRightFromConversation,
 } from "@/api/conversation"
 import { apiGetChatStatus } from "@/api/chat"
-import { setupLLMServices } from "@/services/llmServicesIntegration"
-import { setupChat } from "@/services/chatIntegration"
+import { ChannelAssistants } from "@/services/assistantsIntegration/ChannelAssistants.js"
 import { loadEditor } from "@/mobile/services/editor/loadEditor.js"
 import {
   buildAudioPlugin,
@@ -38,9 +37,10 @@ export class ConversationEditorSession {
     this.socket = socket
     this.store = store
     this.i18n = i18n
-    // Called with { serviceId, jobId } when "Download" is pressed on a report
+    // Called when "Download" is pressed on a report
     this.openPublication = openPublication
     this.core = null
+    this.assistants = null
     this.destroyed = false
     this.disposers = []
     this.name = ""
@@ -81,8 +81,8 @@ export class ConversationEditorSession {
       this.conversationId,
       buildEditorRoomHandlers(core),
     )
-    this.disposers.push(this.setupServices(core))
-    await this.setupChatIfEnabled(core)
+    this.setupServices(core)
+    await this.setupChatIfEnabled()
     if (this.destroyed) return
     core.setDocument(this.document.doc)
     this.pushLastUpdate()
@@ -98,6 +98,7 @@ export class ConversationEditorSession {
 
   destroy() {
     this.destroyed = true
+    this.assistants?.destroy()
     this.disposers.forEach((dispose) => dispose?.())
     this.disposers = []
     this.socket.leaveEditorRoom()
@@ -115,10 +116,11 @@ export class ConversationEditorSession {
     }
   }
 
+  // Starts on the first channel of the document, then follows the active one.
   setupServices(core) {
-    const { organizationId, securityLevel } = this.document
-    return setupLLMServices(core, {
-      conversationId: this.conversationId,
+    const { doc, organizationId, securityLevel } = this.document
+    this.assistants = new ChannelAssistants(core, {
+      conversationId: doc.channels[0].id,
       organizationId,
       securityLevel,
       conversationName: this.name,
@@ -128,17 +130,15 @@ export class ConversationEditorSession {
       notify: (type, message) =>
         this.store.dispatch("system/addNotification", { type, message }),
       openPublication: (request) => this.openPublication?.(request),
-    }).dispose
+    })
   }
 
-  async setupChatIfEnabled(core) {
+  async setupChatIfEnabled() {
     const { enabled } = await apiGetChatStatus().catch(() => ({
       enabled: false,
     }))
     if (this.destroyed || !enabled) return
-    this.disposers.push(
-      setupChat(core, { conversationId: this.conversationId }),
-    )
+    this.assistants.enableChat()
   }
 
   async pushLastUpdate() {

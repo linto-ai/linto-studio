@@ -1,4 +1,7 @@
-export function onExport({ store, t, notify, openPublication }, { id }) {
+export function onExport(
+  { store, conversationId, t, notify, openPublication },
+  { id },
+) {
   const entry = store.getters["llmServices/byId"](id)
   if (!entry?.jobId) {
     notify("error", t("publish.export_error"))
@@ -11,5 +14,9 @@ export function onExport({ store, t, notify, openPublication }, { id }) {
     return
   }
   // The SDK id is the service route; publication needs the gateway UUID
-  openPublication({ serviceId: entry.serviceId || id, jobId: entry.jobId })
+  openPublication({
+    serviceId: entry.serviceId || id,
+    jobId: entry.jobId,
+    conversationId,
+  })
 }

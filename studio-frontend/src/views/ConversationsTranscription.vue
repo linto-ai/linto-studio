@@ -10,7 +10,7 @@
       v-model="publicationModal.open"
       :jobId="publicationModal.jobId"
       :serviceId="publicationModal.serviceId"
-      :conversationId="conversationId"
+      :conversationId="publicationModal.conversationId"
       :organizationId="organizationId"
       :conversationName="conversationName" />
   </LayoutV2>
@@ -33,8 +33,7 @@ import {
   mapApiTurns,
 } from "@linto-ai/transcript-ui-webcomponent"
 
-import { setupLLMServices } from "@/services/llmServicesIntegration"
-import { setupChat } from "@/services/chatIntegration"
+import { ChannelAssistants } from "@/services/assistantsIntegration/ChannelAssistants.js"
 import { apiGetChatStatus } from "@/api/chat"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
@@ -59,11 +58,15 @@ export default {
       conversationName: "",
       core: null,
       isDestroyed: false,
-      llmDispose: null,
-      chatDispose: null,
+      assistants: null,
       editListeners: [],
       canWrite: false,
-      publicationModal: { open: false, jobId: null, serviceId: null },
+      publicationModal: {
+        open: false,
+        jobId: null,
+        serviceId: null,
+        conversationId: null,
+      },
       verbatimFormats: [
         { format: "docx", labelKey: "format.docx" },
         { format: "pdf", labelKey: "format.pdf" },
@@ -103,10 +106,8 @@ export default {
     this.isDestroyed = true
     this.editListeners.forEach((fn) => fn?.())
     this.editListeners = []
-    this.llmDispose?.()
-    this.llmDispose = null
-    this.chatDispose?.()
-    this.chatDispose = null
+    this.assistants?.destroy()
+    this.assistants = null
     this.$apiEventWS.leaveEditorRoom()
   },
   methods: {
@@ -193,10 +194,9 @@ export default {
           core.transcriptionEditor?.applySpeakerRestored(restored),
       })
 
-      // setupLLMServices returns { dispose }; store the disposer so it matches
-      // chatDispose (a bare function) and beforeDestroy can call llmDispose().
-      this.llmDispose = setupLLMServices(core, {
-        conversationId: this.conversationId,
+      // Starts on the first channel of the document, then follows the active one.
+      const assistants = new ChannelAssistants(core, {
+        conversationId: doc.channels[0].id,
         organizationId: this.organizationId,
         securityLevel: this.securityLevel,
         conversationName: this.conversationName,
@@ -205,10 +205,11 @@ export default {
         t: (key, params) => this.$t(key, params),
         notify: (type, message) =>
           this.$store.dispatch("system/addNotification", { type, message }),
-        openPublication: ({ jobId, serviceId }) => {
-          this.publicationModal = { open: true, jobId, serviceId }
+        openPublication: (request) => {
+          this.publicationModal = { open: true, ...request }
         },
-      }).dispose
+      })
+      this.assistants = markRaw(assistants)
 
       // Chat assistant: only wire it when the backend feature is enabled, so
       // the SDK's "ask" button stays disabled otherwise (core.chat absent).
@@ -217,14 +218,10 @@ export default {
       }))
       // Destroyed during the await: everything below (chat, collab connection,
       // sync timers, edit listeners) is created after beforeDestroy ran, so it
-      // would leak. llmDispose was set before the await, so beforeDestroy
-      // already disposed it; just stop here.
+      // would leak. The assistants were set before the await, so beforeDestroy
+      // already destroyed them; just stop here.
       if (this.isDestroyed || !this.$refs.editor) return
-      if (chatEnabled) {
-        this.chatDispose = setupChat(core, {
-          conversationId: this.conversationId,
-        })
-      }
+      if (chatEnabled) this.assistants.enableChat()
 
       core.setDocument(doc)
       this.pushTranscriptionLastUpdate()

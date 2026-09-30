@@ -18,6 +18,7 @@ import { onSelectVersion } from "./actions/onSelectVersion.js"
 import { onSaveVersion } from "./actions/onSaveVersion.js"
 import { onSelectGeneration } from "./actions/onSelectGeneration.js"
 import { onVerbatimExport } from "./actions/onVerbatimExport.js"
+import { resetServices } from "./actions/resetServices.js"
 
 export function setupLLMServices(
   core,
@@ -36,13 +37,14 @@ export function setupLLMServices(
   const state = { destroyed: false }
 
   store.commit("llmServices/RESET")
-  core.use(createLLMServicesPlugin())
+  // Once per editor: the rest is set up again for each conversation.
+  if (!core.llmServices) core.use(createLLMServicesPlugin())
 
   const unsubRegenerate = core.on("llmService:regenerate", (p) =>
     onRegenerate({ core, store, state, conversationId, t }, p),
   )
   const unsubExport = core.on("llmService:export", (p) =>
-    onExport({ store, t, notify, openPublication }, p),
+    onExport({ store, conversationId, t, notify, openPublication }, p),
   )
   const unsubSelectVersion = core.on("llmService:selectVersion", (p) =>
     onSelectVersion({ core, store, state, conversationId }, p),
@@ -103,6 +105,7 @@ export function setupLLMServices(
       unsubSelectGeneration?.()
       unsubVerbatim?.()
 
+      resetServices(core)
       store.commit("llmServices/RESET")
     },
   }
