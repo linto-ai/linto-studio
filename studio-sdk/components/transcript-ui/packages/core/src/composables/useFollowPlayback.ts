@@ -1,4 +1,4 @@
-import { ref, watch, onMounted, onBeforeUnmount, type Ref } from "vue"
+import { ref, watch, nextTick, onMounted, onBeforeUnmount, type Ref } from "vue"
 import { useCore } from "../core"
 import { activeWordRange } from "../utils/wordRange"
 
@@ -84,6 +84,9 @@ export function useFollowPlayback(
   // track — symmetric with the isPlaying re-enable above.
   const stopSeekListener = core.on("audio:seek", () => {
     isFollowing.value = true
+    // The active word is recomputed on the next flush — scroll after it, so a
+    // seek landing on the already-active word still brings it back into view.
+    nextTick(scrollToActive)
   })
 
   function onManualScroll() {

@@ -203,6 +203,12 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
     currentTime.value = time
   }
 
+  // A click/drag on the waveform moves the playhead inside wavesurfer,
+  // bypassing core.audio.seekTo — announce it so follow-playback resumes.
+  function onPlayerInteraction(time: number): void {
+    core.emit("audio:seek", { time })
+  }
+
   function onPlayerPlay(): void {
     isPlaying.value = true
   }
@@ -269,6 +275,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions) {
 
     player.on("ready", onPlayerReady)
     player.on("timeupdate", onPlayerTimeUpdate)
+    player.on("interaction", onPlayerInteraction)
     player.on("play", onPlayerPlay)
     player.on("pause", onPlayerPause)
     player.on("finish", onPlayerFinish)
