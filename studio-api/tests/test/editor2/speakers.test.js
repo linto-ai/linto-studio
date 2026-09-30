@@ -1,3 +1,6 @@
+// last_update string the model reports having written; broadcasts carry it.
+const LAST_UPDATE = "2026-09-30T10:00:00+02:00"
+
 jest.mock(
   `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
   () => ({ hasAccess: jest.fn() }),
@@ -124,6 +127,7 @@ describe("onUpdateTurnSpeaker", () => {
     model.conversations.getById.mockResolvedValue([CONV])
     model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
       version: 3,
+      lastUpdate: LAST_UPDATE,
       previousSpeaker: { speaker_id: "spk-2", speaker_name: "Thomas" },
       undoHead: null,
     })
@@ -147,6 +151,7 @@ describe("onUpdateTurnSpeaker", () => {
       speaker: { id: "spk-1", name: "Marie" },
       removedSpeakerId: "spk-2",
       version: 3,
+      lastUpdate: LAST_UPDATE,
       revisionId: "rev-id",
       redoRevisionId: null,
     })
@@ -173,6 +178,7 @@ describe("onUpdateTurnSpeaker", () => {
     model.conversations.getById.mockResolvedValue([CONV])
     model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
       version: 4,
+      lastUpdate: LAST_UPDATE,
     })
     const ctx = makeCtx()
 
@@ -191,6 +197,7 @@ describe("onUpdateTurnSpeaker", () => {
     model.conversations.getById.mockResolvedValue([CONV])
     model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
       version: 5,
+      lastUpdate: LAST_UPDATE,
     })
     const ctx = makeCtx()
     const ack = jest.fn()
@@ -246,6 +253,7 @@ describe("onRenameSpeaker", () => {
   test("renames (trimmed), records a revision and broadcasts", async () => {
     model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
       version: 6,
+      lastUpdate: LAST_UPDATE,
       previousName: "Marie",
       undoHead: null,
     })
@@ -268,6 +276,7 @@ describe("onRenameSpeaker", () => {
       speakerId: "spk-1",
       name: "Marie D.",
       version: 6,
+      lastUpdate: LAST_UPDATE,
       revisionId: "rev-id",
       redoRevisionId: null,
     })
@@ -315,6 +324,7 @@ describe("onReplaceSpeaker", () => {
   test("replaces and broadcasts, using the affected turns/fromSpeaker captured atomically by the mutation itself", async () => {
     model.conversationEditor.replaceEditorSpeaker.mockResolvedValue({
       version: 7,
+      lastUpdate: LAST_UPDATE,
       fromSpeaker: { speaker_id: "spk-1", speaker_name: "Marie" },
       turnIds: ["turn-1", "turn-3"],
       undoHead: null,
@@ -338,6 +348,7 @@ describe("onReplaceSpeaker", () => {
       fromSpeakerId: "spk-1",
       toSpeakerId: "spk-2",
       version: 7,
+      lastUpdate: LAST_UPDATE,
       revisionId: "rev-id",
       redoRevisionId: null,
     })
@@ -386,6 +397,7 @@ describe("recordSpeakerRevision resilience", () => {
   test("a lost head-swap race doesn't block the mutation: it still broadcasts, just with revisionId: null", async () => {
     model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
       version: 6,
+      lastUpdate: LAST_UPDATE,
       previousName: "Marie",
       undoHead: null,
     })
@@ -404,6 +416,7 @@ describe("recordSpeakerRevision resilience", () => {
       speakerId: "spk-1",
       name: "Marie D.",
       version: 6,
+      lastUpdate: LAST_UPDATE,
       revisionId: null,
       redoRevisionId: null,
     })
@@ -418,6 +431,7 @@ describe("recordSpeakerRevision resilience", () => {
   test("a failure writing the revision itself doesn't block the mutation either", async () => {
     model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
       version: 6,
+      lastUpdate: LAST_UPDATE,
       previousName: "Marie",
       undoHead: null,
     })

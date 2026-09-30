@@ -71,6 +71,7 @@ async function onMergeTurns({ io, socket }, payload, ack) {
       removedTurnId,
       turn: toWireTurn(merged),
       version: updated.version,
+      lastUpdate: updated.lastUpdate,
     })
     reply({ ok: true, version: updated.version })
   } catch (err) {

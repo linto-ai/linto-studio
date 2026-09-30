@@ -6,6 +6,7 @@ import {
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 import { filterLLMServicesBySecurityLevel } from "@/tools/filterBySecurityLevel.js"
 import { mapStatus } from "@/tools/llm/mapStatus.js"
+import { computeEpochMs } from "@/tools/computeEpochMs.js"
 import { loadVersions } from "../loadVersions.js"
 import { loadGenerations } from "../loadGenerations.js"
 
@@ -49,6 +50,8 @@ export async function loadServices({
     const defaultFlavor =
       service.flavors?.find((f) => f.is_default) || service.flavors?.[0]
     const job = jobs.find((j) => j.format === id)
+    // The API sends last_update as an ISO string; the SDK compares epoch ms.
+    const lastUpdate = computeEpochMs(job?.last_update)
 
     store.commit("llmServices/REGISTER", {
       id,
@@ -67,7 +70,7 @@ export async function loadServices({
       id,
       label,
       status: mapStatus(job?.status) ?? "idle",
-      lastUpdate: job?.last_update ?? null,
+      lastUpdate,
     })
 
     const status = mapStatus(job?.status)
@@ -83,7 +86,7 @@ export async function loadServices({
       hydrationTargets.push({
         id,
         jobId: job.jobId,
-        lastUpdate: job.last_update,
+        lastUpdate,
       })
     }
   }
@@ -95,7 +98,7 @@ export async function loadServices({
           const r = await apiGetExportContent(conversationId, jobId)
           if (state.destroyed) return
           if (r?.status === "success" && typeof r.content === "string") {
-            core.llmServices.setContent(id, r.content, lastUpdate || Date.now())
+            core.llmServices.setContent(id, r.content, lastUpdate ?? Date.now())
           }
         } catch (e) {
           console.error("[llm] hydrate content failed for", id, e)

@@ -23,7 +23,6 @@ import USER_RIGHTS from "@/const/userRights.js"
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
 import {
   apiGetConversationById,
-  apiGetConversationLastUpdate,
   apiGetUserRightFromConversation,
 } from "@/api/conversation"
 
@@ -34,6 +33,7 @@ import {
 } from "@linto-ai/transcript-ui-webcomponent"
 
 import { ChannelAssistants } from "@/services/assistantsIntegration/ChannelAssistants.js"
+import { loadSourceLastUpdate } from "@/services/editorIntegration/loadSourceLastUpdate.js"
 import { apiGetChatStatus } from "@/api/chat"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
@@ -43,6 +43,7 @@ import {
   apiGetAudioWaveFormFromConversation,
 } from "@/api/conversation"
 import { customDebug } from "@/tools/customDebug"
+import { computeEpochMs } from "@/tools/computeEpochMs.js"
 
 const debug = customDebug("vue:editor")
 export default {
@@ -59,7 +60,7 @@ export default {
       core: null,
       isDestroyed: false,
       assistants: null,
-      editListeners: [],
+      coreListeners: [],
       canWrite: false,
       publicationModal: {
         open: false,
@@ -104,8 +105,8 @@ export default {
   },
   beforeDestroy() {
     this.isDestroyed = true
-    this.editListeners.forEach((fn) => fn?.())
-    this.editListeners = []
+    this.coreListeners.forEach((fn) => fn?.())
+    this.coreListeners = []
     this.assistants?.destroy()
     this.assistants = null
     this.$apiEventWS.leaveEditorRoom()
@@ -174,6 +175,9 @@ export default {
           // Reconnection: any loaded track the server says is ahead gets
           // refetched — the whole point of the version safety net.
           core.transcriptionEditor?.reconcileVersions(ack.versions ?? {})
+          // Broadcasts missed while disconnected may concern a source track
+          // that is not loaded (hence not refetched): reseed its timestamp.
+          this.loadActiveSourceLastUpdate()
         },
         onTurnLocked: (lock) => core.transcriptionEditor?.setTurnLock(lock),
         onTurnUnlocked: (ref) => core.transcriptionEditor?.clearTurnLock(ref),
@@ -224,8 +228,7 @@ export default {
       if (chatEnabled) this.assistants.enableChat()
 
       core.setDocument(doc)
-      this.pushTranscriptionLastUpdate()
-      this.attachEditListeners()
+      this.loadActiveSourceLastUpdate()
 
       // The REST skeleton carries no content: turns and speakers are loaded
       // per translation, lazily — now for the active one, then on every
@@ -262,11 +265,11 @@ export default {
     async fetchTranslationContent(channel, translation) {
       channel.isLoadingHistory.value = true
       try {
-        // editorVersion fetched WITH the content (same backend read): the
-        // version baseline always matches what is displayed.
+        // editorVersion and last_update fetched WITH the content (same
+        // backend read): the baselines always match what is displayed.
         const conv = await apiGetConversationById(
           translation.id,
-          ["text", "speakers", "editorVersion"].toString(),
+          ["text", "speakers", "editorVersion", "last_update"].toString(),
         )
         if (this.isDestroyed || !conv) return
         for (const s of conv.speakers ?? []) {
@@ -277,6 +280,7 @@ export default {
           translation.id,
           conv.editorVersion ?? 0,
         )
+        translation.advanceLastModifiedAt(computeEpochMs(conv.last_update))
         // Whole content arrives in one fetch: mark the history complete so
         // the panel shows its "beginning of transcription" boundary.
         channel.hasMoreHistory.value = false
@@ -289,47 +293,18 @@ export default {
 
     attachTranslationLoader() {
       const load = () => this.loadActiveTranslation()
-      this.editListeners.push(
+      this.coreListeners.push(
         this.core.on("translation:change", load),
         this.core.on("channel:change", load),
+        this.core.on("channel:change", () => this.loadActiveSourceLastUpdate()),
       )
     },
 
-    async pushTranscriptionLastUpdate() {
-      try {
-        const res = await apiGetConversationLastUpdate(this.conversationId)
-        const lastUpdate = res?.last_update
-        if (!lastUpdate) return
-        const ts = new Date(lastUpdate).getTime()
-        if (!Number.isFinite(ts)) return
-        this.markTranscriptionEdited(ts)
-      } catch (e) {
-        console.error("[host] failed to fetch conversation last update", e)
-      }
-    },
-
-    // Pushes a "last modified" timestamp to the active translation so the
-    // SDK can drive the "compte rendu obsolète" status. Triggered by:
-    //   - initial fetch (server-side timestamp at mount)
-    //   - every local edit event (turn:* / speaker:*)
-    markTranscriptionEdited(ts) {
-      const translation =
-        this.core?.activeChannel?.value?.activeTranslation?.value
-      translation?.setLastModifiedAt(ts ?? Date.now())
-    },
-
-    attachEditListeners() {
-      const core = this.core
-      if (!core) return
-      const bump = () => this.markTranscriptionEdited()
-      this.editListeners = [
-        core.on("turn:add", bump),
-        core.on("turn:update", bump),
-        core.on("turn:remove", bump),
-        core.on("speaker:add", bump),
-        core.on("speaker:update", bump),
-        core.on("speaker:remove", bump),
-      ]
+    // Reports are generated from the channel conversation (its source track):
+    // seed the timestamp they are compared against. Later modifications come
+    // with the editor broadcasts.
+    loadActiveSourceLastUpdate() {
+      loadSourceLastUpdate(this.core?.activeChannel?.value)
     },
   },
 }

@@ -26,6 +26,7 @@ async function applyRenameSpeaker(translationId, target) {
   if (!updated) return null
   return {
     version: updated.version,
+    lastUpdate: updated.lastUpdate,
     event: "editor:speaker_renamed",
     payload: { speakerId: target.speakerId, name: target.name },
   }
@@ -53,6 +54,7 @@ async function applyUpdateTurnSpeaker(translationId, target, leftSpeakerId) {
     leftSpeakerId && leftSpeakerId !== target.speakerId ? leftSpeakerId : undefined
   return {
     version: updated.version,
+    lastUpdate: updated.lastUpdate,
     event: "editor:turn_speaker_updated",
     payload: {
       turnId: target.turnId,
@@ -80,6 +82,7 @@ const APPLY_BACKWARD = {
     if (!updated) return null
     return {
       version: updated.version,
+      lastUpdate: updated.lastUpdate,
       event: "editor:speaker_restored",
       payload: { fromSpeaker, toSpeakerId, turnIds },
     }
@@ -103,6 +106,7 @@ const APPLY_FORWARD = {
     if (!updated) return null
     return {
       version: updated.version,
+      lastUpdate: updated.lastUpdate,
       event: "editor:speaker_replaced",
       payload: { fromSpeakerId, toSpeakerId },
     }
@@ -116,7 +120,7 @@ function isUndoable(type) {
 }
 
 /**
- * @returns {Promise<{version:number, event:string, payload:object}|null>}
+ * @returns {Promise<{version:number, lastUpdate:string, event:string, payload:object}|null>}
  *   null when the underlying mutation itself found nothing to write (DB-level
  *   inconsistency past the head swap — see onUndo.js). Callers must check
  *   isUndoable(revision.type) first; an unsupported type throws here.

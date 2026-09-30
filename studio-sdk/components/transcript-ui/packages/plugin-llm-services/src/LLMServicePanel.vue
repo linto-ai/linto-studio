@@ -11,6 +11,7 @@ import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useCore, useIsMobile } from "@linto-ai/transcript-ui-core"
 import type { LLMService } from "@linto-ai/transcript-ui-core"
 import LLMServiceStatus from "./LLMServiceStatus.vue"
+import { computeIsUpToDate } from "./utils/computeIsUpToDate"
 
 const props = defineProps<{
   service: LLMService
@@ -65,22 +66,19 @@ const isEmpty = computed<boolean>(() => {
 })
 
 // "Up to date" = the current version is more recent than the transcription's
-// last edit. When either date is missing, default to up to date (no negative
-// signal to show).
+// last server-side modification. When either date is missing, default to up
+// to date (no negative signal to show).
 const isUpdated = computed<boolean>(() => {
-  // Resolve the real backing store; the virtual cross translation isn't in the
-  // map (no lastModifiedAt) → treated as up to date.
-  const channel = core.activeChannel.value
-  const activeId = channel?.activeTranslation.value.id
-  const realStore = activeId ? channel?.translations.get(activeId) : undefined
-  const transcriptionLastModified = realStore?.lastModifiedAt.value ?? null
-  if (transcriptionLastModified == null) return true
+  // Reports are generated from the channel conversation, i.e. its source
+  // track, whatever track is displayed.
+  const transcriptionModifiedAt =
+    core.activeChannel.value?.sourceTranslation.lastModifiedAt.value ?? null
   const activeVersion = versions.value.find(
     (v) => v.versionNumber === activeVersionNumber.value,
   )
-  const versionTs = activeVersion?.createdAt ?? props.service.lastUpdate.value
-  if (versionTs == null) return true
-  return versionTs >= transcriptionLastModified
+  const reportCreatedAt =
+    activeVersion?.createdAt ?? props.service.lastUpdate.value
+  return computeIsUpToDate(transcriptionModifiedAt, reportCreatedAt)
 })
 
 const draft = ref(content.value)

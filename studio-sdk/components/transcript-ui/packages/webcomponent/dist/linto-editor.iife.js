@@ -8763,7 +8763,10 @@ var LintoEditor = (function(exports) {
     const { id, languages, isSource, audio } = init;
     const turns = /* @__PURE__ */ shallowRef(init.turns);
     const lastModifiedAt = /* @__PURE__ */ ref(null);
-    function setLastModifiedAt(ts) {
+    function advanceLastModifiedAt(ts) {
+      if (ts == null || !Number.isFinite(ts)) return;
+      const current = lastModifiedAt.value;
+      if (current != null && ts <= current) return;
       lastModifiedAt.value = ts;
     }
     const indexMap = /* @__PURE__ */ new Map();
@@ -8839,7 +8842,7 @@ var LintoEditor = (function(exports) {
       audio,
       turns,
       lastModifiedAt,
-      setLastModifiedAt,
+      advanceLastModifiedAt,
       addTurn,
       prependTurns: prependTurns$1,
       updateTurn,
@@ -29334,6 +29337,11 @@ section.turn:has([data-state="open"]) {
       state.pendingRefetches.delete(translationId);
     });
   }
+  function computeEpochMs(value) {
+    if (value == null) return null;
+    const ms = Date.parse(value);
+    return Number.isFinite(ms) ? ms : null;
+  }
   function findTranslationStore(core, translationId) {
     for (const channel of core.channels.values()) {
       const store = channel.translations.get(translationId);
@@ -29341,8 +29349,14 @@ section.turn:has([data-state="open"]) {
     }
     return void 0;
   }
+  function trackBroadcastLastUpdate(state, translationId, lastUpdate) {
+    const ms = computeEpochMs(lastUpdate);
+    if (ms == null) return;
+    findTranslationStore(state.core, translationId)?.advanceLastModifiedAt(ms);
+  }
   const { wordsFromApi: wordsFromApi$1 } = utils;
   function applyTurnUpdate(state, update) {
+    trackBroadcastLastUpdate(state, update.translationId, update.lastUpdate);
     if (!trackBroadcastVersion(state, update.translationId, update.version)) return;
     if (state.editingRef && state.editingRef.turnId === update.turnId && state.editingRef.translationId === update.translationId) {
       return;
@@ -29373,6 +29387,7 @@ section.turn:has([data-state="open"]) {
     };
   }
   function applyTurnSplit(state, split) {
+    trackBroadcastLastUpdate(state, split.translationId, split.lastUpdate);
     if (!trackBroadcastVersion(state, split.translationId, split.version)) return;
     if (state.editingRef && state.editingRef.turnId === split.originalTurnId && state.editingRef.translationId === split.translationId) {
       return;
@@ -29429,6 +29444,7 @@ section.turn:has([data-state="open"]) {
     });
   }
   function applyTurnsMerged(state, merge) {
+    trackBroadcastLastUpdate(state, merge.translationId, merge.lastUpdate);
     if (!trackBroadcastVersion(state, merge.translationId, merge.version)) return;
     if (state.editingRef && state.editingRef.translationId === merge.translationId && (state.editingRef.turnId === merge.mergedTurnId || state.editingRef.turnId === merge.removedTurnId)) {
       return;
@@ -29463,6 +29479,7 @@ section.turn:has([data-state="open"]) {
     core.speakers.delete(speakerId);
   }
   function applyTurnDeleted(state, deleted) {
+    trackBroadcastLastUpdate(state, deleted.translationId, deleted.lastUpdate);
     if (!trackBroadcastVersion(state, deleted.translationId, deleted.version)) return;
     if (state.editingRef && state.editingRef.turnId === deleted.turnId && state.editingRef.translationId === deleted.translationId) {
       return;
@@ -29566,6 +29583,7 @@ section.turn:has([data-state="open"]) {
     }
   }
   function applyTurnSpeakerUpdated(state, update) {
+    trackBroadcastLastUpdate(state, update.translationId, update.lastUpdate);
     if (!trackBroadcastVersion(state, update.translationId, update.version)) return;
     const { speakers } = state.core;
     speakers.ensure(update.speaker.id, update.speaker.name);
@@ -29585,6 +29603,7 @@ section.turn:has([data-state="open"]) {
     );
   }
   function applySpeakerRenamed(state, renamed) {
+    trackBroadcastLastUpdate(state, renamed.translationId, renamed.lastUpdate);
     if (!trackBroadcastVersion(state, renamed.translationId, renamed.version)) return;
     state.core.speakers.update(renamed.speakerId, { name: renamed.name });
     trackUndoRedoHeads(
@@ -29595,6 +29614,7 @@ section.turn:has([data-state="open"]) {
     );
   }
   function applySpeakerReplaced(state, replaced) {
+    trackBroadcastLastUpdate(state, replaced.translationId, replaced.lastUpdate);
     if (!trackBroadcastVersion(state, replaced.translationId, replaced.version)) return;
     state.core.speakers.ensure(replaced.toSpeakerId);
     const store = findTranslationStore(state.core, replaced.translationId);
@@ -29614,6 +29634,7 @@ section.turn:has([data-state="open"]) {
     );
   }
   function applySpeakerRestored(state, restored) {
+    trackBroadcastLastUpdate(state, restored.translationId, restored.lastUpdate);
     if (!trackBroadcastVersion(state, restored.translationId, restored.version)) {
       return;
     }
@@ -29808,6 +29829,13 @@ section.turn:has([data-state="open"]) {
   });
   const _style_0$6 = "\n.llm-service-status[data-v-c0012514] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  min-width: 0;\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n}\n.llm-service-status--ok[data-v-c0012514] {\n  color: var(--color-success);\n}\n.llm-service-status--warn[data-v-c0012514] {\n  color: var(--color-warning);\n}\n.llm-service-status[data-v-c0012514] .editor-icon {\n  flex-shrink: 0;\n}\n.llm-service-status__label[data-v-c0012514] {\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
   const LLMServiceStatus = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$6]], ["__scopeId", "data-v-c0012514"]]);
+  function computeIsUpToDate(transcriptionModifiedAt, reportCreatedAt) {
+    if (transcriptionModifiedAt == null || !Number.isFinite(transcriptionModifiedAt)) {
+      return true;
+    }
+    if (reportCreatedAt == null || !Number.isFinite(reportCreatedAt)) return true;
+    return reportCreatedAt >= transcriptionModifiedAt;
+  }
   const _hoisted_1$5 = { class: "llm-service-panel" };
   const _hoisted_2$5 = {
     key: 0,
@@ -29856,17 +29884,12 @@ section.turn:has([data-state="open"]) {
         return !hasContent.value;
       });
       const isUpdated = computed(() => {
-        const channel = core.activeChannel.value;
-        const activeId = channel?.activeTranslation.value.id;
-        const realStore = activeId ? channel?.translations.get(activeId) : void 0;
-        const transcriptionLastModified = realStore?.lastModifiedAt.value ?? null;
-        if (transcriptionLastModified == null) return true;
+        const transcriptionModifiedAt = core.activeChannel.value?.sourceTranslation.lastModifiedAt.value ?? null;
         const activeVersion = versions.value.find(
           (v2) => v2.versionNumber === activeVersionNumber.value
         );
-        const versionTs = activeVersion?.createdAt ?? props.service.lastUpdate.value;
-        if (versionTs == null) return true;
-        return versionTs >= transcriptionLastModified;
+        const reportCreatedAt = activeVersion?.createdAt ?? props.service.lastUpdate.value;
+        return computeIsUpToDate(transcriptionModifiedAt, reportCreatedAt);
       });
       const draft = /* @__PURE__ */ ref(content.value);
       watch(content, (next2) => {
@@ -30012,8 +30035,8 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0$5 = "\n.llm-service-panel[data-v-2d38dcc6] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.llm-service-panel__reading-status[data-v-2d38dcc6] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.llm-service-panel__reading-actions[data-v-2d38dcc6] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.llm-service-panel__reading[data-v-2d38dcc6] {\n  padding: var(--spacing-xl) var(--spacing-lg);\n}\n.llm-service-panel__empty[data-v-2d38dcc6] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-2d38dcc6] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n";
-  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$5]], ["__scopeId", "data-v-2d38dcc6"]]);
+  const _style_0$5 = "\n.llm-service-panel[data-v-4a960542] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.llm-service-panel__reading-status[data-v-4a960542] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.llm-service-panel__reading-actions[data-v-4a960542] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.llm-service-panel__reading[data-v-4a960542] {\n  padding: var(--spacing-xl) var(--spacing-lg);\n}\n.llm-service-panel__empty[data-v-4a960542] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-4a960542] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n";
+  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["styles", [_style_0$5]], ["__scopeId", "data-v-4a960542"]]);
   function createService(init) {
     return {
       id: init.id,
