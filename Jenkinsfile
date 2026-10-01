@@ -40,6 +40,40 @@ def buildDockerfile(folder_name, version, commit_sha, tagSuffix = '', context = 
     }
 }
 
+// SaaS flavour of studio-api: the public image just pushed plus the private linto-saas plugin (branch of the
+// same name), released with the same tags to the private Docker Hub repository lintoai/studio-api-saas.
+def buildSaasImage(version) {
+    def completeImageName = "${env.DOCKER_HUB_REPO}/studio-api-saas"
+    echo "Building ${completeImageName} on top of studio-api:${version}..."
+
+    // cloned outside the workspace: the plugin must never sit in a public image build context
+    dir("${env.WORKSPACE}@saas") {
+        try {
+            // "saas-plugin-repo-url": secret text, SSH URL of the private plugin repository
+            // "saas-plugin-deploy-key": SSH private key of a read-only deploy key of that repository
+            withCredentials([
+                string(credentialsId: 'saas-plugin-repo-url', variable: 'SAAS_REPO_URL'),
+                sshUserPrivateKey(credentialsId: 'saas-plugin-deploy-key', keyFileVariable: 'SAAS_SSH_KEY')
+            ]) {
+                sh 'GIT_SSH_COMMAND="ssh -i $SAAS_SSH_KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" git clone --quiet --depth 1 --branch "$BRANCH_NAME" "$SAAS_REPO_URL" .'
+            }
+
+            // --pull: build on the studio-api tag just pushed, never on a stale local copy of it
+            def image = docker.build(completeImageName, "--pull --build-arg STUDIO_API_TAG=${version} .")
+            docker.withRegistry('https://registry.hub.docker.com', env.DOCKER_HUB_CRED) {
+                if (version == 'latest-unstable') {
+                    image.push('latest-unstable')
+                } else {
+                    image.push('latest')
+                    image.push(version)
+                }
+            }
+        } finally {
+            deleteDir()
+        }
+    }
+}
+
 // npm publish of the transcript-ui SDK: master ships package.json's version as "latest" (skipped if already
 // on the registry), next ships <version>-unstable.<UTC timestamp> as "latest-unstable".
 def publishSdk(distTag) {
@@ -109,6 +143,11 @@ def performBuildForFile(changedFiles, version, commit_sha) {
         buildDockerfile('studio-websocket', version, commit_sha)
     }
 
+    // Last, so a failure on the private side never holds back the public images
+    if (changedFiles.contains('studio-api')) {
+        echo 'Files in studio-api path are modified. Running specific build steps for studio-api-saas...'
+        buildSaasImage(version)
+    }
 }
 
 // Best-effort deploy of a freshly built image to the staging cluster (full CI/CD).
