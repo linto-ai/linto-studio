@@ -1,5 +1,8 @@
+import { createChatPlugin } from "@linto-ai/transcript-ui-webcomponent"
+
 import { setupLLMServices } from "@/services/llmServicesIntegration"
-import { setupChat } from "@/services/chatIntegration"
+import { ChatIntegration } from "@/services/chatIntegration"
+import { resetChat } from "@/services/chatIntegration/helpers"
 
 // The AI services, the chat and the exports of the editor act on the
 // conversation of the active channel: the media, or one of its channels.
@@ -9,7 +12,7 @@ export class ChannelAssistants {
     this.llmServicesOptions = llmServicesOptions
     this.chatEnabled = false
     this.disposeLLMServices = null
-    this.disposeChat = null
+    this.chat = null
     this.setupConversation(llmServicesOptions.conversationId)
     this.offChannelChange = core.on("channel:change", ({ channelId }) =>
       this.setupConversation(channelId),
@@ -27,13 +30,14 @@ export class ChannelAssistants {
   }
 
   setupConversationChat() {
-    this.disposeChat = setupChat(this.core, {
+    this.chat = new ChatIntegration(this.core, {
       conversationId: this.conversationId,
     })
   }
 
   // Called once the host knows the backend offers the chat.
   enableChat() {
+    this.core.use(createChatPlugin())
     this.chatEnabled = true
     this.setupConversationChat()
   }
@@ -41,8 +45,11 @@ export class ChannelAssistants {
   disposeConversation() {
     this.disposeLLMServices?.()
     this.disposeLLMServices = null
-    this.disposeChat?.()
-    this.disposeChat = null
+    if (this.chat) {
+      this.chat.dispose()
+      this.chat = null
+      resetChat(this.core)
+    }
   }
 
   destroy() {

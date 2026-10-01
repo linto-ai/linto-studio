@@ -1,48 +1,60 @@
-// Glue between the SDK core and the host app for the chat assistant:
-// - installs the (state-only) chat plugin on the core
-// - listens to the UI intents (chat:* events) emitted by the SDK drawer
-// - performs the REST / SSE calls (api/chat.js) and pushes results back
-//   through core.chat.*
+// Host glue for the SDK chat drawer of one conversation: listens to the
+// chat:* intents, does the REST/SSE calls (api/chat.js) and pushes results
+// back through core.chat.*. The SDK still calls a discussion a "session".
 //
-// All work lives in actions/. This file only wires deps together. Mirrors
-// services/llmServicesIntegration/index.js.
+// The chat plugin must already be installed on the core.
 
-import { createChatPlugin } from "@linto-ai/transcript-ui-webcomponent"
+import { loadDiscussions } from "./actions/loadDiscussions"
+import { loadDiscussionMessages } from "./actions/loadDiscussionMessages"
+import { createDiscussion } from "./actions/createDiscussion"
+import { deleteDiscussion } from "./actions/deleteDiscussion"
+import { renameDiscussion } from "./actions/renameDiscussion"
+import { sendMessage } from "./actions/sendMessage"
+import { autoNameDiscussion } from "./actions/autoNameDiscussion"
+import { streamAssistantReply } from "./actions/streamAssistantReply"
 
-import { onLoadSessions } from "./actions/onLoadSessions"
-import { onLoadSession } from "./actions/onLoadSession"
-import { onCreateSession } from "./actions/onCreateSession"
-import { onDeleteSession } from "./actions/onDeleteSession"
-import { onRenameSession } from "./actions/onRenameSession"
-import { onSend } from "./actions/onSend"
-import { resetChat } from "./helpers"
+export class ChatIntegration {
+  constructor(core, { conversationId }) {
+    this.core = core
+    this.conversationId = conversationId
+    // Responses landing after dispose() must leave the drawer alone: it
+    // shows another conversation by then
+    this.isDisposed = false
+    // In-flight guards, read and written by the actions
+    this.turnInFlight = false
+    this.discussionsInFlight = null
 
-export function setupChat(core, { conversationId }) {
-  // Once per editor: the rest is set up again for each conversation.
-  if (!core.chat) core.use(createChatPlugin())
+    this.loadDiscussions = loadDiscussions.bind(this)
+    this.loadDiscussionMessages = loadDiscussionMessages.bind(this)
+    this.createDiscussion = createDiscussion.bind(this)
+    this.deleteDiscussion = deleteDiscussion.bind(this)
+    this.renameDiscussion = renameDiscussion.bind(this)
+    this.sendMessage = sendMessage.bind(this)
+    this.autoNameDiscussion = autoNameDiscussion.bind(this)
+    this.streamAssistantReply = streamAssistantReply.bind(this)
 
-  const ctx = { core, conversationId }
+    this.unsubscribes = [
+      core.on("chat:loadSessions", () => this.loadDiscussions()),
+      core.on("chat:loadSession", ({ sessionId }) =>
+        this.loadDiscussionMessages(sessionId),
+      ),
+      core.on("chat:createSession", () => this.createDiscussion()),
+      core.on("chat:deleteSession", ({ sessionId }) =>
+        this.deleteDiscussion(sessionId),
+      ),
+      core.on("chat:renameSession", ({ sessionId, title }) =>
+        this.renameDiscussion(sessionId, title),
+      ),
+      core.on("chat:send", ({ content }) => this.sendMessage(content)),
+    ]
 
-  const unsub = [
-    core.on("chat:loadSessions", () => onLoadSessions(ctx)),
-    core.on("chat:loadSession", ({ sessionId }) =>
-      onLoadSession(ctx, sessionId),
-    ),
-    core.on("chat:createSession", () => onCreateSession(ctx)),
-    core.on("chat:deleteSession", ({ sessionId }) =>
-      onDeleteSession(ctx, sessionId),
-    ),
-    core.on("chat:renameSession", ({ sessionId, title }) =>
-      onRenameSession(ctx, sessionId, title),
-    ),
-    core.on("chat:send", ({ content }) => onSend(ctx, content)),
-  ]
+    // A drawer left open across a channel change shows the new discussions.
+    if (core.chat.drawerOpen.value) this.loadDiscussions()
+  }
 
-  // A drawer left open across a channel change shows the new sessions.
-  if (core.chat.drawerOpen.value) onLoadSessions(ctx)
-
-  return function dispose() {
-    unsub.forEach((fn) => fn?.())
-    resetChat(core)
+  dispose() {
+    this.isDisposed = true
+    this.unsubscribes.forEach((fn) => fn?.())
+    this.unsubscribes = []
   }
 }
