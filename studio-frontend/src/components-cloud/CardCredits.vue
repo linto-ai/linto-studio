@@ -8,7 +8,7 @@
           target="_blank"
           rel="noopener noreferrer"
           variant="link"
-          size="xs">
+          size="sm">
           Learn more
         </Button>
       </div>

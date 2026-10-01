@@ -29,6 +29,11 @@ const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const logger = require(`${process.cwd()}/lib/logger/logger`)
+const saas = require(`${process.cwd()}/lib/saas`)
+const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
+const orgaUtility = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
 
 const ROLE_MAP = {
   member: ROLES.MEMBER,
@@ -71,20 +76,64 @@ function buildGuards() {
     // ?userScope=backoffice (the front adds it on /backoffice pages).
     authorizePlatformAdmin: platform_access.isPlatformSystemAdministrator,
 
-    // Billable seats = members with role >= uploader, floored at 1. null on
-    // failure so the plugin falls back to the request instead of mis-billing.
+    // null on failure so the plugin falls back to the request instead of
+    // mis-billing.
     resolveSeats: async (orgId) => {
       try {
         const orgs = await model.organizations.getById(orgId)
         if (!orgs || orgs.length !== 1) return null
-        const seats = (orgs[0].users || []).filter(
-          (u) => u.role >= ROLES.UPLOADER,
-        ).length
-        return Math.max(1, seats)
+        return saas.requiredSeats(orgs[0])
       } catch (e) {
         return null
       }
     },
+  }
+}
+
+// Organization hooks of the plugin (SPEC-SAAS §3.2 pending org, §4.2 lock)
+function buildOrganizationHooks() {
+  return {
+    // false = team org (bought with a plan or created under one): the plugin
+    // locks it out while it has no team plan. null when the org is unknown.
+    isPersonal: async (orgId) => {
+      const rows = throwIfError(
+        await model.organizations.getByIdFilter(orgId, { personal: 1 }),
+      )
+      if (rows.length !== 1) return null
+      return rows[0].personal !== false
+    },
+    // A plan sold with its own organization (Business): the org exists, hidden,
+    // before Checkout so Stripe metadata can carry its id; the webhook reveals it.
+    createPending: async ({ ownerUserId, name }) => {
+      if (!ownerUserId) {
+        throw new Error("CloudService: createPending needs the caller userId")
+      }
+      return throwIfError(
+        await model.organizations.createPending(ownerUserId, name),
+      )
+    },
+    activate: async (orgId) => {
+      const rows = throwIfError(await model.organizations.getById(orgId))
+      if (rows.length !== 1) return false
+      return throwIfError(await model.organizations.activatePending(orgId))
+    },
+    // Anchor of a free org's monthly quotas (SPEC-SAAS §1.5): they reset on the
+    // monthly anniversary of the org, as a paid org's do on its billing day.
+    createdAt: async (orgId) => {
+      const rows = throwIfError(
+        await model.organizations.getByIdFilter(orgId, { created: 1 }),
+      )
+      return rows.length === 1 ? rows[0].created || null : null
+    },
+    // The plugin sweeps the never-paid organizations: those still hidden
+    // since before a date, and the way to drop one.
+    pendingBefore: async (before) => {
+      const rows = throwIfError(
+        await model.organizations.listPendingBefore(before),
+      )
+      return rows.map((org) => org._id.toString())
+    },
+    remove: (orgId) => orgaUtility.deleteOrganizationCascade(orgId),
   }
 }
 
@@ -126,7 +175,9 @@ class CloudService extends Component {
       defaultPlanKey: process.env.SAAS_DEFAULT_PLAN_KEY || undefined,
       stripe: {},
       resolveRequester,
+      organizations: buildOrganizationHooks(),
     })
+    saas.register(this.paymentProcessor)
 
     // Init runs in the background. A failure leaves the plugin loaded and every
     // gate fail-closed (402/403 everywhere); make it impossible to miss.
@@ -145,13 +196,15 @@ class CloudService extends Component {
     // slot after authentication (lib/saas.afterAuth).
     this.paymentProcessor.hostAfterAuth = this.paymentProcessor.apiCallMeter()
 
-    this.app.components.WebServer.express.use(
-      "/cloud",
-      this.paymentProcessor.apiRouter(buildGuards()),
-    )
+    // Webhook first: the /cloud router parses JSON, which would consume the
+    // raw body Stripe signs.
     this.app.components.WebServer.express.use(
       "/cloud/webhook",
       this.paymentProcessor.webhookRouter(),
+    )
+    this.app.components.WebServer.express.use(
+      "/cloud",
+      this.paymentProcessor.apiRouter(buildGuards()),
     )
 
     return this

@@ -3,8 +3,7 @@ import {
   apiGetUsage,
   apiGetUsageByMember,
   apiGetSubscriptions,
-  apiCreateSubscription,
-  apiCancelSubscription,
+  apiChangeSubscription,
 } from "@/api/cloud"
 
 function currentOrg(rootGetters, orgId) {
@@ -53,8 +52,31 @@ export default {
   openUpgradeModal({ commit }, reason = null) {
     commit("openUpgradeModal", reason)
   },
+  // Opens the wizard straight on one plan's own step. The catalog is loaded
+  // first: the wizard renders nothing for a plan it doesn't know yet.
+  async openUpgradeModalOnPlan({ commit, dispatch, state }, planKey) {
+    if (!state.plans.length) await dispatch("fetchPlans")
+    commit("openUpgradeModalOnPlan", planKey)
+  },
   closeUpgradeModal({ commit }) {
     commit("closeUpgradeModal")
+  },
+
+  // Seat capacity of a per-seat plan, bought and released in place. `seats` is
+  // the TOTAL, never a delta, and the API floors it at the org's current
+  // collaborators and at the plan's included seats — so the caller reads the
+  // seat count back from the refreshed usage, never from what it asked for.
+  // Stripe invoices the prorated difference right away (proration_behavior
+  // "always_invoice"). Org admin only; null when the change is refused.
+  async changeSeats({ dispatch, rootGetters }, payload = {}) {
+    const { seats, orgId } = payload
+    const organizationId = currentOrg(rootGetters, orgId)
+    if (!organizationId || typeof seats !== "number") return null
+    const subscription = await apiChangeSubscription(organizationId, { seats })
+    if (!subscription) return null
+    await dispatch("refresh", organizationId)
+    await dispatch("fetchSubscriptions", organizationId)
+    return subscription
   },
 
   // What every member may load: the catalog and the org's usage summary.
@@ -65,28 +87,5 @@ export default {
     } finally {
       commit("setLoading", false)
     }
-  },
-
-  // Subscribe the org to a paid plan. Returns { subscription, clientSecret }.
-  // Seats are derived server-side from membership. Checkout replaces this in J2.
-  async subscribe({ dispatch, rootGetters }, payload = {}) {
-    const { planKey, orgId } = payload
-    if (!planKey) return null
-    const organizationId = currentOrg(rootGetters, orgId)
-    if (!organizationId) return null
-    const result = await apiCreateSubscription(organizationId, planKey, 1)
-    await dispatch("refresh", organizationId)
-    return result
-  },
-
-  // Cancel at period end. Kept for the API; the UI hands this to the Stripe
-  // Customer Portal in J2.
-  async cancel({ dispatch, state, rootGetters }, payload = {}) {
-    const { immediate = false, orgId } = payload
-    const sub = state.subscription
-    if (!sub || !sub._id) return null
-    const result = await apiCancelSubscription(sub._id, immediate)
-    await dispatch("refresh", currentOrg(rootGetters, orgId))
-    return result
   },
 }

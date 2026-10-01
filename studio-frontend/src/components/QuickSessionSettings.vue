@@ -6,7 +6,11 @@
       variant="info"
       icon="info"
       v-if="transcriberProfiles.length === 0">
-      {{ $t("quick_session.creation.only_offline_available") }}
+      {{
+        isLiveCreditExhausted
+          ? $t("quick_session.creation.only_offline_live_credit_exhausted")
+          : $t("quick_session.creation.only_offline_available")
+      }}
     </NotificationBanner>
     <section>
       <FormCheckbox
@@ -15,21 +19,7 @@
         v-model="fieldOfflineTranscription.value"
         switchDisplay />
       <div v-if="fieldOfflineTranscription.value" class="subSection">
-        <h3>{{ $t("conversation.conversation_creation_right_title") }}</h3>
-        <div class="form-field flex col">
-          <label class="form-label">
-            {{ $t("conversation.conversation_creation_right_label") }}
-          </label>
-          <select v-model="membersRight.value">
-            <option
-              v-for="uright in membersRight.list"
-              :key="uright.value"
-              :value="uright.value">
-              {{ uright.txt }}
-            </option>
-          </select>
-        </div>
-        <div class="medium-margin-top flex col gap-small">
+        <div class="flex col gap-small">
           <h3>{{ $t("conversation.transcription_service_title") }}</h3>
           <div class="error-field" v-if="fieldTranscriptionService.error">
             {{ fieldTranscriptionService.error }}
@@ -110,9 +100,9 @@
   </div>
 </template>
 <script>
+import { mapGetters } from "vuex"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { testService } from "@/tools/fields/testService.js"
-import RIGHTS_LIST from "@/const/rigthsList"
 import { getEnv } from "@/tools/getEnv"
 import generateServiceConfig from "@/tools/generateServiceConfig"
 import {
@@ -201,11 +191,6 @@ export default {
         testField: testService,
         value: this.value.transcriptionService,
       },
-      membersRight: {
-        ...EMPTY_FIELD,
-        value: 1,
-        list: RIGHTS_LIST((key) => this.$i18n.t(key)),
-      },
       selectedTranslation: this.value.subSource || "original",
     }
   },
@@ -268,11 +253,6 @@ export default {
         this.sendUpdate()
       },
       deep: true,
-    },
-    "membersRight.value": {
-      handler() {
-        this.sendUpdate()
-      },
     },
     transcriptionServices: {
       handler(newServices) {
@@ -350,12 +330,12 @@ export default {
         transcriptionService: structuredClone(
           this.fieldTranscriptionService.value,
         ),
-        membersRight: this.membersRight.value,
         subSource: this.selectedTranslation,
       })
     },
   },
   computed: {
+    ...mapGetters("billing", ["isLiveCreditExhausted"]),
     isCompatibleWithDiarization() {
       return this.selectedProfile?.config?.hasDiarization
     },

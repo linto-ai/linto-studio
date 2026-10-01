@@ -10,7 +10,7 @@ jest.mock(`${process.cwd()}/lib/utility/axios`, () => mockAxios)
 const mockSaas = {
   enabled: jest.fn(),
   enforce: jest.fn(),
-  allowed: jest.fn(),
+  decide: jest.fn(),
   record: jest.fn(),
 }
 jest.mock(`${process.cwd()}/lib/saas`, () => mockSaas)
@@ -39,11 +39,8 @@ jest.mock(`${process.cwd()}/lib/logger/logger.js`, () => ({
   debug: jest.fn(),
 }))
 
-const { SaasFeatureLocked } = require(
-  `${process.cwd()}/components/WebServer/error/exception/saas`,
-)
-const { FOOTER_NOTE } = require(
-  `${process.cwd()}/components/WebServer/controllers/publication/exportPolicy`,
+const { FOOTER_NOTE, freeExportPlan } = require(
+  `${process.cwd()}/tests/utility/saasExportPlan`,
 )
 const { exportConversation, generateExportDocument } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/conversation/export.js`,
@@ -53,13 +50,7 @@ const ORG = "64b7f0c2a1b2c3d4e5f60718"
 const USER = "user-1"
 const LOCKED = { pdf_lock: "true", pdf_footer_note: FOOTER_NOTE }
 
-function freePlan() {
-  mockSaas.enabled.mockReturnValue(true)
-  mockSaas.allowed.mockResolvedValue(false)
-  mockSaas.enforce.mockImplementation(async ({ capability }) => {
-    throw new SaasFeatureLocked("locked", { capability })
-  })
-}
+const freePlan = () => freeExportPlan(mockSaas)
 
 function mockRes() {
   return {

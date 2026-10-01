@@ -18,8 +18,13 @@ export default {
     state.upgradeModalOpen = true
     state.upgradeReason = reason || null
   },
+  openUpgradeModalOnPlan(state, planKey) {
+    state.upgradeModalOpen = true
+    state.upgradePlanKey = planKey
+  },
   closeUpgradeModal(state) {
     state.upgradeModalOpen = false
     state.upgradeReason = null
+    state.upgradePlanKey = null
   },
 }

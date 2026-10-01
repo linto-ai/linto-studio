@@ -9,4 +9,7 @@ export default {
   // reference to the component that renders it (see OnboardingWizard.vue).
   upgradeModalOpen: false,
   upgradeReason: null, // { code, reason, capability, remaining } | null
+  // Plan the wizard opens on instead of the plan list (e.g. "business" from
+  // the "create an organization" button) | null
+  upgradePlanKey: null,
 }

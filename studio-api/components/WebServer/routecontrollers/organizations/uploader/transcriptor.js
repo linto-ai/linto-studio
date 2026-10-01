@@ -175,25 +175,23 @@ async function transcribe(isSingleFile, req, res, next) {
     )
     req.body.file_data = formData.file_data
 
-    // SaaS gate: probe the stored file's duration and refuse before the ASR is
-    // paid for when it does not fit the remaining quota (402). Probe failure
-    // falls back to a 1-minute check. No-op when the plugin is absent.
+    // SaaS gate: probe the stored file's duration so the plugin refuses (402)
+    // before the ASR is paid for. No probe and no gate when the plugin is absent.
     if (saas.enabled()) {
-      let importMinutes = 1
+      let seconds = 0
       try {
         const probed = await addAudioDuration(
           { metadata: {} },
           formData.file_data,
         )
-        const seconds = probed?.metadata?.audio?.duration || 0
-        if (seconds > 0) importMinutes = Math.round((seconds / 60) * 100) / 100
+        seconds = probed?.metadata?.audio?.duration || 0
       } catch (e) {
         debug(`import duration probe failed: ${e && e.message}`)
       }
       await saas.enforce({
         orgId: req.params.organizationId,
         capability: "import.minutes",
-        value: importMinutes,
+        seconds,
         userId: req.payload?.data?.userId,
       })
     }
@@ -204,15 +202,12 @@ async function transcribe(isSingleFile, req, res, next) {
     )
     const conversation = await createConversation(processingJob, req.body)
 
-    // SaaS metering: minutes of audio ingested. No-op in OSS.
+    // SaaS metering: the audio ingested. No-op in OSS.
     await saas.record({
       orgId: req.params.organizationId,
       userId: req.payload?.data?.userId,
       capability: "import.minutes",
-      value:
-        Math.round(
-          ((conversation?.metadata?.audio?.duration || 0) / 60) * 100,
-        ) / 100,
+      seconds: conversation?.metadata?.audio?.duration || 0,
       ref: { conversationId: conversation._id.toString() },
     })
 

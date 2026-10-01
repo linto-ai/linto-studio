@@ -1,18 +1,13 @@
 import {
-  apiCreateChatSession,
-  apiListChatSessions,
-  apiGetChatSession,
-  apiDeleteChatSession,
-  apiUpdateChatSessionTitle,
+  apiCreateChatDiscussion,
+  apiListChatDiscussions,
+  apiGetChatDiscussion,
+  apiDeleteChatDiscussion,
+  apiUpdateChatDiscussionTitle,
   apiSendChatMessage,
   apiGetChatStatus,
 } from "@/api/chat"
-
-function truncateTitle(text, maxLen = 30) {
-  const trimmed = text.trim()
-  if (trimmed.length <= maxLen) return trimmed
-  return trimmed.slice(0, maxLen).trimEnd() + "..."
-}
+import { truncateTitle } from "@/tools/truncateTitle"
 
 export default {
   namespaced: true,
@@ -72,26 +67,32 @@ export default {
       }
     },
     async loadSessions({ commit, state, dispatch }) {
-      const sessions = await apiListChatSessions(state.conversationId)
+      const sessions = await apiListChatDiscussions(state.conversationId)
       commit("SET_SESSIONS", sessions)
       if (!state.activeSessionId && sessions.length > 0) {
         await dispatch("loadSession", sessions[0]._id)
       }
     },
     async createSession({ commit, state, dispatch }) {
-      const session = await apiCreateChatSession(state.conversationId)
+      const session = await apiCreateChatDiscussion(state.conversationId)
       await dispatch("loadSessions")
       commit("SET_ACTIVE_SESSION", session._id)
       commit("SET_MESSAGES", [])
       return session
     },
     async loadSession({ commit, state }, sessionId) {
-      const session = await apiGetChatSession(state.conversationId, sessionId)
+      const session = await apiGetChatDiscussion(
+        state.conversationId,
+        sessionId,
+      )
       commit("SET_ACTIVE_SESSION", sessionId)
       commit("SET_MESSAGES", session.messages || [])
     },
     async deleteSession({ commit, state, dispatch }, sessionId) {
-      const result = await apiDeleteChatSession(state.conversationId, sessionId)
+      const result = await apiDeleteChatDiscussion(
+        state.conversationId,
+        sessionId,
+      )
       if (!result) {
         console.error("Failed to delete chat session")
         return
@@ -109,7 +110,7 @@ export default {
       }
     },
     async renameSession({ state, commit, dispatch }, { sessionId, title }) {
-      await apiUpdateChatSessionTitle(state.conversationId, sessionId, title)
+      await apiUpdateChatDiscussionTitle(state.conversationId, sessionId, title)
       commit("UPDATE_SESSION_TITLE", { sessionId, title })
     },
     async sendMessage({ commit, state, dispatch }, content) {

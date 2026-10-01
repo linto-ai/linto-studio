@@ -10,6 +10,9 @@ jest.mock(
   `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
   () => ({ hasAccess: jest.fn() }),
 )
+// last_update string the model reports having written; broadcasts carry it.
+const LAST_UPDATE = "2026-09-30T10:00:00+02:00"
+
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
   users: { getById: jest.fn() },
   editorLocks: {
@@ -260,7 +263,10 @@ describe("onUpdateTurn", () => {
 
   test("retimes, persists (version bumped) and broadcasts the wire turn", async () => {
     model.conversations.getById.mockResolvedValue([{ text: [OLD_TURN] }])
-    model.conversationEditor.updateEditorTurn.mockResolvedValue({ version: 7 })
+    model.conversationEditor.updateEditorTurn.mockResolvedValue({
+      version: 7,
+      lastUpdate: LAST_UPDATE,
+    })
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -281,6 +287,7 @@ describe("onUpdateTurn", () => {
     expect(broadcast.turnId).toBe("turn-1")
     expect(broadcast.text).toBe("Bonjour tous le monde")
     expect(broadcast.version).toBe(7)
+    expect(broadcast.lastUpdate).toBe(LAST_UPDATE)
     // No wid on the wire: clients consume words positionally.
     expect(broadcast.words.every((w) => !("wid" in w))).toBe(true)
     expect(broadcast.words[0]).toMatchObject({ word: "Bonjour", stime: 0 })
@@ -357,7 +364,10 @@ describe("onSplitTurn", () => {
 
   test("splits, persists and broadcasts both wire halves", async () => {
     model.conversations.getById.mockResolvedValue([{ text: [OLD_TURN] }])
-    model.conversationEditor.splitEditorTurn.mockResolvedValue({ version: 4 })
+    model.conversationEditor.splitEditorTurn.mockResolvedValue({
+      version: 4,
+      lastUpdate: LAST_UPDATE,
+    })
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -384,6 +394,7 @@ describe("onSplitTurn", () => {
     expect(broadcast.turns[1].turnId).not.toBe("turn-1")
     expect(broadcast.turns[1].words.every((w) => !("wid" in w))).toBe(true)
     expect(broadcast.version).toBe(4)
+    expect(broadcast.lastUpdate).toBe(LAST_UPDATE)
     expect(ack).toHaveBeenCalledWith({ ok: true, version: 4 })
   })
 
@@ -455,7 +466,10 @@ describe("onMergeTurns", () => {
     access.hasAccess.mockResolvedValue(true)
     model.editorLocks.findLiveLocks.mockResolvedValue([])
     model.conversations.getById.mockResolvedValue([{ text: [FIRST, SECOND] }])
-    model.conversationEditor.mergeEditorTurns.mockResolvedValue({ version: 9 })
+    model.conversationEditor.mergeEditorTurns.mockResolvedValue({
+      version: 9,
+      lastUpdate: LAST_UPDATE,
+    })
     const ctx = joinedCtx()
     const ack = jest.fn()
 
@@ -480,6 +494,7 @@ describe("onMergeTurns", () => {
     expect(broadcast.removedTurnId).toBe("turn-2")
     expect(broadcast.turn.words.every((w) => !("wid" in w))).toBe(true)
     expect(broadcast.version).toBe(9)
+    expect(broadcast.lastUpdate).toBe(LAST_UPDATE)
     expect(ack).toHaveBeenCalledWith({ ok: true, version: 9 })
   })
 
@@ -567,7 +582,10 @@ describe("onDeleteTurn", () => {
 
   test("deletes, predicts the speaker GC and broadcasts", async () => {
     model.conversations.getById.mockResolvedValue([{ text: TURNS }])
-    model.conversationEditor.deleteEditorTurn.mockResolvedValue({ version: 11 })
+    model.conversationEditor.deleteEditorTurn.mockResolvedValue({
+      version: 11,
+      lastUpdate: LAST_UPDATE,
+    })
     const ctx = makeCtx()
     const ack = jest.fn()
 
@@ -584,6 +602,7 @@ describe("onDeleteTurn", () => {
       turnId: "turn-2",
       removedSpeakerId: "spk-2",
       version: 11,
+      lastUpdate: LAST_UPDATE,
     })
     expect(ack).toHaveBeenCalledWith({ ok: true, version: 11 })
   })

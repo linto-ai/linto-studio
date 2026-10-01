@@ -27,6 +27,14 @@ beforeEach(() => {
   jest.clearAllMocks()
 })
 
+// The last_update string the model wrote, whether the update is an operator
+// document or a pipeline (last stage carries it).
+function writtenLastUpdate() {
+  const [, update] = mockCollection.findOneAndUpdate.mock.calls[0]
+  const stages = Array.isArray(update) ? update : [update]
+  return stages[stages.length - 1].$set.last_update
+}
+
 describe("conversationEditor.renameEditorSpeaker", () => {
   test("captures the previous name and undo head from the pre-image, computes version arithmetically", async () => {
     mockCollection.findOneAndUpdate.mockResolvedValue({
@@ -43,6 +51,7 @@ describe("conversationEditor.renameEditorSpeaker", () => {
 
     expect(result).toEqual({
       version: 6,
+      lastUpdate: writtenLastUpdate(),
       previousName: "Marie",
       undoHead: "rev-0",
     })
@@ -61,7 +70,12 @@ describe("conversationEditor.renameEditorSpeaker", () => {
       "Marie D.",
     )
 
-    expect(result).toEqual({ version: 1, previousName: "Marie", undoHead: null })
+    expect(result).toEqual({
+      version: 1,
+      lastUpdate: writtenLastUpdate(),
+      previousName: "Marie",
+      undoHead: null,
+    })
   })
 
   test("null when the conversation or speaker no longer exists", async () => {
@@ -95,6 +109,7 @@ describe("conversationEditor.updateEditorTurnSpeaker", () => {
 
     expect(result).toEqual({
       version: 10,
+      lastUpdate: writtenLastUpdate(),
       previousSpeaker: { speaker_id: "spk-2", speaker_name: "Thomas" },
       undoHead: "rev-0",
     })
@@ -116,6 +131,7 @@ describe("conversationEditor.updateEditorTurnSpeaker", () => {
 
     expect(result).toEqual({
       version: 1,
+      lastUpdate: writtenLastUpdate(),
       previousSpeaker: { speaker_id: "spk-2", speaker_name: "Thomas" },
       undoHead: null,
     })
@@ -156,6 +172,7 @@ describe("conversationEditor.replaceEditorSpeaker", () => {
 
     expect(result).toEqual({
       version: 7,
+      lastUpdate: writtenLastUpdate(),
       fromSpeaker: { speaker_id: "spk-1", speaker_name: "Marie" },
       turnIds: ["turn-1", "turn-3"],
       undoHead: "rev-0",

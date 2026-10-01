@@ -8,7 +8,7 @@ jest.mock(`${process.cwd()}/lib/utility/axios`, () => mockAxios)
 
 const mockSaas = {
   enabled: jest.fn(),
-  enforce: jest.fn(),
+  decide: jest.fn(),
   allowed: jest.fn(),
 }
 jest.mock(`${process.cwd()}/lib/saas`, () => mockSaas)
@@ -23,10 +23,10 @@ jest.mock(`${process.cwd()}/lib/logger/logger.js`, () => ({
   debug: jest.fn(),
 }))
 
-const { SaasFeatureLocked } = require(
-  `${process.cwd()}/components/WebServer/error/exception/saas`,
+const { FOOTER_NOTE, freeExportPlan } = require(
+  `${process.cwd()}/tests/utility/saasExportPlan`,
 )
-const { exportRestrictions, FOOTER_NOTE } = require(
+const { exportRestrictions } = require(
   `${process.cwd()}/components/WebServer/controllers/publication/exportPolicy`,
 )
 const {
@@ -40,25 +40,16 @@ const ORG = "64b7f0c2a1b2c3d4e5f60718"
 const USER = "user-1"
 const LOCKED = { pdf_lock: "true", pdf_footer_note: FOOTER_NOTE }
 
-const locked = (capability) =>
-  new SaasFeatureLocked(`Not on your plan: ${capability}`, {
-    reason: "feature_disabled",
-    capability,
-  })
-
 // Free plan: both publication capabilities are off
 function freePlan() {
-  mockSaas.enabled.mockReturnValue(true)
+  freeExportPlan(mockSaas)
   mockSaas.allowed.mockResolvedValue(false)
-  mockSaas.enforce.mockImplementation(async ({ capability }) => {
-    throw locked(capability)
-  })
 }
 
 function paidPlan() {
   mockSaas.enabled.mockReturnValue(true)
   mockSaas.allowed.mockResolvedValue(true)
-  mockSaas.enforce.mockResolvedValue({ allowed: true })
+  mockSaas.decide.mockResolvedValue({ allowed: true, pdfFooterNote: null })
 }
 
 function mockRes() {
@@ -89,7 +80,23 @@ describe("exportRestrictions", () => {
     expect(mockModel.conversations.getById).not.toHaveBeenCalled()
   })
 
-  test("free: editable formats are refused with the plan capability", async () => {
+  test("the plugin decides on the conversation's org, the format and the template", async () => {
+    paidPlan()
+    await exportRestrictions({
+      conversationId: "conv-1",
+      userId: USER,
+      format: "docx",
+      templateScope: "organization",
+    })
+    expect(mockSaas.decide).toHaveBeenCalledWith("publicationExport", {
+      orgId: ORG,
+      userId: USER,
+      format: "docx",
+      templateScope: "organization",
+    })
+  })
+
+  test("free: a refusal of the plugin goes out as it is", async () => {
     freePlan()
     for (const format of ["docx", "html", "odt"]) {
       await expect(
@@ -100,23 +107,13 @@ describe("exportRestrictions", () => {
         capability: "publication.docx_export",
       })
     }
-    expect(mockSaas.enforce).toHaveBeenCalledWith({
-      orgId: ORG,
-      capability: "publication.docx_export",
-      userId: USER,
-    })
   })
 
-  test("free: the PDF goes out locked with the LinTO footer", async () => {
+  test("free: the plugin's footer note becomes a locked, marked PDF", async () => {
     freePlan()
     await expect(
       exportRestrictions({ conversationId: "conv-1", userId: USER, format: "pdf" }),
     ).resolves.toEqual(LOCKED)
-    expect(mockSaas.allowed).toHaveBeenCalledWith({
-      orgId: ORG,
-      capability: "publication.docx_export",
-      userId: USER,
-    })
   })
 
   test("free: a custom template is refused, a LinTO template is not", async () => {
@@ -153,12 +150,13 @@ describe("exportRestrictions", () => {
     }
   })
 
-  test("a conversation without organization fails closed", async () => {
-    paidPlan()
+  test("a conversation without organization is decided without org: the plugin refuses", async () => {
+    freePlan()
     mockModel.conversations.getById.mockResolvedValue([{ _id: "conv-1" }])
     await expect(
       exportRestrictions({ conversationId: "conv-1", userId: USER, format: "pdf" }),
     ).rejects.toMatchObject({ status: 403, reason: "no_org" })
+    expect(mockSaas.decide.mock.calls[0][1].orgId).toBeNull()
   })
 })
 

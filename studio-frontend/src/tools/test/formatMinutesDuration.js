@@ -26,3 +26,13 @@ test("formatMinutesDuration formats hours and minutes", (t) => {
 test("formatMinutesDuration rounds fractional minutes", (t) => {
   t.is(formatMinutesDuration(59.6), "1 h")
 })
+
+test("a negative balance carries one sign, in front", (t) => {
+  t.is(formatMinutesDuration(-30), "-30 min")
+  t.is(formatMinutesDuration(-60), "-1 h")
+  t.is(formatMinutesDuration(-90), "-1 h 30 min")
+})
+
+test("minus zero is still zero", (t) => {
+  t.is(formatMinutesDuration(-0.4), "0 min")
+})

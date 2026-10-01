@@ -56,7 +56,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
-import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
+import { isCollaboratorRole } from "@/tools/isCollaboratorRole.js"
 
 export default {
   name: "MemberUsageTable",
@@ -82,7 +82,7 @@ export default {
           // UserInfoInline caller; undefined until allUsers loads (guarded in template).
           user: all.find((x) => x._id === m.userId),
           role: m.role,
-          isSeat: m.role >= ORGANIZATION_ROLES.UPLOADER,
+          isSeat: isCollaboratorRole(m.role),
           import: (u["import.minutes"] || {}).used || 0,
           ai: (u["ai.generations"] || {}).used || 0,
           chat: (u["ai.chat"] || {}).used || 0,

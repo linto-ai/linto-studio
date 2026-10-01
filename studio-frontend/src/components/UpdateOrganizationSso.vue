@@ -40,7 +40,7 @@
           <Button
             type="submit"
             variant="primary"
-            size="sm"
+            size="md"
             :loading="saving"
             :label="$t('organisation.sso.save_button')" />
         </section>

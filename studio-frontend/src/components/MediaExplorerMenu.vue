@@ -9,25 +9,23 @@
           :selectedFolderId="isInboxActive ? 'inbox' : null"
           @select="handleInboxClick"
           @drop-media="handleInboxDrop" />
-        <!-- Session mode (SRT/RTMP streams, scheduling) is not part of the SaaS
-             plans: in cloud mode the entry stays visible with a lock and leads to
-             the live product page. Transparent in OSS builds. -->
-        <HasEntitlement v-if="sessionEnable" capability="live.sessions">
-          <FolderTreeNode
-            :folder="sessionsFolder"
-            :virtual="true"
-            icon="broadcast"
-            :selectedFolderId="isSessionsActive ? 'sessions' : null"
-            @select="handleSessionsClick" />
-          <template #locked>
-            <FolderTreeNode
-              :folder="sessionsFolder"
-              :virtual="true"
-              icon="lock"
-              :selectedFolderId="null"
-              @select="openLiveProduct" />
-          </template>
-        </HasEntitlement>
+        <!-- Session mode (SRT/RTMP streams, scheduling) depends on the
+             organization's session permission: without it, the entry stays
+             visible with a lock and leads to the live product page. -->
+        <FolderTreeNode
+          v-if="sessionEnable && canSessionInCurrentOrganization"
+          :folder="sessionsFolder"
+          :virtual="true"
+          icon="broadcast"
+          :selectedFolderId="isSessionsActive ? 'sessions' : null"
+          @select="handleSessionsClick" />
+        <FolderTreeNode
+          v-else-if="sessionEnable"
+          :folder="sessionsFolder"
+          :virtual="true"
+          icon="lock"
+          :selectedFolderId="null"
+          @select="openLiveProduct" />
         <FolderTreeNode
           v-if="processingCount > 0"
           :folder="processingFolder"
@@ -72,16 +70,15 @@ import { getEnv } from "@/tools/getEnv"
 import FolderTree from "@/components/FolderTree.vue"
 import FolderTreeNode from "@/components/FolderTreeNode.vue"
 import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
-import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
+import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
 export default {
   name: "MediaExplorerMenu",
-  mixins: [mediaScopeMixin],
+  mixins: [mediaScopeMixin, organizationPermissionsMixin],
   components: {
     FolderTree,
     FolderTreeNode,
     MediaExplorerMenuLabels,
-    HasEntitlement,
   },
   data() {
     return {

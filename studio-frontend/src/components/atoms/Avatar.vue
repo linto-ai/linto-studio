@@ -1,7 +1,7 @@
 <template>
   <div
     class="avatar"
-    :class="[sizeClass, tone, clickable, circle ? 'circle' : '']"
+    :class="[sizeClass, tone, clickable, circle ? 'circle' : '', border ? 'border' : '']"
     :style="frameStyle"
     @click="$emit('click')">
     <AvatarImage v-if="src" :src="src" :alt="text" />
@@ -49,6 +49,11 @@ export default {
       default: "",
     },
     circle: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    border: {
       type: Boolean,
       required: false,
       default: false,
@@ -116,6 +121,10 @@ a:hover .avatar {
 
   &.clickable {
     cursor: pointer;
+  }
+
+  &.border {
+    box-shadow: 0 0 0 1px var(--neutral-20);
   }
 
   &.xs {

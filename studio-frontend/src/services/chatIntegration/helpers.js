@@ -1,15 +1,8 @@
-// Mapping + small helpers between the API shape (api/chat.js) and the SDK
-// chat plugin shape (core.chat.*). The SDK is agnostic: it uses `id`, the API
-// returns `_id`.
+// Maps the API shapes (_id) to the SDK chat plugin shapes (id).
+// The wire still calls a discussion a "session".
 
-export function truncateTitle(text, maxLen = 30) {
-  const trimmed = text.trim()
-  if (trimmed.length <= maxLen) return trimmed
-  return trimmed.slice(0, maxLen).trimEnd() + "..."
-}
-
-export function mapSession(session) {
-  return { id: session._id, title: session.title }
+export function mapDiscussion(apiSession) {
+  return { id: apiSession._id, title: apiSession.title }
 }
 
 export function mapMessage(message, index) {
@@ -22,4 +15,14 @@ export function mapMessage(message, index) {
       : undefined,
     tokenCount: message.tokenCount,
   }
+}
+
+// The drawer keeps nothing of the conversation it leaves. core.chat is gone
+// when the editor was torn down first.
+export function resetChat(core) {
+  core.chat?.streamAbort()
+  core.chat?.setSessions([])
+  core.chat?.setActiveSession(null)
+  core.chat?.setMessages([])
+  core.chat?.setLoadingSession(false)
 }

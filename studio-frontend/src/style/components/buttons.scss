@@ -12,10 +12,17 @@
   .btn {
     @include button-base.btn-base;
 
-    &.btn:not(:has(> .label)) {
+    // Scoped to .btn on purpose: a bare <button> (table sort header, editor
+    // toolbar…) must not inherit a button height it never had.
+    &.btn {
+      min-height: var(--btn-height, 40px);
+    }
+
+    // Icon-only: square because both dimensions read the same token as the
+    // height of a labelled button of that size.
+    &.btn:not(:has(> .label)):not(.btn--block) {
       padding: 0px;
-      width: var(--btn-icon-size, 24px);
-      height: var(--btn-icon-size, 24px);
+      width: var(--btn-height, 40px);
 
       svg {
         margin: 0;

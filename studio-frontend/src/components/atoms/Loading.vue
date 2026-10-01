@@ -31,6 +31,14 @@ export default {
 </script>
 
 <style>
+#loading-overlay {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
 #loading-overlay:not([block]) {
   position: absolute;
   top: 0;
@@ -39,11 +47,6 @@ export default {
   height: 100%;
   background-color: white;
   z-index: 50;
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
   padding: 0;
 
   &.overlay-transparent {

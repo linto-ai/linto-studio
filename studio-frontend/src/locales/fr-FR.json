@@ -1,55 +1,105 @@
 {
   "billing": {
-    "account": {
-      "title": "Facturation",
-      "subtitle": "Plans, quotas et factures de vos organisations.",
-      "total_monthly": "Total mensuel",
-      "summary_free": "{n} organisation · plan gratuit | {n} organisations · plan gratuit",
-      "summary_paid": "{n} organisation · prochain prélèvement le {date} | {n} organisations · prochain prélèvement le {date}",
-      "your_organizations": "Vos organisations",
-      "create_business_org": "Créer une organisation business",
-      "personal_org_subtitle": "Organisation personnelle · {n} membre | Organisation personnelle · {n} membres",
-      "members_subtitle": "{n} membre | {n} membres",
-      "seats_subtitle": "{n} siège · quota par siège | {n} sièges · quota par siège",
-      "price_per_month": "par mois",
-      "price_per_seat_detail": "{seats} × {unitPrice} / mois",
-      "current_quotas": "Quotas du mois en cours",
-      "reset_on": "Remise à zéro le {date}",
-      "member_consumption_link": "Voir la consommation par membre",
-      "renews": "Renouvellement automatique le {date}",
-      "renews_seats": "Renouvellement automatique le {date} · {n} siège | Renouvellement automatique le {date} · {n} sièges",
-      "cancel_subscription": "Résilier l'abonnement",
-      "billing_history": "Historique de facturation",
-      "payment_method": "Moyen de paiement du compte : {method}",
-      "payment_method_edit": "Modifier",
-      "table_date": "Date",
-      "table_organization": "Organisation",
-      "table_amount": "Montant",
-      "table_invoice": "Facture",
-      "no_invoice": "Aucune facture. Le plan gratuit n'est pas facturé.",
-      "need_more_minutes": "Besoin de plus de minutes ?",
-      "upsell_hint": "Premium débloque plus de minutes de transcription pour votre espace personnel. Business ajoute la transcription offline illimitée et des sièges pour votre équipe.",
-      "upgrade_premium": "Passer en Premium",
+    "settings": {
+      "free_plan": "Gratuit",
+      "retry": "Réessayer",
+      "upcoming": {
+        "title": "Prochaine facture",
+        "charged_on": "Prélevée le {date}",
+        "amount_due": "Montant prélevé après déduction de votre solde : {amount}",
+        "details": "Détail",
+        "tax": "TVA",
+        "total": "Total TTC",
+        "ends_on": "Abonnement résilié : il prend fin le {date}, aucune autre facture ne sera émise."
+      },
+      "usage": {
+        "title": "Consommation",
+        "load_error": "Impossible de charger la consommation et l'offre de l'organisation.",
+        "renews_on": "Renouvellement le {date}",
+        "renews_and_resets_on": "Renouvellement et remise à zéro des quotas le {date}",
+        "quota_reset_on": "Quotas remis à zéro le {date}",
+        "member_consumption_link": "Voir la consommation par membre"
+      },
       "meter": {
-        "offline": "Transcription offline",
-        "ai_summary": "Résumés IA",
+        "import": "Transcription de fichiers",
+        "ai": "Résumés IA",
         "chat": "Messages de chat"
-      }
+      },
+      "buy_pack": "Acheter un pack",
+      "no_pack_available": "Aucun pack n'est proposé avec l'offre de cette organisation.",
+      "upgrade_premium": "Passer en Premium",
+      "manage_subscription": "Gérer l'abonnement",
+      "stripe_error": "Impossible d'ouvrir la page de paiement. Réessayez dans un instant.",
+      "pack_bought": "Paiement reçu : les minutes seront créditées dans quelques instants.",
+      "pack_cancelled": "Achat annulé, aucun montant n'a été débité.",
+      "packs": {
+        "title": "Acheter un pack",
+        "subtitle": "Paiement unique, sans abonnement.",
+        "subtitle_with_validity": "Paiement unique, sans abonnement · minutes valables {validity}.",
+        "confirm": "Continuer vers le paiement",
+        "pay": "Payer {price}",
+        "price_excl_tax": "{price} HT",
+        "per_hour": "{price} / h",
+        "saving": "−{percent} %",
+        "group": {
+          "live": "Microphone et visioconférence en direct",
+          "transcription": "Transcription de fichiers"
+        },
+        "hint": {
+          "transcription": "Utilisées une fois le quota mensuel épuisé."
+        }
+      },
+      "overview_load_error": "Impossible de charger le paiement et les factures.",
+      "payment": {
+        "title": "Paiement",
+        "none": "Aucun moyen de paiement enregistré",
+        "expires": "Expire fin {expiry}",
+        "update": "Mettre à jour",
+        "type": {
+          "card": "Carte bancaire",
+          "sepa_debit": "Prélèvement SEPA",
+          "paypal": "PayPal",
+          "link": "Link",
+          "other": "Autre moyen de paiement"
+        }
+      },
+      "invoices": {
+        "title": "Factures",
+        "empty": "Aucune facture pour le moment.",
+        "date": "Date",
+        "number": "Numéro",
+        "amount": "Montant",
+        "status_header": "Statut",
+        "document": "Document",
+        "download_pdf": "PDF",
+        "download_pdf_of": "Télécharger la facture {name} en PDF",
+        "view": "Voir",
+        "view_of": "Voir la facture {name}",
+        "status": {
+          "paid": "Payée",
+          "open": "À régler",
+          "void": "Annulée",
+          "uncollectible": "Impayée"
+        },
+        "pay": "Payer",
+        "pay_of": "Payer la facture {name}"
+      },
+      "admin_only": "Seuls les administrateurs de l'organisation ont accès à la facturation."
     },
     "unlimited": "Illimité",
+    "quota_limit_this_month": "sur {limit} ce mois",
     "price_flat": "{price} / mois",
-    "price_per_seat": "{price} / siège / mois",
-    "used_of": "{used} sur {total}",
+    "price_per_seat": "{price} / licence / mois",
     "reset_on": "Réinitialisé le {date}",
     "upgrade_cta": "Voir les offres",
     "upgrade_title": "Choisir une offre",
-    "upgrade_subtitle": "Des plafonds plus hauts, le travail en équipe et des minutes de live prépayées.",
     "upgrade_pending_payment": "Abonnement créé, paiement à finaliser. Stripe Checkout arrive au prochain jalon.",
     "cancel": "Annuler",
     "confirm_upgrade": "Souscrire",
     "upgrade_done": "Bienvenue dans {plan} !",
     "limit_reached": "Vous avez atteint la limite de votre offre.",
     "feature_locked": "Cette fonctionnalité est incluse dans une offre équipe.",
+    "team_plan_required": "Cette organisation n'a plus d'offre équipe : ses fonctions sont bloquées jusqu'au retour sur une offre Business. Les membres et leurs rôles sont conservés.",
     "feature_locked_plan": "Cette fonctionnalité est incluse dans l'offre {plan}.",
     "feature_locked_paid": "Cette fonctionnalité est incluse dans les offres payantes.",
     "footer": {
@@ -68,55 +118,31 @@
       "api": "Appels API"
     },
     "live": {
-      "title": "Minutes de live",
-      "balance": "Solde",
-      "remaining_suffix": "restantes",
+      "title": "Microphone et visioconférence",
       "expires": "Prochaine expiration",
-      "low": "Solde bas. Les crédits ne se renouvellent pas, ils s'achètent par packs.",
-      "no_renewal": "Les crédits ne se renouvellent pas, ils s'achètent par packs.",
-      "buy": "Acheter un pack",
-      "buy_soon": "Les packs de live s'achètent via Stripe Checkout (prochain jalon).",
-      "not_purchasable": "Les packs de live sont réservés aux offres payantes.",
+      "no_renewal": "Prépayé, ne se renouvelle pas",
       "unmetered": "Les minutes de live ne sont pas comptées pour cette organisation."
     },
     "member_usage": {
       "title": "Usage par membre",
-      "seats": "{n} sièges facturés",
+      "seats": "{n} licences facturées",
       "member": "Membre",
-      "seat": "Siège",
-      "billable": "Siège facturé (rôle >= uploader)",
+      "seat": "Licence",
+      "billable": "Licence facturée (rôle >= uploader)",
       "empty": "Aucun membre."
     },
-    "page": {
-      "manage": "Gérer l'abonnement",
-      "title": "Abonnement & usage",
-      "free_plan": "Gratuit",
-      "usage": "Usage de la période",
-      "your_plan": "Votre offre",
-      "no_usage": "Aucun usage enregistré pour l'instant.",
-      "seats": "Sièges facturés",
-      "renews": "Renouvellement le",
-      "status": "Statut",
-      "cancels_at_period_end": "Résiliation en fin de période",
-      "admin_only": "Seul un administrateur de l'organisation peut changer l'offre.",
-      "unmetered_hint": "Cette organisation n'est pas comptée (offert ou managé). Géré depuis le backoffice.",
-      "portal_soon": "Factures, carte et résiliation passent par le portail client Stripe (prochain jalon)."
-    },
-    "seat_promo": {
-      "seat": "1 siège",
-      "title": "Ajouter un siège facturé ?",
-      "this_member": "ce membre",
-      "message": "Donner à {name} un rôle contributeur (uploader ou plus) ajoute 1 siège facturé à {price}/siège/mois.",
-      "prorated": "Il est proratisé sur les jours restants de la période en cours ; une rétrogradation ultérieure crédite la part non utilisée.",
-      "confirm": "Promouvoir & ajouter le siège"
-    },
+    "seats_usage": "{used} / {total} licences utilisées",
+    "seats_full": "Toutes les licences sont utilisées. Ajoutez des licences pour donner un rôle contributeur à un membre.",
     "backoffice": {
       "title": "Abonnement (SaaS)",
       "plan": "Offre",
-      "seats": "Sièges facturés",
+      "seats": "Licences facturées",
       "live_balance": "Solde live",
       "mode": "Mode de l'organisation",
-      "mode_hint": "SaaS : portes et facturation suivent l'offre. Offert : accès complet offert, rien de facturé. Hébergement managé : on héberge ce client, aucune porte, usage quand même mesuré.",
+      "mode_hint": "SaaS : portes et facturation suivent l'offre. Offert : accès complet offert, rien de facturé. Hébergement managé : on héberge ce client, aucune porte hormis un plafond de licences si le contrat en fixe un, usage quand même mesuré.",
+      "seats_max": "Licences max",
+      "seats_max_none": "Sans limite",
+      "seats_max_hint": "Nombre de licences du contrat d'hébergement. Au-delà, l'ajout d'un collaborateur est refusé ; personne n'est retiré si le plafond passe sous l'effectif. Vide : aucune limite.",
       "credits_title": "Octroyer des minutes de live",
       "credits_hint": "Ajoute un lot de minutes prépayées (expire dans 12 mois). Le motif est tracé dans le journal d'activité.",
       "credits_minutes": "Minutes",
@@ -126,8 +152,95 @@
       "lot_minutes": "Octroyé",
       "lot_remaining": "Restant",
       "lot_expires": "Expire le",
-      "set_seats": "Forcer les sièges",
-      "saved": "Enregistré"
+      "set_seats": "Forcer les licences",
+      "saved": "Enregistré",
+      "load_error": "Impossible de charger la facturation de cette organisation.",
+      "seats_unchanged": "Les sièges n'ont pas été modifiés ({reason}).",
+      "status": "Statut",
+      "renews": "Renouvellement",
+      "cancel_scheduled": "résiliation programmée",
+      "lot_refund": "Rembourser",
+      "refund_confirm_title": "Rembourser ce lot ?",
+      "refund_confirm_body": "Le paiement est remboursé chez Stripe et les {minutes} correspondantes sont retirées du solde de l'organisation. Action irréversible.",
+      "refund_done": "Remboursement demandé chez Stripe.",
+      "refund_failed": "Le remboursement n'a pas abouti ({reason})."
+    },
+    "refusal": {
+      "live_credit": "Crédit « Microphone et visioconférence » insuffisant pour démarrer.",
+      "import_exhausted": "Quota de transcription de fichiers épuisé.",
+      "import_too_long": "Ce fichier dépasse le temps de transcription restant ({remaining}).",
+      "import_file_too_long": "« {name} » dépasse le temps de transcription restant ({remaining}).",
+      "import_reset": "Le quota sera remis à zéro le {date}.",
+      "email_not_verified": "Vérifiez votre adresse e-mail pour utiliser cette fonctionnalité.",
+      "not_available": "Cette fonctionnalité n'est pas incluse dans l'offre de cette organisation.",
+      "contact_admin": "Contactez un administrateur de l'organisation.",
+      "unknown": "Impossible de vérifier l'offre de cette organisation pour le moment. Réessayez dans un instant."
+    }
+  },
+  "seats": {
+    "tabs": {
+      "seats": "Collaborateurs",
+      "members": "Membres"
+    },
+    "search_label": "Rechercher un membre",
+    "search_placeholder": "Rechercher un nom ou un e-mail",
+    "member_hint": "Membre · lecture seule, sans licence",
+    "empty_members": "Tous les membres de cette organisation sont collaborateurs.",
+    "empty_seats": "Aucun collaborateur pour le moment.",
+    "empty_search": "Aucun membre ne correspond à cette recherche.",
+    "row": {
+      "give_seat": "Attribuer une licence"
+    },
+    "panel": {
+      "used": "licences utilisées",
+      "manage": "Gérer les licences",
+      "helper": "une licence par collaborateur, les membres sont gratuits"
+    },
+    "bar": {
+      "region_label": "Membres sélectionnés",
+      "selected": "{count} sélectionné | {count} sélectionnés",
+      "caption_capacity": "{needed} sur {available} licences libres",
+      "clear": "Effacer",
+      "grant": "Attribuer des licences"
+    },
+    "grant": {
+      "title": "Attribuer une licence à 1 utilisateur | Attribuer des licences à {count} utilisateurs",
+      "role_label": "Rôle de {name}",
+      "drop": "Retirer du lot",
+      "done": "Licence attribuée",
+      "not_attempted": "Non tentée",
+      "running": "{done} sur {total} traités",
+      "apply": "Attribuer 1 licence | Attribuer {count} licences",
+      "apply_no_seat": "Mettre à jour 1 rôle | Mettre à jour {count} rôles",
+      "retry_failed": "Réessayer 1 échec | Réessayer {count} échecs",
+      "close": "Fermer",
+      "error_seats_full": "Plus aucune licence disponible sur l'offre : les membres restants n'ont pas été traités.",
+      "success_notification": "1 licence attribuée | {count} licences attribuées",
+      "extra_helper": "{count} licence supplémentaire sera ajoutée à votre abonnement · environ {price} facturés aujourd'hui, au prorata | {count} licences supplémentaires seront ajoutées à votre abonnement · environ {price} facturés aujourd'hui, au prorata",
+      "extra_helper_unknown_price": "{count} licence supplémentaire sera ajoutée à votre abonnement, facturée au prorata | {count} licences supplémentaires seront ajoutées à votre abonnement, facturées au prorata",
+      "cannot_buy": "Toutes les licences sont utilisées, et votre rôle ne permet pas d'en ajouter. Demandez à un administrateur de l'organisation.",
+      "apply_and_pay": "Attribuer et payer",
+      "purchase_failed": "L'ajout de licences n'a pas abouti : aucune licence n'a été attribuée."
+    },
+    "notification": {
+      "role_updated": "Rôle mis à jour."
+    },
+    "manage": {
+      "title": "Gérer les licences",
+      "stepper_label": "Nombre de licences",
+      "decrement": "Retirer une licence",
+      "increment": "Ajouter une licence",
+      "floor_hint": "Minimum {count} — retirez d'abord des collaborateurs pour descendre plus bas.",
+      "increase_notice": "{count} licence ajoutée · environ {price} facturés aujourd'hui, au prorata | {count} licences ajoutées · environ {price} facturés aujourd'hui, au prorata",
+      "increase_notice_unknown_price": "{count} licence ajoutée, facturée au prorata | {count} licences ajoutées, facturées au prorata",
+      "decrease_notice": "{count} licence retirée · un avoir sera appliqué sur votre prochaine facture | {count} licences retirées · un avoir sera appliqué sur votre prochaine facture",
+      "estimate_note": "Montant estimé : le prorata exact est calculé au moment du prélèvement.",
+      "unchanged": "Aucun changement",
+      "cannot_manage": "Votre rôle ne permet pas de modifier les licences. Demandez à un administrateur de l'organisation.",
+      "failed": "La modification n'a pas abouti.",
+      "success": "Votre offre compte maintenant {count} licence. | Votre offre compte maintenant {count} licences.",
+      "apply": "Valider",
+      "apply_and_pay": "Valider et payer"
     }
   },
   "apply": "Appliquer",
@@ -158,7 +271,7 @@
     "saas": {
       "event_label": "Événement",
       "details_label": "Détails",
-      "seats_unit": "sièges",
+      "seats_unit": "licences",
       "prorated": "proratisé",
       "rows_anonymized": "lignes anonymisées",
       "actions": {
@@ -169,9 +282,10 @@
         "subscription_ended": "Abonnement terminé",
         "payment_succeeded": "Paiement réussi",
         "payment_failed": "Échec de paiement",
-        "seats_changed": "Sièges modifiés",
+        "seats_changed": "Licences modifiées",
         "mode_changed": "Mode de l'organisation modifié",
         "credits_granted": "Minutes de live octroyées",
+        "credits_purchased": "Minutes de live achetées",
         "quota_exceeded": "Quota dépassé",
         "feature_denied": "Fonctionnalité bloquée",
         "credit_exhausted": "Solde live épuisé",
@@ -468,7 +582,6 @@
     "users": "Utilisateurs",
     "userSettings": "Paramètres utilisateur",
     "createorganization": "Créer une organisation",
-    "billing": "Abonnement",
     "processing": "En traitement"
   },
   "conversation": {
@@ -489,6 +602,7 @@
       "sending": "En cours..."
     },
     "conversation_creation_error_multiple_unknown": "Une erreur est survenue lors de l'envoi de {total} fichiers audio. {count} fichier(s) transféré(s). Veuillez réessayer ultérieurement.",
+    "conversation_creation_partially_sent": "{count} fichier sur {total} a déjà été envoyé. | {count} fichiers sur {total} ont déjà été envoyés.",
     "conversation_creation_loading_multiple": "Envoi du fichier {count} sur {total}. Cette opération peut prendre plusieurs minutes.",
     "folder_selection_title": "Dossier",
     "folder_selection_label": "Importer dans le dossier",
@@ -1168,12 +1282,12 @@
     "price_note_free": "Sans carte bancaire",
     "price_note_billed_yearly": "Facturé {price} par an ({freeMonths} mois offerts)",
     "price_note_annual_hint": "ou {price} par an ({freeMonths} mois offerts)",
-    "price_note_seats_minimum": "à partir de {seats} sièges",
+    "price_note_seats_minimum": "à partir de {seats} licences",
     "price_suffix_monthly": "/ mois",
-    "price_suffix_per_seat": "/ siège / mois",
+    "price_suffix_per_seat": "/ licence / mois",
     "price_suffix_annual": "/ mois, facturé annuellement",
-    "price_suffix_per_seat_annual": "/ siège / mois, facturé annuellement",
-    "fair_use_note": "* Dans la limite d'un usage raisonnable, non partagé publiquement.",
+    "price_suffix_per_seat_annual": "/ licence / mois, facturé annuellement",
+    "fair_use_note": "* Voir CGV",
     "plans": {
       "free": {
         "tagline": "Pour découvrir, ou pour un usage occasionnel."
@@ -1187,13 +1301,13 @@
     },
     "features": {
       "transcription_hours": "{hours} h de transcription par mois",
-      "transcription_hours_per_seat": "{hours} h de transcription par mois et par siège",
+      "transcription_hours_per_seat": "{hours} h de transcription par mois et par licence",
       "transcription_unlimited": "Transcription illimitée* par mois",
-      "transcription_unlimited_per_seat": "Transcription illimitée* par siège",
+      "transcription_unlimited_per_seat": "Transcription illimitée* par licence",
       "usage_all_unlimited": "Transcription, résumés et chat illimités* par mois",
-      "usage_all_unlimited_per_seat": "Transcription, résumés et chat illimités* par siège",
+      "usage_all_unlimited_per_seat": "Transcription, résumés et chat illimités* par licence",
       "ai_and_chat_unlimited": "Résumés et chat illimités*",
-      "ai_and_chat_unlimited_per_seat": "Résumés et chat illimités* par siège",
+      "ai_and_chat_unlimited_per_seat": "Résumés et chat illimités* par licence",
       "ai_and_chat_count": "{generations} résumés IA et {chat} messages de chat par mois",
       "api_calls_unlimited": "Appels API illimités*",
       "api_calls_count": "{count} appels API par mois",
@@ -1204,7 +1318,56 @@
       "multi_orga": "Organisations multiples"
     },
     "payment_note": "Paiement à l'étape suivante. Résiliable à tout moment.",
-    "continue": "Continuer avec {plan}"
+    "continue": "Continuer avec {plan}",
+    "organization": {
+      "steps_label": "Étapes de l'abonnement",
+      "step_plan": "Formule",
+      "step_organization": "Organisation",
+      "step_payment": "Paiement",
+      "title": "Créez votre organisation",
+      "description": "Seules les licences collaborateur sont facturées. Les membres en lecture seule sont gratuits et illimités.",
+      "name_label": "Nom de l'organisation",
+      "name_placeholder": "ex. Direction de la communication",
+      "collaborators_title": "Licences collaborateur",
+      "collaborators_description": "Pour importer des médias et transcrire en direct · min. {min}",
+      "collaborators_admin": "Une licence vous revient en tant qu'administrateur.",
+      "seat_price_monthly": "{price} / mois chacun",
+      "seat_price_yearly": "{price} / an chacun",
+      "remove_seat": "Retirer une licence",
+      "add_seat": "Ajouter une licence",
+      "members_title": "Membres",
+      "members_description": "Consultent, recherchent et exportent les transcriptions",
+      "members_unlimited": "Illimité",
+      "members_free": "Gratuit",
+      "total_monthly": "Total mensuel",
+      "total_yearly": "Total annuel",
+      "total_monthly_detail": "{seats} × {price} · prélevé chaque mois, résiliable à tout moment",
+      "total_yearly_detail": "{seats} × {price} · prélevé chaque année, résiliable à tout moment",
+      "seats_note": "Rien n'est figé : ajoutez ou retirez des licences à tout moment depuis les réglages, la facturation s'ajuste au prorata.",
+      "back": "Formules",
+      "submit": "Passer au paiement"
+    },
+    "payment": {
+      "waiting_title": "Paiement reçu",
+      "waiting_organization": "Création de votre organisation en cours…",
+      "waiting_plan": "Activation de votre abonnement en cours…",
+      "ready_title": "C'est prêt",
+      "ready_organization": "Votre organisation « {name} » est prête. Invitez vos membres depuis ses réglages.",
+      "ready_plan": "Votre abonnement est actif.",
+      "timeout": "L'activation prend plus de temps que prévu. Elle apparaîtra d'ici quelques minutes, vous pouvez fermer cette fenêtre.",
+      "open_organization": "Ouvrir l'organisation",
+      "close": "Fermer"
+    },
+    "checkout": {
+      "canceled": "Paiement annulé, rien n'a été facturé.",
+      "errors": {
+        "default": "Impossible de lancer le paiement. Réessayez dans un instant.",
+        "already_subscribed": "Cette organisation a déjà un abonnement payant.",
+        "plan_requires_personal_organization": "Cette organisation ne peut pas passer en Premium : ce n'est pas une organisation personnelle. Premium est une offre individuelle, choisissez Business pour une équipe.",
+        "organization_creation_not_supported": "La création d'organisation n'est pas disponible pour le moment.",
+        "plan_not_synced_to_stripe": "Cette offre n'est pas encore disponible au paiement."
+      }
+    }
   },
   "organisation": {
     "add_member_description": "Recherchez des utilisateurs par prénom, nom ou adresse électronique",
@@ -1805,8 +1968,10 @@
       "live_options_title": "Options de la transcription",
       "offline_transcription_label": "Transcription après l'enregistrement",
       "only_offline_available": "Seule la transcription après l'enregistrement est disponible dans votre organisation",
+      "only_offline_live_credit_exhausted": "Vos minutes de live sont épuisées : seule la transcription après l'enregistrement est disponible. Vous pouvez en racheter depuis l'onglet Facturation.",
       "keep_audio_disabled_because_offline": "L'audio doit être conservé pour permettre la transcription après l'enregistrement",
-      "live_or_offline_should_be_selected": "Au moins une option de transcription doit être sélectionnée"
+      "live_or_offline_should_be_selected": "Au moins une option de transcription doit être sélectionnée",
+      "start_error": "Impossible de démarrer la session. Réessayez dans un instant."
     },
     "setup_microphone": {
       "waiting_permission_title": "En attente des permissions pour accéder au microphone",
@@ -1839,7 +2004,8 @@
         "bigbluebutton": "Le bot rejoint comme invité ; un modérateur doit l'admettre si la salle exige une approbation.",
         "teams": "La réunion doit être publique ; le bot arrive dans le hall d'attente et doit être admis manuellement par un participant.",
         "visio": "Le bot se connecte comme participant standard ; vérifiez que l'accès invité est autorisé sans approbation."
-      }
+      },
+      "bot_error": "Impossible de connecter le bot à la visioconférence. Vérifiez le lien et réessayez."
     },
     "live": {
       "default_name": "Enregistrement sans titre",

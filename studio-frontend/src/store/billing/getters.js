@@ -1,3 +1,6 @@
+import { isQuotaUnlimited } from "@/tools/billingMeters"
+import { isLiveCreditExhausted } from "@/tools/isLiveCreditExhausted"
+
 // i18n label per metered capability (quota rules of the catalog).
 const METER_LABEL = {
   "import.minutes": "billing.meter.import",
@@ -14,11 +17,14 @@ export default {
   loading: (s) => s.loading,
   upgradeModalOpen: (s) => s.upgradeModalOpen,
   upgradeReason: (s) => s.upgradeReason,
+  upgradePlanKey: (s) => s.upgradePlanKey,
   planKey: (s) => s.usage?.planKey || s.subscription?.planKey || "free_payg",
   // normal | comp | managed
   mode: (s) => s.usage?.mode || s.subscription?.mode || "normal",
   // comp and managed orgs have no gate and no limit.
   isUnmetered: (s, g) => g.mode !== "normal",
+  // Team org without a team plan: every gated call is refused server-side.
+  locked: (s) => s.usage?.locked === true,
   isFree: (s, g) => g.planKey === "free_payg",
   currentPlan: (s, g) => s.plans.find((p) => p.planKey === g.planKey) || null,
   isPaid: (s, g) => !g.isFree,
@@ -41,14 +47,22 @@ export default {
     }
     return (
       [...s.plans]
-        .sort((a, b) => (a.pricing?.amountCents || 0) - (b.pricing?.amountCents || 0))
+        .sort(
+          (a, b) =>
+            (a.pricing?.amountCents || 0) - (b.pricing?.amountCents || 0),
+        )
         .find(grants) || null
     )
   },
-  // Only a per-seat plan bills a seat on promotion.
+  // Per-seat plan: seats are bought and cap the collaborators
   isPerSeat: (s, g) => g.currentPlan?.pricing?.perSeat === true,
+  // Seat capacity of the subscription (per-seat plans), caps the collaborators
+  seats: (s) => s.usage?.seats || s.subscription?.seats || 1,
   // Live balance block of the usage summary (null until loaded).
   live: (s) => s.usage?.live || null,
+  // No live minutes left: live transcription would be refused.
+  isLiveCreditExhausted: (s, g) =>
+    !g.isUnmetered && isLiveCreditExhausted(g.live),
 
   // Is a capability available on the current plan? Drives UI locks. The usage
   // summary is authoritative (it already applies the org mode); the catalog is
@@ -56,6 +70,7 @@ export default {
   // their limit is enforced server-side.
   can: (s, g) => (capability) => {
     if (g.isUnmetered) return true
+    if (g.locked) return false
     const c = s.usage?.capabilities?.[capability]
     if (c) {
       if (c.type === "boolean") return c.enabled === true
@@ -74,7 +89,7 @@ export default {
     return Object.entries(caps)
       .filter(([, c]) => c && c.type === "quota")
       .map(([key, c]) => {
-        const unlimited = c.limit == null
+        const unlimited = isQuotaUnlimited(c.limit, c.unit)
         const percent = unlimited
           ? 0
           : Math.min(100, Math.round((c.used / Math.max(1, c.limit)) * 100))
@@ -99,5 +114,5 @@ export default {
 
   // True when any quota is exhausted (drives the upsell emphasis).
   needsUpgrade: (s, g) =>
-    g.meters.some((m) => !m.unlimited && m.remaining <= 0),
+    g.meters.some((m) => !m.unlimited && m.remaining != null && m.remaining <= 0),
 }

@@ -17,11 +17,14 @@
     </div>
 
     <progress
+      v-if="!primaryMeter.unlimited"
       class="saas-usage-footer__bar"
       :value="progressValue"
       :max="progressMax"></progress>
 
+    <!-- The billing tab is for org admins: others only read the reset date -->
     <button
+      v-if="isAdmin"
       type="button"
       class="saas-usage-footer__details flex row align-center justify-between custom"
       @click="openBillingDetails">
@@ -30,6 +33,11 @@
       </time>
       <PhIcon name="caret-right" size="xs" color="neutral" />
     </button>
+    <p v-else-if="primaryMeter.resetAt" class="saas-usage-footer__reset">
+      <time :datetime="primaryMeter.resetAt">
+        {{ $t("billing.reset_on", { date: resetDateLabel }) }}
+      </time>
+    </p>
   </div>
 </template>
 
@@ -37,11 +45,13 @@
 import { mapGetters, mapActions } from "vuex"
 
 import PhIcon from "@/components/atoms/PhIcon.vue"
+import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration.js"
 import { formatDateDayMonth } from "@/tools/formatDateDayMonth.js"
 
 export default {
   name: "SaasUsageFooter",
+  mixins: [orgaRoleMixin],
   components: { PhIcon },
   computed: {
     ...mapGetters("billing", [
@@ -50,18 +60,20 @@ export default {
       "planLabel",
       "primaryMeter",
     ]),
+    // An unlimited quota has nothing to count against: the word says it all
     usageLabel() {
       const meter = this.primaryMeter
+      if (meter.unlimited) return this.$t("billing.unlimited")
       return this.$t("billing.footer.usage", {
         used: this.formatMeterAmount(meter.used),
-        total: meter.unlimited ? "∞" : this.formatMeterAmount(meter.limit),
+        total: this.formatMeterAmount(meter.limit),
       })
     },
     progressValue() {
-      return this.primaryMeter.unlimited ? 1 : this.primaryMeter.used
+      return this.primaryMeter.used
     },
     progressMax() {
-      return this.primaryMeter.unlimited ? 1 : this.primaryMeter.limit
+      return this.primaryMeter.limit
     },
     resetDateLabel() {
       return formatDateDayMonth(this.primaryMeter.resetAt, this.$i18n.locale)
@@ -89,7 +101,8 @@ export default {
   gap: var(--tiny-gap);
   padding: 0.75em 1em 1em;
 
-  &__label {
+  &__label,
+  &__reset {
     margin: 0;
     color: var(--text-secondary);
   }

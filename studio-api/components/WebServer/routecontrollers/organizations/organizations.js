@@ -10,41 +10,21 @@ const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const { OrganizationError, OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
-const { SaasFeatureLocked } = require(
-  `${process.cwd()}/components/WebServer/error/exception/saas`,
-)
 const saas = require(`${process.cwd()}/lib/saas`)
+const platform = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/platform`,
+)
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function createOrganization(req, res, next) {
   try {
     requireParam(req.body.name, OrganizationUnsupportedMediaType)
 
-    // SaaS gate: creating another organization is a Business capability. The
-    // subject is the caller's personal org (the new org has no plan yet).
-    // Fail-closed when SaaS is on and no personal org resolves. No-op in OSS.
+    // SaaS: organizations are bought, not created, a platform admin aside; the
+    // plugin decides. No-op in OSS.
     if (saas.enabled()) {
-      let personalOrg = null
-      try {
-        personalOrg = await model.organizations.getPersonalByOwner(
-          req.payload.data.userId,
-        )
-      } catch (err) {
-        throw new SaasFeatureLocked("Cannot resolve billing subject", {
-          reason: "feature_disabled",
-          capability: "organization.create",
-        })
-      }
-      if (!personalOrg || !personalOrg._id) {
-        throw new SaasFeatureLocked("No billing subject for org creation", {
-          reason: "feature_disabled",
-          capability: "organization.create",
-        })
-      }
-      await saas.enforce({
-        orgId: String(personalOrg._id),
-        capability: "organization.create",
-        userId: req.payload.data.userId,
+      await saas.decide("organizationCreate", {
+        platformAdmin: await platform.isSystemAdministrator(req),
       })
     }
 

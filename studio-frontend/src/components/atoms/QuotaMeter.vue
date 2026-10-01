@@ -1,32 +1,35 @@
 <template>
-  <div class="quota-meter">
-    <div class="quota-meter__head">
-      <span class="quota-meter__label field-label">{{ label }}</span>
-      <span class="quota-meter__value">{{ displayValue }}</span>
-    </div>
+  <UsageTile
+    class="quota-meter"
+    :label="label"
+    :value="formatAmount(used)"
+    :detail="detailLabel">
     <progress
+      v-if="!isUnlimited"
       class="quota-meter__bar"
       :class="statusClass"
       :value="progressValue"
       :max="progressMax"></progress>
-  </div>
+  </UsageTile>
 </template>
 
 <script>
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
+import { isQuotaUnlimited } from "@/tools/billingMeters"
 
 export default {
   name: "QuotaMeter",
   props: {
     label: { type: String, required: true },
     used: { type: Number, default: 0 },
-    // null/undefined limit means unlimited
+    // null/undefined limit means unlimited, as does a minutes limit above
+    // UNLIMITED_MINUTES_THRESHOLD (see isQuotaUnlimited).
     limit: { type: Number, default: null },
     unit: { type: String, default: "count" }, // "minutes" | "count"
   },
   computed: {
     isUnlimited() {
-      return this.limit === null || this.limit === undefined
+      return isQuotaUnlimited(this.limit, this.unit)
     },
     percent() {
       if (this.isUnlimited) return 0
@@ -36,26 +39,29 @@ export default {
       )
     },
     progressValue() {
-      return this.isUnlimited ? 1 : this.used
+      return this.used
     },
     progressMax() {
-      return this.isUnlimited ? 1 : Math.max(1, this.limit)
+      return Math.max(1, this.limit)
     },
     // Mirrors the seat-status thresholds used across the billing UI.
     statusClass() {
-      if (this.isUnlimited) return "unlimited"
       if (this.percent >= 100) return "danger"
       if (this.percent >= 80) return "warning"
       return "success"
     },
-    displayValue() {
+    detailLabel() {
       if (this.isUnlimited) return this.$t("billing.unlimited")
-      return `${this.formatAmount(this.used)} / ${this.formatAmount(this.limit)}`
+      return this.$t("billing.quota_limit_this_month", {
+        limit: this.formatAmount(this.limit),
+      })
     },
   },
   methods: {
     formatAmount(value) {
-      return this.unit === "minutes" ? formatMinutesDuration(value) : value
+      return this.unit === "minutes"
+        ? formatMinutesDuration(value)
+        : String(value)
     },
   },
 }
@@ -63,24 +69,8 @@ export default {
 
 <style lang="scss" scoped>
 .quota-meter {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  &__head {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5em;
-    font-size: 0.85rem;
-  }
-
-  &__value {
-    font-weight: 400;
-    font-family: var(--font-family-mono);
-    font-variant-numeric: tabular-nums;
-    color: var(--text-secondary);
-  }
-
   &__bar {
+    display: block;
     width: 100%;
     height: 6px;
     border: none;
@@ -114,15 +104,6 @@ export default {
     }
     &.danger::-moz-progress-bar {
       background: var(--danger-color);
-    }
-
-    &.unlimited::-webkit-progress-value {
-      background: var(--success-color);
-      opacity: 0.5;
-    }
-    &.unlimited::-moz-progress-bar {
-      background: var(--success-color);
-      opacity: 0.5;
     }
   }
 }

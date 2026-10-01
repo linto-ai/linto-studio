@@ -9,14 +9,14 @@
         <Button
           variant="secondary"
           icon="eye"
-          size="xs"
+          size="sm"
           :label="$t('media_explorer.panel.show_template_button')"
           @click="showTemplateInfo = true" />
         <Button
           v-if="canSessionInCurrentOrganization"
           variant="secondary"
           icon="plus"
-          size="xs"
+          size="sm"
           :label="$t('media_explorer.panel.use_template_button')"
           :to="{
             name: 'conversations create',

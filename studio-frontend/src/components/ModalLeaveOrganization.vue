@@ -2,10 +2,12 @@
   <Modal
     v-model="_value"
     @on-cancel="($event) => this.$emit('on-cancel')"
-    @on-confirm="deleteOrganization"
+    @on-delete="deleteOrganization"
     :title="$t('organisation.leave_modal.title')"
-    :actionBtnLabel="$t('organisation.leave_modal.action')"
-    :custom-class-button="{ red: true }"
+    :withActionApply="false"
+    withActionDelete
+    :textActionDelete="$t('organisation.leave_modal.action')"
+    iconActionDelete="sign-out"
     size="sm">
     <p>
       {{

@@ -1,13 +1,10 @@
 import { markRaw } from "vue"
 import USER_RIGHTS from "@/const/userRights.js"
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
-import {
-  apiGetConversationLastUpdate,
-  apiGetUserRightFromConversation,
-} from "@/api/conversation"
+import { apiGetUserRightFromConversation } from "@/api/conversation"
 import { apiGetChatStatus } from "@/api/chat"
-import { setupLLMServices } from "@/services/llmServicesIntegration"
-import { setupChat } from "@/services/chatIntegration"
+import { ChannelAssistants } from "@/services/assistantsIntegration/ChannelAssistants.js"
+import { loadSourceLastUpdate } from "@/services/editorIntegration/loadSourceLastUpdate.js"
 import { loadEditor } from "@/mobile/services/editor/loadEditor.js"
 import {
   buildAudioPlugin,
@@ -20,15 +17,6 @@ import {
 } from "@/mobile/services/editor/translationContent.js"
 import { VERBATIM_FORMATS } from "@/mobile/const/verbatimFormats.js"
 
-const EDIT_EVENTS = [
-  "turn:add",
-  "turn:update",
-  "turn:remove",
-  "speaker:add",
-  "speaker:update",
-  "speaker:remove",
-]
-
 // One open conversation in the editor web component: loads the document,
 // wires the plugins on the shared socket, and releases everything in
 // destroy(). Mirrors the classic ConversationsTranscription page.
@@ -38,9 +26,10 @@ export class ConversationEditorSession {
     this.socket = socket
     this.store = store
     this.i18n = i18n
-    // Called with { serviceId, jobId } when "Download" is pressed on a report
+    // Called when "Download" is pressed on a report
     this.openPublication = openPublication
     this.core = null
+    this.assistants = null
     this.destroyed = false
     this.disposers = []
     this.name = ""
@@ -79,25 +68,25 @@ export class ConversationEditorSession {
     core.verbatimFormats.value = VERBATIM_FORMATS
     this.socket.joinEditorRoom(
       this.conversationId,
-      buildEditorRoomHandlers(core),
+      buildEditorRoomHandlers(core, () => this.loadActiveSourceLastUpdate()),
     )
-    this.disposers.push(this.setupServices(core))
-    await this.setupChatIfEnabled(core)
+    this.setupServices(core)
+    await this.setupChatIfEnabled()
     if (this.destroyed) return
     core.setDocument(this.document.doc)
-    this.pushLastUpdate()
+    this.loadActiveSourceLastUpdate()
     const load = () => loadActiveTranslation(core, mapApiTurns)
-    const bump = () => this.markEdited()
     this.disposers.push(
       core.on("translation:change", load),
       core.on("channel:change", load),
+      core.on("channel:change", () => this.loadActiveSourceLastUpdate()),
     )
-    this.disposers.push(...EDIT_EVENTS.map((event) => core.on(event, bump)))
     load()
   }
 
   destroy() {
     this.destroyed = true
+    this.assistants?.destroy()
     this.disposers.forEach((dispose) => dispose?.())
     this.disposers = []
     this.socket.leaveEditorRoom()
@@ -115,10 +104,11 @@ export class ConversationEditorSession {
     }
   }
 
+  // Starts on the first channel of the document, then follows the active one.
   setupServices(core) {
-    const { organizationId, securityLevel } = this.document
-    return setupLLMServices(core, {
-      conversationId: this.conversationId,
+    const { doc, organizationId, securityLevel } = this.document
+    this.assistants = new ChannelAssistants(core, {
+      conversationId: doc.channels[0].id,
       organizationId,
       securityLevel,
       conversationName: this.name,
@@ -128,32 +118,21 @@ export class ConversationEditorSession {
       notify: (type, message) =>
         this.store.dispatch("system/addNotification", { type, message }),
       openPublication: (request) => this.openPublication?.(request),
-    }).dispose
+    })
   }
 
-  async setupChatIfEnabled(core) {
+  async setupChatIfEnabled() {
     const { enabled } = await apiGetChatStatus().catch(() => ({
       enabled: false,
     }))
     if (this.destroyed || !enabled) return
-    this.disposers.push(
-      setupChat(core, { conversationId: this.conversationId }),
-    )
+    this.assistants.enableChat()
   }
 
-  async pushLastUpdate() {
-    try {
-      const res = await apiGetConversationLastUpdate(this.conversationId)
-      const timestamp = new Date(res?.last_update).getTime()
-      if (Number.isFinite(timestamp)) this.markEdited(timestamp)
-    } catch (error) {
-      console.error("cannot fetch conversation last update", error)
-    }
-  }
-
-  markEdited(timestamp) {
-    const translation =
-      this.core?.activeChannel?.value?.activeTranslation?.value
-    translation?.setLastModifiedAt(timestamp ?? Date.now())
+  // Reports are generated from the channel conversation (its source track):
+  // seed the timestamp they are compared against. Later modifications come
+  // with the editor broadcasts.
+  loadActiveSourceLastUpdate() {
+    loadSourceLastUpdate(this.core?.activeChannel?.value)
   }
 }

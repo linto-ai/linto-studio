@@ -1,11 +1,12 @@
 <template>
   <div class="main-container flex col gap-small">
     <h1>Linto components</h1>
-    <div>
-      <Button variant="primary" label="primary button" />
+    <div class="flex gap-medium">
+      <Button variant="primary" label="primary button" icon="users" />
+      <Button variant="primary" size="sm" label="small" icon="users" />
     </div>
     <div>
-      <Button variant="secondary" label="secondary button" />
+      <Button variant="secondary" label="secondary button" icon="users" />
     </div>
     <div>
       <Button
@@ -32,15 +33,13 @@
       <h5>Heading 5</h5>
     </div>
     <p class="components-hint">
-      h1-h4 have a real theme style (themes/LinTO-green/style/text.scss). h5
-      has none — plain browser default. In practice, h4 is rarely used as-is:
-      see the 3 utility classes below, which is what most screens actually
-      reach for on top of it.
+      h1-h4 have a real theme style (themes/LinTO-green/style/text.scss). h5 has
+      none — plain browser default. In practice, h4 is rarely used as-is: see
+      the 3 utility classes below, which is what most screens actually reach for
+      on top of it.
     </p>
 
-    <h3>
-      h4 utility classes - .field-label / .card-title / .section-caption
-    </h3>
+    <h3>h4 utility classes - .field-label / .card-title / .section-caption</h3>
     <div class="flex col gap-small">
       <h4 class="field-label">Field label (FormInput, QuotaMeter)</h4>
       <h4 class="card-title">Card title (template name, sub-section)</h4>
@@ -56,8 +55,8 @@
       <Avatar><ph-icon name="star" /></Avatar>
     </div>
     <p class="components-hint">
-      The first one points at a missing image on purpose — it falls back to
-      the default avatar picture (AvatarImage's own error handling).
+      The first one points at a missing image on purpose — it falls back to the
+      default avatar picture (AvatarImage's own error handling).
     </p>
 
     <h3>Avatar - tone (primary / soft / neutral)</h3>
@@ -129,7 +128,10 @@
     <h3>FormInput - leading icon (field.leadingIcon)</h3>
     <FormInput :field="fieldInputIcon" :inputFullWidth="true" />
     <FormInput :field="fieldInputIconError" :inputFullWidth="true" />
-    <FormInput :field="fieldInputIconDisabled" disabled :inputFullWidth="true" />
+    <FormInput
+      :field="fieldInputIconDisabled"
+      disabled
+      :inputFullWidth="true" />
     <DurationInput :field="fieldDuration" v-model="fieldDuration.value" />
     <PopoverList :items="popoverItems" v-model="popoverValue" class="relative">
       <!-- <template #trigger="{ open }">

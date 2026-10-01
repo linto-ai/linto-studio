@@ -138,6 +138,7 @@
           <Button
             class="media-explorer-item__actions-trigger"
             variant="transparent"
+            size="sm"
             icon="dots-three-outline-vertical" />
         </template>
       </PopoverList>

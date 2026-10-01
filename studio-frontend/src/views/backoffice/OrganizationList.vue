@@ -84,11 +84,13 @@
               @click="viewAsOrganization(id)"
               variant="secondary"
               icon="eye"
+              size="sm"
               :label="$t('impersonation.browse_button_label')" />
             <Button
               @click="$router.push(orgDetailRoute(id))"
               variant="secondary"
               icon="pencil"
+              size="sm"
               :label="$t('orga_table.edit_button_label')" />
           </div>
         </template>
