@@ -40,10 +40,10 @@ def buildDockerfile(folder_name, version, commit_sha, tagSuffix = '', context = 
     }
 }
 
-// SaaS flavour of studio-api: the public image just pushed plus the private linto-saas plugin (branch of the
-// same name), released with the same tags to the private Docker Hub repository lintoai/studio-api-saas.
+// SaaS flavour of studio-api
 def buildSaasImage(version) {
     def completeImageName = "${env.DOCKER_HUB_REPO}/studio-api-saas"
+    def saasBranch = env.BRANCH_NAME == 'master' ? 'main' : env.BRANCH_NAME
     echo "Building ${completeImageName} on top of studio-api:${version}..."
 
     // cloned outside the workspace: the plugin must never sit in a public image build context
@@ -55,7 +55,9 @@ def buildSaasImage(version) {
                 string(credentialsId: 'saas-plugin-repo-url', variable: 'SAAS_REPO_URL'),
                 sshUserPrivateKey(credentialsId: 'saas-plugin-deploy-key', keyFileVariable: 'SAAS_SSH_KEY')
             ]) {
-                sh 'GIT_SSH_COMMAND="ssh -i $SAAS_SSH_KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" git clone --quiet --depth 1 --branch "$BRANCH_NAME" "$SAAS_REPO_URL" .'
+                withEnv(["SAAS_BRANCH=${saasBranch}"]) {
+                    sh 'GIT_SSH_COMMAND="ssh -i $SAAS_SSH_KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" git clone --quiet --depth 1 --branch "$SAAS_BRANCH" "$SAAS_REPO_URL" .'
+                }
             }
 
             // --pull: build on the studio-api tag just pushed, never on a stale local copy of it
