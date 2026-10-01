@@ -2,7 +2,8 @@
 // chat:* intents, does the REST/SSE calls (api/chat.js) and pushes results
 // back through core.chat.*. The SDK still calls a discussion a "session".
 //
-// The chat plugin must already be installed on the core.
+// The chat plugin must already be installed on the core. The methods below
+// are the whole public API; each delegates to its action in actions/.
 
 import { loadDiscussions } from "./actions/loadDiscussions"
 import { loadDiscussionMessages } from "./actions/loadDiscussionMessages"
@@ -10,8 +11,7 @@ import { createDiscussion } from "./actions/createDiscussion"
 import { deleteDiscussion } from "./actions/deleteDiscussion"
 import { renameDiscussion } from "./actions/renameDiscussion"
 import { sendMessage } from "./actions/sendMessage"
-import { autoNameDiscussion } from "./actions/autoNameDiscussion"
-import { streamAssistantReply } from "./actions/streamAssistantReply"
+import { resetChat } from "./actions/resetChat"
 
 export class ChatIntegration {
   constructor(core, { conversationId }) {
@@ -21,17 +21,11 @@ export class ChatIntegration {
     // shows another conversation by then
     this.isDisposed = false
     // In-flight guards, read and written by the actions
-    this.turnInFlight = false
+    this.isCreatingDiscussion = false
     this.discussionsInFlight = null
-
-    this.loadDiscussions = loadDiscussions.bind(this)
-    this.loadDiscussionMessages = loadDiscussionMessages.bind(this)
-    this.createDiscussion = createDiscussion.bind(this)
-    this.deleteDiscussion = deleteDiscussion.bind(this)
-    this.renameDiscussion = renameDiscussion.bind(this)
-    this.sendMessage = sendMessage.bind(this)
-    this.autoNameDiscussion = autoNameDiscussion.bind(this)
-    this.streamAssistantReply = streamAssistantReply.bind(this)
+    // The stream whose tokens reach the drawer; null once its discussion is
+    // left (see showDiscussion)
+    this.displayedStream = null
 
     this.unsubscribes = [
       core.on("chat:loadSessions", () => this.loadDiscussions()),
@@ -52,9 +46,36 @@ export class ChatIntegration {
     if (core.chat.drawerOpen.value) this.loadDiscussions()
   }
 
+  loadDiscussions() {
+    return loadDiscussions(this)
+  }
+
+  loadDiscussionMessages(discussionId) {
+    return loadDiscussionMessages(this, discussionId)
+  }
+
+  createDiscussion(title) {
+    return createDiscussion(this, title)
+  }
+
+  deleteDiscussion(discussionId) {
+    return deleteDiscussion(this, discussionId)
+  }
+
+  renameDiscussion(discussionId, title) {
+    return renameDiscussion(this, discussionId, title)
+  }
+
+  sendMessage(content) {
+    return sendMessage(this, content)
+  }
+
+  // The drawer keeps nothing of the conversation it leaves.
   dispose() {
     this.isDisposed = true
+    this.displayedStream = null
     this.unsubscribes.forEach((fn) => fn?.())
     this.unsubscribes = []
+    resetChat(this.core.chat)
   }
 }

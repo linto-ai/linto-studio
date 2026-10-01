@@ -9590,7 +9590,7 @@ var LintoEditor = (function(exports) {
     }
     return core;
   }
-  const _hoisted_1$K = ["aria-label"];
+  const _hoisted_1$J = ["aria-label"];
   const _sfc_main$S = /* @__PURE__ */ defineComponent({
     __name: "Badge",
     props: {
@@ -9603,7 +9603,7 @@ var LintoEditor = (function(exports) {
           "aria-label": __props.ariaLabel
         }, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true)
-        ], 8, _hoisted_1$K);
+        ], 8, _hoisted_1$J);
       };
     }
   });
@@ -10078,7 +10078,7 @@ var LintoEditor = (function(exports) {
     md: 20,
     lg: 24
   };
-  const _hoisted_1$J = {
+  const _hoisted_1$I = {
     key: 1,
     class: "editor-icon editor-icon--missing",
     "aria-hidden": "true"
@@ -10102,13 +10102,13 @@ var LintoEditor = (function(exports) {
           style: normalizeStyle(style.value),
           class: normalizeClass(["editor-icon", { "editor-icon--spin": __props.spin }]),
           "aria-hidden": "true"
-        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$J, "?"));
+        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$I, "?"));
       };
     }
   });
   const _style_0$I = "\n.editor-icon[data-v-bdd2a2df] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-bdd2a2df] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-bdd2a2df] {\n  animation: editor-icon-spin-bdd2a2df 1s linear infinite;\n}\n@keyframes editor-icon-spin-bdd2a2df {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-bdd2a2df] {\n    animation: none;\n}\n}\n";
   const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$R, [["styles", [_style_0$I]], ["__scopeId", "data-v-bdd2a2df"]]);
-  const _hoisted_1$I = ["type", "disabled", "aria-disabled", "aria-label"];
+  const _hoisted_1$H = ["type", "disabled", "aria-disabled", "aria-label"];
   const _hoisted_2$x = {
     key: 3,
     class: "editor-btn__label"
@@ -10176,7 +10176,7 @@ var LintoEditor = (function(exports) {
             name: __props.iconRight,
             size: iconSize.value
           }, null, 8, ["name", "size"])) : _ctx.$slots["icon-right"] ? renderSlot(_ctx.$slots, "icon-right", {}, void 0, true, 5) : createCommentVNode("", true)
-        ], 10, _hoisted_1$I);
+        ], 10, _hoisted_1$H);
       };
     }
   });
@@ -10580,7 +10580,7 @@ var LintoEditor = (function(exports) {
       locale: fallbackLocale
     };
   }
-  const _hoisted_1$H = { class: "code-block" };
+  const _hoisted_1$G = { class: "code-block" };
   const _hoisted_2$w = ["innerHTML"];
   const _hoisted_3$p = { key: 1 };
   const _sfc_main$O = /* @__PURE__ */ defineComponent({
@@ -10612,7 +10612,7 @@ var LintoEditor = (function(exports) {
         { immediate: true }
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$H, [
+        return openBlock(), createElementBlock("div", _hoisted_1$G, [
           !__props.streaming ? (openBlock(), createBlock(CopyButton, {
             key: 0,
             class: "code-block__copy",
@@ -10758,7 +10758,7 @@ pre[class*="language-"] {
 }
 `;
   const CodeBlock = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["styles", [_style_0$F, _style_1]], ["__scopeId", "data-v-ad87d1e4"]]);
-  const _hoisted_1$G = {
+  const _hoisted_1$F = {
     key: 0,
     class: "form-field__header"
   };
@@ -10893,7 +10893,7 @@ pre[class*="language-"] {
         return openBlock(), createElementBlock("div", {
           class: normalizeClass(rootClasses.value)
         }, [
-          __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$G, [
+          __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$F, [
             createBaseVNode("label", {
               class: "form-field__label",
               for: id.value
@@ -10992,7 +10992,7 @@ pre[class*="language-"] {
   });
   const _style_0$E = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-863d0b18] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-863d0b18] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-863d0b18] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-863d0b18] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-863d0b18] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-863d0b18] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-863d0b18] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-863d0b18] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-863d0b18] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-863d0b18] {\n  flex: 1;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-863d0b18]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-863d0b18]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-863d0b18]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-863d0b18]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-863d0b18] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-863d0b18] {\n  cursor: pointer;\n  appearance: auto;\n}\n.form-field__input--error[data-v-863d0b18] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-863d0b18]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-863d0b18] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-863d0b18] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-863d0b18] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-863d0b18] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-863d0b18] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-863d0b18] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-863d0b18] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-863d0b18] {\n    transition: none;\n}\n}\n";
   const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["styles", [_style_0$E]], ["__scopeId", "data-v-863d0b18"]]);
-  const _hoisted_1$F = ["disabled", "aria-label"];
+  const _hoisted_1$E = ["disabled", "aria-label"];
   const _sfc_main$M = /* @__PURE__ */ defineComponent({
     __name: "EditableText",
     props: {
@@ -11067,7 +11067,7 @@ pre[class*="language-"] {
           disabled: __props.disabled,
           "aria-label": __props.ariaLabel,
           onClick: startEdit
-        }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$F));
+        }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$E));
       };
     }
   });
@@ -15489,7 +15489,7 @@ pre[class*="language-"] {
       update
     };
   }
-  const _hoisted_1$E = ["dir"];
+  const _hoisted_1$D = ["dir"];
   const PopperContentPropsDefaultValue = {
     side: "bottom",
     sideOffset: 0,
@@ -15782,7 +15782,7 @@ pre[class*="language-"] {
           "data-align",
           "dir",
           "style"
-        ]))], 12, _hoisted_1$E);
+        ]))], 12, _hoisted_1$D);
       };
     }
   });
@@ -21240,7 +21240,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   function getShadowRootSelection(root2) {
     return root2.getSelection?.() ?? null;
   }
-  const _hoisted_1$D = { class: "markdown-editor" };
+  const _hoisted_1$C = { class: "markdown-editor" };
   const _hoisted_2$u = ["aria-label"];
   const _hoisted_3$n = ["contenteditable"];
   const _sfc_main$K = /* @__PURE__ */ defineComponent({
@@ -21464,7 +21464,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$D, [
+        return openBlock(), createElementBlock("div", _hoisted_1$C, [
           !__props.disabled ? (openBlock(), createElementBlock("div", {
             key: 0,
             class: "markdown-editor__toolbar",
@@ -21592,7 +21592,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   });
   const _style_0$B = "\n.markdown-editor[data-v-a278828c] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-a278828c] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: var(--document-toolbar-height, 0px);\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-a278828c] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-a278828c] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-a278828c] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-a278828c] h1,\n.markdown-editor__content[data-v-a278828c] h2,\n.markdown-editor__content[data-v-a278828c] h3,\n.markdown-editor__content[data-v-a278828c] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-a278828c] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-a278828c] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-a278828c] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-a278828c] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-a278828c] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-a278828c] ul,\n.markdown-editor__content[data-v-a278828c] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-a278828c] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-a278828c] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-a278828c] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-a278828c] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-a278828c] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-a278828c] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-a278828c] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-a278828c] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-a278828c] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-a278828c] th,\n.markdown-editor__content[data-v-a278828c] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-a278828c] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
   const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$B]], ["__scopeId", "data-v-a278828c"]]);
-  const _hoisted_1$C = { class: "markdown-view" };
+  const _hoisted_1$B = { class: "markdown-view" };
   const _hoisted_2$t = ["innerHTML"];
   const _hoisted_3$m = ["innerHTML"];
   const _sfc_main$J = /* @__PURE__ */ defineComponent({
@@ -21605,7 +21605,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const props = __props;
       const segments = computed(() => renderMarkdownSegments(props.source));
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$C, [
+        return openBlock(), createElementBlock("div", _hoisted_1$B, [
           (openBlock(true), createElementBlock(Fragment, null, renderList(segments.value, (seg, i2) => {
             return openBlock(), createElementBlock(Fragment, { key: i2 }, [
               seg.type === "html" ? (openBlock(), createElementBlock("div", {
@@ -21630,7 +21630,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   });
   const _style_0$A = "\n.markdown-view[data-v-b6eeece0] {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  /* Long URLs and identifiers wrap instead of running past a narrow\n     column (phones, chat), where the overflow would just be clipped. */\n  overflow-wrap: break-word;\n}\n\n/* No box: block children flow as direct children of .markdown-view so margin\n   collapsing keeps working across html/code segment boundaries. */\n.markdown-view__html[data-v-b6eeece0] {\n  display: contents;\n}\n\n/* Trim the outer margins of the first/last rendered block (reach through the\n   display:contents wrapper to the real content element). */\n.markdown-view > .markdown-view__html[data-v-b6eeece0]:first-child >  :first-child {\n  margin-top: 0;\n}\n.markdown-view > .markdown-view__html[data-v-b6eeece0]:last-child >  :last-child {\n  margin-bottom: 0;\n}\n.markdown-view > .markdown-view__table[data-v-b6eeece0]:first-child {\n  margin-top: 0;\n}\n.markdown-view > .markdown-view__table[data-v-b6eeece0]:last-child {\n  margin-bottom: 0;\n}\n.markdown-view[data-v-b6eeece0] h1,\n.markdown-view[data-v-b6eeece0] h2,\n.markdown-view[data-v-b6eeece0] h3,\n.markdown-view[data-v-b6eeece0] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-b6eeece0] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-view[data-v-b6eeece0] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-view[data-v-b6eeece0] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-view[data-v-b6eeece0] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-view[data-v-b6eeece0] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-view[data-v-b6eeece0] ul,\n.markdown-view[data-v-b6eeece0] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-view[data-v-b6eeece0] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-view[data-v-b6eeece0] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n\n/* Inline code only — fenced blocks render via <CodeBlock>. Scoped to the html\n   wrapper so it never reaches into the CodeBlock component. */\n.markdown-view__html[data-v-b6eeece0] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n\n/* Fallback for raw <pre> written as literal HTML (not fenced code). */\n.markdown-view__html[data-v-b6eeece0] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.markdown-view__html[data-v-b6eeece0] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-view[data-v-b6eeece0] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-view[data-v-b6eeece0] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-view[data-v-b6eeece0] strong {\n  font-weight: 700;\n}\n.markdown-view[data-v-b6eeece0] img {\n  max-width: 100%;\n  height: auto;\n}\n\n/* A table wider than the column scrolls on its own, the text around it\n   keeps the column width. */\n.markdown-view__table[data-v-b6eeece0] {\n  margin: var(--spacing-md) 0;\n  overflow-x: auto;\n}\n.markdown-view[data-v-b6eeece0] table {\n  border-collapse: collapse;\n}\n.markdown-view[data-v-b6eeece0] th,\n.markdown-view[data-v-b6eeece0] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-view[data-v-b6eeece0] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
   const MarkdownView = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["styles", [_style_0$A]], ["__scopeId", "data-v-b6eeece0"]]);
-  const _hoisted_1$B = {
+  const _hoisted_1$A = {
     key: 0,
     class: "transcript-ui-popover-list__items"
   };
@@ -21692,7 +21692,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                   "side-offset": __props.sideOffset
                 }, {
                   default: withCtx(() => [
-                    __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$B, [
+                    __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$A, [
                       (openBlock(true), createElementBlock(Fragment, null, renderList(__props.items, (item, index) => {
                         return openBlock(), createBlock(unref(DropdownMenuItem_default), {
                           key: keyFor(item, index),
@@ -21725,7 +21725,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$A = { class: "range-slider" };
+  const _hoisted_1$z = { class: "range-slider" };
   const _hoisted_2$r = { class: "range-slider__label" };
   const _hoisted_3$k = { class: "range-slider__value" };
   const _hoisted_4$e = ["min", "max", "step", "value", "disabled"];
@@ -21747,7 +21747,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         emit2("update:modelValue", Number(event.target.value));
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("label", _hoisted_1$A, [
+        return openBlock(), createElementBlock("label", _hoisted_1$z, [
           createBaseVNode("span", _hoisted_2$r, [
             createTextVNode(toDisplayString(__props.label) + " ", 1),
             createBaseVNode("span", _hoisted_3$k, toDisplayString(__props.modelValue) + toDisplayString(__props.unit), 1)
@@ -21767,7 +21767,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   });
   const _style_0$z = '\n.range-slider[data-v-a6e9d302] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.range-slider__label[data-v-a6e9d302] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.range-slider__value[data-v-a6e9d302] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.range-slider input[type="range"][data-v-a6e9d302] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.range-slider input[type="range"][data-v-a6e9d302]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n';
   const RangeSlider = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["styles", [_style_0$z]], ["__scopeId", "data-v-a6e9d302"]]);
-  const _hoisted_1$z = ["disabled", "aria-current"];
+  const _hoisted_1$y = ["disabled", "aria-current"];
   const _hoisted_2$q = {
     key: 0,
     class: "selectable-list-item__leading"
@@ -21817,7 +21817,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             _ctx.$slots.trailing ? (openBlock(), createElementBlock("span", _hoisted_4$d, [
               renderSlot(_ctx.$slots, "trailing", {}, void 0, true)
             ])) : createCommentVNode("", true)
-          ], 8, _hoisted_1$z),
+          ], 8, _hoisted_1$y),
           _ctx.$slots.actions ? (openBlock(), createElementBlock("div", _hoisted_5$c, [
             renderSlot(_ctx.$slots, "actions", {}, void 0, true)
           ])) : createCommentVNode("", true)
@@ -21844,7 +21844,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   });
   const _style_0$x = "\n.speaker-indicator[data-v-324978c0] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
   const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$F, [["styles", [_style_0$x]], ["__scopeId", "data-v-324978c0"]]);
-  const _hoisted_1$y = { class: "switch" };
+  const _hoisted_1$x = { class: "switch" };
   const _hoisted_2$p = ["id", "checked", "disabled"];
   const _hoisted_3$i = ["for"];
   const _sfc_main$E = /* @__PURE__ */ defineComponent({
@@ -21860,7 +21860,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const emit2 = __emit;
       const inputId = props.id ?? useId$1();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$y, [
+        return openBlock(), createElementBlock("div", _hoisted_1$x, [
           createBaseVNode("input", {
             type: "checkbox",
             id: unref(inputId),
@@ -21882,7 +21882,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     if (words.length === 0) return "?";
     return words.slice(0, 2).map((w2) => w2[0].toUpperCase()).join("");
   }
-  const _hoisted_1$x = ["title", "aria-label"];
+  const _hoisted_1$w = ["title", "aria-label"];
   const _sfc_main$D = /* @__PURE__ */ defineComponent({
     __name: "UserAvatar",
     props: {
@@ -21899,13 +21899,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           role: "img",
           title: title.value,
           "aria-label": title.value
-        }, toDisplayString(initials.value), 9, _hoisted_1$x);
+        }, toDisplayString(initials.value), 9, _hoisted_1$w);
       };
     }
   });
   const _style_0$v = "\n.user-avatar[data-v-977a8d17] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  user-select: none;\n  cursor: default;\n}\n";
   const UserAvatar = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$v]], ["__scopeId", "data-v-977a8d17"]]);
-  const _hoisted_1$w = ["data-status"];
+  const _hoisted_1$v = ["data-status"];
   const _hoisted_2$o = {
     key: 0,
     class: "document-article__toolbar",
@@ -21995,7 +21995,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               })
             ])) : renderSlot(_ctx.$slots, "default", {}, void 0, true, 2)
           ])
-        ], 8, _hoisted_1$w);
+        ], 8, _hoisted_1$v);
       };
     }
   });
@@ -22079,7 +22079,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$v = ["aria-label"];
+  const _hoisted_1$u = ["aria-label"];
   const _hoisted_2$n = ["aria-selected", "aria-disabled", "disabled", "onClick"];
   const _hoisted_3$g = { class: "tab__label" };
   const _hoisted_4$b = ["aria-selected", "aria-label"];
@@ -22198,7 +22198,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             ]),
             _: 1
           }, 8, ["items", "item-key", "is-current"])) : createCommentVNode("", true)
-        ], 8, _hoisted_1$v);
+        ], 8, _hoisted_1$u);
       };
     }
   });
@@ -22260,7 +22260,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     if (!focus2 || !container.contains(focus2.node)) return null;
     return computeTextOffsetInContainer(container, focus2.node, focus2.offset);
   }
-  const _hoisted_1$u = ["aria-label", "textContent"];
+  const _hoisted_1$t = ["aria-label", "textContent"];
   const _sfc_main$y = /* @__PURE__ */ defineComponent({
     __name: "TurnTextEditor",
     props: {
@@ -22315,13 +22315,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           onKeydown,
           onBlur,
           textContent: toDisplayString(__props.text)
-        }, null, 40, _hoisted_1$u);
+        }, null, 40, _hoisted_1$t);
       };
     }
   });
   const _style_0$s = "\n.turn-text-editor[data-v-597e2575] {\n  margin: 0;\n  white-space: pre-wrap;\n  overflow-wrap: anywhere;\n  cursor: text;\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  padding: 0;\n}\n";
   const TurnTextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["styles", [_style_0$s]], ["__scopeId", "data-v-597e2575"]]);
-  const _hoisted_1$t = { class: "editor-header" };
+  const _hoisted_1$s = { class: "editor-header" };
   const _hoisted_2$m = { class: "header-main" };
   const _hoisted_3$f = { class: "document-title" };
   const _hoisted_4$a = {
@@ -22364,7 +22364,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         ].filter(Boolean)
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("header", _hoisted_1$t, [
+        return openBlock(), createElementBlock("header", _hoisted_1$s, [
           createBaseVNode("div", _hoisted_2$m, [
             createBaseVNode("h1", _hoisted_3$f, toDisplayString(formattedTitle.value), 1),
             metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$a, [
@@ -22870,7 +22870,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     };
   }
   var StickToBottomKey = /* @__PURE__ */ Symbol("StickToBottom");
-  var _hoisted_1$s = { style: {
+  var _hoisted_1$r = { style: {
     "position": "relative",
     "height": "100%",
     "width": "100%",
@@ -22936,7 +22936,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         stopScroll
       }));
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", null, [createBaseVNode("div", _hoisted_1$s, [createBaseVNode("div", {
+        return openBlock(), createElementBlock("div", null, [createBaseVNode("div", _hoisted_1$r, [createBaseVNode("div", {
           ref_key: "scrollRef",
           ref: scrollRef,
           style: normalizeStyle({
@@ -22953,7 +22953,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$r = ["datetime"];
+  const _hoisted_1$q = ["datetime"];
   const _hoisted_2$l = {
     key: 3,
     class: "lang"
@@ -23014,7 +23014,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             key: 2,
             class: "timestamp",
             datetime: timestamp.value.datetime
-          }, toDisplayString(timestamp.value.text), 9, _hoisted_1$r)) : createCommentVNode("", true),
+          }, toDisplayString(timestamp.value.text), 9, _hoisted_1$q)) : createCommentVNode("", true),
           __props.showLanguage && languageName.value ? (openBlock(), createElementBlock("span", _hoisted_2$l, toDisplayString(languageName.value), 1)) : createCommentVNode("", true)
         ], 2);
       };
@@ -23022,7 +23022,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   });
   const _style_0$q = "\n.speaker-label[data-v-c7a3e9ae] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-c7a3e9ae] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.speaker-name--unknown[data-v-c7a3e9ae] {\n  font-weight: 400;\n  font-style: italic;\n  color: var(--color-text-muted);\n}\n.speaker-label--interactive:hover .speaker-name[data-v-c7a3e9ae] {\n  text-decoration: underline;\n}\n.timestamp[data-v-c7a3e9ae] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-c7a3e9ae] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
   const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$q]], ["__scopeId", "data-v-c7a3e9ae"]]);
-  const _hoisted_1$q = {
+  const _hoisted_1$p = {
     key: 0,
     class: "merge-turns"
   };
@@ -23046,7 +23046,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         core.transcriptionEditor.mergeTurns(props.firstTurnId, props.secondTurnId);
       }
       return (_ctx, _cache) => {
-        return canShow.value ? (openBlock(), createElementBlock("div", _hoisted_1$q, [
+        return canShow.value ? (openBlock(), createElementBlock("div", _hoisted_1$p, [
           createVNode(unref(Button), {
             size: "sm",
             variant: "inverse",
@@ -23123,7 +23123,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     switchTurnSpeaker: switchTurnSpeaker$1,
     updateTurnWords
   }, Symbol.toStringTag, { value: "Module" }));
-  const _hoisted_1$p = {
+  const _hoisted_1$o = {
     type: "button",
     class: "speaker-popover-trigger"
   };
@@ -23203,7 +23203,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           onSelect: onPickExisting
         }, {
           trigger: withCtx(() => [
-            createBaseVNode("button", _hoisted_1$p, [
+            createBaseVNode("button", _hoisted_1$o, [
               renderSlot(_ctx.$slots, "default", {}, void 0, true)
             ])
           ]),
@@ -23391,7 +23391,7 @@ ${text2}` : text2;
       (w2) => w2.charStart != null && w2.charEnd != null && w2.charStart <= offset2 && offset2 < w2.charEnd
     );
   }
-  const _hoisted_1$o = ["data-turn-active", "aria-selected"];
+  const _hoisted_1$n = ["data-turn-active", "aria-selected"];
   const _hoisted_2$j = {
     key: 4,
     class: "turn-edit-actions"
@@ -23650,32 +23650,32 @@ ${text2}` : text2;
               createTextVNode(toDisplayString(__props.turn.text), 1)
             ], 64)) : createCommentVNode("", true)
           ], 42, _hoisted_3$e))
-        ], 14, _hoisted_1$o);
+        ], 14, _hoisted_1$n);
       };
     }
   });
   const _style_0$n = "\n.turn[data-v-2b4ee8df] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-2b4ee8df] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n\n/* Reserve the edit-actions height (Button sm) so entering/leaving edit mode\n   never shifts the layout — but only where those actions can appear at all.\n   Read-only, the row holds a line of metadata and has no reason to be 36px\n   tall. */\n.turn-header--with-actions[data-v-2b4ee8df] {\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-2b4ee8df] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n\n/* Same reset as the popover's own trigger: the label IS the button. */\n.transcript-ui-root .speaker-trigger[data-v-2b4ee8df] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-trigger[data-v-2b4ee8df]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.turn[data-v-2b4ee8df]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-2b4ee8df] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--transcript-font-size);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-2b4ee8df] {\n  cursor: text;\n}\n.turn-text--editable[data-v-2b4ee8df]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-2b4ee8df] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-2b4ee8df]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-2b4ee8df] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-2b4ee8df] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-2b4ee8df 200ms ease;\n}\n@keyframes partial-fade-in-2b4ee8df {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-2b4ee8df] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-2b4ee8df] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-2b4ee8df],\n  .turn--active[data-v-2b4ee8df]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
   const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$n]], ["__scopeId", "data-v-2b4ee8df"]]);
   const _sfc_main$r = {};
-  const _hoisted_1$n = {
+  const _hoisted_1$m = {
     viewBox: "0 0 938 604",
     fill: "none",
     xmlns: "http://www.w3.org/2000/svg"
   };
   function _sfc_render(_ctx, _cache) {
-    return openBlock(), createElementBlock("svg", _hoisted_1$n, [..._cache[0] || (_cache[0] = [
+    return openBlock(), createElementBlock("svg", _hoisted_1$m, [..._cache[0] || (_cache[0] = [
       createStaticVNode('<polygon points="331.5,533.5 331.5,520.5 702.5,428.5 705.5,443.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><polygon points="564.5,469.5 555.5,452.5 544.5,455.5 542.5,472.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><path d="m 317.61655,19.99224 c 0,0 79.97514,-5.452851 101.78654,56.34612 21.81141,61.79897 72.70468,172.67359 92.69846,189.03214 19.99379,16.35855 41.80519,59.98136 38.16995,74.52229" stroke="currentColor" stroke-miterlimit="10" stroke-width="9.08808"></path><path d="m 329.43106,19.083431 c 0,8.532657 -9.0733,15.449743 -23.62902,15.449743 -14.55571,0 -21.8114,-6.917086 -21.8114,-15.449743 0,-8.532657 7.25569,-15.4497427 21.8114,-15.4497427 14.55572,0 23.62902,6.9170857 23.62902,15.4497427 z" fill="currentColor" style="fill:currentColor;opacity:0.6;"></path><polygon points="691.5,439.5 364.5,521.5 377.5,602.5 666.5,602.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-456.32371,-492.51252)"></polygon>', 5)
     ])]);
   }
   const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render]]);
-  const _hoisted_1$m = { class: "transcription-empty" };
+  const _hoisted_1$l = { class: "transcription-empty" };
   const _hoisted_2$i = { class: "message" };
   const _sfc_main$q = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionEmpty",
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$m, [
+        return openBlock(), createElementBlock("div", _hoisted_1$l, [
           createVNode(MicrophoneIllustration, {
             class: "illustration",
             "aria-hidden": "true"
@@ -23687,7 +23687,7 @@ ${text2}` : text2;
   });
   const _style_0$m = "\n.transcription-empty[data-v-585c4f2b] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-xl);\n}\n.illustration[data-v-585c4f2b] {\n  width: 180px;\n  height: auto;\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.message[data-v-585c4f2b] {\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n  margin: 0;\n}\n";
   const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$m]], ["__scopeId", "data-v-585c4f2b"]]);
-  const _hoisted_1$l = ["aria-label"];
+  const _hoisted_1$k = ["aria-label"];
   const _sfc_main$p = /* @__PURE__ */ defineComponent({
     __name: "SpeechActivityIndicator",
     props: {
@@ -23704,7 +23704,7 @@ ${text2}` : text2;
           createBaseVNode("span", { class: "speech-activity-dot" }, null, -1),
           createBaseVNode("span", { class: "speech-activity-dot" }, null, -1),
           createBaseVNode("span", { class: "speech-activity-dot" }, null, -1)
-        ])], 10, _hoisted_1$l);
+        ])], 10, _hoisted_1$k);
       };
     }
   });
@@ -23845,7 +23845,7 @@ ${text2}` : text2;
     }
     return { isFollowing, resumeFollow };
   }
-  const _hoisted_1$k = {
+  const _hoisted_1$j = {
     ref: "scrollContainer",
     class: "scroll-container"
   };
@@ -23969,7 +23969,7 @@ ${text2}` : text2;
           class: "transcription-panel",
           style: normalizeStyle({ "--transcript-font-size": transcriptFontSize.value })
         }, [
-          createBaseVNode("div", _hoisted_1$k, [
+          createBaseVNode("div", _hoisted_1$j, [
             createBaseVNode("div", _hoisted_2$h, [
               isLoadingHistory.value ? (openBlock(), createElementBlock("div", _hoisted_3$d, [..._cache[2] || (_cache[2] = [
                 createBaseVNode("progress", null, null, -1)
@@ -24034,7 +24034,7 @@ ${text2}` : text2;
   });
   const _style_0$k = "\n.transcription-panel[data-v-2325c72c] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.scroll-container[data-v-2325c72c] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-2325c72c] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-2325c72c]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-2325c72c] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-2325c72c] {\n  width: 120px;\n}\n.history-start[data-v-2325c72c] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button — placement lives on this wrapper, never on the\n   button itself: Button.vue's `.editor-btn` base rule resets `position` via\n   `all: unset` (and, in the webcomponent build, gets re-injected a second\n   time after everything else to reach teleported popovers/dialogs — see\n   packages/webcomponent/src/index.ts), so any positioning put directly on\n   the button is one rebuild away from being silently overridden again. */\n.resume-scroll-anchor[data-v-2325c72c] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  z-index: var(--z-sticky);\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.transcript-ui-root .resume-scroll-btn[data-v-2325c72c] {\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: var(--color-surface) !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-2325c72c],\n.fade-slide-leave-active[data-v-2325c72c] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-2325c72c],\n.fade-slide-leave-to[data-v-2325c72c] {\n  opacity: 0;\n  translate: 0 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-2325c72c],\n  .fade-slide-leave-active[data-v-2325c72c] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-2325c72c] {\n    padding: var(--spacing-md);\n}\n}\n";
   const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$k]], ["__scopeId", "data-v-2325c72c"]]);
-  const _hoisted_1$j = { class: "verbatim-panel" };
+  const _hoisted_1$i = { class: "verbatim-panel" };
   const _hoisted_2$g = { class: "verbatim-panel__content" };
   const _hoisted_3$c = { class: "verbatim-panel__header" };
   const _hoisted_4$7 = { class: "verbatim-panel__doc-title" };
@@ -24096,7 +24096,7 @@ ${text2}` : text2;
         core.emit("verbatim:export", { format: format2 });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("section", _hoisted_1$j, [
+        return openBlock(), createElementBlock("section", _hoisted_1$i, [
           createVNode(unref(DocumentArticle), null, {
             "toolbar-right": withCtx(() => [
               createVNode(unref(_sfc_main$B), {
@@ -24204,7 +24204,7 @@ ${text2}` : text2;
       };
     }
   });
-  const _hoisted_1$i = { class: "merge-dialog-title" };
+  const _hoisted_1$h = { class: "merge-dialog-title" };
   const _hoisted_2$f = { class: "merge-dialog-description" };
   const _hoisted_3$b = { class: "merge-dialog-actions" };
   const _sfc_main$k = /* @__PURE__ */ defineComponent({
@@ -24275,7 +24275,7 @@ ${text2}` : text2;
             class: "merge-dialog-form",
             onSubmit: withModifiers(onConfirm, ["prevent"])
           }, [
-            createBaseVNode("h2", _hoisted_1$i, toDisplayString(unref(t2)("mergeDialog.title")), 1),
+            createBaseVNode("h2", _hoisted_1$h, toDisplayString(unref(t2)("mergeDialog.title")), 1),
             createBaseVNode("p", _hoisted_2$f, [
               createBaseVNode("strong", null, toDisplayString(fromSpeaker.value.name), 1),
               createTextVNode(" · " + toDisplayString(affectedCount.value) + " " + toDisplayString(unref(t2)("mergeDialog.turnsAffected")), 1)
@@ -24316,7 +24316,7 @@ ${text2}` : text2;
   });
   const _style_0$i = "\n.merge-dialog[data-v-e658bcd0] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-e658bcd0]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-e658bcd0] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-e658bcd0] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-e658bcd0] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-e658bcd0] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
   const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["styles", [_style_0$i]], ["__scopeId", "data-v-e658bcd0"]]);
-  const _hoisted_1$h = { class: "speaker-sidebar" };
+  const _hoisted_1$g = { class: "speaker-sidebar" };
   const _hoisted_2$e = {
     key: 0,
     class: "sidebar-section sidebar-section--selector"
@@ -24476,7 +24476,7 @@ ${text2}` : text2;
         core.emit("llmService:selectVersion", { id: service.id, versionNumber });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("aside", _hoisted_1$h, [
+        return openBlock(), createElementBlock("aside", _hoisted_1$g, [
           __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$e, [
             createBaseVNode("h2", _hoisted_3$a, toDisplayString(unref(t2)("sidebar.channel")), 1),
             createVNode(_sfc_main$m, {
@@ -24730,7 +24730,7 @@ ${text2}` : text2;
       };
     }
   });
-  const _hoisted_1$g = ["aria-label"];
+  const _hoisted_1$f = ["aria-label"];
   const _hoisted_2$d = { class: "selection-count" };
   const _hoisted_3$9 = { class: "selection-actions" };
   const _sfc_main$h = /* @__PURE__ */ defineComponent({
@@ -24777,13 +24777,13 @@ ${text2}` : text2;
               _: 1
             })
           ])
-        ], 8, _hoisted_1$g)) : createCommentVNode("", true);
+        ], 8, _hoisted_1$f)) : createCommentVNode("", true);
       };
     }
   });
   const _style_0$g = "\n.selection-bar[data-v-9bad1410] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  /* No backdrop-filter: it forces a WebRender backdrop render target sized to\n     the content behind, a heavy GPU-memory cost on long transcripts. The\n     semi-opaque glass background stays legible without the blur. */\n  background: var(--glass-background);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-9bad1410 var(--transition-duration) ease;\n}\n.selection-count[data-v-9bad1410] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-9bad1410] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-9bad1410 {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-9bad1410] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-9bad1410] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
   const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$g]], ["__scopeId", "data-v-9bad1410"]]);
-  const _hoisted_1$f = { class: "editor-layout" };
+  const _hoisted_1$e = { class: "editor-layout" };
   const _hoisted_2$c = {
     key: 6,
     class: "mobile-selectors"
@@ -24880,7 +24880,7 @@ ${text2}` : text2;
         core.activeChannel.value?.setActiveTranslation(translationId);
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$f, [
+        return openBlock(), createElementBlock("div", _hoisted_1$e, [
           props.showHeader ? (openBlock(), createBlock(Header, {
             key: 0,
             title: unref(core).title.value,
@@ -24987,7 +24987,7 @@ ${text2}` : text2;
   });
   const _style_0$f = "\n.editor-layout[data-v-8b1fb5fb] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-8b1fb5fb] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-8b1fb5fb] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-8b1fb5fb] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-8b1fb5fb] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-8b1fb5fb] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-8b1fb5fb] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-8b1fb5fb] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-8b1fb5fb] {\n    grid-template-columns: 1fr;\n}\n}\n";
   const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["styles", [_style_0$f]], ["__scopeId", "data-v-8b1fb5fb"]]);
-  const _hoisted_1$e = {
+  const _hoisted_1$d = {
     class: "editor-loading",
     role: "status",
     "aria-live": "polite"
@@ -24998,7 +24998,7 @@ ${text2}` : text2;
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$e, [
+        return openBlock(), createElementBlock("div", _hoisted_1$d, [
           _cache[0] || (_cache[0] = createBaseVNode("span", {
             class: "editor-loading__spinner",
             "aria-hidden": "true"
@@ -25010,7 +25010,7 @@ ${text2}` : text2;
   });
   const _style_0$e = "\n.editor-loading[data-v-f56c39db] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  /* Opaque so the half-built layout never flashes behind while collab syncs.\n     No backdrop-filter: it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  color: var(--color-text-secondary);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n}\n.editor-loading__spinner[data-v-f56c39db] {\n  width: 32px;\n  height: 32px;\n  border: 3px solid var(--color-border);\n  border-top-color: var(--color-primary);\n  border-radius: 50%;\n  animation: editor-loading-spin-f56c39db 0.8s linear infinite;\n}\n@keyframes editor-loading-spin-f56c39db {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-loading__spinner[data-v-f56c39db] {\n    animation: none;\n}\n}\n";
   const EditorLoadingOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$e]], ["__scopeId", "data-v-f56c39db"]]);
-  const _hoisted_1$d = {
+  const _hoisted_1$c = {
     class: "editor-error",
     role: "alert"
   };
@@ -25027,7 +25027,7 @@ ${text2}` : text2;
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$d, [
+        return openBlock(), createElementBlock("div", _hoisted_1$c, [
           createVNode(unref(EditorIcon), {
             name: "warning",
             size: 40,
@@ -25074,7 +25074,7 @@ ${text2}` : text2;
     });
     return { isLoading, error };
   }
-  const _hoisted_1$c = ["data-theme"];
+  const _hoisted_1$b = ["data-theme"];
   const _sfc_main$d = /* @__PURE__ */ defineComponent({
     __name: "TranscriptUI",
     props: {
@@ -25120,7 +25120,7 @@ ${text2}` : text2;
             key: 1,
             message: unref(error)
           }, null, 8, ["message"])) : unref(isLoading) ? (openBlock(), createBlock(EditorLoadingOverlay, { key: 2 })) : createCommentVNode("", true)
-        ], 12, _hoisted_1$c);
+        ], 12, _hoisted_1$b);
       };
     }
   });
@@ -25251,6 +25251,7 @@ ${text2}` : text2;
   --z-overlay: 50;
   --z-drawer: 1000;
   --z-dropdown: 1100;
+  --z-fullscreen: 1200;
 
   /* Glass effect — backdrop blur intentionally removed: each backdrop-filter
      forces a WebRender render target, which on long transcripts (one waveform
@@ -25918,7 +25919,7 @@ section.turn:has([data-state="open"]) {
       }
     };
   }
-  const _hoisted_1$b = { class: "player-controls" };
+  const _hoisted_1$a = { class: "player-controls" };
   const _hoisted_2$9 = { class: "controls-left" };
   const _hoisted_3$7 = { class: "controls-time" };
   const _hoisted_4$5 = { class: "time-display" };
@@ -25946,7 +25947,7 @@ section.turn:has([data-state="open"]) {
         emit2("update:volume", parseFloat(target.value));
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$b, [
+        return openBlock(), createElementBlock("div", _hoisted_1$a, [
           createBaseVNode("div", _hoisted_2$9, [
             createVNode(unref(Button), {
               variant: "transparent",
@@ -28022,7 +28023,7 @@ section.turn:has([data-state="open"]) {
       toggleMute
     };
   }
-  const _hoisted_1$a = { class: "audio-player" };
+  const _hoisted_1$9 = { class: "audio-player" };
   const _sfc_main$b = /* @__PURE__ */ defineComponent({
     __name: "AudioPlayer",
     props: {
@@ -28053,7 +28054,7 @@ section.turn:has([data-state="open"]) {
       });
       __expose({ seekTo, pause });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("footer", _hoisted_1$a, [
+        return openBlock(), createElementBlock("footer", _hoisted_1$9, [
           createBaseVNode("div", {
             ref_key: "waveformRef",
             ref: waveformRef,
@@ -28536,6 +28537,10 @@ section.turn:has([data-state="open"]) {
     font;
     paddingInline;
     isResizing = false;
+    /** Canvas size in CSS pixels: the unit of every draw and measure call. The
+     *  bitmap itself is scaled by devicePixelRatio (see resizeBitmap). */
+    width = 0;
+    height = 0;
     resizeObserver;
     constructor(canvas, {
       fontSize = 40,
@@ -28550,12 +28555,10 @@ section.turn:has([data-state="open"]) {
       this.color = color;
       this.font = font;
       this.paddingInline = paddingInline;
-      this.canvas.width = this.canvas.clientWidth;
-      this.canvas.height = this.canvas.clientHeight;
+      this.resizeBitmap();
       this.resizeObserver = new ResizeObserver(() => {
         this.isResizing = true;
-        this.canvas.width = this.canvas.clientWidth;
-        this.canvas.height = this.canvas.clientHeight;
+        this.resizeBitmap();
         this.onResize();
         this.isResizing = false;
       });
@@ -28572,7 +28575,19 @@ section.turn:has([data-state="open"]) {
     }
     resetDrawing() {
       const ctx = this.canvas.getContext("2d");
-      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      ctx.clearRect(0, 0, this.width, this.height);
+    }
+    // Sizes the bitmap in device pixels so text stays sharp on high-density
+    // screens, then scales the context back so callers keep drawing in CSS
+    // pixels. Assigning canvas.width resets the context, hence the transform
+    // being set again on every call.
+    resizeBitmap() {
+      const pixelRatio = window.devicePixelRatio || 1;
+      this.width = this.canvas.clientWidth;
+      this.height = this.canvas.clientHeight;
+      this.canvas.width = Math.round(this.width * pixelRatio);
+      this.canvas.height = Math.round(this.height * pixelRatio);
+      this.canvas.getContext("2d").setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     }
     drawText(text2, x2, y2) {
       const ctx = this.canvas.getContext("2d");
@@ -28581,10 +28596,15 @@ section.turn:has([data-state="open"]) {
       ctx.fillText(text2, x2 + this.paddingInline, y2);
     }
     drawFirstLine(text2) {
-      this.drawText(text2, 0, this.fontSize);
+      this.drawText(text2, 0, this.computeTextBlockTop() + this.fontSize);
     }
     drawSecondLine(text2) {
-      this.drawText(text2, 0, this.fontSize + this.lineHeight);
+      this.drawText(text2, 0, this.computeTextBlockTop() + this.fontSize + this.lineHeight);
+    }
+    // The two lines form a block of 2 × lineHeight, centered vertically. The
+    // banner canvas is exactly that tall, so there the block starts at the top.
+    computeTextBlockTop() {
+      return (this.height - 2 * this.lineHeight) / 2;
     }
     onResize() {
     }
@@ -28681,13 +28701,13 @@ section.turn:has([data-state="open"]) {
     }
     // Normal cut threshold: keeps both inline margins free.
     computeIfTextIsTooLong(text2) {
-      return this.textWidth(text2) > this.canvas.width - 2 * this.paddingInline;
+      return this.textWidth(text2) > this.width - 2 * this.paddingInline;
     }
     // Overflow threshold: the text is drawn at x = paddingInline, so it reaches the
-    // canvas edge once its width exceeds canvas.width - paddingInline. Spilling into
+    // canvas edge once its width exceeds width - paddingInline. Spilling into
     // the inline margin is tolerated; going past this re-cuts an already-shown line.
     computeIfTextOverflows(text2) {
-      return this.textWidth(text2) > this.canvas.width - this.paddingInline;
+      return this.textWidth(text2) > this.width - this.paddingInline;
     }
   }
   function useSubtitleScroller(options) {
@@ -28811,7 +28831,7 @@ section.turn:has([data-state="open"]) {
     }
     return parts;
   }
-  const _hoisted_1$9 = {
+  const _hoisted_1$8 = {
     key: 0,
     class: "watermark",
     "aria-hidden": "true"
@@ -28833,7 +28853,7 @@ section.turn:has([data-state="open"]) {
       return (_ctx, _cache) => {
         return openBlock(), createBlock(Transition, { name: "watermark" }, {
           default: withCtx(() => [
-            __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$9, [
+            __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$8, [
               (openBlock(true), createElementBlock(Fragment, null, renderList(parts.value, (part, i2) => {
                 return openBlock(), createElementBlock(Fragment, { key: i2 }, [
                   part.type === "token" ? (openBlock(), createElementBlock("img", {
@@ -28853,7 +28873,6 @@ section.turn:has([data-state="open"]) {
   });
   const _style_0$9 = "\n.watermark[data-v-eb604a8e] {\n  position: absolute;\n  right: var(--spacing-md, 16px);\n  bottom: 4px;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25em;\n  font-size: 1.2rem;\n  color: var(--color-white, #fff);\n  pointer-events: none;\n  line-height: 1;\n}\n.watermark__img[data-v-eb604a8e] {\n  height: 1em;\n  vertical-align: middle;\n}\n.watermark-enter-active[data-v-eb604a8e],\n.watermark-leave-active[data-v-eb604a8e] {\n  transition:\n    opacity 0.4s ease,\n    transform 0.4s ease;\n}\n.watermark-enter-from[data-v-eb604a8e],\n.watermark-leave-to[data-v-eb604a8e] {\n  opacity: 0;\n  transform: translate(6px, 6px);\n}\n@media (prefers-reduced-motion: reduce) {\n.watermark-enter-active[data-v-eb604a8e],\n  .watermark-leave-active[data-v-eb604a8e] {\n    transition: opacity 0.01s;\n    transform: none;\n}\n}\n";
   const SubtitleWatermark = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$9]], ["__scopeId", "data-v-eb604a8e"]]);
-  const _hoisted_1$8 = ["height"];
   const _sfc_main$9 = /* @__PURE__ */ defineComponent({
     __name: "SubtitleBanner",
     setup(__props) {
@@ -28886,16 +28905,15 @@ section.turn:has([data-state="open"]) {
         }, [
           createBaseVNode("canvas", {
             ref: "canvas",
-            class: normalizeClass(["subtitle-canvas", { "subtitle-canvas--shrunk": unref(watermarkVisible) }]),
-            height: canvasHeight.value
-          }, null, 10, _hoisted_1$8),
+            class: normalizeClass(["subtitle-canvas", { "subtitle-canvas--shrunk": unref(watermarkVisible) }])
+          }, null, 2),
           createVNode(SubtitleWatermark, { visible: unref(watermarkVisible) }, null, 8, ["visible"])
         ], 4);
       };
     }
   });
-  const _style_0$8 = "\n.subtitle-banner[data-v-6b9b2fb2] {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n  z-index: 1001;\n}\n.subtitle-canvas[data-v-6b9b2fb2] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-6b9b2fb2] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-6b9b2fb2] {\n    transition: none;\n}\n}\n";
-  const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$8]], ["__scopeId", "data-v-6b9b2fb2"]]);
+  const _style_0$8 = "\n.subtitle-banner[data-v-af110bff] {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n  z-index: 1001;\n}\n.subtitle-canvas[data-v-af110bff] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-af110bff] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-af110bff] {\n    transition: none;\n}\n}\n";
+  const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$8]], ["__scopeId", "data-v-af110bff"]]);
   const _hoisted_1$7 = {
     ref: "container",
     class: "subtitle-fullscreen"
@@ -28976,8 +28994,8 @@ section.turn:has([data-state="open"]) {
       };
     }
   });
-  const _style_0$7 = "\n.subtitle-fullscreen[data-v-4dac7247] {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  height: 100%;\n  background-color: var(--color-black);\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (border/background only) left margin, padding,\n     and appearance to whatever the host page's UA/global styles set. */\n  all: unset;\n  box-sizing: border-box;\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247]:hover,\n.transcript-ui-root .subtitle-fullscreen__close[data-v-4dac7247]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-4dac7247] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-4dac7247] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-4dac7247],\n  .subtitle-fullscreen__canvas[data-v-4dac7247] {\n    transition: none;\n}\n}\n";
-  const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$7]], ["__scopeId", "data-v-4dac7247"]]);
+  const _style_0$7 = "\n/* Fixed to the viewport on its own: when requestFullscreen() is refused\n   (iPhone Safari, WebViews), the view must still cover the editor instead of\n   sitting as one more flex child of the layout. */\n.subtitle-fullscreen[data-v-85e1f633] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-fullscreen);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background-color: var(--color-black);\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-85e1f633] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (border/background only) left margin, padding,\n     and appearance to whatever the host page's UA/global styles set. */\n  all: unset;\n  box-sizing: border-box;\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-85e1f633]:hover,\n.transcript-ui-root .subtitle-fullscreen__close[data-v-85e1f633]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-85e1f633] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-85e1f633] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-85e1f633],\n  .subtitle-fullscreen__canvas[data-v-85e1f633] {\n    transition: none;\n}\n}\n";
+  const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["styles", [_style_0$7]], ["__scopeId", "data-v-85e1f633"]]);
   function createSubtitlePlugin(options = {}) {
     return {
       name: "subtitle",

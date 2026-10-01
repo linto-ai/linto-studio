@@ -92,13 +92,16 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* Fixed to the viewport on its own: when requestFullscreen() is refused
+   (iPhone Safari, WebViews), the view must still cover the editor instead of
+   sitting as one more flex child of the layout. */
 .subtitle-fullscreen {
-  position: relative;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-fullscreen);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
   background-color: var(--color-black);
 }
 

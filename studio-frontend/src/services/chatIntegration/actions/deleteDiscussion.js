@@ -1,19 +1,20 @@
 import { apiDeleteChatDiscussion } from "@/api/chat"
+import { showDiscussion } from "./showDiscussion"
 
-export async function deleteDiscussion(discussionId) {
-  const ok = await apiDeleteChatDiscussion(this.conversationId, discussionId)
+export async function deleteDiscussion(chatIntegration, discussionId) {
+  const { core, conversationId } = chatIntegration
+  const ok = await apiDeleteChatDiscussion(conversationId, discussionId)
   if (!ok) {
     console.error("[chat] delete discussion failed")
     return
   }
   // A list still loading would bring the deleted discussion back
-  await this.discussionsInFlight
-  if (this.isDisposed) return
+  await chatIntegration.discussionsInFlight
+  if (chatIntegration.isDisposed) return
 
-  const chat = this.core.chat
+  const chat = core.chat
   chat.setSessions(chat.sessions.value.filter((d) => d.id !== discussionId))
   if (chat.activeSessionId.value === discussionId) {
-    chat.setActiveSession(null)
-    chat.setMessages([])
+    showDiscussion(chatIntegration, null, [])
   }
 }

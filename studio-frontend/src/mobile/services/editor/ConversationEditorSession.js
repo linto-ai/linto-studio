@@ -2,7 +2,6 @@ import { markRaw } from "vue"
 import USER_RIGHTS from "@/const/userRights.js"
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
 import { apiGetUserRightFromConversation } from "@/api/conversation"
-import { apiGetChatStatus } from "@/api/chat"
 import { ChannelAssistants } from "@/services/assistantsIntegration/ChannelAssistants.js"
 import { loadSourceLastUpdate } from "@/services/editorIntegration/loadSourceLastUpdate.js"
 import { loadEditor } from "@/mobile/services/editor/loadEditor.js"
@@ -71,7 +70,7 @@ export class ConversationEditorSession {
       buildEditorRoomHandlers(core, () => this.loadActiveSourceLastUpdate()),
     )
     this.setupServices(core)
-    await this.setupChatIfEnabled()
+    await this.assistants.enableChatIfAvailable()
     if (this.destroyed) return
     core.setDocument(this.document.doc)
     this.loadActiveSourceLastUpdate()
@@ -119,14 +118,6 @@ export class ConversationEditorSession {
         this.store.dispatch("system/addNotification", { type, message }),
       openPublication: (request) => this.openPublication?.(request),
     })
-  }
-
-  async setupChatIfEnabled() {
-    const { enabled } = await apiGetChatStatus().catch(() => ({
-      enabled: false,
-    }))
-    if (this.destroyed || !enabled) return
-    this.assistants.enableChat()
   }
 
   // Reports are generated from the channel conversation (its source track):

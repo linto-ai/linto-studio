@@ -34,7 +34,6 @@ import {
 
 import { ChannelAssistants } from "@/services/assistantsIntegration/ChannelAssistants.js"
 import { loadSourceLastUpdate } from "@/services/editorIntegration/loadSourceLastUpdate.js"
-import { apiGetChatStatus } from "@/api/chat"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import PublicationModal from "@/components/molecules/PublicationModal.vue"
@@ -215,17 +214,12 @@ export default {
       })
       this.assistants = markRaw(assistants)
 
-      // Chat assistant: only wire it when the backend feature is enabled, so
-      // the SDK's "ask" button stays disabled otherwise (core.chat absent).
-      const { enabled: chatEnabled } = await apiGetChatStatus().catch(() => ({
-        enabled: false,
-      }))
-      // Destroyed during the await: everything below (chat, collab connection,
-      // sync timers, edit listeners) is created after beforeDestroy ran, so it
+      await this.assistants.enableChatIfAvailable()
+      // Destroyed during the await: everything below (collab connection, sync
+      // timers, edit listeners) is created after beforeDestroy ran, so it
       // would leak. The assistants were set before the await, so beforeDestroy
       // already destroyed them; just stop here.
       if (this.isDestroyed || !this.$refs.editor) return
-      if (chatEnabled) this.assistants.enableChat()
 
       core.setDocument(doc)
       this.loadActiveSourceLastUpdate()

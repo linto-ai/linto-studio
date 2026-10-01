@@ -118,6 +118,7 @@
   --z-overlay: 50;
   --z-drawer: 1000;
   --z-dropdown: 1100;
+  --z-fullscreen: 1200;
 
   /* Glass effect — backdrop blur intentionally removed: each backdrop-filter
      forces a WebRender render target, which on long transcripts (one waveform

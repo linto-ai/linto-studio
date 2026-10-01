@@ -1,23 +1,22 @@
 import { apiCreateChatDiscussion } from "@/api/chat"
 import { mapDiscussion } from "../helpers"
+import { showDiscussion } from "./showDiscussion"
 
 // Prepends the POST response instead of refetching (the list is newest
 // first); returns the new id, or null on failure
-export async function createDiscussion(title) {
+export async function createDiscussion(chatIntegration, title) {
+  const { core, conversationId } = chatIntegration
   try {
-    const discussion = await apiCreateChatDiscussion(this.conversationId, {
-      title,
-    })
+    const discussion = await apiCreateChatDiscussion(conversationId, { title })
     // A list still loading would overwrite the prepended discussion; it may
     // also already contain it
-    await this.discussionsInFlight
-    if (this.isDisposed) return null
+    await chatIntegration.discussionsInFlight
+    if (chatIntegration.isDisposed) return null
 
-    const chat = this.core.chat
+    const chat = core.chat
     const others = chat.sessions.value.filter((d) => d.id !== discussion._id)
-    chat.setActiveSession(discussion._id)
-    chat.setMessages([])
     chat.setSessions([mapDiscussion(discussion), ...others])
+    showDiscussion(chatIntegration, discussion._id, [])
     return discussion._id
   } catch (e) {
     console.error("[chat] create discussion failed", e)

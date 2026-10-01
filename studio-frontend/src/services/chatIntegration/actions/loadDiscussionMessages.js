@@ -1,14 +1,18 @@
 import { apiGetChatDiscussion } from "@/api/chat"
 import { mapMessage } from "../helpers"
+import { showDiscussion } from "./showDiscussion"
 
-export async function loadDiscussionMessages(discussionId) {
-  const chat = this.core.chat
-  chat.setActiveSession(discussionId)
+export async function loadDiscussionMessages(chatIntegration, discussionId) {
+  const { core, conversationId } = chatIntegration
+  const chat = core.chat
+  showDiscussion(chatIntegration, discussionId, [])
   chat.setLoadingSession(true)
-  const messages = await fetchMessages(this.conversationId, discussionId)
-  if (this.isDisposed) return
-  // A discussion opened meanwhile keeps its own messages
-  if (chat.activeSessionId.value === discussionId) chat.setMessages(messages)
+  const messages = await fetchMessages(conversationId, discussionId)
+  // Another discussion (or conversation) was shown meanwhile: it owns the
+  // messages and the loading state now
+  if (chatIntegration.isDisposed) return
+  if (chat.activeSessionId.value !== discussionId) return
+  chat.setMessages(messages)
   chat.setLoadingSession(false)
 }
 
