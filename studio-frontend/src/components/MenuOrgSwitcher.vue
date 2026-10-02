@@ -114,6 +114,7 @@ export default {
   cursor: pointer;
   text-align: left;
   min-width: 0;
+  overflow: hidden;
 
   &:hover {
     background-color: var(--primary-soft);

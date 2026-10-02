@@ -3,6 +3,7 @@
     <SessionStatusBanner
       :websocketStatus="websocketInstance.state.status"
       :microphoneStatus="microphoneStatus"
+      :liveCredit="liveCredit"
       @retry-websocket="websocketInstance.retry()"
       @retry-microphone="$emit('retry-microphone')"
       @reconfigure-microphone="$emit('reconfigure-microphone')" />
@@ -17,6 +18,7 @@
 <script>
 import { markRaw } from "vue"
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
+import { liveCreditPollingMixin } from "@/mixins/liveCreditPolling.js"
 import sessionToEditorDocument from "@/tools/sessionToEditorDocument.js"
 import processSessionCaptions from "@/tools/processSessionCaptions.js"
 import {
@@ -99,7 +101,7 @@ function storeTranscriptFontSize(fontSize) {
 }
 
 export default {
-  mixins: [sessionModelMixin],
+  mixins: [sessionModelMixin, liveCreditPollingMixin],
   components: { SessionStatusBanner },
   props: {
     session: { type: Object, required: true },

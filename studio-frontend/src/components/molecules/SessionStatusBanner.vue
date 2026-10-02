@@ -46,16 +46,46 @@
     :status="microphoneStatus"
     @retry="$emit('retry-microphone')"
     @reconfigure="$emit('reconfigure-microphone')" />
+
+  <NotificationBanner
+    v-else-if="banner === 'live_credit_exhausted'"
+    variant="error"
+    icon="warning-circle"
+    align="start"
+    role="alert"
+    class="session-status-banner">
+    <span class="session-status-banner__message">
+      {{ $t("session.live_credit_banner.exhausted") }}
+    </span>
+  </NotificationBanner>
+
+  <NotificationBanner
+    v-else-if="banner === 'live_credit_low'"
+    variant="warning"
+    icon="warning"
+    align="start"
+    role="status"
+    class="session-status-banner">
+    <span class="session-status-banner__message">
+      {{
+        $t("session.live_credit_banner.low", {
+          minutes: liveCredit.balance,
+        })
+      }}
+    </span>
+  </NotificationBanner>
 </template>
 
 <script>
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import MicrophoneStatusBanner from "@/components/molecules/MicrophoneStatusBanner.vue"
 import { resolveSessionBanner } from "@/tools/resolveSessionBanner.js"
+import { computeLiveCreditLevel } from "@/tools/computeLiveCreditLevel.js"
 import { createRestoredFlashMixin } from "@/mixins/restoredFlash.js"
 
 // Single banner slot for a live session view: websocket outage first,
-// microphone trouble second (see resolveSessionBanner for the rationale).
+// microphone trouble second, live credit last (see resolveSessionBanner for
+// the rationale).
 export default {
   name: "SessionStatusBanner",
   components: { NotificationBanner, MicrophoneStatusBanner },
@@ -66,12 +96,15 @@ export default {
     // microphoneStatus value from sessionMicrophoneMixin ("idle" when the
     // view has no microphone at all).
     microphoneStatus: { type: String, default: "idle" },
+    // live block of the org usage summary (null when unknown or not watched).
+    liveCredit: { type: Object, default: null },
   },
   computed: {
     banner() {
       const banner = resolveSessionBanner(
         this.websocketStatus,
         this.microphoneStatus,
+        computeLiveCreditLevel(this.liveCredit),
       )
       if (banner) return banner
       return this.showRestored ? "websocket_restored" : null

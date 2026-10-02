@@ -1704,6 +1704,10 @@
     "loading": "Chargement..."
   },
   "session": {
+    "live_credit_banner": {
+      "low": "Crédit live bientôt épuisé : il reste {minutes} min. Le direct s'arrêtera automatiquement une fois le crédit épuisé.",
+      "exhausted": "Crédit live épuisé : le direct va s'arrêter automatiquement dans quelques minutes."
+    },
     "sessions_status": {
       "pending": "La session est en attente de recevoir un flux audio",
       "active": "La session est active. Un ou des audio(s) sont transcrits",

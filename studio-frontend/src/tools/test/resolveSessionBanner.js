@@ -30,3 +30,17 @@ test("microphone banner shows only for its recovery statuses", (t) => {
 test("initial connection is not treated as an outage", (t) => {
   t.is(resolveSessionBanner("connecting", "idle"), null)
 })
+
+test("live credit banner shows its level when nothing else is wrong", (t) => {
+  t.is(resolveSessionBanner("connected", "idle", "low"), "live_credit_low")
+  t.is(
+    resolveSessionBanner("connected", "recording", "exhausted"),
+    "live_credit_exhausted",
+  )
+  t.is(resolveSessionBanner("connected", "idle", null), null)
+})
+
+test("websocket and microphone trouble win over live credit", (t) => {
+  t.is(resolveSessionBanner("failed", "idle", "exhausted"), "websocket_failed")
+  t.is(resolveSessionBanner("connected", "mic_lost", "low"), "microphone")
+})

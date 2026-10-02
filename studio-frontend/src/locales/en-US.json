@@ -1710,6 +1710,10 @@
     "loading": "Loading..."
   },
   "session": {
+    "live_credit_banner": {
+      "low": "Live credit running low: {minutes} min left. The live will stop automatically once it runs out.",
+      "exhausted": "Live credit used up: the live will stop automatically within a few minutes."
+    },
     "sessions_status": {
       "pending": "Session is pending, waiting to receive audio",
       "active": "Session is active, receiving audio",
