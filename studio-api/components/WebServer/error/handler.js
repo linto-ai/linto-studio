@@ -14,6 +14,12 @@ function buildErrorBody(err) {
   if (err.code) body.code = err.code
   if (err.maxSize !== undefined) body.maxSize = err.maxSize
   if (err.maxSizeBytes !== undefined) body.maxSizeBytes = err.maxSizeBytes
+  // SaaS gating detail, consumed by the front-end upgrade CTA.
+  if (err.reason !== undefined) body.reason = err.reason
+  if (err.capability !== undefined) body.capability = err.capability
+  if (err.remaining !== undefined) body.remaining = err.remaining
+  // The pack that lifts a spent quota, for the front's packs modal
+  if (err.topUp !== undefined) body.topUp = err.topUp
   return body
 }
 

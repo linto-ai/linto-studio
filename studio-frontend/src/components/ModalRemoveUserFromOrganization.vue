@@ -2,10 +2,11 @@
   <Modal
     v-model="_value"
     @on-cancel="($event) => this.$emit('on-cancel')"
-    @on-confirm="deleteUserFromOrganization"
+    @on-delete="deleteUserFromOrganization"
     :title="$t('organisation.remove_user_modal.title')"
-    :actionBtnLabel="$t('organisation.remove_user_modal.action')"
-    :custom-class-button="{ red: true }"
+    :withActionApply="false"
+    withActionDelete
+    :textActionDelete="$t('organisation.remove_user_modal.action')"
     size="sm">
     <p>
       {{
@@ -29,9 +30,10 @@ export default {
       type: Object,
       required: true,
     },
+    // null while the modal is closed: the caller only fills it on opening.
     user: {
       type: Object,
-      required: true,
+      default: null,
     },
     value: {
       type: Boolean,

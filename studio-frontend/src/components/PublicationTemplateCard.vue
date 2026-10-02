@@ -12,7 +12,7 @@
       <PhIcon name="eye" class="template-card__preview-hint" size="sm" />
     </div>
 
-    <h4 class="template-card__name">{{ displayName }}</h4>
+    <h4 class="template-card__name card-title">{{ displayName }}</h4>
     <p class="template-card__description">{{ displayDescription }}</p>
 
     <footer class="template-card__meta" @click.stop @keydown.stop>
@@ -156,11 +156,9 @@ export default {
   justify-content: space-between;
 }
 
+/* Typography comes from the shared .card-title class */
 .template-card__name {
   margin: 0;
-  font-size: var(--text-md);
-  font-weight: 600;
-  color: var(--text-primary);
 }
 
 .template-card__description {

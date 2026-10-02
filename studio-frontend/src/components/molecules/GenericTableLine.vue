@@ -2,7 +2,7 @@
   <tr
     @click="onRowClick"
     :class="[
-      { 'selectable-row': selectable, selected: isSelected },
+      { 'selectable-row': isSelectable, selected: isSelected },
       rowClass?.(line),
     ]">
     <td v-if="selectable && selectMode !== 'single'">
@@ -10,6 +10,7 @@
         v-model="p_selectedRows"
         :id="String(line[idKey])"
         :checkboxValue="line[idKey]"
+        :disabled="!isSelectable"
         @click.native.stop />
     </td>
     <td v-else-if="selectable">
@@ -68,6 +69,11 @@ export default {
       type: Function,
       default: null,
     },
+    // Optional subset of row ids that can be selected. null means every row.
+    selectableRowIds: {
+      type: Array,
+      default: null,
+    },
   },
   data() {
     return {}
@@ -95,12 +101,17 @@ export default {
       this.$emit("update:selectedRows", [value])
     },
     onRowClick() {
-      if (this.selectable) {
+      if (this.isSelectable) {
         this.toggleSelection()
       }
     },
   },
   computed: {
+    isSelectable() {
+      if (!this.selectable) return false
+      if (this.selectableRowIds === null) return true
+      return this.selectableRowIds.includes(this.line[this.idKey])
+    },
     isSelected() {
       return this.selectedRows.includes(this.line[this.idKey])
     },

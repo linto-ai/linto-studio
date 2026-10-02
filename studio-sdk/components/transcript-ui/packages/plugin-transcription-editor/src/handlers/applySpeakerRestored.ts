@@ -1,6 +1,7 @@
 import type { SpeakerRestored } from "@linto-ai/transcript-ui-core"
 import type { EditorPluginState } from "../types"
 import { trackBroadcastVersion } from "../tools/trackBroadcastVersion"
+import { trackBroadcastLastUpdate } from "../tools/trackBroadcastLastUpdate"
 import { findTranslationStore } from "../tools/findTranslationStore"
 import { trackUndoRedoHeads } from "../tools/trackUndoRedoHeads"
 
@@ -14,6 +15,10 @@ export function applySpeakerRestored(
   state: EditorPluginState,
   restored: SpeakerRestored,
 ): void {
+  // First: even a skipped broadcast (own echo, stale, not-loaded track,
+  // turn under the caret) reports a server-side modification.
+  trackBroadcastLastUpdate(state, restored.translationId, restored.lastUpdate)
+
   // Version gate: stale broadcasts are skipped, a gap triggers a refetch.
   if (!trackBroadcastVersion(state, restored.translationId, restored.version)) {
     return

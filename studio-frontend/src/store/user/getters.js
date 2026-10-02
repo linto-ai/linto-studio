@@ -14,6 +14,11 @@ const getters = {
   getUserPlatformRole(state) {
     return state.userInfos.role
   },
+  needsOnboarding(state) {
+    // Only brand-new accounts carry onboarded:false. Existing users (field
+    // absent) and already-onboarded users are skipped.
+    return state.userInfos?.onboarded === false
+  },
   getFavoriteOrganizationId(state) {
     return state.userInfos?.defaultOrganization ?? null
   },

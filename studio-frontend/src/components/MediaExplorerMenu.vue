@@ -1,24 +1,5 @@
 <template>
   <div class="media-explorer-menu flex col flex1">
-    <!-- Organisation -->
-    <div
-      class="media-explorer-menu__item media-explorer-menu__item--section"
-      @click="openOrgSelector">
-      <ph-icon name="user-switch" size="20" />
-      <div class="media-explorer-menu__item__org-info">
-        <span class="media-explorer-menu__item__org-name">{{ orgName }}</span>
-        <span class="media-explorer-menu__item__org-role">{{
-          currentRoleToString
-        }}</span>
-      </div>
-      <button
-        v-if="isAtLeastMaintainer"
-        class="media-explorer-menu__item__action"
-        :title="$t('folders.create')"
-        @click.stop="$refs.folderTree.toggleCreate()">
-        <ph-icon name="plus" size="14" />
-      </button>
-    </div>
     <div class="media-explorer-menu__sub">
       <ul class="media-explorer-menu__list">
         <FolderTreeNode
@@ -28,13 +9,23 @@
           :selectedFolderId="isInboxActive ? 'inbox' : null"
           @select="handleInboxClick"
           @drop-media="handleInboxDrop" />
+        <!-- Session mode (SRT/RTMP streams, scheduling) depends on the
+             organization's session permission: without it, the entry stays
+             visible with a lock and leads to the live product page. -->
         <FolderTreeNode
-          v-if="sessionEnable"
+          v-if="sessionEnable && canSessionInCurrentOrganization"
           :folder="sessionsFolder"
           :virtual="true"
           icon="broadcast"
           :selectedFolderId="isSessionsActive ? 'sessions' : null"
           @select="handleSessionsClick" />
+        <FolderTreeNode
+          v-else-if="sessionEnable"
+          :folder="sessionsFolder"
+          :virtual="true"
+          icon="lock"
+          :selectedFolderId="null"
+          @select="openLiveProduct" />
         <FolderTreeNode
           v-if="processingCount > 0"
           :folder="processingFolder"
@@ -43,12 +34,8 @@
           :selectedFolderId="isProcessingActive ? 'processing' : null"
           @select="handleProcessingClick" />
       </ul>
-      <FolderTree ref="folderTree" />
+      <FolderTree />
     </div>
-
-    <ModalSwitchOrg
-      v-model="modalOrgSelector"
-      @close="modalOrgSelector = false" />
 
     <!-- Personnel -->
     <div
@@ -79,26 +66,22 @@
 
 <script>
 import { mediaScopeMixin } from "@/mixins/mediaScope"
-import { orgaRoleMixin } from "@/mixins/orgaRole.js"
-import { orgDisplayName } from "@/tools/orgDisplayName"
 import { getEnv } from "@/tools/getEnv"
 import FolderTree from "@/components/FolderTree.vue"
 import FolderTreeNode from "@/components/FolderTreeNode.vue"
-import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
+import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
 export default {
   name: "MediaExplorerMenu",
-  mixins: [mediaScopeMixin, orgaRoleMixin],
+  mixins: [mediaScopeMixin, organizationPermissionsMixin],
   components: {
     FolderTree,
     FolderTreeNode,
-    ModalSwitchOrg,
     MediaExplorerMenuLabels,
   },
   data() {
     return {
-      modalOrgSelector: false,
       leavingExplore: false,
     }
   },
@@ -106,14 +89,8 @@ export default {
     sessionEnable() {
       return getEnv("VUE_APP_ENABLE_SESSION") === "true"
     },
-    currentOrganization() {
-      return this.$store.getters["organizations/getCurrentOrganization"]
-    },
     currentUserId() {
       return this.$store.getters["user/getUserId"]
-    },
-    orgName() {
-      return orgDisplayName(this.currentOrganization, this.currentUserId)
     },
     isMediaRoute() {
       return this.$route.name === "explore" || this.$route.name === "inbox"
@@ -180,14 +157,13 @@ export default {
       immediate: true,
       handler(orgId) {
         if (!orgId) return
-        this.$store.dispatch(`${orgId}/processing/conversations/loadStatusCount`)
+        this.$store.dispatch(
+          `${orgId}/processing/conversations/loadStatusCount`,
+        )
       },
     },
   },
   methods: {
-    openOrgSelector() {
-      this.modalOrgSelector = true
-    },
     handleInboxClick() {
       this.clearSearch()
       this.selectFolder(undefined)
@@ -203,6 +179,9 @@ export default {
         .catch(() => {
           this.leavingExplore = false
         })
+    },
+    openLiveProduct() {
+      window.open(getEnv("VUE_APP_SAAS_LIVE_PRODUCT_URL"), "_blank", "noopener")
     },
     handleFavoritesClick() {
       this.clearSearch()
@@ -289,52 +268,6 @@ export default {
 
       &:hover {
         background-color: transparent;
-      }
-    }
-
-    &__org-info {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      flex: 1;
-      line-height: 1.2;
-    }
-
-    &__org-name {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      text-decoration: underline transparent;
-      transition: text-decoration-color 0.2s;
-    }
-
-    &__org-role {
-      //font-size: 0.7em;
-      font-weight: 400;
-      color: var(--text-secondary);
-      //padding-left: 0.5em;
-    }
-
-    &--section:hover &__org-name {
-      text-decoration-color: var(--primary-color);
-      color: var(--primary-color);
-    }
-
-    &__action {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0.2em;
-      border-radius: 4px;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      flex-shrink: 0;
-      margin-left: auto;
-
-      &:hover {
-        background-color: var(--primary-soft);
-        color: var(--primary-color);
       }
     }
   }

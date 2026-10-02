@@ -4,6 +4,11 @@ import { getCookie } from "@/tools/getCookie"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
+// Wire path: the backend still names chat discussions "sessions".
+function chatDiscussionsUrl(conversationId) {
+  return `${BASE_API}/conversations/${conversationId}/chat/sessions`
+}
+
 /**
  * Check if chat feature is enabled on the backend
  */
@@ -14,68 +19,68 @@ export async function apiGetChatStatus() {
 }
 
 /**
- * Create a new chat session for a conversation
+ * Create a new chat discussion for a conversation; without a title the
+ * backend names it "New chat". Null on failure.
  */
-export async function apiCreateChatSession(conversationId, flavorId = null) {
+export async function apiCreateChatDiscussion(conversationId, { title } = {}) {
   const body = {}
-  if (flavorId) body.flavorId = flavorId
+  if (title) body.title = title
 
   const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions`,
+    chatDiscussionsUrl(conversationId),
     { method: "post" },
     body,
   )
   if (req.status === "success") return req.data
-  throw new Error(req.message || "Failed to create chat session")
+  return null
 }
 
 /**
- * List all chat sessions for a conversation (current user)
+ * List all chat discussions for a conversation (current user), newest
+ * first. Null on failure.
  */
-export async function apiListChatSessions(conversationId) {
+export async function apiListChatDiscussions(conversationId) {
+  const req = await sendRequest(chatDiscussionsUrl(conversationId), {
+    method: "get",
+  })
+  if (req.status === "success") return req.data
+  return null
+}
+
+/**
+ * Get a chat discussion with all messages. Null on failure.
+ */
+export async function apiGetChatDiscussion(conversationId, discussionId) {
   const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions`,
+    `${chatDiscussionsUrl(conversationId)}/${discussionId}`,
     { method: "get" },
   )
   if (req.status === "success") return req.data
-  return []
+  return null
 }
 
 /**
- * Get a chat session with all messages
+ * Update a chat discussion title; true on success
  */
-export async function apiGetChatSession(conversationId, sessionId) {
-  const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}`,
-    { method: "get" },
-  )
-  if (req.status === "success") return req.data
-  throw new Error(req.message || "Failed to get chat session")
-}
-
-/**
- * Update a chat session title
- */
-export async function apiUpdateChatSessionTitle(
+export async function apiUpdateChatDiscussionTitle(
   conversationId,
-  sessionId,
+  discussionId,
   title,
 ) {
   const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}`,
+    `${chatDiscussionsUrl(conversationId)}/${discussionId}`,
     { method: "patch" },
     { title },
   )
-  if (req.status === "success") return req.data
-  throw new Error(req.message || "Failed to update chat session title")
+  return req.status === "success"
 }
 
 /**
- * Delete a chat session and all its messages
+ * Delete a chat discussion and all its messages; true on success
  */
-export async function apiDeleteChatSession(conversationId, sessionId) {
+export async function apiDeleteChatDiscussion(conversationId, discussionId) {
   const req = await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}`,
+    `${chatDiscussionsUrl(conversationId)}/${discussionId}`,
     { method: "delete" },
   )
   return req.status === "success"
@@ -84,15 +89,18 @@ export async function apiDeleteChatSession(conversationId, sessionId) {
 /**
  * Send a chat message with SSE streaming.
  * Uses native fetch (not axios) for streaming support.
+ * onError receives { status, data }: the HTTP status (null for an error
+ * event inside the stream, 0 for a network failure) and the error body
+ * (a SaaS refusal carries { code, reason, capability… }).
  */
 export async function apiSendChatMessage(
   conversationId,
-  sessionId,
+  discussionId,
   content,
   { onToken, onDone, onError },
 ) {
   const userToken = getCookie("authToken")
-  const url = `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}/messages`
+  const url = `${chatDiscussionsUrl(conversationId)}/${discussionId}/messages`
 
   try {
     const response = await fetch(url, {
@@ -105,14 +113,19 @@ export async function apiSendChatMessage(
     })
 
     if (!response.ok) {
-      const err = await response.text()
-      onError(err)
+      onError({
+        status: response.status,
+        data: await readErrorBody(response),
+      })
       return
     }
 
     const reader = response.body.getReader()
     const decoder = new TextDecoder()
     let buffer = ""
+    // Survives chunk boundaries: an "event:" line may arrive in a different
+    // read than its "data:" line
+    let eventType = null
 
     while (true) {
       const { done, value } = await reader.read()
@@ -122,7 +135,6 @@ export async function apiSendChatMessage(
       const lines = buffer.split("\n")
       buffer = lines.pop()
 
-      let eventType = null
       for (const line of lines) {
         if (line.startsWith("event: ")) {
           eventType = line.slice(7).trim()
@@ -131,14 +143,25 @@ export async function apiSendChatMessage(
             const data = JSON.parse(line.slice(6))
             if (eventType === "token") onToken(data.content)
             else if (eventType === "done") onDone(data)
-            else if (eventType === "error") onError(data.error)
-          } catch (e) {
+            else if (eventType === "error") onError({ status: null, data })
+          } catch {
             /* ignore parse errors */
           }
         }
       }
     }
   } catch (err) {
-    onError(err.message || "Network error")
+    onError({ status: 0, data: { error: err.message || "Network error" } })
+  }
+}
+
+// A JSON error body (studio-api errors, SaaS refusals) parsed, anything
+// else wrapped as { error: text }
+async function readErrorBody(response) {
+  const text = await response.text()
+  try {
+    return JSON.parse(text)
+  } catch {
+    return { error: text }
   }
 }

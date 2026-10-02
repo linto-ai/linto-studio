@@ -6,9 +6,13 @@ import {
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 import { filterLLMServicesBySecurityLevel } from "@/tools/filterBySecurityLevel.js"
 import { mapStatus } from "@/tools/llm/mapStatus.js"
+import { computeEpochMs } from "@/tools/computeEpochMs.js"
 import { loadVersions } from "../loadVersions.js"
 import { loadGenerations } from "../loadGenerations.js"
 
+// Registers the services of the conversation and hydrates their jobs.
+// Resolves to true once the job list is known: a failed fetch must not make
+// every service look never generated.
 export async function loadServices({
   core,
   store,
@@ -23,19 +27,21 @@ export async function loadServices({
     services = await getLLMService(organizationId, securityLevel)
   } catch (e) {
     console.error("[llm] getLLMService failed", e)
-    return
+    return false
   }
-  if (state.destroyed) return
+  if (state.destroyed) return false
 
   services = filterLLMServicesBySecurityLevel(services, securityLevel)
 
-  let jobs = []
+  let jobs = null
   try {
-    jobs = (await apiGetMetadataLLMService(conversationId)) || []
+    jobs = await apiGetMetadataLLMService(conversationId)
   } catch (e) {
     console.error("[llm] apiGetMetadataLLMService failed", e)
   }
-  if (state.destroyed) return
+  if (state.destroyed) return false
+  const jobsLoaded = jobs !== null
+  jobs = jobs ?? []
 
   const hydrationTargets = []
 
@@ -49,6 +55,8 @@ export async function loadServices({
     const defaultFlavor =
       service.flavors?.find((f) => f.is_default) || service.flavors?.[0]
     const job = jobs.find((j) => j.format === id)
+    // The API sends last_update as an ISO string; the SDK compares epoch ms.
+    const lastUpdate = computeEpochMs(job?.last_update)
 
     store.commit("llmServices/REGISTER", {
       id,
@@ -67,7 +75,7 @@ export async function loadServices({
       id,
       label,
       status: mapStatus(job?.status) ?? "idle",
-      lastUpdate: job?.last_update ?? null,
+      lastUpdate,
     })
 
     const status = mapStatus(job?.status)
@@ -83,7 +91,7 @@ export async function loadServices({
       hydrationTargets.push({
         id,
         jobId: job.jobId,
-        lastUpdate: job.last_update,
+        lastUpdate,
       })
     }
   }
@@ -95,7 +103,7 @@ export async function loadServices({
           const r = await apiGetExportContent(conversationId, jobId)
           if (state.destroyed) return
           if (r?.status === "success" && typeof r.content === "string") {
-            core.llmServices.setContent(id, r.content, lastUpdate || Date.now())
+            core.llmServices.setContent(id, r.content, lastUpdate ?? Date.now())
           }
         } catch (e) {
           console.error("[llm] hydrate content failed for", id, e)
@@ -105,4 +113,5 @@ export async function loadServices({
       loadGenerations({ core, store, state, conversationId, id }),
     ]),
   )
+  return jobsLoaded
 }

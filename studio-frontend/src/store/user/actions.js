@@ -48,6 +48,13 @@ const actions = {
     )
   },
   async register({ commit }, payload) {},
+  // Closing OnboardingWizard.vue (any trigger) or leaving for Stripe marks
+  // onboarding done, locally at once and server-side so it survives a reload.
+  async dismissOnboarding({ commit, state }) {
+    if (state.userInfos?.onboarded !== false) return
+    commit("setUserInfos", { ...state.userInfos, onboarded: true })
+    await apiUpdateUserInfo({ onboarded: true }, null)
+  },
   async updateUser({ dispatch }, payload) {
     const req = await apiUpdateUserInfo(payload, null)
     if (req.status === "success") await dispatch("fetchUser")

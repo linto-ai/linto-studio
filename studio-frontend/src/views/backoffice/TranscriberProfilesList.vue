@@ -63,10 +63,7 @@
               : $t('backoffice.transcriber_profile_list.global_profile')
           "
           position="bottom">
-          <Avatar
-            :icon="value ? 'buildings' : 'globe'"
-            color="neutral-10"
-            size="md" />
+          <ph-icon :name="value ? 'buildings' : 'globe'" color="neutral" />
         </Tooltip>
       </template>
       <template #cell-config.name="{ value, id }">

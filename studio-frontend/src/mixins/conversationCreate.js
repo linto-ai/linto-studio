@@ -9,14 +9,17 @@ import { meetsSecurityLevel } from "@/tools/filterBySecurityLevel"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { debounceMixin } from "@/mixins/debounce"
+import { saasRefusalFormMixin } from "@/mixins/saasRefusalForm.js"
 
 import RIGHTS_LIST from "@/const/rigthsList"
 import EMPTY_FIELD from "@/const/emptyField"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import generateServiceConfig from "@/tools/generateServiceConfig"
+import { getEnv } from "@/tools/getEnv"
+import { isSaasRefusal } from "@/tools/isSaasRefusal"
 
 export default {
-  mixins: [formsMixin, debounceMixin],
+  mixins: [formsMixin, debounceMixin, saasRefusalFormMixin],
   props: {
     userInfo: {
       type: Object,
@@ -82,6 +85,10 @@ export default {
     this.initTranscriptionList()
   },
   watch: {
+    // A refusal is about the files it was given: another selection may pass
+    audioFiles() {
+      this.saasRefusal = null
+    },
     "conversationLanguage.value"(value) {
       this.initTranscriptionList()
     },
@@ -129,6 +136,7 @@ export default {
     },
     async createConversationByFile(event) {
       event?.preventDefault()
+      this.saasRefusal = null
 
       if (this.audioFiles.length === 0) {
         this.formError = this.$i18n.t("conversation.error.no_audio_file")
@@ -199,16 +207,23 @@ export default {
 
             if (!creationResult.success) {
               this.$store.dispatch("system/removeNotificationById", notifId)
-              this.emitError(
-                this.resolveCreationErrorMessage(
-                  creationResult,
-                  "conversation.conversation_creation_error_multiple_unknown",
-                  { count: audioFileIndex - 1, total: total },
-                ),
-              )
-              this.formSubmitLabel = this.$i18n.t(
-                "conversation.conversation_creation_button.retry",
-              )
+              if (isSaasRefusal(creationResult.errorData)) {
+                this.showSaasRefusal(creationResult.errorData, {
+                  sent: audioFileIndex - 1,
+                  total,
+                })
+              } else {
+                this.emitError(
+                  this.resolveCreationErrorMessage(
+                    creationResult,
+                    "conversation.conversation_creation_error_multiple_unknown",
+                    { count: audioFileIndex - 1, total: total },
+                  ),
+                )
+                this.formSubmitLabel = this.$i18n.t(
+                  "conversation.conversation_creation_button.retry",
+                )
+              }
               this.formState = "available"
               return
             }
@@ -220,6 +235,7 @@ export default {
           }
 
           if (this.audioFiles.length === 0) {
+            this.refreshUsage()
             this.formState = "success"
             bus.$emit("app_notif", {
               status: "success",
@@ -306,6 +322,33 @@ export default {
           }
         }
       }
+    },
+    // Shown above the submit bar. Retrying as is would be refused again, so
+    // the button keeps its label; the files sent before the refused one are
+    // gone from the list, which a notification accounts for.
+    showSaasRefusal(errorData, { sent, total }) {
+      this.saasRefusal = errorData
+      this.formSubmitLabel = this.$i18n.t(
+        "conversation.conversation_creation_button.create",
+      )
+      if (sent > 0) {
+        bus.$emit("app_notif", {
+          status: "info",
+          message: this.$i18n.tc(
+            "conversation.conversation_creation_partially_sent",
+            sent,
+            { count: sent, total },
+          ),
+          timeout: null,
+        })
+      }
+      this.refreshUsage()
+    },
+    // The sidebar gauge and the next refusal read the file quota from the
+    // store: keep it in step with what was just used or refused.
+    refreshUsage() {
+      if (getEnv("VUE_APP_MODE") !== "cloud") return
+      this.$store.dispatch("billing/fetchUsage", this.currentOrganizationScope)
     },
     emitError(errorMessage) {
       bus.$emit("app_notif", {

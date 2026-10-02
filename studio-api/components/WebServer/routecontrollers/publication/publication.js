@@ -6,6 +6,10 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 const FormData = require("form-data")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
+const saas = require(`${process.cwd()}/lib/saas`)
+const { exportRestrictions } = require(
+  `${process.cwd()}/components/WebServer/controllers/publication/exportPolicy`,
+)
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -87,11 +91,22 @@ async function getTemplates(req, res, next) {
     }
 
     const response = await axios.get(url, { timeout: 5000 })
+    let templates = response || []
+
+    // Off plan only LinTO templates are listed, custom ones stay stored
+    const customAllowed = await saas.allowed({
+      orgId: organizationId,
+      capability: "publication.custom_templates",
+      userId: authenticatedUserId,
+    })
+    if (!customAllowed && Array.isArray(templates)) {
+      templates = templates.filter((template) => template.scope === "system")
+    }
 
     // Return with status wrapper, preserve all fields from LLM Gateway (including name_fr, name_en, etc.)
     return res.status(200).json({
       status: "success",
-      templates: response || [],
+      templates,
     })
   } catch (err) {
     next(err)
@@ -166,6 +181,17 @@ async function exportWithTemplate(req, res, next) {
       throw new PublicationNotConfigured()
     }
 
+    const templateScope =
+      req.query.templateId && saas.enabled()
+        ? (await fetchTemplate(baseUrl, req.query.templateId)).scope
+        : null
+    const restrictions = await exportRestrictions({
+      conversationId: req.params.conversationId,
+      userId: req.payload?.data?.userId,
+      format,
+      templateScope,
+    })
+
     // Build request URL
     url = `${baseUrl}/api/v1/jobs/${jobId}/export/${format}`
 
@@ -187,6 +213,9 @@ async function exportWithTemplate(req, res, next) {
     }
     if (req.query.timezone) {
       queryParams.append("timezone", req.query.timezone)
+    }
+    for (const [key, value] of Object.entries(restrictions)) {
+      queryParams.append(key, value)
     }
 
     if (queryParams.toString()) {

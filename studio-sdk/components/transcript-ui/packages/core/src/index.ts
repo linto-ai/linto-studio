@@ -47,6 +47,7 @@ export type {
   LLMServicesPluginApi,
   ChatRole,
   ChatMessage,
+  ChatMessageError,
   ChatSession,
   ChatPluginApi,
 } from './core'

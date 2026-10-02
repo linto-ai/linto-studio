@@ -15,6 +15,7 @@ export async function apiGetActivityLogs(
     sortOrder = -1,
     source,
     scope,
+    activity,
     userId,
   } = {},
 ) {
@@ -32,6 +33,7 @@ export async function apiGetActivityLogs(
       sortCriteria: sortOrder,
       source,
       scope,
+      activity,
       "user.id": userId,
     },
   )
@@ -39,11 +41,14 @@ export async function apiGetActivityLogs(
   return res?.data || { count: 0, list: [] }
 }
 
-// Maps each backoffice activity tab to its log source/scope filters.
+// Maps each backoffice activity tab to its log source/scope/activity filters.
 export const ACTIVITY_SCOPE_BY_TAB = {
   ressources: { source: "webserver", scope: "resource" },
   keys: { source: "webserver", scope: "tokens" },
   backoffice: { source: "webserver", scope: "platform" },
+  // Billing tab: every SaaS product-life event regardless of origin
+  // (webserver routes + system webhooks) -> filter on the activity type.
+  billing: { activity: "saas" },
 }
 
 export async function apiGetBackofficeActivityLogs(page = 0, args) {
@@ -71,9 +76,16 @@ export async function apiGetSessionActivityLogs(page = 0, args) {
   return await apiGetActivityLogs(page, { ...args, source: "socketio" })
 }
 
+export async function apiGetSaasActivityLogs(page = 0, args) {
+  return await apiGetActivityLogs(page, {
+    ...args,
+    ...ACTIVITY_SCOPE_BY_TAB.billing,
+  })
+}
+
 export async function apiExportActivityLogs(
   format,
-  { source, scope, userId } = {},
+  { source, scope, activity, userId } = {},
 ) {
   const res = await sendRequest(
     `${BASE_API}/administration/activity/export`,
@@ -82,6 +94,7 @@ export async function apiExportActivityLogs(
       format,
       source,
       scope,
+      activity,
       "user.id": userId,
     },
   )

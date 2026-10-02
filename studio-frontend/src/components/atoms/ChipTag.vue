@@ -48,8 +48,7 @@
         v-if="count"
         :class="{ 'chip-tag__count': count }"
         size="xs"
-        color="var(--neutral-20)"
-        color-text="var(--neutral-10)">
+        tone="neutral">
         {{ count }}
       </Avatar>
       <slot></slot>

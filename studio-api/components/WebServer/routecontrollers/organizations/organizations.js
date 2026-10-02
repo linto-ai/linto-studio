@@ -10,11 +10,23 @@ const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const { OrganizationError, OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
+const saas = require(`${process.cwd()}/lib/saas`)
+const platform = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/platform`,
+)
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
 async function createOrganization(req, res, next) {
   try {
     requireParam(req.body.name, OrganizationUnsupportedMediaType)
+
+    // SaaS: organizations are bought, not created, a platform admin aside; the
+    // plugin decides. No-op in OSS.
+    if (saas.enabled()) {
+      await saas.decide("organizationCreate", {
+        platformAdmin: await platform.isSystemAdministrator(req),
+      })
+    }
 
     const organization = {
       name: req.body.name,

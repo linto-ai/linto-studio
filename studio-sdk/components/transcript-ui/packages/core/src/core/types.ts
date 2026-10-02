@@ -76,6 +76,8 @@ export interface CoreEventMap {
   "chat:deleteSession": { sessionId: string }
   "chat:renameSession": { sessionId: string; title: string }
   "chat:send": { content: string }
+  /** The action button of an error message (see ChatMessageError) was clicked. */
+  "chat:errorAction": { messageId: string; actionId: string }
   destroy: void
 }
 
@@ -104,9 +106,13 @@ export interface ReadableTranslation extends TranslationInfo {
 export interface TurnStore {
   readonly id: string
   readonly turns: Readonly<Ref<Turn[]>>
-  /** Epoch ms — last time the transcription was modified (host-pushed). */
+  /** Epoch ms of the last server-side modification of this track (host- or
+   *  broadcast-pushed). */
   readonly lastModifiedAt: Ref<number | null>
-  setLastModifiedAt(ts: number | null): void
+  /** Move lastModifiedAt forward only: null, non-finite, or older-or-equal
+   *  timestamps are ignored (server reads and broadcasts can arrive out of
+   *  order; a modification never makes the transcription older). */
+  advanceLastModifiedAt(ts: number | null): void
   addTurn(turn: Turn): void
   prependTurns(turns: Turn[]): void
   updateTurn(turnId: string, patch: Partial<Turn>): void
@@ -240,6 +246,8 @@ export interface TurnUpdate {
   etime?: number
   /** Per-translation edit version — carried, not consumed yet (resync lot). */
   version?: number
+  /** Server last_update of the track after this mutation. */
+  lastUpdate?: string
 }
 
 /** A full turn as carried by structural broadcasts (turn_split, turns_merged). */
@@ -260,6 +268,8 @@ export interface TurnSplit {
   /** The two halves, in order — the left one keeps the original turn id. */
   turns: WireTurn[]
   version?: number
+  /** Server last_update of the track after this mutation. */
+  lastUpdate?: string
 }
 
 /** Two adjacent turns merged, as broadcast by the server (editor:turns_merged). */
@@ -270,6 +280,8 @@ export interface TurnsMerged {
   removedTurnId: string
   turn: WireTurn
   version?: number
+  /** Server last_update of the track after this mutation. */
+  lastUpdate?: string
 }
 
 /** A turn removed (the client committed an emptied text), as broadcast by
@@ -279,6 +291,8 @@ export interface TurnDeleted {
   turnId: string
   removedSpeakerId?: string
   version?: number
+  /** Server last_update of the track after this mutation. */
+  lastUpdate?: string
 }
 
 /** A turn pointed at a (possibly freshly created) speaker, as broadcast by
@@ -290,6 +304,8 @@ export interface TurnSpeakerUpdated {
   speaker: { id: string; name: string }
   removedSpeakerId?: string
   version?: number
+  /** Server last_update of the track after this mutation. */
+  lastUpdate?: string
   /** @see SpeakerRenamed.revisionId */
   revisionId?: string | null
   /** @see SpeakerRenamed.redoRevisionId */
@@ -301,6 +317,8 @@ export interface SpeakerRenamed {
   speakerId: string
   name: string
   version?: number
+  /** Server last_update of the track after this mutation. */
+  lastUpdate?: string
   /** The undo cursor AFTER this broadcast (see onUndo/onRedo server-side) —
    *  a plain rename and an undo/redo replaying one are indistinguishable on
    *  the wire, and don't need to be: both just mean "the cursor is here
@@ -322,6 +340,8 @@ export interface SpeakerReplaced {
   fromSpeakerId: string
   toSpeakerId: string
   version?: number
+  /** Server last_update of the track after this mutation. */
+  lastUpdate?: string
   /** @see SpeakerRenamed.revisionId */
   revisionId?: string | null
   /** @see SpeakerRenamed.redoRevisionId */
@@ -339,6 +359,8 @@ export interface SpeakerRestored {
   toSpeakerId: string
   turnIds: string[]
   version?: number
+  /** Server last_update of the track after this mutation. */
+  lastUpdate?: string
   /** @see SpeakerRenamed.revisionId */
   revisionId?: string | null
   /** @see SpeakerRenamed.redoRevisionId */
@@ -614,6 +636,17 @@ export interface ChatMessage {
   tokenCount?: number
   /** True only for the virtual in-flight assistant message during streaming. */
   streaming?: boolean
+  /** Set on an assistant message that reports a failure instead of a reply:
+   *  rendered as an error card, its content is ignored. */
+  error?: ChatMessageError
+}
+
+/** A failure reported in the thread. The host writes the texts (already
+ *  translated) and owns the action: clicking it emits "chat:errorAction". */
+export interface ChatMessageError {
+  title: string
+  description?: string
+  action?: { id: string; label: string; icon?: string }
 }
 
 export interface ChatSession {

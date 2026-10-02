@@ -1,7 +1,14 @@
 import axios from "axios"
 import { bus } from "@/tools/eventBus.js"
+import store from "@/store/index.js"
 import { getCookie } from "./getCookie"
 import { getImpersonatedOrgId } from "./getImpersonatedOrgId.js"
+import { readErrorPayload } from "@/tools/readErrorPayload.js"
+
+// Refusals shown inline by their forms (SaasRefusalMessage) instead of the
+// global upgrade wizard: the file quota (media upload) and the live credit
+// (microphone and visio), which packs refill rather than plans.
+const INLINE_REFUSAL_CAPABILITIES = ["import.minutes", "live.minutes"]
 
 export async function sendRequest(
   url,
@@ -78,7 +85,19 @@ export async function sendRequest(
     }
   } catch (error) {
     if (error.code === "ERR_CANCELED") return
-    let errMsg = error?.response?.data?.message || error.code || error.message
+    const payload = await readErrorPayload(error?.response?.data)
+    let errMsg = payload?.message || error.code || error.message
+    // SaaS gating: surface the upgrade flow globally (filtered services / quota
+    // exhausted / feature locked) regardless of the caller, except for the
+    // capabilities whose forms show the refusal themselves (SaasRefusalMessage).
+    const saasCode = error?.response?.data?.code
+    if (
+      (saasCode === "SAAS_QUOTA_EXCEEDED" ||
+        saasCode === "SAAS_FEATURE_LOCKED") &&
+      !INLINE_REFUSAL_CAPABILITIES.includes(error.response.data.capability)
+    ) {
+      store.dispatch("billing/openUpgradeModal", payload)
+    }
     if (notif) {
       bus.$emit("app_notif", {
         status: "error",

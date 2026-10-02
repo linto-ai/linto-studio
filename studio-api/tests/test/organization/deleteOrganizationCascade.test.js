@@ -1,4 +1,5 @@
 jest.mock("debug", () => () => () => {})
+jest.mock(`${process.cwd()}/lib/mailer/mailing`, () => ({}))
 
 const mockModel = {
   conversations: { getByOrga: jest.fn(), delete: jest.fn() },

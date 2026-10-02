@@ -38,6 +38,11 @@
 
         <UpdateOrganizationTranscriberProfiles
           :organizationId="organizationId" />
+        <IsCloud>
+          <section>
+            <BackofficeOrgBilling :organizationId="organizationId" />
+          </section>
+        </IsCloud>
         <section>
           <ApiTokenSettings :organizationId="organizationId" />
         </section>
@@ -85,6 +90,8 @@ import UpdateOrganizationMatchingUsers from "@/components/UpdateOrganizationMatc
 import UpdateOrganizationTranscriberProfiles from "@/components/UpdateOrganizationTranscriberProfiles.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import Button from "@/components/atoms/Button.vue"
+import IsCloud from "@/components/atoms/IsCloud.vue"
+import BackofficeOrgBilling from "@/components-cloud/BackofficeOrgBilling.vue"
 
 export default {
   mixins: [platformRoleMixin, impersonationMixin],
@@ -144,6 +151,8 @@ export default {
     ModalDeleteOrganization,
     ApiTokenSettings,
     Button,
+    IsCloud,
+    BackofficeOrgBilling,
   },
 }
 </script>

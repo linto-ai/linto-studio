@@ -13,6 +13,7 @@ import { resetCookie } from "../tools/resetCookie"
 import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
 import { isAtLeastSystemAdministrator } from "@/tools/platformRoles.js"
+import { computeSettingsTabRequest } from "@/tools/computeSettingsTabRequest.js"
 
 const defaultComponents = {}
 
@@ -768,24 +769,6 @@ let router = new Router({
       },
     },
     {
-      path: "/interface/organizations/:organizationId",
-      name: "organizations update",
-      components: {
-        default: () => import("../views/OrganizationsUpdate.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-      meta: {
-        breadcrumb: {
-          label: "",
-          parent: "explore",
-          dynamic: true,
-          entity: "organization",
-          showInBreadcrumb: true,
-        },
-      },
-    },
-    {
       path: "/interface/user/settings",
       name: "user settings",
       components: {
@@ -898,6 +881,23 @@ router.beforeEach(async (to, from, next) => {
 
     // User is authenticated
 
+    // ?settings=<tab> opens the settings modal on that tab (Stripe return
+    // URLs, cross-org links). Consumed here and dropped from the URL, so the
+    // redirected navigation runs the regular guard once.
+    const settingsTabRequest = computeSettingsTabRequest(to.query)
+    if (settingsTabRequest) {
+      store.dispatch("settings/openModalOnTab", settingsTabRequest.tab)
+      const cleanRoute = { ...to, query: settingsTabRequest.query }
+      // Already on that page (e.g. a link to the current org): redirecting
+      // would be aborted as redundant and afterEach would never stop the
+      // loader, so cancel the navigation instead.
+      if (router.resolve(cleanRoute).route.fullPath === from.fullPath) {
+        store.dispatch("system/setIsLoading", false)
+        return next(false)
+      }
+      return next({ ...cleanRoute, replace: true })
+    }
+
     // Fetch user data
     routerDebug("Fetching user data")
     await authGuards.checkUserAuth(next, to, from)
@@ -906,6 +906,17 @@ router.beforeEach(async (to, from, next) => {
     // Fetch organizations
     await store.dispatch("organizations/fetchOrganizations")
     routerDebug("Organizations fetched")
+
+    // Preload the billing plan catalog once per session (cloud only) so
+    // OnboardingWizard and the billing pages never show their own spinner
+    // for it — it rides the same global loader as organizations/tags.
+    if (
+      getEnv("VUE_APP_MODE") === "cloud" &&
+      store.getters["billing/plans"].length === 0
+    ) {
+      await store.dispatch("billing/fetchPlans")
+      routerDebug("Billing plans fetched")
+    }
 
     syncImpersonationState(to)
 

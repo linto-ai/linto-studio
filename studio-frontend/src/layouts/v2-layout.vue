@@ -47,7 +47,6 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "@/main.js"
 import isAuthenticated from "@/tools/isAuthenticated.js"
 import { mapGetters } from "vuex"
 
@@ -91,9 +90,6 @@ export default {
       default: false,
     },
   },
-  data() {
-    return {}
-  },
   computed: {
     isAuthenticated() {
       return isAuthenticated()
@@ -110,7 +106,6 @@ export default {
       this.$store.dispatch("system/toggleSidebar", true)
     }
   },
-  mounted() {},
   methods: {
     closeSidebar() {
       if (!this.isMobile || !this.sidebarOpen) return

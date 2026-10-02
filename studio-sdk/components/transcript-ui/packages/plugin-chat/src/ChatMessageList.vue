@@ -11,6 +11,10 @@ defineProps<{
   isLoading: boolean
 }>()
 
+const emit = defineEmits<{
+  errorAction: [messageId: string, actionId: string]
+}>()
+
 const { t } = useI18n()
 </script>
 
@@ -22,8 +26,11 @@ const { t } = useI18n()
       <span class="transcript-ui-sr-only">{{ t("editor.loading") }}</span>
     </div>
 
-    <!-- No session selected yet -->
-    <div v-else-if="!hasActiveSession" class="chat-message-list__state">
+    <!-- No session selected yet (a failed first send still shows its
+         messages: the question and its error) -->
+    <div
+      v-else-if="!hasActiveSession && messages.length === 0"
+      class="chat-message-list__state">
       <p>{{ t("chat.emptyState") }}</p>
     </div>
 
@@ -39,7 +46,13 @@ const { t } = useI18n()
       resize="smooth"
       :initial="true">
       <div class="chat-message-list__items">
-        <ChatMessage v-for="msg in messages" :key="msg.id" :message="msg" />
+        <ChatMessage
+          v-for="msg in messages"
+          :key="msg.id"
+          :message="msg"
+          @error-action="
+            (messageId, actionId) => emit('errorAction', messageId, actionId)
+          " />
       </div>
     </StickToBottom>
   </div>

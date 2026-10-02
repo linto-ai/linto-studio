@@ -21,7 +21,6 @@
     <ReportPdfFlow
       v-if="ready"
       ref="reportPdf"
-      :conversation-id="$route.params.conversationId"
       :conversation-name="name"
       :organization-id="organizationId" />
   </div>

@@ -20,7 +20,7 @@
       <Button
         type="submit"
         variant="primary"
-        size="sm"
+        size="md"
         :label="$t('user_settings.update_personal_information_button')" />
     </section>
   </form>

@@ -2,6 +2,7 @@
 // - initial load (catalog + already-completed jobs)
 // - WS dispatch (update / complete / error)
 // - core event dispatch (regenerate / export / verbatim:export)
+// - auto-generation of a never-generated report when it is opened
 //
 // All work lives in actions/. This file only wires deps together.
 
@@ -13,11 +14,13 @@ import { onLlmJobUpdate } from "./actions/onLlmJobUpdate.js"
 import { onLlmJobComplete } from "./actions/onLlmJobComplete.js"
 import { onLlmJobError } from "./actions/onLlmJobError.js"
 import { onRegenerate } from "./actions/onRegenerate.js"
+import { generateIfNeverGenerated } from "./actions/generateIfNeverGenerated.js"
 import { onExport } from "./actions/onExport.js"
 import { onSelectVersion } from "./actions/onSelectVersion.js"
 import { onSaveVersion } from "./actions/onSaveVersion.js"
 import { onSelectGeneration } from "./actions/onSelectGeneration.js"
 import { onVerbatimExport } from "./actions/onVerbatimExport.js"
+import { resetServices } from "./actions/resetServices.js"
 
 export function setupLLMServices(
   core,
@@ -33,16 +36,21 @@ export function setupLLMServices(
     openPublication,
   },
 ) {
-  const state = { destroyed: false }
+  // jobsLoaded: the conversation's job list is known (see loadServices).
+  const state = { destroyed: false, jobsLoaded: false }
 
   store.commit("llmServices/RESET")
-  core.use(createLLMServicesPlugin())
+  // Once per editor: the rest is set up again for each conversation.
+  if (!core.llmServices) core.use(createLLMServicesPlugin())
 
   const unsubRegenerate = core.on("llmService:regenerate", (p) =>
     onRegenerate({ core, store, state, conversationId, t }, p),
   )
+  const unsubActive = core.on("llmService:active", ({ id }) =>
+    generateIfNeverGenerated({ core, store, state, conversationId, t }, id),
+  )
   const unsubExport = core.on("llmService:export", (p) =>
-    onExport({ store, t, notify, openPublication }, p),
+    onExport({ store, conversationId, t, notify, openPublication }, p),
   )
   const unsubSelectVersion = core.on("llmService:selectVersion", (p) =>
     onSelectVersion({ core, store, state, conversationId }, p),
@@ -79,6 +87,14 @@ export function setupLLMServices(
     organizationId,
     securityLevel,
     locale,
+  }).then((jobsLoaded) => {
+    state.jobsLoaded = jobsLoaded
+    // The report may already be open: tab opened during the load, or channel
+    // switched while on the tab.
+    generateIfNeverGenerated(
+      { core, store, state, conversationId, t },
+      core.llmServices.activeId.value,
+    )
   })
 
   return {
@@ -97,12 +113,14 @@ export function setupLLMServices(
       }
 
       unsubRegenerate?.()
+      unsubActive?.()
       unsubExport?.()
       unsubSelectVersion?.()
       unsubSaveVersion?.()
       unsubSelectGeneration?.()
       unsubVerbatim?.()
 
+      resetServices(core)
       store.commit("llmServices/RESET")
     },
   }

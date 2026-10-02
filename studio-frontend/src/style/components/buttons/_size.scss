@@ -1,48 +1,42 @@
 @use "sass:map";
+// One token per size drives BOTH dimensions of a button. The vertical padding
+// is deliberately zero: the height comes from --btn-height and the content is
+// centred by align-items, so a labelled button and an icon-only one of the same
+// size are exactly as tall — and the icon-only one is square, by construction.
+// md matches the app-wide input height (see InputItem) so a button sitting next
+// to a field lines up with it.
 $btn-sizes: (
   xs: (
-    padding: 0.25rem 0.5rem,
+    padding-x: 0.5rem,
     font-size: 0.8rem,
-    icon-size: 16px,
+    height: 24px,
   ),
   sm: (
-    padding: 0.35rem 0.75rem,
+    padding-x: 0.75rem,
     font-size: 0.9rem,
-    icon-size: 24px,
+    height: 32px,
   ),
   md: (
-    padding: 0.5rem 1rem,
+    padding-x: 1rem,
     font-size: 0.9rem,
-    icon-size: 32px,
+    height: 40px,
   ),
   lg: (
-    padding: 0.75rem 1.25rem,
+    padding-x: 1.25rem,
     font-size: 1.1rem,
-    icon-size: 32px,
+    height: 48px,
   ),
   xl: (
-    padding: 1rem 1.5rem,
+    padding-x: 1.5rem,
     font-size: 1.2rem,
-    icon-size: 32px,
+    height: 56px,
   ),
 );
 
 @each $size, $values in $btn-sizes {
-  @debug "divider offset: #{$size}";
   .btn--#{$size} {
-    --btn-padding: #{map.get($values, padding)};
+    --btn-padding: 0 #{map.get($values, padding-x)};
     --btn-font-size: #{map.get($values, font-size)};
-    --btn-icon-size: #{map.get($values, icon-size)};
-
-    &.btn--icon-only {
-      width: #{map.get($values, icon-size)};
-      height: #{map.get($values, icon-size)};
-      padding: 0;
-
-      &:hover:not([disabled]):not(.disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-      }
-    }
+    --btn-height: #{map.get($values, height)};
   }
 }

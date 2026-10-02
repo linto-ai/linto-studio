@@ -11,6 +11,7 @@ import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useCore, useIsMobile } from "@linto-ai/transcript-ui-core"
 import type { LLMService } from "@linto-ai/transcript-ui-core"
 import LLMServiceStatus from "./LLMServiceStatus.vue"
+import { computeIsUpToDate } from "./utils/computeIsUpToDate"
 
 const props = defineProps<{
   service: LLMService
@@ -46,9 +47,6 @@ const content = computed(() => props.service.content.value)
 const busy = computed(() => props.service.busy.value)
 const dirty = computed(() => props.service.dirty.value)
 const versions = computed(() => props.service.versions.value)
-const activeVersionNumber = computed(
-  () => props.service.activeVersionNumber.value,
-)
 
 // Nothing generated yet AND no saved version to fall back to — regardless
 // of status (covers "error" with nothing generated too, not just "done").
@@ -64,23 +62,23 @@ const isEmpty = computed<boolean>(() => {
   return !hasContent.value
 })
 
-// "Up to date" = the current version is more recent than the transcription's
-// last edit. When either date is missing, default to up to date (no negative
-// signal to show).
+// "Up to date" = the displayed generation is at least as recent as the
+// transcription's last server-side modification. The generation date, not
+// the version date: editing and saving the report by hand creates a version
+// but does not make it reflect the transcription. When either date is missing,
+// default to up to date (no negative signal to show).
 const isUpdated = computed<boolean>(() => {
-  // Resolve the real backing store; the virtual cross translation isn't in the
-  // map (no lastModifiedAt) → treated as up to date.
-  const channel = core.activeChannel.value
-  const activeId = channel?.activeTranslation.value.id
-  const realStore = activeId ? channel?.translations.get(activeId) : undefined
-  const transcriptionLastModified = realStore?.lastModifiedAt.value ?? null
-  if (transcriptionLastModified == null) return true
-  const activeVersion = versions.value.find(
-    (v) => v.versionNumber === activeVersionNumber.value,
+  // Reports are generated from the channel conversation, i.e. its source
+  // track, whatever track is displayed.
+  const transcriptionModifiedAt =
+    core.activeChannel.value?.sourceTranslation.lastModifiedAt.value ?? null
+  const currentGeneration = props.service.generations.value.find(
+    (g) => g.generationId === props.service.currentGenerationId.value,
   )
-  const versionTs = activeVersion?.createdAt ?? props.service.lastUpdate.value
-  if (versionTs == null) return true
-  return versionTs >= transcriptionLastModified
+  return computeIsUpToDate(
+    transcriptionModifiedAt,
+    currentGeneration?.createdAt ?? null,
+  )
 })
 
 const draft = ref(content.value)

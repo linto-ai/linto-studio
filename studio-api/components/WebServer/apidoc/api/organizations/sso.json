@@ -1,0 +1,271 @@
+{
+  "/api/organizations/{organizationId}/sso": {
+    "get": {
+      "tags": ["organizations admin"],
+      "summary": "Get the organization custom SSO configuration and the callback URL (client secret never returned)",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "callbackUrl": {
+                    "type": "string",
+                    "description": "Redirect URI to register on the identity provider"
+                  },
+                  "sso": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "example": "oidc"
+                      },
+                      "enabled": {
+                        "type": "boolean"
+                      },
+                      "issuerUrl": {
+                        "type": "string"
+                      },
+                      "clientId": {
+                        "type": "string"
+                      },
+                      "scope": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "emailDomains": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "authorizationUrl": {
+                        "type": "string"
+                      },
+                      "tokenUrl": {
+                        "type": "string"
+                      },
+                      "userInfoUrl": {
+                        "type": "string"
+                      },
+                      "created": {
+                        "type": "string"
+                      },
+                      "last_update": {
+                        "type": "string"
+                      }
+                    },
+                    "nullable": true,
+                    "description": "null when no SSO is configured"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "Not an admin of the organization, or the plan does not include a custom SSO"
+        }
+      }
+    },
+    "put": {
+      "tags": ["organizations admin"],
+      "summary": "Create or replace the organization custom SSO configuration",
+      "description": "Available to Business organizations on the cloud offer, to every organization otherwise. The client secret is stored encrypted and may be omitted on an update to keep the stored one.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["issuerUrl", "clientId"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["oidc"],
+                  "default": "oidc"
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "issuerUrl": {
+                  "type": "string",
+                  "description": "OpenID Connect issuer, https only",
+                  "example": "https://login.example.com/realms/acme"
+                },
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string",
+                  "description": "Required on creation, optional on update"
+                },
+                "scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "default": ["openid", "email", "profile"],
+                  "description": "Must include openid. A comma separated string is also accepted"
+                },
+                "emailDomains": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Email domains routed to this SSO at login. Defaults to the domain of the organization matching email, required when there is none. A comma separated string is also accepted",
+                  "example": ["acme.com"]
+                },
+                "authorizationUrl": {
+                  "type": "string",
+                  "description": "Optional, overrides the issuer discovery"
+                },
+                "tokenUrl": {
+                  "type": "string",
+                  "description": "Optional, overrides the issuer discovery"
+                },
+                "userInfoUrl": {
+                  "type": "string",
+                  "description": "Optional, overrides the issuer discovery"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "callbackUrl": {
+                    "type": "string",
+                    "description": "Redirect URI to register on the identity provider"
+                  },
+                  "sso": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "example": "oidc"
+                      },
+                      "enabled": {
+                        "type": "boolean"
+                      },
+                      "issuerUrl": {
+                        "type": "string"
+                      },
+                      "clientId": {
+                        "type": "string"
+                      },
+                      "scope": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "emailDomains": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "authorizationUrl": {
+                        "type": "string"
+                      },
+                      "tokenUrl": {
+                        "type": "string"
+                      },
+                      "userInfoUrl": {
+                        "type": "string"
+                      },
+                      "created": {
+                        "type": "string"
+                      },
+                      "last_update": {
+                        "type": "string"
+                      }
+                    },
+                    "nullable": true,
+                    "description": "null when no SSO is configured"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid configuration"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "Not an admin of the organization, or the plan does not include a custom SSO"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["organizations admin"],
+      "summary": "Remove the organization custom SSO configuration",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "message": "Organization SSO has been removed"
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "Not an admin of the organization, or the plan does not include a custom SSO"
+        },
+        "404": {
+          "description": "No SSO configured for this organization"
+        }
+      }
+    }
+  }
+}

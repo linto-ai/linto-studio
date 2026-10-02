@@ -1,0 +1,110 @@
+<template>
+  <UsageTile
+    class="quota-meter"
+    :label="label"
+    :value="formatAmount(used)"
+    :detail="detailLabel">
+    <progress
+      v-if="!isUnlimited"
+      class="quota-meter__bar"
+      :class="statusClass"
+      :value="progressValue"
+      :max="progressMax"></progress>
+  </UsageTile>
+</template>
+
+<script>
+import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
+import { isQuotaUnlimited } from "@/tools/billingMeters"
+
+export default {
+  name: "QuotaMeter",
+  props: {
+    label: { type: String, required: true },
+    used: { type: Number, default: 0 },
+    // null/undefined limit means unlimited, as does a minutes limit above
+    // UNLIMITED_MINUTES_THRESHOLD (see isQuotaUnlimited).
+    limit: { type: Number, default: null },
+    unit: { type: String, default: "count" }, // "minutes" | "count"
+  },
+  computed: {
+    isUnlimited() {
+      return isQuotaUnlimited(this.limit, this.unit)
+    },
+    percent() {
+      if (this.isUnlimited) return 0
+      return Math.min(
+        100,
+        Math.round((this.used / Math.max(1, this.limit)) * 100),
+      )
+    },
+    progressValue() {
+      return this.used
+    },
+    progressMax() {
+      return Math.max(1, this.limit)
+    },
+    // Mirrors the seat-status thresholds used across the billing UI.
+    statusClass() {
+      if (this.percent >= 100) return "danger"
+      if (this.percent >= 80) return "warning"
+      return "success"
+    },
+    detailLabel() {
+      if (this.isUnlimited) return this.$t("billing.unlimited")
+      return this.$t("billing.quota_limit_this_month", {
+        limit: this.formatAmount(this.limit),
+      })
+    },
+  },
+  methods: {
+    formatAmount(value) {
+      return this.unit === "minutes"
+        ? formatMinutesDuration(value)
+        : String(value)
+    },
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+.quota-meter {
+  &__bar {
+    display: block;
+    width: 100%;
+    height: 6px;
+    border: none;
+    border-radius: 3px;
+    overflow: hidden;
+
+    &::-webkit-progress-bar {
+      background: var(--neutral-30);
+      border-radius: 3px;
+    }
+    &::-moz-progress-bar {
+      border-radius: 3px;
+    }
+
+    &.success::-webkit-progress-value {
+      background: var(--success-color);
+    }
+    &.success::-moz-progress-bar {
+      background: var(--success-color);
+    }
+
+    &.warning::-webkit-progress-value {
+      background: var(--warning-color);
+    }
+    &.warning::-moz-progress-bar {
+      background: var(--warning-color);
+    }
+
+    &.danger::-webkit-progress-value {
+      background: var(--danger-color);
+    }
+    &.danger::-moz-progress-bar {
+      background: var(--danger-color);
+    }
+  }
+}
+</style>

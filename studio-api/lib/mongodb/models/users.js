@@ -34,6 +34,7 @@ const defaultUserPayload = {
   private: false,
   favorites: [],
   defaultOrganization: null,
+  onboarded: false,
   emailNotifications: {
     conversations: {
       share: { update: false, delete: false, add: true },

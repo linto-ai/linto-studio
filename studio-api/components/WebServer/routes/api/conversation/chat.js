@@ -13,6 +13,13 @@ const {
   `${process.cwd()}/components/WebServer/routecontrollers/conversation/chat.js`,
 )
 
+const organizationUtility = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+
+// SaaS: a chat message is billed to the conversation's organization.
+const chatOrg = (req) => organizationUtility.getOrgaIdFromReq(req)
+
 module.exports = (webserver) => {
   return [
     {
@@ -55,6 +62,7 @@ module.exports = (webserver) => {
       method: "post",
       requireAuth: true,
       requireConversationReadAccess: true,
+      requireEntitlement: { capability: "ai.chat", value: 1, orgFrom: chatOrg },
       controller: sendMessage,
     },
   ]

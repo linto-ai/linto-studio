@@ -1,4 +1,5 @@
 import Vue from "vue"
+import i18n from "../i18n.js"
 import { timeAgo } from "../tools/formatDate.js"
 import { getCookie } from "../tools/getCookie"
 import { sendRequest } from "../tools/sendRequest"
@@ -82,5 +83,5 @@ Vue.filter("setCookie", setCookie)
 Vue.filter("getCookie", getCookie)
 
 Vue.filter("getTimeDiffText", function (date) {
-  return timeAgo(date)
+  return timeAgo(date, i18n.locale)
 })

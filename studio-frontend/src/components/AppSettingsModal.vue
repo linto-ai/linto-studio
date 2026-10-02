@@ -18,7 +18,9 @@
     <div class="app-settings flex1">
       <aside>
         <div class="flex1">
-          <h4>{{ $t("app_settings_modal.account_title") }}</h4>
+          <h4 class="section-caption">
+            {{ $t("app_settings_modal.account_title") }}
+          </h4>
           <!-- <div class="app-settings__user-info flex align-center gap-small">
           <div class="flex flex1 align-center gap-small">
             <UserProfilePicture :hover="false" :user="user" />
@@ -54,7 +56,7 @@
             </li> -->
           </ul>
           <template v-if="!isImpersonatingCurrentOrganization">
-            <h4>{{ orgaName }}</h4>
+            <h4 class="section-caption">{{ orgaName }}</h4>
 
             <ul>
               <li
@@ -74,14 +76,16 @@
                   }}</span>
                 </a>
               </li>
-              <!-- <is-cloud>
-              <li :class="{ active: selectedTab === 'billing' }">
-                <a href="#" @click="selectTab('billing')">
-                  <ph-icon name="credit-card" weight="bold"></ph-icon>
-                  <span>{{ $t("app_settings_modal.billing") }}</span>
-                </a>
-              </li>
-            </is-cloud> -->
+              <is-cloud>
+                <li
+                  v-if="canSeeBilling"
+                  :class="{ active: selectedTab === 'billing' }">
+                  <a href="#" @click="selectTab('billing')">
+                    <ph-icon name="credit-card" weight="bold"></ph-icon>
+                    <span>{{ $t("app_settings_modal.billing") }}</span>
+                  </a>
+                </li>
+              </is-cloud>
               <li :class="{ active: selectedTab === 'tags' }">
                 <a href="#" @click="selectTab('tags')">
                   <ph-icon name="tag" weight="bold"></ph-icon>
@@ -104,6 +108,12 @@
                 <a href="#" @click="selectTab('apiTokens')">
                   <ph-icon name="key" weight="bold"></ph-icon>
                   <span>{{ $t("app_settings_modal.api_tokens") }}</span>
+                </a>
+              </li>
+              <li :class="{ active: selectedTab === 'sso' }" v-if="isAdmin">
+                <a href="#" @click="selectTab('sso')">
+                  <ph-icon name="shield-check" weight="bold"></ph-icon>
+                  <span>{{ $t("app_settings_modal.sso") }}</span>
                 </a>
               </li>
             </ul>
@@ -149,6 +159,7 @@
           v-if="selectedTab === 'organization-information'"
           class="app-settings__section">
           <UpdateOrganizationForm :currentOrganization="currentOrganization" />
+          <!-- <DevSubscribeButtons :currentOrganization="currentOrganization" /> -->
           <UpdateOrganizationDeletion
             v-if="isAdmin"
             :currentOrganization="currentOrganization" />
@@ -165,14 +176,30 @@
             :organizationId="organizationId"
             @quit="leaveSpeakerIdentification" />
         </div>
+        <div
+          v-if="selectedTab === 'sso' && isAdmin"
+          class="app-settings__section flex col">
+          <HasEntitlement capability="sso.custom" lockedPlaceholder>
+            <UpdateOrganizationSso :currentOrganization="currentOrganization" />
+          </HasEntitlement>
+        </div>
       </template>
+      <!-- Outside the impersonation block: the tab can be requested from the
+           usage footer or a ?settings=billing link by someone who cannot see
+           it, who gets an explanation instead of an empty pane. -->
+      <is-cloud>
+        <div v-if="selectedTab === 'billing'" class="app-settings__section">
+          <OrganizationSettingsBilling
+            v-if="canSeeBilling"
+            :currentOrganization="currentOrganization" />
+          <p v-else class="app-settings__notice">
+            {{ $t("billing.settings.admin_only") }}
+          </p>
+        </div>
+      </is-cloud>
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
       </div>
-      <div
-        v-if="selectedTab === 'billing'"
-        class="app-settings__section"
-        :class="{ active: selectedTab === 'billing' }"></div>
     </div>
   </Modal>
 </template>
@@ -193,12 +220,16 @@ import UserSettingsAvatar from "@/components/UserSettingsAvatar.vue"
 import UserSettingsPreferences from "@/components/UserSettingsPreferences.vue"
 import TagManagement from "@/components/TagManagement.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
+import DevSubscribeButtons from "@/components-cloud/DevSubscribeButtons.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
+import UpdateOrganizationSso from "@/components/UpdateOrganizationSso.vue"
+import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import SpeakerIdentificationSettings from "@/components/SpeakerIdentificationSettings.vue"
 import UserSettingsVoiceOptIn from "@/components/UserSettingsVoiceOptIn.vue"
+import OrganizationSettingsBilling from "@/components-cloud/OrganizationSettingsBilling.vue"
 
 export default {
   name: "AppSettingsModal",
@@ -213,12 +244,16 @@ export default {
     UserSettingsPreferences,
     TagManagement,
     UpdateOrganizationForm,
+    DevSubscribeButtons,
     UpdateOrganizationUsers,
     UpdateOrganizationDeletion,
+    UpdateOrganizationSso,
+    HasEntitlement,
     Modal,
     ApiTokenSettings,
     SpeakerIdentificationSettings,
     UserSettingsVoiceOptIn,
+    OrganizationSettingsBilling,
   },
   data() {
     return {
@@ -245,9 +280,15 @@ export default {
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
       organizationId: "getCurrentOrganizationScope",
+      orgaName: "getCurrentOrganizationDisplayName",
     }),
     ...mapGetters("system", ["isMobile"]),
     ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
+    // Billing is the org's Stripe account: its admins only, and not while
+    // impersonating (the whole org block is hidden then).
+    canSeeBilling() {
+      return this.isAdmin && !this.isImpersonatingCurrentOrganization
+    },
     speakerIdentificationEnabled() {
       return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"
     },
@@ -259,6 +300,9 @@ export default {
         this.$store.dispatch("settings/setModalOpen", value)
       },
     },
+    requestedTab() {
+      return this.$store.state.settings.requestedTab
+    },
     userName() {
       return this.user.firstname + " " + this.user.lastname
     },
@@ -268,8 +312,21 @@ export default {
       }
       return "xl"
     },
-    orgaName() {
-      return this.currentOrganization?.name
+  },
+  watch: {
+    // Reacts whether the modal was closed or already open, so a shortcut
+    // like the billing one still lands on the right tab either way.
+    // Immediate: on a full page load (e.g. back from Stripe with
+    // ?settings=billing) the router requests the tab before this component
+    // is created.
+    requestedTab: {
+      handler(tab) {
+        if (!tab) return
+        this.selectTab(tab)
+        // Consume it so a later plain "open settings" doesn't land here again.
+        this.$store.dispatch("settings/setRequestedTab", null)
+      },
+      immediate: true,
     },
   },
   methods: {
@@ -333,9 +390,8 @@ export default {
     border-radius: 10px;
     //height: 100%;
 
+    // Typographic identity comes from .section-caption — only layout here.
     h4 {
-      font-size: 14px;
-      color: var(--text-secondary);
       margin-bottom: 0.25rem;
     }
 
@@ -376,6 +432,11 @@ export default {
         }
       }
     }
+  }
+
+  &__notice {
+    margin: 0;
+    color: var(--text-secondary);
   }
 
   &__section {

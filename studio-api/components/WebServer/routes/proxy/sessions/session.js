@@ -191,6 +191,9 @@ module.exports = (webServer) => {
       {
         //quick meeting access (microphone)
         scrapPath: /^\/organizations\/[^/]+/,
+        // SaaS: admission of the session on POST, decided by the plugin from
+        // the requested channels. No-op in OSS.
+        requireEntitlement: { liveAdmit: true, methods: ["post"] },
         paths: [
           {
             path: "/organizations/:organizationId/quickMeeting/",
@@ -244,6 +247,8 @@ module.exports = (webServer) => {
       {
         // Meeting Manager access
         scrapPath: /^\/organizations\/[^/]+/,
+        // SaaS: the Sessions mode is not part of the plans (managed orgs only).
+        requireEntitlement: { capability: "live.sessions", methods: ["post"] },
         paths: [
           {
             path: "/organizations/:organizationId/sessions/",

@@ -203,7 +203,7 @@ async function inviteNewUser(req, res, next) {
     if (magicId) {
       const createOrganization = await model.organizations.createDefault(
         userId,
-        email + "'s Organization",
+        email,
         {},
       )
       if (createOrganization.insertedCount !== 1) {

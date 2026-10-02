@@ -10,7 +10,7 @@
             :alt="logoAlt"
             class="login-page__logo" />
           <h1 class="center-text login-page__main-title">
-            {{ title }}
+            <AppName />
           </h1>
         </div>
         <div class="flex flex1 col align-center gap-medium reset-overflows">
@@ -60,7 +60,7 @@
       </div>
       <div class="login-page__container__right">
         <h1 class="center-text login-page__main-title">
-          {{ title }}
+          <AppName />
         </h1>
         <LocalSwitcher class="local-switcher"></LocalSwitcher>
 
@@ -84,9 +84,6 @@ export default {
   methods: {},
   computed: {
     ...mapGetters("system", ["isMobile"]),
-    title() {
-      return getEnv("VUE_APP_NAME")
-    },
     logo() {
       return getEnv("VUE_APP_LOGO") ? `/img/${getEnv("VUE_APP_LOGO")}` : false
     },

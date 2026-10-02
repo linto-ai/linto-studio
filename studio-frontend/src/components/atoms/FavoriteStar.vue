@@ -33,6 +33,9 @@ export default {
   justify-content: center;
   width: 20px;
   height: 20px;
+  // Declares its own box: opt out of the button height scale, which would
+  // otherwise stretch it to the size of a full control.
+  min-height: 20px;
   border: none;
   background: transparent;
   color: var(--neutral-60);

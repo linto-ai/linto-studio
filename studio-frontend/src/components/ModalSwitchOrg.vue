@@ -17,6 +17,7 @@
           <Avatar
             icon="key"
             size="sm"
+            tone="soft"
             class="modal-switch-org__list__item__avatar" />
           <div
             class="modal-switch-org__list__item__name flex flex1"
@@ -40,8 +41,9 @@
             :title="$t('modal_switch_org.favorite')"
             @input="toggleFavoriteOrganization(org._id)" />
           <Avatar
-            :text="org.name.slice(0, 1)"
-            :size="isMobile ? 'md' : 'sm'"
+            :icon="org.icon"
+            size="md"
+            tone="primary"
             class="modal-switch-org__list__item__avatar" />
           <div
             class="modal-switch-org__list__item__name flex flex1"
@@ -50,7 +52,7 @@
                 currentOrganization && org._id === currentOrganization._id,
             }">
             <div class="modal-switch-org__list__item__name__text flex1">
-              {{ getOrgDisplayName(org) }}
+              {{ org.displayName }}
             </div>
             <!-- <div
               v-if="currentOrganization && org._id === currentOrganization._id"
@@ -62,15 +64,16 @@
             </div>
           </div>
         </router-link>
-        <div class="modal-switch-org__list__item new-org">
+        <div
+          v-if="canCreateOrganization"
+          class="modal-switch-org__list__item new-org">
           <Button
-            v-if="isOrganizationInitiator"
             :label="$t('modal_switch_org.create_organization')"
             icon="plus"
             size="sm"
             variant="primary"
             color="primary"
-            @click="isCreateModalOpen = true" />
+            @click="createOrganization" />
         </div>
       </div>
       <ModalCreateOrganization
@@ -85,10 +88,11 @@ import { mapGetters, mapActions } from "vuex"
 import Modal from "@/components/molecules/Modal.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
 import FavoriteStar from "@/components/atoms/FavoriteStar.vue"
-import { orgDisplayName } from "@/tools/orgDisplayName"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
-import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
+import { getEnv } from "@/tools/getEnv"
+
+const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 
 export default {
   name: "ModalSwitchOrg",
@@ -113,13 +117,17 @@ export default {
   computed: {
     ...mapGetters("organizations", {
       currentOrganization: "getCurrentOrganization",
-      organizations: "getOrganizationsAsArray",
+      organizations: "getOrganizationsWithUserContext",
     }),
     ...mapGetters("user", {
-      userInfo: "getUserInfos",
       isFavoriteOrganization: "isFavoriteOrganization",
     }),
     ...mapGetters("system", ["isMobile"]),
+    // In SaaS a new organization is a Business subscription: anyone can buy
+    // one. Elsewhere it takes the platform role.
+    canCreateOrganization() {
+      return IS_MODE_CLOUD || this.isOrganizationInitiator
+    },
     isOpen: {
       get() {
         return this.value
@@ -137,7 +145,6 @@ export default {
           this.sortedOrganizations = this.organizations
             .map((org) => ({
               ...org,
-              role: getUserRoleInOrganization(org, this.userInfo._id),
               isFav: this.isFavoriteOrganization(org._id),
             }))
             .sort((a, b) => {
@@ -154,11 +161,19 @@ export default {
   },
   methods: {
     ...mapActions("user", ["toggleFavoriteOrganization"]),
+    ...mapActions("billing", ["openUpgradeModalOnPlan"]),
+    // SaaS: the organization is created by the Business checkout, from the
+    // wizard's organization step.
+    createOrganization() {
+      if (!IS_MODE_CLOUD) {
+        this.isCreateModalOpen = true
+        return
+      }
+      this.close()
+      this.openUpgradeModalOnPlan("business")
+    },
     close() {
       this.$emit("close")
-    },
-    getOrgDisplayName(org) {
-      return orgDisplayName(org, this.userInfo._id)
     },
   },
 }

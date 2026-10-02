@@ -14,20 +14,17 @@
 </template>
 <script>
 import { mapGetters } from "vuex"
-import { orgDisplayName } from "@/tools/orgDisplayName.js"
 import { userName } from "@/tools/userName.js"
 
 export default {
   computed: {
     ...mapGetters("system", ["isImpersonatingUser"]),
-    ...mapGetters("user", { userId: "getUserId", userInfos: "getUserInfos" }),
+    ...mapGetters("user", { userInfos: "getUserInfos" }),
     ...mapGetters("organizations", {
       impersonatedOrganizationId: "impersonatedOrganizationId",
       currentOrganization: "getCurrentOrganization",
+      organizationName: "getCurrentOrganizationDisplayName",
     }),
-    organizationName() {
-      return orgDisplayName(this.currentOrganization, this.userId)
-    },
     bannerText() {
       if (this.isImpersonatingUser) {
         return this.$t("impersonation.user_banner", {

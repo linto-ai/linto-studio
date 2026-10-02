@@ -1,4 +1,248 @@
 {
+  "billing": {
+    "settings": {
+      "free_plan": "Free",
+      "retry": "Retry",
+      "upcoming": {
+        "title": "Next invoice",
+        "charged_on": "Charged on {date}",
+        "amount_due": "Amount charged after your account balance: {amount}",
+        "details": "Details",
+        "tax": "Tax",
+        "total": "Total incl. tax",
+        "ends_on": "Subscription cancelled: it ends on {date}, no further invoice will be issued."
+      },
+      "usage": {
+        "title": "Usage",
+        "load_error": "Couldn't load the organization's usage and plan.",
+        "renews_on": "Renews on {date}",
+        "renews_and_resets_on": "Renews and resets quotas on {date}",
+        "quota_reset_on": "Quotas reset on {date}",
+        "member_consumption_link": "View usage per member"
+      },
+      "meter": {
+        "import": "File transcription",
+        "ai": "AI summaries",
+        "chat": "Chat messages"
+      },
+      "buy_pack": "Buy a pack",
+      "no_pack_available": "No pack is offered with this organization's plan.",
+      "upgrade_premium": "Upgrade to Premium",
+      "manage_subscription": "Manage subscription",
+      "stripe_error": "Couldn't open the payment page. Please try again in a moment.",
+      "pack_bought": "Payment received: the minutes will be credited shortly.",
+      "pack_cancelled": "Purchase cancelled, you were not charged.",
+      "packs": {
+        "title": "Buy a pack",
+        "subtitle": "One-time payment, no subscription.",
+        "subtitle_with_validity": "One-time payment, no subscription · minutes valid for {validity}.",
+        "confirm": "Continue to payment",
+        "pay": "Pay {price}",
+        "price_excl_tax": "{price} excl. tax",
+        "per_hour": "{price} / h",
+        "saving": "−{percent}%",
+        "group": {
+          "live": "Live microphone and video conferencing",
+          "transcription": "File transcription"
+        },
+        "hint": {
+          "transcription": "Used once the monthly quota is spent."
+        }
+      },
+      "overview_load_error": "Couldn't load payment details and invoices.",
+      "payment": {
+        "title": "Payment",
+        "none": "No payment method on file",
+        "expires": "Expires {expiry}",
+        "update": "Update",
+        "type": {
+          "card": "Card",
+          "sepa_debit": "SEPA Direct Debit",
+          "paypal": "PayPal",
+          "link": "Link",
+          "other": "Other payment method"
+        }
+      },
+      "invoices": {
+        "title": "Invoices",
+        "empty": "No invoice yet.",
+        "date": "Date",
+        "number": "Number",
+        "amount": "Amount",
+        "status_header": "Status",
+        "document": "Document",
+        "download_pdf": "PDF",
+        "download_pdf_of": "Download invoice {name} as PDF",
+        "view": "View",
+        "view_of": "View invoice {name}",
+        "status": {
+          "paid": "Paid",
+          "open": "Due",
+          "void": "Void",
+          "uncollectible": "Uncollectible"
+        },
+        "pay": "Pay",
+        "pay_of": "Pay invoice {name}"
+      },
+      "admin_only": "Only the organization's administrators can access billing."
+    },
+    "unlimited": "Unlimited",
+    "quota_limit_this_month": "of {limit} this month",
+    "price_flat": "{price} / month",
+    "price_per_seat": "{price} / seat / month",
+    "reset_on": "Resets on {date}",
+    "upgrade_cta": "See plans",
+    "upgrade_title": "Choose a plan",
+    "upgrade_pending_payment": "Subscription created, payment to complete. Stripe Checkout arrives with the next milestone.",
+    "cancel": "Cancel",
+    "confirm_upgrade": "Subscribe",
+    "upgrade_done": "Welcome to {plan}!",
+    "limit_reached": "You've reached the limit of your plan.",
+    "feature_locked": "This feature is included in a team plan.",
+    "team_plan_required": "This organization no longer has a team plan: its features are blocked until it is back on Business. Members and their roles are kept.",
+    "feature_locked_plan": "This feature is included in the {plan} plan.",
+    "feature_locked_paid": "This feature is included in paid plans.",
+    "footer": {
+      "usage": "{used} / {total}",
+      "upgrade_cta": "Upgrade"
+    },
+    "mode": {
+      "normal": "SaaS",
+      "comp": "Complimentary",
+      "managed": "Managed hosting"
+    },
+    "meter": {
+      "import": "Imports",
+      "ai": "AI generations",
+      "chat": "Chat messages",
+      "api": "API calls"
+    },
+    "live": {
+      "title": "Microphone and video conferencing",
+      "expires": "Next expiry",
+      "no_renewal": "Prepaid, doesn't renew",
+      "unmetered": "Live minutes are not metered for this organization."
+    },
+    "member_usage": {
+      "title": "Usage per member",
+      "seats": "{n} billable seats",
+      "member": "Member",
+      "seat": "Seat",
+      "billable": "Billable seat (role >= uploader)",
+      "empty": "No members yet."
+    },
+    "seats_usage": "{used} / {total} seats used",
+    "seats_full": "All seats are taken. Add seats to give a member a contributor role.",
+    "backoffice": {
+      "title": "Subscription (SaaS)",
+      "plan": "Plan",
+      "seats": "Billable seats",
+      "live_balance": "Live balance",
+      "mode": "Organization mode",
+      "mode_hint": "SaaS: gates and billing follow the plan. Complimentary: full access offered, nothing billed. Managed hosting: we host this customer, no gate but a seat cap when the contract sets one, usage still measured.",
+      "seats_max": "Max seats",
+      "seats_max_none": "No limit",
+      "seats_max_hint": "Seats of the hosting contract. Beyond it, adding a collaborator is refused; nobody is removed when the cap goes under the headcount. Empty: no limit.",
+      "credits_title": "Grant live minutes",
+      "credits_hint": "Adds a lot of prepaid live minutes (12-month expiry). The reason is recorded in the activity log.",
+      "credits_minutes": "Minutes",
+      "credits_reason": "Reason",
+      "credits_grant": "Grant",
+      "lot_source": "Source",
+      "lot_minutes": "Granted",
+      "lot_remaining": "Remaining",
+      "lot_expires": "Expires",
+      "set_seats": "Override seats",
+      "saved": "Saved",
+      "load_error": "Could not load this organization's billing.",
+      "seats_unchanged": "Seats were not changed ({reason}).",
+      "status": "Status",
+      "renews": "Renews",
+      "cancel_scheduled": "cancellation scheduled",
+      "lot_refund": "Refund",
+      "refund_confirm_title": "Refund this lot?",
+      "refund_confirm_body": "The payment is refunded at Stripe and the matching {minutes} are taken back from the organization's balance. This cannot be undone.",
+      "refund_done": "Refund requested at Stripe.",
+      "refund_failed": "The refund did not go through ({reason})."
+    },
+    "refusal": {
+      "live_credit": "Not enough “Microphone and video conferencing” credit to start.",
+      "import_exhausted": "File transcription quota used up.",
+      "import_too_long": "This file is longer than the transcription time left ({remaining}).",
+      "import_file_too_long": "“{name}” is longer than the transcription time left ({remaining}).",
+      "import_reset": "The quota resets on {date}.",
+      "email_not_verified": "Verify your email address to use this feature.",
+      "not_available": "This feature isn't included in this organization's plan.",
+      "contact_admin": "Contact an administrator of the organization.",
+      "unknown": "Couldn't check this organization's plan right now. Please try again in a moment."
+    }
+  },
+  "seats": {
+    "tabs": {
+      "seats": "Collaborators",
+      "members": "Members"
+    },
+    "search_label": "Search a member",
+    "search_placeholder": "Search name or email",
+    "member_hint": "Member · read-only, holds no seat",
+    "empty_members": "Every member of this organization is a collaborator.",
+    "empty_seats": "No collaborator yet.",
+    "empty_search": "No member matches this search.",
+    "row": {
+      "give_seat": "Give a seat"
+    },
+    "panel": {
+      "used": "seats used",
+      "manage": "Manage seats",
+      "helper": "one seat per collaborator, members are free"
+    },
+    "bar": {
+      "region_label": "Selected members",
+      "selected": "{count} selected | {count} selected",
+      "caption_capacity": "{needed} of {available} free seats",
+      "clear": "Clear",
+      "grant": "Give seats"
+    },
+    "grant": {
+      "title": "Give a seat to 1 user | Give seats to {count} users",
+      "role_label": "Role for {name}",
+      "drop": "Remove from the batch",
+      "done": "Seat given",
+      "not_attempted": "Not attempted",
+      "running": "{done} of {total} processed",
+      "apply": "Assign 1 seat | Assign {count} seats",
+      "apply_no_seat": "Update 1 role | Update {count} roles",
+      "retry_failed": "Retry 1 failure | Retry {count} failures",
+      "close": "Close",
+      "error_seats_full": "No seat left in the plan: the remaining members were not processed.",
+      "success_notification": "1 seat given | {count} seats given",
+      "extra_helper": "{count} extra seat will be added to your subscription · about {price} billed today, prorated | {count} extra seats will be added to your subscription · about {price} billed today, prorated",
+      "extra_helper_unknown_price": "{count} extra seat will be added to your subscription, billed prorated | {count} extra seats will be added to your subscription, billed prorated",
+      "cannot_buy": "Every seat is taken, and your role cannot add more. Ask an organization administrator.",
+      "apply_and_pay": "Assign and pay",
+      "purchase_failed": "Adding seats failed: no seat was assigned."
+    },
+    "notification": {
+      "role_updated": "Role updated."
+    },
+    "manage": {
+      "title": "Manage seats",
+      "stepper_label": "Number of seats",
+      "decrement": "Remove a seat",
+      "increment": "Add a seat",
+      "floor_hint": "Minimum {count} — remove collaborators first to go lower.",
+      "increase_notice": "{count} seat added · about {price} billed today, prorated | {count} seats added · about {price} billed today, prorated",
+      "increase_notice_unknown_price": "{count} seat added, billed prorated | {count} seats added, billed prorated",
+      "decrease_notice": "{count} seat removed · a credit will be applied to your next invoice | {count} seats removed · a credit will be applied to your next invoice",
+      "estimate_note": "Estimated amount: the exact proration is computed when the charge is made.",
+      "unchanged": "No change",
+      "cannot_manage": "Your role cannot change seats. Ask an organization administrator.",
+      "failed": "The change did not go through.",
+      "success": "Your plan now has {count} seat. | Your plan now has {count} seats.",
+      "apply": "Confirm",
+      "apply_and_pay": "Confirm and pay"
+    }
+  },
   "apply": "Apply",
   "cancel": "Cancel",
   "activity_list": {
@@ -20,7 +264,34 @@
       "sessions": "Sessions detailed",
       "ressources": "Resources",
       "tokens": "API key access",
-      "backoffice": "Backoffice"
+      "backoffice": "Backoffice",
+      "billing": "Billing"
+    },
+    "saas": {
+      "event_label": "Event",
+      "details_label": "Details",
+      "seats_unit": "seats",
+      "prorated": "prorated",
+      "rows_anonymized": "rows anonymized",
+      "actions": {
+        "subscription_created": "Subscription created",
+        "subscription_updated": "Subscription updated",
+        "plan_changed": "Plan changed",
+        "subscription_canceled": "Cancellation scheduled",
+        "subscription_ended": "Subscription ended",
+        "payment_succeeded": "Payment succeeded",
+        "payment_failed": "Payment failed",
+        "seats_changed": "Seats changed",
+        "mode_changed": "Organization mode changed",
+        "credits_granted": "Live minutes granted",
+        "credits_purchased": "Live minutes bought",
+        "quota_exceeded": "Quota exceeded",
+        "feature_denied": "Feature blocked",
+        "credit_exhausted": "Live balance exhausted",
+        "subscription_suspended": "Subscription suspended",
+        "user_purged": "User data anonymized"
+      },
+      "minutes_unit": "min"
     }
   },
   "session_list": {
@@ -144,6 +415,7 @@
     "email_not_verified": "Your email is not verified. Please verify your email to access all features.",
     "pending_email": "A confirmation was sent to {email}. This address will replace the current one once validated.",
     "speaker_identification": "Speaker identification",
+    "sso": "SSO",
     "speaker_recognition": "My voice signature"
   },
   "backoffice": {
@@ -329,6 +601,7 @@
       "sending": "Sending..."
     },
     "conversation_creation_error_multiple_unknown": "An error occurred while uploading {total} audio files. {count} have already been uploaded. Try again later.",
+    "conversation_creation_partially_sent": "{count} file out of {total} was already sent. | {count} files out of {total} were already sent.",
     "conversation_creation_loading_multiple": "Uploading audio {count} of {total}. This can take several minutes.",
     "folder_selection_title": "Folder",
     "folder_selection_label": "Upload to folder",
@@ -593,19 +866,15 @@
     }
   },
   "createaccount": {
-    "create_account_button": "Create an account",
     "email_label": "Email",
     "email_verification_text": "You have just received an email to validate your account. Click on the verification link to start using Linto Studio.",
     "email_verification_title": "Congratulations, a Linto Studio account has been associated with your email address !",
     "first_name_label": "First name",
     "image_label": "Image (.png, .jpg) :",
     "last_name_label": "Last name",
-    "organization_description": "Create and share your transcripts, invite collaborators within organisations.",
-    "organization_name_label": "One last step : please name your first organisation, you can create others later",
-    "organization_title": "Name your organisation",
     "password_confirmation_label": "Password confirmation",
     "password_label": "Password",
-    "personal_button": "Next",
+    "personal_button": "Create an account",
     "personal_title": "Create an account",
     "picture_selected": "One picture selected",
     "picture_upload_label": "Upload a picture",
@@ -683,6 +952,18 @@
     "not_registered": "Not registered yet? ",
     "create_account_button": "Create an account",
     "or_continue_with": "Or continue with",
+    "organization_sso": {
+      "button_title": "Sign in with my organisation SSO",
+      "email_label": "Work email address",
+      "submit": "Continue with my organisation SSO",
+      "errors": {
+        "no_sso": "No SSO is configured for this email domain",
+        "email_not_allowed": "This email address is not attached to the SSO organisation",
+        "missing_email": "The identity provider did not return an email address",
+        "session_expired": "The sign-in session has expired, please try again",
+        "idp_error": "The connection to the identity provider failed"
+      }
+    },
     "email_label": "Email :",
     "error": "Error while logging in",
     "login_button": "Login",
@@ -728,7 +1009,7 @@
   "folders": {
     "uncategorized": "Inbox",
     "select_this_folder": "Choose “{name}”",
-    "create": "Create folder",
+    "create": "New folder",
     "create_placeholder": "Folder name...",
     "name_required": "Folder name is required",
     "create_subfolder": "Create subfolder",
@@ -956,6 +1237,7 @@
       "logout": "Logout",
       "title": "User menu"
     },
+    "toggle_sidebar": "Collapse menu",
     "conversation": {
       "start": "Transcribe"
     },
@@ -993,6 +1275,105 @@
     "no_access_detail": "You do not yet belong to an organisation. An administrator must add you to one before you can access the platform's resources.",
     "no_access_action": "Please contact your organisation's administrator to obtain access.",
     "back_to_login": "Back to login page"
+  },
+  "onboarding": {
+    "welcome_title": "Welcome to LinTO Studio",
+    "kicker": "Welcome to LinTO Studio",
+    "billing_period": {
+      "label": "Billing period",
+      "monthly": "Monthly",
+      "annual": "Annual"
+    },
+    "most_popular": "Most popular",
+    "price_note_free": "No credit card required",
+    "price_note_billed_yearly": "Billed {price} per year ({freeMonths} months free)",
+    "price_note_annual_hint": "or {price} per year ({freeMonths} months free)",
+    "price_note_seats_minimum": "from {seats} seats",
+    "price_suffix_monthly": "/ month",
+    "price_suffix_per_seat": "/ seat / month",
+    "price_suffix_annual": "/ month, billed annually",
+    "price_suffix_per_seat_annual": "/ seat / month, billed annually",
+    "fair_use_note": "* See terms of sale",
+    "plans": {
+      "free": {
+        "tagline": "To try it out, or for occasional use."
+      },
+      "premium": {
+        "tagline": "Freelancers, independent professionals, journalists, researchers, small associations."
+      },
+      "business": {
+        "tagline": "Teams and organizations: firms, local government, companies, federations."
+      }
+    },
+    "features": {
+      "transcription_hours": "{hours} h of transcription per month",
+      "transcription_hours_per_seat": "{hours} h of transcription per month and per seat",
+      "transcription_unlimited": "Unlimited* transcription per month",
+      "transcription_unlimited_per_seat": "Unlimited* transcription per seat",
+      "usage_all_unlimited": "Unlimited* transcription, summaries and chat per month",
+      "usage_all_unlimited_per_seat": "Unlimited* transcription, summaries and chat per seat",
+      "ai_and_chat_unlimited": "Unlimited* summaries and chat",
+      "ai_and_chat_unlimited_per_seat": "Unlimited* summaries and chat per seat",
+      "ai_and_chat_count": "{generations} AI summaries and {chat} chat messages per month",
+      "api_calls_unlimited": "Unlimited* API calls",
+      "api_calls_count": "{count} API calls per month",
+      "live_welcome": "{minutes} language-minutes of live offered, one time",
+      "live_packs": "Meeting bots and live microphone, with prepaid minutes",
+      "editor_suite": "Speaker recognition, collaborative editor, exports and document templates",
+      "invitations": "Free member and reader invitations",
+      "multi_orga": "Multiple organizations"
+    },
+    "payment_note": "Payment at the next step. Cancel anytime.",
+    "continue": "Continue with {plan}",
+    "organization": {
+      "steps_label": "Subscription steps",
+      "step_plan": "Plan",
+      "step_organization": "Organization",
+      "step_payment": "Payment",
+      "title": "Create your organization",
+      "description": "Only collaborator seats are billed. Read-only members are free and unlimited.",
+      "name_label": "Organization name",
+      "name_placeholder": "e.g. Communications department",
+      "collaborators_title": "Collaborator seats",
+      "collaborators_description": "To import media and transcribe live · min. {min}",
+      "collaborators_admin": "One seat is yours, as the administrator.",
+      "seat_price_monthly": "{price} / month each",
+      "seat_price_yearly": "{price} / year each",
+      "remove_seat": "Remove a seat",
+      "add_seat": "Add a seat",
+      "members_title": "Members",
+      "members_description": "View, search and export transcriptions",
+      "members_unlimited": "Unlimited",
+      "members_free": "Free",
+      "total_monthly": "Monthly total",
+      "total_yearly": "Yearly total",
+      "total_monthly_detail": "{seats} × {price} · charged every month, cancel anytime",
+      "total_yearly_detail": "{seats} × {price} · charged every year, cancel anytime",
+      "seats_note": "Nothing is set in stone: add or remove seats at any time from the settings, billing is prorated.",
+      "back": "Plans",
+      "submit": "Continue to payment"
+    },
+    "payment": {
+      "waiting_title": "Payment received",
+      "waiting_organization": "Creating your organization…",
+      "waiting_plan": "Activating your subscription…",
+      "ready_title": "All set",
+      "ready_organization": "Your organization “{name}” is ready. Invite your members from its settings.",
+      "ready_plan": "Your subscription is active.",
+      "timeout": "Activation is taking longer than expected. It will show up within a few minutes, you can close this window.",
+      "open_organization": "Open the organization",
+      "close": "Close"
+    },
+    "checkout": {
+      "canceled": "Payment canceled, nothing was charged.",
+      "errors": {
+        "default": "Could not start the payment. Please try again in a moment.",
+        "already_subscribed": "This organization already has a paid subscription.",
+        "plan_requires_personal_organization": "This organization cannot move to Premium: it is not a personal organization. Premium is an individual plan, choose Business for a team.",
+        "organization_creation_not_supported": "Organization creation is not available right now.",
+        "plan_not_synced_to_stripe": "This plan cannot be purchased yet."
+      }
+    }
   },
   "organisation": {
     "add_member_description": "Use the search form to find users by their firstname, lastname or email address",
@@ -1070,6 +1451,34 @@
       },
       "update_button": "Update matching criteria",
       "apply_button": "Invite all users matching criteria"
+    },
+    "sso": {
+      "title": "Organisation SSO",
+      "enabled_label": "Enable SSO",
+      "issuer_url_label": "Issuer URL",
+      "client_id_label": "Client ID",
+      "client_secret_label": "Client secret",
+      "client_secret_kept_placeholder": "Leave empty to keep the stored secret",
+      "scope_label": "Scopes (comma separated)",
+      "email_domains_label": "Email domains (comma separated)",
+      "callback_url_label": "Redirect URL to register on your identity provider",
+      "advanced_title": "Advanced endpoints (optional, override the automatic discovery)",
+      "authorization_url_label": "Authorization URL",
+      "token_url_label": "Token URL",
+      "user_info_url_label": "Userinfo URL",
+      "save_button": "Save SSO",
+      "delete_button": "Remove SSO",
+      "delete_modal": {
+        "title": "Remove the SSO configuration",
+        "content": "Members of the organisation will no longer be able to sign in through this SSO. Confirm the removal?"
+      },
+      "save_success": "The SSO configuration has been saved",
+      "delete_success": "The SSO configuration has been removed",
+      "errors": {
+        "invalid_https_url": "Please enter a valid https URL",
+        "invalid_domain": "\"{domain}\" is not a valid email domain",
+        "scope_openid": "Scopes must include openid"
+      }
     },
     "organization_stats": {
       "title": "Organisation statistics",
@@ -1565,8 +1974,10 @@
       "live_options_title": "Transcription options",
       "offline_transcription_label": "Offline transcription",
       "only_offline_available": "Only offline transcription is available in your organisation",
+      "only_offline_live_credit_exhausted": "Your live minutes are used up: only offline transcription is available. You can buy more from the Billing tab.",
       "keep_audio_disabled_because_offline": "Audio should be saved when offline transcription is enabled",
-      "live_or_offline_should_be_selected": "You must select either live or offline transcription"
+      "live_or_offline_should_be_selected": "You must select either live or offline transcription",
+      "start_error": "Couldn't start the session. Please try again in a moment."
     },
     "setup_microphone": {
       "waiting_permission_title": "Waiting permission to access your microphone",
@@ -1599,7 +2010,8 @@
         "bigbluebutton": "The bot joins as a guest; a moderator must admit it if the room requires approval.",
         "teams": "The meeting must be public; the bot lands in the lobby and must be admitted manually by a participant.",
         "visio": "The bot connects as a standard participant; make sure guest access is allowed without approval."
-      }
+      },
+      "bot_error": "Couldn't connect the bot to the video conference. Check the link and try again."
     },
     "live": {
       "default_name": "Untitled record",
@@ -1849,20 +2261,22 @@
   },
   "actions": "Actions",
   "chat": {
-    "title": "Chat",
-    "start": "Start a chat",
-    "description": "Ask questions about this conversation",
-    "new_chat": "New chat",
-    "send": "Send",
-    "placeholder": "Ask a question about this conversation...",
-    "history": "History",
-    "empty_state": "Ask a question to start a chat",
-    "empty_chat": "Ask your first question",
-    "rename": "Rename",
-    "delete_session": "Delete",
-    "delete_confirm_inline": "Delete \"{name}\"?",
-    "error": "An error occurred",
-    "streaming": "Generating response..."
+    "errors": {
+      "reply_failed_title": "The reply could not be generated",
+      "reply_failed": "Something went wrong while talking to the assistant. Please try again in a moment.",
+      "refused_title": "The assistant is not available",
+      "quota_exceeded_admin": "Your current plan no longer allows sending messages to the assistant this month. Upgrade your plan to continue.",
+      "quota_exceeded_member": "Your current plan no longer allows sending messages to the assistant this month. Contact an administrator of the organization to upgrade the plan.",
+      "unsent_title": "The message could not be sent",
+      "create_discussion": "The discussion could not be created. Please try again in a moment.",
+      "load_discussions": "Couldn't load the discussions.",
+      "load_messages": "Couldn't load this discussion.",
+      "rename_discussion": "Couldn't rename the discussion.",
+      "delete_discussion": "Couldn't delete the discussion.",
+      "actions": {
+        "upgrade": "Upgrade your plan"
+      }
+    }
   },
   "speaker_diarization": {
     "title": "Speaker identification",

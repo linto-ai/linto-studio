@@ -28,6 +28,11 @@ const platform_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/platform.js`,
 )
 
+const entitlement_middlewares = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/entitlement.js`,
+)
+const saas = require(`${process.cwd()}/lib/saas`)
+
 const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
@@ -80,7 +85,11 @@ const disableAuthIfDev = (route) => {
 const loadMiddlewares = (route) => {
   const middlewares = []
 
-  if (route.requireAuth) middlewares.push(auth_middlewares.isAuthenticate)
+  if (route.requireAuth) {
+    middlewares.push(auth_middlewares.isAuthenticate)
+    // SaaS slot right after authentication (API call metering). No-op in OSS.
+    middlewares.push(saas.afterAuth())
+  }
   if (route.requireRefresh) middlewares.push(auth_middlewares.refresh_token)
 
   if (route.requireSuperAdmin)
@@ -89,8 +98,15 @@ const loadMiddlewares = (route) => {
     middlewares.push(platform_middlewares.isPlatformSystemAdministrator)
   if (route.requireSessionOperator)
     middlewares.push(platform_middlewares.isPlatformSessionOperator)
+  // In cloud mode organizations are bought, not created: the controller
+  // answers with the SaaS refusal instead of studio's platform-role one.
+  // Decided per request: the plugin loads after the routes are built.
   if (route.requireOrganizationInitiatorAccess)
-    middlewares.push(platform_middlewares.isPlatformOrganizationInitiator)
+    middlewares.push((req, res, next) =>
+      saas.enabled()
+        ? next()
+        : platform_middlewares.isPlatformOrganizationInitiator(req, res, next),
+    )
 
   if (route.requireConversationReadAccess)
     middlewares.push(conversation_middlewares.asReadAccess)
@@ -144,6 +160,11 @@ const loadMiddlewares = (route) => {
 
   if (route.requireUserVisibility)
     middlewares.push(user_middlewares.isVisibility)
+
+  // SaaS plan gate (declarative), last so auth and org access already ran.
+  // No-op when the linto-saas plugin is absent.
+  if (route.requireEntitlement !== undefined)
+    middlewares.push(entitlement_middlewares.build(route.requireEntitlement))
 
   return middlewares
 }

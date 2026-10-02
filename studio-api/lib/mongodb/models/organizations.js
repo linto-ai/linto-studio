@@ -17,7 +17,11 @@ const tagsModel = require(`./tags`)
 
 const moment = require("moment")
 
-const public_projection = { token: 0 }
+// sso holds the client secret: only the dedicated admin route exposes it
+const public_projection = { token: 0, sso: 0 }
+
+// Orgs bought with a plan stay hidden until paid (see createPending)
+const VISIBLE = { pendingCheckout: { $exists: false } }
 
 class OrganizationModel extends MongoModel {
   constructor() {
@@ -110,6 +114,69 @@ class OrganizationModel extends MongoModel {
     }
   }
 
+  // Hidden until the SaaS plugin activates it (SPEC-SAAS §3.2); holds only its
+  // buyer, members are invited once it is paid. A retry for the same owner and
+  // name reuses the row.
+  async createPending(userId, name) {
+    try {
+      const pendingCheckout = { since: new Date() }
+      const existing = await this.mongoRequest(
+        {
+          owner: userId.toString(),
+          name,
+          pendingCheckout: { $exists: true },
+        },
+        { projection: { _id: 1 } },
+      )
+      if (existing.length > 0) {
+        await this.mongoUpdateOne({ _id: existing[0]._id }, "$set", {
+          pendingCheckout,
+        })
+        return existing[0]._id.toString()
+      }
+      const result = await this.createDefault(userId.toString(), name, {
+        personal: false,
+        pendingCheckout,
+      })
+      if (result instanceof Error) return result
+      return result.insertedId.toString()
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // true when the org was pending and is now visible
+  async activatePending(id) {
+    try {
+      const result = await this.mongoUpdateOne(
+        { _id: this.getObjectId(id), pendingCheckout: { $exists: true } },
+        "$unset",
+        { pendingCheckout: "" },
+      )
+      if (result.modifiedCount !== 1) return false
+      await this.mongoUpdateOne({ _id: this.getObjectId(id) }, "$set", {
+        last_update: moment().format(),
+      })
+      return true
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  async listPendingBefore(date) {
+    try {
+      return await this.mongoRequest(
+        { "pendingCheckout.since": { $lt: date } },
+        { projection: { _id: 1 } },
+      )
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async createOrgaByAdmin(payload) {
     try {
       const dateTime = moment().format()
@@ -185,6 +252,18 @@ class OrganizationModel extends MongoModel {
     }
   }
 
+  async getByIdFilter(id, filter = undefined) {
+    try {
+      const query = {
+        _id: this.getObjectId(id),
+      }
+      return await this.mongoRequest(query, { ...filter })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getByIdAndUser(orgaId, userId, options = {}) {
     try {
       const { bypass = false } = options
@@ -196,6 +275,7 @@ class OrganizationModel extends MongoModel {
       }
       const query = {
         _id: this.getObjectId(orgaId),
+        ...VISIBLE,
         users: {
           $elemMatch: {
             userId: userId.toString(),
@@ -219,9 +299,26 @@ class OrganizationModel extends MongoModel {
     }
   }
 
+  // Resolve a user's personal/master organization (the billing subject used to
+  // gate paid actions such as creating extra organizations). createDefault sets
+  // {owner, personal:true} at signup; child orgs created via POST /organizations
+  // are personal:false so they never match. Oldest wins for determinism.
+  // Re-throws on DB error so callers can fail CLOSED (a billing gate must never
+  // fail open).
+  async getPersonalByOwner(userId) {
+    const rows = await this.mongoRequest(
+      { owner: userId.toString(), personal: true },
+      public_projection,
+    )
+    if (!Array.isArray(rows) || rows.length === 0) return null
+    rows.sort((a, b) => new Date(a.created) - new Date(b.created))
+    return rows[0]
+  }
+
   async listSelf(userId) {
     try {
       const query = {
+        ...VISIBLE,
         users: {
           $elemMatch: {
             userId: userId.toString(),
@@ -270,6 +367,45 @@ class OrganizationModel extends MongoModel {
 
       let mutableElements = payload
       return await this.mongoUpdateOne(query, operator, mutableElements)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // Login routing: the organization whose enabled SSO claims the email domain.
+  // Oldest wins when several do. Re-throws on DB error (an auth gate must not
+  // fail open).
+  async getBySsoEmailDomain(domain) {
+    const rows = await this.mongoRequest(
+      { "sso.enabled": true, "sso.emailDomains": domain },
+      { projection: { name: 1, sso: 1 }, sort: { created: 1 }, limit: 1 },
+    )
+    return rows[0] ?? null
+  }
+
+  // Idempotent: matchedCount 0 when the user is already a member (or the
+  // organization does not exist).
+  async addMember(id, userId, role) {
+    try {
+      const query = {
+        _id: this.getObjectId(id),
+        "users.userId": { $ne: userId.toString() },
+      }
+      return await this.mongoUpdateOne(query, "$addToSet", {
+        users: { userId: userId.toString(), role },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // matchedCount 0 when the organization has no sso to remove
+  async deleteSso(id) {
+    try {
+      const query = { _id: this.getObjectId(id), sso: { $exists: true } }
+      return await this.mongoUpdateOne(query, "$unset", { sso: "" })
     } catch (error) {
       console.error(error)
       return error

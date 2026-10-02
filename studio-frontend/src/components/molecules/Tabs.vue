@@ -26,6 +26,7 @@
         <div class="flex col justify-center" :class="{ flex1: !squareTabs }">
           <span class="tab__label">{{ tab.label }}</span>
         </div>
+        <span v-if="tab.count != null" class="tab__count">{{ tab.count }}</span>
         <Badge v-if="tab.badge" :inverted="value == tab.name">{{
           tab.badge
         }}</Badge>
@@ -68,7 +69,9 @@ import PopoverList from "@/components/atoms/PopoverList.vue"
 
 export default {
   props: {
-    tabs: { type: Array, required: true }, // array of tab objects { name: 'inbox', label: 'Inbox', icon: 'box', ?id, ?aria-control, ?hidden }
+    // array of tab objects { name: 'inbox', label: 'Inbox', icon: 'box',
+    // ?count (how many items the tab holds), ?badge, ?id, ?ariaControl, ?hidden }
+    tabs: { type: Array, required: true },
     value: { type: String, required: true }, // selected tab
     squareTabs: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
@@ -150,6 +153,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// How many items the tab holds. The separator is decorative, so it lives in
+// CSS: a screen reader announces "Collaborators 7", not a middle dot.
+.tab__count {
+  font-variant-numeric: tabular-nums;
+
+  &::before {
+    content: "·";
+    margin-right: 0.35em;
+  }
+}
+
 // End-of-bar action zone: pushed right, vertically centered, and visually
 // separated from the navigation tabs so it reads as an action, not a tab.
 .tabs__end {

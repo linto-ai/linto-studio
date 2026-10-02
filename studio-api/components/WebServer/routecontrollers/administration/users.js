@@ -62,7 +62,7 @@ async function createSuperUser(req, res, next) {
       true,
     )
 
-    const organizationName = user.email + "'s Organization"
+    const organizationName = user.email
     const createdOrganization = await model.organizations.createDefault(
       createdUser.insertedId.toString(),
       organizationName,

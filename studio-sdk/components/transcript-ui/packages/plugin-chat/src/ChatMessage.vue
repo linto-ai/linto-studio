@@ -2,9 +2,14 @@
 import { MarkdownView, EditorIcon, CopyButton } from "@linto-ai/transcript-ui-ui"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import type { ChatMessage } from "@linto-ai/transcript-ui-core"
+import ChatErrorMessage from "./ChatErrorMessage.vue"
 
 const props = defineProps<{
   message: ChatMessage
+}>()
+
+const emit = defineEmits<{
+  errorAction: [messageId: string, actionId: string]
 }>()
 
 const { t } = useI18n()
@@ -18,6 +23,13 @@ function copyContent() {
   <!-- User: compact bubble aligned right -->
   <div v-if="message.role === 'user'" class="chat-message chat-message--user">
     <div class="chat-message__bubble">{{ message.content }}</div>
+  </div>
+
+  <!-- Assistant failure: error card -->
+  <div v-else-if="message.error" class="chat-message">
+    <ChatErrorMessage
+      :error="message.error"
+      @action="(actionId) => emit('errorAction', message.id, actionId)" />
   </div>
 
   <!-- Assistant: flat full-width markdown -->

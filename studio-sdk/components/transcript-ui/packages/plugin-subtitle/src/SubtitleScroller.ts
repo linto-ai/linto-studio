@@ -21,6 +21,10 @@ export class SubtitleDrawer {
   protected font: string
   protected paddingInline: number
   protected isResizing = false
+  /** Canvas size in CSS pixels: the unit of every draw and measure call. The
+   *  bitmap itself is scaled by devicePixelRatio (see resizeBitmap). */
+  protected width = 0
+  protected height = 0
   private resizeObserver: ResizeObserver
 
   constructor(
@@ -40,13 +44,11 @@ export class SubtitleDrawer {
     this.font = font
     this.paddingInline = paddingInline
 
-    this.canvas.width = this.canvas.clientWidth
-    this.canvas.height = this.canvas.clientHeight
+    this.resizeBitmap()
 
     this.resizeObserver = new ResizeObserver(() => {
       this.isResizing = true
-      this.canvas.width = this.canvas.clientWidth
-      this.canvas.height = this.canvas.clientHeight
+      this.resizeBitmap()
       this.onResize()
       this.isResizing = false
     })
@@ -66,7 +68,20 @@ export class SubtitleDrawer {
 
   resetDrawing(): void {
     const ctx = this.canvas.getContext("2d")!
-    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    ctx.clearRect(0, 0, this.width, this.height)
+  }
+
+  // Sizes the bitmap in device pixels so text stays sharp on high-density
+  // screens, then scales the context back so callers keep drawing in CSS
+  // pixels. Assigning canvas.width resets the context, hence the transform
+  // being set again on every call.
+  private resizeBitmap(): void {
+    const pixelRatio = window.devicePixelRatio || 1
+    this.width = this.canvas.clientWidth
+    this.height = this.canvas.clientHeight
+    this.canvas.width = Math.round(this.width * pixelRatio)
+    this.canvas.height = Math.round(this.height * pixelRatio)
+    this.canvas.getContext("2d")!.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
   }
 
   protected drawText(text: string, x: number, y: number): void {
@@ -77,11 +92,17 @@ export class SubtitleDrawer {
   }
 
   protected drawFirstLine(text: string): void {
-    this.drawText(text, 0, this.fontSize)
+    this.drawText(text, 0, this.computeTextBlockTop() + this.fontSize)
   }
 
   protected drawSecondLine(text: string): void {
-    this.drawText(text, 0, this.fontSize + this.lineHeight)
+    this.drawText(text, 0, this.computeTextBlockTop() + this.fontSize + this.lineHeight)
+  }
+
+  // The two lines form a block of 2 × lineHeight, centered vertically. The
+  // banner canvas is exactly that tall, so there the block starts at the top.
+  private computeTextBlockTop(): number {
+    return (this.height - 2 * this.lineHeight) / 2
   }
 
   protected onResize(): void {
@@ -195,13 +216,13 @@ export class SubtitleScroller extends SubtitleDrawer {
 
   // Normal cut threshold: keeps both inline margins free.
   private computeIfTextIsTooLong(text: string): boolean {
-    return this.textWidth(text) > this.canvas.width - 2 * this.paddingInline
+    return this.textWidth(text) > this.width - 2 * this.paddingInline
   }
 
   // Overflow threshold: the text is drawn at x = paddingInline, so it reaches the
-  // canvas edge once its width exceeds canvas.width - paddingInline. Spilling into
+  // canvas edge once its width exceeds width - paddingInline. Spilling into
   // the inline margin is tolerated; going past this re-cuts an already-shown line.
   private computeIfTextOverflows(text: string): boolean {
-    return this.textWidth(text) > this.canvas.width - this.paddingInline
+    return this.textWidth(text) > this.width - this.paddingInline
   }
 }

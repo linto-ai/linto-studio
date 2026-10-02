@@ -46,18 +46,26 @@
       source="visio"
       v-model="quickSessionSettingsField.value" />
 
+    <!-- Submit bar: a SaaS refusal explained on its own line, its purchase
+         beside the submit button -->
     <div
-      class="flex gap-small align-center conversation-create-footer"
+      class="flex col gap-small conversation-create-footer"
       style="margin-top: 1rem">
-      <div class="error-field flex1" v-if="formError">{{ formError }}</div>
-      <div v-else class="flex1"></div>
-
-      <Button
-        type="submit"
-        variant="primary"
-        :loading="formState === 'sending'"
-        :disabled="!canSubmit"
-        :label="formSubmitLabel"></Button>
+      <SaasRefusalMessage v-if="saasRefusalView" :refusal="saasRefusalView" />
+      <div class="flex gap-small align-center">
+        <div class="error-field flex1" v-if="formError">{{ formError }}</div>
+        <div v-else class="flex1"></div>
+        <Button
+          type="submit"
+          :variant="hasSaasRefusalPurchase ? 'secondary' : 'primary'"
+          :loading="formState === 'sending'"
+          :disabled="!canSubmit || formState === 'sending'"
+          :label="formSubmitLabel"></Button>
+        <SaasRefusalAction
+          v-if="saasRefusalView"
+          :refusal="saasRefusalView"
+          :error-data="saasRefusal" />
+      </div>
     </div>
   </form>
 </template>
@@ -77,16 +85,21 @@ import {
   apiDeleteQuickSession,
 } from "@/api/session.js"
 import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSettings"
+import { buildQuickSessionChannel } from "@/tools/buildQuickSessionChannel.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
+import SaasRefusalMessage from "@/components-cloud/SaasRefusalMessage.vue"
+import SaasRefusalAction from "@/components-cloud/SaasRefusalAction.vue"
+import { saasRefusalFormMixin } from "@/mixins/saasRefusalForm.js"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import { getEnv } from "@/tools/getEnv"
+import { isSaasRefusal } from "@/tools/isSaasRefusal"
 
 export default {
-  mixins: [formsMixin, organizationSecurityLevelMixin],
+  mixins: [formsMixin, organizationSecurityLevelMixin, saasRefusalFormMixin],
   props: {
     transcriberProfiles: {
       type: Array,
@@ -205,23 +218,13 @@ export default {
     },
     async createSession(event) {
       event?.preventDefault()
+      if (this.formState === "sending") return
+      this.formError = null
+      this.saasRefusal = null
       if (this.testFields()) {
+        this.formState = "sending"
         const settings = this.quickSessionSettingsField.value
-        const channels = [
-          {
-            name: "Main",
-            transcriberProfileId: settings.selectedProfile.id,
-            translations: settings.selectedProfile.translations ?? [],
-            diarization: settings.diarization ?? false,
-            keepAudio: settings.keepAudio,
-            compressAudio: !settings.offlineTranscription,
-            enableLiveTranscripts: settings.subInStudio,
-            //async: settings.offlineTranscription,
-            meta: {
-              transcriptionService: settings.transcriptionService,
-            },
-          },
-        ]
+        const channels = [buildQuickSessionChannel(settings)]
         const requestSession = await apiCreateQuickSession(
           this.currentOrganizationScope,
           {
@@ -258,11 +261,23 @@ export default {
               { trash: true, force: true },
             )
             this.formState = "error"
+            this.formError = this.$t("quick_session.setup_visio.bot_error")
           }
         } else {
-          this.formState = "error"
+          this.showCreationError(requestSession)
         }
       }
+    },
+    // A SaaS refusal gets its own message and action; anything else a
+    // generic error, so a failed start is never silent.
+    showCreationError(res) {
+      this.formState = "error"
+      const errorData = res.error?.response?.data
+      if (isSaasRefusal(errorData)) {
+        this.saasRefusal = errorData
+        return
+      }
+      this.formError = this.$t("quick_session.creation.start_error")
     },
   },
   trashSession() {
@@ -273,6 +288,8 @@ export default {
     QuickSessionSettings,
     SecurityLevelSelector,
     NotificationBanner,
+    SaasRefusalMessage,
+    SaasRefusalAction,
   },
 }
 </script>

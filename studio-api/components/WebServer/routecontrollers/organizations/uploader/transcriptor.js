@@ -47,6 +47,7 @@ const { getTranscriptionServiceByEndpoint } = require(
   `${process.cwd()}/components/WebServer/controllers/services/utility`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const saas = require(`${process.cwd()}/lib/saas`)
 
 const { applySpeakerIdentification } = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/injection`,
@@ -174,11 +175,42 @@ async function transcribe(isSingleFile, req, res, next) {
     )
     req.body.file_data = formData.file_data
 
+    // SaaS gate: probe the stored file's duration so the plugin refuses (402)
+    // before the ASR is paid for. No probe and no gate when the plugin is absent.
+    if (saas.enabled()) {
+      let seconds = 0
+      try {
+        const probed = await addAudioDuration(
+          { metadata: {} },
+          formData.file_data,
+        )
+        seconds = probed?.metadata?.audio?.duration || 0
+      } catch (e) {
+        debug(`import duration probe failed: ${e && e.message}`)
+      }
+      await saas.enforce({
+        orgId: req.params.organizationId,
+        capability: "import.minutes",
+        seconds,
+        userId: req.payload?.data?.userId,
+      })
+    }
+
     const processingJob = await axios.postFormData(
       transcriptionService,
       options,
     )
     const conversation = await createConversation(processingJob, req.body)
+
+    // SaaS metering: the audio ingested. No-op in OSS.
+    await saas.record({
+      orgId: req.params.organizationId,
+      userId: req.payload?.data?.userId,
+      capability: "import.minutes",
+      seconds: conversation?.metadata?.audio?.duration || 0,
+      ref: { conversationId: conversation._id.toString() },
+    })
+
     res.status(201).send({
       message: "A conversation is currently being processed",
       conversationId: conversation._id.toString(),

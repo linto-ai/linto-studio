@@ -12,6 +12,10 @@ const docx = require(
 const llm = require(
   `${process.cwd()}/components/WebServer/controllers/llm/index`,
 )
+const saas = require(`${process.cwd()}/lib/saas`)
+const { exportRestrictions } = require(
+  `${process.cwd()}/components/WebServer/controllers/publication/exportPolicy`,
+)
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 const { execFile } = require("child_process")
 const path = require("path")
@@ -318,10 +322,25 @@ async function handleLLMService(req, res, query, conversation, metadata) {
         isCurrent: true,
       }
 
+      // SaaS gate: one AI generation against the org's quota. No-op in OSS.
+      await saas.enforce({
+        orgId: organizationId,
+        capability: "ai.generations",
+        value: 1,
+        userId: req.payload?.data?.userId,
+      })
+
       // V2: Call LLM API with generation payload (awaited for proper error handling)
       const result = await callLlmAPI(req, query, conversation, metadata, conversationExport, generationPayload)
 
       if (result.success) {
+        await saas.record({
+          orgId: organizationId,
+          userId: req.payload?.data?.userId,
+          capability: "ai.generations",
+          value: 1,
+          ref: { conversationId: conversation._id.toString(), jobId: result.jobId, serviceId },
+        })
         res.status(200).send({ status: "processing", processing: 0, organizationId: organizationId })
       } else {
         // Return error immediately so frontend can show notification
@@ -339,8 +358,13 @@ async function handleLLMService(req, res, query, conversation, metadata) {
 
       // V2: Check if document export is requested (preview=true or exportFormat specified)
       if (query.preview === "true" || query.exportFormat === "pdf" || query.exportFormat === "docx") {
+        const restrictions = await exportRestrictions({
+          conversationId: conversation._id.toString(),
+          userId: req.payload?.data?.userId,
+          format: query.preview === "true" ? "pdf" : query.exportFormat,
+        })
         // Try V2 document export from LLM Gateway
-        const exportResult = await handleV2DocumentExport(res, conversationExport, query, conversation.name)
+        const exportResult = await handleV2DocumentExport(res, conversationExport, query, conversation.name, restrictions)
 
         // If job was not found on LLM Gateway, inform frontend to regenerate
         if (exportResult?.jobNotFound) {
@@ -388,6 +412,11 @@ async function handleLLMService(req, res, query, conversation, metadata) {
         )
       } else {
         // Fallback to local DOCX generation
+        await exportRestrictions({
+          conversationId: conversation._id.toString(),
+          userId: req.payload?.data?.userId,
+          format: query.exportFormat || "docx",
+        })
         const file = await docx.generateDocxOnFormat(query, conversationExport)
         sendFileAsResponse(res, file, query)
       }
@@ -500,7 +529,7 @@ async function verifyJobExists(jobId) {
  * Falls back to local generation if V2 export fails
  * Returns { jobNotFound: true } if job no longer exists on LLM Gateway
  */
-async function handleV2DocumentExport(res, conversationExport, query, conversationName) {
+async function handleV2DocumentExport(res, conversationExport, query, conversationName, restrictions = {}) {
   const jobId = conversationExport.jobId
 
   // Determine format (pdf for preview, otherwise use exportFormat or default to docx)
@@ -512,7 +541,7 @@ async function handleV2DocumentExport(res, conversationExport, query, conversati
   try {
     if (jobId && process.env.LLM_GATEWAY_SERVICES) {
       // V2: Export document directly from LLM Gateway
-      const documentBuffer = await llm.exportJobDocument(jobId, format)
+      const documentBuffer = await llm.exportJobDocument(jobId, format, null, null, restrictions)
 
       const validCharsRegex = /[a-zA-Z0-9-_.]/g
       const fileName = conversationName.match(validCharsRegex).join("") + "." + format
@@ -541,11 +570,13 @@ async function handleV2DocumentExport(res, conversationExport, query, conversati
       return { jobNotFound: true }
     }
 
+    // A locked PDF cannot be rebuilt locally
+    if (restrictions.pdf_lock) throw new ExportGatewayError(err.message)
     appLogger.warn(`[Export V2] LLM Gateway export failed, falling back to local generation: ${err.message}`)
   }
 
   // Fallback: Local DOCX generation (only if we have local data)
-  if (conversationExport.data) {
+  if (conversationExport.data && !restrictions.pdf_lock) {
     const file = await docx.generateDocxOnFormat(query, conversationExport)
     sendFileAsResponse(res, file, query)
     return { success: true }
@@ -990,6 +1021,12 @@ async function generateExportDocument(req, res, next) {
       throw new ConversationMetadataRequire("format must be 'pdf' or 'docx'")
     }
 
+    const restrictions = await exportRestrictions({
+      conversationId: req.params.conversationId,
+      userId: req.payload?.data?.userId,
+      format,
+    })
+
     // Get conversation for filename
     const conversation = await model.conversations.getById(req.params.conversationId)
     const conversationName = conversation && conversation.length > 0 ? conversation[0].name : "export"
@@ -1002,11 +1039,13 @@ async function generateExportDocument(req, res, next) {
       throw new ExportNotConfigured()
     }
 
-    let url = `${baseUrl}/api/v1/jobs/${jobId}/export/${format}`
+    const params = new URLSearchParams(restrictions)
     if (versionNumber !== undefined && versionNumber !== null) {
-      url += `?version_number=${versionNumber}`
+      params.append("version_number", versionNumber)
       appLogger.info(`[Export] Exporting version ${versionNumber} for job ${jobId}`)
     }
+    let url = `${baseUrl}/api/v1/jobs/${jobId}/export/${format}`
+    if (params.toString()) url += `?${params.toString()}`
 
     const response = await axios.get(url, {
       responseType: "arraybuffer"
