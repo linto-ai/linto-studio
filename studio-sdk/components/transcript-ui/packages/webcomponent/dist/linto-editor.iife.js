@@ -116,10 +116,10 @@ var LintoEditor = (function(exports) {
   }
   const listDelimiterRE = /;(?![^(]*\))/g;
   const propertyDelimiterRE = /:([^]+)/;
-  const styleCommentRE = /\/\*[^]*?\*\//g;
+  const styleCommentRE = /"(?:[^"\\]|\\[^])*"|'(?:[^'\\]|\\[^])*'|\\[^]|\/\*[^]*?\*\//g;
   function parseStringStyle(cssText) {
     const ret = {};
-    cssText.replace(styleCommentRE, "").split(listDelimiterRE).forEach((item) => {
+    cssText.replace(styleCommentRE, (match) => match.startsWith("/*") ? "" : match).split(listDelimiterRE).forEach((item) => {
       if (item) {
         const tmp = item.split(propertyDelimiterRE);
         tmp.length > 1 && (ret[tmp[0].trim()] = tmp[1].trim());
@@ -163,22 +163,22 @@ var LintoEditor = (function(exports) {
   function includeBooleanAttr(value) {
     return !!value || value === "";
   }
-  function looseCompareArrays(a2, b2) {
+  function looseCompareArrays(a2, b2, seen) {
     if (a2.length !== b2.length) return false;
     let equal = true;
     for (let i2 = 0; equal && i2 < a2.length; i2++) {
-      equal = looseEqual(a2[i2], b2[i2]);
+      equal = looseEqual(a2[i2], b2[i2], seen);
     }
     return equal;
   }
-  function looseCompareCollections(a2, b2) {
+  function looseCompareCollections(a2, b2, seen) {
     if (a2.size !== b2.size) return false;
     const candidates = Array.from(b2);
     const matched = new Uint8Array(candidates.length);
     for (const item of a2) {
       let index = -1;
       for (let i2 = 0; i2 < candidates.length; i2++) {
-        if (!matched[i2] && looseEqual(item, candidates[i2])) {
+        if (!matched[i2] && looseEqual(item, candidates[i2], seen)) {
           index = i2;
           break;
         }
@@ -188,7 +188,47 @@ var LintoEditor = (function(exports) {
     }
     return true;
   }
-  function looseEqual(a2, b2) {
+  function looseCompareObjects(a2, b2, seen) {
+    let aValidType = isMap(a2);
+    let bValidType = isMap(b2);
+    if (aValidType || bValidType) {
+      return aValidType && bValidType ? looseCompareCollections(a2, b2, seen) : false;
+    }
+    aValidType = isSet(a2);
+    bValidType = isSet(b2);
+    if (aValidType || bValidType) {
+      return aValidType && bValidType ? looseCompareCollections(a2, b2, seen) : false;
+    }
+    const aKeysCount = Object.keys(a2).length;
+    const bKeysCount = Object.keys(b2).length;
+    if (aKeysCount !== bKeysCount) {
+      return false;
+    }
+    for (const key in a2) {
+      const aHasKey = a2.hasOwnProperty(key);
+      const bHasKey = b2.hasOwnProperty(key);
+      if (aHasKey && !bHasKey || !aHasKey && bHasKey || !looseEqual(a2[key], b2[key], seen)) {
+        return false;
+      }
+    }
+    return String(a2) === String(b2);
+  }
+  function looseCompareNested(a2, b2, seen, compare) {
+    if (!seen) {
+      seen = [/* @__PURE__ */ new Map(), /* @__PURE__ */ new Map()];
+    }
+    const [seenA, seenB] = seen;
+    if (seenA.has(a2) || seenB.has(b2)) {
+      return seenA.get(a2) === b2 && seenB.get(b2) === a2;
+    }
+    seenA.set(a2, b2);
+    seenB.set(b2, a2);
+    const equal = compare(a2, b2, seen);
+    seenA.delete(a2);
+    seenB.delete(b2);
+    return equal;
+  }
+  function looseEqual(a2, b2, seen) {
     if (a2 === b2) return true;
     let aValidType = isDate(a2);
     let bValidType = isDate(b2);
@@ -203,7 +243,7 @@ var LintoEditor = (function(exports) {
     aValidType = isArray(a2);
     bValidType = isArray(b2);
     if (aValidType || bValidType) {
-      return aValidType && bValidType ? looseCompareArrays(a2, b2) : false;
+      return aValidType && bValidType ? looseCompareNested(a2, b2, seen, looseCompareArrays) : false;
     }
     aValidType = isObject$1(a2);
     bValidType = isObject$1(b2);
@@ -211,28 +251,7 @@ var LintoEditor = (function(exports) {
       if (!aValidType || !bValidType) {
         return false;
       }
-      aValidType = isMap(a2);
-      bValidType = isMap(b2);
-      if (aValidType || bValidType) {
-        return aValidType && bValidType ? looseCompareCollections(a2, b2) : false;
-      }
-      aValidType = isSet(a2);
-      bValidType = isSet(b2);
-      if (aValidType || bValidType) {
-        return aValidType && bValidType ? looseCompareCollections(a2, b2) : false;
-      }
-      const aKeysCount = Object.keys(a2).length;
-      const bKeysCount = Object.keys(b2).length;
-      if (aKeysCount !== bKeysCount) {
-        return false;
-      }
-      for (const key in a2) {
-        const aHasKey = a2.hasOwnProperty(key);
-        const bHasKey = b2.hasOwnProperty(key);
-        if (aHasKey && !bHasKey || !aHasKey && bHasKey || !looseEqual(a2[key], b2[key])) {
-          return false;
-        }
-      }
+      return looseCompareNested(a2, b2, seen, looseCompareObjects);
     }
     return String(a2) === String(b2);
   }
@@ -889,7 +908,9 @@ var LintoEditor = (function(exports) {
     const raw = /* @__PURE__ */ toRaw(array);
     if (raw === array) return raw;
     track(raw, "iterate", ARRAY_ITERATE_KEY);
-    return /* @__PURE__ */ isShallow(array) ? raw : raw.map(toReactive);
+    if (/* @__PURE__ */ isShallow(array)) return raw;
+    if (!/* @__PURE__ */ isReadonly(array)) return raw.map(toReactive);
+    return /* @__PURE__ */ isReactive(array) ? raw.map((item) => toReadonly(toReactive(item))) : raw.map(toReadonly);
   }
   function shallowReadArray(arr) {
     track(arr = /* @__PURE__ */ toRaw(arr), "iterate", ARRAY_ITERATE_KEY);
@@ -4992,6 +5013,12 @@ var LintoEditor = (function(exports) {
         optimized = false;
         n2.dynamicChildren = null;
       }
+      if (n2.dynamicChildren && n1 && n1.dynamicChildren && n1.dynamicChildren.hasOnce) {
+        if (n2.dynamicChildren === EMPTY_ARR) {
+          n2.dynamicChildren = [];
+        }
+        n2.dynamicChildren.hasOnce = true;
+      }
       const { type, ref: ref3, shapeFlag } = n2;
       switch (type) {
         case Text:
@@ -5544,6 +5571,7 @@ var LintoEditor = (function(exports) {
       const instance = n2.component = n1.component;
       if (shouldUpdateComponent(n1, n2, optimized)) {
         if (instance.asyncDep && !instance.asyncResolved) {
+          n2.el = n1.el;
           updateComponentPreRender(instance, n2, optimized);
           return;
         } else {
@@ -6053,7 +6081,7 @@ var LintoEditor = (function(exports) {
         cacheIndex,
         memo
       } = vnode;
-      if (patchFlag === -2) {
+      if (patchFlag === -2 || dynamicChildren && dynamicChildren.hasOnce) {
         optimized = false;
       }
       if (ref3 != null) {
@@ -6061,7 +6089,7 @@ var LintoEditor = (function(exports) {
         setRef(ref3, null, parentSuspense, vnode, true);
         resetTracking();
       }
-      if (cacheIndex != null) {
+      if (cacheIndex != null && (!vnode.ctx || vnode.ctx === parentComponent)) {
         parentComponent.renderCache[cacheIndex] = void 0;
       }
       if (shapeFlag & 256) {
@@ -6134,6 +6162,9 @@ var LintoEditor = (function(exports) {
       }
       if (type === Static) {
         removeStaticNode(vnode);
+        if (transition && !transition.persisted && transition.afterLeave) {
+          transition.afterLeave();
+        }
         return;
       }
       const performRemove = () => {
@@ -6173,6 +6204,9 @@ var LintoEditor = (function(exports) {
       scope.stop();
       if (job) {
         job.flags |= 8;
+        unmount(subTree, instance, parentSuspense, doRemove);
+      } else if (instance.vnode.el && subTree) {
+        subTree.transition = instance.vnode.transition;
         unmount(subTree, instance, parentSuspense, doRemove);
       }
       if (um) {
@@ -6587,7 +6621,8 @@ var LintoEditor = (function(exports) {
       el: vnode.el,
       anchor: vnode.anchor,
       ctx: vnode.ctx,
-      ce: vnode.ce
+      ce: vnode.ce,
+      cacheIndex: vnode.cacheIndex
     };
     if (transition && cloneTransition) {
       setTransitionHooks(
@@ -6998,7 +7033,7 @@ var LintoEditor = (function(exports) {
     const c2 = /* @__PURE__ */ computed$1(getterOrOptions, debugOptions, isInSSRComponentSetup);
     return c2;
   };
-  function h$2(type, propsOrChildren, children) {
+  function h$3(type, propsOrChildren, children) {
     try {
       setBlockTracking(-1);
       const l2 = arguments.length;
@@ -7048,7 +7083,7 @@ var LintoEditor = (function(exports) {
     }
     return true;
   }
-  const version = "3.5.42";
+  const version = "3.5.43";
   let policy = void 0;
   const tt$1 = typeof window !== "undefined" && window.trustedTypes;
   if (tt$1) {
@@ -7160,7 +7195,7 @@ var LintoEditor = (function(exports) {
     return t2;
   };
   const Transition = /* @__PURE__ */ decorate$1(
-    (props, { slots }) => h$2(BaseTransition, resolveTransitionProps(props), slots)
+    (props, { slots }) => h$3(BaseTransition, resolveTransitionProps(props), slots)
   );
   const callHook = (hook, args = []) => {
     if (isArray(hook)) {
@@ -9659,7 +9694,7 @@ var LintoEditor = (function(exports) {
     color = defaultAttributes.stroke,
     ...props
   }, { slots }) => {
-    return h$2(
+    return h$3(
       "svg",
       {
         ...defaultAttributes,
@@ -9675,10 +9710,10 @@ var LintoEditor = (function(exports) {
         ),
         ...!slots.default && !hasA11yProp(props) && { "aria-hidden": "true" }
       },
-      [...iconNode.map((child) => h$2(...child)), ...slots.default ? [slots.default()] : []]
+      [...iconNode.map((child) => h$3(...child)), ...slots.default ? [slots.default()] : []]
     );
   };
-  const createLucideIcon = (iconName, iconNode) => (props, { slots, attrs }) => h$2(
+  const createLucideIcon = (iconName, iconNode) => (props, { slots, attrs }) => h$3(
     Icon,
     {
       ...attrs,
@@ -12155,7 +12190,7 @@ pre[class*="language-"] {
         ].join("\n"));
       }
       return () => {
-        if (forceMount.value || present.value || isPresent.value) return h$2(slots.default({ present: isPresent.value })[0], { ref: (v2) => {
+        if (forceMount.value || present.value || isPresent.value) return h$3(slots.default({ present: isPresent.value })[0], { ref: (v2) => {
           const el = unrefElement(v2);
           if (typeof el?.hasAttribute === "undefined") return el;
           if (el?.hasAttribute("data-reka-popper-content-wrapper")) node.value = el.firstElementChild;
@@ -12208,9 +12243,9 @@ pre[class*="language-"] {
     },
     setup(props, { attrs, slots }) {
       const asTag = props.asChild ? "template" : props.as;
-      if (typeof asTag === "string" && SELF_CLOSING_TAGS.includes(asTag)) return () => h$2(asTag, attrs);
-      if (asTag !== "template") return () => h$2(props.as, attrs, { default: slots.default });
-      return () => h$2(Slot, attrs, { default: slots.default });
+      if (typeof asTag === "string" && SELF_CLOSING_TAGS.includes(asTag)) return () => h$3(asTag, attrs);
+      if (asTag !== "template") return () => h$3(props.as, attrs, { default: slots.default });
+      return () => h$3(Slot, attrs, { default: slots.default });
     }
   });
   function usePrimitiveElement() {
@@ -12319,6 +12354,7 @@ pre[class*="language-"] {
   const FOCUS_OUTSIDE = "dismissableLayer.focusOutside";
   function isLayerExist(layerElement, targetElement) {
     if (!(targetElement instanceof Element)) return false;
+    if (layerElement.contains(targetElement)) return true;
     const targetLayer = targetElement.closest("[data-dismissable-layer]");
     const mainLayer = layerElement.dataset.dismissableLayer === "" ? layerElement : layerElement.querySelector("[data-dismissable-layer]");
     const nodeList = Array.from(layerElement.ownerDocument.querySelectorAll("[data-dismissable-layer]"));
@@ -12336,6 +12372,7 @@ pre[class*="language-"] {
         const target = event.target;
         if (!element?.value || !target) return;
         if (isLayerExist(element.value, target)) {
+          ownerDocument.removeEventListener("click", handleClickRef.value);
           isPointerInsideDOMTree.value = false;
           return;
         }
@@ -13121,15 +13158,16 @@ pre[class*="language-"] {
       const rootContext = injectDialogRootContext();
       const emitsAsProps = useEmitAsProps(emits);
       const { forwardRef } = useForwardExpose();
+      const staysMounted = computed(() => props.forceMount || !rootContext.unmountOnHide.value);
       return (_ctx, _cache) => {
         return openBlock(), createBlock(unref(Presence_default), {
-          present: _ctx.forceMount || unref(rootContext).open.value,
-          "force-mount": _ctx.forceMount || !unref(rootContext).unmountOnHide.value
+          present: unref(rootContext).open.value,
+          "force-mount": staysMounted.value
         }, {
           default: withCtx(({ present }) => [unref(rootContext).modal.value ? withDirectives((openBlock(), createBlock(DialogContentModal_default, mergeProps({
             key: 0,
             ref: unref(forwardRef),
-            present: unref(rootContext).unmountOnHide.value || present
+            present: staysMounted.value ? present : true
           }, {
             ...props,
             ...unref(emitsAsProps),
@@ -13137,10 +13175,10 @@ pre[class*="language-"] {
           }), {
             default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
             _: 2
-          }, 1040, ["present"])), [[vShow, unref(rootContext).unmountOnHide.value || present]]) : withDirectives((openBlock(), createBlock(DialogContentNonModal_default, mergeProps({
+          }, 1040, ["present"])), [[vShow, _ctx.forceMount || unref(rootContext).unmountOnHide.value || present]]) : withDirectives((openBlock(), createBlock(DialogContentNonModal_default, mergeProps({
             key: 1,
             ref: unref(forwardRef),
-            present: unref(rootContext).unmountOnHide.value || present
+            present: staysMounted.value ? present : true
           }, {
             ...props,
             ...unref(emitsAsProps),
@@ -13148,7 +13186,7 @@ pre[class*="language-"] {
           }), {
             default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
             _: 2
-          }, 1040, ["present"])), [[vShow, unref(rootContext).unmountOnHide.value || present]])]),
+          }, 1040, ["present"])), [[vShow, _ctx.forceMount || unref(rootContext).unmountOnHide.value || present]])]),
           _: 3
         }, 8, ["present", "force-mount"]);
       };
@@ -13219,19 +13257,21 @@ pre[class*="language-"] {
       }
     },
     setup(__props) {
+      const props = __props;
       const rootContext = injectDialogRootContext();
       const { forwardRef } = useForwardExpose();
+      const staysMounted = computed(() => props.forceMount || !rootContext.unmountOnHide.value);
       return (_ctx, _cache) => {
         return unref(rootContext)?.modal.value ? (openBlock(), createBlock(unref(Presence_default), {
           key: 0,
-          present: _ctx.forceMount || unref(rootContext).open.value,
-          "force-mount": _ctx.forceMount || !unref(rootContext).unmountOnHide.value
+          present: unref(rootContext).open.value,
+          "force-mount": staysMounted.value
         }, {
           default: withCtx(({ present }) => [withDirectives(createVNode(DialogOverlayImpl_default, mergeProps(_ctx.$attrs, {
             ref: unref(forwardRef),
             as: _ctx.as,
             "as-child": _ctx.asChild,
-            present: unref(rootContext).unmountOnHide.value || present
+            present: staysMounted.value ? present : true
           }), {
             default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
             _: 2
@@ -13239,7 +13279,7 @@ pre[class*="language-"] {
             "as",
             "as-child",
             "present"
-          ]), [[vShow, unref(rootContext).unmountOnHide.value || present]])]),
+          ]), [[vShow, _ctx.forceMount || unref(rootContext).unmountOnHide.value || present]])]),
           _: 3
         }, 8, ["present", "force-mount"])) : createCommentVNode("v-if", true);
       };
@@ -13357,6 +13397,11 @@ pre[class*="language-"] {
       };
       provide(injectionKey, context2);
     } else context2 = inject(injectionKey);
+    const getItem = (element, includeDisabledItem = false) => {
+      if (!context2.collectionRef.value) return void 0;
+      const item = context2.itemMap.value.get(element);
+      return item && (includeDisabledItem || item.ref.dataset.disabled !== "") ? item : void 0;
+    };
     const getItems = (includeDisabledItem = false) => {
       const collectionNode = context2.collectionRef.value;
       if (!collectionNode) return [];
@@ -13375,7 +13420,7 @@ pre[class*="language-"] {
         watch(currentElement, () => {
           context2.collectionRef.value = currentElement.value;
         });
-        return () => h$2(Slot, {
+        return () => h$3(Slot, {
           ref: primitiveElement,
           ...attrs
         }, slots);
@@ -13397,7 +13442,7 @@ pre[class*="language-"] {
             cleanupFn(() => context2.itemMap.value.delete(key$1));
           }
         });
-        return () => h$2(Slot, {
+        return () => h$3(Slot, {
           ...attrs,
           [ITEM_DATA_ATTR]: "",
           ref: primitiveElement
@@ -13408,6 +13453,7 @@ pre[class*="language-"] {
     const itemMapSize = computed(() => context2.itemMap.value.size);
     return {
       getItems,
+      getItem,
       reactiveItems,
       itemMapSize,
       CollectionSlot,
@@ -16735,10 +16781,11 @@ pre[class*="language-"] {
             onPointermove: handlePointerMove,
             onPointerleave: handlePointerLeave,
             onFocus: _cache[0] || (_cache[0] = async (event) => {
+              const item = event.currentTarget;
               await nextTick();
               if (event.defaultPrevented || _ctx.disabled) return;
               isFocused.value = true;
-              unref(contentContext).highlightedElement.value = event.currentTarget;
+              unref(contentContext).highlightedElement.value = item;
             }),
             onBlur: _cache[1] || (_cache[1] = async (event) => {
               await nextTick();
@@ -18399,63 +18446,69 @@ pre[class*="language-"] {
       taskListItems
     ]);
   }
-  function A() {
+  function I() {
     return { async: false, breaks: false, extensions: null, gfm: true, hooks: null, pedantic: false, renderer: null, silent: false, tokenizer: null, walkTokens: null };
   }
-  var R = A();
-  function j(l2) {
-    R = l2;
+  var y$1 = I();
+  function W(l2) {
+    y$1 = l2;
   }
-  var z = { exec: () => null };
-  function I(l2) {
+  var A = { exec: () => null };
+  function C$1(l2) {
     let e2 = [];
     return (t2) => {
       let n2 = Math.max(0, Math.min(3, t2 - 1)), s2 = e2[n2];
       return s2 || (s2 = l2(n2), e2[n2] = s2), s2;
     };
   }
-  function k(l2, e2 = "") {
+  function h$2(l2, e2 = "") {
     let t2 = typeof l2 == "string" ? l2 : l2.source, n2 = { replace: (s2, r2) => {
-      let i2 = typeof r2 == "string" ? r2 : r2.source;
-      return i2 = i2.replace(m$1.caret, "$1"), t2 = t2.replace(s2, i2), n2;
+      let o2 = typeof r2 == "string" ? r2 : r2.source;
+      return o2 = o2.replace(x.caret, "$1"), t2 = t2.replace(s2, o2), n2;
     }, getRegex: () => new RegExp(t2, e2) };
     return n2;
   }
-  var Oe = ((l2 = "") => {
+  var _e = ((l2 = "") => {
     try {
       return !!new RegExp("(?<=1)(?<!1)" + l2);
     } catch {
       return false;
     }
-  })(), m$1 = { codeRemoveIndent: /^(?: {1,4}| {0,3}\t)/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (l2) => new RegExp(`^( {0,3}${l2})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: I((l2) => new RegExp(`^ {0,${l2}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`)), hrRegex: I((l2) => new RegExp(`^ {0,${l2}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`)), fencesBeginRegex: I((l2) => new RegExp(`^ {0,${l2}}(?:\`\`\`|~~~)`)), headingBeginRegex: I((l2) => new RegExp(`^ {0,${l2}}#`)), htmlBeginRegex: I((l2) => new RegExp(`^ {0,${l2}}<(?:[a-z].*>|!--)`, "i")), blockquoteBeginRegex: I((l2) => new RegExp(`^ {0,${l2}}>`)) }, Te = /^(?:[ \t]*(?:\n|$))+/, we = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, ye = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, q = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, Pe = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, U = / {0,3}(?:[*+-]|\d{1,9}[.)])/, oe = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, ae = k(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Se = k(oe).replace(/bull/g, U).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), K = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table|[ \t]+\n)[^\n]+)*)/, _e = /^[^\n]+/, W = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, $e = k(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", W).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), Le = k(/^(bull)([ \t][^\n]*?)?(?:\n|$)/).replace(/bull/g, U).getRegex(), Q = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", X = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, Ee = k("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n*|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>[^\\n]*\\n*|$)|<![A-Z][\\s\\S]*?(?:>[^\\n]*\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>[^\\n]*\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", X).replace("tag", Q).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), le = (l2) => k(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", l2).replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), ze = le(/ {0,3}(?:[*+-]|1[.)])[ \t]+[^ \t\n]/), Me = le(/ {0,3}(?:[*+-]|\d{1,9}[.)])(?:[ \t]|\n|$)/), Ae = k(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", Me).getRegex(), J = { blockquote: Ae, code: we, def: $e, fences: ye, heading: Pe, hr: q, html: Ee, lheading: ae, list: Le, newline: Te, paragraph: ze, table: z, text: _e }, se = k("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex(), Ie = { ...J, lheading: Se, table: se, paragraph: k(K).replace("hr", q).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", se).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]+[^ \\t\\n]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", Q).getRegex() }, Ce = { ...J, html: k(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", X).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: z, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: k(K).replace("hr", q).replace("heading", ` *#{1,6} *[^
-]`).replace("lheading", ae).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Be = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, De = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, ue = /^( {2,}|\\)\n(?!\s*$)/, qe = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, _ = /[\p{P}\p{S}]/u, C$1 = /[\s\p{P}\p{S}]/u, v$1 = /[^\s\p{P}\p{S}]/u, ve = k(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, C$1).getRegex(), He = /[\p{Pi}\p{Ps}"']/u, pe = /(?!~)[\p{P}\p{S}]/u, Ze = /(?!~)[\s\p{P}\p{S}]/u, Ge = /(?:[^\s\p{P}\p{S}]|~)/u, Qe = k(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", Oe ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), ce = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, Ne = k(ce, "u").replace(/punct/g, _).getRegex(), je = k(ce, "u").replace(/punct/g, pe).getRegex(), Fe = /^(?:\*+(?:((?!\*)(?!openQuote)punct)|([^\s*]))?)|^_+(?:((?!_)(?!openQuote)punct)|([^\s_]))?/, Ue = k(Fe, "u").replace(/openQuote/g, He).replace(/punct/g, _).getRegex(), he = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", Ke = k(he, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), We = k(he, "gu").replace(/notPunctSpace/g, Ge).replace(/punctSpace/g, Ze).replace(/punct/g, pe).getRegex(), Xe = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)[\\s](\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|(?:(?!\\*)punct|notPunctSpace)(\\*+)(?!\\*)(?=notPunctSpace)", Je = k(Xe, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), Ve = k("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), Ye = "^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)[\\s](_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)|(?:(?!_)punct|notPunctSpace)(_+)(?!_)(?=notPunctSpace)", et = k(Ye, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), tt = k(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, _).getRegex(), nt = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", rt = k(nt, "gu").replace(/notPunctSpace/g, v$1).replace(/punctSpace/g, C$1).replace(/punct/g, _).getRegex(), st = k(/\\(punct)/, "gu").replace(/punct/g, _).getRegex(), it = k(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), ot = k(X).replace("(?:-->|$)", "-->").getRegex(), at = k("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", ot).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), G = /(?:\[(?:\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/, lt = k(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", G).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]+|(?=\))/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), ke = k(/^!?\[(label)\]\[(ref)\]/).replace("label", G).replace("ref", W).getRegex(), de = k(/^!?\[(ref)\](?:\[\])?/).replace("ref", W).getRegex(), ut = k("reflink|nolink(?!\\()", "g").replace("reflink", ke).replace("nolink", de).getRegex(), ie = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, V = { _backpedal: z, anyPunctuation: st, autolink: it, blockSkip: Qe, br: ue, code: De, del: z, delLDelim: z, delRDelim: z, emStrongLDelim: Ne, emStrongRDelimAst: Ke, emStrongRDelimUnd: Ve, escape: Be, link: lt, nolink: de, punctuation: ve, reflink: ke, reflinkSearch: ut, tag: at, text: qe, url: z }, pt = { ...V, emStrongLDelim: Ue, emStrongRDelimAst: Je, emStrongRDelimUnd: et, link: k(/^!?\[(label)\]\((.*?)\)/).replace("label", G).getRegex(), reflink: k(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", G).getRegex() }, F = { ...V, emStrongRDelimAst: We, emStrongLDelim: je, delLDelim: tt, delRDelim: rt, url: k(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("protocol", ie).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: k(/^(`+|~+|[^`~])(?:(?=[`~])|(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace("protocol", ie).getRegex() }, ct = { ...F, br: k(ue).replace("{2,}", "*").getRegex(), text: k(F.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, H = { normal: J, gfm: Ie, pedantic: Ce }, B = { normal: V, gfm: F, breaks: ct, pedantic: pt };
-  var ht = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }, ge = (l2) => ht[l2];
-  function T(l2, e2) {
+  })(), x = { codeRemoveIndent: /^(?: {0,3}\t| {1,4})/gm, outputLinkReplace: /\\([\[\]])/g, indentCodeCompensation: /^(\s+)(?:```)/, beginningSpace: /^\s+/, endingHash: /#$/, startingSpaceChar: /^ /, endingSpaceChar: / $/, endingSpaceTabChar: /[ \t]$/, nonSpaceChar: /[^ ]/, newLineCharGlobal: /\n/g, tabCharGlobal: /\t/g, leadingSpaceTab: /^[ \t]+/, multipleSpaceGlobal: /\s+/g, blankLine: /^[ \t]*$/, doubleBlankLine: /\n[ \t]*\n[ \t]*$/, blockquoteStart: /^ {0,3}>/, blockquoteSetextReplace: /\n {0,3}((?:=+|-+) *)(?=\n|$)/g, blockquoteSetextReplace2: /^ {0,3}>[ \t]?/gm, listReplaceNesting: /^ {1,4}(?=( {4})*[^ ])/g, listIsTask: /^\[[ xX]\] +\S/, listReplaceTask: /^\[[ xX]\] +/, listTaskCheckbox: /\[[ xX]\]/, anyLine: /\n.*\n/, hrefBrackets: /^<(.*)>$/, tableDelimiter: /[:|]/, tableAlignChars: /^\||\| *$/g, tableRowBlankLine: /\n[ \t]*$/, tableAlignRight: /^ *-+: *$/, tableAlignCenter: /^ *:-+: *$/, tableAlignLeft: /^ *:-+ *$/, startATag: /^<a /i, endATag: /^<\/a>/i, startPreScriptTag: /^<(pre|code|kbd|script)(\s|>)/i, endPreScriptTag: /^<\/(pre|code|kbd|script)(\s|>)/i, startAngleBracket: /^</, endAngleBracket: />$/, pedanticHrefTitle: /^([^'"]*[^\s])\s+(['"])(.*)\2/, unicodeAlphaNumeric: /[\p{L}\p{N}]/u, numericCharacterReference: /&#(?:(\d{1,7})|[Xx]([A-Fa-f0-9]{1,6}));/g, escapeTest: /[&<>"']/, escapeReplace: /[&<>"']/g, escapeTestNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/, escapeReplaceNoEncode: /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g, caret: /(^|[^\[])\^/g, percentDecode: /%25/g, findPipe: /\|/g, splitPipe: / \|/, slashPipe: /\\\|/g, carriageReturn: /\r\n|\r/g, spaceLine: /^ +$/gm, notSpaceStart: /^\S*/, endingNewline: /\n$/, listItemRegex: (l2) => new RegExp(`^( {0,3}${l2})((?:[	 ][^\\n]*)?(?:\\n|$))`), nextBulletRegex: C$1((l2) => new RegExp(`^ {0,${l2}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`)), hrRegex: C$1((l2) => new RegExp(`^ {0,${l2}}((?:-[ 	]*){3,}|(?:_[ 	]*){3,}|(?:\\*[ 	]*){3,})(?:\\n+|$)`)), fencesBeginRegex: C$1((l2) => new RegExp(`^ {0,${l2}}(?:\`\`\`|~~~)`)), headingBeginRegex: C$1((l2) => new RegExp(`^ {0,${l2}}#`)), htmlBeginRegex: C$1((l2) => new RegExp(`^ {0,${l2}}(?:</?(?:${N})(?: +|$|/?>)|<(?:script|pre|style|textarea|!--))`, "i")), blockquoteBeginRegex: C$1((l2) => new RegExp(`^ {0,${l2}}>`)) }, $e = /^(?:[ \t]*(?:\n|$))+/, Le = /^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/, ze = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/, G = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/, Ae = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/, J = / {0,3}(?:[*+-]|\d{1,9}[.)])/, ce = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |fences|blockquote|heading|hr|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/, he = h$2(ce).replace(/bull/g, J).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/hr/g, / {0,3}(?:(?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/\|table/g, "").getRegex(), Ee = h$2(ce).replace(/bull/g, J).replace(/blockCode/g, /(?: {4}| {0,3}\t)/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}(?:\s|$)/).replace(/hr/g, / {0,3}(?:(?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/).replace(/html/g, / {0,3}<[^\n>]+>\n/).replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(), V = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table|[ \t]+\n)[^\n]+)*)/, Me = /^[^\n]+/, Y = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/, Ie = h$2(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace("label", Y).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(), Ce = h$2(/^(bull)([ \t][^\n]*?)?(?:\n|$)/).replace(/bull/g, J).getRegex(), N = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", ee = /<!--(?:-?>|[\s\S]*?(?:-->|$))/, Be = h$2("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n*|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>[^\\n]*\\n*|$)|<![A-Z][\\s\\S]*?(?:>[^\\n]*\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>[^\\n]*\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][a-z0-9-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][a-z0-9-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))", "i").replace("comment", ee).replace("tag", N).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), de = (l2) => h$2(V).replace("hr", G).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", l2).replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", N).getRegex(), De = de(/ {0,3}(?:[*+-]|1[.)])[ \t]+[^ \t\n]/), qe = de(/ {0,3}(?:[*+-]|\d{1,9}[.)])(?:[ \t]|\n|$)/), ve = h$2(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", qe).getRegex(), te = { blockquote: ve, code: Le, def: Ie, fences: ze, heading: Ae, hr: G, html: Be, lheading: he, list: Ce, newline: $e, paragraph: De, table: A, text: Me }, le = h$2("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", G).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", "(?: {4}| {0,3}	)[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", N).getRegex(), Ze = { ...te, lheading: Ee, table: le, paragraph: h$2(V).replace("hr", G).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", le).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*(?:\\n|$))|~~~)[^\\n]*(?:\\n|$)").replace("list", " {0,3}(?:[*+-]|1[.)])[ \\t]+[^ \\t\\n]").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", N).getRegex() }, He = { ...te, html: h$2(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", ee).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(), def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/, heading: /^(#{1,6})(.*)(?:\n+|$)/, fences: A, lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/, paragraph: h$2(V).replace("hr", G).replace("heading", ` *#{1,6} *[^
+]`).replace("lheading", he).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex() }, Ge = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/, Ne = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/, ke = /^( {2,}|\\)\n(?!\s*$)[ \t]*/, Qe = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/, $ = /[\p{P}\p{S}]/u, B = /[\s\p{P}\p{S}]/u, Q = /[^\s\p{P}\p{S}]/u, je = h$2(/^((?![*_])punctSpace)/, "u").replace(/punctSpace/g, B).getRegex(), Fe = /[\p{Pi}\p{Ps}"']/u, ge = /(?!~)[\p{P}\p{S}]/u, Ue = /(?!~)[\s\p{P}\p{S}]/u, Ke = /(?:[^\s\p{P}\p{S}]|~)/u, We = h$2(/link|precode-code|html/, "g").replace("link", /\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace("precode-", _e ? "(?<!`)()" : "(^^|[^`])").replace("code", /(?<b>`+)[^`]+\k<b>(?!`)/).replace("html", /<(?! )[^<>]*?>/).getRegex(), fe = /^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/, Xe = h$2(fe, "u").replace(/punct/g, $).getRegex(), Je = h$2(fe, "u").replace(/punct/g, ge).getRegex(), Ve = /^(?:\*+(?:((?!\*)(?!openQuote)punct)|([^\s*]))?)|^_+(?:((?!_)(?!openQuote)punct)|([^\s_]))?/, Ye = h$2(Ve, "u").replace(/openQuote/g, Fe).replace(/punct/g, $).getRegex(), me = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)", et = h$2(me, "gu").replace(/notPunctSpace/g, Q).replace(/punctSpace/g, B).replace(/punct/g, $).getRegex(), tt = h$2(me, "gu").replace(/notPunctSpace/g, Ke).replace(/punctSpace/g, Ue).replace(/punct/g, ge).getRegex(), nt = "^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)[\\s](\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|(?:(?!\\*)punct|notPunctSpace)(\\*+)(?!\\*)(?=notPunctSpace)", rt = h$2(nt, "gu").replace(/notPunctSpace/g, Q).replace(/punctSpace/g, B).replace(/punct/g, $).getRegex(), st = h$2("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)", "gu").replace(/notPunctSpace/g, Q).replace(/punctSpace/g, B).replace(/punct/g, $).getRegex(), it = "^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)[\\s](_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)|(?:(?!_)punct|notPunctSpace)(_+)(?!_)(?=notPunctSpace)", ot = h$2(it, "gu").replace(/notPunctSpace/g, Q).replace(/punctSpace/g, B).replace(/punct/g, $).getRegex(), at = h$2(/^~~?(?:((?!~)punct)|[^\s~])/, "u").replace(/punct/g, $).getRegex(), lt = "^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)", ut = h$2(lt, "gu").replace(/notPunctSpace/g, Q).replace(/punctSpace/g, B).replace(/punct/g, $).getRegex(), pt = h$2(/\\(punct)/, "gu").replace(/punct/g, $).getRegex(), ct = h$2(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(), ht = h$2(ee).replace("(?:-->|$)", "-->").getRegex(), dt = h$2("^comment|^</[a-zA-Z][a-zA-Z0-9-]*\\s*>|^<[a-zA-Z][a-zA-Z0-9-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", ht).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(), xe = /\[(?:\\[\s\S]|[^\[\]\\])*\]/, U = h$2(/(?:\[(?:brackets|\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/).replace("brackets", xe).getRegex(), kt = h$2(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace("label", U).replace("href", /<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]+|(?=\))/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(), gt = h$2(/^!?\[(label)\]\[(ref)\]/).replace("label", U).replace("ref", Y).getRegex(), ft = h$2(/^!?\[(ref)\](?:\[\])?/).replace("ref", Y).getRegex(), ue = /(?!\s*\])(?:\\[\s\S]|[^\[\]\\]){1,999}/, mt = h$2(/(?:[^\[\]\\`]*(?:\[(?:brackets|\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\]))){0,999}?[^\[\]\\`]*?/).replace("brackets", xe).getRegex(), xt = h$2("reflink|nolink(?!\\()", "g").replace("reflink", h$2(/^!?\[(label)\]\[(ref)\]/).replace("label", mt).replace("ref", ue).getRegex()).replace("nolink", h$2(/^!?\[(ref)\](?:\[\])?/).replace("ref", ue).getRegex()).getRegex(), pe = /[hH][tT][tT][pP][sS]?|[fF][tT][pP]/, bt = /[A-Za-z0-9._+-]+@[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![\w-])/, Rt = h$2(/(?:mailto:email|xmpp:email(?:\/[A-Za-z0-9@.]+)?)/).replace(/email/g, bt).getRegex(), ne = { _backpedal: A, anyPunctuation: pt, autolink: ct, blockSkip: We, br: ke, code: Ne, del: A, delLDelim: A, delRDelim: A, emStrongLDelim: Xe, emStrongRDelimAst: et, emStrongRDelimUnd: st, escape: Ge, link: kt, nolink: ft, punctuation: je, reflink: gt, reflinkSearch: xt, tag: dt, text: Qe, url: A }, Tt = { ...ne, emStrongLDelim: Ye, emStrongRDelimAst: rt, emStrongRDelimUnd: ot, link: h$2(/^!?\[(label)\]\((.*?)\)/).replace("label", U).getRegex(), reflink: h$2(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", U).getRegex() }, X = { ...ne, emStrongRDelimAst: tt, emStrongLDelim: Je, delLDelim: at, delRDelim: ut, url: h$2(/^emailProtocol|^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace("emailProtocol", Rt).replace("protocol", pe).replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![\w-])/).getRegex(), _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/, del: /^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/, text: h$2(/^(?:[^a-zA-Z0-9](?=emailProtocol)|(`+|~+|[^`~])(?:(?=[`~])|(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9](?=emailProtocol)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@))))/).replace("protocol", pe).replace(/emailProtocol/g, /(?:mailto|xmpp):/).getRegex() }, Ot = { ...X, br: h$2(ke).replace("{2,}", "*").getRegex(), text: h$2(X.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex() }, j = { normal: te, gfm: Ze, pedantic: He }, D = { normal: ne, gfm: X, breaks: Ot, pedantic: Tt };
+  var wt = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }, be = (l2) => wt[l2];
+  function O(l2, e2) {
     if (e2) {
-      if (m$1.escapeTest.test(l2)) return l2.replace(m$1.escapeReplace, ge);
-    } else if (m$1.escapeTestNoEncode.test(l2)) return l2.replace(m$1.escapeReplaceNoEncode, ge);
+      if (x.escapeTest.test(l2)) return l2.replace(x.escapeReplace, be);
+    } else if (x.escapeTestNoEncode.test(l2)) return l2.replace(x.escapeReplaceNoEncode, be);
     return l2;
   }
-  function Y(l2) {
+  function Re(l2) {
+    return l2.replace(x.numericCharacterReference, (e2, t2, n2) => {
+      let s2 = t2 === void 0 ? Number.parseInt(n2, 16) : Number.parseInt(t2, 10);
+      return s2 === 0 || s2 > 1114111 || s2 >= 55296 && s2 <= 57343 ? "�" : String.fromCodePoint(s2);
+    });
+  }
+  function re(l2) {
     try {
-      l2 = encodeURI(l2).replace(m$1.percentDecode, "%");
+      l2 = encodeURI(l2).replace(x.percentDecode, "%");
     } catch {
       return null;
     }
     return l2;
   }
-  function ee(l2, e2) {
-    let t2 = l2.replace(m$1.findPipe, (r2, i2, o2) => {
-      let u2 = false, a2 = i2;
-      for (; --a2 >= 0 && o2[a2] === "\\"; ) u2 = !u2;
+  function se(l2, e2) {
+    let t2 = l2.replace(x.findPipe, (r2, o2, i2) => {
+      let u2 = false, a2 = o2;
+      for (; --a2 >= 0 && i2[a2] === "\\"; ) u2 = !u2;
       return u2 ? "|" : " |";
-    }), n2 = t2.split(m$1.splitPipe), s2 = 0;
+    }), n2 = t2.split(x.splitPipe), s2 = 0;
     if (n2[0].trim() || n2.shift(), n2.length > 0 && !n2.at(-1)?.trim() && n2.pop(), e2) if (n2.length > e2) n2.splice(e2);
     else for (; n2.length < e2; ) n2.push("");
-    for (; s2 < n2.length; s2++) n2[s2] = n2[s2].trim().replace(m$1.slashPipe, "|");
+    for (; s2 < n2.length; s2++) n2[s2] = n2[s2].trim().replace(x.slashPipe, "|");
     return n2;
   }
-  function $(l2, e2, t2) {
+  function L(l2, e2, t2) {
     let n2 = l2.length;
     if (n2 === 0) return "";
     let s2 = 0;
@@ -18466,14 +18519,17 @@ pre[class*="language-"] {
     }
     return l2.slice(0, n2 - s2);
   }
-  function te(l2) {
+  function ie(l2) {
     let e2 = l2.split(`
 `), t2 = e2.length - 1;
-    for (; t2 >= 0 && m$1.blankLine.test(e2[t2]); ) t2--;
+    for (; t2 >= 0 && x.blankLine.test(e2[t2]); ) t2--;
     return e2.length - t2 <= 2 ? l2 : e2.slice(0, t2 + 1).join(`
 `);
   }
-  function fe(l2, e2) {
+  function q(l2) {
+    return l2.trim().toLowerCase().toUpperCase().toLowerCase();
+  }
+  function Te(l2, e2) {
     if (l2.indexOf(e2[1]) === -1) return -1;
     let t2 = 0;
     for (let n2 = 0; n2 < l2.length; n2++) if (l2[n2] === "\\") n2++;
@@ -18481,7 +18537,7 @@ pre[class*="language-"] {
     else if (l2[n2] === e2[1] && (t2--, t2 < 0)) return n2;
     return t2 > 0 ? -2 : -1;
   }
-  function me(l2, e2 = 0) {
+  function oe(l2, e2 = 0) {
     let t2 = e2, n2 = "";
     for (let s2 of l2) if (s2 === "	") {
       let r2 = 4 - t2 % 4;
@@ -18489,40 +18545,63 @@ pre[class*="language-"] {
     } else n2 += s2, t2++;
     return n2;
   }
-  function xe(l2, e2, t2, n2, s2) {
-    let r2 = e2.href, i2 = e2.title || null, o2 = l2[1].replace(s2.other.outputLinkReplace, "$1"), u2 = l2[0].charAt(0) === "!";
+  function Oe(l2, e2, t2, n2, s2) {
+    let r2 = e2.href, o2 = e2.title || null, i2 = l2[1].replace(s2.other.outputLinkReplace, "$1"), u2 = l2[0].charAt(0) === "!";
     n2.state.inLink = true;
     let a2 = n2.state.linkEmitted, p2 = n2.state.inRawBlock;
     n2.state.linkEmitted = false;
-    let c2 = n2.inlineTokens(o2), h2 = n2.state.linkEmitted;
+    let c2 = n2.inlineTokens(i2), d2 = n2.state.linkEmitted;
     if (n2.state.linkEmitted = a2, n2.state.inLink = false, !u2) {
-      if (h2) {
+      if (d2) {
         n2.state.inRawBlock = p2;
         return;
       }
       n2.state.linkEmitted = true;
     }
-    return { type: u2 ? "image" : "link", raw: t2, href: r2, title: i2, text: o2, tokens: c2 };
+    return { type: u2 ? "image" : "link", raw: t2, href: r2, title: o2, text: i2, tokens: c2 };
   }
-  function kt(l2, e2, t2) {
+  function yt(l2, e2, t2) {
     let n2 = l2.match(t2.other.indentCodeCompensation);
     if (n2 === null) return e2;
     let s2 = n2[1];
     return e2.split(`
 `).map((r2) => {
-      let i2 = r2.match(t2.other.beginningSpace);
-      if (i2 === null) return r2;
-      let [o2] = i2;
-      return o2.length >= s2.length ? r2.slice(s2.length) : r2;
+      let o2 = r2.match(t2.other.beginningSpace);
+      if (o2 === null) return r2;
+      let [i2] = o2;
+      return r2.slice(Math.min(i2.length, s2.length));
     }).join(`
 `);
   }
-  var y$1 = class y {
+  function we(l2, e2, t2, n2) {
+    if (!e2.includes("<")) return false;
+    for (let s2 = 0; s2 < e2.length; s2++) {
+      if (e2[s2] === "\\") {
+        s2++;
+        continue;
+      }
+      if (e2[s2] === "`") {
+        let i2 = n2.inline.code.exec(e2.slice(s2));
+        if (i2) {
+          s2 += i2[0].length - 1;
+          continue;
+        }
+      }
+      if (e2[s2] !== "<") continue;
+      let r2 = l2.slice(t2 + s2), o2 = n2.inline.tag.exec(r2) || n2.inline.autolink.exec(r2);
+      if (o2) {
+        if (o2[0].length > e2.length - s2) return true;
+        s2 += o2[0].length - 1;
+      }
+    }
+    return false;
+  }
+  var P$1 = class P {
     options;
     rules;
     lexer;
     constructor(e2) {
-      this.options = e2 || R;
+      this.options = e2 || y$1;
     }
     space(e2) {
       let t2 = this.rules.block.newline.exec(e2);
@@ -18531,14 +18610,14 @@ pre[class*="language-"] {
     code(e2) {
       let t2 = this.rules.block.code.exec(e2);
       if (t2) {
-        let n2 = this.options.pedantic ? t2[0] : te(t2[0]), s2 = n2.replace(this.rules.other.codeRemoveIndent, "");
+        let n2 = this.options.pedantic ? t2[0] : ie(t2[0]), s2 = n2.replace(this.rules.other.codeRemoveIndent, "");
         return { type: "code", raw: n2, codeBlockStyle: "indented", text: s2 };
       }
     }
     fences(e2) {
       let t2 = this.rules.block.fences.exec(e2);
       if (t2) {
-        let n2 = t2[0], s2 = kt(n2, t2[3] || "", this.rules);
+        let n2 = t2[0], s2 = yt(n2, t2[3] || "", this.rules);
         return { type: "code", raw: n2, lang: t2[2] ? t2[2].trim().replace(this.rules.inline.anyPunctuation, "$1") : t2[2], text: s2 };
       }
     }
@@ -18547,28 +18626,28 @@ pre[class*="language-"] {
       if (t2) {
         let n2 = t2[2].trim();
         if (this.rules.other.endingHash.test(n2)) {
-          let s2 = $(n2, "#");
-          (this.options.pedantic || !s2 || this.rules.other.endingSpaceChar.test(s2)) && (n2 = s2.trim());
+          let s2 = L(n2, "#");
+          (this.options.pedantic || !s2 || this.rules.other.endingSpaceTabChar.test(s2)) && (n2 = s2.trim());
         }
-        return { type: "heading", raw: $(t2[0], `
+        return { type: "heading", raw: L(t2[0], `
 `), depth: t2[1].length, text: n2, tokens: this.lexer.inline(n2) };
       }
     }
     hr(e2) {
       let t2 = this.rules.block.hr.exec(e2);
-      if (t2) return { type: "hr", raw: $(t2[0], `
+      if (t2) return { type: "hr", raw: L(t2[0], `
 `) };
     }
     blockquote(e2) {
       let t2 = this.rules.block.blockquote.exec(e2);
       if (t2) {
-        let n2 = $(t2[0], `
+        let n2 = L(t2[0], `
 `).split(`
-`), s2 = "", r2 = "", i2 = [];
+`), s2 = "", r2 = "", o2 = [];
         for (; n2.length > 0; ) {
-          let o2 = false, u2 = [], a2;
-          for (a2 = 0; a2 < n2.length; a2++) if (this.rules.other.blockquoteStart.test(n2[a2])) u2.push(n2[a2]), o2 = true;
-          else if (!o2) u2.push(n2[a2]);
+          let i2 = false, u2 = [], a2;
+          for (a2 = 0; a2 < n2.length; a2++) if (this.rules.other.blockquoteStart.test(n2[a2])) u2.push(n2[a2]), i2 = true;
+          else if (!i2) u2.push(n2[a2]);
           else break;
           n2 = n2.slice(a2);
           let p2 = u2.join(`
@@ -18577,27 +18656,31 @@ pre[class*="language-"] {
           s2 = s2 ? `${s2}
 ${p2}` : p2, r2 = r2 ? `${r2}
 ${c2}` : c2;
-          let h2 = this.lexer.state.top;
-          if (this.lexer.state.top = true, this.lexer.blockTokens(c2, i2, true), this.lexer.state.top = h2, n2.length === 0) break;
-          let d2 = i2.at(-1);
-          if (d2?.type === "code") break;
-          if (d2?.type === "blockquote") {
-            let O = d2, g2 = n2.join(`
-`), w2 = O.raw + `
-` + g2.replace(this.rules.other.blockquoteSetextReplace2, ""), E2 = this.blockquote(w2);
-            i2[i2.length - 1] = E2, s2 = `${s2}
-${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
+          let d2 = this.lexer.state.top;
+          if (this.lexer.state.top = true, this.lexer.blockTokens(c2, o2, true), this.lexer.state.top = d2, n2.length === 0) break;
+          let m2 = o2.at(-1);
+          if (m2?.type === "code") break;
+          if (m2?.type === "blockquote") {
+            let b2 = m2, g2 = n2.join(`
+`), w2 = b2.raw + `
+` + g2.replace(this.rules.other.blockquoteSetextReplace2, ""), f2 = this.blockquote(w2);
+            o2[o2.length - 1] = f2;
+            let M = w2.substring(f2.raw.length).replace(/^\n/, ""), v2 = M ? M.split(`
+`).length : 0, Z = v2 ? n2.slice(0, -v2) : n2;
+            Z.length > 0 && (s2 = `${s2}
+${Z.join(`
+`)}`), r2 = r2.substring(0, r2.length - b2.text.length) + f2.text;
             break;
-          } else if (d2?.type === "list") {
-            let O = d2, g2 = O.raw + `
+          } else if (m2?.type === "list") {
+            let b2 = m2, g2 = b2.raw + `
 ` + n2.join(`
 `), w2 = this.list(g2);
-            i2[i2.length - 1] = w2, s2 = s2.substring(0, s2.length - d2.raw.length) + w2.raw, r2 = r2.substring(0, r2.length - O.raw.length) + w2.raw, n2 = g2.substring(i2.at(-1).raw.length).split(`
+            o2[o2.length - 1] = w2, s2 = s2.substring(0, s2.length - m2.raw.length) + w2.raw, r2 = r2.substring(0, r2.length - b2.raw.length) + w2.raw, n2 = g2.substring(o2.at(-1).raw.length).split(`
 `);
             continue;
           }
         }
-        return { type: "blockquote", raw: s2, tokens: i2, text: r2 };
+        return { type: "blockquote", raw: s2, tokens: o2, text: r2 };
       }
     }
     list(e2) {
@@ -18605,54 +18688,54 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       if (t2) {
         let n2 = t2[1].trim(), s2 = n2.length > 1, r2 = { type: "list", raw: "", ordered: s2, start: s2 ? +n2.slice(0, -1) : "", loose: false, items: [] };
         n2 = s2 ? `\\d{1,9}\\${n2.slice(-1)}` : `\\${n2}`, this.options.pedantic && (n2 = s2 ? n2 : "[*+-]");
-        let i2 = this.rules.other.listItemRegex(n2), o2 = false;
+        let o2 = this.rules.other.listItemRegex(n2), i2 = false;
         for (; e2; ) {
           let a2 = false, p2 = "", c2 = "";
-          if (!(t2 = i2.exec(e2)) || this.rules.block.hr.test(e2)) break;
+          if (!(t2 = o2.exec(e2)) || this.rules.block.hr.test(e2)) break;
           p2 = t2[0], e2 = e2.substring(p2.length);
-          let h2 = me(t2[2].split(`
-`, 1)[0], t2[1].length), d2 = e2.split(`
-`, 1)[0], O = !h2.trim(), g2 = 0;
-          if (this.options.pedantic ? (g2 = 2, c2 = h2.trimStart()) : O ? g2 = t2[1].length + 1 : (g2 = h2.search(this.rules.other.nonSpaceChar), g2 = g2 > 4 ? 1 : g2, c2 = h2.slice(g2), g2 += t2[1].length), O && this.rules.other.blankLine.test(d2) && (p2 += d2 + `
-`, e2 = e2.substring(d2.length + 1), a2 = true), !a2) {
-            let w2 = this.rules.other.nextBulletRegex(g2), E2 = this.rules.other.hrRegex(g2), ne = this.rules.other.fencesBeginRegex(g2), re = this.rules.other.headingBeginRegex(g2), be = this.rules.other.htmlBeginRegex(g2), Re = this.rules.other.blockquoteBeginRegex(g2);
+          let d2 = t2[2].split(`
+`, 1)[0], m2 = t2[1].length, b2 = this.options.pedantic ? oe(d2, m2) : d2.replace(this.rules.other.leadingSpaceTab, (M) => oe(M, m2)), g2 = e2.split(`
+`, 1)[0], w2 = !b2.trim(), f2 = 0;
+          if (this.options.pedantic ? (f2 = 2, c2 = b2.trimStart()) : w2 ? f2 = m2 + 1 : (f2 = b2.search(this.rules.other.nonSpaceChar), f2 = f2 > 4 ? 1 : f2, c2 = b2.slice(f2), f2 += m2), w2 && this.rules.other.blankLine.test(g2) && (p2 += g2 + `
+`, e2 = e2.substring(g2.length + 1), a2 = true), !a2) {
+            let M = this.rules.other.nextBulletRegex(f2), v2 = this.rules.other.hrRegex(f2), Z = this.rules.other.fencesBeginRegex(f2), ae = this.rules.other.headingBeginRegex(f2), ye = this.rules.other.htmlBeginRegex(f2), Pe = this.rules.other.blockquoteBeginRegex(f2);
             for (; e2; ) {
-              let N = e2.split(`
-`, 1)[0], D;
-              if (d2 = N, this.options.pedantic ? (d2 = d2.replace(this.rules.other.listReplaceNesting, "  "), D = d2) : D = d2.replace(this.rules.other.tabCharGlobal, "    "), ne.test(d2) || re.test(d2) || be.test(d2) || Re.test(d2) || w2.test(d2) || E2.test(d2)) break;
-              if (D.search(this.rules.other.nonSpaceChar) >= g2 || !d2.trim()) c2 += `
-` + D.slice(g2);
+              let K = e2.split(`
+`, 1)[0], H;
+              if (g2 = K, this.options.pedantic ? (g2 = g2.replace(this.rules.other.listReplaceNesting, "  "), H = g2) : H = g2.replace(this.rules.other.leadingSpaceTab, (Se) => Se.replace(this.rules.other.tabCharGlobal, "    ")), Z.test(g2) || ae.test(g2) || ye.test(g2) || Pe.test(g2) || M.test(g2) || v2.test(g2)) break;
+              if (H.search(this.rules.other.nonSpaceChar) >= f2 || !g2.trim()) c2 += `
+` + H.slice(f2);
               else {
-                if (O || h2.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || ne.test(h2) || re.test(h2) || E2.test(h2)) break;
+                if (w2 || b2.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || Z.test(b2) || ae.test(b2) || v2.test(b2)) break;
                 c2 += `
-` + d2;
+` + g2;
               }
-              O = !d2.trim(), p2 += N + `
-`, e2 = e2.substring(N.length + 1), h2 = D.slice(g2);
+              w2 = !g2.trim(), p2 += K + `
+`, e2 = e2.substring(K.length + 1), b2 = H.slice(f2);
             }
           }
-          r2.loose || (o2 ? r2.loose = true : this.rules.other.doubleBlankLine.test(p2) && (o2 = true)), r2.items.push({ type: "list_item", raw: p2, task: !!this.options.gfm && this.rules.other.listIsTask.test(c2), loose: false, text: c2, tokens: [] }), r2.raw += p2;
+          r2.loose || (i2 ? r2.loose = true : this.rules.other.doubleBlankLine.test(p2) && (i2 = true)), r2.items.push({ type: "list_item", raw: p2, task: !!this.options.gfm && this.rules.other.listIsTask.test(c2), loose: false, text: c2, tokens: [] }), r2.raw += p2;
         }
         let u2 = r2.items.at(-1);
         if (u2) u2.raw = u2.raw.trimEnd(), u2.text = u2.text.trimEnd();
         else return;
         r2.raw = r2.raw.trimEnd();
         for (let a2 of r2.items) if (this.lexer.state.top = false, a2.tokens = this.lexer.blockTokens(a2.text, []), !r2.loose) {
-          let p2 = a2.tokens.filter((h2) => h2.type === "space"), c2 = p2.length > 0 && p2.some((h2) => this.rules.other.anyLine.test(h2.raw));
+          let p2 = a2.tokens.filter((d2) => d2.type === "space"), c2 = p2.length > 0 && p2.some((d2) => this.rules.other.anyLine.test(d2.raw));
           r2.loose = c2;
         }
         for (let a2 of r2.items) {
           let p2 = a2.tokens[0];
           if (a2.task && (p2?.type === "text" || p2?.type === "paragraph")) {
             a2.text = a2.text.replace(this.rules.other.listReplaceTask, ""), p2.raw = p2.raw.replace(this.rules.other.listReplaceTask, ""), p2.text = p2.text.replace(this.rules.other.listReplaceTask, "");
-            for (let h2 = this.lexer.inlineQueue.length - 1; h2 >= 0; h2--) if (this.rules.other.listIsTask.test(this.lexer.inlineQueue[h2].src)) {
-              this.lexer.inlineQueue[h2].src = this.lexer.inlineQueue[h2].src.replace(this.rules.other.listReplaceTask, "");
+            for (let d2 = this.lexer.inlineQueue.length - 1; d2 >= 0; d2--) if (this.rules.other.listIsTask.test(this.lexer.inlineQueue[d2].src)) {
+              this.lexer.inlineQueue[d2].src = this.lexer.inlineQueue[d2].src.replace(this.rules.other.listReplaceTask, "");
               break;
             }
             let c2 = this.rules.other.listTaskCheckbox.exec(a2.raw);
             if (c2) {
-              let h2 = { type: "checkbox", raw: c2[0] + " ", checked: c2[0] !== "[ ]" };
-              a2.checked = h2.checked, r2.loose ? a2.tokens[0] && ["paragraph", "text"].includes(a2.tokens[0].type) && "tokens" in a2.tokens[0] && a2.tokens[0].tokens ? (a2.tokens[0].raw = h2.raw + a2.tokens[0].raw, a2.tokens[0].text = h2.raw + a2.tokens[0].text, a2.tokens[0].tokens.unshift(h2)) : a2.tokens.unshift({ type: "paragraph", raw: h2.raw, text: h2.raw, tokens: [h2] }) : a2.tokens.unshift(h2);
+              let d2 = { type: "checkbox", raw: c2[0] + " ", checked: c2[0] !== "[ ]" };
+              a2.checked = d2.checked, r2.loose ? a2.tokens[0] && ["paragraph", "text"].includes(a2.tokens[0].type) && "tokens" in a2.tokens[0] && a2.tokens[0].tokens ? (a2.tokens[0].raw = d2.raw + a2.tokens[0].raw, a2.tokens[0].text = d2.raw + a2.tokens[0].text, a2.tokens[0].tokens.unshift(d2)) : a2.tokens.unshift({ type: "paragraph", raw: d2.raw, text: d2.raw, tokens: [d2] }) : a2.tokens.unshift(d2);
             }
           } else a2.task && (a2.task = false);
         }
@@ -18666,36 +18749,36 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
     html(e2) {
       let t2 = this.rules.block.html.exec(e2);
       if (t2) {
-        let n2 = te(t2[0]);
+        let n2 = ie(t2[0]);
         return { type: "html", block: true, raw: n2, pre: t2[1] === "pre" || t2[1] === "script" || t2[1] === "style", text: n2 };
       }
     }
     def(e2) {
       let t2 = this.rules.block.def.exec(e2);
       if (t2) {
-        let n2 = t2[1].toLowerCase().replace(this.rules.other.multipleSpaceGlobal, " "), s2 = t2[2] ? t2[2].replace(this.rules.other.hrefBrackets, "$1").replace(this.rules.inline.anyPunctuation, "$1") : "", r2 = t2[3] ? t2[3].substring(1, t2[3].length - 1).replace(this.rules.inline.anyPunctuation, "$1") : t2[3];
-        return { type: "def", tag: n2, raw: $(t2[0], `
+        let n2 = q(t2[1]).replace(this.rules.other.multipleSpaceGlobal, " "), s2 = t2[2] ? t2[2].replace(this.rules.other.hrefBrackets, "$1").replace(this.rules.inline.anyPunctuation, "$1") : "", r2 = t2[3] ? t2[3].substring(1, t2[3].length - 1).replace(this.rules.inline.anyPunctuation, "$1") : t2[3];
+        return { type: "def", tag: n2, raw: L(t2[0], `
 `), href: s2, title: r2 };
       }
     }
     table(e2) {
       let t2 = this.rules.block.table.exec(e2);
       if (!t2 || !this.rules.other.tableDelimiter.test(t2[2])) return;
-      let n2 = ee(t2[1]), s2 = t2[2].replace(this.rules.other.tableAlignChars, "").split("|"), r2 = t2[3]?.trim() ? t2[3].replace(this.rules.other.tableRowBlankLine, "").split(`
-`) : [], i2 = { type: "table", raw: $(t2[0], `
+      let n2 = se(t2[1]), s2 = t2[2].replace(this.rules.other.tableAlignChars, "").split("|"), r2 = t2[3]?.trim() ? t2[3].replace(this.rules.other.tableRowBlankLine, "").split(`
+`) : [], o2 = { type: "table", raw: L(t2[0], `
 `), header: [], align: [], rows: [] };
       if (n2.length === s2.length) {
-        for (let o2 of s2) this.rules.other.tableAlignRight.test(o2) ? i2.align.push("right") : this.rules.other.tableAlignCenter.test(o2) ? i2.align.push("center") : this.rules.other.tableAlignLeft.test(o2) ? i2.align.push("left") : i2.align.push(null);
-        for (let o2 = 0; o2 < n2.length; o2++) i2.header.push({ text: n2[o2], tokens: this.lexer.inline(n2[o2]), header: true, align: i2.align[o2] });
-        for (let o2 of r2) i2.rows.push(ee(o2, i2.header.length).map((u2, a2) => ({ text: u2, tokens: this.lexer.inline(u2), header: false, align: i2.align[a2] })));
-        return i2;
+        for (let i2 of s2) this.rules.other.tableAlignRight.test(i2) ? o2.align.push("right") : this.rules.other.tableAlignCenter.test(i2) ? o2.align.push("center") : this.rules.other.tableAlignLeft.test(i2) ? o2.align.push("left") : o2.align.push(null);
+        for (let i2 = 0; i2 < n2.length; i2++) o2.header.push({ text: n2[i2], tokens: this.lexer.inline(n2[i2]), header: true, align: o2.align[i2] });
+        for (let i2 of r2) o2.rows.push(se(i2, o2.header.length).map((u2, a2) => ({ text: u2, tokens: this.lexer.inline(u2), header: false, align: o2.align[a2] })));
+        return o2;
       }
     }
     lheading(e2) {
       let t2 = this.rules.block.lheading.exec(e2);
       if (t2) {
         let n2 = t2[1].trim();
-        return { type: "heading", raw: $(t2[0], `
+        return { type: "heading", raw: L(t2[0], `
 `), depth: t2[2].charAt(0) === "=" ? 1 : 2, text: n2, tokens: this.lexer.inline(n2) };
       }
     }
@@ -18722,61 +18805,65 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
     link(e2) {
       let t2 = this.rules.inline.link.exec(e2);
       if (t2) {
-        let n2 = t2[2].trim();
-        if (!this.options.pedantic && this.rules.other.startAngleBracket.test(n2)) {
-          if (!this.rules.other.endAngleBracket.test(n2)) return;
-          let i2 = $(n2.slice(0, -1), "\\");
-          if ((n2.length - i2.length) % 2 === 0) return;
+        let n2 = t2[0].charAt(0) === "!" ? 2 : 1;
+        if (!this.options.pedantic && we(e2, t2[1], n2, this.rules)) return;
+        let s2 = t2[2].trim();
+        if (!this.options.pedantic && this.rules.other.startAngleBracket.test(s2)) {
+          if (!this.rules.other.endAngleBracket.test(s2)) return;
+          let i2 = L(s2.slice(0, -1), "\\");
+          if ((s2.length - i2.length) % 2 === 0) return;
         } else {
-          let i2 = fe(t2[2], "()");
+          let i2 = Te(t2[2], "()");
           if (i2 === -2) return;
           if (i2 > -1) {
-            let u2 = (t2[0].indexOf("!") === 0 ? 5 : 4) + t2[1].length + i2;
-            t2[2] = t2[2].substring(0, i2), t2[0] = t2[0].substring(0, u2).trim(), t2[3] = "";
+            let a2 = (t2[0].indexOf("!") === 0 ? 5 : 4) + t2[1].length + i2;
+            t2[2] = t2[2].substring(0, i2), t2[0] = t2[0].substring(0, a2).trim(), t2[3] = "";
           }
         }
-        let s2 = t2[2], r2 = "";
+        let r2 = t2[2], o2 = "";
         if (this.options.pedantic) {
-          let i2 = this.rules.other.pedanticHrefTitle.exec(s2);
-          i2 && (s2 = i2[1], r2 = i2[3]);
-        } else r2 = t2[3] ? t2[3].slice(1, -1) : "";
-        return s2 = s2.trim(), this.rules.other.startAngleBracket.test(s2) && (this.options.pedantic && !this.rules.other.endAngleBracket.test(n2) ? s2 = s2.slice(1) : s2 = s2.slice(1, -1)), xe(t2, { href: s2 && s2.replace(this.rules.inline.anyPunctuation, "$1"), title: r2 && r2.replace(this.rules.inline.anyPunctuation, "$1") }, t2[0], this.lexer, this.rules);
+          let i2 = this.rules.other.pedanticHrefTitle.exec(r2);
+          i2 && (r2 = i2[1], o2 = i2[3]);
+        } else o2 = t2[3] ? t2[3].slice(1, -1) : "";
+        return r2 = r2.trim(), this.rules.other.startAngleBracket.test(r2) && (this.options.pedantic && !this.rules.other.endAngleBracket.test(s2) ? r2 = r2.slice(1) : r2 = r2.slice(1, -1)), Oe(t2, { href: r2 && r2.replace(this.rules.inline.anyPunctuation, "$1"), title: o2 && o2.replace(this.rules.inline.anyPunctuation, "$1") }, t2[0], this.lexer, this.rules);
       }
     }
     reflink(e2, t2) {
       let n2;
       if ((n2 = this.rules.inline.reflink.exec(e2)) || (n2 = this.rules.inline.nolink.exec(e2))) {
-        let s2 = (n2[2] || n2[1]).replace(this.rules.other.multipleSpaceGlobal, " "), r2 = t2[s2.toLowerCase()];
-        if (!r2) {
+        let s2 = n2[0].charAt(0) === "!" ? 2 : 1;
+        if (!this.options.pedantic && we(e2, n2[1], s2, this.rules)) return;
+        let r2 = (n2[2] || n2[1]).replace(this.rules.other.multipleSpaceGlobal, " "), o2 = t2[q(r2)];
+        if (!o2) {
           let i2 = n2[0].charAt(0);
           return { type: "text", raw: i2, text: i2 };
         }
-        return xe(n2, r2, n2[0], this.lexer, this.rules);
+        return Oe(n2, o2, n2[0], this.lexer, this.rules);
       }
     }
     emStrong(e2, t2, n2 = "") {
       let s2 = this.rules.inline.emStrongLDelim.exec(e2);
       if (!s2 || !s2[1] && !s2[2] && !s2[3] && !s2[4] || s2[4] && n2.match(this.rules.other.unicodeAlphaNumeric)) return;
       if (!(s2[1] || s2[3] || "") || !n2 || this.rules.inline.punctuation.exec(n2)) {
-        let i2 = [...s2[0]].length - 1, o2, u2, a2 = i2, p2 = 0, c2 = s2[0][0], h2 = n2 === c2, d2 = c2 === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
-        for (d2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + i2); (s2 = d2.exec(t2)) !== null; ) {
-          if (o2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !o2) continue;
-          if (u2 = [...o2].length, s2[3] || s2[4]) {
+        let o2 = [...s2[0]].length - 1, i2, u2, a2 = o2, p2 = 0, c2 = s2[0][0], d2 = n2 === c2, m2 = c2 === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
+        for (m2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + o2); (s2 = m2.exec(t2)) !== null; ) {
+          if (i2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !i2) continue;
+          if (u2 = [...i2].length, s2[3] || s2[4]) {
             a2 += u2;
             continue;
           } else if (s2[5] || s2[6]) {
-            if (i2 % 3 && !((i2 + u2) % 3)) {
+            if (o2 % 3 && !((o2 + u2) % 3)) {
               p2 += u2;
               continue;
             }
-            if (h2) break;
+            if (d2) break;
           }
           if (a2 -= u2, a2 > 0) continue;
           u2 = Math.min(u2, u2 + a2 + p2);
-          let O = [...s2[0]][0].length, g2 = e2.slice(0, i2 + s2.index + O + u2);
-          if (Math.min(i2, u2) % 2) {
-            let E2 = g2.slice(1, -1);
-            return { type: "em", raw: g2, text: E2, tokens: this.lexer.inlineTokens(E2) };
+          let b2 = [...s2[0]][0].length, g2 = e2.slice(0, o2 + s2.index + b2 + u2);
+          if (Math.min(o2, u2) % 2) {
+            let f2 = g2.slice(1, -1);
+            return { type: "em", raw: g2, text: f2, tokens: this.lexer.inlineTokens(f2) };
           }
           let w2 = g2.slice(2, -2);
           return { type: "strong", raw: g2, text: w2, tokens: this.lexer.inlineTokens(w2) };
@@ -18798,17 +18885,17 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       let s2 = this.rules.inline.delLDelim.exec(e2);
       if (!s2) return;
       if (!(s2[1] || "") || !n2 || this.rules.inline.punctuation.exec(n2)) {
-        let i2 = [...s2[0]].length - 1, o2, u2, a2 = i2, p2 = this.rules.inline.delRDelim;
-        for (p2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + i2); (s2 = p2.exec(t2)) !== null; ) {
-          if (o2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !o2 || (u2 = [...o2].length, u2 !== i2)) continue;
+        let o2 = [...s2[0]].length - 1, i2, u2, a2 = o2, p2 = this.rules.inline.delRDelim;
+        for (p2.lastIndex = 0, t2 = t2.slice(-1 * e2.length + o2); (s2 = p2.exec(t2)) !== null; ) {
+          if (i2 = s2[1] || s2[2] || s2[3] || s2[4] || s2[5] || s2[6], !i2 || (u2 = [...i2].length, u2 !== o2)) continue;
           if (s2[3] || s2[4]) {
             a2 += u2;
             continue;
           }
           if (a2 -= u2, a2 > 0) continue;
           u2 = Math.min(u2, u2 + a2);
-          let c2 = [...s2[0]][0].length, h2 = e2.slice(0, i2 + s2.index + c2 + u2), d2 = h2.slice(i2, -i2);
-          return { type: "del", raw: h2, text: d2, tokens: this.lexer.inlineTokens(d2) };
+          let c2 = [...s2[0]][0].length, d2 = e2.slice(0, o2 + s2.index + c2 + u2), m2 = d2.slice(o2, -o2);
+          return { type: "del", raw: d2, text: m2, tokens: this.lexer.inlineTokens(m2) };
         }
       }
     }
@@ -18816,7 +18903,7 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       let t2 = this.rules.inline.autolink.exec(e2);
       if (t2) {
         let n2, s2;
-        return t2[2] === "@" ? (n2 = t2[1], s2 = "mailto:" + n2) : (n2 = t2[1], s2 = n2), { type: "link", raw: t2[0], text: n2, href: s2, tokens: [{ type: "text", raw: n2, text: n2 }] };
+        return t2[2] === "@" ? (n2 = t2[1], s2 = "mailto:" + n2) : (n2 = t2[1], s2 = n2), { type: "link", raw: t2[0], text: n2, href: s2, autolink: true, tokens: [{ type: "text", raw: n2, text: n2 }] };
       }
     }
     url(e2) {
@@ -18831,30 +18918,30 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
           while (r2 !== t2[0]);
           n2 = t2[0], t2[1] === "www." ? s2 = "http://" + t2[0] : s2 = t2[0];
         }
-        return { type: "link", raw: t2[0], text: n2, href: s2, tokens: [{ type: "text", raw: n2, text: n2 }] };
+        return { type: "link", raw: t2[0], text: n2, href: s2, autolink: true, tokens: [{ type: "text", raw: n2, text: n2 }] };
       }
     }
     inlineText(e2) {
       let t2 = this.rules.inline.text.exec(e2);
       if (t2) {
         let n2 = this.lexer.state.inRawBlock;
-        return { type: "text", raw: t2[0], text: t2[0], escaped: n2 };
+        return { type: "text", raw: t2[0], text: n2 ? t2[0] : Re(t2[0]), escaped: n2 };
       }
     }
   };
-  var x = class l2 {
+  var R = class l2 {
     tokens;
     options;
     state;
     inlineQueue;
     tokenizer;
     constructor(e2) {
-      this.tokens = [], this.tokens.links = /* @__PURE__ */ Object.create(null), this.options = e2 || R, this.options.tokenizer = this.options.tokenizer || new y$1(), this.tokenizer = this.options.tokenizer, this.tokenizer.options = this.options, this.tokenizer.lexer = this, this.inlineQueue = [], this.state = { inLink: false, inRawBlock: false, linkEmitted: false, top: true };
-      let t2 = { other: m$1, block: H.normal, inline: B.normal };
-      this.options.pedantic ? (t2.block = H.pedantic, t2.inline = B.pedantic) : this.options.gfm && (t2.block = H.gfm, this.options.breaks ? t2.inline = B.breaks : t2.inline = B.gfm), this.tokenizer.rules = t2;
+      this.tokens = [], this.tokens.links = /* @__PURE__ */ Object.create(null), this.options = e2 || y$1, this.options.tokenizer = this.options.tokenizer || new P$1(), this.tokenizer = this.options.tokenizer, this.tokenizer.options = this.options, this.tokenizer.lexer = this, this.inlineQueue = [], this.state = { inLink: false, inRawBlock: false, linkEmitted: false, top: true };
+      let t2 = { other: x, block: j.normal, inline: D.normal };
+      this.options.pedantic ? (t2.block = j.pedantic, t2.inline = D.pedantic) : this.options.gfm && (t2.block = j.gfm, this.options.breaks ? t2.inline = D.breaks : t2.inline = D.gfm), this.tokenizer.rules = t2;
     }
     static get rules() {
-      return { block: H, inline: B };
+      return { block: j, inline: D };
     }
     static lex(e2, t2) {
       return new l2(t2).lex(e2);
@@ -18863,7 +18950,7 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       return new l2(t2).inlineTokens(e2);
     }
     lex(e2) {
-      e2 = e2.replace(m$1.carriageReturn, `
+      e2 = e2.replace(x.carriageReturn, `
 `), this.blockTokens(e2, this.tokens);
       for (let t2 = 0; t2 < this.inlineQueue.length; t2++) {
         let n2 = this.inlineQueue[t2];
@@ -18872,7 +18959,7 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       return this.inlineQueue = [], this.tokens;
     }
     blockTokens(e2, t2 = [], n2 = false) {
-      this.tokenizer.lexer = this, this.options.pedantic && (e2 = e2.replace(m$1.tabCharGlobal, "    ").replace(m$1.spaceLine, ""));
+      this.tokenizer.lexer = this, this.options.pedantic && (e2 = e2.replace(x.tabCharGlobal, "    ").replace(x.spaceLine, ""));
       let s2 = 1 / 0;
       for (; e2; ) {
         if (e2.length < s2) s2 = e2.length;
@@ -18881,21 +18968,21 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
           break;
         }
         let r2;
-        if (this.options.extensions?.block?.some((o2) => (r2 = o2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(r2.raw.length), t2.push(r2), true) : false)) continue;
+        if (this.options.extensions?.block?.some((i2) => (r2 = i2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(r2.raw.length), t2.push(r2), true) : false)) continue;
         if (r2 = this.tokenizer.space(e2)) {
           e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          r2.raw.length === 1 && o2 !== void 0 ? o2.raw += `
+          let i2 = t2.at(-1);
+          r2.raw.length === 1 && i2 !== void 0 ? i2.raw += `
 ` : t2.push(r2);
           continue;
         }
         if (r2 = this.tokenizer.code(e2)) {
           e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          o2?.type === "paragraph" || o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
+          let i2 = t2.at(-1);
+          i2?.type === "paragraph" || i2?.type === "text" ? (i2.raw += (i2.raw.endsWith(`
 `) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.text, this.inlineQueue.at(-1).src = o2.text) : t2.push(r2);
+`) + r2.raw, i2.text += `
+` + r2.text, this.inlineQueue.at(-1).src = i2.text) : t2.push(r2);
           continue;
         }
         if (r2 = this.tokenizer.fences(e2)) {
@@ -18924,11 +19011,11 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
         }
         if (r2 = this.tokenizer.def(e2)) {
           e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          o2?.type === "paragraph" || o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
+          let i2 = t2.at(-1);
+          i2?.type === "paragraph" || i2?.type === "text" ? (i2.raw += (i2.raw.endsWith(`
 `) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.raw, this.inlineQueue.at(-1).src = o2.text) : this.tokens.links[r2.tag] || (this.tokens.links[r2.tag] = { href: r2.href, title: r2.title }, t2.push(r2));
+`) + r2.raw, i2.text += `
+` + r2.raw, this.inlineQueue.at(-1).src = i2.text) : this.tokens.links[r2.tag] || (this.tokens.links[r2.tag] = { href: r2.href, title: r2.title }, t2.push(r2));
           continue;
         }
         if (r2 = this.tokenizer.table(e2)) {
@@ -18939,28 +19026,28 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
           e2 = e2.substring(r2.raw.length), t2.push(r2);
           continue;
         }
-        let i2 = e2;
+        let o2 = e2;
         if (this.options.extensions?.startBlock) {
-          let o2 = 1 / 0, u2 = e2.slice(1), a2;
+          let i2 = 1 / 0, u2 = e2.slice(1), a2;
           this.options.extensions.startBlock.forEach((p2) => {
-            a2 = p2.call({ lexer: this }, u2), typeof a2 == "number" && a2 >= 0 && (o2 = Math.min(o2, a2));
-          }), o2 < 1 / 0 && o2 >= 0 && (i2 = e2.substring(0, o2 + 1));
+            a2 = p2.call({ lexer: this }, u2), typeof a2 == "number" && a2 >= 0 && (i2 = Math.min(i2, a2));
+          }), i2 < 1 / 0 && i2 >= 0 && (o2 = e2.substring(0, i2 + 1));
         }
-        if (this.state.top && (r2 = this.tokenizer.paragraph(i2))) {
-          let o2 = t2.at(-1);
-          n2 && o2?.type === "paragraph" ? (o2.raw += (o2.raw.endsWith(`
+        if (this.state.top && (r2 = this.tokenizer.paragraph(o2))) {
+          let i2 = t2.at(-1);
+          n2 && i2?.type === "paragraph" ? (i2.raw += (i2.raw.endsWith(`
 `) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = o2.text) : t2.push(r2), n2 = i2.length !== e2.length, e2 = e2.substring(r2.raw.length);
+`) + r2.raw, i2.text += `
+` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = i2.text) : t2.push(r2), n2 = o2.length !== e2.length, e2 = e2.substring(r2.raw.length);
           continue;
         }
         if (r2 = this.tokenizer.text(e2)) {
           e2 = e2.substring(r2.raw.length);
-          let o2 = t2.at(-1);
-          o2?.type === "text" ? (o2.raw += (o2.raw.endsWith(`
+          let i2 = t2.at(-1);
+          i2?.type === "text" ? (i2.raw += (i2.raw.endsWith(`
 `) ? "" : `
-`) + r2.raw, o2.text += `
-` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = o2.text) : t2.push(r2);
+`) + r2.raw, i2.text += `
+` + r2.text, this.inlineQueue.pop(), this.inlineQueue.at(-1).src = i2.text) : t2.push(r2);
           continue;
         }
         if (e2) {
@@ -18979,7 +19066,7 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       for (let n2 of e2.matchAll(this.tokenizer.rules.inline.blockSkip)) if (t2.test(n2[0]) && e2.charAt(n2.index - 1) !== "!") return true;
       for (let n2 of e2.matchAll(this.tokenizer.rules.inline.reflinkSearch)) {
         let s2 = n2[0], r2 = s2.lastIndexOf("[");
-        if (!(s2.charAt(0) === "!" || !Object.hasOwn(this.tokens.links, s2.slice(r2 + 1, -1))) && !(r2 > 1 && this.linkInText(s2.slice(1, r2 - 1)))) return true;
+        if (!(s2.charAt(0) === "!" || !Object.hasOwn(this.tokens.links, q(s2.slice(r2 + 1, -1)))) && !(r2 > 1 && this.linkInText(s2.slice(1, r2 - 1)))) return true;
       }
       return false;
     }
@@ -18987,84 +19074,84 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       this.tokenizer.lexer = this;
       let n2 = e2;
       if (this.tokens.links && e2.includes("[")) {
-        let o2 = this.tokenizer.rules.inline.reflinkSearch, u2 = (a2) => {
+        let i2 = this.tokenizer.rules.inline.reflinkSearch, u2 = (a2) => {
           let p2 = a2.lastIndexOf("[");
-          if (!Object.hasOwn(this.tokens.links, a2.slice(p2 + 1, -1))) return a2;
+          if (!Object.hasOwn(this.tokens.links, q(a2.slice(p2 + 1, -1)))) return a2;
           if (p2 > 1 && a2.charAt(0) !== "!") {
             let c2 = a2.slice(1, p2 - 1);
-            if (this.linkInText(c2)) return "[" + c2.replace(o2, u2) + "][" + "a".repeat(a2.length - p2 - 2) + "]";
+            if (this.linkInText(c2)) return "[" + c2.replace(i2, u2) + "][" + "a".repeat(a2.length - p2 - 2) + "]";
           }
           return "[" + "a".repeat(a2.length - 2) + "]";
         };
-        n2 = n2.replace(o2, u2);
+        n2 = n2.replace(i2, u2);
       }
-      n2 = n2.replace(this.tokenizer.rules.inline.anyPunctuation, (o2) => "+".repeat(o2.length)), n2 = n2.replace(this.tokenizer.rules.inline.blockSkip, (o2, u2, a2) => {
+      n2 = n2.replace(this.tokenizer.rules.inline.anyPunctuation, (i2) => "+".repeat(i2.length)), n2 = n2.replace(this.tokenizer.rules.inline.blockSkip, (i2, u2, a2) => {
         let p2 = a2 ? a2.length : 0;
-        return o2.slice(0, p2) + "[" + "a".repeat(o2.length - p2 - 2) + "]";
+        return i2.slice(0, p2) + "[" + "a".repeat(i2.length - p2 - 2) + "]";
       }), n2 = this.options.hooks?.emStrongMask?.call({ lexer: this }, n2) ?? n2;
-      let s2 = false, r2 = "", i2 = 1 / 0;
+      let s2 = false, r2 = "", o2 = 1 / 0;
       for (; e2; ) {
-        if (e2.length < i2) i2 = e2.length;
+        if (e2.length < o2) o2 = e2.length;
         else {
           this.infiniteLoopError(e2.charCodeAt(0));
           break;
         }
         s2 || (r2 = ""), s2 = false;
-        let o2;
-        if (this.options.extensions?.inline?.some((a2) => (o2 = a2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(o2.raw.length), t2.push(o2), true) : false)) continue;
-        if (o2 = this.tokenizer.escape(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        let i2;
+        if (this.options.extensions?.inline?.some((a2) => (i2 = a2.call({ lexer: this }, e2, t2)) ? (e2 = e2.substring(i2.raw.length), t2.push(i2), true) : false)) continue;
+        if (i2 = this.tokenizer.escape(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.tag(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.tag(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.link(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.link(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.reflink(e2, this.tokens.links)) {
-          e2 = e2.substring(o2.raw.length);
+        if (i2 = this.tokenizer.reflink(e2, this.tokens.links)) {
+          e2 = e2.substring(i2.raw.length);
           let a2 = t2.at(-1);
-          o2.type === "text" && a2?.type === "text" ? (a2.raw += o2.raw, a2.text += o2.text) : t2.push(o2);
+          i2.type === "text" && a2?.type === "text" ? (a2.raw += i2.raw, a2.text += i2.text) : t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.emStrong(e2, n2, r2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.emStrong(e2, n2, r2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.codespan(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.codespan(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.br(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.br(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.del(e2, n2, r2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.del(e2, n2, r2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (o2 = this.tokenizer.autolink(e2)) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (i2 = this.tokenizer.autolink(e2)) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
-        if (!this.state.inLink && (o2 = this.tokenizer.url(e2))) {
-          e2 = e2.substring(o2.raw.length), t2.push(o2);
+        if (!this.state.inLink && (i2 = this.tokenizer.url(e2))) {
+          e2 = e2.substring(i2.raw.length), t2.push(i2);
           continue;
         }
         let u2 = e2;
         if (this.options.extensions?.startInline) {
           let a2 = 1 / 0, p2 = e2.slice(1), c2;
-          this.options.extensions.startInline.forEach((h2) => {
-            c2 = h2.call({ lexer: this }, p2), typeof c2 == "number" && c2 >= 0 && (a2 = Math.min(a2, c2));
+          this.options.extensions.startInline.forEach((d2) => {
+            c2 = d2.call({ lexer: this }, p2), typeof c2 == "number" && c2 >= 0 && (a2 = Math.min(a2, c2));
           }), a2 < 1 / 0 && a2 >= 0 && (u2 = e2.substring(0, a2 + 1));
         }
-        if (o2 = this.tokenizer.inlineText(u2)) {
-          e2 = e2.substring(o2.raw.length), o2.raw.slice(-1) !== "_" && (r2 = o2.raw.slice(-1)), s2 = true;
+        if (i2 = this.tokenizer.inlineText(u2)) {
+          e2 = e2.substring(i2.raw.length), i2.raw.slice(-1) !== "_" && (r2 = i2.raw.slice(-1)), s2 = true;
           let a2 = t2.at(-1);
-          a2?.type === "text" ? (a2.raw += o2.raw, a2.text += o2.text) : t2.push(o2);
+          a2?.type === "text" ? (a2.raw += i2.raw, a2.text += i2.text) : t2.push(i2);
           continue;
         }
         if (e2) {
@@ -19080,20 +19167,20 @@ ${g2}`, r2 = r2.substring(0, r2.length - O.text.length) + E2.text;
       else throw new Error(t2);
     }
   };
-  var P$1 = class P {
+  var S$1 = class S {
     options;
     parser;
     constructor(e2) {
-      this.options = e2 || R;
+      this.options = e2 || y$1;
     }
     space(e2) {
       return "";
     }
     code({ text: e2, lang: t2, escaped: n2 }) {
-      let s2 = (t2 || "").match(m$1.notSpaceStart)?.[0], r2 = e2.replace(m$1.endingNewline, "") + `
-`;
-      return s2 ? '<pre><code class="language-' + T(s2) + '">' + (n2 ? r2 : T(r2, true)) + `</code></pre>
-` : "<pre><code>" + (n2 ? r2 : T(r2, true)) + `</code></pre>
+      let s2 = (t2 || "").match(x.notSpaceStart)?.[0], r2 = e2 ? e2.replace(x.endingNewline, "") + `
+` : "";
+      return s2 ? '<pre><code class="language-' + O(s2) + '">' + (n2 ? r2 : O(r2, true)) + `</code></pre>
+` : "<pre><code>" + (n2 ? r2 : O(r2, true)) + `</code></pre>
 `;
     }
     blockquote({ tokens: e2 }) {
@@ -19117,12 +19204,12 @@ ${this.parser.parse(e2)}</blockquote>
     }
     list(e2) {
       let t2 = e2.ordered, n2 = e2.start, s2 = "";
-      for (let o2 = 0; o2 < e2.items.length; o2++) {
-        let u2 = e2.items[o2];
+      for (let i2 = 0; i2 < e2.items.length; i2++) {
+        let u2 = e2.items[i2];
         s2 += this.listitem(u2);
       }
-      let r2 = t2 ? "ol" : "ul", i2 = t2 && n2 !== 1 ? ' start="' + n2 + '"' : "";
-      return "<" + r2 + i2 + `>
+      let r2 = t2 ? "ol" : "ul", o2 = t2 && n2 !== 1 ? ' start="' + n2 + '"' : "";
+      return "<" + r2 + o2 + `>
 ` + s2 + "</" + r2 + `>
 `;
     }
@@ -19143,9 +19230,9 @@ ${this.parser.parse(e2)}</blockquote>
       t2 += this.tablerow({ text: n2 });
       let s2 = "";
       for (let r2 = 0; r2 < e2.rows.length; r2++) {
-        let i2 = e2.rows[r2];
+        let o2 = e2.rows[r2];
         n2 = "";
-        for (let o2 = 0; o2 < i2.length; o2++) n2 += this.tablecell(i2[o2]);
+        for (let i2 = 0; i2 < o2.length; i2++) n2 += this.tablecell(o2[i2]);
         s2 += this.tablerow({ text: n2 });
       }
       return s2 && (s2 = `<tbody>${s2}</tbody>`), `<table>
@@ -19171,7 +19258,7 @@ ${e2}</tr>
       return `<em>${this.parser.parseInline(e2)}</em>`;
     }
     codespan({ text: e2 }) {
-      return `<code>${T(e2, true)}</code>`;
+      return `<code>${O(e2, true)}</code>`;
     }
     br(e2) {
       return "<br>";
@@ -19179,26 +19266,26 @@ ${e2}</tr>
     del({ tokens: e2 }) {
       return `<del>${this.parser.parseInline(e2)}</del>`;
     }
-    link({ href: e2, title: t2, tokens: n2 }) {
-      let s2 = this.parser.parseInline(n2), r2 = Y(e2);
-      if (r2 === null) return s2;
-      e2 = r2;
-      let i2 = '<a href="' + e2 + '"';
-      return t2 && (i2 += ' title="' + T(t2) + '"'), i2 += ">" + s2 + "</a>", i2;
+    link({ href: e2, title: t2, text: n2, tokens: s2, autolink: r2 }) {
+      let o2 = r2 ? O(n2, true) : this.parser.parseInline(s2), i2 = re(e2);
+      if (i2 === null) return o2;
+      e2 = O(i2, r2);
+      let u2 = '<a href="' + e2 + '"';
+      return t2 && (u2 += ' title="' + O(t2) + '"'), u2 += ">" + o2 + "</a>", u2;
     }
     image({ href: e2, title: t2, text: n2, tokens: s2 }) {
       s2 && (n2 = this.parser.parseInline(s2, this.parser.textRenderer));
-      let r2 = Y(e2);
-      if (r2 === null) return T(n2);
+      let r2 = re(e2);
+      if (r2 === null) return O(n2);
       e2 = r2;
-      let i2 = `<img src="${e2}" alt="${T(n2)}"`;
-      return t2 && (i2 += ` title="${T(t2)}"`), i2 += ">", i2;
+      let o2 = `<img src="${O(e2)}" alt="${O(n2)}"`;
+      return t2 && (o2 += ` title="${O(t2)}"`), o2 += ">", o2;
     }
     text(e2) {
-      return "tokens" in e2 && e2.tokens ? this.parser.parseInline(e2.tokens) : "escaped" in e2 && e2.escaped ? e2.text : T(e2.text);
+      return "tokens" in e2 && e2.tokens ? this.parser.parseInline(e2.tokens) : "escaped" in e2 && e2.escaped ? e2.text : O(e2.text);
     }
   };
-  var L = class {
+  var z = class {
     strong({ text: e2 }) {
       return e2;
     }
@@ -19230,12 +19317,12 @@ ${e2}</tr>
       return e2;
     }
   };
-  var b$1 = class l2 {
+  var T = class l2 {
     options;
     renderer;
     textRenderer;
     constructor(e2) {
-      this.options = e2 || R, this.options.renderer = this.options.renderer || new P$1(), this.renderer = this.options.renderer, this.renderer.options = this.options, this.renderer.parser = this, this.textRenderer = new L();
+      this.options = e2 || y$1, this.options.renderer = this.options.renderer || new S$1(), this.renderer = this.options.renderer, this.renderer.options = this.options, this.renderer.parser = this, this.textRenderer = new z();
     }
     static parse(e2, t2) {
       return new l2(t2).parse(e2);
@@ -19249,9 +19336,9 @@ ${e2}</tr>
       for (let n2 = 0; n2 < e2.length; n2++) {
         let s2 = e2[n2];
         if (this.options.extensions?.renderers?.[s2.type]) {
-          let i2 = s2, o2 = this.options.extensions.renderers[i2.type].call({ parser: this }, i2);
-          if (o2 !== false || !["space", "hr", "heading", "code", "table", "blockquote", "list", "checkbox", "html", "def", "paragraph", "text"].includes(i2.type)) {
-            t2 += o2 || "";
+          let o2 = s2, i2 = this.options.extensions.renderers[o2.type].call({ parser: this }, o2);
+          if (i2 !== false || !["space", "hr", "heading", "code", "table", "blockquote", "list", "checkbox", "html", "def", "paragraph", "text"].includes(o2.type)) {
+            t2 += i2 || "";
             continue;
           }
         }
@@ -19306,9 +19393,9 @@ ${e2}</tr>
             break;
           }
           default: {
-            let i2 = 'Token with "' + r2.type + '" type was not found.';
-            if (this.options.silent) return console.error(i2), "";
-            throw new Error(i2);
+            let o2 = 'Token with "' + r2.type + '" type was not found.';
+            if (this.options.silent) return console.error(o2), "";
+            throw new Error(o2);
           }
         }
       }
@@ -19320,73 +19407,73 @@ ${e2}</tr>
       for (let s2 = 0; s2 < e2.length; s2++) {
         let r2 = e2[s2];
         if (this.options.extensions?.renderers?.[r2.type]) {
-          let o2 = this.options.extensions.renderers[r2.type].call({ parser: this }, r2);
-          if (o2 !== false || !["escape", "html", "link", "image", "checkbox", "strong", "em", "codespan", "br", "del", "text"].includes(r2.type)) {
-            n2 += o2 || "";
+          let i2 = this.options.extensions.renderers[r2.type].call({ parser: this }, r2);
+          if (i2 !== false || !["escape", "html", "link", "image", "checkbox", "strong", "em", "codespan", "br", "del", "text"].includes(r2.type)) {
+            n2 += i2 || "";
             continue;
           }
         }
-        let i2 = r2;
-        switch (i2.type) {
+        let o2 = r2;
+        switch (o2.type) {
           case "escape": {
-            n2 += t2.text(i2);
+            n2 += t2.text(o2);
             break;
           }
           case "html": {
-            n2 += t2.html(i2);
+            n2 += t2.html(o2);
             break;
           }
           case "link": {
-            n2 += t2.link(i2);
+            n2 += t2.link(o2);
             break;
           }
           case "image": {
-            n2 += t2.image(i2);
+            n2 += t2.image(o2);
             break;
           }
           case "checkbox": {
-            n2 += t2.checkbox(i2);
+            n2 += t2.checkbox(o2);
             break;
           }
           case "strong": {
-            n2 += t2.strong(i2);
+            n2 += t2.strong(o2);
             break;
           }
           case "em": {
-            n2 += t2.em(i2);
+            n2 += t2.em(o2);
             break;
           }
           case "codespan": {
-            n2 += t2.codespan(i2);
+            n2 += t2.codespan(o2);
             break;
           }
           case "br": {
-            n2 += t2.br(i2);
+            n2 += t2.br(o2);
             break;
           }
           case "del": {
-            n2 += t2.del(i2);
+            n2 += t2.del(o2);
             break;
           }
           case "text": {
-            n2 += t2.text(i2);
+            n2 += t2.text(o2);
             break;
           }
           default: {
-            let o2 = 'Token with "' + i2.type + '" type was not found.';
-            if (this.options.silent) return console.error(o2), "";
-            throw new Error(o2);
+            let i2 = 'Token with "' + o2.type + '" type was not found.';
+            if (this.options.silent) return console.error(i2), "";
+            throw new Error(i2);
           }
         }
       }
       return n2;
     }
   };
-  var S$1 = class S {
+  var _ = class {
     options;
     block;
     constructor(e2) {
-      this.options = e2 || R;
+      this.options = e2 || y$1;
     }
     static passThroughHooks = /* @__PURE__ */ new Set(["preprocess", "postprocess", "processAllTokens", "emStrongMask"]);
     static passThroughHooksRespectAsync = /* @__PURE__ */ new Set(["preprocess", "postprocess", "processAllTokens"]);
@@ -19403,23 +19490,23 @@ ${e2}</tr>
       return e2;
     }
     provideLexer(e2 = this.block) {
-      return e2 ? x.lex : x.lexInline;
+      return e2 ? R.lex : R.lexInline;
     }
     provideParser(e2 = this.block) {
-      return e2 ? b$1.parse : b$1.parseInline;
+      return e2 ? T.parse : T.parseInline;
     }
   };
-  var Z = class {
-    defaults = A();
+  var F = class {
+    defaults = I();
     options = this.setOptions;
     parse = this.parseMarkdown(true);
     parseInline = this.parseMarkdown(false);
-    Parser = b$1;
-    Renderer = P$1;
-    TextRenderer = L;
-    Lexer = x;
-    Tokenizer = y$1;
-    Hooks = S$1;
+    Parser = T;
+    Renderer = S$1;
+    TextRenderer = z;
+    Lexer = R;
+    Tokenizer = P$1;
+    Hooks = _;
     constructor(...e2) {
       this.use(...e2);
     }
@@ -19428,8 +19515,8 @@ ${e2}</tr>
       for (let s2 of e2) switch (n2 = n2.concat(t2.call(this, s2)), s2.type) {
         case "table": {
           let r2 = s2;
-          for (let i2 of r2.header) n2 = n2.concat(this.walkTokens(i2.tokens, t2));
-          for (let i2 of r2.rows) for (let o2 of i2) n2 = n2.concat(this.walkTokens(o2.tokens, t2));
+          for (let o2 of r2.header) n2 = n2.concat(this.walkTokens(o2.tokens, t2));
+          for (let o2 of r2.rows) for (let i2 of o2) n2 = n2.concat(this.walkTokens(i2.tokens, t2));
           break;
         }
         case "list": {
@@ -19439,9 +19526,9 @@ ${e2}</tr>
         }
         default: {
           let r2 = s2;
-          this.defaults.extensions?.childTokens?.[r2.type] ? this.defaults.extensions.childTokens[r2.type].forEach((i2) => {
-            let o2 = r2[i2].flat(1 / 0);
-            n2 = n2.concat(this.walkTokens(o2, t2));
+          this.defaults.extensions?.childTokens?.[r2.type] ? this.defaults.extensions.childTokens[r2.type].forEach((o2) => {
+            let i2 = r2[o2].flat(1 / 0);
+            n2 = n2.concat(this.walkTokens(i2, t2));
           }) : r2.tokens && (n2 = n2.concat(this.walkTokens(r2.tokens, t2)));
         }
       }
@@ -19454,25 +19541,25 @@ ${e2}</tr>
         if (s2.async = this.defaults.async || s2.async || false, n2.extensions && (n2.extensions.forEach((r2) => {
           if (!r2.name) throw new Error("extension name required");
           if ("renderer" in r2) {
-            let i2 = t2.renderers[r2.name];
-            i2 ? t2.renderers[r2.name] = function(...o2) {
-              let u2 = r2.renderer.apply(this, o2);
-              return u2 === false && (u2 = i2.apply(this, o2)), u2;
+            let o2 = t2.renderers[r2.name];
+            o2 ? t2.renderers[r2.name] = function(...i2) {
+              let u2 = r2.renderer.apply(this, i2);
+              return u2 === false && (u2 = o2.apply(this, i2)), u2;
             } : t2.renderers[r2.name] = r2.renderer;
           }
           if ("tokenizer" in r2) {
             if (!r2.level || r2.level !== "block" && r2.level !== "inline") throw new Error("extension level must be 'block' or 'inline'");
-            let i2 = t2[r2.level];
-            i2 ? i2.unshift(r2.tokenizer) : t2[r2.level] = [r2.tokenizer], r2.start && (r2.level === "block" ? t2.startBlock ? t2.startBlock.push(r2.start) : t2.startBlock = [r2.start] : r2.level === "inline" && (t2.startInline ? t2.startInline.push(r2.start) : t2.startInline = [r2.start]));
+            let o2 = t2[r2.level];
+            o2 ? o2.unshift(r2.tokenizer) : t2[r2.level] = [r2.tokenizer], r2.start && (r2.level === "block" ? t2.startBlock ? t2.startBlock.push(r2.start) : t2.startBlock = [r2.start] : r2.level === "inline" && (t2.startInline ? t2.startInline.push(r2.start) : t2.startInline = [r2.start]));
           }
           "childTokens" in r2 && r2.childTokens && (t2.childTokens[r2.name] = r2.childTokens);
         }), s2.extensions = t2), n2.renderer) {
-          let r2 = this.defaults.renderer || new P$1(this.defaults);
-          for (let i2 in n2.renderer) {
-            if (!(i2 in r2)) throw new Error(`renderer '${i2}' does not exist`);
-            if (["options", "parser"].includes(i2)) continue;
-            let o2 = i2, u2 = n2.renderer[o2], a2 = r2[o2];
-            r2[o2] = (...p2) => {
+          let r2 = this.defaults.renderer || new S$1(this.defaults);
+          for (let o2 in n2.renderer) {
+            if (!(o2 in r2)) throw new Error(`renderer '${o2}' does not exist`);
+            if (["options", "parser"].includes(o2)) continue;
+            let i2 = o2, u2 = n2.renderer[i2], a2 = r2[i2];
+            r2[i2] = (...p2) => {
               let c2 = u2.apply(r2, p2);
               return c2 === false && (c2 = a2.apply(r2, p2)), c2 || "";
             };
@@ -19480,12 +19567,12 @@ ${e2}</tr>
           s2.renderer = r2;
         }
         if (n2.tokenizer) {
-          let r2 = this.defaults.tokenizer || new y$1(this.defaults);
-          for (let i2 in n2.tokenizer) {
-            if (!(i2 in r2)) throw new Error(`tokenizer '${i2}' does not exist`);
-            if (["options", "rules", "lexer"].includes(i2)) continue;
-            let o2 = i2, u2 = n2.tokenizer[o2], a2 = r2[o2];
-            r2[o2] = (...p2) => {
+          let r2 = this.defaults.tokenizer || new P$1(this.defaults);
+          for (let o2 in n2.tokenizer) {
+            if (!(o2 in r2)) throw new Error(`tokenizer '${o2}' does not exist`);
+            if (["options", "rules", "lexer"].includes(o2)) continue;
+            let i2 = o2, u2 = n2.tokenizer[i2], a2 = r2[i2];
+            r2[i2] = (...p2) => {
               let c2 = u2.apply(r2, p2);
               return c2 === false && (c2 = a2.apply(r2, p2)), c2;
             };
@@ -19493,22 +19580,22 @@ ${e2}</tr>
           s2.tokenizer = r2;
         }
         if (n2.hooks) {
-          let r2 = this.defaults.hooks || new S$1();
-          for (let i2 in n2.hooks) {
-            if (!(i2 in r2)) throw new Error(`hook '${i2}' does not exist`);
-            if (["options", "block"].includes(i2)) continue;
-            let o2 = i2, u2 = n2.hooks[o2], a2 = r2[o2];
-            S$1.passThroughHooks.has(i2) ? r2[o2] = (p2) => {
-              if (this.defaults.async && S$1.passThroughHooksRespectAsync.has(i2)) return (async () => {
-                let h2 = await u2.call(r2, p2);
-                return a2.call(r2, h2);
+          let r2 = this.defaults.hooks || new _();
+          for (let o2 in n2.hooks) {
+            if (!(o2 in r2)) throw new Error(`hook '${o2}' does not exist`);
+            if (["options", "block"].includes(o2)) continue;
+            let i2 = o2, u2 = n2.hooks[i2], a2 = r2[i2];
+            _.passThroughHooks.has(o2) ? r2[i2] = (p2) => {
+              if (this.defaults.async && _.passThroughHooksRespectAsync.has(o2)) return (async () => {
+                let d2 = await u2.call(r2, p2);
+                return a2.call(r2, d2);
               })();
               let c2 = u2.call(r2, p2);
               return a2.call(r2, c2);
-            } : r2[o2] = (...p2) => {
+            } : r2[i2] = (...p2) => {
               if (this.defaults.async) return (async () => {
-                let h2 = await u2.apply(r2, p2);
-                return h2 === false && (h2 = await a2.apply(r2, p2)), h2;
+                let d2 = await u2.apply(r2, p2);
+                return d2 === false && (d2 = await a2.apply(r2, p2)), d2;
               })();
               let c2 = u2.apply(r2, p2);
               return c2 === false && (c2 = a2.apply(r2, p2)), c2;
@@ -19517,10 +19604,10 @@ ${e2}</tr>
           s2.hooks = r2;
         }
         if (n2.walkTokens) {
-          let r2 = this.defaults.walkTokens, i2 = n2.walkTokens;
-          s2.walkTokens = function(o2) {
+          let r2 = this.defaults.walkTokens, o2 = n2.walkTokens;
+          s2.walkTokens = function(i2) {
             let u2 = [];
-            return u2.push(i2.call(this, o2)), r2 && (u2 = u2.concat(r2.call(this, o2))), u2;
+            return u2.push(o2.call(this, i2)), r2 && (u2 = u2.concat(r2.call(this, i2))), u2;
           };
         }
         this.defaults = { ...this.defaults, ...s2 };
@@ -19530,31 +19617,31 @@ ${e2}</tr>
       return this.defaults = { ...this.defaults, ...e2 }, this;
     }
     lexer(e2, t2) {
-      return x.lex(e2, t2 ?? this.defaults);
+      return R.lex(e2, t2 ?? this.defaults);
     }
     parser(e2, t2) {
-      return b$1.parse(e2, t2 ?? this.defaults);
+      return T.parse(e2, t2 ?? this.defaults);
     }
     parseMarkdown(e2) {
       return (n2, s2) => {
-        let r2 = { ...s2 }, i2 = { ...this.defaults, ...r2 }, o2 = this.onError(!!i2.silent, !!i2.async);
-        if (this.defaults.async === true && r2.async === false) return o2(new Error("marked(): The async option was set to true by an extension. Remove async: false from the parse options object to return a Promise."));
-        if (typeof n2 > "u" || n2 === null) return o2(new Error("marked(): input parameter is undefined or null"));
-        if (typeof n2 != "string") return o2(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(n2) + ", string expected"));
-        if (i2.hooks && (i2.hooks.options = i2, i2.hooks.block = e2), i2.async) return (async () => {
-          let u2 = i2.hooks ? await i2.hooks.preprocess(n2) : n2, p2 = await (i2.hooks ? await i2.hooks.provideLexer(e2) : e2 ? x.lex : x.lexInline)(u2, i2), c2 = i2.hooks ? await i2.hooks.processAllTokens(p2) : p2;
-          i2.walkTokens && await Promise.all(this.walkTokens(c2, i2.walkTokens));
-          let d2 = await (i2.hooks ? await i2.hooks.provideParser(e2) : e2 ? b$1.parse : b$1.parseInline)(c2, i2);
-          return i2.hooks ? await i2.hooks.postprocess(d2) : d2;
-        })().catch(o2);
+        let r2 = { ...s2 }, o2 = { ...this.defaults, ...r2 }, i2 = this.onError(!!o2.silent, !!o2.async);
+        if (this.defaults.async === true && r2.async === false) return i2(new Error("marked(): The async option was set to true by an extension. Remove async: false from the parse options object to return a Promise."));
+        if (typeof n2 > "u" || n2 === null) return i2(new Error("marked(): input parameter is undefined or null"));
+        if (typeof n2 != "string") return i2(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(n2) + ", string expected"));
+        if (o2.hooks && (o2.hooks.options = o2, o2.hooks.block = e2), o2.async) return (async () => {
+          let u2 = o2.hooks ? await o2.hooks.preprocess(n2) : n2, p2 = await (o2.hooks ? await o2.hooks.provideLexer(e2) : e2 ? R.lex : R.lexInline)(u2, o2), c2 = o2.hooks ? await o2.hooks.processAllTokens(p2) : p2;
+          o2.walkTokens && await Promise.all(this.walkTokens(c2, o2.walkTokens));
+          let m2 = await (o2.hooks ? await o2.hooks.provideParser(e2) : e2 ? T.parse : T.parseInline)(c2, o2);
+          return o2.hooks ? await o2.hooks.postprocess(m2) : m2;
+        })().catch(i2);
         try {
-          i2.hooks && (n2 = i2.hooks.preprocess(n2));
-          let a2 = (i2.hooks ? i2.hooks.provideLexer(e2) : e2 ? x.lex : x.lexInline)(n2, i2);
-          i2.hooks && (a2 = i2.hooks.processAllTokens(a2)), i2.walkTokens && this.walkTokens(a2, i2.walkTokens);
-          let c2 = (i2.hooks ? i2.hooks.provideParser(e2) : e2 ? b$1.parse : b$1.parseInline)(a2, i2);
-          return i2.hooks && (c2 = i2.hooks.postprocess(c2)), c2;
+          o2.hooks && (n2 = o2.hooks.preprocess(n2));
+          let a2 = (o2.hooks ? o2.hooks.provideLexer(e2) : e2 ? R.lex : R.lexInline)(n2, o2);
+          o2.hooks && (a2 = o2.hooks.processAllTokens(a2)), o2.walkTokens && this.walkTokens(a2, o2.walkTokens);
+          let c2 = (o2.hooks ? o2.hooks.provideParser(e2) : e2 ? T.parse : T.parseInline)(a2, o2);
+          return o2.hooks && (c2 = o2.hooks.postprocess(c2)), c2;
         } catch (u2) {
-          return o2(u2);
+          return i2(u2);
         }
       };
     }
@@ -19562,7 +19649,7 @@ ${e2}</tr>
       return (n2) => {
         if (n2.message += `
 Please report this to https://github.com/markedjs/marked.`, e2) {
-          let s2 = "<p>An error occurred:</p><pre>" + T(n2.message + "", true) + "</pre>";
+          let s2 = "<p>An error occurred:</p><pre>" + O(n2.message + "", true) + "</pre>";
           return t2 ? Promise.resolve(s2) : s2;
         }
         if (t2) return Promise.reject(n2);
@@ -19570,38 +19657,38 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   };
-  var M = new Z();
-  function f$1(l2, e2) {
-    return M.parse(l2, e2);
+  var E$1 = new F();
+  function k(l2, e2) {
+    return E$1.parse(l2, e2);
   }
-  f$1.options = f$1.setOptions = function(l2) {
-    return M.setOptions(l2), f$1.defaults = M.defaults, j(f$1.defaults), f$1;
+  k.options = k.setOptions = function(l2) {
+    return E$1.setOptions(l2), k.defaults = E$1.defaults, W(k.defaults), k;
   };
-  f$1.getDefaults = A;
-  f$1.defaults = R;
-  function dt(...l2) {
-    return M.use(...l2), f$1.defaults = M.defaults, j(f$1.defaults), f$1;
+  k.getDefaults = I;
+  k.defaults = y$1;
+  function Pt(...l2) {
+    return E$1.use(...l2), k.defaults = E$1.defaults, W(k.defaults), k;
   }
-  f$1.use = dt;
-  f$1.walkTokens = function(l2, e2) {
-    return M.walkTokens(l2, e2);
+  k.use = Pt;
+  k.walkTokens = function(l2, e2) {
+    return E$1.walkTokens(l2, e2);
   };
-  f$1.parseInline = M.parseInline;
-  f$1.Parser = b$1;
-  f$1.parser = b$1.parse;
-  f$1.Renderer = P$1;
-  f$1.TextRenderer = L;
-  f$1.Lexer = x;
-  f$1.lexer = x.lex;
-  f$1.Tokenizer = y$1;
-  f$1.Hooks = S$1;
-  f$1.parse = f$1;
-  f$1.options;
-  f$1.setOptions;
-  f$1.walkTokens;
-  f$1.parseInline;
-  b$1.parse;
-  x.lex;
+  k.parseInline = E$1.parseInline;
+  k.Parser = T;
+  k.parser = T.parse;
+  k.Renderer = S$1;
+  k.TextRenderer = z;
+  k.Lexer = R;
+  k.lexer = R.lex;
+  k.Tokenizer = P$1;
+  k.Hooks = _;
+  k.parse = k;
+  k.options;
+  k.setOptions;
+  k.walkTokens;
+  k.parseInline;
+  T.parse;
+  R.lex;
   function _arrayLikeToArray(r2, a2) {
     (null == a2 || a2 > r2.length) && (a2 = r2.length);
     for (var e2 = 0, n2 = Array(a2); e2 < a2; e2++) n2[e2] = r2[e2];
@@ -19642,35 +19729,31 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       return "Object" === t2 && r2.constructor && (t2 = r2.constructor.name), "Map" === t2 || "Set" === t2 ? Array.from(r2) : "Arguments" === t2 || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t2) ? _arrayLikeToArray(r2, a2) : void 0;
     }
   }
-  const entries = Object.entries, setPrototypeOf = Object.setPrototypeOf, isFrozen = Object.isFrozen, getPrototypeOf = Object.getPrototypeOf, getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-  let freeze = Object.freeze, seal = Object.seal, create = Object.create;
-  let _ref = typeof Reflect !== "undefined" && Reflect, apply = _ref.apply, construct = _ref.construct;
-  if (!freeze) {
-    freeze = function freeze2(x2) {
-      return x2;
-    };
-  }
-  if (!seal) {
-    seal = function seal2(x2) {
-      return x2;
-    };
-  }
-  if (!apply) {
-    apply = function apply2(func, thisArg) {
-      for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-        args[_key - 2] = arguments[_key];
-      }
-      return func.apply(thisArg, args);
-    };
-  }
-  if (!construct) {
-    construct = function construct2(Func) {
-      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        args[_key2 - 1] = arguments[_key2];
-      }
-      return new Func(...args);
-    };
-  }
+  const entries = Object.entries;
+  const setPrototypeOf = Object.setPrototypeOf;
+  const isFrozen = Object.isFrozen;
+  const getPrototypeOf = Object.getPrototypeOf;
+  const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+  let freeze = Object.freeze;
+  let seal = Object.seal;
+  let create = Object.create;
+  let _ref = typeof Reflect !== "undefined" && Reflect;
+  let apply = _ref.apply;
+  let construct = _ref.construct;
+  if (!freeze) freeze = function freeze2(x2) {
+    return x2;
+  };
+  if (!seal) seal = function seal2(x2) {
+    return x2;
+  };
+  if (!apply) apply = function apply2(func, thisArg) {
+    for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) args[_key - 2] = arguments[_key];
+    return func.apply(thisArg, args);
+  };
+  if (!construct) construct = function construct2(Func) {
+    for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) args[_key2 - 1] = arguments[_key2];
+    return new Func(...args);
+  };
   const arrayForEach = unapply(Array.prototype.forEach);
   const arrayLastIndexOf = unapply(Array.prototype.lastIndexOf);
   const arrayPop = unapply(Array.prototype.pop);
@@ -19693,40 +19776,28 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   const typeErrorCreate = unconstruct(TypeError);
   function unapply(func) {
     return function(thisArg) {
-      if (thisArg instanceof RegExp) {
-        thisArg.lastIndex = 0;
-      }
-      for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-        args[_key3 - 1] = arguments[_key3];
-      }
+      if (thisArg instanceof RegExp) thisArg.lastIndex = 0;
+      for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) args[_key3 - 1] = arguments[_key3];
       return apply(func, thisArg, args);
     };
   }
   function unconstruct(Func) {
     return function() {
-      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-        args[_key4] = arguments[_key4];
-      }
+      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) args[_key4] = arguments[_key4];
       return construct(Func, args);
     };
   }
   function addToSet(set, array) {
     let transformCaseFunc = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : stringToLowerCase;
-    if (setPrototypeOf) {
-      setPrototypeOf(set, null);
-    }
-    if (!arrayIsArray(array)) {
-      return set;
-    }
+    if (setPrototypeOf) setPrototypeOf(set, null);
+    if (!arrayIsArray(array)) return set;
     let l2 = array.length;
     while (l2--) {
       let element = array[l2];
       if (typeof element === "string") {
         const lcElement = transformCaseFunc(element);
         if (lcElement !== element) {
-          if (!isFrozen(array)) {
-            array[l2] = lcElement;
-          }
+          if (!isFrozen(array)) array[l2] = lcElement;
           element = lcElement;
         }
       }
@@ -19735,12 +19806,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     return set;
   }
   function cleanArray(array) {
-    for (let index = 0; index < array.length; index++) {
-      const isPropertyExist = objectHasOwnProperty(array, index);
-      if (!isPropertyExist) {
-        array[index] = null;
-      }
-    }
+    for (let index = 0; index < array.length; index++) if (!objectHasOwnProperty(array, index)) array[index] = null;
     return array;
   }
   function clone(object) {
@@ -19749,44 +19815,31 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       var _ref3 = _slicedToArray(_ref2, 2);
       const property = _ref3[0];
       const value = _ref3[1];
-      const isPropertyExist = objectHasOwnProperty(object, property);
-      if (isPropertyExist) {
-        if (arrayIsArray(value)) {
-          newObject[property] = cleanArray(value);
-        } else if (value && typeof value === "object" && value.constructor === Object) {
-          newObject[property] = clone(value);
-        } else {
-          newObject[property] = value;
-        }
+      if (objectHasOwnProperty(object, property)) {
+        if (arrayIsArray(value)) newObject[property] = cleanArray(value);
+        else if (value && typeof value === "object" && value.constructor === Object) newObject[property] = clone(value);
+        else newObject[property] = value;
       }
     }
     return newObject;
   }
   function stringifyValue(value) {
     switch (typeof value) {
-      case "string": {
+      case "string":
         return value;
-      }
-      case "number": {
+      case "number":
         return numberToString(value);
-      }
-      case "boolean": {
+      case "boolean":
         return booleanToString(value);
-      }
-      case "bigint": {
+      case "bigint":
         return bigintToString ? bigintToString(value) : "0";
-      }
-      case "symbol": {
+      case "symbol":
         return symbolToString ? symbolToString(value) : "Symbol()";
-      }
-      case "undefined": {
+      case "undefined":
         return objectToString(value);
-      }
       case "function":
       case "object": {
-        if (value === null) {
-          return objectToString(value);
-        }
+        if (value === null) return objectToString(value);
         const valueAsRecord = value;
         const valueToString = lookupGetter(valueAsRecord, "toString");
         if (typeof valueToString === "function") {
@@ -19795,21 +19848,16 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
         return objectToString(value);
       }
-      default: {
+      default:
         return objectToString(value);
-      }
     }
   }
   function lookupGetter(object, prop) {
     while (object !== null) {
       const desc = getOwnPropertyDescriptor(object, prop);
       if (desc) {
-        if (desc.get) {
-          return unapply(desc.get);
-        }
-        if (typeof desc.value === "function") {
-          return unapply(desc.value);
-        }
+        if (desc.get) return unapply(desc.get);
+        if (typeof desc.value === "function") return unapply(desc.value);
       }
       object = getPrototypeOf(object);
     }
@@ -19826,31 +19874,662 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       return false;
     }
   }
-  const html$1 = freeze(["a", "abbr", "acronym", "address", "area", "article", "aside", "audio", "b", "bdi", "bdo", "big", "blink", "blockquote", "body", "br", "button", "canvas", "caption", "center", "cite", "code", "col", "colgroup", "content", "data", "datalist", "dd", "decorator", "del", "details", "dfn", "dialog", "dir", "div", "dl", "dt", "element", "em", "fieldset", "figcaption", "figure", "font", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html", "i", "img", "input", "ins", "kbd", "label", "legend", "li", "main", "map", "mark", "marquee", "menu", "menuitem", "meter", "nav", "nobr", "ol", "optgroup", "option", "output", "p", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "search", "section", "select", "shadow", "slot", "small", "source", "spacer", "span", "strike", "strong", "style", "sub", "summary", "sup", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "tr", "track", "tt", "u", "ul", "var", "video", "wbr"]);
-  const svg$1 = freeze(["svg", "a", "altglyph", "altglyphdef", "altglyphitem", "animatecolor", "animatemotion", "animatetransform", "circle", "clippath", "defs", "desc", "ellipse", "enterkeyhint", "exportparts", "filter", "font", "g", "glyph", "glyphref", "hkern", "image", "inputmode", "line", "lineargradient", "marker", "mask", "metadata", "mpath", "part", "path", "pattern", "polygon", "polyline", "radialgradient", "rect", "stop", "style", "switch", "symbol", "text", "textpath", "title", "tref", "tspan", "view", "vkern"]);
-  const svgFilters = freeze(["feBlend", "feColorMatrix", "feComponentTransfer", "feComposite", "feConvolveMatrix", "feDiffuseLighting", "feDisplacementMap", "feDistantLight", "feDropShadow", "feFlood", "feFuncA", "feFuncB", "feFuncG", "feFuncR", "feGaussianBlur", "feImage", "feMerge", "feMergeNode", "feMorphology", "feOffset", "fePointLight", "feSpecularLighting", "feSpotLight", "feTile", "feTurbulence"]);
-  const svgDisallowed = freeze(["animate", "color-profile", "cursor", "discard", "font-face", "font-face-format", "font-face-name", "font-face-src", "font-face-uri", "foreignobject", "hatch", "hatchpath", "mesh", "meshgradient", "meshpatch", "meshrow", "missing-glyph", "script", "set", "solidcolor", "unknown", "use"]);
-  const mathMl$1 = freeze(["math", "menclose", "merror", "mfenced", "mfrac", "mglyph", "mi", "mlabeledtr", "mmultiscripts", "mn", "mo", "mover", "mpadded", "mphantom", "mroot", "mrow", "ms", "mspace", "msqrt", "mstyle", "msub", "msup", "msubsup", "mtable", "mtd", "mtext", "mtr", "munder", "munderover", "mprescripts"]);
-  const mathMlDisallowed = freeze(["maction", "maligngroup", "malignmark", "mlongdiv", "mscarries", "mscarry", "msgroup", "mstack", "msline", "msrow", "semantics", "annotation", "annotation-xml", "mprescripts", "none"]);
+  const html$1 = freeze([
+    "a",
+    "abbr",
+    "acronym",
+    "address",
+    "area",
+    "article",
+    "aside",
+    "audio",
+    "b",
+    "bdi",
+    "bdo",
+    "big",
+    "blink",
+    "blockquote",
+    "body",
+    "br",
+    "button",
+    "canvas",
+    "caption",
+    "center",
+    "cite",
+    "code",
+    "col",
+    "colgroup",
+    "content",
+    "data",
+    "datalist",
+    "dd",
+    "decorator",
+    "del",
+    "details",
+    "dfn",
+    "dialog",
+    "dir",
+    "div",
+    "dl",
+    "dt",
+    "element",
+    "em",
+    "fieldset",
+    "figcaption",
+    "figure",
+    "font",
+    "footer",
+    "form",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "head",
+    "header",
+    "hgroup",
+    "hr",
+    "html",
+    "i",
+    "img",
+    "input",
+    "ins",
+    "kbd",
+    "label",
+    "legend",
+    "li",
+    "main",
+    "map",
+    "mark",
+    "marquee",
+    "menu",
+    "menuitem",
+    "meter",
+    "nav",
+    "nobr",
+    "ol",
+    "optgroup",
+    "option",
+    "output",
+    "p",
+    "picture",
+    "pre",
+    "progress",
+    "q",
+    "rp",
+    "rt",
+    "ruby",
+    "s",
+    "samp",
+    "search",
+    "section",
+    "select",
+    "shadow",
+    "slot",
+    "small",
+    "source",
+    "spacer",
+    "span",
+    "strike",
+    "strong",
+    "style",
+    "sub",
+    "summary",
+    "sup",
+    "table",
+    "tbody",
+    "td",
+    "template",
+    "textarea",
+    "tfoot",
+    "th",
+    "thead",
+    "time",
+    "tr",
+    "track",
+    "tt",
+    "u",
+    "ul",
+    "var",
+    "video",
+    "wbr"
+  ]);
+  const svg$1 = freeze([
+    "svg",
+    "a",
+    "altglyph",
+    "altglyphdef",
+    "altglyphitem",
+    "animatecolor",
+    "animatemotion",
+    "animatetransform",
+    "circle",
+    "clippath",
+    "defs",
+    "desc",
+    "ellipse",
+    "enterkeyhint",
+    "exportparts",
+    "filter",
+    "font",
+    "g",
+    "glyph",
+    "glyphref",
+    "hkern",
+    "image",
+    "inputmode",
+    "line",
+    "lineargradient",
+    "marker",
+    "mask",
+    "metadata",
+    "mpath",
+    "part",
+    "path",
+    "pattern",
+    "polygon",
+    "polyline",
+    "radialgradient",
+    "rect",
+    "stop",
+    "style",
+    "switch",
+    "symbol",
+    "text",
+    "textpath",
+    "title",
+    "tref",
+    "tspan",
+    "view",
+    "vkern"
+  ]);
+  const svgFilters = freeze([
+    "feBlend",
+    "feColorMatrix",
+    "feComponentTransfer",
+    "feComposite",
+    "feConvolveMatrix",
+    "feDiffuseLighting",
+    "feDisplacementMap",
+    "feDistantLight",
+    "feDropShadow",
+    "feFlood",
+    "feFuncA",
+    "feFuncB",
+    "feFuncG",
+    "feFuncR",
+    "feGaussianBlur",
+    "feImage",
+    "feMerge",
+    "feMergeNode",
+    "feMorphology",
+    "feOffset",
+    "fePointLight",
+    "feSpecularLighting",
+    "feSpotLight",
+    "feTile",
+    "feTurbulence"
+  ]);
+  const svgDisallowed = freeze([
+    "animate",
+    "color-profile",
+    "cursor",
+    "discard",
+    "font-face",
+    "font-face-format",
+    "font-face-name",
+    "font-face-src",
+    "font-face-uri",
+    "foreignobject",
+    "hatch",
+    "hatchpath",
+    "mesh",
+    "meshgradient",
+    "meshpatch",
+    "meshrow",
+    "missing-glyph",
+    "script",
+    "set",
+    "solidcolor",
+    "unknown",
+    "use"
+  ]);
+  const mathMl$1 = freeze([
+    "math",
+    "menclose",
+    "merror",
+    "mfenced",
+    "mfrac",
+    "mglyph",
+    "mi",
+    "mlabeledtr",
+    "mmultiscripts",
+    "mn",
+    "mo",
+    "mover",
+    "mpadded",
+    "mphantom",
+    "mroot",
+    "mrow",
+    "ms",
+    "mspace",
+    "msqrt",
+    "mstyle",
+    "msub",
+    "msup",
+    "msubsup",
+    "mtable",
+    "mtd",
+    "mtext",
+    "mtr",
+    "munder",
+    "munderover",
+    "mprescripts"
+  ]);
+  const mathMlDisallowed = freeze([
+    "maction",
+    "maligngroup",
+    "malignmark",
+    "mlongdiv",
+    "mscarries",
+    "mscarry",
+    "msgroup",
+    "mstack",
+    "msline",
+    "msrow",
+    "semantics",
+    "annotation",
+    "annotation-xml",
+    "mprescripts",
+    "none"
+  ]);
   const text = freeze(["#text"]);
-  const html = freeze(["accept", "action", "align", "alt", "autocapitalize", "autocomplete", "autopictureinpicture", "autoplay", "background", "bgcolor", "border", "capture", "cellpadding", "cellspacing", "checked", "cite", "class", "clear", "color", "cols", "colspan", "command", "commandfor", "controls", "controlslist", "coords", "crossorigin", "datetime", "decoding", "default", "dir", "disabled", "disablepictureinpicture", "disableremoteplayback", "download", "draggable", "enctype", "enterkeyhint", "exportparts", "face", "for", "headers", "height", "hidden", "high", "href", "hreflang", "id", "inert", "inputmode", "integrity", "ismap", "kind", "label", "lang", "list", "loading", "loop", "low", "max", "maxlength", "media", "method", "min", "minlength", "multiple", "muted", "name", "nonce", "noshade", "novalidate", "nowrap", "open", "optimum", "part", "pattern", "placeholder", "playsinline", "popover", "popovertarget", "popovertargetaction", "poster", "preload", "pubdate", "radiogroup", "readonly", "rel", "required", "rev", "reversed", "role", "rows", "rowspan", "spellcheck", "scope", "selected", "shape", "size", "sizes", "slot", "span", "srclang", "start", "src", "srcset", "step", "style", "summary", "tabindex", "title", "translate", "type", "usemap", "valign", "value", "width", "wrap", "xmlns"]);
-  const svg = freeze(["accent-height", "accumulate", "additive", "alignment-baseline", "amplitude", "ascent", "attributename", "attributetype", "azimuth", "basefrequency", "baseline-shift", "begin", "bias", "by", "class", "clip", "clippathunits", "clip-path", "clip-rule", "color", "color-interpolation", "color-interpolation-filters", "color-profile", "color-rendering", "cx", "cy", "d", "dx", "dy", "diffuseconstant", "direction", "display", "divisor", "dominant-baseline", "dur", "edgemode", "elevation", "end", "exponent", "fill", "fill-opacity", "fill-rule", "filter", "filterunits", "flood-color", "flood-opacity", "font-family", "font-size", "font-size-adjust", "font-stretch", "font-style", "font-variant", "font-weight", "fx", "fy", "g1", "g2", "glyph-name", "glyphref", "gradientunits", "gradienttransform", "height", "href", "id", "image-rendering", "in", "in2", "intercept", "k", "k1", "k2", "k3", "k4", "kerning", "keypoints", "keysplines", "keytimes", "lang", "lengthadjust", "letter-spacing", "kernelmatrix", "kernelunitlength", "lighting-color", "local", "marker-end", "marker-mid", "marker-start", "markerheight", "markerunits", "markerwidth", "maskcontentunits", "maskunits", "max", "mask", "mask-type", "media", "method", "mode", "min", "name", "numoctaves", "offset", "operator", "opacity", "order", "orient", "orientation", "origin", "overflow", "paint-order", "path", "pathlength", "patterncontentunits", "patterntransform", "patternunits", "pointer-events", "points", "preservealpha", "preserveaspectratio", "primitiveunits", "r", "rx", "ry", "radius", "refx", "refy", "repeatcount", "repeatdur", "restart", "result", "rotate", "scale", "seed", "shape-rendering", "slope", "specularconstant", "specularexponent", "spreadmethod", "startoffset", "stddeviation", "stitchtiles", "stop-color", "stop-opacity", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke", "stroke-width", "style", "surfacescale", "systemlanguage", "tabindex", "tablevalues", "targetx", "targety", "transform", "transform-origin", "text-anchor", "text-decoration", "text-orientation", "text-rendering", "textlength", "type", "u1", "u2", "unicode", "values", "vector-effect", "viewbox", "visibility", "version", "vert-adv-y", "vert-origin-x", "vert-origin-y", "width", "word-spacing", "wrap", "writing-mode", "xchannelselector", "ychannelselector", "x", "x1", "x2", "xmlns", "y", "y1", "y2", "z", "zoomandpan"]);
-  const mathMl = freeze(["accent", "accentunder", "align", "bevelled", "close", "columnalign", "columnlines", "columnspacing", "columnspan", "denomalign", "depth", "dir", "display", "displaystyle", "encoding", "fence", "frame", "height", "href", "id", "largeop", "length", "linethickness", "lquote", "lspace", "mathbackground", "mathcolor", "mathsize", "mathvariant", "maxsize", "minsize", "movablelimits", "notation", "numalign", "open", "rowalign", "rowlines", "rowspacing", "rowspan", "rspace", "rquote", "scriptlevel", "scriptminsize", "scriptsizemultiplier", "selection", "separator", "separators", "stretchy", "subscriptshift", "supscriptshift", "symmetric", "voffset", "width", "xmlns"]);
-  const xml = freeze(["xlink:href", "xml:id", "xlink:title", "xml:space", "xmlns:xlink"]);
+  const html = freeze([
+    "accept",
+    "action",
+    "align",
+    "alt",
+    "autocapitalize",
+    "autocomplete",
+    "autopictureinpicture",
+    "autoplay",
+    "background",
+    "bgcolor",
+    "border",
+    "capture",
+    "cellpadding",
+    "cellspacing",
+    "checked",
+    "cite",
+    "class",
+    "clear",
+    "color",
+    "cols",
+    "colspan",
+    "command",
+    "commandfor",
+    "controls",
+    "controlslist",
+    "coords",
+    "crossorigin",
+    "datetime",
+    "decoding",
+    "default",
+    "dir",
+    "disabled",
+    "disablepictureinpicture",
+    "disableremoteplayback",
+    "download",
+    "draggable",
+    "enctype",
+    "enterkeyhint",
+    "exportparts",
+    "face",
+    "for",
+    "headers",
+    "height",
+    "hidden",
+    "high",
+    "href",
+    "hreflang",
+    "id",
+    "inert",
+    "inputmode",
+    "integrity",
+    "ismap",
+    "kind",
+    "label",
+    "lang",
+    "list",
+    "loading",
+    "loop",
+    "low",
+    "max",
+    "maxlength",
+    "media",
+    "method",
+    "min",
+    "minlength",
+    "multiple",
+    "muted",
+    "name",
+    "nonce",
+    "noshade",
+    "novalidate",
+    "nowrap",
+    "open",
+    "optimum",
+    "part",
+    "pattern",
+    "placeholder",
+    "playsinline",
+    "popover",
+    "popovertarget",
+    "popovertargetaction",
+    "poster",
+    "preload",
+    "pubdate",
+    "radiogroup",
+    "readonly",
+    "rel",
+    "required",
+    "rev",
+    "reversed",
+    "role",
+    "rows",
+    "rowspan",
+    "spellcheck",
+    "scope",
+    "selected",
+    "shape",
+    "size",
+    "sizes",
+    "slot",
+    "span",
+    "srclang",
+    "start",
+    "src",
+    "srcset",
+    "step",
+    "style",
+    "summary",
+    "tabindex",
+    "title",
+    "translate",
+    "type",
+    "usemap",
+    "valign",
+    "value",
+    "width",
+    "wrap",
+    "xmlns"
+  ]);
+  const svg = freeze([
+    "accent-height",
+    "accumulate",
+    "additive",
+    "alignment-baseline",
+    "amplitude",
+    "ascent",
+    "attributename",
+    "attributetype",
+    "azimuth",
+    "basefrequency",
+    "baseline-shift",
+    "begin",
+    "bias",
+    "by",
+    "class",
+    "clip",
+    "clippathunits",
+    "clip-path",
+    "clip-rule",
+    "color",
+    "color-interpolation",
+    "color-interpolation-filters",
+    "color-profile",
+    "color-rendering",
+    "cx",
+    "cy",
+    "d",
+    "dx",
+    "dy",
+    "diffuseconstant",
+    "direction",
+    "display",
+    "divisor",
+    "dominant-baseline",
+    "dur",
+    "edgemode",
+    "elevation",
+    "end",
+    "exponent",
+    "fill",
+    "fill-opacity",
+    "fill-rule",
+    "filter",
+    "filterunits",
+    "flood-color",
+    "flood-opacity",
+    "font-family",
+    "font-size",
+    "font-size-adjust",
+    "font-stretch",
+    "font-style",
+    "font-variant",
+    "font-weight",
+    "fx",
+    "fy",
+    "g1",
+    "g2",
+    "glyph-name",
+    "glyphref",
+    "gradientunits",
+    "gradienttransform",
+    "height",
+    "href",
+    "id",
+    "image-rendering",
+    "in",
+    "in2",
+    "intercept",
+    "k",
+    "k1",
+    "k2",
+    "k3",
+    "k4",
+    "kerning",
+    "keypoints",
+    "keysplines",
+    "keytimes",
+    "lang",
+    "lengthadjust",
+    "letter-spacing",
+    "kernelmatrix",
+    "kernelunitlength",
+    "lighting-color",
+    "local",
+    "marker-end",
+    "marker-mid",
+    "marker-start",
+    "markerheight",
+    "markerunits",
+    "markerwidth",
+    "maskcontentunits",
+    "maskunits",
+    "max",
+    "mask",
+    "mask-type",
+    "media",
+    "method",
+    "mode",
+    "min",
+    "name",
+    "numoctaves",
+    "offset",
+    "operator",
+    "opacity",
+    "order",
+    "orient",
+    "orientation",
+    "origin",
+    "overflow",
+    "paint-order",
+    "path",
+    "pathlength",
+    "patterncontentunits",
+    "patterntransform",
+    "patternunits",
+    "pointer-events",
+    "points",
+    "preservealpha",
+    "preserveaspectratio",
+    "primitiveunits",
+    "r",
+    "rx",
+    "ry",
+    "radius",
+    "refx",
+    "refy",
+    "repeatcount",
+    "repeatdur",
+    "restart",
+    "result",
+    "rotate",
+    "scale",
+    "seed",
+    "shape-rendering",
+    "slope",
+    "specularconstant",
+    "specularexponent",
+    "spreadmethod",
+    "startoffset",
+    "stddeviation",
+    "stitchtiles",
+    "stop-color",
+    "stop-opacity",
+    "stroke-dasharray",
+    "stroke-dashoffset",
+    "stroke-linecap",
+    "stroke-linejoin",
+    "stroke-miterlimit",
+    "stroke-opacity",
+    "stroke",
+    "stroke-width",
+    "style",
+    "surfacescale",
+    "systemlanguage",
+    "tabindex",
+    "tablevalues",
+    "targetx",
+    "targety",
+    "transform",
+    "transform-origin",
+    "text-anchor",
+    "text-decoration",
+    "text-orientation",
+    "text-rendering",
+    "textlength",
+    "type",
+    "u1",
+    "u2",
+    "unicode",
+    "values",
+    "vector-effect",
+    "viewbox",
+    "visibility",
+    "version",
+    "vert-adv-y",
+    "vert-origin-x",
+    "vert-origin-y",
+    "width",
+    "word-spacing",
+    "wrap",
+    "writing-mode",
+    "xchannelselector",
+    "ychannelselector",
+    "x",
+    "x1",
+    "x2",
+    "xmlns",
+    "y",
+    "y1",
+    "y2",
+    "z",
+    "zoomandpan"
+  ]);
+  const mathMl = freeze([
+    "accent",
+    "accentunder",
+    "align",
+    "bevelled",
+    "close",
+    "columnalign",
+    "columnlines",
+    "columnspacing",
+    "columnspan",
+    "denomalign",
+    "depth",
+    "dir",
+    "display",
+    "displaystyle",
+    "encoding",
+    "fence",
+    "frame",
+    "height",
+    "href",
+    "id",
+    "largeop",
+    "length",
+    "linethickness",
+    "lquote",
+    "lspace",
+    "mathbackground",
+    "mathcolor",
+    "mathsize",
+    "mathvariant",
+    "maxsize",
+    "minsize",
+    "movablelimits",
+    "notation",
+    "numalign",
+    "open",
+    "rowalign",
+    "rowlines",
+    "rowspacing",
+    "rowspan",
+    "rspace",
+    "rquote",
+    "scriptlevel",
+    "scriptminsize",
+    "scriptsizemultiplier",
+    "selection",
+    "separator",
+    "separators",
+    "stretchy",
+    "subscriptshift",
+    "supscriptshift",
+    "symmetric",
+    "voffset",
+    "width",
+    "xmlns"
+  ]);
+  const xml = freeze([
+    "xlink:href",
+    "xml:id",
+    "xlink:title",
+    "xml:space",
+    "xmlns:xlink"
+  ]);
   const MUSTACHE_EXPR = seal(/{{[\w\W]*|^[\w\W]*}}/g);
   const ERB_EXPR = seal(/<%[\w\W]*|^[\w\W]*%>/g);
   const TMPLIT_EXPR = seal(/\${[\w\W]*/g);
   const DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]+$/);
   const ARIA_ATTR = seal(/^aria-[\-\w]+$/);
-  const IS_ALLOWED_URI = seal(
-    /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|matrix):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
-    // eslint-disable-line no-useless-escape
-  );
+  const IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|matrix):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i);
   const IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
-  const ATTR_WHITESPACE = seal(
-    /[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g
-    // eslint-disable-line no-control-regex
-  );
+  const ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g);
   const DOCTYPE_NAME = seal(/^html$/i);
   const CUSTOM_ELEMENT = seal(/^[a-z][.\w]*(-[.\w]+)+$/i);
   const ELEMENT_MARKUP_PROBE = seal(/<[/\w!]/g);
@@ -19863,18 +20542,24 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     text: 3,
     cdataSection: 4,
     entityReference: 5,
-    // Deprecated
     entityNode: 6,
-    // Deprecated
     processingInstruction: 7,
     comment: 8,
     document: 9,
     documentType: 10,
     documentFragment: 11,
     notation: 12
-    // Deprecated
   };
-  const LITERAL_TEXT_ELEMENT_NAMES = ["style", "script", "xmp", "iframe", "noembed", "noframes", "plaintext", "noscript"];
+  const LITERAL_TEXT_ELEMENT_NAMES = [
+    "style",
+    "script",
+    "xmp",
+    "iframe",
+    "noembed",
+    "noframes",
+    "plaintext",
+    "noscript"
+  ];
   const LITERAL_TEXT_ELEMENTS = freeze(addToSet({}, LITERAL_TEXT_ELEMENT_NAMES));
   const LITERAL_TEXT_CLOSE = (function() {
     const map = {};
@@ -19887,14 +20572,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     return typeof window === "undefined" ? null : window;
   };
   const _createTrustedTypesPolicy = function _createTrustedTypesPolicy2(trustedTypes, purifyHostElement) {
-    if (typeof trustedTypes !== "object" || typeof trustedTypes.createPolicy !== "function") {
-      return null;
-    }
+    if (typeof trustedTypes !== "object" || typeof trustedTypes.createPolicy !== "function") return null;
     let suffix = null;
     const ATTR_NAME = "data-tt-policy-suffix";
-    if (purifyHostElement && purifyHostElement.hasAttribute(ATTR_NAME)) {
-      suffix = purifyHostElement.getAttribute(ATTR_NAME);
-    }
+    if (purifyHostElement && purifyHostElement.hasAttribute(ATTR_NAME)) suffix = purifyHostElement.getAttribute(ATTR_NAME);
     const policyName = "dompurify" + (suffix ? "#" + suffix : "");
     try {
       return trustedTypes.createPolicy(policyName, {
@@ -19933,7 +20614,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   function createDOMPurify() {
     let window2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : getGlobal();
     const DOMPurify = (root2) => createDOMPurify(root2);
-    DOMPurify.version = "3.4.14";
+    DOMPurify.version = "3.4.16";
     DOMPurify.removed = [];
     if (!window2 || !window2.document || window2.document.nodeType !== NODE_TYPE.document || !window2.Element) {
       DOMPurify.isSupported = false;
@@ -19943,13 +20624,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     const originalDocument = document2;
     const currentScript = originalDocument.currentScript;
     window2.DocumentFragment;
-    const HTMLTemplateElement = window2.HTMLTemplateElement, Node2 = window2.Node, Element2 = window2.Element, NodeFilter2 = window2.NodeFilter, _window$NamedNodeMap = window2.NamedNodeMap;
-    _window$NamedNodeMap === void 0 ? window2.NamedNodeMap || window2.MozNamedAttrMap : _window$NamedNodeMap;
+    const HTMLTemplateElement = window2.HTMLTemplateElement, Node2 = window2.Node, Element2 = window2.Element, NodeFilter2 = window2.NodeFilter;
+    window2.NamedNodeMap === void 0 && (window2.NamedNodeMap || window2.MozNamedAttrMap);
     window2.HTMLFormElement;
     const DOMParser = window2.DOMParser, trustedTypes = window2.trustedTypes;
     const ElementPrototype = Element2.prototype;
     const cloneNode = lookupGetter(ElementPrototype, "cloneNode");
     const remove2 = lookupGetter(ElementPrototype, "remove");
+    const removeAttributeNode = lookupGetter(ElementPrototype, "removeAttributeNode");
     const getNextSibling = lookupGetter(ElementPrototype, "nextSibling");
     const getChildNodes = lookupGetter(ElementPrototype, "childNodes");
     const getParentNode2 = lookupGetter(ElementPrototype, "parentNode");
@@ -19966,9 +20648,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     };
     if (typeof HTMLTemplateElement === "function") {
       const template = document2.createElement("template");
-      if (template.content && template.content.ownerDocument) {
-        document2 = template.content.ownerDocument;
-      }
+      if (template.content && template.content.ownerDocument) document2 = template.content.ownerDocument;
     }
     let trustedTypesPolicy;
     let emptyHTML = "";
@@ -19976,9 +20656,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     let defaultTrustedTypesPolicyResolved = false;
     let IN_TRUSTED_TYPES_POLICY = 0;
     const _assertNotInTrustedTypesPolicy = function _assertNotInTrustedTypesPolicy2() {
-      if (IN_TRUSTED_TYPES_POLICY > 0) {
-        throw typeErrorCreate('A configured TRUSTED_TYPES_POLICY callback (createHTML or createScriptURL) must not call DOMPurify.sanitize, as that causes infinite recursion. Do not pass a policy whose callbacks wrap DOMPurify as TRUSTED_TYPES_POLICY; see the "DOMPurify and Trusted Types" section of the README.');
-      }
+      if (IN_TRUSTED_TYPES_POLICY > 0) throw typeErrorCreate('A configured TRUSTED_TYPES_POLICY callback (createHTML or createScriptURL) must not call DOMPurify.sanitize, as that causes infinite recursion. Do not pass a policy whose callbacks wrap DOMPurify as TRUSTED_TYPES_POLICY; see the "DOMPurify and Trusted Types" section of the README.');
     };
     const _createTrustedHTML = function _createTrustedHTML2(html2) {
       _assertNotInTrustedTypesPolicy();
@@ -20012,9 +20690,20 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     const MUSTACHE_EXPR$1 = MUSTACHE_EXPR, ERB_EXPR$1 = ERB_EXPR, TMPLIT_EXPR$1 = TMPLIT_EXPR, DATA_ATTR$1 = DATA_ATTR, ARIA_ATTR$1 = ARIA_ATTR, IS_SCRIPT_OR_DATA$1 = IS_SCRIPT_OR_DATA, ATTR_WHITESPACE$1 = ATTR_WHITESPACE, CUSTOM_ELEMENT$1 = CUSTOM_ELEMENT;
     let IS_ALLOWED_URI$1 = IS_ALLOWED_URI;
     let ALLOWED_TAGS = null;
-    const DEFAULT_ALLOWED_TAGS = addToSet({}, [...html$1, ...svg$1, ...svgFilters, ...mathMl$1, ...text]);
+    const DEFAULT_ALLOWED_TAGS = addToSet({}, [
+      ...html$1,
+      ...svg$1,
+      ...svgFilters,
+      ...mathMl$1,
+      ...text
+    ]);
     let ALLOWED_ATTR = null;
-    const DEFAULT_ALLOWED_ATTR = addToSet({}, [...html, ...svg, ...mathMl, ...xml]);
+    const DEFAULT_ALLOWED_ATTR = addToSet({}, [
+      ...html,
+      ...svg,
+      ...mathMl,
+      ...xml
+    ]);
     let CUSTOM_ELEMENT_HANDLING = Object.seal(create(null, {
       tagNameCheck: {
         writable: true,
@@ -20091,15 +20780,6 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       "noscript",
       "plaintext",
       "script",
-      // <selectedcontent> mirrors the selected <option>'s subtree, cloned by
-      // the UA (customizable <select>) — including any on* handlers — and the
-      // engine re-mirrors synchronously whenever a removal changes which
-      // option/selectedcontent is current, even inside DOMPurify's inert
-      // DOMParser document. Hoisting its children on removal re-inserts a fresh
-      // mirror target ahead of the walk, which the engine refills, looping
-      // forever (DoS) and amplifying output. Dropping its content on removal
-      // (rather than hoisting) breaks that cascade; the content is a duplicate
-      // of the option, which is sanitized on its own. See campaign-3 F1/F6.
       "selectedcontent",
       "style",
       "svg",
@@ -20110,21 +20790,59 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       "xmp"
     ]);
     let DATA_URI_TAGS = null;
-    const DEFAULT_DATA_URI_TAGS = addToSet({}, ["audio", "video", "img", "source", "image", "track"]);
+    const DEFAULT_DATA_URI_TAGS = addToSet({}, [
+      "audio",
+      "video",
+      "img",
+      "source",
+      "image",
+      "track"
+    ]);
     let URI_SAFE_ATTRIBUTES = null;
-    const DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, ["alt", "class", "for", "id", "label", "name", "pattern", "placeholder", "role", "summary", "title", "value", "style", "xmlns"]);
+    const DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, [
+      "alt",
+      "class",
+      "for",
+      "id",
+      "label",
+      "name",
+      "pattern",
+      "placeholder",
+      "role",
+      "summary",
+      "title",
+      "value",
+      "style",
+      "xmlns"
+    ]);
     const MATHML_NAMESPACE = "http://www.w3.org/1998/Math/MathML";
     const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
     const HTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
     let NAMESPACE = HTML_NAMESPACE;
     let IS_EMPTY_INPUT = false;
     let ALLOWED_NAMESPACES = null;
-    const DEFAULT_ALLOWED_NAMESPACES = addToSet({}, [MATHML_NAMESPACE, SVG_NAMESPACE, HTML_NAMESPACE], stringToString);
-    const DEFAULT_MATHML_TEXT_INTEGRATION_POINTS = freeze(["mi", "mo", "mn", "ms", "mtext"]);
+    const DEFAULT_ALLOWED_NAMESPACES = addToSet({}, [
+      MATHML_NAMESPACE,
+      SVG_NAMESPACE,
+      HTML_NAMESPACE
+    ], stringToString);
+    const DEFAULT_MATHML_TEXT_INTEGRATION_POINTS = freeze([
+      "mi",
+      "mo",
+      "mn",
+      "ms",
+      "mtext"
+    ]);
     let MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, DEFAULT_MATHML_TEXT_INTEGRATION_POINTS);
     const DEFAULT_HTML_INTEGRATION_POINTS = freeze(["annotation-xml"]);
     let HTML_INTEGRATION_POINTS = addToSet({}, DEFAULT_HTML_INTEGRATION_POINTS);
-    const COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, ["title", "style", "font", "a", "script"]);
+    const COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, [
+      "title",
+      "style",
+      "font",
+      "a",
+      "script"
+    ]);
     let PARSER_MEDIA_TYPE = null;
     const SUPPORTED_PARSER_MEDIA_TYPES = ["application/xhtml+xml", "text/html"];
     const DEFAULT_PARSER_MEDIA_TYPE = "text/html";
@@ -20136,25 +20854,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     };
     const _parseConfig = function _parseConfig2() {
       let cfg = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
-      if (CONFIG && CONFIG === cfg) {
-        return;
-      }
-      if (!cfg || typeof cfg !== "object") {
-        cfg = {};
-      }
+      if (CONFIG && CONFIG === cfg) return;
+      if (!cfg || typeof cfg !== "object") cfg = {};
       cfg = clone(cfg);
-      PARSER_MEDIA_TYPE = // eslint-disable-next-line unicorn/prefer-includes
-      SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? DEFAULT_PARSER_MEDIA_TYPE : cfg.PARSER_MEDIA_TYPE;
+      PARSER_MEDIA_TYPE = SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? DEFAULT_PARSER_MEDIA_TYPE : cfg.PARSER_MEDIA_TYPE;
       transformCaseFunc = PARSER_MEDIA_TYPE === "application/xhtml+xml" ? stringToString : stringToLowerCase;
-      ALLOWED_TAGS = _resolveSetOption(cfg, "ALLOWED_TAGS", DEFAULT_ALLOWED_TAGS, {
-        transform: transformCaseFunc
-      });
-      ALLOWED_ATTR = _resolveSetOption(cfg, "ALLOWED_ATTR", DEFAULT_ALLOWED_ATTR, {
-        transform: transformCaseFunc
-      });
-      ALLOWED_NAMESPACES = _resolveSetOption(cfg, "ALLOWED_NAMESPACES", DEFAULT_ALLOWED_NAMESPACES, {
-        transform: stringToString
-      });
+      ALLOWED_TAGS = _resolveSetOption(cfg, "ALLOWED_TAGS", DEFAULT_ALLOWED_TAGS, { transform: transformCaseFunc });
+      ALLOWED_ATTR = _resolveSetOption(cfg, "ALLOWED_ATTR", DEFAULT_ALLOWED_ATTR, { transform: transformCaseFunc });
+      ALLOWED_NAMESPACES = _resolveSetOption(cfg, "ALLOWED_NAMESPACES", DEFAULT_ALLOWED_NAMESPACES, { transform: stringToString });
       URI_SAFE_ATTRIBUTES = _resolveSetOption(cfg, "ADD_URI_SAFE_ATTR", DEFAULT_URI_SAFE_ATTRIBUTES, {
         transform: transformCaseFunc,
         base: DEFAULT_URI_SAFE_ATTRIBUTES
@@ -20163,15 +20870,9 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         transform: transformCaseFunc,
         base: DEFAULT_DATA_URI_TAGS
       });
-      FORBID_CONTENTS = _resolveSetOption(cfg, "FORBID_CONTENTS", DEFAULT_FORBID_CONTENTS, {
-        transform: transformCaseFunc
-      });
-      FORBID_TAGS = _resolveSetOption(cfg, "FORBID_TAGS", clone({}), {
-        transform: transformCaseFunc
-      });
-      FORBID_ATTR = _resolveSetOption(cfg, "FORBID_ATTR", clone({}), {
-        transform: transformCaseFunc
-      });
+      FORBID_CONTENTS = _resolveSetOption(cfg, "FORBID_CONTENTS", DEFAULT_FORBID_CONTENTS, { transform: transformCaseFunc });
+      FORBID_TAGS = _resolveSetOption(cfg, "FORBID_TAGS", clone({}), { transform: transformCaseFunc });
+      FORBID_ATTR = _resolveSetOption(cfg, "FORBID_ATTR", clone({}), { transform: transformCaseFunc });
       USE_PROFILES = objectHasOwnProperty(cfg, "USE_PROFILES") ? cfg.USE_PROFILES && typeof cfg.USE_PROFILES === "object" ? clone(cfg.USE_PROFILES) : cfg.USE_PROFILES : false;
       ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false;
       ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false;
@@ -20190,36 +20891,16 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       IN_PLACE = cfg.IN_PLACE || false;
       IS_ALLOWED_URI$1 = isRegex(cfg.ALLOWED_URI_REGEXP) ? cfg.ALLOWED_URI_REGEXP : IS_ALLOWED_URI;
       NAMESPACE = typeof cfg.NAMESPACE === "string" ? cfg.NAMESPACE : HTML_NAMESPACE;
-      MATHML_TEXT_INTEGRATION_POINTS = _resolveObjectOption(
-        cfg,
-        "MATHML_TEXT_INTEGRATION_POINTS",
-        () => addToSet({}, DEFAULT_MATHML_TEXT_INTEGRATION_POINTS)
-        // Default built-in map
-      );
-      HTML_INTEGRATION_POINTS = _resolveObjectOption(
-        cfg,
-        "HTML_INTEGRATION_POINTS",
-        () => addToSet({}, DEFAULT_HTML_INTEGRATION_POINTS)
-        // Default built-in map
-      );
+      MATHML_TEXT_INTEGRATION_POINTS = _resolveObjectOption(cfg, "MATHML_TEXT_INTEGRATION_POINTS", () => addToSet({}, DEFAULT_MATHML_TEXT_INTEGRATION_POINTS));
+      HTML_INTEGRATION_POINTS = _resolveObjectOption(cfg, "HTML_INTEGRATION_POINTS", () => addToSet({}, DEFAULT_HTML_INTEGRATION_POINTS));
       const customElementHandling = _resolveObjectOption(cfg, "CUSTOM_ELEMENT_HANDLING", () => create(null));
       CUSTOM_ELEMENT_HANDLING = create(null);
-      if (objectHasOwnProperty(customElementHandling, "tagNameCheck") && isRegexOrFunction(customElementHandling.tagNameCheck)) {
-        CUSTOM_ELEMENT_HANDLING.tagNameCheck = customElementHandling.tagNameCheck;
-      }
-      if (objectHasOwnProperty(customElementHandling, "attributeNameCheck") && isRegexOrFunction(customElementHandling.attributeNameCheck)) {
-        CUSTOM_ELEMENT_HANDLING.attributeNameCheck = customElementHandling.attributeNameCheck;
-      }
-      if (objectHasOwnProperty(customElementHandling, "allowCustomizedBuiltInElements") && typeof customElementHandling.allowCustomizedBuiltInElements === "boolean") {
-        CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = customElementHandling.allowCustomizedBuiltInElements;
-      }
+      if (objectHasOwnProperty(customElementHandling, "tagNameCheck") && isRegexOrFunction(customElementHandling.tagNameCheck)) CUSTOM_ELEMENT_HANDLING.tagNameCheck = customElementHandling.tagNameCheck;
+      if (objectHasOwnProperty(customElementHandling, "attributeNameCheck") && isRegexOrFunction(customElementHandling.attributeNameCheck)) CUSTOM_ELEMENT_HANDLING.attributeNameCheck = customElementHandling.attributeNameCheck;
+      if (objectHasOwnProperty(customElementHandling, "allowCustomizedBuiltInElements") && typeof customElementHandling.allowCustomizedBuiltInElements === "boolean") CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = customElementHandling.allowCustomizedBuiltInElements;
       seal(CUSTOM_ELEMENT_HANDLING);
-      if (SAFE_FOR_TEMPLATES) {
-        ALLOW_DATA_ATTR = false;
-      }
-      if (RETURN_DOM_FRAGMENT) {
-        RETURN_DOM = true;
-      }
+      if (SAFE_FOR_TEMPLATES) ALLOW_DATA_ATTR = false;
+      if (RETURN_DOM_FRAGMENT) RETURN_DOM = true;
       if (USE_PROFILES) {
         ALLOWED_TAGS = addToSet({}, text);
         ALLOWED_ATTR = create(null);
@@ -20246,48 +20927,36 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       EXTRA_ELEMENT_HANDLING.tagCheck = null;
       EXTRA_ELEMENT_HANDLING.attributeCheck = null;
       if (objectHasOwnProperty(cfg, "ADD_TAGS")) {
-        if (typeof cfg.ADD_TAGS === "function") {
-          EXTRA_ELEMENT_HANDLING.tagCheck = cfg.ADD_TAGS;
-        } else if (arrayIsArray(cfg.ADD_TAGS)) {
-          if (ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) {
-            ALLOWED_TAGS = clone(ALLOWED_TAGS);
-          }
+        if (typeof cfg.ADD_TAGS === "function") EXTRA_ELEMENT_HANDLING.tagCheck = cfg.ADD_TAGS;
+        else if (arrayIsArray(cfg.ADD_TAGS)) {
+          if (ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) ALLOWED_TAGS = clone(ALLOWED_TAGS);
           addToSet(ALLOWED_TAGS, cfg.ADD_TAGS, transformCaseFunc);
         }
       }
       if (objectHasOwnProperty(cfg, "ADD_ATTR")) {
-        if (typeof cfg.ADD_ATTR === "function") {
-          EXTRA_ELEMENT_HANDLING.attributeCheck = cfg.ADD_ATTR;
-        } else if (arrayIsArray(cfg.ADD_ATTR)) {
-          if (ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) {
-            ALLOWED_ATTR = clone(ALLOWED_ATTR);
-          }
+        if (typeof cfg.ADD_ATTR === "function") EXTRA_ELEMENT_HANDLING.attributeCheck = cfg.ADD_ATTR;
+        else if (arrayIsArray(cfg.ADD_ATTR)) {
+          if (ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) ALLOWED_ATTR = clone(ALLOWED_ATTR);
           addToSet(ALLOWED_ATTR, cfg.ADD_ATTR, transformCaseFunc);
         }
       }
       if (objectHasOwnProperty(cfg, "ADD_FORBID_CONTENTS") && arrayIsArray(cfg.ADD_FORBID_CONTENTS)) {
-        if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) {
-          FORBID_CONTENTS = clone(FORBID_CONTENTS);
-        }
+        if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) FORBID_CONTENTS = clone(FORBID_CONTENTS);
         addToSet(FORBID_CONTENTS, cfg.ADD_FORBID_CONTENTS, transformCaseFunc);
       }
-      if (KEEP_CONTENT) {
-        ALLOWED_TAGS["#text"] = true;
-      }
-      if (WHOLE_DOCUMENT) {
-        addToSet(ALLOWED_TAGS, ["html", "head", "body"]);
-      }
+      if (KEEP_CONTENT) ALLOWED_TAGS["#text"] = true;
+      if (WHOLE_DOCUMENT) addToSet(ALLOWED_TAGS, [
+        "html",
+        "head",
+        "body"
+      ]);
       if (ALLOWED_TAGS.table) {
         addToSet(ALLOWED_TAGS, ["tbody"]);
         delete FORBID_TAGS.tbody;
       }
       if (cfg.TRUSTED_TYPES_POLICY) {
-        if (typeof cfg.TRUSTED_TYPES_POLICY.createHTML !== "function") {
-          throw typeErrorCreate('TRUSTED_TYPES_POLICY configuration option must provide a "createHTML" hook.');
-        }
-        if (typeof cfg.TRUSTED_TYPES_POLICY.createScriptURL !== "function") {
-          throw typeErrorCreate('TRUSTED_TYPES_POLICY configuration option must provide a "createScriptURL" hook.');
-        }
+        if (typeof cfg.TRUSTED_TYPES_POLICY.createHTML !== "function") throw typeErrorCreate('TRUSTED_TYPES_POLICY configuration option must provide a "createHTML" hook.');
+        if (typeof cfg.TRUSTED_TYPES_POLICY.createScriptURL !== "function") throw typeErrorCreate('TRUSTED_TYPES_POLICY configuration option must provide a "createScriptURL" hook.');
         const previousTrustedTypesPolicy = trustedTypesPolicy;
         trustedTypesPolicy = cfg.TRUSTED_TYPES_POLICY;
         try {
@@ -20300,90 +20969,60 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         trustedTypesPolicy = void 0;
         emptyHTML = "";
       } else {
-        if (trustedTypesPolicy === void 0) {
-          trustedTypesPolicy = _getDefaultTrustedTypesPolicy();
-        }
-        if (trustedTypesPolicy && typeof emptyHTML === "string") {
-          emptyHTML = _createTrustedHTML("");
-        }
+        if (trustedTypesPolicy === void 0) trustedTypesPolicy = _getDefaultTrustedTypesPolicy();
+        if (trustedTypesPolicy && typeof emptyHTML === "string") emptyHTML = _createTrustedHTML("");
       }
-      if (freeze) {
-        freeze(cfg);
-      }
+      if (freeze) freeze(cfg);
       CONFIG = cfg;
     };
-    const ALL_SVG_TAGS = addToSet({}, [...svg$1, ...svgFilters, ...svgDisallowed]);
+    const ALL_SVG_TAGS = addToSet({}, [
+      ...svg$1,
+      ...svgFilters,
+      ...svgDisallowed
+    ]);
     const ALL_MATHML_TAGS = addToSet({}, [...mathMl$1, ...mathMlDisallowed]);
     const _checkSvgNamespace = function _checkSvgNamespace2(tagName, parent, parentTagName) {
-      if (parent.namespaceURI === HTML_NAMESPACE) {
-        return tagName === "svg";
-      }
-      if (parent.namespaceURI === MATHML_NAMESPACE) {
-        return tagName === "svg" && (parentTagName === "annotation-xml" || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
-      }
+      if (parent.namespaceURI === HTML_NAMESPACE) return tagName === "svg";
+      if (parent.namespaceURI === MATHML_NAMESPACE) return tagName === "svg" && (parentTagName === "annotation-xml" || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
       return Boolean(ALL_SVG_TAGS[tagName]);
     };
     const _checkMathMlNamespace = function _checkMathMlNamespace2(tagName, parent, parentTagName) {
-      if (parent.namespaceURI === HTML_NAMESPACE) {
-        return tagName === "math";
-      }
-      if (parent.namespaceURI === SVG_NAMESPACE) {
-        return tagName === "math" && HTML_INTEGRATION_POINTS[parentTagName];
-      }
+      if (parent.namespaceURI === HTML_NAMESPACE) return tagName === "math";
+      if (parent.namespaceURI === SVG_NAMESPACE) return tagName === "math" && HTML_INTEGRATION_POINTS[parentTagName];
       return Boolean(ALL_MATHML_TAGS[tagName]);
     };
     const _checkHtmlNamespace = function _checkHtmlNamespace2(tagName, parent, parentTagName) {
-      if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) {
-        return false;
-      }
-      if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) {
-        return false;
-      }
+      if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) return false;
+      if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) return false;
       return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
     };
     const _checkValidNamespace = function _checkValidNamespace2(element) {
       let parent = getParentNode2(element);
-      if (!parent || !parent.tagName) {
-        parent = {
-          namespaceURI: NAMESPACE,
-          tagName: "template"
-        };
-      }
+      if (!parent || !parent.tagName) parent = {
+        namespaceURI: NAMESPACE,
+        tagName: "template"
+      };
       const tagName = stringToLowerCase(element.tagName);
       const parentTagName = stringToLowerCase(parent.tagName);
-      if (!ALLOWED_NAMESPACES[element.namespaceURI]) {
-        return false;
-      }
-      if (element.namespaceURI === SVG_NAMESPACE) {
-        return _checkSvgNamespace(tagName, parent, parentTagName);
-      }
-      if (element.namespaceURI === MATHML_NAMESPACE) {
-        return _checkMathMlNamespace(tagName, parent, parentTagName);
-      }
-      if (element.namespaceURI === HTML_NAMESPACE) {
-        return _checkHtmlNamespace(tagName, parent, parentTagName);
-      }
-      if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && ALLOWED_NAMESPACES[element.namespaceURI]) {
-        return true;
-      }
+      if (!ALLOWED_NAMESPACES[element.namespaceURI]) return false;
+      if (element.namespaceURI === SVG_NAMESPACE) return _checkSvgNamespace(tagName, parent, parentTagName);
+      if (element.namespaceURI === MATHML_NAMESPACE) return _checkMathMlNamespace(tagName, parent, parentTagName);
+      if (element.namespaceURI === HTML_NAMESPACE) return _checkHtmlNamespace(tagName, parent, parentTagName);
+      if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && ALLOWED_NAMESPACES[element.namespaceURI]) return true;
       return false;
     };
     const _forceRemove = function _forceRemove2(node) {
-      arrayPush(DOMPurify.removed, {
-        element: node
-      });
+      arrayPush(DOMPurify.removed, { element: node });
       try {
         getParentNode2(node).removeChild(node);
       } catch (_2) {
         remove2(node);
-        if (!getParentNode2(node)) {
-          throw typeErrorCreate("a node selected for removal could not be detached from its tree and cannot be safely returned; refusing to sanitize in place");
-        }
+        if (!getParentNode2(node)) throw typeErrorCreate("a node selected for removal could not be detached from its tree and cannot be safely returned; refusing to sanitize in place");
       }
     };
     const _stripAttributeNode = function _stripAttributeNode2(element, attribute, name) {
       try {
-        element.removeAttributeNode(attribute);
+        removeAttributeNode(element, attribute);
       } catch (_2) {
         try {
           element.removeAttribute(name);
@@ -20407,34 +21046,25 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         });
       }
       const attributes = getAttributes(root2);
-      if (attributes) {
-        for (let i2 = attributes.length - 1; i2 >= 0; --i2) {
-          const attribute = attributes[i2];
-          const name = attribute && attribute.name;
-          if (typeof name === "string") {
-            _stripAttributeNode(root2, attribute, name);
-          }
-        }
+      if (attributes) for (let i2 = attributes.length - 1; i2 >= 0; --i2) {
+        const attribute = attributes[i2];
+        const name = attribute && attribute.name;
+        if (typeof name === "string") _stripAttributeNode(root2, attribute, name);
       }
     };
     const _removeAttribute = function _removeAttribute2(name, element, attr) {
-      if (!attr) {
-        try {
-          attr = element.getAttributeNode(name);
-        } catch (_2) {
-          attr = null;
-        }
+      if (!attr) try {
+        attr = element.getAttributeNode(name);
+      } catch (_2) {
+        attr = null;
       }
       arrayPush(DOMPurify.removed, {
         attribute: attr || null,
         from: element
       });
       try {
-        if (attr) {
-          element.removeAttributeNode(attr);
-        } else {
-          element.removeAttribute(name);
-        }
+        if (attr) removeAttributeNode(element, attr);
+        else element.removeAttribute(name);
       } catch (_2) {
         try {
           element.removeAttribute(name);
@@ -20442,30 +21072,23 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
       }
       if (name === "is") {
-        if (RETURN_DOM || RETURN_DOM_FRAGMENT) {
-          try {
-            _forceRemove(element);
-          } catch (_2) {
-          }
-        } else {
-          try {
-            element.setAttribute(name, "");
-          } catch (_2) {
-          }
+        if (RETURN_DOM || RETURN_DOM_FRAGMENT) try {
+          _forceRemove(element);
+        } catch (_2) {
+        }
+        else try {
+          element.setAttribute(name, "");
+        } catch (_2) {
         }
       }
     };
     const _stripDisallowedAttributes = function _stripDisallowedAttributes2(element) {
       const attributes = getAttributes(element);
-      if (!attributes) {
-        return;
-      }
+      if (!attributes) return;
       for (let i2 = attributes.length - 1; i2 >= 0; --i2) {
         const attribute = attributes[i2];
         const name = attribute && attribute.name;
-        if (typeof name !== "string" || ALLOWED_ATTR[transformCaseFunc(name)]) {
-          continue;
-        }
+        if (typeof name !== "string" || ALLOWED_ATTR[transformCaseFunc(name)]) continue;
         _stripAttributeNode(element, attribute, name);
       }
     };
@@ -20473,31 +21096,18 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const stack2 = [root2];
       while (stack2.length > 0) {
         const node = stack2.pop();
-        const nodeType = _readNodeType(node);
-        if (nodeType === NODE_TYPE.element) {
-          _stripDisallowedAttributes(node);
-        }
+        if (_readNodeType(node) === NODE_TYPE.element) _stripDisallowedAttributes(node);
         const childNodes = getChildNodes(node);
-        if (childNodes) {
-          for (let i2 = childNodes.length - 1; i2 >= 0; --i2) {
-            stack2.push(childNodes[i2]);
-          }
-        }
+        if (childNodes) for (let i2 = childNodes.length - 1; i2 >= 0; --i2) stack2.push(childNodes[i2]);
       }
     };
     const _isPatchLinkageAttribute = function _isPatchLinkageAttribute2(lcName, lcTag) {
-      if (!SAFE_FOR_XML) {
-        return false;
-      }
-      if (lcName === "patchsrc") {
-        return true;
-      }
+      if (!SAFE_FOR_XML) return false;
+      if (lcName === "patchsrc") return true;
       return lcName === "for" && lcTag !== "label" && lcTag !== "output";
     };
     const _neutralizePatchLinkage = function _neutralizePatchLinkage2(root2) {
-      if (!SAFE_FOR_XML) {
-        return;
-      }
+      if (!SAFE_FOR_XML) return;
       const stack2 = [root2];
       while (stack2.length > 0) {
         const node = stack2.pop();
@@ -20513,41 +21123,28 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           const element = node;
           const lcTag = transformCaseFunc(_readNodeName(node));
           try {
-            if (element.hasAttribute && element.hasAttribute("patchsrc")) {
-              element.removeAttribute("patchsrc");
-            }
-            if (element.hasAttribute && element.hasAttribute("for") && _isPatchLinkageAttribute("for", lcTag)) {
-              element.removeAttribute("for");
-            }
+            if (element.hasAttribute && element.hasAttribute("patchsrc")) element.removeAttribute("patchsrc");
+            if (element.hasAttribute && element.hasAttribute("for") && _isPatchLinkageAttribute("for", lcTag)) element.removeAttribute("for");
           } catch (_2) {
           }
         }
         const childNodes = getChildNodes(node);
-        if (childNodes) {
-          for (let i2 = childNodes.length - 1; i2 >= 0; --i2) {
-            stack2.push(childNodes[i2]);
-          }
-        }
+        if (childNodes) for (let i2 = childNodes.length - 1; i2 >= 0; --i2) stack2.push(childNodes[i2]);
       }
     };
     const _initDocument = function _initDocument2(dirty) {
       let doc2 = null;
       let leadingWhitespace = null;
-      if (FORCE_BODY) {
-        dirty = "<remove></remove>" + dirty;
-      } else {
+      if (FORCE_BODY) dirty = "<remove></remove>" + dirty;
+      else {
         const matches = stringMatch(dirty, /^[\r\n\t ]+/);
         leadingWhitespace = matches && matches[0];
       }
-      if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && NAMESPACE === HTML_NAMESPACE) {
-        dirty = '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>' + dirty + "</body></html>";
-      }
+      if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && NAMESPACE === HTML_NAMESPACE) dirty = '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>' + dirty + "</body></html>";
       const dirtyPayload = trustedTypesPolicy ? _createTrustedHTML(dirty) : dirty;
-      if (NAMESPACE === HTML_NAMESPACE) {
-        try {
-          doc2 = new DOMParser().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
-        } catch (_2) {
-        }
+      if (NAMESPACE === HTML_NAMESPACE) try {
+        doc2 = new DOMParser().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
+      } catch (_2) {
       }
       if (!doc2 || !doc2.documentElement) {
         doc2 = implementation.createDocument(NAMESPACE, "template", null);
@@ -20557,23 +21154,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
       }
       const body = doc2.body || doc2.documentElement;
-      if (dirty && leadingWhitespace) {
-        body.insertBefore(document2.createTextNode(leadingWhitespace), body.childNodes[0] || null);
-      }
-      if (NAMESPACE === HTML_NAMESPACE) {
-        return getElementsByTagName.call(doc2, WHOLE_DOCUMENT ? "html" : "body")[0];
-      }
+      if (dirty && leadingWhitespace) body.insertBefore(document2.createTextNode(leadingWhitespace), body.childNodes[0] || null);
+      if (NAMESPACE === HTML_NAMESPACE) return getElementsByTagName.call(doc2, WHOLE_DOCUMENT ? "html" : "body")[0];
       return WHOLE_DOCUMENT ? doc2.documentElement : body;
     };
     const _createNodeIterator = function _createNodeIterator2(root2) {
       const doc2 = getOwnerDocument ? getOwnerDocument(root2) : root2.ownerDocument;
-      return createNodeIterator.call(
-        doc2 || root2,
-        root2,
-        // eslint-disable-next-line no-bitwise
-        NodeFilter2.SHOW_ELEMENT | NodeFilter2.SHOW_COMMENT | NodeFilter2.SHOW_TEXT | NodeFilter2.SHOW_PROCESSING_INSTRUCTION | NodeFilter2.SHOW_CDATA_SECTION,
-        null
-      );
+      return createNodeIterator.call(doc2 || root2, root2, NodeFilter2.SHOW_ELEMENT | NodeFilter2.SHOW_COMMENT | NodeFilter2.SHOW_TEXT | NodeFilter2.SHOW_PROCESSING_INSTRUCTION | NodeFilter2.SHOW_CDATA_SECTION, null);
     };
     const _stripTemplateExpressions = function _stripTemplateExpressions2(value) {
       value = stringReplace(value, MUSTACHE_EXPR$1, " ");
@@ -20585,64 +21172,25 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       var _node$querySelectorAl;
       node.normalize();
       const doc2 = getOwnerDocument ? getOwnerDocument(node) : node.ownerDocument;
-      const walker = createNodeIterator.call(
-        doc2 || node,
-        node,
-        // eslint-disable-next-line no-bitwise
-        NodeFilter2.SHOW_TEXT | NodeFilter2.SHOW_COMMENT | NodeFilter2.SHOW_CDATA_SECTION | NodeFilter2.SHOW_PROCESSING_INSTRUCTION,
-        null
-      );
+      const walker = createNodeIterator.call(doc2 || node, node, NodeFilter2.SHOW_TEXT | NodeFilter2.SHOW_COMMENT | NodeFilter2.SHOW_CDATA_SECTION | NodeFilter2.SHOW_PROCESSING_INSTRUCTION, null);
       let currentNode = walker.nextNode();
       while (currentNode) {
         currentNode.data = _stripTemplateExpressions(currentNode.data);
         currentNode = walker.nextNode();
       }
       const templates = (_node$querySelectorAl = node.querySelectorAll) === null || _node$querySelectorAl === void 0 ? void 0 : _node$querySelectorAl.call(node, "template");
-      if (templates) {
-        arrayForEach(templates, (tmpl) => {
-          if (_isDocumentFragment(tmpl.content)) {
-            _scrubTemplateExpressions2(tmpl.content);
-          }
-        });
-      }
+      if (templates) arrayForEach(templates, (tmpl) => {
+        if (_isDocumentFragment(tmpl.content)) _scrubTemplateExpressions2(tmpl.content);
+      });
     };
     const _isClobbered = function _isClobbered2(element) {
       const realTagName = getNodeName2 ? getNodeName2(element) : null;
-      if (typeof realTagName !== "string") {
-        return false;
-      }
-      if (transformCaseFunc(realTagName) !== "form") {
-        return false;
-      }
-      return typeof element.nodeName !== "string" || typeof element.textContent !== "string" || typeof element.removeChild !== "function" || // Realm-safe NamedNodeMap detection: equality against the cached
-      // prototype getter. Clobbered .attributes (e.g. <input name="attributes">)
-      // makes the direct read diverge from the cached read; a clean form
-      // (same-realm OR foreign-realm) has both reads pointing at the same
-      // canonical NamedNodeMap.
-      element.attributes !== getAttributes(element) || typeof element.removeAttribute !== "function" || typeof element.setAttribute !== "function" || typeof element.namespaceURI !== "string" || typeof element.insertBefore !== "function" || typeof element.hasChildNodes !== "function" || // NodeType clobbering probe. Cached Node.prototype.nodeType getter
-      // returns the integer 1 for any Element regardless of realm; direct
-      // read on a clobbered form (e.g. <input name="nodeType">) returns
-      // the named child element. Cheap addition — nodeType is read from
-      // an internal slot, no serialization cost — and removes a residual
-      // clobbering surface used by several mXSS / PI / comment branches
-      // in _sanitizeElements that compare currentNode.nodeType directly.
-      element.nodeType !== getNodeType(element) || // HTMLFormElement has [LegacyOverrideBuiltIns]: a descendant named
-      // "childNodes" shadows the prototype getter. Direct reads of
-      // form.childNodes from a clobbered form return the named child
-      // instead of the real NodeList, so any walk that reads it directly
-      // skips the form's real children. Compare the direct read to the
-      // cached Node.prototype getter — when the form's named-property
-      // getter intercepts the read, the two values differ and we flag
-      // the form. This catches every clobbering child type (input,
-      // select, etc.) regardless of whether the named child happens to
-      // carry a numeric .length, which a typeof-based probe would miss
-      // (e.g. HTMLSelectElement.length is a defined unsigned-long).
-      element.childNodes !== getChildNodes(element);
+      if (typeof realTagName !== "string") return false;
+      if (transformCaseFunc(realTagName) !== "form") return false;
+      return typeof element.nodeName !== "string" || typeof element.textContent !== "string" || typeof element.removeChild !== "function" || element.attributes !== getAttributes(element) || typeof element.removeAttribute !== "function" || typeof element.removeAttributeNode !== "function" || typeof element.getAttributeNode !== "function" || typeof element.setAttribute !== "function" || typeof element.namespaceURI !== "string" || typeof element.insertBefore !== "function" || typeof element.hasChildNodes !== "function" || element.nodeType !== getNodeType(element) || element.childNodes !== getChildNodes(element);
     };
     const _isDocumentFragment = function _isDocumentFragment2(value) {
-      if (!getNodeType || typeof value !== "object" || value === null) {
-        return false;
-      }
+      if (!getNodeType || typeof value !== "object" || value === null) return false;
       try {
         return getNodeType(value) === NODE_TYPE.documentFragment;
       } catch (_2) {
@@ -20650,9 +21198,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       }
     };
     const _isNode = function _isNode2(value) {
-      if (!getNodeType || typeof value !== "object" || value === null) {
-        return false;
-      }
+      if (!getNodeType || typeof value !== "object" || value === null) return false;
       try {
         return typeof getNodeType(value) === "number";
       } catch (_2) {
@@ -20660,44 +21206,28 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       }
     };
     function _executeHooks(hooks2, currentNode, data) {
-      if (hooks2.length === 0) {
-        return;
-      }
+      if (hooks2.length === 0) return;
       arrayForEach(hooks2, (hook) => {
         hook.call(DOMPurify, currentNode, data, CONFIG);
       });
     }
     const _isUnsafeNode = function _isUnsafeNode2(currentNode, tagName) {
-      if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.textContent) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.innerHTML)) {
-        return true;
-      }
-      if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && LITERAL_TEXT_ELEMENTS[tagName] && (_isNode(currentNode.firstElementChild) || typeof currentNode.textContent === "string" && regExpTest(LITERAL_TEXT_CLOSE[tagName], currentNode.textContent))) {
-        return true;
-      }
-      if (currentNode.nodeType === NODE_TYPE.processingInstruction) {
-        return true;
-      }
-      if (SAFE_FOR_XML && currentNode.nodeType === NODE_TYPE.comment && regExpTest(COMMENT_MARKUP_PROBE, currentNode.data)) {
-        return true;
-      }
+      if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.textContent) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.innerHTML)) return true;
+      if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && LITERAL_TEXT_ELEMENTS[tagName] && (_isNode(currentNode.firstElementChild) || typeof currentNode.textContent === "string" && regExpTest(LITERAL_TEXT_CLOSE[tagName], currentNode.textContent))) return true;
+      if (currentNode.nodeType === NODE_TYPE.processingInstruction) return true;
+      if (SAFE_FOR_XML && currentNode.nodeType === NODE_TYPE.comment && regExpTest(COMMENT_MARKUP_PROBE, currentNode.data)) return true;
       return false;
     };
     const _matchesNameCheck = function _matchesNameCheck2(check, name) {
-      if (check instanceof RegExp) {
-        return regExpTest(check, name);
-      }
+      if (check instanceof RegExp) return regExpTest(check, name);
       if (check instanceof Function) {
-        for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-          args[_key - 2] = arguments[_key];
-        }
+        for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) args[_key - 2] = arguments[_key];
         return Boolean(check(name, ...args));
       }
       return false;
     };
     const _sanitizeDisallowedNode = function _sanitizeDisallowedNode2(currentNode, tagName, root2) {
-      if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) {
-        return false;
-      }
+      if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) return false;
       if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
         const parentNode = getParentNode2(currentNode);
         const childNodes = getChildNodes(currentNode);
@@ -20713,25 +21243,17 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       return true;
     };
     const _forkSharedAllowlist = function _forkSharedAllowlist2(hookList, set, defaultSet, setConfigSet) {
-      if (hookList.length === 0) {
-        return set;
-      }
+      if (hookList.length === 0) return set;
       return set === defaultSet || set === setConfigSet ? clone(set) : set;
     };
     const _handleHookDetachedNode = function _handleHookDetachedNode2(currentNode, root2) {
-      if (currentNode === root2 || getParentNode2(currentNode) !== null) {
-        return false;
-      }
-      if (IN_PLACE) {
-        _neutralizeSubtree(currentNode);
-      }
+      if (currentNode === root2 || getParentNode2(currentNode) !== null) return false;
+      if (IN_PLACE) _neutralizeSubtree(currentNode);
       return true;
     };
     const _sanitizeElements = function _sanitizeElements2(currentNode, root2) {
       _executeHooks(hooks.beforeSanitizeElements, currentNode, null);
-      if (_handleHookDetachedNode(currentNode, root2)) {
-        return true;
-      }
+      if (_handleHookDetachedNode(currentNode, root2)) return true;
       if (_isClobbered(currentNode)) {
         _forceRemove(currentNode);
         return true;
@@ -20742,9 +21264,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         tagName,
         allowedTags: ALLOWED_TAGS
       });
-      if (_handleHookDetachedNode(currentNode, root2)) {
-        return true;
-      }
+      if (_handleHookDetachedNode(currentNode, root2)) return true;
       if (_isUnsafeNode(currentNode, tagName)) {
         _forceRemove(currentNode);
         return true;
@@ -20753,11 +21273,11 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         const removed = _sanitizeDisallowedNode(currentNode, tagName, root2);
         if (removed === false) {
           _executeHooks(hooks.afterSanitizeElements, currentNode, null);
+          if (_handleHookDetachedNode(currentNode, root2)) return true;
         }
         return removed;
       }
-      const nt2 = _readNodeType(currentNode);
-      if (nt2 === NODE_TYPE.element && !_checkValidNamespace(currentNode)) {
+      if (_readNodeType(currentNode) === NODE_TYPE.element && !_checkValidNamespace(currentNode)) {
         _forceRemove(currentNode);
         return true;
       }
@@ -20768,96 +21288,68 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       if (SAFE_FOR_TEMPLATES && currentNode.nodeType === NODE_TYPE.text) {
         const content = _stripTemplateExpressions(currentNode.textContent);
         if (currentNode.textContent !== content) {
-          arrayPush(DOMPurify.removed, {
-            element: currentNode.cloneNode()
-          });
+          arrayPush(DOMPurify.removed, { element: currentNode.cloneNode() });
           currentNode.textContent = content;
         }
       }
       _executeHooks(hooks.afterSanitizeElements, currentNode, null);
-      return false;
+      return _handleHookDetachedNode(currentNode, root2);
     };
     const _isValidAttribute = function _isValidAttribute2(lcTag, lcName, value) {
-      if (FORBID_ATTR[lcName]) {
-        return false;
-      }
-      if (_isPatchLinkageAttribute(lcName, lcTag)) {
-        return false;
-      }
-      if (SANITIZE_DOM && (lcName === "id" || lcName === "name") && (value in document2 || value in formElement)) {
-        return false;
-      }
+      if (FORBID_ATTR[lcName]) return false;
+      if (_isPatchLinkageAttribute(lcName, lcTag)) return false;
+      if (SANITIZE_DOM && (lcName === "id" || lcName === "name") && (value in document2 || value in formElement)) return false;
       const nameIsPermitted = ALLOWED_ATTR[lcName] || EXTRA_ELEMENT_HANDLING.attributeCheck instanceof Function && EXTRA_ELEMENT_HANDLING.attributeCheck(lcName, lcTag);
-      if (ALLOW_DATA_ATTR && regExpTest(DATA_ATTR$1, lcName)) {
-        return true;
-      }
-      if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName)) {
-        return true;
-      }
-      if (!nameIsPermitted) {
-        return (
-          // Condition a) covers a basically valid custom element tag name whose
-          // tag passes the configured tagNameCheck and whose attribute name
-          // passes the configured attributeNameCheck ...
-          _isBasicCustomElement(lcTag) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName, lcTag) || // Condition b) covers an `is` attribute whose value passes the
-          // configured tagNameCheck while customized built-in elements are
-          // allowed.
-          lcName === "is" && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value)
-        );
-      }
-      if (URI_SAFE_ATTRIBUTES[lcName]) {
-        return true;
-      }
-      if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) {
-        return true;
-      }
-      if ((lcName === "src" || lcName === "xlink:href" || lcName === "href") && lcTag !== "script" && stringIndexOf(value, "data:") === 0 && DATA_URI_TAGS[lcTag]) {
-        return true;
-      }
-      if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) {
-        return true;
-      }
+      if (ALLOW_DATA_ATTR && regExpTest(DATA_ATTR$1, lcName)) return true;
+      if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName)) return true;
+      if (!nameIsPermitted) return _isBasicCustomElement(lcTag) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName, lcTag) || lcName === "is" && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value);
+      if (URI_SAFE_ATTRIBUTES[lcName]) return true;
+      if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) return true;
+      if ((lcName === "src" || lcName === "xlink:href" || lcName === "href") && lcTag !== "script" && stringIndexOf(value, "data:") === 0 && DATA_URI_TAGS[lcTag]) return true;
+      if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) return true;
       return !value;
     };
-    const RESERVED_CUSTOM_ELEMENT_NAMES = addToSet({}, ["annotation-xml", "color-profile", "font-face", "font-face-format", "font-face-name", "font-face-src", "font-face-uri", "missing-glyph"]);
+    const RESERVED_CUSTOM_ELEMENT_NAMES = addToSet({}, [
+      "annotation-xml",
+      "color-profile",
+      "font-face",
+      "font-face-format",
+      "font-face-name",
+      "font-face-src",
+      "font-face-uri",
+      "missing-glyph"
+    ]);
     const _isBasicCustomElement = function _isBasicCustomElement2(tagName) {
       return !RESERVED_CUSTOM_ELEMENT_NAMES[stringToLowerCase(tagName)] && regExpTest(CUSTOM_ELEMENT$1, tagName);
     };
     const _applyTrustedTypesToAttribute = function _applyTrustedTypesToAttribute2(lcTag, lcName, namespaceURI, value) {
-      if (trustedTypesPolicy && typeof trustedTypes === "object" && typeof trustedTypes.getAttributeType === "function" && !namespaceURI) {
-        switch (trustedTypes.getAttributeType(lcTag, lcName)) {
-          case "TrustedHTML": {
-            return _createTrustedHTML(value);
-          }
-          case "TrustedScriptURL": {
-            return _createTrustedScriptURL(value);
-          }
-        }
+      if (trustedTypesPolicy && typeof trustedTypes === "object" && typeof trustedTypes.getAttributeType === "function" && !namespaceURI) switch (trustedTypes.getAttributeType(lcTag, lcName)) {
+        case "TrustedHTML":
+          return _createTrustedHTML(value);
+        case "TrustedScriptURL":
+          return _createTrustedScriptURL(value);
       }
       return value;
     };
     const _setAttributeValue = function _setAttributeValue2(currentNode, name, namespaceURI, value) {
       try {
-        if (namespaceURI) {
-          currentNode.setAttributeNS(namespaceURI, name, value);
-        } else {
-          currentNode.setAttribute(name, value);
-        }
+        if (namespaceURI) currentNode.setAttributeNS(namespaceURI, name, value);
+        else currentNode.setAttribute(name, value);
         if (_isClobbered(currentNode)) {
           _forceRemove(currentNode);
-        } else {
-          arrayPop(DOMPurify.removed);
+          return false;
         }
+        return true;
       } catch (_2) {
         _removeAttribute(name, currentNode);
+        return false;
       }
     };
-    const _sanitizeAttributes = function _sanitizeAttributes2(currentNode) {
+    const _sanitizeAttributes = function _sanitizeAttributes2(currentNode, root2) {
       _executeHooks(hooks.beforeSanitizeAttributes, currentNode, null);
+      if (_handleHookDetachedNode(currentNode, root2)) return;
       const attributes = currentNode.attributes;
-      if (!attributes || _isClobbered(currentNode)) {
-        return;
-      }
+      if (!attributes || _isClobbered(currentNode)) return;
       ALLOWED_ATTR = _forkSharedAllowlist(hooks.uponSanitizeAttribute, ALLOWED_ATTR, DEFAULT_ALLOWED_ATTR, SET_CONFIG_ALLOWED_ATTR);
       const hookEvent = {
         attrName: "",
@@ -20874,6 +21366,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         const lcName = transformCaseFunc(name);
         const initValue = attrValue;
         let value = name === "value" ? initValue : stringTrim(initValue);
+        let recreatedNamedProp = false;
         hookEvent.attrName = lcName;
         hookEvent.attrValue = value;
         hookEvent.keepAttr = true;
@@ -20883,6 +21376,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         if (SANITIZE_NAMED_PROPS && (lcName === "id" || lcName === "name") && stringIndexOf(value, SANITIZE_NAMED_PROPS_PREFIX) !== 0) {
           _removeAttribute(name, currentNode, attr);
           value = SANITIZE_NAMED_PROPS_PREFIX + value;
+          recreatedNamedProp = true;
         }
         if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/i, value)) {
           _removeAttribute(name, currentNode, attr);
@@ -20892,9 +21386,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           _removeAttribute(name, currentNode, attr);
           continue;
         }
-        if (hookEvent.forceKeepAttr) {
-          continue;
-        }
+        if (hookEvent.forceKeepAttr) continue;
         if (!hookEvent.keepAttr) {
           _removeAttribute(name, currentNode, attr);
           continue;
@@ -20903,19 +21395,18 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           _removeAttribute(name, currentNode, attr);
           continue;
         }
-        if (SAFE_FOR_TEMPLATES) {
-          value = _stripTemplateExpressions(value);
-        }
+        if (SAFE_FOR_TEMPLATES) value = _stripTemplateExpressions(value);
         if (!_isValidAttribute(lcTag, lcName, value)) {
           _removeAttribute(name, currentNode, attr);
           continue;
         }
         value = _applyTrustedTypesToAttribute(lcTag, lcName, namespaceURI, value);
         if (value !== initValue) {
-          _setAttributeValue(currentNode, name, namespaceURI, value);
+          if (_setAttributeValue(currentNode, name, namespaceURI, value) && recreatedNamedProp) arrayPop(DOMPurify.removed);
         }
       }
       _executeHooks(hooks.afterSanitizeAttributes, currentNode, null);
+      _handleHookDetachedNode(currentNode, root2);
     };
     const _sanitizeShadowDOM2 = function _sanitizeShadowDOM(fragment) {
       let shadowNode = null;
@@ -20924,10 +21415,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       while (shadowNode = shadowIterator.nextNode()) {
         _executeHooks(hooks.uponSanitizeShadowNode, shadowNode, null);
         _sanitizeElements(shadowNode, fragment);
-        _sanitizeAttributes(shadowNode);
-        if (_isDocumentFragment(shadowNode.content)) {
-          _sanitizeShadowDOM2(shadowNode.content);
-        }
+        _sanitizeAttributes(shadowNode, fragment);
+        if (_isDocumentFragment(shadowNode.content)) _sanitizeShadowDOM2(shadowNode.content);
         if (_readNodeType(shadowNode) === NODE_TYPE.element) {
           const innerSr = getShadowRoot(shadowNode);
           if (_isDocumentFragment(innerSr)) {
@@ -20950,40 +21439,31 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           continue;
         }
         const node = item.node;
-        const nodeType = _readNodeType(node);
-        const isElement2 = nodeType === NODE_TYPE.element;
+        const isElement2 = _readNodeType(node) === NODE_TYPE.element;
         const childNodes = getChildNodes(node);
-        if (childNodes) {
-          for (let i2 = childNodes.length - 1; i2 >= 0; --i2) {
-            stack2.push({
-              node: childNodes[i2],
-              shadow: null
-            });
-          }
-        }
+        if (childNodes) for (let i2 = childNodes.length - 1; i2 >= 0; --i2) stack2.push({
+          node: childNodes[i2],
+          shadow: null
+        });
         if (isElement2) {
           const rootName = getNodeName2 ? getNodeName2(node) : null;
           if (typeof rootName === "string" && transformCaseFunc(rootName) === "template") {
             const content = node.content;
-            if (_isDocumentFragment(content)) {
-              stack2.push({
-                node: content,
-                shadow: null
-              });
-            }
+            if (_isDocumentFragment(content)) stack2.push({
+              node: content,
+              shadow: null
+            });
           }
         }
         if (isElement2) {
           const sr = getShadowRoot(node);
-          if (_isDocumentFragment(sr)) {
-            stack2.push({
-              node: null,
-              shadow: sr
-            }, {
-              node: sr,
-              shadow: null
-            });
-          }
+          if (_isDocumentFragment(sr)) stack2.push({
+            node: null,
+            shadow: sr
+          }, {
+            node: sr,
+            shadow: null
+          });
         }
       }
     };
@@ -20994,30 +21474,18 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       let currentNode = null;
       let returnNode = null;
       IS_EMPTY_INPUT = !dirty;
-      if (IS_EMPTY_INPUT) {
-        dirty = "<!-->";
-      }
+      if (IS_EMPTY_INPUT) dirty = "<!-->";
       if (typeof dirty !== "string" && !_isNode(dirty)) {
         dirty = stringifyValue(dirty);
-        if (typeof dirty !== "string") {
-          throw typeErrorCreate("dirty is not a string, aborting");
-        }
+        if (typeof dirty !== "string") throw typeErrorCreate("dirty is not a string, aborting");
       }
-      if (!DOMPurify.isSupported) {
-        return dirty;
-      }
+      if (!DOMPurify.isSupported) return dirty;
       if (SET_CONFIG) {
         ALLOWED_TAGS = SET_CONFIG_ALLOWED_TAGS;
         ALLOWED_ATTR = SET_CONFIG_ALLOWED_ATTR;
-      } else {
-        _parseConfig(cfg);
-      }
-      if (hooks.uponSanitizeElement.length > 0 || hooks.uponSanitizeAttribute.length > 0) {
-        ALLOWED_TAGS = clone(ALLOWED_TAGS);
-      }
-      if (hooks.uponSanitizeAttribute.length > 0) {
-        ALLOWED_ATTR = clone(ALLOWED_ATTR);
-      }
+      } else _parseConfig(cfg);
+      if (hooks.uponSanitizeElement.length > 0 || hooks.uponSanitizeAttribute.length > 0) ALLOWED_TAGS = clone(ALLOWED_TAGS);
+      if (hooks.uponSanitizeAttribute.length > 0) ALLOWED_ATTR = clone(ALLOWED_ATTR);
       DOMPurify.removed = [];
       const inPlace = IN_PLACE && typeof dirty !== "string" && _isNode(dirty);
       if (inPlace) {
@@ -21043,83 +21511,57 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       } else if (_isNode(dirty)) {
         body = _initDocument("<!---->");
         importedNode = body.ownerDocument.importNode(dirty, true);
-        if (importedNode.nodeType === NODE_TYPE.element && importedNode.nodeName === "BODY") {
-          body = importedNode;
-        } else if (importedNode.nodeName === "HTML") {
-          body = importedNode;
-        } else {
-          body.appendChild(importedNode);
-        }
-        _sanitizeAttachedShadowRoots(importedNode);
+        if (importedNode.nodeType === NODE_TYPE.element && importedNode.nodeName === "BODY") body = importedNode;
+        else if (importedNode.nodeName === "HTML") body = importedNode;
+        else body.appendChild(importedNode);
+        _sanitizeAttachedShadowRoots(body);
       } else {
-        if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && // eslint-disable-next-line unicorn/prefer-includes
-        dirty.indexOf("<") === -1) {
-          return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? _createTrustedHTML(dirty) : dirty;
-        }
+        if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && dirty.indexOf("<") === -1) return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? _createTrustedHTML(dirty) : dirty;
         body = _initDocument(dirty);
-        if (!body) {
-          return RETURN_DOM ? null : RETURN_TRUSTED_TYPE ? emptyHTML : "";
-        }
+        if (!body) return RETURN_DOM ? null : RETURN_TRUSTED_TYPE ? emptyHTML : "";
       }
-      if (body && FORCE_BODY) {
-        _forceRemove(body.firstChild);
-      }
+      if (body && FORCE_BODY) _forceRemove(body.firstChild);
       const walkRoot = inPlace ? dirty : body;
       try {
         const nodeIterator = _createNodeIterator(walkRoot);
         while (currentNode = nodeIterator.nextNode()) {
           _sanitizeElements(currentNode, walkRoot);
-          _sanitizeAttributes(currentNode);
-          if (_isDocumentFragment(currentNode.content)) {
-            _sanitizeShadowDOM2(currentNode.content);
-          }
+          _sanitizeAttributes(currentNode, walkRoot);
+          if (_isDocumentFragment(currentNode.content)) _sanitizeShadowDOM2(currentNode.content);
         }
       } catch (error) {
         if (inPlace) {
           _neutralizeRoot(dirty);
           arrayForEach(DOMPurify.removed, (entry) => {
-            if (entry.element) {
-              _neutralizeSubtree(entry.element);
-            }
+            if (entry.element) _neutralizeSubtree(entry.element);
           });
         }
         throw error;
       }
       if (inPlace) {
+        let rootWasRemoved = false;
         arrayForEach(DOMPurify.removed, (entry) => {
           if (entry.element) {
+            if (entry.element === dirty) rootWasRemoved = true;
             _neutralizeSubtree(entry.element);
           }
         });
-        if (SAFE_FOR_TEMPLATES) {
-          _scrubTemplateExpressions2(dirty);
-        }
+        if (rootWasRemoved) throw typeErrorCreate("a node selected for removal could not be safely returned; refusing to sanitize in place");
+        if (SAFE_FOR_TEMPLATES) _scrubTemplateExpressions2(dirty);
         return dirty;
       }
       if (RETURN_DOM) {
-        if (SAFE_FOR_TEMPLATES) {
-          _scrubTemplateExpressions2(body);
-        }
+        if (SAFE_FOR_TEMPLATES) _scrubTemplateExpressions2(body);
         if (RETURN_DOM_FRAGMENT) {
           returnNode = createDocumentFragment.call(body.ownerDocument);
-          while (body.firstChild) {
-            returnNode.appendChild(body.firstChild);
-          }
-        } else {
-          returnNode = body;
-        }
-        if (ALLOWED_ATTR.shadowroot || ALLOWED_ATTR.shadowrootmode) {
-          returnNode = importNode.call(originalDocument, returnNode, true);
-        }
+          while (body.firstChild) returnNode.appendChild(body.firstChild);
+        } else returnNode = body;
+        if (ALLOWED_ATTR.shadowroot || ALLOWED_ATTR.shadowrootmode) returnNode = importNode.call(originalDocument, returnNode, true);
         return returnNode;
       }
       let serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
-      if (WHOLE_DOCUMENT && ALLOWED_TAGS["!doctype"] && body.ownerDocument && body.ownerDocument.doctype && body.ownerDocument.doctype.name && regExpTest(DOCTYPE_NAME, body.ownerDocument.doctype.name)) {
-        serializedHTML = "<!DOCTYPE " + body.ownerDocument.doctype.name + ">\n" + serializedHTML;
-      }
-      if (SAFE_FOR_TEMPLATES) {
-        serializedHTML = _stripTemplateExpressions(serializedHTML);
-      }
+      if (WHOLE_DOCUMENT && ALLOWED_TAGS["!doctype"] && body.ownerDocument && body.ownerDocument.doctype && body.ownerDocument.doctype.name && regExpTest(DOCTYPE_NAME, body.ownerDocument.doctype.name)) serializedHTML = "<!DOCTYPE " + body.ownerDocument.doctype.name + ">\n" + serializedHTML;
+      if (SAFE_FOR_TEMPLATES) serializedHTML = _stripTemplateExpressions(serializedHTML);
       return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? _createTrustedHTML(serializedHTML) : serializedHTML;
     };
     DOMPurify.setConfig = function() {
@@ -21138,26 +21580,18 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       emptyHTML = "";
     };
     DOMPurify.isValidAttribute = function(tag, attr, value) {
-      if (!CONFIG) {
-        _parseConfig({});
-      }
+      if (!CONFIG) _parseConfig({});
       const lcTag = transformCaseFunc(tag);
       const lcName = transformCaseFunc(attr);
       return _isValidAttribute(lcTag, lcName, value);
     };
     DOMPurify.addHook = function(entryPoint, hookFunction) {
-      if (typeof hookFunction !== "function") {
-        return;
-      }
-      if (!objectHasOwnProperty(hooks, entryPoint)) {
-        return;
-      }
+      if (typeof hookFunction !== "function") return;
+      if (!objectHasOwnProperty(hooks, entryPoint)) return;
       arrayPush(hooks[entryPoint], hookFunction);
     };
     DOMPurify.removeHook = function(entryPoint, hookFunction) {
-      if (!objectHasOwnProperty(hooks, entryPoint)) {
-        return void 0;
-      }
+      if (!objectHasOwnProperty(hooks, entryPoint)) return;
       if (hookFunction !== void 0) {
         const index = arrayLastIndexOf(hooks[entryPoint], hookFunction);
         return index === -1 ? void 0 : arraySplice(hooks[entryPoint], index, 1)[0];
@@ -21165,9 +21599,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       return arrayPop(hooks[entryPoint]);
     };
     DOMPurify.removeHooks = function(entryPoint) {
-      if (!objectHasOwnProperty(hooks, entryPoint)) {
-        return;
-      }
+      if (!objectHasOwnProperty(hooks, entryPoint)) return;
       hooks[entryPoint] = [];
     };
     DOMPurify.removeAllHooks = function() {
@@ -21175,22 +21607,22 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     };
     return DOMPurify;
   }
-  var purify = createDOMPurify();
-  f$1.setOptions({ gfm: true, breaks: false });
+  var purify_default = createDOMPurify();
+  k.setOptions({ gfm: true, breaks: false });
   function renderMarkdown(md) {
     if (!md) return "";
-    const rawHtml = f$1.parse(md, { async: false });
-    return purify.sanitize(rawHtml);
+    const rawHtml = k.parse(md, { async: false });
+    return purify_default.sanitize(rawHtml);
   }
   function renderMarkdownSegments(md) {
     if (!md) return [];
-    const tokens = f$1.lexer(md);
+    const tokens = k.lexer(md);
     const segments = [];
     let buffer = [];
     function renderGroup(group) {
       const list = group;
       list.links = tokens.links;
-      return purify.sanitize(f$1.parser(list));
+      return purify_default.sanitize(k.parser(list));
     }
     function flush() {
       if (buffer.length === 0) return;
@@ -26224,7 +26656,7 @@ section.turn:has([data-state="open"]) {
       i2 && (i2(), i2 = void 0), s2.forEach(((t3) => t3()));
     };
   }
-  class u extends e$1 {
+  let d$1 = class d extends e$1 {
     get isPlayingSignal() {
       return this._isPlaying;
     }
@@ -26355,8 +26787,8 @@ section.turn:has([data-state="open"]) {
     setSinkId(t2) {
       return this.media.setSinkId(t2);
     }
-  }
-  function d$1({ maxTop: t2, maxBottom: e2, halfHeight: i2, vScale: n2, barMinHeight: s2 = 0, barAlign: r2 }) {
+  };
+  function u({ maxTop: t2, maxBottom: e2, halfHeight: i2, vScale: n2, barMinHeight: s2 = 0, barAlign: r2 }) {
     let o2 = Math.round(t2 * i2 * n2);
     let a2 = o2 + Math.round(e2 * i2 * n2) || 1;
     return a2 < s2 && (a2 = s2, r2 || (o2 = a2 / 2)), { topHeight: o2, totalHeight: a2 };
@@ -26449,16 +26881,16 @@ section.turn:has([data-state="open"]) {
           if (o2.has(e3.pointerId)) return;
           if (o2.set(e3.pointerId, e3), o2.size > 1) return;
           const l2 = e3.pointerId;
-          let c3 = e3.clientX, u2 = e3.clientY, d2 = false;
+          let c3 = e3.clientX, d2 = e3.clientY, u2 = false;
           const p2 = Date.now(), m2 = t3.getBoundingClientRect(), { left: g2, top: f2 } = m2, v2 = (t4) => {
             if (t4.pointerId !== l2) return;
             if (t4.defaultPrevented || o2.size > 1) return;
             if (a2 && Date.now() - p2 < s2) return;
-            const e4 = t4.clientX, n3 = t4.clientY, h3 = e4 - c3, m3 = n3 - u2;
-            (d2 || Math.abs(h3) > i2 || Math.abs(m3) > i2) && (t4.preventDefault(), t4.stopPropagation(), d2 || (r2.set({ type: "start", x: c3 - g2, y: u2 - f2 }), d2 = true), r2.set({ type: "move", x: e4 - g2, y: n3 - f2, deltaX: h3, deltaY: m3 }), c3 = e4, u2 = n3);
+            const e4 = t4.clientX, n3 = t4.clientY, h3 = e4 - c3, m3 = n3 - d2;
+            (u2 || Math.abs(h3) > i2 || Math.abs(m3) > i2) && (t4.preventDefault(), t4.stopPropagation(), u2 || (r2.set({ type: "start", x: c3 - g2, y: d2 - f2 }), u2 = true), r2.set({ type: "move", x: e4 - g2, y: n3 - f2, deltaX: h3, deltaY: m3 }), c3 = e4, d2 = n3);
           }, b2 = (t4) => {
             if (o2.delete(t4.pointerId)) {
-              if (t4.pointerId === l2 && d2) {
+              if (t4.pointerId === l2 && u2) {
                 const e4 = t4.clientX, i3 = t4.clientY;
                 r2.set({ type: "end", x: e4 - g2, y: i3 - f2 });
               }
@@ -26467,9 +26899,9 @@ section.turn:has([data-state="open"]) {
           }, y2 = (t4) => {
             t4.relatedTarget && t4.relatedTarget !== document.documentElement || b2(t4);
           }, C2 = (t4) => {
-            d2 && (t4.stopPropagation(), t4.preventDefault());
+            u2 && (t4.stopPropagation(), t4.preventDefault());
           }, S2 = (t4) => {
-            t4.defaultPrevented || o2.size > 1 || d2 && t4.preventDefault();
+            t4.defaultPrevented || o2.size > 1 || u2 && t4.preventDefault();
           };
           document.addEventListener("pointermove", v2), document.addEventListener("pointerup", b2), document.addEventListener("pointerout", y2), document.addEventListener("pointercancel", y2), document.addEventListener("touchmove", S2, { passive: false }), document.addEventListener("click", C2, { capture: true }), h2 = () => {
             document.removeEventListener("pointermove", v2), document.removeEventListener("pointerup", b2), document.removeEventListener("pointerout", y2), document.removeEventListener("pointercancel", y2), document.removeEventListener("touchmove", S2), setTimeout((() => {
@@ -26642,23 +27074,23 @@ section.turn:has([data-state="open"]) {
       var t2;
     }
     renderBarWaveform(t2, e2, i2, n2) {
-      const { width: s2, height: r2 } = i2.canvas, { halfHeight: o2, barWidth: a2, barRadius: l2, barIndexScale: h2, barSpacing: c2, barMinHeight: u2 } = (function({ width: t3, height: e3, length: i3, options: n3, pixelRatio: s3 }) {
+      const { width: s2, height: r2 } = i2.canvas, { halfHeight: o2, barWidth: a2, barRadius: l2, barIndexScale: h2, barSpacing: c2, barMinHeight: d2 } = (function({ width: t3, height: e3, length: i3, options: n3, pixelRatio: s3 }) {
         const r3 = e3 / 2, o3 = n3.barWidth ? n3.barWidth * s3 : 1, a3 = n3.barGap ? n3.barGap * s3 : n3.barWidth ? o3 / 2 : 0, l3 = o3 + a3 || 1;
         return { halfHeight: r3, barWidth: o3, barGap: a3, barRadius: n3.barRadius || 0, barMinHeight: n3.barMinHeight ? n3.barMinHeight * s3 : 0, barIndexScale: i3 > 0 ? t3 / l3 / i3 : 0, barSpacing: l3 };
       })({ width: s2, height: r2, length: (t2[0] || []).length, options: e2, pixelRatio: this.getPixelRatio() }), m2 = (function({ channelData: t3, barIndexScale: e3, barSpacing: i3, barWidth: n3, halfHeight: s3, vScale: r3, canvasHeight: o3, barAlign: a3, barMinHeight: l3 }) {
-        const h3 = t3[0] || [], c3 = t3[1] || h3, u3 = h3.length, m3 = [];
+        const h3 = t3[0] || [], c3 = t3[1] || h3, d3 = h3.length, m3 = [];
         let g2 = 0, f2 = 0, v2 = 0;
-        for (let t4 = 0; t4 <= u3; t4++) {
-          const u4 = Math.round(t4 * e3);
-          if (u4 > g2) {
-            const { topHeight: t5, totalHeight: e4 } = d$1({ maxTop: f2, maxBottom: v2, halfHeight: s3, vScale: r3, barMinHeight: l3, barAlign: a3 }), h4 = p({ barAlign: a3, halfHeight: s3, topHeight: t5, totalHeight: e4, canvasHeight: o3 });
-            m3.push({ x: g2 * i3, y: h4, width: n3, height: e4 }), g2 = u4, f2 = 0, v2 = 0;
+        for (let t4 = 0; t4 <= d3; t4++) {
+          const d4 = Math.round(t4 * e3);
+          if (d4 > g2) {
+            const { topHeight: t5, totalHeight: e4 } = u({ maxTop: f2, maxBottom: v2, halfHeight: s3, vScale: r3, barMinHeight: l3, barAlign: a3 }), h4 = p({ barAlign: a3, halfHeight: s3, topHeight: t5, totalHeight: e4, canvasHeight: o3 });
+            m3.push({ x: g2 * i3, y: h4, width: n3, height: e4 }), g2 = d4, f2 = 0, v2 = 0;
           }
           const b2 = Math.abs(h3[t4] || 0), y2 = Math.abs(c3[t4] || 0);
           b2 > f2 && (f2 = b2), y2 > v2 && (v2 = y2);
         }
         return m3;
-      })({ channelData: t2, barIndexScale: h2, barSpacing: c2, barWidth: a2, halfHeight: o2, vScale: n2, canvasHeight: r2, barAlign: e2.barAlign, barMinHeight: u2 });
+      })({ channelData: t2, barIndexScale: h2, barSpacing: c2, barWidth: a2, halfHeight: o2, vScale: n2, canvasHeight: r2, barAlign: e2.barAlign, barMinHeight: d2 });
       i2.beginPath();
       for (const t3 of m2) l2 && "roundRect" in i2 ? i2.roundRect(t3.x, t3.y, t3.width, t3.height, l2) : i2.rect(t3.x, t3.y, t3.width, t3.height);
       i2.fill(), i2.closePath();
@@ -26668,15 +27100,15 @@ section.turn:has([data-state="open"]) {
         const s3 = i3 / 2, r3 = t3[0] || [];
         return [r3, t3[1] || r3].map(((t4, i4) => {
           const r4 = t4.length, o3 = r4 ? e3 / r4 : 0, a2 = s3, l2 = 0 === i4 ? -1 : 1, h2 = [{ x: 0, y: a2 }];
-          let c2 = 0, u2 = 0;
+          let c2 = 0, d2 = 0;
           for (let e4 = 0; e4 <= r4; e4++) {
             const i5 = Math.round(e4 * o3);
             if (i5 > c2) {
-              const t5 = a2 + (Math.round(u2 * s3 * n3) || 1) * l2;
-              h2.push({ x: c2, y: t5 }), c2 = i5, u2 = 0;
+              const t5 = a2 + (Math.round(d2 * s3 * n3) || 1) * l2;
+              h2.push({ x: c2, y: t5 }), c2 = i5, d2 = 0;
             }
             const r5 = Math.abs(t4[e4] || 0);
-            r5 > u2 && (u2 = r5);
+            r5 > d2 && (d2 = r5);
           }
           return h2.push({ x: c2, y: a2 }), h2;
         }));
@@ -26723,29 +27155,29 @@ section.turn:has([data-state="open"]) {
       })({ clientWidth: a2, totalWidth: l2, options: e2 });
       let c2 = {};
       if (0 === h2) return;
-      const u2 = (i3) => {
-        if (i3 < 0 || i3 >= d2) return;
+      const d2 = (i3) => {
+        if (i3 < 0 || i3 >= u2) return;
         if (c2[i3]) return;
         c2[i3] = true;
         const o3 = i3 * h2;
         let a3 = Math.min(l2 - o3, h2);
         if (a3 = f(a3, e2), a3 <= 0) return;
-        const u3 = (function({ channelData: t3, offset: e3, clampedWidth: i4, totalWidth: n3 }) {
+        const d3 = (function({ channelData: t3, offset: e3, clampedWidth: i4, totalWidth: n3 }) {
           return t3.map(((t4) => {
             const s3 = Math.floor(e3 / n3 * t4.length), r3 = Math.floor((e3 + i4) / n3 * t4.length);
             return t4.slice(s3, r3);
           }));
         })({ channelData: t2, offset: o3, clampedWidth: a3, totalWidth: l2 });
-        this.renderSingleCanvas(u3, e2, a3, n2, o3, s2, r2);
-      }, d2 = Math.ceil(l2 / h2);
+        this.renderSingleCanvas(d3, e2, a3, n2, o3, s2, r2);
+      }, u2 = Math.ceil(l2 / h2);
       if (!this.isScrollable) {
-        for (let t3 = 0; t3 < d2; t3++) u2(t3);
+        for (let t3 = 0; t3 < u2; t3++) d2(t3);
         return;
       }
-      if (v({ scrollLeft: this.scrollContainer.scrollLeft, totalWidth: l2, numCanvases: d2 }).forEach(((t3) => u2(t3))), d2 > 1) {
+      if (v({ scrollLeft: this.scrollContainer.scrollLeft, totalWidth: l2, numCanvases: u2 }).forEach(((t3) => d2(t3))), u2 > 1) {
         const t3 = this.on("scroll", (() => {
           const { scrollLeft: t4 } = this.scrollContainer;
-          Object.keys(c2).length > 10 && (s2.innerHTML = "", r2.innerHTML = "", c2 = {}), v({ scrollLeft: t4, totalWidth: l2, numCanvases: d2 }).forEach(((t5) => u2(t5)));
+          Object.keys(c2).length > 10 && (s2.innerHTML = "", r2.innerHTML = "", c2 = {}), v({ scrollLeft: t4, totalWidth: l2, numCanvases: u2 }).forEach(((t5) => d2(t5)));
         }));
         this.unsubscribeOnScroll.push(t3);
       }
@@ -27008,7 +27440,7 @@ section.turn:has([data-state="open"]) {
     }
   }
   const P = { waveColor: "#999", progressColor: "#555", cursorWidth: 1, minPxPerSec: 0, fillParent: true, interact: true, dragToSeek: false, autoScroll: true, autoCenter: true, sampleRate: 8e3 };
-  class w extends u {
+  class w extends d$1 {
     static create(t2) {
       return new w(t2);
     }
@@ -27020,19 +27452,19 @@ section.turn:has([data-state="open"]) {
     }
     constructor(t2) {
       const e2 = t2.media || ("WebAudio" === t2.backend ? new E() : void 0);
-      super({ media: e2, mediaControls: t2.mediaControls, autoplay: t2.autoplay, playbackRate: t2.audioRate }), this.plugins = [], this.decodedData = null, this.stopAtPosition = null, this.subscriptions = [], this.mediaSubscriptions = [], this.abortController = null, this._isDestroyed = false, this._loadVersion = 0, this.reactiveCleanups = [], this.options = Object.assign({}, P, t2);
+      super({ media: e2, mediaControls: t2.mediaControls, autoplay: t2.autoplay, playbackRate: t2.audioRate }), this.plugins = [], this.decodedData = null, this.stopAtPosition = null, this.subscriptions = [], this.mediaSubscriptions = [], this.abortController = null, this._isDestroyed = false, this._loadVersion = 0, this.options = Object.assign({}, P, t2);
       const { state: i2, actions: n2 } = (function(t3) {
         var e3, i3, n3, s3, r3, o2;
-        const a2 = null !== (e3 = null == t3 ? void 0 : t3.currentTime) && void 0 !== e3 ? e3 : l$1(0), c2 = null !== (i3 = null == t3 ? void 0 : t3.duration) && void 0 !== i3 ? i3 : l$1(0), u2 = null !== (n3 = null == t3 ? void 0 : t3.isPlaying) && void 0 !== n3 ? n3 : l$1(false), d2 = null !== (s3 = null == t3 ? void 0 : t3.isSeeking) && void 0 !== s3 ? s3 : l$1(false), p2 = null !== (r3 = null == t3 ? void 0 : t3.volume) && void 0 !== r3 ? r3 : l$1(1), m2 = null !== (o2 = null == t3 ? void 0 : t3.playbackRate) && void 0 !== o2 ? o2 : l$1(1), g2 = l$1(null), f2 = l$1(null), v2 = l$1(""), b2 = l$1(0), y2 = l$1(0), C2 = h$1((() => !u2.value), [u2]), S2 = h$1((() => null !== g2.value), [g2]), E2 = h$1((() => S2.value && c2.value > 0), [S2, c2]), P2 = h$1((() => a2.value), [a2]), w2 = h$1((() => c2.value > 0 ? a2.value / c2.value : 0), [a2, c2]);
-        return { state: { currentTime: a2, duration: c2, isPlaying: u2, isPaused: C2, isSeeking: d2, volume: p2, playbackRate: m2, audioBuffer: g2, peaks: f2, url: v2, zoom: b2, scrollPosition: y2, canPlay: S2, isReady: E2, progress: P2, progressPercent: w2 }, actions: { setCurrentTime: (t4) => {
+        const a2 = null !== (e3 = null == t3 ? void 0 : t3.currentTime) && void 0 !== e3 ? e3 : l$1(0), c2 = null !== (i3 = null == t3 ? void 0 : t3.duration) && void 0 !== i3 ? i3 : l$1(0), d2 = null !== (n3 = null == t3 ? void 0 : t3.isPlaying) && void 0 !== n3 ? n3 : l$1(false), u2 = null !== (s3 = null == t3 ? void 0 : t3.isSeeking) && void 0 !== s3 ? s3 : l$1(false), p2 = null !== (r3 = null == t3 ? void 0 : t3.volume) && void 0 !== r3 ? r3 : l$1(1), m2 = null !== (o2 = null == t3 ? void 0 : t3.playbackRate) && void 0 !== o2 ? o2 : l$1(1), g2 = l$1(null), f2 = l$1(null), v2 = l$1(""), b2 = l$1(0), y2 = l$1(0), C2 = h$1((() => !d2.value), [d2]), S2 = h$1((() => null !== g2.value), [g2]), E2 = h$1((() => S2.value && c2.value > 0), [S2, c2]), P2 = h$1((() => a2.value), [a2]), w2 = h$1((() => c2.value > 0 ? a2.value / c2.value : 0), [a2, c2]);
+        return { state: { currentTime: a2, duration: c2, isPlaying: d2, isPaused: C2, isSeeking: u2, volume: p2, playbackRate: m2, audioBuffer: g2, peaks: f2, url: v2, zoom: b2, scrollPosition: y2, canPlay: S2, isReady: E2, progress: P2, progressPercent: w2 }, actions: { setCurrentTime: (t4) => {
           const e4 = Math.max(0, Math.min(c2.value || 1 / 0, t4));
           a2.set(e4);
         }, setDuration: (t4) => {
           c2.set(Math.max(0, t4));
         }, setPlaying: (t4) => {
-          u2.set(t4);
-        }, setSeeking: (t4) => {
           d2.set(t4);
+        }, setSeeking: (t4) => {
+          u2.set(t4);
         }, setVolume: (t4) => {
           const e4 = Math.max(0, Math.min(1, t4));
           p2.set(e4);
@@ -27053,7 +27485,7 @@ section.turn:has([data-state="open"]) {
       })({ isPlaying: this.isPlayingSignal, currentTime: this.currentTimeSignal, duration: this.durationSignal, volume: this.volumeSignal, playbackRate: this.playbackRateSignal, isSeeking: this.seekingSignal });
       this.wavesurferState = i2, this.wavesurferActions = n2, this.timer = new S();
       const s2 = e2 ? void 0 : this.getMediaElement();
-      this.renderer = new C(this.options, s2), this.initPlayerEvents(), this.initRendererEvents(), this.initTimerEvents(), this.initReactiveState(), this.initPlugins();
+      this.renderer = new C(this.options, s2), this.initPlayerEvents(), this.initRendererEvents(), this.initTimerEvents(), this.initPlugins();
       const r2 = this.options.url || this.getSrc() || "";
       Promise.resolve().then((() => {
         this.emit("init");
@@ -27075,36 +27507,6 @@ section.turn:has([data-state="open"]) {
           }
         }
       })));
-    }
-    initReactiveState() {
-      this.reactiveCleanups.push((function(t2, e2) {
-        const i2 = [];
-        i2.push(c((() => {
-          const i3 = t2.isPlaying.value;
-          e2.emit(i3 ? "play" : "pause");
-        }), [t2.isPlaying])), i2.push(c((() => {
-          const i3 = t2.currentTime.value;
-          e2.emit("timeupdate", i3), t2.isPlaying.value && e2.emit("audioprocess", i3);
-        }), [t2.currentTime, t2.isPlaying])), i2.push(c((() => {
-          t2.isSeeking.value && e2.emit("seeking", t2.currentTime.value);
-        }), [t2.isSeeking, t2.currentTime]));
-        let n2 = false;
-        i2.push(c((() => {
-          t2.isReady.value && !n2 && (n2 = true, e2.emit("ready", t2.duration.value));
-        }), [t2.isReady, t2.duration])), i2.push(c((() => {
-          null === t2.audioBuffer.value && (n2 = false);
-        }), [t2.audioBuffer]));
-        let s2 = false;
-        return i2.push(c((() => {
-          const i3 = t2.isPlaying.value, n3 = t2.currentTime.value, r2 = t2.duration.value, o2 = r2 > 0 && n3 >= r2;
-          s2 && !i3 && o2 && e2.emit("finish"), s2 = i3 && o2;
-        }), [t2.isPlaying, t2.currentTime, t2.duration])), i2.push(c((() => {
-          const i3 = t2.zoom.value;
-          i3 > 0 && e2.emit("zoom", i3);
-        }), [t2.zoom])), () => {
-          i2.forEach(((t3) => t3()));
-        };
-      })(this.wavesurferState, { emit: this.emit.bind(this) }));
     }
     initPlayerEvents() {
       this.isPlaying() && (this.emit("play"), this.timer.start()), this.mediaSubscriptions.push(this.onMediaEvent("timeupdate", (() => {
@@ -27325,7 +27727,7 @@ section.turn:has([data-state="open"]) {
     }
     destroy() {
       var t2;
-      this._isDestroyed = true, this.emit("destroy"), null === (t2 = this.abortController) || void 0 === t2 || t2.abort(), this.plugins.forEach(((t3) => t3.destroy())), this.subscriptions.forEach(((t3) => t3())), this.unsubscribePlayerEvents(), this.reactiveCleanups.forEach(((t3) => t3())), this.reactiveCleanups = [], this.timer.destroy(), this.renderer.destroy(), super.destroy();
+      this._isDestroyed = true, this.emit("destroy"), null === (t2 = this.abortController) || void 0 === t2 || t2.abort(), this.plugins.forEach(((t3) => t3.destroy())), this.subscriptions.forEach(((t3) => t3())), this.unsubscribePlayerEvents(), this.timer.destroy(), this.renderer.destroy(), super.destroy();
     }
   }
   w.BasePlugin = class extends e$1 {
@@ -33029,7 +33431,7 @@ section.turn:has([data-state="open"]) {
     var space = /(?:\s|\/\/.*(?!.)|\/\*(?:[^*]|\*(?!\/))\*\/)/.source;
     var braces = /(?:\{(?:\{(?:\{[^{}]*\}|[^{}])*\}|[^{}])*\})/.source;
     var spread = /(?:\{<S>*\.{3}(?:[^{}]|<BRACES>)*\})/.source;
-    function re(source, flags) {
+    function re2(source, flags) {
       source = source.replace(/<S>/g, function() {
         return space;
       }).replace(/<BRACES>/g, function() {
@@ -33039,9 +33441,9 @@ section.turn:has([data-state="open"]) {
       });
       return RegExp(source, flags);
     }
-    spread = re(spread).source;
+    spread = re2(spread).source;
     Prism2.languages.jsx = Prism2.languages.extend("markup", javascript);
-    Prism2.languages.jsx.tag.pattern = re(
+    Prism2.languages.jsx.tag.pattern = re2(
       /<\/?(?:[\w.:-]+(?:<S>+(?:[\w.:$-]+(?:=(?:"(?:\\[\s\S]|[^\\"])*"|'(?:\\[\s\S]|[^\\'])*'|[^\s{'"/>=]+|<BRACES>))?|<SPREAD>))*<S>*\/?)?>/.source
     );
     Prism2.languages.jsx.tag.inside["tag"].pattern = /^<\/?[^\s>\/]*/;
@@ -33050,14 +33452,14 @@ section.turn:has([data-state="open"]) {
     Prism2.languages.jsx.tag.inside["comment"] = javascript["comment"];
     Prism2.languages.insertBefore("inside", "attr-name", {
       "spread": {
-        pattern: re(/<SPREAD>/.source),
+        pattern: re2(/<SPREAD>/.source),
         inside: Prism2.languages.jsx
       }
     }, Prism2.languages.jsx.tag);
     Prism2.languages.insertBefore("inside", "special-attr", {
       "script": {
         // Allow for two levels of nesting
-        pattern: re(/=<BRACES>/.source),
+        pattern: re2(/=<BRACES>/.source),
         alias: "language-javascript",
         inside: {
           "script-punctuation": {
@@ -34022,7 +34424,7 @@ section.turn:has([data-state="open"]) {
     const name = ALIASES[lang] ?? lang;
     const grammar = Prism$1.languages[name];
     if (!grammar) return null;
-    return purify.sanitize(Prism$1.highlight(code, grammar, name));
+    return purify_default.sanitize(Prism$1.highlight(code, grammar, name));
   }
   const highlight = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
