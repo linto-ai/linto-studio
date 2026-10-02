@@ -5,6 +5,7 @@
 export function showDiscussion(chatIntegration, discussionId, messages) {
   const chat = chatIntegration.core.chat
   chatIntegration.displayedStream = null
+  chatIntegration.errorActionPayloads.clear()
   chat.streamAbort()
   chat.setLoadingSession(false)
   chat.setActiveSession(discussionId)

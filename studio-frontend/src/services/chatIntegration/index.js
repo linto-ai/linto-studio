@@ -11,12 +11,22 @@ import { createDiscussion } from "./actions/createDiscussion"
 import { deleteDiscussion } from "./actions/deleteDiscussion"
 import { renameDiscussion } from "./actions/renameDiscussion"
 import { sendMessage } from "./actions/sendMessage"
-import { resetChat } from "./actions/resetChat"
+import { runErrorAction } from "./actions/runErrorAction"
+import { showDiscussion } from "./actions/showDiscussion"
 
 export class ChatIntegration {
-  constructor(core, { conversationId }) {
+  // Host dependencies: t, notify(type, message), isOrganizationAdmin() and
+  // openUpgradeModal(refusal) (a SaaS refusal body)
+  constructor(
+    core,
+    { conversationId, t, notify, isOrganizationAdmin, openUpgradeModal },
+  ) {
     this.core = core
     this.conversationId = conversationId
+    this.t = t
+    this.notify = notify
+    this.isOrganizationAdmin = isOrganizationAdmin
+    this.openUpgradeModal = openUpgradeModal
     // Responses landing after dispose() must leave the drawer alone: it
     // shows another conversation by then
     this.isDisposed = false
@@ -26,6 +36,9 @@ export class ChatIntegration {
     // The stream whose tokens reach the drawer; null once its discussion is
     // left (see showDiscussion)
     this.displayedStream = null
+    // What each shown error card's action needs, by message id (see
+    // showErrorReply)
+    this.errorActionPayloads = new Map()
 
     this.unsubscribes = [
       core.on("chat:loadSessions", () => this.loadDiscussions()),
@@ -40,6 +53,9 @@ export class ChatIntegration {
         this.renameDiscussion(sessionId, title),
       ),
       core.on("chat:send", ({ content }) => this.sendMessage(content)),
+      core.on("chat:errorAction", ({ messageId, actionId }) =>
+        this.runErrorAction(messageId, actionId),
+      ),
     ]
 
     // A drawer left open across a channel change shows the new discussions.
@@ -54,8 +70,8 @@ export class ChatIntegration {
     return loadDiscussionMessages(this, discussionId)
   }
 
-  createDiscussion(title) {
-    return createDiscussion(this, title)
+  createDiscussion() {
+    return createDiscussion(this)
   }
 
   deleteDiscussion(discussionId) {
@@ -70,12 +86,19 @@ export class ChatIntegration {
     return sendMessage(this, content)
   }
 
-  // The drawer keeps nothing of the conversation it leaves.
+  runErrorAction(messageId, actionId) {
+    return runErrorAction(this, messageId, actionId)
+  }
+
+  // The drawer keeps nothing of the conversation it leaves. core.chat is
+  // gone when the editor was torn down first: nothing left to clear.
   dispose() {
     this.isDisposed = true
     this.displayedStream = null
     this.unsubscribes.forEach((fn) => fn?.())
     this.unsubscribes = []
-    resetChat(this.core.chat)
+    if (!this.core.chat) return
+    showDiscussion(this, null, [])
+    this.core.chat.setSessions([])
   }
 }

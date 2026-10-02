@@ -1,5 +1,6 @@
 import { markRaw } from "vue"
 import USER_RIGHTS from "@/const/userRights.js"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
 import { apiGetUserRightFromConversation } from "@/api/conversation"
 import { ChannelAssistants } from "@/services/assistantsIntegration/ChannelAssistants.js"
@@ -117,6 +118,11 @@ export class ConversationEditorSession {
       notify: (type, message) =>
         this.store.dispatch("system/addNotification", { type, message }),
       openPublication: (request) => this.openPublication?.(request),
+      isOrganizationAdmin: () =>
+        this.store.getters["organizations/getUserRoleInOrganization"] ===
+        ORGANIZATION_ROLES.ADMINISTRATOR,
+      openUpgradeModal: (refusal) =>
+        this.store.dispatch("billing/openUpgradeModal", refusal),
     })
   }
 

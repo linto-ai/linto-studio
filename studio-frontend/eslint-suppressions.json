@@ -4,11 +4,6 @@
       "count": 1
     }
   },
-  "src/api/chat.js": {
-    "no-unused-vars": {
-      "count": 1
-    }
-  },
   "src/api/conversation.d/apiGetConversationAsDoc.js": {
     "no-unreachable": {
       "count": 1
@@ -25,11 +20,6 @@
   "src/api/kpi.js": {
     "no-undef": {
       "count": 10
-    }
-  },
-  "src/api/plan.js": {
-    "no-unused-vars": {
-      "count": 1
     }
   },
   "src/api/service.js": {
@@ -81,11 +71,6 @@
   },
   "src/components/AppSettingsModal.vue": {
     "vue/no-unused-components": {
-      "count": 1
-    }
-  },
-  "src/components/ChatDrawer.vue": {
-    "vue/no-reserved-component-names": {
       "count": 1
     }
   },
@@ -350,7 +335,7 @@
   },
   "src/components/PublicationSection.vue": {
     "no-unused-vars": {
-      "count": 3
+      "count": 1
     }
   },
   "src/components/QuickSessionNotif.vue": {
@@ -739,9 +724,6 @@
     }
   },
   "src/components/atoms/Avatar.vue": {
-    "no-unused-vars": {
-      "count": 2
-    },
     "vue/multi-word-component-names": {
       "count": 1
     }
@@ -1118,11 +1100,6 @@
       "count": 2
     }
   },
-  "src/store/chat.js": {
-    "no-unused-vars": {
-      "count": 2
-    }
-  },
   "src/store/folders/index.js": {
     "no-unused-vars": {
       "count": 2
@@ -1309,11 +1286,6 @@
     "no-unused-vars": {
       "count": 1
     },
-    "vue/no-unused-components": {
-      "count": 1
-    }
-  },
-  "src/views/OrganizationsUpdate.vue": {
     "vue/no-unused-components": {
       "count": 1
     }

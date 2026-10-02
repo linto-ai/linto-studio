@@ -1,5 +1,6 @@
 import { apiListChatDiscussions } from "@/api/chat"
 import { mapDiscussion } from "../helpers"
+import { notifyError } from "./notifyError"
 
 // Single-flight: reopening the drawer re-requests the list; share one GET.
 export function loadDiscussions(chatIntegration) {
@@ -15,11 +16,11 @@ export function loadDiscussions(chatIntegration) {
 
 async function fetchDiscussions(chatIntegration) {
   const { core, conversationId } = chatIntegration
-  try {
-    const discussions = await apiListChatDiscussions(conversationId)
-    if (chatIntegration.isDisposed) return
-    core.chat.setSessions(discussions.map(mapDiscussion))
-  } catch (e) {
-    console.error("[chat] load discussions failed", e)
+  const discussions = await apiListChatDiscussions(conversationId)
+  if (chatIntegration.isDisposed) return
+  if (!discussions) {
+    notifyError(chatIntegration, "chat.errors.load_discussions")
+    return
   }
+  core.chat.setSessions(discussions.map(mapDiscussion))
 }

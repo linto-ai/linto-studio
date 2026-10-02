@@ -1,11 +1,16 @@
 import { apiUpdateChatDiscussionTitle } from "@/api/chat"
+import { notifyError } from "./notifyError"
 
 export async function renameDiscussion(chatIntegration, discussionId, title) {
   const { core, conversationId } = chatIntegration
-  try {
-    await apiUpdateChatDiscussionTitle(conversationId, discussionId, title)
-    core.chat.updateSessionTitle(discussionId, title)
-  } catch (e) {
-    console.error("[chat] rename discussion failed", e)
+  const ok = await apiUpdateChatDiscussionTitle(
+    conversationId,
+    discussionId,
+    title,
+  )
+  if (!ok) {
+    notifyError(chatIntegration, "chat.errors.rename_discussion")
+    return
   }
+  core.chat.updateSessionTitle(discussionId, title)
 }

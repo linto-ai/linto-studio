@@ -20,7 +20,7 @@ export async function apiGetChatStatus() {
 
 /**
  * Create a new chat discussion for a conversation; without a title the
- * backend names it "New chat"
+ * backend names it "New chat". Null on failure.
  */
 export async function apiCreateChatDiscussion(conversationId, { title } = {}) {
   const body = {}
@@ -32,22 +32,23 @@ export async function apiCreateChatDiscussion(conversationId, { title } = {}) {
     body,
   )
   if (req.status === "success") return req.data
-  throw new Error(req.message || "Failed to create chat discussion")
+  return null
 }
 
 /**
- * List all chat discussions for a conversation (current user), newest first
+ * List all chat discussions for a conversation (current user), newest
+ * first. Null on failure.
  */
 export async function apiListChatDiscussions(conversationId) {
   const req = await sendRequest(chatDiscussionsUrl(conversationId), {
     method: "get",
   })
   if (req.status === "success") return req.data
-  return []
+  return null
 }
 
 /**
- * Get a chat discussion with all messages
+ * Get a chat discussion with all messages. Null on failure.
  */
 export async function apiGetChatDiscussion(conversationId, discussionId) {
   const req = await sendRequest(
@@ -55,11 +56,11 @@ export async function apiGetChatDiscussion(conversationId, discussionId) {
     { method: "get" },
   )
   if (req.status === "success") return req.data
-  throw new Error(req.message || "Failed to get chat discussion")
+  return null
 }
 
 /**
- * Update a chat discussion title
+ * Update a chat discussion title; true on success
  */
 export async function apiUpdateChatDiscussionTitle(
   conversationId,
@@ -71,12 +72,11 @@ export async function apiUpdateChatDiscussionTitle(
     { method: "patch" },
     { title },
   )
-  if (req.status === "success") return req.data
-  throw new Error(req.message || "Failed to update chat discussion title")
+  return req.status === "success"
 }
 
 /**
- * Delete a chat discussion and all its messages
+ * Delete a chat discussion and all its messages; true on success
  */
 export async function apiDeleteChatDiscussion(conversationId, discussionId) {
   const req = await sendRequest(
@@ -89,6 +89,9 @@ export async function apiDeleteChatDiscussion(conversationId, discussionId) {
 /**
  * Send a chat message with SSE streaming.
  * Uses native fetch (not axios) for streaming support.
+ * onError receives { status, data }: the HTTP status (null for an error
+ * event inside the stream, 0 for a network failure) and the error body
+ * (a SaaS refusal carries { code, reason, capability… }).
  */
 export async function apiSendChatMessage(
   conversationId,
@@ -110,8 +113,10 @@ export async function apiSendChatMessage(
     })
 
     if (!response.ok) {
-      const err = await response.text()
-      onError(err)
+      onError({
+        status: response.status,
+        data: await readErrorBody(response),
+      })
       return
     }
 
@@ -138,14 +143,25 @@ export async function apiSendChatMessage(
             const data = JSON.parse(line.slice(6))
             if (eventType === "token") onToken(data.content)
             else if (eventType === "done") onDone(data)
-            else if (eventType === "error") onError(data.error)
-          } catch (e) {
+            else if (eventType === "error") onError({ status: null, data })
+          } catch {
             /* ignore parse errors */
           }
         }
       }
     }
   } catch (err) {
-    onError(err.message || "Network error")
+    onError({ status: 0, data: { error: err.message || "Network error" } })
+  }
+}
+
+// A JSON error body (studio-api errors, SaaS refusals) parsed, anything
+// else wrapped as { error: text }
+async function readErrorBody(response) {
+  const text = await response.text()
+  try {
+    return JSON.parse(text)
+  } catch {
+    return { error: text }
   }
 }

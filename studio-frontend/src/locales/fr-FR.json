@@ -2261,20 +2261,22 @@
     "y": "Année | Années"
   },
   "chat": {
-    "title": "Chat",
-    "start": "Démarrer un chat",
-    "description": "Posez vos questions sur cette conversation",
-    "new_chat": "Nouveau chat",
-    "send": "Envoyer",
-    "placeholder": "Posez une question sur cette conversation...",
-    "history": "Historique",
-    "empty_state": "Posez une question pour démarrer la conversation",
-    "empty_chat": "Posez votre première question",
-    "rename": "Renommer",
-    "delete_session": "Supprimer",
-    "delete_confirm_inline": "Supprimer « {name} » ?",
-    "error": "Une erreur est survenue",
-    "streaming": "Génération de la réponse en cours..."
+    "errors": {
+      "reply_failed_title": "La réponse n'a pas pu être générée",
+      "reply_failed": "Une erreur est survenue lors de la communication avec l'assistant. Réessayez dans un instant.",
+      "refused_title": "L'assistant n'est pas disponible",
+      "quota_exceeded_admin": "Votre plan actuel ne permet plus d'envoyer de messages à l'assistant ce mois-ci. Passez à un plan supérieur pour continuer.",
+      "quota_exceeded_member": "Votre plan actuel ne permet plus d'envoyer de messages à l'assistant ce mois-ci. Contactez un administrateur de l'organisation pour passer à un plan supérieur.",
+      "unsent_title": "Le message n'a pas pu être envoyé",
+      "create_discussion": "La discussion n'a pas pu être créée. Réessayez dans un instant.",
+      "load_discussions": "Impossible de charger les discussions.",
+      "load_messages": "Impossible de charger cette discussion.",
+      "rename_discussion": "Impossible de renommer la discussion.",
+      "delete_discussion": "Impossible de supprimer la discussion.",
+      "actions": {
+        "upgrade": "Passer au plan supérieur"
+      }
+    }
   },
   "speaker_diarization": {
     "title": "Identification des locuteurs",

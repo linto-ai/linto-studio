@@ -6,15 +6,16 @@ import { ChatIntegration } from "@/services/chatIntegration"
 
 // The AI services, the chat and the exports of the editor act on the
 // conversation of the active channel: the media, or one of its channels.
+// options: the host dependencies of setupLLMServices and ChatIntegration
 export class ChannelAssistants {
-  constructor(core, llmServicesOptions) {
+  constructor(core, options) {
     this.core = core
-    this.llmServicesOptions = llmServicesOptions
+    this.options = options
     this.isDestroyed = false
     this.chatEnabled = false
     this.disposeLLMServices = null
     this.chat = null
-    this.setupConversation(llmServicesOptions.conversationId)
+    this.setupConversation(options.conversationId)
     this.offChannelChange = core.on("channel:change", ({ channelId }) =>
       this.setupConversation(channelId),
     )
@@ -24,25 +25,28 @@ export class ChannelAssistants {
     this.disposeConversation()
     this.conversationId = conversationId
     this.disposeLLMServices = setupLLMServices(this.core, {
-      ...this.llmServicesOptions,
+      ...this.options,
       conversationId,
     }).dispose
     if (this.chatEnabled) this.setupConversationChat()
   }
 
   setupConversationChat() {
+    const { t, notify, isOrganizationAdmin, openUpgradeModal } = this.options
     this.chat = new ChatIntegration(this.core, {
       conversationId: this.conversationId,
+      t,
+      notify,
+      isOrganizationAdmin,
+      openUpgradeModal,
     })
   }
 
   // Wires the chat only when the backend offers it, so the editor's "ask"
   // button stays hidden otherwise (core.chat absent).
   async enableChatIfAvailable() {
-    const { enabled } = await apiGetChatStatus().catch(() => ({
-      enabled: false,
-    }))
-    if (!enabled || this.isDestroyed) return
+    const status = await apiGetChatStatus()
+    if (!status?.enabled || this.isDestroyed) return
     this.core.use(createChatPlugin())
     this.chatEnabled = true
     this.setupConversationChat()

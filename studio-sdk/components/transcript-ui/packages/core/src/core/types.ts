@@ -76,6 +76,8 @@ export interface CoreEventMap {
   "chat:deleteSession": { sessionId: string }
   "chat:renameSession": { sessionId: string; title: string }
   "chat:send": { content: string }
+  /** The action button of an error message (see ChatMessageError) was clicked. */
+  "chat:errorAction": { messageId: string; actionId: string }
   destroy: void
 }
 
@@ -634,6 +636,17 @@ export interface ChatMessage {
   tokenCount?: number
   /** True only for the virtual in-flight assistant message during streaming. */
   streaming?: boolean
+  /** Set on an assistant message that reports a failure instead of a reply:
+   *  rendered as an error card, its content is ignored. */
+  error?: ChatMessageError
+}
+
+/** A failure reported in the thread. The host writes the texts (already
+ *  translated) and owns the action: clicking it emits "chat:errorAction". */
+export interface ChatMessageError {
+  title: string
+  description?: string
+  action?: { id: string; label: string; icon?: string }
 }
 
 export interface ChatSession {
