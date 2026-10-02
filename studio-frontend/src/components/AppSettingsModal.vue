@@ -159,7 +159,7 @@
           v-if="selectedTab === 'organization-information'"
           class="app-settings__section">
           <UpdateOrganizationForm :currentOrganization="currentOrganization" />
-          <DevSubscribeButtons :currentOrganization="currentOrganization" />
+          <!-- <DevSubscribeButtons :currentOrganization="currentOrganization" /> -->
           <UpdateOrganizationDeletion
             v-if="isAdmin"
             :currentOrganization="currentOrganization" />
