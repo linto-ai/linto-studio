@@ -35,6 +35,7 @@ import {
   computeTurnEndDate,
 } from "@/tools/computeTurnTime.js"
 import { getEnv } from "@/tools/getEnv"
+import { readBrandColor } from "@/tools/readBrandColor"
 import { bus } from "@/tools/eventBus.js"
 import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
 import { customDebug } from "@/tools/customDebug"
@@ -46,16 +47,6 @@ const THEME_KEY = "editor.theme"
 // Same data-theme convention the app's own stylesheets already use.
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme
-}
-
-// The editor cannot read the app's palette through CSS (its own tokens sit
-// closer to its content than anything we set on <linto-editor>), so the brand
-// colour is pushed. It is re-read after every theme switch: each theme
-// declares its own primary for dark.
-function readBrandColor() {
-  return getComputedStyle(document.body)
-    .getPropertyValue("--primary-color")
-    .trim()
 }
 
 // Dark is scoped to the live pages, so the document goes back to its default
@@ -278,6 +269,7 @@ export default {
       const storedTheme = readStoredTheme()
       if (storedTheme !== null) core.theme.value = storedTheme
       applyTheme(core.theme.value)
+      // Re-read after every theme switch: each theme declares its own primary
       core.primaryColor.value = readBrandColor() || null
       this.offTheme = core.on("theme:change", ({ theme }) => {
         applyTheme(theme)

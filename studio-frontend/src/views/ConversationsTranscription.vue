@@ -44,6 +44,7 @@ import {
 } from "@/api/conversation"
 import { customDebug } from "@/tools/customDebug"
 import { computeEpochMs } from "@/tools/computeEpochMs.js"
+import { readBrandColor } from "@/tools/readBrandColor"
 
 const debug = customDebug("vue:editor")
 export default {
@@ -119,6 +120,9 @@ export default {
       if (this.isDestroyed || !el) return
       const { core } = el
       this.core = markRaw(core)
+      // The editor's theme tokens can't be overridden from outside the web
+      // component: the brand colour is pushed (no theme switch here)
+      core.primaryColor.value = readBrandColor() || null
       core.use(
         createAudioPlugin({
           resolveSrc: async (source) => {

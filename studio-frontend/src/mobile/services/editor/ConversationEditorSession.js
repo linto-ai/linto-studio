@@ -6,6 +6,7 @@ import { apiGetUserRightFromConversation } from "@/api/conversation"
 import { ChannelAssistants } from "@/services/assistantsIntegration/ChannelAssistants.js"
 import { loadSourceLastUpdate } from "@/services/editorIntegration/loadSourceLastUpdate.js"
 import { loadEditor } from "@/mobile/services/editor/loadEditor.js"
+import { readBrandColor } from "@/tools/readBrandColor"
 import {
   buildAudioPlugin,
   buildTranscriptionEditorPlugin,
@@ -53,6 +54,9 @@ export class ConversationEditorSession {
       this.module
     const core = markRaw(element.core)
     this.core = core
+    // The editor's theme tokens can't be overridden from outside the web
+    // component: the brand colour is pushed (no theme switch here)
+    core.primaryColor.value = readBrandColor("--m-primary") || null
     const refetch = (translationId) =>
       refetchTranslation(core, translationId, mapApiTurns)
     core.use(buildAudioPlugin(createAudioPlugin))
