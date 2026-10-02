@@ -12,7 +12,7 @@
           <span class="menu-org-switcher__org-name">{{ orgName }}</span>
           <IsCloud>
             <Chip
-              v-if="!isUnmetered"
+              v-if="isFree && !isUnmetered"
               :value="planLabel"
               class="menu-org-switcher__plan" />
           </IsCloud>
@@ -67,7 +67,7 @@ export default {
       currentOrgScope: "getCurrentOrganizationScope",
       orgName: "getCurrentOrganizationDisplayName",
     }),
-    ...mapGetters("billing", ["planLabel", "isUnmetered"]),
+    ...mapGetters("billing", ["planLabel", "isFree", "isUnmetered"]),
     userAvatar() {
       return userAvatar(this.userInfo)
     },
