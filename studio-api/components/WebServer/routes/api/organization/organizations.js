@@ -134,6 +134,8 @@ module.exports = (webserver) => {
       method: "patch",
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
+      // SaaS: roles are frozen without a Business plan. No-op in OSS.
+      requireEntitlement: "collaboration",
       controller: updateUserFromOrganization,
     },
     {
