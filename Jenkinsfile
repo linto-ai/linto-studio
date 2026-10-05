@@ -125,6 +125,13 @@ def publishSdk(distTag) {
 
 // For linto studio, the folder name have the same name of the docker image
 def performBuildForFile(changedFiles, version, commit_sha) {
+    // Triggered by a push on the plugin repository: nothing changed here, only the SaaS image is stale
+    if (params.SAAS_ONLY) {
+        echo 'SAAS_ONLY build. Running specific build steps for studio-api-saas only...'
+        buildSaasImage(version)
+        return
+    }
+
     if (changedFiles.contains('studio-api')) {
         echo 'Files in studio-api path are modified. Running specific build steps for studio-api...'
         buildDockerfile('studio-api', version, commit_sha)
@@ -200,6 +207,13 @@ pipeline {
     environment {
         DOCKER_HUB_REPO = "lintoai"
         DOCKER_HUB_CRED = 'docker-hub-credentials'
+    }
+    options {
+        // a SAAS_ONLY build must never race the studio-api push of a regular build of the same branch
+        disableConcurrentBuilds()
+    }
+    parameters {
+        booleanParam(name: 'SAAS_ONLY', defaultValue: false, description: 'Rebuild only the studio-api-saas image (set by the plugin repository pipeline)')
     }
 
     stages {
