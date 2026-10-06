@@ -231,7 +231,7 @@ export default function createMediaModule(scope, status = "done") {
             signal,
           )
 
-          if (!data) return // aborted
+          if (!data) return false // aborted
 
           if (append) commit("appendMedias", data.list)
           else {
@@ -246,6 +246,7 @@ export default function createMediaModule(scope, status = "done") {
           if (getters["autoselectMedias"]) {
             commit("setSelectedMedias", getters["all"])
           }
+          return true
         } catch (error) {
           console.error(error)
           dispatch(
@@ -256,6 +257,7 @@ export default function createMediaModule(scope, status = "done") {
             },
             { root: true },
           )
+          return false
         }
       },
       async loadStatusCount({ commit, getters }) {
@@ -279,7 +281,7 @@ export default function createMediaModule(scope, status = "done") {
       },
       async loadNextPage({ state, dispatch }, { folderId } = {}) {
         const nextPage = state.pagination.page + 1
-        await dispatch("load", { page: nextPage, append: true, folderId })
+        return dispatch("load", { page: nextPage, append: true, folderId })
       },
       setSearchQuery({ commit }, query) {
         commit("setSearchQuery", query)

@@ -64,11 +64,15 @@
               :key="`media-explorer-item-${media._id}-${index}`"
               :media="media"
               :selected-media-ids.sync="selectedMediaIds"
-              :ref="'mediaItem' + index"
               @share="handleShareAction"
               @details="handleDetailsAction"
               class="media-explorer__body__item" />
           </div>
+          <div
+            v-if="!loading"
+            ref="loadMoreSentinel"
+            class="media-explorer__load-more-sentinel"
+            aria-hidden="true" />
           <div v-if="loadingNextPage" class="loading-next-page">
             <p>Chargement de la page suivante</p>
           </div>
@@ -214,6 +218,12 @@ export default {
       if (cleaned.length !== this.selectedMediaIds.length) {
         this.selectedMediaIds = cleaned
       }
+      // The list also changes outside of the loading flags (websocket
+      // prepend/delete, silent reload): re-observe so a sentinel that is
+      // already visible triggers the next page.
+      if (this.hasMore && !this.loading && !this.loadingNextPage) {
+        this.setupIntersectionObserver()
+      }
     },
     "$route.fullPath"() {
       this.selectedMediaIds = []
@@ -278,7 +288,7 @@ export default {
       this.observer = new IntersectionObserver(this.handleIntersection, options)
 
       this.$nextTick(() => {
-        this.observeMediaItems()
+        this.observeLoadMoreSentinel()
       })
     },
 
@@ -290,13 +300,9 @@ export default {
       })
     },
 
-    observeMediaItems() {
-      if (!this.observer || this.medias.length === 0) return
-      const index = this.medias.length - 1
-      const itemRef = this.$refs["mediaItem" + index]
-      if (itemRef && itemRef[0]?.$el) {
-        this.observer.observe(itemRef[0].$el)
-      }
+    observeLoadMoreSentinel() {
+      if (!this.observer || !this.$refs.loadMoreSentinel) return
+      this.observer.observe(this.$refs.loadMoreSentinel)
     },
 
     handleRightPanelResize(width) {
@@ -403,6 +409,11 @@ export default {
 
 .media-explorer__body__item {
   margin: 0.25rem 0;
+}
+
+.media-explorer__load-more-sentinel {
+  height: 1px;
+  flex: none;
 }
 
 .empty-state {
