@@ -3,14 +3,29 @@
     <h2>{{ $t("quick_session.creation.transcription_settings_title") }}</h2>
     <!-- -- -- -- -- OFFLINE Transcription -- -- -- -- -- -->
     <NotificationBanner
+      v-if="transcriberProfiles.length === 0 && isLiveCreditExhausted"
+      variant="warning"
+      icon="warning"
+      align="start">
+      {{ $t("quick_session.creation.only_offline_live_credit_exhausted") }}
+      <template v-if="!canBuyLivePack">
+        {{ $t("quick_session.creation.live_pack_ask_admin") }}
+      </template>
+      <template v-if="canBuyLivePack" #actions>
+        <Button
+          variant="primary"
+          size="sm"
+          icon="plus"
+          @click="openPackPicker('live')">
+          {{ $t("billing.settings.buy_pack") }}
+        </Button>
+      </template>
+    </NotificationBanner>
+    <NotificationBanner
+      v-else-if="transcriberProfiles.length === 0"
       variant="info"
-      icon="info"
-      v-if="transcriberProfiles.length === 0">
-      {{
-        isLiveCreditExhausted
-          ? $t("quick_session.creation.only_offline_live_credit_exhausted")
-          : $t("quick_session.creation.only_offline_available")
-      }}
+      icon="info">
+      {{ $t("quick_session.creation.only_offline_available") }}
     </NotificationBanner>
     <section>
       <FormCheckbox
@@ -100,7 +115,8 @@
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex"
+import { mapActions, mapGetters } from "vuex"
+import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { testService } from "@/tools/fields/testService.js"
 import { getEnv } from "@/tools/getEnv"
@@ -120,6 +136,7 @@ import Chip from "@/components/atoms/Chip.vue"
 import NotificationBanner from "./atoms/NotificationBanner.vue"
 
 export default {
+  mixins: [orgaRoleMixin],
   props: {
     transcriberProfiles: {
       type: Array,
@@ -319,6 +336,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions("settings", ["openPackPicker"]),
     sendUpdate() {
       this.$emit("input", {
         subInVisio: this.fieldSubInVisio.value,
@@ -336,6 +354,14 @@ export default {
   },
   computed: {
     ...mapGetters("billing", ["isLiveCreditExhausted"]),
+    // Buying is done in the billing tab, open to the org admins only (and
+    // not while impersonating, where it is read-only)
+    canBuyLivePack() {
+      return (
+        this.isAdmin &&
+        !this.$store.getters["organizations/isImpersonatingCurrentOrganization"]
+      )
+    },
     isCompatibleWithDiarization() {
       return this.selectedProfile?.config?.hasDiarization
     },

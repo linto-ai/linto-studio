@@ -1987,10 +1987,11 @@
       "live_options_title": "Transcription options",
       "offline_transcription_label": "Offline transcription",
       "only_offline_available": "Only offline transcription is available in your organisation",
-      "only_offline_live_credit_exhausted": "Your live minutes are used up: only offline transcription is available. You can buy more from the Billing tab.",
+      "only_offline_live_credit_exhausted": "Live transcription credit spent: only transcription after the recording is available.",
       "keep_audio_disabled_because_offline": "Audio should be saved when offline transcription is enabled",
       "live_or_offline_should_be_selected": "You must select either live or offline transcription",
-      "start_error": "Couldn't start the session. Please try again in a moment."
+      "start_error": "Couldn't start the session. Please try again in a moment.",
+      "live_pack_ask_admin": "An organization administrator can buy a pack."
     },
     "setup_microphone": {
       "waiting_permission_title": "Waiting permission to access your microphone",

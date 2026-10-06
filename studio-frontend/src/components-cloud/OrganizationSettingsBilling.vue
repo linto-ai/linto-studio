@@ -101,7 +101,7 @@
               icon="plus"
               :disabled="!canBuyPack"
               :loading="pendingRedirect === 'pack'"
-              @click="openPackPicker">
+              @click="openPackPicker()">
               {{ $t("billing.settings.buy_pack") }}
             </Button>
           </template>
@@ -185,7 +185,7 @@
 
     <PackPickerModal
       v-model="isPackPickerOpen"
-      :packs="purchasablePacks"
+      :packs="pickerPacks"
       @submit="buyPack" />
   </div>
 </template>
@@ -239,6 +239,8 @@ export default {
       packs: [],
       creditLots: [],
       isPackPickerOpen: false,
+      // Kind of pack the purchase is limited to, or null for every kind
+      packPickerKind: null,
       // pack | portal | payment_method: the Stripe page being opened
       pendingRedirect: null,
     }
@@ -268,6 +270,14 @@ export default {
     },
     purchasablePacks() {
       return computePurchasablePacks(this.packs, this.view.plan)
+    },
+    // The packs the purchase offers: one kind when asked for one (and sold
+    // to this plan), every kind otherwise
+    pickerPacks() {
+      const ofKind = this.purchasablePacks.filter(
+        (pack) => pack.kind === this.packPickerKind,
+      )
+      return ofKind.length ? ofKind : this.purchasablePacks
     },
     // A locked team org can't use any quota, bought minutes included
     canBuyPack() {
@@ -371,6 +381,15 @@ export default {
       this.overviewFailed = !overview
       this.packs = packs || []
       this.loading = false
+      this.applyPackPickerRequest()
+    },
+    // A shortcut elsewhere (the "live credit spent" banner) asked for the
+    // purchase of a kind of pack: open it once the catalog is there.
+    applyPackPickerRequest() {
+      const kind = this.$store.getters["settings/requestedPackKind"]
+      if (!kind) return
+      this.$store.dispatch("settings/consumePackPickerRequest")
+      if (this.canBuyPack) this.openPackPicker(kind)
     },
     // The packs are a section of their own: without them the rest of the tab
     // still works, so a failure just shows the section empty.
@@ -387,7 +406,8 @@ export default {
         label: this.$t(labelKey, { date: dateLabel }),
       }
     },
-    openPackPicker() {
+    openPackPicker(kind = null) {
+      this.packPickerKind = kind
       this.isPackPickerOpen = true
     },
     async buyPack(packKey) {
