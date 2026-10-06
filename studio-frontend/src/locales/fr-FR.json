@@ -30,7 +30,7 @@
       "upgrade_premium": "Passer en Premium",
       "manage_subscription": "Gérer l'abonnement",
       "stripe_error": "Impossible d'ouvrir la page de paiement. Réessayez dans un instant.",
-      "pack_bought": "Paiement reçu : les minutes seront créditées dans quelques instants.",
+      "pack_bought": "Paiement reçu : vos heures seront créditées dans quelques instants.",
       "pack_cancelled": "Achat annulé, aucun montant n'a été débité.",
       "packs": {
         "title": "Acheter un pack",
@@ -46,8 +46,8 @@
           "transcription": "Transcription de fichiers"
         },
         "kind": {
-          "live": "Pass direct",
-          "transcription": "Pass fichiers"
+          "live": "Micro et visio en direct",
+          "transcription": "Transcription de fichiers"
         },
         "price": "Prix",
         "rate": "Tarif"
@@ -90,14 +90,15 @@
       "admin_only": "Seuls les administrateurs de l'organisation ont accès à la facturation.",
       "lots": {
         "title": "Packs",
-        "offered": "{kind} offert",
+        "offered": "Offert",
         "exhausted": "Épuisé",
         "remaining": "restante | restantes",
         "consumed_label": "Minutes consommées",
         "consumed": "Consommé",
         "expires_on": "Expire le",
-        "subtitle": "Minutes en plus · ne se renouvellent pas",
-        "empty": "Aucun pack pour le moment. Le direct (micro et visioconférence) fonctionne avec des packs."
+        "subtitle": "Heures prépayées, en plus de votre offre",
+        "empty": "Aucun pack en cours. La transcription en direct fonctionne avec des packs.",
+        "consumed_of": "{consumed} sur {total}"
       }
     },
     "unlimited": "Illimité",
@@ -2432,5 +2433,9 @@
       "Les rues de la vieille ville racontent des histoires d'un autre temps. Chaque pierre, chaque façade porte la mémoire des générations passées qui ont façonné ce lieu unique.",
       "Ce matin, la rosée perle sur les pétales des fleurs du jardin. Le parfum délicat des roses se mêle à celui du café fraîchement préparé, annonçant une belle journée."
     ]
+  },
+  "horizontal_scroller": {
+    "previous": "Faire défiler vers la gauche",
+    "next": "Faire défiler vers la droite"
   }
 }

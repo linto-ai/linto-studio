@@ -111,11 +111,15 @@
           class="organization-billing__muted">
           {{ $t("billing.settings.no_pack_available") }}
         </p>
-        <ul v-if="packLots.length" class="organization-billing__lot-list">
+        <HorizontalScroller
+          v-if="packLots.length"
+          tag="ul"
+          class="organization-billing__lot-list"
+          :label="$t('billing.settings.lots.title')">
           <li v-for="lot in packLots" :key="lot.id">
             <PackLot :lot="lot" />
           </li>
-        </ul>
+        </HorizontalScroller>
         <p v-else class="organization-billing__empty">
           {{ $t("billing.settings.lots.empty") }}
         </p>
@@ -204,6 +208,7 @@ import { computePaymentMethodSummary } from "@/tools/computePaymentMethodSummary
 import { computePurchasablePacks } from "@/tools/computePurchasablePacks"
 import { formatFullDate } from "@/tools/formatFullDate"
 import InvoiceTable from "@/components-cloud/InvoiceTable.vue"
+import HorizontalScroller from "@/components/molecules/HorizontalScroller.vue"
 import SectionHeading from "@/components/molecules/SectionHeading.vue"
 import PackLot from "@/components-cloud/PackLot.vue"
 import PackPickerModal from "@/components-cloud/PackPickerModal.vue"
@@ -216,6 +221,7 @@ export default {
   name: "OrganizationSettingsBilling",
   components: {
     InvoiceTable,
+    HorizontalScroller,
     SectionHeading,
     PackLot,
     PackPickerModal,
@@ -447,35 +453,9 @@ export default {
     margin-left: auto;
   }
 
-  // Side by side; on a narrow screen one row that scrolls sideways, each
-  // card snapping into place, the next one peeking to show there is more.
-  &__lot-list {
+  // The card sets its own width; the item only passes the row height on
+  &__lot-list li {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--medium-gap);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-
-    @media (max-width: 768px) {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-      scroll-snap-type: x mandatory;
-      padding-bottom: var(--small-gap);
-
-      > li {
-        flex-shrink: 0;
-        scroll-snap-align: start;
-      }
-    }
-
-    // The card sets its own width; the item only passes the row height on.
-    // No global li margin: it would leave the first cards shorter.
-    > li {
-      display: flex;
-      margin: 0;
-    }
   }
 
   &__section + &__section {

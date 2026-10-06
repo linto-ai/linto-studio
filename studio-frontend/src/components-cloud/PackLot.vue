@@ -5,9 +5,10 @@
     :icon="look.icon"
     :motif="look.motif"
     :variant="lot.isExhausted ? 'faded' : 'default'"
-    :label="label"
+    :label="kindLabel"
     :amount="amount"
     :caption="caption"
+    :badge="badge"
     :details="details">
     <UsageBar
       :value="lot.consumed"
@@ -45,13 +46,13 @@ export default {
     isOffered() {
       return OFFERED_SOURCES.includes(this.lot.source)
     },
-    label() {
+    // What the pack is for; the section title already says it is a pack
+    kindLabel() {
       const kindKey = `billing.settings.packs.kind.${this.lot.kind}`
-      const kind = this.$te(kindKey) ? this.$t(kindKey) : this.lot.kind
-      const name = this.isOffered
-        ? this.$t("billing.settings.lots.offered", { kind })
-        : kind
-      return `${name} · ${formatMinutesDuration(this.lot.minutes)}`
+      return this.$te(kindKey) ? this.$t(kindKey) : this.lot.kind
+    },
+    badge() {
+      return this.isOffered ? this.$t("billing.settings.lots.offered") : null
     },
     amount() {
       if (this.lot.isExhausted) {
@@ -71,7 +72,10 @@ export default {
       return [
         {
           label: this.$t("billing.settings.lots.consumed"),
-          value: formatMinutesDuration(this.lot.consumed),
+          value: this.$t("billing.settings.lots.consumed_of", {
+            consumed: formatMinutesDuration(this.lot.consumed),
+            total: formatMinutesDuration(this.lot.minutes),
+          }),
         },
         {
           label: this.$t("billing.settings.lots.expires_on"),

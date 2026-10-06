@@ -29,7 +29,7 @@
 
     <span class="pack-card__header">
       <Avatar :icon="icon" tag="span" size="md" circle padded />
-      <span class="pack-card__label">{{ label }}</span>
+      <span v-if="label" class="pack-card__label">{{ label }}</span>
       <span v-if="$slots['header-end']" class="pack-card__header-end">
         <slot name="header-end" />
       </span>
@@ -90,7 +90,8 @@ export default {
     // shade of it, inverted together by the dark theme.
     color: { type: String, required: true },
     icon: { type: String, required: true },
-    label: { type: String, required: true },
+    // Small caps title next to the icon; none when the context names it
+    label: { type: String, default: null },
     // faded: a dashed, muted card, for a pack that no longer counts (spent)
     variant: {
       type: String,
