@@ -36,6 +36,7 @@ import CopyButton from "./CopyButton.vue"
 import FavoriteStar from "./FavoriteStar.vue"
 import QuotaMeter from "./QuotaMeter.vue"
 import UsageTile from "./UsageTile.vue"
+import UsageBar from "./UsageBar.vue"
 import SearchInput from "./SearchInput.vue"
 
 const components = [
@@ -77,6 +78,7 @@ const components = [
   FavoriteStar,
   QuotaMeter,
   UsageTile,
+  UsageBar,
   SearchInput,
 ]
 

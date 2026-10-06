@@ -1,6 +1,16 @@
 <template>
   <div class="usage-tile">
-    <span class="usage-tile__label">{{ label }}</span>
+    <span class="usage-tile__header">
+      <Avatar
+        v-if="icon"
+        :icon="icon"
+        tag="span"
+        size="md"
+        circle
+        padded
+        tone="soft" />
+      <span class="usage-tile__label">{{ label }}</span>
+    </span>
     <strong class="usage-tile__value">{{ value }}</strong>
     <span v-if="detail" class="usage-tile__detail">{{ detail }}</span>
     <!-- Bottom-anchored extra content (a progress bar, an expiry line…). -->
@@ -18,6 +28,8 @@ export default {
     // Pre-formatted, so the tile stays agnostic of units and locales.
     value: { type: String, required: true },
     detail: { type: String, default: null },
+    // Phosphor icon name, shown in a round avatar before the label
+    icon: { type: String, default: null },
   },
 }
 </script>
@@ -31,6 +43,12 @@ export default {
   border: 1px solid var(--neutral-20);
   border-radius: 4px;
   background: var(--background-primary);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--small-gap);
+  }
 
   &__label {
     font-size: 0.85rem;

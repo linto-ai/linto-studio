@@ -13,7 +13,7 @@
         "ends_on": "Abonnement résilié : il prend fin le {date}, aucune autre facture ne sera émise."
       },
       "usage": {
-        "title": "Consommation",
+        "title": "Inclus dans votre offre",
         "load_error": "Impossible de charger la consommation et l'offre de l'organisation.",
         "renews_on": "Renouvellement le {date}",
         "renews_and_resets_on": "Renouvellement et remise à zéro des quotas le {date}",
@@ -34,8 +34,8 @@
       "pack_cancelled": "Achat annulé, aucun montant n'a été débité.",
       "packs": {
         "title": "Acheter un pack",
-        "subtitle": "Paiement unique, sans abonnement.",
-        "subtitle_with_validity": "Paiement unique, sans abonnement · minutes valables {validity}.",
+        "intro": "Paiement unique, sans abonnement.",
+        "intro_with_validity": "Paiement unique, sans abonnement · pack valable {validity}.",
         "confirm": "Continuer vers le paiement",
         "pay": "Payer {price}",
         "price_excl_tax": "{price} HT",
@@ -45,9 +45,12 @@
           "live": "Microphone et visioconférence en direct",
           "transcription": "Transcription de fichiers"
         },
-        "hint": {
-          "transcription": "Utilisées une fois le quota mensuel épuisé."
-        }
+        "kind": {
+          "live": "Pass direct",
+          "transcription": "Pass fichiers"
+        },
+        "price": "Prix",
+        "rate": "Tarif"
       },
       "overview_load_error": "Impossible de charger le paiement et les factures.",
       "payment": {
@@ -84,7 +87,18 @@
         "pay": "Payer",
         "pay_of": "Payer la facture {name}"
       },
-      "admin_only": "Seuls les administrateurs de l'organisation ont accès à la facturation."
+      "admin_only": "Seuls les administrateurs de l'organisation ont accès à la facturation.",
+      "lots": {
+        "title": "Packs",
+        "offered": "{kind} offert",
+        "exhausted": "Épuisé",
+        "remaining": "restante | restantes",
+        "consumed_label": "Minutes consommées",
+        "consumed": "Consommé",
+        "expires_on": "Expire le",
+        "subtitle": "Minutes en plus · ne se renouvellent pas",
+        "empty": "Aucun pack pour le moment. Le direct (micro et visioconférence) fonctionne avec des packs."
+      }
     },
     "unlimited": "Illimité",
     "quota_limit_this_month": "sur {limit} ce mois",
@@ -116,12 +130,6 @@
       "ai": "Générations IA",
       "chat": "Messages chat",
       "api": "Appels API"
-    },
-    "live": {
-      "title": "Microphone et visioconférence",
-      "expires": "Prochaine expiration",
-      "no_renewal": "Prépayé, ne se renouvelle pas",
-      "unmetered": "Les minutes de live ne sont pas comptées pour cette organisation."
     },
     "member_usage": {
       "title": "Usage par membre",

@@ -144,24 +144,11 @@ test("keeps the displayed quotas only, in display order", (t) => {
       ["ai.chat", "billing.settings.meter.chat"],
     ],
   )
+  t.true(view.meters.every((meter) => typeof meter.icon === "string"))
   t.is(view.meters[0].used, 30)
   t.is(view.meters[0].limit, 120)
   t.is(view.meters[0].unit, "minutes")
   t.is(view.quotaResetAt, RESET_AT)
-})
-
-test("the live balance gets its own tile", (t) => {
-  const view = computeOrganizationBillingView({
-    organization: { personal: true },
-    usage: usageFor("free_payg"),
-    subscription: null,
-    plans: PLANS,
-  })
-  t.deepEqual(view.liveCredit, {
-    balance: 45,
-    expiresAt: "2027-09-01",
-    unmetered: false,
-  })
 })
 
 test("a locked team organization is reported", (t) => {
@@ -187,6 +174,5 @@ test("an organization without usage yet falls back to the free plan", (t) => {
   t.false(view.canUpgradeToPremium)
   t.false(view.isUnmetered)
   t.deepEqual(view.meters, [])
-  t.is(view.liveCredit, null)
   t.is(view.quotaResetAt, null)
 })
