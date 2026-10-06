@@ -13,12 +13,24 @@ const UNMETERED_PLAN = {
   cancelsAtPeriodEnd: false,
 }
 
-// Quotas shown on the billing tab, in display order, with their label.
-// api.calls is left out: it only matters to API integrators.
+// Quotas shown on the billing tab, in display order, with their label and
+// icon. api.calls is left out: it only matters to API integrators.
 const DISPLAYED_METERS = [
-  { key: "import.minutes", labelKey: "billing.settings.meter.import" },
-  { key: "ai.generations", labelKey: "billing.settings.meter.ai" },
-  { key: "ai.chat", labelKey: "billing.settings.meter.chat" },
+  {
+    key: "import.minutes",
+    labelKey: "billing.settings.meter.import",
+    icon: "file-audio",
+  },
+  {
+    key: "ai.generations",
+    labelKey: "billing.settings.meter.ai",
+    icon: "sparkle",
+  },
+  {
+    key: "ai.chat",
+    labelKey: "billing.settings.meter.chat",
+    icon: "chat-circle-dots",
+  },
 ]
 
 /**
@@ -60,7 +72,6 @@ export function computeOrganizationBillingView({
     // (manual, comp, managed) has none.
     canManageSubscription: !isFree && !!subscription?.stripeSubscriptionId,
     meters,
-    liveCredit: computeLiveCredit(usage?.live),
     quotaResetAt: meters.find((meter) => meter.resetAt)?.resetAt || null,
     renewalAt: subscription?.currentPeriodEnd || null,
     cancelsAtPeriodEnd: subscription?.cancelAtPeriodEnd === true,
@@ -70,19 +81,8 @@ export function computeOrganizationBillingView({
 
 function computeDisplayedMeters(capabilities) {
   const meters = computeQuotaMeters(capabilities)
-  return DISPLAYED_METERS.map(({ key, labelKey }) => {
+  return DISPLAYED_METERS.map(({ key, labelKey, icon }) => {
     const meter = meters.find((m) => m.key === key)
-    return meter ? { ...meter, labelKey } : null
+    return meter ? { ...meter, labelKey, icon } : null
   }).filter(Boolean)
-}
-
-// usage.live is an org-wide prepaid balance, not a per-period quota: it gets
-// its own tile rather than a used/limit meter.
-function computeLiveCredit(live) {
-  if (!live) return null
-  return {
-    balance: live.balance || 0,
-    expiresAt: live.expiresAt || null,
-    unmetered: live.unmetered === true,
-  }
 }

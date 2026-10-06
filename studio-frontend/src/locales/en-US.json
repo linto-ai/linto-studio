@@ -13,7 +13,7 @@
         "ends_on": "Subscription cancelled: it ends on {date}, no further invoice will be issued."
       },
       "usage": {
-        "title": "Usage",
+        "title": "Included in your plan",
         "load_error": "Couldn't load the organization's usage and plan.",
         "renews_on": "Renews on {date}",
         "renews_and_resets_on": "Renews and resets quotas on {date}",
@@ -34,8 +34,8 @@
       "pack_cancelled": "Purchase cancelled, you were not charged.",
       "packs": {
         "title": "Buy a pack",
-        "subtitle": "One-time payment, no subscription.",
-        "subtitle_with_validity": "One-time payment, no subscription · minutes valid for {validity}.",
+        "intro": "One-time payment, no subscription.",
+        "intro_with_validity": "One-time payment, no subscription · pack valid for {validity}.",
         "confirm": "Continue to payment",
         "pay": "Pay {price}",
         "price_excl_tax": "{price} excl. tax",
@@ -45,9 +45,12 @@
           "live": "Live microphone and video conferencing",
           "transcription": "File transcription"
         },
-        "hint": {
-          "transcription": "Used once the monthly quota is spent."
-        }
+        "kind": {
+          "live": "Live pass",
+          "transcription": "Files pass"
+        },
+        "price": "Price",
+        "rate": "Rate"
       },
       "overview_load_error": "Couldn't load payment details and invoices.",
       "payment": {
@@ -84,7 +87,18 @@
         "pay": "Pay",
         "pay_of": "Pay invoice {name}"
       },
-      "admin_only": "Only the organization's administrators can access billing."
+      "admin_only": "Only the organization's administrators can access billing.",
+      "lots": {
+        "title": "Packs",
+        "offered": "Free {kind}",
+        "exhausted": "Spent",
+        "remaining": "left | left",
+        "consumed_label": "Minutes used",
+        "consumed": "Used",
+        "expires_on": "Expires on",
+        "subtitle": "Extra minutes · no renewal",
+        "empty": "No pack yet. Live (microphone and video conferencing) runs on packs."
+      }
     },
     "unlimited": "Unlimited",
     "quota_limit_this_month": "of {limit} this month",
@@ -116,12 +130,6 @@
       "ai": "AI generations",
       "chat": "Chat messages",
       "api": "API calls"
-    },
-    "live": {
-      "title": "Microphone and video conferencing",
-      "expires": "Next expiry",
-      "no_renewal": "Prepaid, doesn't renew",
-      "unmetered": "Live minutes are not metered for this organization."
     },
     "member_usage": {
       "title": "Usage per member",

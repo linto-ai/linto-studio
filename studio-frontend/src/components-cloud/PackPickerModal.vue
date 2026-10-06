@@ -2,62 +2,27 @@
   <Modal
     v-model="isOpen"
     isForm
+    size="lg"
+    custom-modal-class="pack-picker-modal"
     :title="$t('billing.settings.packs.title')"
-    :subtitle="subtitle"
     :text-action-apply="applyLabel"
     icon-action-apply="credit-card"
     :disabled-action-apply="!selectedPack"
     @submit="submit">
     <div class="pack-picker flex col gap-medium">
+      <p class="pack-picker__intro">{{ intro }}</p>
       <fieldset
         v-for="group in groups"
         :key="group.kind"
         class="pack-picker__group">
-        <legend class="pack-picker__legend flex align-center gap-small">
-          <Avatar
-            v-if="packIcons[group.kind]"
-            :icon="packIcons[group.kind]"
-            size="md"
-            tone="soft" />
-          <span>{{ computeGroupTitle(group.kind) }}</span>
-        </legend>
-        <p v-if="groupHints[group.kind]" class="pack-picker__hint">
-          {{ $t(groupHints[group.kind]) }}
-        </p>
+        <SectionHeading tag="legend" :title="computeGroupTitle(group.kind)" />
         <div class="pack-picker__options">
-          <label
+          <PackOffer
             v-for="pack in group.packs"
             :key="pack.packKey"
-            class="pack-picker__option flex col">
-            <span class="flex align-center gap-small">
-              <input
-                v-model="selectedPackKey"
-                type="radio"
-                name="pack"
-                class="pack-picker__radio no-shrink"
-                :value="pack.packKey" />
-              <span class="pack-picker__duration">{{
-                formatDuration(pack.minutes)
-              }}</span>
-              <Chip
-                v-if="pack.savingPercent"
-                class="pack-picker__saving"
-                primary
-                :value="
-                  $t('billing.settings.packs.saving', {
-                    percent: pack.savingPercent,
-                  })
-                " />
-            </span>
-            <span class="pack-picker__price">{{
-              computePriceLabel(pack.amountCents, pack.currency)
-            }}</span>
-            <span class="pack-picker__hourly">{{
-              $t("billing.settings.packs.per_hour", {
-                price: formatAmount(pack.hourlyCents, pack.currency),
-              })
-            }}</span>
-          </label>
+            v-model="selectedPackKey"
+            name="pack"
+            :pack="pack" />
         </div>
       </fieldset>
     </div>
@@ -66,27 +31,18 @@
 
 <script>
 import Modal from "@/components/molecules/Modal.vue"
+import SectionHeading from "@/components/molecules/SectionHeading.vue"
+import PackOffer from "@/components-cloud/PackOffer.vue"
+import { computeDefaultPackKey } from "@/tools/computeDefaultPackKey"
 import { computePackGroups } from "@/tools/computePackGroups"
 import { computeValidityDuration } from "@/tools/computeValidityDuration"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
-import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
-
-// What a pack buys, by its kind: live sessions or file imports
-const PACK_ICONS = {
-  live: "microphone",
-  transcription: "file-audio",
-}
-
-// When a kind of pack is used, for the kinds that need saying
-const GROUP_HINTS = {
-  transcription: "billing.settings.packs.hint.transcription",
-}
 
 // Picks one prepaid pack to buy. The purchase itself (Checkout redirect)
 // belongs to the parent, which receives the chosen packKey on submit.
 export default {
   name: "PackPickerModal",
-  components: { Modal },
+  components: { Modal, SectionHeading, PackOffer },
   props: {
     value: { type: Boolean, default: false },
     // Packs the organization may buy (see computePurchasablePacks)
@@ -94,9 +50,7 @@ export default {
   },
   data() {
     return {
-      selectedPackKey: this.packs[0]?.packKey ?? null,
-      packIcons: PACK_ICONS,
-      groupHints: GROUP_HINTS,
+      selectedPackKey: computeDefaultPackKey(this.packs),
     }
   },
   computed: {
@@ -116,9 +70,9 @@ export default {
         this.packs.find((pack) => pack.packKey === this.selectedPackKey) || null
       )
     },
-    // The validity every pack shares, if they do
-    subtitle() {
-      const oneOff = this.$t("billing.settings.packs.subtitle")
+    // One-off payment, and the validity every pack shares, if they do
+    intro() {
+      const oneOff = this.$t("billing.settings.packs.intro")
       const validityDays = [
         ...new Set(this.packs.map((pack) => pack.validityDays)),
       ]
@@ -132,7 +86,7 @@ export default {
         unit: duration.unit,
         unitDisplay: "long",
       }).format(duration.value)
-      return this.$t("billing.settings.packs.subtitle_with_validity", {
+      return this.$t("billing.settings.packs.intro_with_validity", {
         validity,
       })
     },
@@ -147,11 +101,11 @@ export default {
     },
   },
   watch: {
-    // The catalog loads after the parent mounts: preselect the first pack
+    // The catalog loads after the parent mounts: preselect the first pack shown
     // once it is there, and never keep a pack that left the list.
     packs(packs) {
       if (packs.some((pack) => pack.packKey === this.selectedPackKey)) return
-      this.selectedPackKey = packs[0]?.packKey ?? null
+      this.selectedPackKey = computeDefaultPackKey(packs)
     },
   },
   methods: {
@@ -161,9 +115,6 @@ export default {
     computeGroupTitle(kind) {
       const titleKey = `billing.settings.packs.group.${kind}`
       return this.$te(titleKey) ? this.$t(titleKey) : kind
-    },
-    formatDuration(minutes) {
-      return formatMinutesDuration(minutes)
     },
     formatAmount(amountCents, currency) {
       return formatCurrencyAmount(amountCents, currency, this.$i18n.locale)
@@ -180,82 +131,61 @@ export default {
 
 <style lang="scss" scoped>
 .pack-picker {
+  &__intro {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+  }
+
+  // Groups are told apart by their titles and the room between them
   &__group {
     display: flex;
     flex-direction: column;
     gap: var(--small-gap);
+    min-width: 0;
     margin: 0;
     padding: 0;
     border: none;
+
+    & + & {
+      padding-top: var(--medium-gap);
+    }
+
+    // A rendered legend sits apart from the group's flex layout: floated,
+    // it is laid out as plain content, spaced like the cards.
+    > legend {
+      float: left;
+    }
   }
 
-  &__legend {
-    margin-bottom: var(--small-gap);
-    padding: 0;
-    font-weight: 600;
-  }
-
-  &__hint {
-    margin: 0;
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-  }
-
+  // Room around the cards for the ring of the chosen one. On a narrow
+  // screen each group is one row that scrolls sideways, like the bought
+  // packs of the billing tab.
   &__options {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-    gap: var(--small-gap);
-  }
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--medium-gap);
+    padding: var(--tiny-gap);
 
-  &__option {
-    gap: 0.25em;
-    padding: 0.75em 1em;
-    border: 1px solid var(--neutral-20);
-    border-radius: 4px;
-    background: var(--background-primary);
-    cursor: pointer;
+    @media (max-width: 768px) {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--tiny-gap);
 
-    &:hover {
-      border-color: var(--neutral-40);
-    }
-
-    // The modal body is already primary-soft: the chosen card stays white
-    // and gets a thicker primary ring instead of a tint.
-    &:has(:checked) {
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 1px var(--primary-color);
-    }
-
-    &:has(:focus-visible) {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 2px;
+      > * {
+        flex-shrink: 0;
+        scroll-snap-align: start;
+      }
     }
   }
+}
+</style>
 
-  &__radio {
-    margin: 0;
-    accent-color: var(--primary-color);
-  }
-
-  &__duration {
-    font-size: var(--text-xl);
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-  }
-
-  &__saving {
-    margin-left: auto;
-  }
-
-  &__price {
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-  }
-
-  &__hourly {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    font-variant-numeric: tabular-nums;
-  }
+<style lang="scss">
+// The modal body is tinted by default: plain here, the cards bring the color
+.pack-picker-modal .modal-body {
+  background: var(--background-primary);
 }
 </style>

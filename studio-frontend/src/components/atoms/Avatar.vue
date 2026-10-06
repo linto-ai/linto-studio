@@ -1,7 +1,15 @@
 <template>
-  <div
+  <component
+    :is="tag"
     class="avatar"
-    :class="[sizeClass, tone, clickable, circle ? 'circle' : '', border ? 'border' : '']"
+    :class="[
+      sizeClass,
+      tone,
+      clickable,
+      circle ? 'circle' : '',
+      border ? 'border' : '',
+      padded ? 'padded' : '',
+    ]"
     :style="frameStyle"
     @click="$emit('click')">
     <AvatarImage v-if="src" :src="src" :alt="text" />
@@ -9,7 +17,7 @@
     <AvatarInitials v-else-if="text" :text="text" />
     <AvatarEmoji v-else-if="emoji" :unified="emoji" />
     <slot v-else></slot>
-  </div>
+  </component>
 </template>
 
 <script>
@@ -26,6 +34,9 @@ import { SIZE_SCALE } from "@/const/componentSize"
 // (consumed as a font-size ratio, see .avatar below), and color/tone reaches
 // them purely by CSS inheritance (currentColor). A child only ever receives
 // its own content data (src, icon name, text, emoji).
+// A parent that needs a color outside the tones (a category color) sets the
+// --avatar-background / --avatar-color custom properties: each tone falls
+// back to its own pair when they are unset.
 export default {
   name: "Avatar",
   components: { AvatarImage, AvatarInitials, AvatarIcon, AvatarEmoji },
@@ -54,6 +65,21 @@ export default {
       default: false,
     },
     border: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    // span inside a parent that only takes phrasing content (a <label>, a
+    // <span>); the frame displays the same either way.
+    tag: {
+      type: String,
+      required: false,
+      default: "div",
+      validator: (value) => ["div", "span"].includes(value),
+    },
+    // Room around the content: an icon or initials take a smaller share of
+    // the frame, for a marker that reads as a badge rather than a picture.
+    padded: {
       type: Boolean,
       required: false,
       default: false,
@@ -107,8 +133,11 @@ a:hover .avatar {
   width: var(--avatar-size);
   height: var(--avatar-size);
   // Content (icon/initials/emoji) sizes itself off this, in CSS, by
-  // inheriting font-size — no size prop is passed to any child.
-  font-size: calc(var(--avatar-size) * 0.8);
+  // inheriting font-size — no size prop is passed to any child. Rounded down
+  // to an even pixel count: with an even frame, the gap around the content
+  // is whole pixels, so frame and content snap to the pixel grid the same
+  // way and the content stays centered (a 14.4px icon drifts ~1px).
+  font-size: round(down, calc(var(--avatar-size) * 0.8), 2px);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -125,6 +154,10 @@ a:hover .avatar {
 
   &.border {
     box-shadow: 0 0 0 1px var(--neutral-20);
+  }
+
+  &.padded {
+    font-size: round(down, calc(var(--avatar-size) * 0.6), 2px);
   }
 
   &.xs {
@@ -148,18 +181,18 @@ a:hover .avatar {
   }
 
   &.primary {
-    background-color: var(--primary-color);
-    color: var(--primary-soft);
+    background-color: var(--avatar-background, var(--primary-color));
+    color: var(--avatar-color, var(--primary-soft));
   }
 
   &.soft {
-    background-color: var(--primary-soft);
-    color: var(--primary-color);
+    background-color: var(--avatar-background, var(--primary-soft));
+    color: var(--avatar-color, var(--primary-color));
   }
 
   &.neutral {
-    background-color: var(--neutral-15);
-    color: var(--neutral-80);
+    background-color: var(--avatar-background, var(--neutral-15));
+    color: var(--avatar-color, var(--neutral-80));
   }
 }
 </style>

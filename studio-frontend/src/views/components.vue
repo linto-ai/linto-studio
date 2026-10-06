@@ -81,6 +81,14 @@
       <Avatar text="TD" tone="primary" size="xl" circle />
     </div>
 
+    <h3>Avatar - padded (room around the icon)</h3>
+    <div class="flex gap-small align-center">
+      <Avatar icon="microphone" size="md" circle />
+      <Avatar icon="microphone" size="md" circle padded />
+      <Avatar icon="microphone" size="xl" circle />
+      <Avatar icon="microphone" size="xl" circle padded />
+    </div>
+
     <h3>PhIcon - size="auto" inherits the ambient font-size</h3>
     <div class="flex gap-small align-center">
       <span style="font-size: 1rem">
@@ -102,11 +110,22 @@
     <div class="flex col gap-tiny" style="max-width: 260px">
       <QuotaMeter
         label="Offline transcription"
+        icon="file-audio"
         :used="120"
         :limit="600"
         unit="minutes" />
-      <QuotaMeter label="AI generations" :used="42" :limit="50" unit="count" />
-      <QuotaMeter label="Chat messages" :used="110" :limit="100" unit="count" />
+      <QuotaMeter
+        label="AI generations"
+        icon="sparkle"
+        :used="42"
+        :limit="50"
+        unit="count" />
+      <QuotaMeter
+        label="Chat messages"
+        icon="chat-circle-dots"
+        :used="110"
+        :limit="100"
+        unit="count" />
       <QuotaMeter
         label="Business plan"
         :used="4200"
@@ -118,6 +137,38 @@
       80%, danger at 100%+ (last example above). A null limit renders as
       unlimited instead of a ratio.
     </p>
+
+    <h3>UsageBar - always fills with what is consumed</h3>
+    <div class="flex col gap-small" style="max-width: 260px">
+      <UsageBar :value="30" :max="120" />
+      <UsageBar :value="100" :max="120" />
+      <UsageBar :value="120" :max="120" />
+      <UsageBar :value="120" :max="120" tone="neutral" />
+    </div>
+    <p class="components-hint">
+      Success, warning from 80 % used, danger at 100 %, and the neutral tone of
+      a spent pack. Quota tiles and pack cards share it, so the bar means the
+      same thing everywhere.
+    </p>
+
+    <h3>PackOffer - a pack to buy (radio, v-model)</h3>
+    <fieldset class="components-pack-row">
+      <PackOffer
+        v-for="pack in demoPackOffers"
+        :key="pack.packKey"
+        v-model="demoSelectedPackKey"
+        name="demo-pack"
+        :pack="pack" />
+    </fieldset>
+    <p class="components-hint">
+      Chosen: {{ demoSelectedPackKey }}. The card rings itself from the radio it
+      holds (:has(:checked)): click a card or use the arrow keys.
+    </p>
+
+    <h3>PackLot - a bought pack (in use / offered / files / spent)</h3>
+    <div class="components-pack-row">
+      <PackLot v-for="lot in demoPackLots" :key="lot.id" :lot="lot" />
+    </div>
 
     <FormInput :field="fieldInput" />
     <FormInput :field="fieldInputError" />
@@ -201,10 +252,60 @@ import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"
 import OrganizationSelector from "@/components/molecules/OrganizationSelector.vue"
 import GenericTable from "@/components/molecules/GenericTable.vue"
 import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
+import PackLot from "@/components-cloud/PackLot.vue"
+import PackOffer from "@/components-cloud/PackOffer.vue"
+import { computePackGroups } from "@/tools/computePackGroups"
+import { computePackLots } from "@/tools/computePackLots"
+
+// Catalog-shaped packs and API-shaped lots, for the pack cards below
+const DEMO_PACKS = [
+  { packKey: "live_5h", kind: "live", minutes: 300, amountCents: 4500 },
+  { packKey: "live_20h", kind: "live", minutes: 1200, amountCents: 16000 },
+  { packKey: "live_50h", kind: "live", minutes: 3000, amountCents: 35000 },
+  {
+    packKey: "transcription_5h",
+    kind: "transcription",
+    minutes: 300,
+    amountCents: 1000,
+  },
+].map((pack) => ({ ...pack, currency: "eur" }))
+const DEMO_LOTS = [
+  {
+    _id: "in-use",
+    kind: "live",
+    source: "stripe",
+    minutes: 1200,
+    remaining: 740,
+  },
+  {
+    _id: "offered",
+    kind: "live",
+    source: "welcome",
+    minutes: 16,
+    remaining: 16,
+  },
+  {
+    _id: "files",
+    kind: "transcription",
+    source: "stripe",
+    minutes: 300,
+    remaining: 225,
+  },
+  { _id: "spent", kind: "live", source: "stripe", minutes: 300, remaining: 0 },
+].map((lot) => ({
+  ...lot,
+  created: "2026-03-12T12:00:00Z",
+  expiresAt: "2099-03-12T12:00:00Z",
+}))
 export default {
   props: {},
   data() {
     return {
+      demoPackOffers: computePackGroups(DEMO_PACKS).flatMap(
+        (group) => group.packs,
+      ),
+      demoSelectedPackKey: "live_5h",
+      demoPackLots: computePackLots(DEMO_LOTS),
       fieldInput: {
         label: "Type your name",
         error: null,
@@ -326,6 +427,8 @@ export default {
     OrganizationSelector,
     GenericTable,
     SegmentedControl,
+    PackLot,
+    PackOffer,
   },
 }
 </script>
@@ -337,6 +440,15 @@ export default {
   margin: auto;
   padding: 50px;
   box-shadow: var(--shadow-5);
+}
+
+.components-pack-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--medium-gap);
+  margin: 0;
+  padding: var(--tiny-gap);
+  border: none;
 }
 
 .components-hint {

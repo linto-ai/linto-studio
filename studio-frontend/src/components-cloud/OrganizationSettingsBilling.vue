@@ -5,6 +5,27 @@
         {{ $t("app_settings_modal.billing") }}
       </h2>
       <Chip v-if="!loading" :value="planName" :primary="!view.isFree" />
+      <div
+        v-if="!loading && !usageFailed"
+        class="organization-billing__plan-actions flex gap-small wrap">
+        <Button
+          v-if="view.canUpgradeToPremium"
+          variant="primary"
+          size="sm"
+          icon="sparkle"
+          @click="openUpgradeModal()">
+          {{ $t("billing.settings.upgrade_premium") }}
+        </Button>
+        <Button
+          v-if="view.canManageSubscription"
+          variant="secondary"
+          size="sm"
+          icon="arrow-square-out"
+          :loading="pendingRedirect === 'portal'"
+          @click="manageSubscription">
+          {{ $t("billing.settings.manage_subscription") }}
+        </Button>
+      </div>
     </header>
 
     <Loading v-if="loading" block />
@@ -24,9 +45,16 @@
       </p>
 
       <section class="organization-billing__section flex col gap-small">
-        <h3 class="organization-billing__heading">
-          {{ $t("billing.settings.usage.title") }}
-        </h3>
+        <SectionHeading :title="$t('billing.settings.usage.title')">
+          <template v-if="!usageFailed && periodLines.length" #subtitle>
+            <time
+              v-for="line in periodLines"
+              :key="line.labelKey"
+              :datetime="line.date"
+              >{{ line.label }}</time
+            >
+          </template>
+        </SectionHeading>
         <div v-if="usageFailed" class="organization-billing__error">
           <p>{{ $t("billing.settings.usage.load_error") }}</p>
           <Button
@@ -42,34 +70,32 @@
             {{ $t("billing.team_plan_required") }}
           </p>
           <div class="organization-billing__tiles">
-            <LiveCreditStatus
-              v-if="view.liveCredit"
-              :balance="view.liveCredit.balance"
-              :expires-at-label="liveCreditExpiryLabel"
-              :unmetered="view.liveCredit.unmetered" />
             <QuotaMeter
               v-for="meter in view.meters"
               :key="meter.key"
               :label="$t(meter.labelKey)"
+              :icon="meter.icon"
               :used="meter.used"
               :limit="meter.limit"
               :unit="meter.unit" />
           </div>
-          <p
-            v-for="line in periodLines"
-            :key="line.labelKey"
-            class="organization-billing__period">
-            <time :datetime="line.date">{{ line.label }}</time>
-          </p>
           <router-link
             v-if="view.isPerSeat"
             :to="memberConsumptionRoute"
             class="organization-billing__link">
             {{ $t("billing.settings.usage.member_consumption_link") }}
           </router-link>
-          <div class="flex gap-small wrap">
+        </template>
+      </section>
+
+      <section
+        v-if="!usageFailed && !view.isUnmetered"
+        class="organization-billing__section flex col gap-small">
+        <SectionHeading
+          :title="$t('billing.settings.lots.title')"
+          :subtitle="$t('billing.settings.lots.subtitle')">
+          <template #actions>
             <Button
-              v-if="!view.isUnmetered"
               variant="secondary"
               size="sm"
               icon="plus"
@@ -78,30 +104,21 @@
               @click="openPackPicker">
               {{ $t("billing.settings.buy_pack") }}
             </Button>
-            <Button
-              v-if="view.canUpgradeToPremium"
-              variant="primary"
-              size="sm"
-              icon="sparkle"
-              @click="openUpgradeModal()">
-              {{ $t("billing.settings.upgrade_premium") }}
-            </Button>
-            <Button
-              v-if="view.canManageSubscription"
-              variant="secondary"
-              size="sm"
-              icon="arrow-square-out"
-              :loading="pendingRedirect === 'portal'"
-              @click="manageSubscription">
-              {{ $t("billing.settings.manage_subscription") }}
-            </Button>
-          </div>
-          <p
-            v-if="!view.isUnmetered && !view.isLocked && !canBuyPack"
-            class="organization-billing__muted">
-            {{ $t("billing.settings.no_pack_available") }}
-          </p>
-        </template>
+          </template>
+        </SectionHeading>
+        <p
+          v-if="!view.isLocked && !canBuyPack"
+          class="organization-billing__muted">
+          {{ $t("billing.settings.no_pack_available") }}
+        </p>
+        <ul v-if="packLots.length" class="organization-billing__lot-list">
+          <li v-for="lot in packLots" :key="lot.id">
+            <PackLot :lot="lot" />
+          </li>
+        </ul>
+        <p v-else class="organization-billing__empty">
+          {{ $t("billing.settings.lots.empty") }}
+        </p>
       </section>
 
       <div v-if="overviewFailed" class="organization-billing__error">
@@ -118,9 +135,7 @@
         <section
           v-if="showPaymentSection"
           class="organization-billing__section flex col gap-small">
-          <h3 class="organization-billing__heading">
-            {{ $t("billing.settings.payment.title") }}
-          </h3>
+          <SectionHeading :title="$t('billing.settings.payment.title')" />
           <div class="flex align-center justify-between gap-medium wrap">
             <p
               v-if="paymentMethod"
@@ -155,9 +170,7 @@
         </section>
 
         <section class="organization-billing__section flex col gap-small">
-          <h3 class="organization-billing__heading">
-            {{ $t("billing.settings.invoices.title") }}
-          </h3>
+          <SectionHeading :title="$t('billing.settings.invoices.title')" />
           <InvoiceTable v-if="invoices.length" :invoices="invoices" />
           <p v-else class="organization-billing__empty">
             {{ $t("billing.settings.invoices.empty") }}
@@ -180,16 +193,19 @@ import {
   apiCreateCreditsCheckout,
   apiCreatePortalSession,
   apiGetBillingOverview,
+  apiGetCredits,
   apiGetPacks,
 } from "@/api/cloud"
 import { SETTINGS_QUERY_PARAM } from "@/const/settingsQueryParam"
 import { computeBillingReturnUrl } from "@/tools/computeBillingReturnUrl"
 import { computeOrganizationBillingView } from "@/tools/computeOrganizationBillingView"
+import { computePackLots } from "@/tools/computePackLots"
 import { computePaymentMethodSummary } from "@/tools/computePaymentMethodSummary"
 import { computePurchasablePacks } from "@/tools/computePurchasablePacks"
 import { formatFullDate } from "@/tools/formatFullDate"
-import LiveCreditStatus from "@/components/molecules/LiveCreditStatus.vue"
 import InvoiceTable from "@/components-cloud/InvoiceTable.vue"
+import SectionHeading from "@/components/molecules/SectionHeading.vue"
+import PackLot from "@/components-cloud/PackLot.vue"
 import PackPickerModal from "@/components-cloud/PackPickerModal.vue"
 import UpcomingInvoiceSummary from "@/components-cloud/UpcomingInvoiceSummary.vue"
 
@@ -199,8 +215,9 @@ import UpcomingInvoiceSummary from "@/components-cloud/UpcomingInvoiceSummary.vu
 export default {
   name: "OrganizationSettingsBilling",
   components: {
-    LiveCreditStatus,
     InvoiceTable,
+    SectionHeading,
+    PackLot,
     PackPickerModal,
     UpcomingInvoiceSummary,
   },
@@ -214,6 +231,7 @@ export default {
       overview: null,
       overviewFailed: false,
       packs: [],
+      creditLots: [],
       isPackPickerOpen: false,
       // pack | portal | payment_method: the Stripe page being opened
       pendingRedirect: null,
@@ -239,16 +257,15 @@ export default {
         this.view.plan?.displayName || this.$t("billing.settings.free_plan")
       )
     },
+    packLots() {
+      return computePackLots(this.creditLots)
+    },
     purchasablePacks() {
       return computePurchasablePacks(this.packs, this.view.plan)
     },
     // A locked team org can't use any quota, bought minutes included
     canBuyPack() {
       return !this.view.isLocked && this.purchasablePacks.length > 0
-    },
-    liveCreditExpiryLabel() {
-      const expiresAt = this.view.liveCredit?.expiresAt
-      return expiresAt ? formatFullDate(expiresAt, this.$i18n.locale) : null
     },
     // A subscription cancelled at period end has no next invoice: its end
     // date takes that place.
@@ -339,6 +356,7 @@ export default {
         this.fetchSubscriptions(this.organizationId),
         apiGetBillingOverview(this.organizationId),
         apiGetPacks(),
+        this.loadCreditLots(),
       ])
       // Without the subscription or the pack catalog the plan buttons would
       // silently lie (no "Manage", no pack): shown as a failure to retry.
@@ -347,6 +365,12 @@ export default {
       this.overviewFailed = !overview
       this.packs = packs || []
       this.loading = false
+    },
+    // The packs are a section of their own: without them the rest of the tab
+    // still works, so a failure just shows the section empty.
+    async loadCreditLots() {
+      const credits = await apiGetCredits(this.organizationId)
+      this.creditLots = credits?.lots || []
     },
     computePeriod(labelKey, date) {
       const dateLabel = formatFullDate(date, this.$i18n.locale)
@@ -398,6 +422,7 @@ export default {
       if (status === "success") {
         this.notify("success", this.$t("billing.settings.pack_bought"))
         this.fetchUsage(this.organizationId)
+        this.loadCreditLots()
       } else {
         this.notify("info", this.$t("billing.settings.pack_cancelled"))
       }
@@ -417,10 +442,40 @@ export default {
     margin: 0;
   }
 
-  &__heading {
+  // Plan actions sit at the end of the title row
+  &__plan-actions {
+    margin-left: auto;
+  }
+
+  // Side by side; on a narrow screen one row that scrolls sideways, each
+  // card snapping into place, the next one peeking to show there is more.
+  &__lot-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--medium-gap);
     margin: 0;
-    font-size: var(--text-md);
-    font-weight: 600;
+    padding: 0;
+    list-style: none;
+
+    @media (max-width: 768px) {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      padding-bottom: var(--small-gap);
+
+      > li {
+        flex-shrink: 0;
+        scroll-snap-align: start;
+      }
+    }
+
+    // The card sets its own width; the item only passes the row height on.
+    // No global li margin: it would leave the first cards shorter.
+    > li {
+      display: flex;
+      margin: 0;
+    }
   }
 
   &__section + &__section {
@@ -435,7 +490,6 @@ export default {
   }
 
   &__notice,
-  &__period,
   &__payment-method {
     margin: 0;
   }
@@ -448,7 +502,6 @@ export default {
     color: var(--warning-text);
   }
 
-  &__period,
   &__muted {
     margin: 0;
     font-size: var(--text-sm);
