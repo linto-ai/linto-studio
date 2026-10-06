@@ -5,7 +5,6 @@
     :color="look.color"
     :icon="look.icon"
     :motif="look.motif"
-    :label="kindLabel"
     :amount="amount"
     :badge="badge"
     :details="details">
@@ -28,7 +27,8 @@ import { computePackLook } from "@/tools/computePackLook"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 
 // One pack of the catalog, as a radio choice (v-model: the chosen packKey).
-// The whole card is the radio's label, so its text is the radio's name.
+// The whole card is the radio's label, so its text is the radio's name; the
+// fieldset around it (the kind of pack) names the group, so no kind label.
 export default {
   name: "PackOffer",
   components: { PackCard },
@@ -43,10 +43,6 @@ export default {
   computed: {
     look() {
       return computePackLook(this.pack.kind)
-    },
-    kindLabel() {
-      const key = `billing.settings.packs.kind.${this.pack.kind}`
-      return this.$te(key) ? this.$t(key) : this.pack.displayName
     },
     amount() {
       return computeDurationParts(this.pack.minutes, this.$i18n.locale, "long")
