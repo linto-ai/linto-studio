@@ -56,7 +56,18 @@
     class="session-status-banner">
     <span class="session-status-banner__message">
       {{ $t("session.live_credit_banner.exhausted") }}
+      <template v-if="!canBuyLivePack">
+        {{ $t("quick_session.creation.live_pack_ask_admin") }}
+      </template>
     </span>
+    <template v-if="canBuyLivePack" #actions>
+      <Button
+        variant="primary"
+        size="sm"
+        icon="plus"
+        :label="$t('billing.settings.buy_pack')"
+        @click="$emit('buy-live-pack')" />
+    </template>
   </NotificationBanner>
 
   <NotificationBanner
@@ -72,7 +83,18 @@
           minutes: liveCredit.balance,
         })
       }}
+      <template v-if="!canBuyLivePack">
+        {{ $t("quick_session.creation.live_pack_ask_admin") }}
+      </template>
     </span>
+    <template v-if="canBuyLivePack" #actions>
+      <Button
+        variant="secondary"
+        size="sm"
+        icon="plus"
+        :label="$t('billing.settings.buy_pack')"
+        @click="$emit('buy-live-pack')" />
+    </template>
   </NotificationBanner>
 </template>
 
@@ -98,6 +120,9 @@ export default {
     microphoneStatus: { type: String, default: "idle" },
     // live block of the org usage summary (null when unknown or not watched).
     liveCredit: { type: Object, default: null },
+    // Whether the viewer may buy live minutes: offers the shortcut (emits
+    // buy-live-pack), or else tells who can.
+    canBuyLivePack: { type: Boolean, default: false },
   },
   computed: {
     banner() {

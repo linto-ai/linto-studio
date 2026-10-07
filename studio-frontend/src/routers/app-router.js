@@ -14,6 +14,8 @@ import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
 import { isAtLeastSystemAdministrator } from "@/tools/platformRoles.js"
 import { computeSettingsTabRequest } from "@/tools/computeSettingsTabRequest.js"
+import { computeCheckoutReturn } from "@/tools/computeCheckoutReturn.js"
+import i18n from "@/i18n"
 
 const defaultComponents = {}
 
@@ -40,6 +42,14 @@ function syncImpersonationState(to) {
 
   if (!isAtLeastSystemAdministrator(platformRole) || leavesImpersonatedOrg) {
     store.dispatch("organizations/stopImpersonation")
+  }
+}
+
+function notifyCreditsCheckoutReturn(status) {
+  if (status === "success") {
+    store.dispatch("system/showSuccess", i18n.t("billing.settings.pack_bought"))
+  } else {
+    store.dispatch("system/showInfo", i18n.t("billing.settings.pack_cancelled"))
   }
 }
 
@@ -891,6 +901,19 @@ router.beforeEach(async (to, from, next) => {
       // Already on that page (e.g. a link to the current org): redirecting
       // would be aborted as redundant and afterEach would never stop the
       // loader, so cancel the navigation instead.
+      if (router.resolve(cleanRoute).route.fullPath === from.fullPath) {
+        store.dispatch("system/setIsLoading", false)
+        return next(false)
+      }
+      return next({ ...cleanRoute, replace: true })
+    }
+
+    // Back from a pack Checkout (?type=credits&status=success|cancel),
+    // wherever it was bought from: told here, and dropped from the URL.
+    const checkoutReturn = computeCheckoutReturn(to.query)
+    if (checkoutReturn?.type === "credits") {
+      notifyCreditsCheckoutReturn(checkoutReturn.status)
+      const cleanRoute = { ...to, query: checkoutReturn.query }
       if (router.resolve(cleanRoute).route.fullPath === from.fullPath) {
         store.dispatch("system/setIsLoading", false)
         return next(false)

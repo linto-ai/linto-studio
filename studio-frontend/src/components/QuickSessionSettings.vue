@@ -16,7 +16,7 @@
           variant="primary"
           size="sm"
           icon="plus"
-          @click="openPackPicker('live')">
+          @click="isLivePackPurchaseOpen = true">
           {{ $t("billing.settings.buy_pack") }}
         </Button>
       </template>
@@ -27,6 +27,7 @@
       icon="info">
       {{ $t("quick_session.creation.only_offline_available") }}
     </NotificationBanner>
+    <PackPurchaseModal v-model="isLivePackPurchaseOpen" kind="live" />
     <section>
       <FormCheckbox
         v-if="transcriberProfiles.length > 0"
@@ -115,8 +116,8 @@
   </div>
 </template>
 <script>
-import { mapActions, mapGetters } from "vuex"
-import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+import { mapGetters } from "vuex"
+import { livePackPurchaseMixin } from "@/mixins/livePackPurchase.js"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { testService } from "@/tools/fields/testService.js"
 import { getEnv } from "@/tools/getEnv"
@@ -134,9 +135,10 @@ import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.
 import ServiceSelector from "@/components/serviceSelector/ServiceSelector.vue"
 import Chip from "@/components/atoms/Chip.vue"
 import NotificationBanner from "./atoms/NotificationBanner.vue"
+import PackPurchaseModal from "@/components-cloud/PackPurchaseModal.vue"
 
 export default {
-  mixins: [orgaRoleMixin],
+  mixins: [livePackPurchaseMixin],
   props: {
     transcriberProfiles: {
       type: Array,
@@ -209,6 +211,7 @@ export default {
         value: this.value.transcriptionService,
       },
       selectedTranslation: this.value.subSource || "original",
+      isLivePackPurchaseOpen: false,
     }
   },
 
@@ -336,7 +339,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions("settings", ["openPackPicker"]),
     sendUpdate() {
       this.$emit("input", {
         subInVisio: this.fieldSubInVisio.value,
@@ -354,14 +356,6 @@ export default {
   },
   computed: {
     ...mapGetters("billing", ["isLiveCreditExhausted"]),
-    // Buying is done in the billing tab, open to the org admins only (and
-    // not while impersonating, where it is read-only)
-    canBuyLivePack() {
-      return (
-        this.isAdmin &&
-        !this.$store.getters["organizations/isImpersonatingCurrentOrganization"]
-      )
-    },
     isCompatibleWithDiarization() {
       return this.selectedProfile?.config?.hasDiarization
     },
@@ -376,6 +370,7 @@ export default {
     SessionTranslationSelection,
     Chip,
     NotificationBanner,
+    PackPurchaseModal,
   },
 }
 </script>

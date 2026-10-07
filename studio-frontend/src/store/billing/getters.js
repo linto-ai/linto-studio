@@ -1,5 +1,6 @@
 import { isQuotaUnlimited } from "@/tools/billingMeters"
 import { isLiveCreditExhausted } from "@/tools/isLiveCreditExhausted"
+import { computePurchasablePacks } from "@/tools/computePurchasablePacks"
 
 // i18n label per metered capability (quota rules of the catalog).
 const METER_LABEL = {
@@ -11,6 +12,9 @@ const METER_LABEL = {
 
 export default {
   plans: (s) => s.plans,
+  packs: (s) => s.packs || [],
+  // Packs the organization's plan may buy, catalog order kept
+  purchasablePacks: (s, g) => computePurchasablePacks(g.packs, g.currentPlan),
   usage: (s) => s.usage,
   usageByMember: (s) => s.usageByMember,
   subscription: (s) => s.subscription,

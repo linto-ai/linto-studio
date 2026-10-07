@@ -2,6 +2,9 @@ export default {
   setPlans(state, plans) {
     state.plans = plans || []
   },
+  setPacks(state, packs) {
+    state.packs = packs || null
+  },
   setSubscription(state, subscription) {
     state.subscription = subscription || null
   },

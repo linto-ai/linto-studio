@@ -4,6 +4,8 @@ import {
   apiGetUsageByMember,
   apiGetSubscriptions,
   apiChangeSubscription,
+  apiCreateCreditsCheckout,
+  apiGetPacks,
 } from "@/api/cloud"
 
 function currentOrg(rootGetters, orgId) {
@@ -15,6 +17,32 @@ export default {
     const plans = await apiGetPlans()
     if (plans) commit("setPlans", plans)
     return plans
+  },
+
+  // Null when the catalog can't be read.
+  async fetchPacks({ commit }) {
+    const packs = await apiGetPacks()
+    if (packs) commit("setPacks", packs)
+    return packs || null
+  },
+
+  // What a pack purchase needs: the packs and the plans that may buy them.
+  // Reloaded every time: the catalog differs from one organization to another.
+  async loadPackCatalog({ dispatch }) {
+    await Promise.all([dispatch("fetchPacks"), dispatch("fetchPlans")])
+  },
+
+  // Creates the Stripe Checkout of a pack. Returns the page to send the
+  // browser to, which comes back to returnUrl with
+  // ?type=credits&status=success|cancel; null when Stripe can't be reached.
+  async startPackCheckout({ rootGetters }, { packKey, returnUrl, orgId }) {
+    const organizationId = currentOrg(rootGetters, orgId)
+    if (!organizationId) return null
+    const session = await apiCreateCreditsCheckout(organizationId, {
+      packKey,
+      returnUrl,
+    })
+    return session?.url || null
   },
 
   async fetchUsage({ commit, rootGetters }, orgId) {
