@@ -27,7 +27,7 @@
   </div>
 </template>
 <script>
-import { Throttle } from "../tools/throttle.js"
+import { Throttle } from "@/lib/throttle.js"
 
 export default {
   props: {
@@ -53,14 +53,22 @@ export default {
     },
   },
   data() {
-    const throttleObjectChange = new Throttle()
     return {
-      throttleChange: throttleObjectChange.createThrottle(
-        this.handleChange,
-        500,
-      ),
       currentValue: this.screen.text.join("\n"),
     }
+  },
+  created() {
+    // Plain instance fields: the throttle is kept to flush on destroy.
+    this.textUpdateThrottle = new Throttle()
+    this.throttleChange = this.textUpdateThrottle.createThrottle(
+      this.handleChange,
+      500,
+    )
+  },
+  beforeDestroy() {
+    // Send the edit still waiting for its delay, otherwise it is lost when
+    // the editor closes within 500ms of the last keystroke.
+    this.textUpdateThrottle.executeNow()
   },
   watch: {
     screen: {
@@ -85,7 +93,7 @@ export default {
     onInput() {
       this.throttleChange()
     },
-    handleChange(value) {
+    handleChange() {
       this.$emit("textUpdate", this.screenId, this.currentValue)
     },
   },

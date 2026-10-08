@@ -19,15 +19,18 @@
     </template>
     <div class="flex flex1 col">
       <SessionLiveNG
+        v-if="isFirstChannelLive"
         :session="session"
         :currentOrganizationScope="currentOrganizationScope"
         :websocketInstance="$apiEventWS" />
+      <VisioPlaceholder v-else />
     </div>
   </V2Layout>
 </template>
 <script>
 import SessionLiveNG from "@/components/SessionLiveNG.vue"
 import SessionLiveActions from "@/components/SessionLiveActions.vue"
+import VisioPlaceholder from "@/components/molecules/VisioPlaceholder.vue"
 import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
@@ -53,11 +56,15 @@ export default {
         },
       ]
     },
+    isFirstChannelLive() {
+      return this.session.channels?.[0]?.enableLiveTranscripts
+    },
   },
   components: {
     SessionLiveNG,
     SessionLiveActions,
     V2Layout,
+    VisioPlaceholder,
   },
 }
 </script>

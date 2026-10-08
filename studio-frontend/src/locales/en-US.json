@@ -2225,6 +2225,7 @@
     "connection_lost": "Audio interrupted",
     "mic_lost": "Microphone lost",
     "mic_interrupted": "Microphone interrupted",
+    "other_tab": "Recorded in another tab",
     "restored_toast": "Microphone restored",
     "action_retry": "Retry",
     "action_reconfigure": "Reconfigure microphone",
@@ -2240,7 +2241,8 @@
       "reconnecting": "Connection lost, resuming automatically. Audio spoken during the outage is not transmitted.",
       "connection_lost": "Could not restore the connection. Recording is stopped.",
       "mic_lost": "The microphone is not responding (unplugged or permission revoked).",
-      "mic_interrupted": "The system suspended the microphone, resumes automatically when released."
+      "mic_interrupted": "The system suspended the microphone, resumes automatically when released.",
+      "other_tab": "Another tab is already recording this session. To record here, close it and reload this page."
     }
   },
   "websocket": {

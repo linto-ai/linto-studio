@@ -5,12 +5,13 @@
         class="flex1 flex gap-medium align-center"
         style="margin-right: 0.5rem">
         <MicrophoneStatus
-          v-if="microphoneStatus !== 'idle'"
-          :status="microphoneStatus"
+          v-if="displayedMicrophoneStatus !== 'idle'"
+          :status="displayedMicrophoneStatus"
           :speaking="speaking" />
 
         <div class="flex1"></div>
         <Button
+          v-if="!isRecordedInOtherTab"
           @click="toggleMute"
           variant="secondary"
           size="sm"
@@ -49,8 +50,8 @@
           @live-pack-purchase-cancel="undoPackPurchasePause" />
       </template>
       <MicrophonePlaceholder
-        v-else-if="microphoneStatus !== 'idle'"
-        :status="microphoneStatus"
+        v-else-if="displayedMicrophoneStatus !== 'idle'"
+        :status="displayedMicrophoneStatus"
         :speaking="speaking"
         @toggle="toggleMute"
         @retry="retryAudioConnection"
@@ -78,6 +79,7 @@ import MicrophoneStatus from "@/components/molecules/MicrophoneStatus.vue"
 import MicrophonePlaceholder from "@/components/molecules/MicrophonePlaceholder.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveActions from "@/components/SessionLiveActions.vue"
+import TabLock from "@/lib/TabLock.js"
 
 import V2Layout from "@/layouts/v2-layout.vue"
 
@@ -102,13 +104,32 @@ export default {
     return {
       recordingChannel,
       deviceId: null,
-      showMicrophoneSetup: true,
+      // Opened once the tab lock says this tab is the one recording.
+      showMicrophoneSetup: false,
+      // Another tab of this browser already records this session: this one
+      // only displays it. No takeover, no wait: reloading the page re-checks.
+      isRecordedInOtherTab: false,
       // What pauseForPackPurchase changed, undone if the purchase is dropped
       // (closed without leaving for the payment page).
       packPurchasePause: null,
     }
   },
+  async created() {
+    // Plain instance field: the lock is a resource, not reactive state.
+    this.microphoneTabLock = new TabLock(
+      `quick-session-microphone-${this.session.id}`,
+    )
+    const isRecordingTab = await this.microphoneTabLock.acquire()
+    this.isRecordedInOtherTab = !isRecordingTab
+    this.showMicrophoneSetup = isRecordingTab
+  },
+  beforeDestroy() {
+    this.microphoneTabLock.destroy()
+  },
   computed: {
+    displayedMicrophoneStatus() {
+      return this.isRecordedInOtherTab ? "other_tab" : this.microphoneStatus
+    },
     isSessionPaused() {
       return this.session.status === "paused"
     },
