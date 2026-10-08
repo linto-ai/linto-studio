@@ -40,6 +40,9 @@ export default function createMediaModule(scope, status = "done") {
       sidebarFilterTagIds: [],
       pagination: { page: 0, hasMore: true },
       count: 0,
+      // Whole organization, no filter (sidebar badge); `count` follows the
+      // loaded list and its filters.
+      statusCount: 0,
       countDone: 0,
       countProcessing: 0,
       countError: 0,
@@ -56,6 +59,7 @@ export default function createMediaModule(scope, status = "done") {
       hasMore: (s) => s.pagination.hasMore,
       selectedTagIds: (s) => s.selectedTagIds,
       count: (s) => s.count,
+      statusCount: (s) => s.statusCount,
       countDone: (s) => s.countDone,
       countProcessing: (s) => s.countProcessing,
       countError: (s) => s.countError,
@@ -189,6 +193,9 @@ export default function createMediaModule(scope, status = "done") {
       setCount(state, count) {
         state.count = count
       },
+      setStatusCount(state, count) {
+        state.statusCount = count
+      },
       setCountDone(state, count) {
         state.countDone = count
       },
@@ -262,13 +269,9 @@ export default function createMediaModule(scope, status = "done") {
       },
       async loadStatusCount({ commit, getters }) {
         const count = await apiGetGenericConversationsCount(scope, {
-          text: getters.search,
-          title: getters.search,
-          tags: getters.selectedTagIds,
           status: getters.getFilterStatus,
         })
-
-        commit("setCount", count)
+        commit("setStatusCount", count)
       },
       increaseCount({ commit, getters }) {
         commit("setCount", getters.count + 1)
@@ -356,7 +359,8 @@ export default function createMediaModule(scope, status = "done") {
       setFilterStatus({ commit }, status) {
         commit("setFilterStatus", status)
       },
-      async prependMedias({ commit }, medias) {
+      // A media already listed (websocket event after a reload) is skipped.
+      async prependMedias({ commit, state }, medias) {
         const resolved = await Promise.all(
           medias.map(async (m) => {
             if (typeof m === "string") return await apiGetConversationById(m)
@@ -364,7 +368,10 @@ export default function createMediaModule(scope, status = "done") {
             return null
           }),
         )
-        commit("prependMedias", resolved.filter(Boolean))
+        const newMedias = resolved.filter(
+          (m) => m?._id && !state.medias.some((listed) => listed._id === m._id),
+        )
+        commit("prependMedias", newMedias)
       },
     },
   }

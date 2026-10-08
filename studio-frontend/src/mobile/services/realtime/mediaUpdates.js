@@ -8,7 +8,6 @@ const CONNECT_TIMEOUT_MS = 8000
 // One socket.io connection for the mobile app. ApiEventWebSocket pushes
 // media updates straight into the shared store, so the list stays live.
 const socket = new ApiEventWebSocket()
-let watchedOrganizationId = null
 let pendingConnection = null
 
 // The editor page drives the lock+save protocol on this same connection.
@@ -41,23 +40,13 @@ async function waitForConnection() {
 }
 
 export function watchOrganizationMedia(organizationId) {
-  watchedOrganizationId = organizationId
   socket.subscribeMediaUpdate(organizationId)
 }
 
 export function stopWatchingMedia() {
-  watchedOrganizationId = null
   socket.unSubscribeMediaUdate()
-}
-
-export function isRealtimeConnected() {
-  return socket.state.isConnected
 }
 
 export function realtimeState() {
   return socket.state
-}
-
-export function rewatchAfterReconnect() {
-  if (watchedOrganizationId) socket.subscribeMediaUpdate(watchedOrganizationId)
 }

@@ -130,7 +130,9 @@ export default {
         if (ctrl.signal.aborted) return
         throw e
       } finally {
-        if (!ctrl.signal.aborted && !silent) {
+        // Also when silent: it may have aborted a non-silent reload whose
+        // spinner is still on.
+        if (!ctrl.signal.aborted) {
           this.loading = false
           this.$store.dispatch("system/setIsLoading", false)
         }
@@ -148,7 +150,10 @@ export default {
     },
   },
   watch: {
-    getCurrentOrganizationScope(newOrgId, oldOrgId) {
+    // The route's organization, like init() reads: the store one is switched
+    // by the router guard before the route is confirmed, and subscribing
+    // from its watcher picked up the previous route's organization.
+    currentOrganizationScope(newOrgId, oldOrgId) {
       if (newOrgId && newOrgId !== oldOrgId) {
         this.loading = true
         this.$apiEventWS.unSubscribeMediaUdate()
@@ -165,14 +170,11 @@ export default {
     sidebarFilterTagIds: "reloadMedias",
     sortField: "reloadMedias",
     sortOrder: "reloadMedias",
-    // Resubscribe after every (re)connection; both subscribe methods are
-    // idempotent (they unsubscribe first).
-    "$apiEventWS.state.isConnected"(connected) {
-      if (!connected) return
-      if (this.getCurrentScope === "organization") {
-        this.$apiEventWS.subscribeMediaUpdate(this.currentOrganizationScope)
-        this.$apiEventWS.subscribeFolderUpdate(this.currentOrganizationScope)
-      }
+    // ApiEventWebSocket re-watches the media by itself after an outage, but
+    // what happened during it is lost: reload the list (back to the first
+    // page, accepted for such a rare event). The sidebar reloads its count.
+    "$apiEventWS.state.reconnectionCount"() {
+      this.reloadMedias({ silent: true })
     },
   },
 }
