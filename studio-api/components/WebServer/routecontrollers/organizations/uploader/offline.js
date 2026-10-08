@@ -104,6 +104,19 @@ async function injectSpeakerIdentification(conversation) {
   }
 }
 
+// Otherwise a failed dispatch leaves the job in "waiting" with nothing shown
+async function markJobError(conversationId, message) {
+  try {
+    await model.conversations.update({
+      _id: conversationId,
+      "jobs.transcription.state": "error",
+      "jobs.transcription.job_logs": message,
+    })
+  } catch (err) {
+    debug("Could not mark job of %s in error: %s", conversationId, err.message)
+  }
+}
+
 async function sessionReq(conversationId) {
   try {
     let conversation = await validateConversation(conversationId)
@@ -119,7 +132,10 @@ async function sessionReq(conversationId) {
       await new Promise((resolve) => setTimeout(resolve, delay))
       attempts++
     }
-    if (attempts === maxAttempts) return
+    if (attempts === maxAttempts) {
+      await markJobError(conversationId, "Session audio file not found")
+      return
+    }
     // Read before offline(): the model update it runs strips the conversation's _id.
     const orgId = conversation.organization?.organizationId?.toString()
     const userId = conversation.owner?.toString()
@@ -137,6 +153,11 @@ async function sessionReq(conversationId) {
     })
   } catch (err) {
     debug(err)
+    const detail = err.response?.data?.message || err.message
+    await markJobError(
+      conversationId,
+      `Transcription not dispatched: ${detail}`,
+    )
   }
 }
 

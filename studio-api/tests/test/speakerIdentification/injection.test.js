@@ -125,6 +125,19 @@ describe("applySpeakerIdentification", () => {
     ).rejects.toMatchObject({ status: 403 })
   })
 
+  it("(c3) throws when the collection has no Qdrant collection name", async () => {
+    mockGetById.mockResolvedValue([
+      { _id: COLL_ID, organizationId: { toString: () => ORG_ID } },
+    ])
+    const body = {
+      transcriptionConfig: diarConfig(),
+      speakerIdentificationCollections: [COLL_ID],
+    }
+    await expect(applySpeakerIdentification(body, makeOrg())).rejects.toThrow(
+      /no Qdrant collection name/,
+    )
+  })
+
   it("(d) throws when diarization is disabled", async () => {
     const body = {
       transcriptionConfig: { diarizationConfig: { enableDiarization: false } },

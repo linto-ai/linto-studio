@@ -6,9 +6,14 @@ const { v4: uuidv4 } = require("uuid")
 const fs = require("fs")
 const path = require("path")
 
-const { transformAudio, mergeAudio, mergeChannel } = require(
-  `${process.cwd()}/components/WebServer/controllers/files/transform`,
-)
+const {
+  transformAudio,
+  mergeAudio,
+  mergeChannel,
+  convertToFlac,
+  probeAudioDuration,
+} = require(`${process.cwd()}/components/WebServer/controllers/files/transform`)
+const limits = require(`${process.cwd()}/lib/dao/speakerIdentification/limits`)
 const { FileUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/file`,
 )
@@ -185,12 +190,10 @@ function getVoiceSamplesFolder() {
   return process.env.VOLUME_VOICE_SIGNATURES_PATH
 }
 
-const MAX_AUDIO_SIZE = 5 * 1024 * 1024 // 5MB
 const MAX_AUDIO_DURATION = 600 // 10 minutes
+const WAV_AUDIO_TYPES = ["audio/wav", "audio/wave", "audio/x-wav"]
 const ALLOWED_AUDIO_TYPES = [
-  "audio/wav",
-  "audio/wave",
-  "audio/x-wav",
+  ...WAV_AUDIO_TYPES,
   "audio/mp3",
   "audio/mpeg",
   "audio/webm",
@@ -214,14 +217,24 @@ function validateAudioFile(
     )
   }
 
-  if (audioFile.size > MAX_AUDIO_SIZE) {
+  const maxSizeMb = limits.maxSampleSizeMb()
+  if (audioFile.size > maxSizeMb * 1024 * 1024) {
     throw new ValidationError(
-      `Audio file too large. Maximum size: ${MAX_AUDIO_SIZE / 1024 / 1024}MB`,
+      `Audio file too large. Maximum size: ${maxSizeMb}MB`,
     )
   }
 }
 
-/** Store a voice sample to disk; returns the path relative to the storage folder. */
+function isWavSample(audioFile) {
+  return (
+    WAV_AUDIO_TYPES.includes(audioFile.mimetype) ||
+    path.extname(audioFile.name).toLowerCase() === ".wav"
+  )
+}
+
+/**
+ * Store a voice sample to disk; a wav upload is kept lossless as flac.
+ */
 async function storeVoiceSampleFile(audioFile) {
   const folder = getVoiceSamplesFolder()
   const storePath = `${getStorageFolder()}/${folder}`
@@ -234,7 +247,30 @@ async function storeVoiceSampleFile(audioFile) {
 
   await fs.promises.writeFile(fullPath, audioFile.data)
 
-  return `${folder}/${fileName}${ext}`
+  if (!isWavSample(audioFile)) {
+    return `${folder}/${fileName}${ext}`
+  }
+
+  const flacPath = `${storePath}/${fileName}.flac`
+  try {
+    await convertToFlac(fullPath, flacPath)
+  } catch (err) {
+    debug(`flac conversion failed, keeping the wav: ${err.message}`)
+    deleteFile(flacPath)
+    return `${folder}/${fileName}${ext}`
+  }
+  deleteFile(fullPath)
+  return `${folder}/${fileName}.flac`
+}
+
+async function readSampleDuration(absolutePath, clientDuration) {
+  try {
+    const duration = await probeAudioDuration(absolutePath)
+    if (Number.isFinite(duration)) return duration
+  } catch (err) {
+    debug(`audio duration probe failed: ${err.message}`)
+  }
+  return clientDuration
 }
 
 /** Resolve audioFilePath inside the storage directory; null if it escapes it (path traversal). */
@@ -284,25 +320,41 @@ async function deleteAudioFileIfOrphaned(filepath) {
   }
 }
 
-/** Store the audio file and create the sample document; deletes the file if creation fails. */
+// verifySample may throw: the file is then deleted and nothing is stored.
 async function storeAndCreateSample(
   audioFile,
   payload,
   sampleModel,
   ErrorClass,
+  verifySample,
 ) {
   const audioFilePath = await storeVoiceSampleFile(audioFile)
-  const fullPayload = { ...payload, audioFilePath, filename: audioFile.name }
+  const absolutePath = `${getStorageFolder()}/${audioFilePath}`
 
-  const result = await sampleModel.create(fullPayload)
+  try {
+    const audioDuration = await readSampleDuration(
+      absolutePath,
+      payload.audioDuration,
+    )
+    if (verifySample) await verifySample(absolutePath, audioDuration)
 
-  if (!result || result.insertedCount !== 1) {
-    deleteFile(`${getStorageFolder()}/${audioFilePath}`)
-    throw new ErrorClass("Error during the creation of the voice sample")
+    const fullPayload = {
+      ...payload,
+      audioFilePath,
+      audioDuration,
+      filename: audioFile.name,
+    }
+    const result = await sampleModel.create(fullPayload)
+    if (!result || result.insertedCount !== 1) {
+      throw new ErrorClass("Error during the creation of the voice sample")
+    }
+
+    const created = await sampleModel.getById(result.insertedId.toString())
+    return created[0]
+  } catch (err) {
+    deleteFile(absolutePath)
+    throw err
   }
-
-  const created = await sampleModel.getById(result.insertedId.toString())
-  return created[0]
 }
 
 module.exports = {

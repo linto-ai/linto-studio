@@ -228,8 +228,9 @@
         v-model="showRecordModal"
         :title="$t('speaker_diarization.record_modal_title')"
         :textActionApply="$t('speaker_diarization.upload_save')"
-        :disabledActionApply="!hasAudio || submitting"
+        :disabledActionApply="!hasAudio || sampleTooShort || submitting"
         :loading="submitting"
+        :closeOnApply="false"
         size="md"
         @submit="submitRecording">
         <div class="voice-optin__record">
@@ -239,6 +240,8 @@
             variant="inline"
             :disabled="recording"
             @input="switchMode" />
+
+          <VoiceSampleGuidelines />
 
           <!-- Record mode -->
           <template v-if="mode === 'record'">
@@ -271,9 +274,21 @@
                 <span
                   v-if="recording || audioBlob"
                   class="voice-optin__timer"
-                  >{{ formattedTime }}</span
+                  >{{ formattedTime }} / {{ formattedMaxTime }}</span
                 >
               </div>
+
+              <progress
+                class="voice-optin__progress"
+                :max="maxDurationSeconds"
+                :value="recordingTime"></progress>
+
+              <VoiceSampleTooShortWarning
+                v-if="audioBlob && sampleTooShort"
+                :durationSeconds="currentSampleDuration" />
+              <p v-else class="voice-optin__duration-hint">
+                {{ durationHint }}
+              </p>
 
               <div class="voice-optin__buttons">
                 <Button
@@ -325,6 +340,9 @@
                 ref="uploadAudioPlayer"
                 :src="audioUrl"
                 controls></audio>
+              <VoiceSampleTooShortWarning
+                v-if="sampleTooShort"
+                :durationSeconds="currentSampleDuration" />
             </div>
             <Droparea
               v-else
@@ -335,6 +353,8 @@
               <p>{{ $t("speaker_diarization.drop_or_browse") }}</p>
             </Droparea>
           </template>
+
+          <VoiceSampleUploadError v-if="submitError" :message="submitError" />
         </div>
       </Modal>
 
@@ -373,7 +393,16 @@ import Modal from "@/components/molecules/Modal.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import Droparea from "@/components/molecules/Droparea.vue"
 import { formatDateOrDash } from "@/tools/formatDate.js"
-import { STORAGE_MODE } from "@/tools/voiceprintConstants.js"
+import VoiceSampleGuidelines from "@/components/VoiceSampleGuidelines.vue"
+import VoiceSampleTooShortWarning from "@/components/VoiceSampleTooShortWarning.vue"
+import VoiceSampleUploadError from "@/components/VoiceSampleUploadError.vue"
+import {
+  STORAGE_MODE,
+  VOICE_SAMPLE_DURATION,
+} from "@/tools/voiceprintConstants.js"
+import { isVoiceSampleTooShort } from "@/tools/isVoiceSampleTooShort.js"
+import { voiceSampleUploadErrorMessage } from "@/tools/voiceSampleUploadErrorMessage.js"
+import { VoiceSampleRecorder } from "@/services/recording/VoiceSampleRecorder.js"
 import {
   apiGetUserVoiceSamples,
   apiCreateUserVoiceSample,
@@ -387,10 +416,6 @@ import {
 } from "@/api/userVoice.js"
 import { formatDuration, formatCompactDuration } from "@/tools/formatDuration.js"
 import { audioDuration } from "@/tools/audioDuration.js"
-import {
-  getExtensionForMimeType,
-  getSupportedRecordingMimeType,
-} from "@/tools/audioMimeTypes.js"
 import { voiceSignaturePlaybackMixin } from "@/mixins/voiceSignaturePlayback.js"
 
 function defaultVoiceprintStatus() {
@@ -399,7 +424,17 @@ function defaultVoiceprintStatus() {
 
 export default {
   name: "UserSettingsVoiceOptIn",
-  components: { Button, SwitchInput, FormRadio, Modal, Tabs, Droparea },
+  components: {
+    Button,
+    SwitchInput,
+    FormRadio,
+    Modal,
+    Tabs,
+    Droparea,
+    VoiceSampleGuidelines,
+    VoiceSampleTooShortWarning,
+    VoiceSampleUploadError,
+  },
   mixins: [voiceSignaturePlaybackMixin],
   data() {
     return {
@@ -428,10 +463,10 @@ export default {
       audioBlob: null,
       audioUrl: null,
       uploadedFile: null,
-      mediaRecorder: null,
-      activeStream: null,
-      audioChunks: [],
+      recorder: null,
+      maxDurationReached: false,
       submitting: false,
+      submitError: null,
       promptIndex: 0,
       recordingTime: 0,
       recordingTimer: null,
@@ -472,6 +507,30 @@ export default {
     },
     formattedTime() {
       return formatDuration(this.recordingTime, { compact: true }) || "00:00"
+    },
+    maxDurationSeconds() {
+      return VOICE_SAMPLE_DURATION.MAX_SECONDS
+    },
+    formattedMaxTime() {
+      return formatDuration(this.maxDurationSeconds, { compact: true })
+    },
+    currentSampleDuration() {
+      if (this.mode === "upload") return this.uploadDuration
+      return this.recordingTime
+    },
+    sampleTooShort() {
+      return isVoiceSampleTooShort(this.currentSampleDuration)
+    },
+    durationHint() {
+      if (this.maxDurationReached) {
+        return this.$t("speaker_diarization.recording_max_reached", {
+          max: this.maxDurationSeconds,
+        })
+      }
+      return this.$t("speaker_diarization.duration_target", {
+        min: VOICE_SAMPLE_DURATION.MIN_SECONDS,
+        max: this.maxDurationSeconds,
+      })
     },
     isStorageModeEmbeddings() {
       return this.voiceprintStatus.storageMode === STORAGE_MODE.EMBEDDINGS
@@ -735,37 +794,20 @@ export default {
       this.promptIndex = newIndex
     },
     async startRecording() {
-      let stream
+      this.resetAudio()
+      this.recorder = new VoiceSampleRecorder({
+        maxDurationSeconds: this.maxDurationSeconds,
+        onMaxDurationReached: () => this.stopRecording(true),
+      })
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        this.activeStream = stream
-        this.mediaRecorder = new MediaRecorder(stream, {
-          mimeType: getSupportedRecordingMimeType(),
-        })
-        this.audioChunks = []
-
-        this.mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) this.audioChunks.push(event.data)
-        }
-
-        this.mediaRecorder.onstop = () => {
-          const mimeType = this.mediaRecorder.mimeType
-          this.audioBlob = new Blob(this.audioChunks, { type: mimeType })
-          this.audioUrl = URL.createObjectURL(this.audioBlob)
-          this.releaseStream()
-        }
-
-        this.mediaRecorder.start()
+        await this.recorder.start()
         this.recording = true
         this.recordingTime = 0
         this.recordingTimer = setInterval(() => {
-          this.recordingTime++
-        }, 1000)
+          this.recordingTime = Math.floor(this.recorder.durationSeconds)
+        }, 250)
       } catch (err) {
-        if (stream) {
-          stream.getTracks().forEach((track) => track.stop())
-          this.activeStream = null
-        }
+        this.releaseRecorder()
         this.$store.dispatch("system/addNotification", {
           message: this.$t("speaker_diarization.microphone_error"),
           type: "error",
@@ -773,21 +815,30 @@ export default {
         })
       }
     },
-    releaseStream() {
-      if (this.activeStream) {
-        this.activeStream.getTracks().forEach((track) => track.stop())
-        this.activeStream = null
-      }
-    },
-    stopRecording() {
-      if (this.mediaRecorder && this.mediaRecorder.state !== "inactive") {
-        this.mediaRecorder.stop()
-      }
-      this.recording = false
+    clearRecordingTimer() {
       if (this.recordingTimer) {
         clearInterval(this.recordingTimer)
         this.recordingTimer = null
       }
+    },
+    releaseRecorder() {
+      this.clearRecordingTimer()
+      this.recording = false
+      if (this.recorder) {
+        this.recorder.destroy()
+        this.recorder = null
+      }
+    },
+    stopRecording(maxReached = false) {
+      this.clearRecordingTimer()
+      this.recording = false
+      const result = this.recorder?.stop()
+      this.recorder = null
+      if (!result) return
+      this.maxDurationReached = maxReached
+      this.recordingTime = Math.round(result.durationSeconds)
+      this.audioBlob = result.blob
+      this.audioUrl = URL.createObjectURL(this.audioBlob)
     },
     handleDropareaFiles(files) {
       if (files.length > 0) this.setUploadedFile(files[0])
@@ -811,12 +862,12 @@ export default {
       }
     },
     resetAudio() {
-      this.stopRecording()
-      this.releaseStream()
+      this.releaseRecorder()
+      this.submitError = null
       if (this.audioUrl) URL.revokeObjectURL(this.audioUrl)
       this.audioBlob = null
       this.audioUrl = null
-      this.audioChunks = []
+      this.maxDurationReached = false
       this.uploadedFile = null
       this.uploadDuration = null
       this.recordingTime = 0
@@ -835,18 +886,16 @@ export default {
           ? Math.round(this.uploadDuration)
           : undefined
       } else if (this.mode === "record" && this.audioBlob) {
-        const extension = getExtensionForMimeType(this.audioBlob.type)
-        audioFile = new File(
-          [this.audioBlob],
-          `voice-sample.${extension}`,
-          { type: this.audioBlob.type },
-        )
+        audioFile = new File([this.audioBlob], "voice-sample.wav", {
+          type: this.audioBlob.type,
+        })
         duration = this.recordingTime
       } else {
         return
       }
 
       this.submitting = true
+      this.submitError = null
       try {
         await apiCreateUserVoiceSample(audioFile, duration)
 
@@ -864,12 +913,10 @@ export default {
         // get deleted in embeddings-only mode).
         this.pollVoiceprintStatus()
       } catch (err) {
-        this.$store.dispatch("system/addNotification", {
-          message:
-            err.message || this.$t("speaker_diarization.upload_error"),
-          type: "error",
-          timeout: 5000,
-        })
+        this.submitError = voiceSampleUploadErrorMessage(
+          err,
+          this.$t.bind(this),
+        )
       } finally {
         this.submitting = false
       }
@@ -1184,7 +1231,7 @@ export default {
   &__record {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
   &__text-prompt {
@@ -1202,9 +1249,9 @@ export default {
     background: var(--neutral-10);
     border: 1px solid var(--neutral-20);
     border-radius: 8px;
-    padding: 1rem;
-    font-size: 16px;
-    line-height: 1.6;
+    padding: 0.75rem;
+    font-size: 14px;
+    line-height: 1.5;
     color: var(--text-primary);
     font-style: italic;
   }
@@ -1253,6 +1300,37 @@ export default {
     font-family: monospace;
     font-size: 14px;
     color: var(--text-primary);
+  }
+
+  &__progress {
+    display: block;
+    width: 100%;
+    height: 6px;
+    border: none;
+    border-radius: 3px;
+    overflow: hidden;
+    appearance: none;
+    background: var(--neutral-30);
+
+    &::-webkit-progress-bar {
+      background: var(--neutral-30);
+    }
+
+    &::-webkit-progress-value {
+      border-radius: 3px;
+      background: var(--primary-color);
+    }
+
+    &::-moz-progress-bar {
+      border-radius: 3px;
+      background: var(--primary-color);
+    }
+  }
+
+  &__duration-hint {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-secondary);
   }
 
   &__buttons {

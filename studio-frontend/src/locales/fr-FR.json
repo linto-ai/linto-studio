@@ -2365,8 +2365,9 @@
     "upload_save": "Enregistrer",
     "upload_success": "1 échantillon vocal téléversé avec succès | {count} échantillons vocaux téléversés avec succès",
     "upload_error": "Une erreur est survenue lors du téléversement des échantillons vocaux",
-    "upload_error_count": "1 fichier n'a pas pu être envoyé : {message} | {count} fichiers n'ont pas pu être envoyés : {message}",
-    "upload_error_unsupported_format": "format de fichier non supporté",
+    "upload_error_unsupported_format": "Format de fichier non supporté",
+    "upload_error_mismatch": "Cette signature vocale est trop différente de vos échantillons précédents (bruit de fond, distance au micro, ou autre personne). L'enregistrement n'a pas été conservé. Recommencez dans un endroit calme, en parlant près du micro, dans les mêmes conditions que vos premiers échantillons.",
+    "upload_error_service_unavailable": "Le service d'identification des locuteurs est indisponible, réessayez plus tard",
     "drop_or_browse": "Glissez-déposez des fichiers audio ici, ou parcourez",
     "signature_deleted_success": "Échantillon vocal supprimé avec succès",
     "signature_deleted_error": "Une erreur est survenue lors de la suppression de l'échantillon vocal",
@@ -2429,12 +2430,22 @@
     "stop_recording": "Arrêter",
     "re_record": "Réenregistrer",
     "microphone_error": "Impossible d'accéder au microphone. Vérifiez les permissions de votre navigateur.",
+    "guidelines_title": "Pour une signature fiable",
+    "guidelines_items": [
+      "Utilisez le micro et l'environnement de vos réunions habituelles, pas un autre appareil.",
+      "Tous vos échantillons doivent venir du même micro : ne mélangez pas les sources.",
+      "Parlez en continu, d'une voix naturelle, jusqu'à la durée attendue.",
+      "Installez-vous dans un endroit calme, sans musique ni autres voix."
+    ],
+    "duration_target": "Durée attendue : entre {min} et {max} secondes.",
+    "recording_max_reached": "Durée maximale de {max} secondes atteinte, l'enregistrement s'est arrêté.",
+    "sample_too_short": "Échantillon trop court ({duration} s) : il faut au moins {min} secondes de parole.",
     "prompt_texts": [
-      "Le soleil se couche doucement derrière les montagnes, illuminant le ciel de nuances orangées et violettes. Les oiseaux chantent leurs dernières mélodies avant la tombée de la nuit paisible.",
-      "Dans cette forêt ancienne, les arbres centenaires se dressent fièrement vers le ciel. Le vent murmure à travers leurs branches, créant une symphonie naturelle qui apaise les esprits.",
-      "La mer s'étend à perte de vue, ses vagues rythmées viennent caresser le sable doré. Au loin, un voilier blanc glisse silencieusement sur les flots, porté par la brise marine.",
-      "Les rues de la vieille ville racontent des histoires d'un autre temps. Chaque pierre, chaque façade porte la mémoire des générations passées qui ont façonné ce lieu unique.",
-      "Ce matin, la rosée perle sur les pétales des fleurs du jardin. Le parfum délicat des roses se mêle à celui du café fraîchement préparé, annonçant une belle journée."
+      "Le soleil se couche doucement derrière les montagnes, illuminant le ciel de nuances orangées et violettes. Les oiseaux chantent leurs dernières mélodies avant la tombée de la nuit. Dans la vallée, les lumières du village s'allument une à une, tandis que l'air frais du soir porte l'odeur des feux de bois. Sur le chemin qui longe la rivière, quelques promeneurs rentrent sans se presser, profitant des derniers instants de cette belle journée d'automne.",
+      "Dans cette forêt ancienne, les arbres centenaires se dressent fièrement vers le ciel. Le vent murmure à travers leurs branches, créant une symphonie naturelle qui apaise les esprits. Un sentier de terre serpente entre les fougères et les racines, et l'on devine au loin le bruit d'un ruisseau. Les rayons du soleil traversent le feuillage par endroits et dessinent sur le sol des taches de lumière qui bougent lentement au rythme de la brise.",
+      "La mer s'étend à perte de vue, ses vagues rythmées viennent caresser le sable doré. Au loin, un voilier blanc glisse silencieusement sur les flots, porté par la brise marine. Sur la plage, des enfants construisent un château avec des seaux colorés, pendant que leurs parents lisent à l'ombre d'un parasol. Les mouettes tournent au-dessus du port, attendant le retour des bateaux de pêche qui rentreront avant la fin de l'après-midi.",
+      "Les rues de la vieille ville racontent des histoires d'un autre temps. Chaque pierre, chaque façade porte la mémoire des générations passées qui ont façonné ce lieu unique. Sur la place centrale, la fontaine coule depuis des siècles, et les terrasses des cafés se remplissent dès les premiers rayons de soleil. Le marché du samedi attire les habitants des villages voisins, venus acheter du pain, des fromages et des légumes cultivés dans la région.",
+      "Ce matin, la rosée perle sur les pétales des fleurs du jardin. Le parfum délicat des roses se mêle à celui du café fraîchement préparé, annonçant une belle journée. Dans la cuisine, la radio diffuse une chanson ancienne que tout le monde connaît par cœur. Par la fenêtre ouverte, on entend le facteur saluer les voisins et le chat du quartier miauler pour réclamer sa part de petit-déjeuner, comme chaque jour depuis des années."
     ]
   },
   "horizontal_scroller": {
