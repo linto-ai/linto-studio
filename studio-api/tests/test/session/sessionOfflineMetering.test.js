@@ -104,3 +104,31 @@ describe("sessionReq: offline transcription of a session is metered", () => {
     expect(mockRecord).not.toHaveBeenCalled()
   })
 })
+
+describe("sessionReq: a job that cannot be dispatched is marked in error", () => {
+  const model = require(`${process.cwd()}/lib/mongodb/models`)
+  beforeEach(() => model.conversations.update.mockClear())
+
+  test("gateway refusal", async () => {
+    const err = new Error("Request failed with status code 403")
+    err.response = { data: { message: "collections do not belong to the org" } }
+    axios.postFormData.mockRejectedValueOnce(err)
+    await sessionReq("conv-1")
+    // The mocked update strips the _id like the real model does
+    expect(model.conversations.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        "jobs.transcription.state": "error",
+        "jobs.transcription.job_logs":
+          "Transcription not dispatched: collections do not belong to the org",
+      }),
+    )
+  })
+
+  test("nominal dispatch leaves the job alone", async () => {
+    await sessionReq("conv-1")
+    const errorUpdates = model.conversations.update.mock.calls.filter(
+      ([payload]) => payload["jobs.transcription.state"] === "error",
+    )
+    expect(errorUpdates).toHaveLength(0)
+  })
+})

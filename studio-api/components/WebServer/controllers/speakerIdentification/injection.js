@@ -107,6 +107,11 @@ async function applySpeakerIdentification(body, organization) {
     ) {
       throw new SpeakerIdentificationForbidden()
     }
+    if (!found[0].qdrantCollectionName) {
+      throw new ConversationError(
+        `Voiceprint collection ${collectionId} has no Qdrant collection name`,
+      )
+    }
     qdrantCollections.push(found[0].qdrantCollectionName)
   }
 

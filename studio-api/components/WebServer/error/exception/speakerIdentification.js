@@ -13,6 +13,10 @@ const VoiceprintCollectionNotFound = createException("VoiceprintCollectionNotFou
 const VoiceSampleError = createException("VoiceSampleError", "voiceSample", 400, "Voice sample error")
 const VoiceSampleNotFound = createException("VoiceSampleNotFound", "voiceSample", 404, "Voice sample not found")
 const VoiceSampleUnsupportedMediaType = createException("VoiceSampleUnsupportedMediaType", "voiceSample", 415, "Voice sample unsupported media type")
+// Shared by user and organization samples
+const VoiceSampleUnprocessable = createException("VoiceSampleUnprocessable", "voiceSample", 400, "The speaker identification service could not process this voice sample")
+const VoiceSampleMismatch = createException("VoiceSampleMismatch", "voiceSample", 422, "Voice sample does not match the speaker voiceprint")
+const SpeakerIdentificationUnavailable = createException("SpeakerIdentificationUnavailable", "speakerIdentification", 503, "Speaker identification service unavailable")
 
 // User voice sample exceptions (user-scoped)
 const UserVoiceSampleError = createException("UserVoiceSampleError", "userVoiceSample", 400, "User voice sample error")
@@ -29,6 +33,9 @@ module.exports = {
   VoiceSampleError,
   VoiceSampleNotFound,
   VoiceSampleUnsupportedMediaType,
+  VoiceSampleUnprocessable,
+  VoiceSampleMismatch,
+  SpeakerIdentificationUnavailable,
   UserVoiceSampleError,
   UserVoiceSampleNotFound,
   UserVoiceSampleConflict,

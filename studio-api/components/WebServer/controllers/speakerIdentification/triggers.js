@@ -325,6 +325,14 @@ async function userDisplayName(userId) {
   return displayName(users && users[0]) || userId.toString()
 }
 
+// Opted-in org, else any org of the user, else null
+async function resolveUserComputeOrgId(userId, optIns) {
+  const optedIn = optIns || (await model.voiceOptIns.getByUserId(userId))
+  if (optedIn.length > 0) return optedIn[0].organizationId.toString()
+  const orgs = await model.organizations.listSelf(userId)
+  return orgs.length > 0 ? orgs[0]._id.toString() : null
+}
+
 /**
  * Recompute the user voiceprint from their samples and re-upsert it into the
  * Organization collection of every opted-in organization. Fire-and-forget.
@@ -343,16 +351,7 @@ async function recomputeUser(userId) {
     const storageMode = model.voiceprints.getStorageMode(existing)
 
     const optIns = await model.voiceOptIns.getByUserId(userId)
-    // Compute needs an organization only for the request header (the worker
-    // ignores it; isolation is per-collection). Prefer an opted-in org, else
-    // fall back to any org the user belongs to so the voiceprint is computed
-    // eagerly when samples change (US-U2), even before any opt-in.
-    let computeOrgId =
-      optIns.length > 0 ? optIns[0].organizationId.toString() : null
-    if (!computeOrgId) {
-      const orgs = await model.organizations.listSelf(userId)
-      computeOrgId = orgs.length > 0 ? orgs[0]._id.toString() : null
-    }
+    const computeOrgId = await resolveUserComputeOrgId(userId, optIns)
     if (!computeOrgId) {
       // The user belongs to no organization at all: cannot compute.
       return
@@ -522,6 +521,7 @@ module.exports = {
   dropCollectionSpeakers,
   dropOrganizationSpeakers,
   recomputeUser,
+  resolveUserComputeOrgId,
   upsertUserInOrg,
   removeUserFromOrg,
   removeUserEverywhere,
