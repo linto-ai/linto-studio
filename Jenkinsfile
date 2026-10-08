@@ -70,6 +70,12 @@ def buildSaasImage(version) {
                     image.push(version)
                 }
             }
+
+            // Preprod runs this flavour: redeploy it on the image just pushed. The studio-api
+            // deploy of a regular build happened before this rebuild, on the stale SaaS image.
+            if (version == 'latest-unstable') {
+                preprodDeploy('studio-api-saas')
+            }
         } finally {
             deleteDir()
         }
