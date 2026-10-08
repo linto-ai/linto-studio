@@ -3,7 +3,7 @@ import { computeMemberUsageRows } from "../computeMemberUsageRows.js"
 
 const COLUMNS = [
   { capability: "import.minutes", key: "usage_import_minutes" },
-  { capability: "ai.chat", key: "usage_ai_chat" },
+  { capability: "ai.credits", key: "usage_ai_credits" },
 ]
 
 const MEMBERS = [
@@ -17,19 +17,19 @@ test("puts each member's consumption on its row", (t) => {
     {
       u1: {
         "import.minutes": { used: 132.5, events: 12 },
-        "ai.chat": { used: 41, events: 41 },
+        "ai.credits": { used: 41, events: 41 },
       },
     },
     COLUMNS,
   )
   t.is(rows[0].usage_import_minutes, 132.5)
-  t.is(rows[0].usage_ai_chat, 41)
+  t.is(rows[0].usage_ai_credits, 41)
 })
 
 test("a member absent from the payload spent nothing", (t) => {
   const rows = computeMemberUsageRows(MEMBERS, {}, COLUMNS)
   t.is(rows[1].usage_import_minutes, 0)
-  t.is(rows[1].usage_ai_chat, 0)
+  t.is(rows[1].usage_ai_credits, 0)
 })
 
 test("keeps the member fields untouched", (t) => {
@@ -41,10 +41,10 @@ test("keeps the member fields untouched", (t) => {
 test("falls back to the member id when there is no userId", (t) => {
   const rows = computeMemberUsageRows(
     [{ _id: "u3", firstname: "Alan" }],
-    { u3: { "ai.chat": { used: 7 } } },
+    { u3: { "ai.credits": { used: 7 } } },
     COLUMNS,
   )
-  t.is(rows[0].usage_ai_chat, 7)
+  t.is(rows[0].usage_ai_credits, 7)
 })
 
 test("no usage payload yet still yields rows", (t) => {

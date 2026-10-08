@@ -19,9 +19,8 @@ function usageFor(planKey, extra = {}) {
     mode: "normal",
     capabilities: {
       "api.calls": quota(3, 100),
-      "ai.chat": quota(12, 80),
       "import.minutes": quota(30, 120, "minutes"),
-      "ai.generations": quota(2, 20),
+      "ai.credits": quota(12, 20, "credits"),
       collaboration: { type: "boolean", enabled: false },
     },
     live: { balance: 45, expiresAt: "2027-09-01", unmetered: false },
@@ -140,8 +139,7 @@ test("keeps the displayed quotas only, in display order", (t) => {
     view.meters.map((meter) => [meter.key, meter.labelKey]),
     [
       ["import.minutes", "billing.settings.meter.import"],
-      ["ai.generations", "billing.settings.meter.ai"],
-      ["ai.chat", "billing.settings.meter.chat"],
+      ["ai.credits", "billing.settings.meter.ai"],
     ],
   )
   t.true(view.meters.every((meter) => typeof meter.icon === "string"))

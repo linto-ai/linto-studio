@@ -22,14 +22,9 @@ const DISPLAYED_METERS = [
     icon: "file-audio",
   },
   {
-    key: "ai.generations",
+    key: "ai.credits",
     labelKey: "billing.settings.meter.ai",
     icon: "sparkle",
-  },
-  {
-    key: "ai.chat",
-    labelKey: "billing.settings.meter.chat",
-    icon: "chat-circle-dots",
   },
 ]
 

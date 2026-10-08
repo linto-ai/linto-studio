@@ -22,8 +22,7 @@
       },
       "meter": {
         "import": "Transcription de fichiers",
-        "ai": "Résumés IA",
-        "chat": "Messages de chat"
+        "ai": "Crédits IA"
       },
       "buy_pack": "Acheter un pack",
       "no_pack_available": "Aucun pack n'est proposé avec l'offre de cette organisation.",
@@ -128,8 +127,7 @@
     },
     "meter": {
       "import": "Imports",
-      "ai": "Générations IA",
-      "chat": "Messages chat",
+      "ai": "Crédits IA",
       "api": "Appels API"
     },
     "member_usage": {
@@ -1317,7 +1315,7 @@
       "usage_all_unlimited_per_seat": "Transcription, résumés et chat illimités* par licence",
       "ai_and_chat_unlimited": "Résumés et chat illimités*",
       "ai_and_chat_unlimited_per_seat": "Résumés et chat illimités* par licence",
-      "ai_and_chat_count": "{generations} résumés IA et {chat} messages de chat par mois",
+      "ai_credits_count": "{credits} crédits IA par mois (un résumé = {generation} crédits, un message de chat = {chat})",
       "api_calls_unlimited": "Appels API illimités*",
       "api_calls_count": "{count} appels API par mois",
       "live_welcome": "{minutes} minutes-langue de live offertes, une seule fois",

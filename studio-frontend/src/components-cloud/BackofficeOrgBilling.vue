@@ -224,8 +224,7 @@ const MODES = ["normal", "comp", "managed"]
 
 const METER_LABEL = {
   "import.minutes": "billing.meter.import",
-  "ai.generations": "billing.meter.ai",
-  "ai.chat": "billing.meter.chat",
+  "ai.credits": "billing.meter.ai",
   "api.calls": "billing.meter.api",
 }
 

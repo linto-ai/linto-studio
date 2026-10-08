@@ -3,8 +3,7 @@
 // an organization credit, and the per-member payload only carries quota rules.
 const MEMBER_CAPABILITIES = [
   { capability: "import.minutes", labelKey: "billing.meter.import" },
-  { capability: "ai.generations", labelKey: "billing.meter.ai" },
-  { capability: "ai.chat", labelKey: "billing.meter.chat" },
+  { capability: "ai.credits", labelKey: "billing.meter.ai" },
 ]
 
 /**
