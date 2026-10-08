@@ -22,6 +22,10 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
 
+// Stops the infinite scroll from hammering the API when the next page keeps
+// failing: the observer fires again as soon as loadingNextPage is reset.
+const MAX_NEXT_PAGE_ATTEMPTS = 3
+
 export default {
   name: "NextExplore",
   components: {
@@ -38,6 +42,7 @@ export default {
     return {
       loading: true,
       loadingNextPage: false,
+      nextPageFailedAttempts: 0,
     }
   },
   computed: {
@@ -110,6 +115,7 @@ export default {
     async reloadMedias({ silent = false } = {}) {
       this._abortCtrl?.abort()
       const ctrl = (this._abortCtrl = new AbortController())
+      this.nextPageFailedAttempts = 0
       if (!silent) this.loading = true
       this.$store.dispatch(
         "organizations/setCurrentFilterStatus",
@@ -131,10 +137,13 @@ export default {
       }
     },
     async handleLoadMore() {
+      if (this.nextPageFailedAttempts >= MAX_NEXT_PAGE_ATTEMPTS) return
       this.loadingNextPage = true
-      await this.$store.dispatch(`${this.storeScope}/loadNextPage`, {
-        folderId: this.effectiveFolderId,
-      })
+      const loaded = await this.$store.dispatch(
+        `${this.storeScope}/loadNextPage`,
+        { folderId: this.effectiveFolderId },
+      )
+      this.nextPageFailedAttempts = loaded ? 0 : this.nextPageFailedAttempts + 1
       this.loadingNextPage = false
     },
   },

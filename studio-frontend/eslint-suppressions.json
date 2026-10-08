@@ -349,9 +349,6 @@
     }
   },
   "src/components/ScreenEditorBox.vue": {
-    "no-unused-vars": {
-      "count": 1
-    },
     "vue/no-textarea-mustache": {
       "count": 1
     },
@@ -1225,11 +1222,6 @@
   "src/tools/test/mergeTurns.js": {
     "no-unused-vars": {
       "count": 2
-    }
-  },
-  "src/tools/throttle.js": {
-    "no-unused-vars": {
-      "count": 3
     }
   },
   "src/views/404.vue": {

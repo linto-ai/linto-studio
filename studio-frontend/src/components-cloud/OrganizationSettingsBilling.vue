@@ -100,8 +100,7 @@
               size="sm"
               icon="plus"
               :disabled="!canBuyPack"
-              :loading="pendingRedirect === 'pack'"
-              @click="openPackPicker">
+              @click="openPackPurchase">
               {{ $t("billing.settings.buy_pack") }}
             </Button>
           </template>
@@ -183,10 +182,9 @@
       </template>
     </template>
 
-    <PackPickerModal
-      v-model="isPackPickerOpen"
-      :packs="purchasablePacks"
-      @submit="buyPack" />
+    <PackPurchaseModal
+      v-model="isPackPurchaseOpen"
+      :returnUrl="packPurchaseReturnUrl" />
   </div>
 </template>
 
@@ -194,24 +192,21 @@
 import { mapActions, mapGetters } from "vuex"
 import { bus } from "@/main.js"
 import {
-  apiCreateCreditsCheckout,
   apiCreatePortalSession,
   apiGetBillingOverview,
   apiGetCredits,
-  apiGetPacks,
 } from "@/api/cloud"
 import { SETTINGS_QUERY_PARAM } from "@/const/settingsQueryParam"
 import { computeBillingReturnUrl } from "@/tools/computeBillingReturnUrl"
 import { computeOrganizationBillingView } from "@/tools/computeOrganizationBillingView"
 import { computePackLots } from "@/tools/computePackLots"
 import { computePaymentMethodSummary } from "@/tools/computePaymentMethodSummary"
-import { computePurchasablePacks } from "@/tools/computePurchasablePacks"
 import { formatFullDate } from "@/tools/formatFullDate"
 import InvoiceTable from "@/components-cloud/InvoiceTable.vue"
 import HorizontalScroller from "@/components/molecules/HorizontalScroller.vue"
 import SectionHeading from "@/components/molecules/SectionHeading.vue"
 import PackLot from "@/components-cloud/PackLot.vue"
-import PackPickerModal from "@/components-cloud/PackPickerModal.vue"
+import PackPurchaseModal from "@/components-cloud/PackPurchaseModal.vue"
 import UpcomingInvoiceSummary from "@/components-cloud/UpcomingInvoiceSummary.vue"
 
 // Billing of the current organization (org admins only): usage and packs,
@@ -224,7 +219,7 @@ export default {
     HorizontalScroller,
     SectionHeading,
     PackLot,
-    PackPickerModal,
+    PackPurchaseModal,
     UpcomingInvoiceSummary,
   },
   props: {
@@ -236,15 +231,20 @@ export default {
       usageFailed: false,
       overview: null,
       overviewFailed: false,
-      packs: [],
       creditLots: [],
-      isPackPickerOpen: false,
-      // pack | portal | payment_method: the Stripe page being opened
+      isPackPurchaseOpen: false,
+      packPurchaseReturnUrl: null,
+      // portal | payment_method: the Stripe page being opened
       pendingRedirect: null,
     }
   },
   computed: {
-    ...mapGetters("billing", ["usage", "subscription", "plans"]),
+    ...mapGetters("billing", [
+      "usage",
+      "subscription",
+      "plans",
+      "purchasablePacks",
+    ]),
     organizationId() {
       return this.currentOrganization._id
     },
@@ -265,9 +265,6 @@ export default {
     },
     packLots() {
       return computePackLots(this.creditLots)
-    },
-    purchasablePacks() {
-      return computePurchasablePacks(this.packs, this.view.plan)
     },
     // A locked team org can't use any quota, bought minutes included
     canBuyPack() {
@@ -337,13 +334,6 @@ export default {
     organizationId() {
       this.loadBilling()
     },
-    // Back from a pack Checkout with ?type=credits&status=success|cancel
-    "$route.query.status": {
-      handler() {
-        this.handleCreditsCheckoutReturn()
-      },
-      immediate: true,
-    },
   },
   mounted() {
     this.loadBilling()
@@ -352,6 +342,7 @@ export default {
     ...mapActions("billing", [
       "fetchUsage",
       "fetchSubscriptions",
+      "fetchPacks",
       "openUpgradeModal",
     ]),
     formatFullDate,
@@ -361,7 +352,7 @@ export default {
         this.fetchUsage(this.organizationId),
         this.fetchSubscriptions(this.organizationId),
         apiGetBillingOverview(this.organizationId),
-        apiGetPacks(),
+        this.fetchPacks(),
         this.loadCreditLots(),
       ])
       // Without the subscription or the pack catalog the plan buttons would
@@ -369,7 +360,6 @@ export default {
       this.usageFailed = !usage || !Array.isArray(subscriptions) || !packs
       this.overview = overview || null
       this.overviewFailed = !overview
-      this.packs = packs || []
       this.loading = false
     },
     // The packs are a section of their own: without them the rest of the tab
@@ -387,17 +377,6 @@ export default {
         label: this.$t(labelKey, { date: dateLabel }),
       }
     },
-    openPackPicker() {
-      this.isPackPickerOpen = true
-    },
-    async buyPack(packKey) {
-      this.pendingRedirect = "pack"
-      const session = await apiCreateCreditsCheckout(this.organizationId, {
-        packKey,
-        returnUrl: computeBillingReturnUrl(window.location.href),
-      })
-      this.redirectToStripe(session)
-    },
     manageSubscription() {
       this.pendingRedirect = "portal"
       return this.openPortal()
@@ -405,6 +384,11 @@ export default {
     updatePaymentMethod() {
       this.pendingRedirect = "payment_method"
       return this.openPortal("payment_method_update")
+    },
+    // Every Stripe page opened from here comes back to this tab
+    openPackPurchase() {
+      this.packPurchaseReturnUrl = computeBillingReturnUrl(window.location.href)
+      this.isPackPurchaseOpen = true
     },
     async openPortal(flow) {
       const session = await apiCreatePortalSession(this.organizationId, {
@@ -420,18 +404,6 @@ export default {
       }
       this.pendingRedirect = null
       this.notify("error", this.$t("billing.settings.stripe_error"))
-    },
-    handleCreditsCheckoutReturn() {
-      const { type, status, ...query } = this.$route.query
-      if (type !== "credits" || !status) return
-      this.$router.replace({ query }).catch(() => {})
-      if (status === "success") {
-        this.notify("success", this.$t("billing.settings.pack_bought"))
-        this.fetchUsage(this.organizationId)
-        this.loadCreditLots()
-      } else {
-        this.notify("info", this.$t("billing.settings.pack_cancelled"))
-      }
     },
     notify(status, message) {
       bus.$emit("app_notif", { status, message, timeout: 5000 })

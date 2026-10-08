@@ -5,7 +5,16 @@
       :name="icon"
       class="notification-banner__icon"
       size="sm" />
-    <slot></slot>
+    <!-- With actions, the text gets its own box that wraps, and the buttons
+         stay whole at the end, centered on however many lines it takes.
+         Without, the content stays as is (direct children of the flex). -->
+    <template v-if="$slots.actions">
+      <div class="notification-banner__content"><slot></slot></div>
+      <div class="notification-banner__actions">
+        <slot name="actions"></slot>
+      </div>
+    </template>
+    <slot v-else></slot>
   </div>
 </template>
 
@@ -64,6 +73,19 @@ export default {
 
 .notification-banner__icon {
   flex-shrink: 0;
+}
+
+/* The text takes the room left and wraps inside it */
+.notification-banner__content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.notification-banner__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--small-gap);
+  margin-left: var(--small-gap);
 }
 
 .notification-banner.neutral {

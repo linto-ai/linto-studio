@@ -5,12 +5,13 @@
         class="flex1 flex gap-medium align-center"
         style="margin-right: 0.5rem">
         <MicrophoneStatus
-          v-if="microphoneStatus !== 'idle'"
-          :status="microphoneStatus"
+          v-if="displayedMicrophoneStatus !== 'idle'"
+          :status="displayedMicrophoneStatus"
           :speaking="speaking" />
 
         <div class="flex1"></div>
         <Button
+          v-if="!isRecordedInOtherTab"
           @click="toggleMute"
           variant="secondary"
           size="sm"
@@ -44,11 +45,13 @@
           :websocketInstance="$apiEventWS"
           :microphoneStatus="microphoneStatus"
           @retry-microphone="retryAudioConnection"
-          @reconfigure-microphone="showMicrophoneSetup = true" />
+          @reconfigure-microphone="showMicrophoneSetup = true"
+          @buy-live-pack="pauseForPackPurchase"
+          @live-pack-purchase-cancel="undoPackPurchasePause" />
       </template>
       <MicrophonePlaceholder
-        v-else-if="microphoneStatus !== 'idle'"
-        :status="microphoneStatus"
+        v-else-if="displayedMicrophoneStatus !== 'idle'"
+        :status="displayedMicrophoneStatus"
         :speaking="speaking"
         @toggle="toggleMute"
         @retry="retryAudioConnection"
@@ -76,6 +79,7 @@ import MicrophoneStatus from "@/components/molecules/MicrophoneStatus.vue"
 import MicrophonePlaceholder from "@/components/molecules/MicrophonePlaceholder.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveActions from "@/components/SessionLiveActions.vue"
+import TabLock from "@/lib/TabLock.js"
 
 import V2Layout from "@/layouts/v2-layout.vue"
 
@@ -100,10 +104,35 @@ export default {
     return {
       recordingChannel,
       deviceId: null,
-      showMicrophoneSetup: true,
+      // Opened once the tab lock says this tab is the one recording.
+      showMicrophoneSetup: false,
+      // Another tab of this browser already records this session: this one
+      // only displays it. No takeover, no wait: reloading the page re-checks.
+      isRecordedInOtherTab: false,
+      // What pauseForPackPurchase changed, undone if the purchase is dropped
+      // (closed without leaving for the payment page).
+      packPurchasePause: null,
     }
   },
+  async created() {
+    // Plain instance field: the lock is a resource, not reactive state.
+    this.microphoneTabLock = new TabLock(
+      `quick-session-microphone-${this.session.id}`,
+    )
+    const isRecordingTab = await this.microphoneTabLock.acquire()
+    this.isRecordedInOtherTab = !isRecordingTab
+    this.showMicrophoneSetup = isRecordingTab
+  },
+  beforeDestroy() {
+    this.microphoneTabLock.destroy()
+  },
   computed: {
+    displayedMicrophoneStatus() {
+      return this.isRecordedInOtherTab ? "other_tab" : this.microphoneStatus
+    },
+    isSessionPaused() {
+      return this.session.status === "paused"
+    },
     breadcrumbItems() {
       return [
         {
@@ -123,11 +152,68 @@ export default {
         this.startMicrophone()
       }
     },
+    // Leaving for the payment page: stop sending audio and stop the live
+    // server-side (and its credit count). Recording resumes by hand.
+    async pauseForPackPurchase() {
+      this.packPurchasePause = {
+        micWasRecording: this.wantsRecording,
+        sessionPaused: false,
+      }
+      this.pauseMicrophone()
+      if (this.isSessionPaused) return
+      const paused = await this.$store.dispatch(
+        "quickSession/pauseQuickSession",
+      )
+      if (this.packPurchasePause) {
+        this.packPurchasePause.sessionPaused = paused
+      } else if (paused) {
+        // Purchase dropped while the pause was on its way
+        this.resumeSession()
+      }
+    },
+    undoPackPurchasePause() {
+      if (!this.packPurchasePause) return
+      const { micWasRecording, sessionPaused } = this.packPurchasePause
+      this.packPurchasePause = null
+      if (micWasRecording) {
+        // The wantsRecording watcher resumes the session
+        this.startMicrophone()
+      } else if (sessionPaused) {
+        this.resumeSession()
+      }
+    },
+    async resumeSession() {
+      const resumed = await this.$store.dispatch(
+        "quickSession/resumeQuickSession",
+      )
+      if (!resumed) {
+        this.$store.dispatch(
+          "system/showError",
+          this.$t("session.detail_page.resume_session_error_message"),
+        )
+      }
+      return resumed
+    },
+    // Recording into a paused session would be lost: resume it, or give up
+    // recording if the server refuses (e.g. live credit still spent).
+    async resumeSessionForRecording() {
+      if (await this.resumeSession()) return
+      this.pauseMicrophone()
+    },
     startRecordFromMicrophone({ deviceId }) {
       this.showMicrophoneSetup = false
       this.deviceId = deviceId
       this.initMicrophone()
       this.setupRecording(this.recordingChannel)
+    },
+  },
+  watch: {
+    // Any way back to recording (mute toggle, microphone setup after the
+    // payment page, dropped purchase) needs a live session.
+    wantsRecording(wantsRecording) {
+      if (wantsRecording && this.isSessionPaused) {
+        this.resumeSessionForRecording()
+      }
     },
   },
   components: {

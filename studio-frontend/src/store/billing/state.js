@@ -1,5 +1,6 @@
 export default {
   plans: [],
+  packs: null, // GET /cloud/packs, null until loaded
   subscription: null, // current org subscription doc (org admin only)
   usage: null, // { planKey, mode, seats, capabilities: {...}, live: {...} }
   usageByMember: null, // { planKey, seats, members: { userId: {cap:{used,events}} } }

@@ -199,8 +199,17 @@ export default {
     },
     async getDeviceList() {
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true })
-        const devices = await navigator.mediaDevices.enumerateDevices()
+        // Probe stream only unlocks device labels; release it once the list
+        // is read, otherwise the browser mic indicator stays on for good.
+        const probeStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        })
+        let devices
+        try {
+          devices = await navigator.mediaDevices.enumerateDevices()
+        } finally {
+          probeStream.getTracks().forEach((track) => track.stop())
+        }
         this.audioDevices = [...devices.filter((d) => d.kind == "audioinput")]
         this.waitingPermission = false
         this.computeSelectOptionFromDeviceList()

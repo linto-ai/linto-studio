@@ -101,6 +101,9 @@ export const sessionMicrophoneMixin = {
       })
     },
     onbeforeunload(event) {
+      // Paused, leaving loses nothing: no reason to hold the user back
+      // (e.g. on the way to a payment page).
+      if (!this.wantsRecording) return
       event.preventDefault()
       event.returnValue = ""
     },

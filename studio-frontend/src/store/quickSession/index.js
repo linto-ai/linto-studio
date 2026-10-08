@@ -5,6 +5,8 @@ import {
   apiStopBot,
   getBotForChannelId,
   apiDeleteQuickSession,
+  apiPauseSession,
+  apiResumeSession,
 } from "@/api/session.js"
 import { capitalizeFirstLetter } from "@/tools/capitalizeFirstLetter.js"
 import router from "@/routers/app-router"
@@ -40,6 +42,9 @@ const mutations = {
   setQuickSessionBot(state, value) {
     state.quickSessionBot = value
   },
+  setQuickSessionStatus(state, status) {
+    state.quickSession = { ...state.quickSession, status }
+  },
 }
 
 const actions = {
@@ -73,6 +78,26 @@ const actions = {
       commit("clearQuickSession")
     }
     commit("setLoading", false)
+  },
+  // Server-side pause: stops the live (and its credit count) whatever the
+  // microphone does. Returns whether the server accepted it.
+  async pauseQuickSession({ commit, getters, rootGetters }) {
+    const req = await apiPauseSession(
+      rootGetters["organizations/getCurrentOrganizationScope"],
+      getters.quickSession.id,
+    )
+    if (req.status === "error") return false
+    commit("setQuickSessionStatus", "paused")
+    return true
+  },
+  async resumeQuickSession({ commit, getters, rootGetters }) {
+    const req = await apiResumeSession(
+      rootGetters["organizations/getCurrentOrganizationScope"],
+      getters.quickSession.id,
+    )
+    if (req.status === "error") return false
+    commit("setQuickSessionStatus", "active")
+    return true
   },
   async saveQuickSession(
     { commit, getters, rootGetters, dispatch },

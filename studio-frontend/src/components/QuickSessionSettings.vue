@@ -3,15 +3,31 @@
     <h2>{{ $t("quick_session.creation.transcription_settings_title") }}</h2>
     <!-- -- -- -- -- OFFLINE Transcription -- -- -- -- -- -->
     <NotificationBanner
-      variant="info"
-      icon="info"
-      v-if="transcriberProfiles.length === 0">
-      {{
-        isLiveCreditExhausted
-          ? $t("quick_session.creation.only_offline_live_credit_exhausted")
-          : $t("quick_session.creation.only_offline_available")
-      }}
+      v-if="transcriberProfiles.length === 0 && isLiveCreditExhausted"
+      variant="warning"
+      icon="warning"
+      align="start">
+      {{ $t("quick_session.creation.only_offline_live_credit_exhausted") }}
+      <template v-if="!canBuyLivePack">
+        {{ $t("quick_session.creation.live_pack_ask_admin") }}
+      </template>
+      <template v-if="canBuyLivePack" #actions>
+        <Button
+          variant="primary"
+          size="sm"
+          icon="plus"
+          @click="isLivePackPurchaseOpen = true">
+          {{ $t("billing.settings.buy_pack") }}
+        </Button>
+      </template>
     </NotificationBanner>
+    <NotificationBanner
+      v-else-if="transcriberProfiles.length === 0"
+      variant="info"
+      icon="info">
+      {{ $t("quick_session.creation.only_offline_available") }}
+    </NotificationBanner>
+    <PackPurchaseModal v-model="isLivePackPurchaseOpen" kind="live" />
     <section>
       <FormCheckbox
         v-if="transcriberProfiles.length > 0"
@@ -101,6 +117,7 @@
 </template>
 <script>
 import { mapGetters } from "vuex"
+import { livePackPurchaseMixin } from "@/mixins/livePackPurchase.js"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { testService } from "@/tools/fields/testService.js"
 import { getEnv } from "@/tools/getEnv"
@@ -118,8 +135,10 @@ import TranscriberProfileSelector from "@/components/TranscriberProfileSelector.
 import ServiceSelector from "@/components/serviceSelector/ServiceSelector.vue"
 import Chip from "@/components/atoms/Chip.vue"
 import NotificationBanner from "./atoms/NotificationBanner.vue"
+import PackPurchaseModal from "@/components-cloud/PackPurchaseModal.vue"
 
 export default {
+  mixins: [livePackPurchaseMixin],
   props: {
     transcriberProfiles: {
       type: Array,
@@ -192,6 +211,7 @@ export default {
         value: this.value.transcriptionService,
       },
       selectedTranslation: this.value.subSource || "original",
+      isLivePackPurchaseOpen: false,
     }
   },
 
@@ -350,6 +370,7 @@ export default {
     SessionTranslationSelection,
     Chip,
     NotificationBanner,
+    PackPurchaseModal,
   },
 }
 </script>

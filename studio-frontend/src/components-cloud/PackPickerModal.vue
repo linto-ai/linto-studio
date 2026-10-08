@@ -3,6 +3,7 @@
     v-model="isOpen"
     isForm
     size="lg"
+    :loading="loading"
     custom-modal-class="pack-picker-modal"
     :title="$t('billing.settings.packs.title')"
     :text-action-apply="applyLabel"
@@ -47,6 +48,8 @@ export default {
     value: { type: Boolean, default: false },
     // Packs the organization may buy (see computePurchasablePacks)
     packs: { type: Array, required: true },
+    // Catalog loading, or the purchase on its way to the payment page
+    loading: { type: Boolean, default: false },
   },
   data() {
     return {

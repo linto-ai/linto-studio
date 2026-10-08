@@ -24,7 +24,8 @@ export default {
   props: {
     // One of the microphoneStatus values computed by sessionMicrophoneMixin
     // (recording, muted, connecting, reconnecting, connection_lost, mic_lost,
-    // mic_interrupted). "idle" should be filtered out by the parent.
+    // mic_interrupted), or "other_tab" when another tab records the session.
+    // "idle" should be filtered out by the parent.
     status: { type: String, required: true },
     speaking: { type: Boolean, default: false },
   },

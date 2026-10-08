@@ -1,4 +1,3 @@
-var timerId, args, context
 export class Throttle {
   constructor() {
     this.timerId = null

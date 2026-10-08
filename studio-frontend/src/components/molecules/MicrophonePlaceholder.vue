@@ -40,7 +40,8 @@ import PhIcon from "@/components/atoms/PhIcon.vue"
 
 const MUTED_ICON_STATUSES = ["muted", "mic_lost"]
 // Broken states: the circle is inert, recovery goes through the action buttons.
-const NON_TOGGLEABLE_STATUSES = ["mic_lost", "connection_lost"]
+// other_tab: the microphone belongs to another tab, nothing to toggle here.
+const NON_TOGGLEABLE_STATUSES = ["mic_lost", "connection_lost", "other_tab"]
 
 export default {
   name: "MicrophonePlaceholder",
