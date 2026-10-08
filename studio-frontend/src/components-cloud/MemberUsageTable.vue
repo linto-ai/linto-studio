@@ -19,7 +19,6 @@
           <th>{{ $t("billing.member_usage.seat") }}</th>
           <th>{{ $t("billing.meter.import") }}</th>
           <th>{{ $t("billing.meter.ai") }}</th>
-          <th>{{ $t("billing.meter.chat") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -43,7 +42,6 @@
           </td>
           <td>{{ fmtMinutes(m.import) }}</td>
           <td>{{ m.ai }}</td>
-          <td>{{ m.chat }}</td>
         </tr>
       </tbody>
     </table>
@@ -84,8 +82,7 @@ export default {
           role: m.role,
           isSeat: isCollaboratorRole(m.role),
           import: (u["import.minutes"] || {}).used || 0,
-          ai: (u["ai.generations"] || {}).used || 0,
-          chat: (u["ai.chat"] || {}).used || 0,
+          ai: (u["ai.credits"] || {}).used || 0,
         }
       })
     },

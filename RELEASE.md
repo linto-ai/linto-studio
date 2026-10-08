@@ -1,3 +1,21 @@
+# 1.9.0
+
+_2026_10_05_
+
+- SaaS mode (optional, off unless the cloud service component is enabled)
+  - Plans, usage quotas and prepaid live minutes per organization, with Stripe checkout and a billing view in the backoffice
+  - Personal organizations keep their owner only: on the first start in SaaS mode, their other members are removed and keep a read-only share on the media they could read; the API keys of these organizations are deleted
+  - Member roles are frozen in an organization without a Business plan, until it is back on one
+- Sharing
+  - An owner sees their own media when the members right is set to none
+  - The share panel no longer refuses owners nor hangs while the users load, and takes the media owner into account
+  - API keys are hidden from the users list of a media
+- Transcription import no longer loses words or punctuation
+- Transcription editor: interacting with the player scrolls back to the current position
+- Transcriber profiles: updating a profile no longer overwrites its stored secret
+- Remove the organization-level session purge route
+- JavaScript SDK: live meeting flow (quick meeting, sessions, bots)
+
 # 1.8.8
 
 _2026_09_18_

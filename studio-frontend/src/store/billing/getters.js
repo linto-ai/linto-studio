@@ -5,8 +5,7 @@ import { computePurchasablePacks } from "@/tools/computePurchasablePacks"
 // i18n label per metered capability (quota rules of the catalog).
 const METER_LABEL = {
   "import.minutes": "billing.meter.import",
-  "ai.generations": "billing.meter.ai",
-  "ai.chat": "billing.meter.chat",
+  "ai.credits": "billing.meter.ai",
   "api.calls": "billing.meter.api",
 }
 
@@ -103,7 +102,7 @@ export default {
           limit: c.limit,
           remaining: c.remaining,
           resetAt: c.resetAt,
-          unit: c.unit, // minutes | count
+          unit: c.unit, // minutes | credits | count
           period: c.period,
           unlimited,
           percent,

@@ -22,8 +22,7 @@
       },
       "meter": {
         "import": "File transcription",
-        "ai": "AI summaries",
-        "chat": "Chat messages"
+        "ai": "AI credits"
       },
       "buy_pack": "Buy a pack",
       "no_pack_available": "No pack is offered with this organization's plan.",
@@ -128,8 +127,7 @@
     },
     "meter": {
       "import": "Imports",
-      "ai": "AI generations",
-      "chat": "Chat messages",
+      "ai": "AI credits",
       "api": "API calls"
     },
     "member_usage": {
@@ -1323,7 +1321,7 @@
       "usage_all_unlimited_per_seat": "Unlimited* transcription, summaries and chat per seat",
       "ai_and_chat_unlimited": "Unlimited* summaries and chat",
       "ai_and_chat_unlimited_per_seat": "Unlimited* summaries and chat per seat",
-      "ai_and_chat_count": "{generations} AI summaries and {chat} chat messages per month",
+      "ai_credits_count": "{credits} AI credits per month (a summary = {generation} credits, a chat message = {chat})",
       "api_calls_unlimited": "Unlimited* API calls",
       "api_calls_count": "{count} API calls per month",
       "live_welcome": "{minutes} language-minutes of live offered, one time",

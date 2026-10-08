@@ -22,7 +22,7 @@ export function computeQuotaMeters(capabilities) {
       key,
       used: c.used,
       limit: c.limit,
-      unit: c.unit, // "minutes" | "count"
+      unit: c.unit, // "minutes" | "credits" | "count"
       resetAt: c.resetAt || null,
       unlimited: isQuotaUnlimited(c.limit, c.unit),
     }))

@@ -329,18 +329,14 @@ export default {
           ),
         }
       }
-      const generations = computeQuotaMonthlyEquivalent(
-        plan.entitlements["ai.generations"].limit,
-        plan.entitlements["ai.generations"].period,
-      )
-      const chat = computeQuotaMonthlyEquivalent(
-        plan.entitlements["ai.chat"].limit,
-        plan.entitlements["ai.chat"].period,
-      )
+      const rule = plan.entitlements["ai.credits"]
+      const credits = computeQuotaMonthlyEquivalent(rule.limit, rule.period)
+      const costs = rule.costs || {}
       return {
-        text: this.$t("onboarding.features.ai_and_chat_count", {
-          generations,
-          chat,
+        text: this.$t("onboarding.features.ai_credits_count", {
+          credits,
+          generation: costs["ai.generations"],
+          chat: costs["ai.chat"],
         }),
       }
     },
