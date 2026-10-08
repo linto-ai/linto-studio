@@ -16,7 +16,6 @@ import {
 
 import { sessionModelMixin } from "./sessionModel"
 import { bus } from "../main"
-import mergeSession from "../tools/mergeSession"
 import EMPTY_FIELD from "@/const/emptyField"
 import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket"
 
@@ -62,20 +61,31 @@ export const sessionMixin = {
       },
       usedPassword: null,
       websocketInstance: null,
-    }
-
-    if (!this.session) {
-      props["session"] = null
+      // The session object lives in the sessions store (kept up to date by
+      // the websocket feed); the view only knows which one it shows.
+      loadedSessionId: null,
     }
 
     return props
+  },
+  created() {
+    // Plain instance field: a store subscription is not reactive state.
+    this.unsubscribeSessionsFeed = this.$store.subscribeAction({
+      after: (action) => this.onSessionsFeedAction(action),
+    })
   },
   mounted() {
     if (this.session === null) this.fetchSession()
   },
   beforeDestroy() {
-    //this.$apiEventWS.unSubscribeSessionsUpdate()
-    bus.$off(`websocket/orga_${this.sessionOrganizationId}_session_update`)
+    this.unsubscribeSessionsFeed()
+  },
+  destroyed() {
+    // After the children: the live editor stops using the public connection
+    // during its own teardown. The app-wide connection is never closed here.
+    if (this.websocketInstance && this.websocketInstance !== this.$apiEventWS) {
+      this.websocketInstance.close()
+    }
   },
   methods: {
     async fecthSessionWithPassword() {
@@ -96,6 +106,7 @@ export const sessionMixin = {
       if (!sessionRequest || sessionRequest.status === "error") {
         if (this?.privatePage) {
           this.$router.replace({ name: "not_found" })
+          return
         }
 
         this.isFromPublicLink = true
@@ -105,6 +116,10 @@ export const sessionMixin = {
           { withCaptions: false },
         )
       }
+
+      // Left while the requests were running: nothing to show, and no
+      // connection to open that nobody would close.
+      if (this._isDestroyed) return
 
       if (
         sessionRequest.status === "error" ||
@@ -118,23 +133,56 @@ export const sessionMixin = {
         return
       }
 
-      this.session = sessionRequest.data
-      this.$store.commit("sessions/addSession", this.session)
+      this.$store.dispatch(
+        "sessions/updateOrCreateSession",
+        sessionRequest.data,
+      )
+      this.loadedSessionId = sessionRequest.data.id
 
-      // Use another WS instance for public session to avoid conflict with main app WS
-      if (this.isFromPublicLink) {
-        this.websocketInstance = new ApiEventWebSocket()
-        this.websocketInstance.connect(this.session.publicSessionToken, {
-          isPublic: true,
-        })
-      } else {
-        this.websocketInstance = this.$apiEventWS
+      // Chosen on the first load only: fetchSession runs again on
+      // start/clear/password and must not swap or duplicate the connection.
+      if (!this.websocketInstance) {
+        this.websocketInstance = this.isFromPublicLink
+          ? this.createPublicWebsocket()
+          : this.$apiEventWS
       }
 
       // Aliases are organization scoped, a public link viewer cannot read them
       if (this.isFromPublicLink) this.sessionAliases = []
       else await this.fetchAliases()
       this.sessionLoaded = true
+    },
+    // Another connection for a public session, to avoid conflicts with the
+    // app-wide one. Its sessions feed fills the same store.
+    createPublicWebsocket() {
+      const websocket = new ApiEventWebSocket()
+      websocket.connect(this.session.publicSessionToken, { isPublic: true })
+      websocket.subscribeSessionsUpdate(this.sessionOrganizationId)
+      return websocket
+    },
+    // The websocket only pushes changes: one missed during an outage (the
+    // session ended meanwhile) is caught up here. A session the API no
+    // longer finds has ended; any other failure is left for the next try.
+    async syncSessionAfterReconnect() {
+      const sessionRequest = this.isFromPublicLink
+        ? await apiGetPublicSession(this.sessionId, this.usedPassword, {
+            withCaptions: false,
+          })
+        : await apiGetSession(this.organizationId, this.sessionId, {
+            withCaptions: false,
+          })
+      if (sessionRequest.status !== "error") {
+        if (typeof sessionRequest.data === "object") {
+          this.$store.dispatch(
+            "sessions/updateOrCreateSession",
+            sessionRequest.data,
+          )
+        }
+        return
+      }
+      if (sessionRequest.error?.status === 404) {
+        this.$store.commit("sessions/markSessionTerminated", this.id)
+      }
     },
     async fetchAliases() {
       this.sessionAliases = await apiGetSessionDataBySessionId(
@@ -229,22 +277,16 @@ export const sessionMixin = {
       this.$router.replace(this.sessionListRoute)
       this.isDeleting = false
     },
-    subscribeToWebsocket() {
-      this.websocketInstance.subscribeSessionsUpdate(this.sessionOrganizationId)
-      // Runs again on every websocket reconnect: deduplicate the bus handler
-      // (Vue methods are instance-bound, so the reference is stable).
-      const event = `websocket/orga_${this.sessionOrganizationId}_session_update`
-      bus.$off(event, this.onSessionUpdateEvent)
-      bus.$on(event, this.onSessionUpdateEvent)
-    },
-    onSessionUpdateEvent(value) {
-      for (const updatedSession of value.updated) {
-        if (updatedSession.id === this.id) {
-          this.session = mergeSession(this.session, updatedSession)
-        }
-      }
-
-      if (this.onSessionUpdatePostProcess) {
+    // Lets the host (onSessionUpdatePostProcess) react once the websocket
+    // feed changed its session; the session itself is already up to date.
+    onSessionsFeedAction({ type, payload }) {
+      if (type !== "sessions/applySessionsUpdate") return
+      if (!this.onSessionUpdatePostProcess || !this.id) return
+      const changedSessions = [
+        ...(payload.updated ?? []),
+        ...(payload.removed ?? []),
+      ]
+      if (changedSessions.some((session) => session.id === this.id)) {
         this.onSessionUpdatePostProcess(this.session)
       }
     },
@@ -271,7 +313,10 @@ export const sessionMixin = {
         message: this.$i18n.t("session.settings_page.success_message"),
         timeout: 3000,
       })
-      this.session.visibility = visibility
+      this.$store.dispatch("sessions/updateOrCreateSession", {
+        id: this.id,
+        visibility,
+      })
       return true
     },
     async syncPassword(password) {
@@ -334,16 +379,31 @@ export const sessionMixin = {
           timeout: 3000,
         })
       }
-      this.session.meta["@watermark"] = {
-        frequency,
-        duration,
-        content,
-        pinned,
-        display,
-      }
+      this.$store.dispatch("sessions/updateOrCreateSession", {
+        id: this.id,
+        meta: {
+          ...this.session.meta,
+          "@watermark": { frequency, duration, content, pinned, display },
+        },
+      })
+    },
+  },
+  watch: {
+    isWebsocketConnected(isConnected) {
+      if (isConnected && this.sessionLoaded) this.syncSessionAfterReconnect()
     },
   },
   computed: {
+    session() {
+      if (!this.loadedSessionId) return null
+      return (
+        this.$store.getters["sessions/getSessionById"](this.loadedSessionId) ??
+        null
+      )
+    },
+    isWebsocketConnected() {
+      return this.websocketInstance?.state.isConnected ?? false
+    },
     sessionListRoute() {
       return `/interface/sessionsList`
     },
@@ -357,16 +417,6 @@ export const sessionMixin = {
           sessionId: this.sessionId,
           organizationId: this.sessionOrganizationId,
         },
-      }
-    },
-    readyForWSConnection() {
-      return this.sessionLoaded && this.websocketInstance.state.isConnected
-    },
-  },
-  watch: {
-    readyForWSConnection(newValue, oldValue) {
-      if (newValue) {
-        this.subscribeToWebsocket()
       }
     },
   },

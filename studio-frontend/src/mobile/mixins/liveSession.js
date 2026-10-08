@@ -55,6 +55,16 @@ export const liveSessionMixin = {
   beforeDestroy() {
     this.socket.unSubscribeSessionsUpdate?.()
   },
+  watch: {
+    // Ended elsewhere (desktop, backoffice, server): the microphone already
+    // stopped (sessionMicrophoneMixin); leave the page as endLive does.
+    "session.status"(status) {
+      if (status !== "terminated" || this.ending) return
+      this.$store.commit("quickSession/clearQuickSession")
+      this.$store.dispatch("system/showInfo", this.$t("mobile.live.stopped"))
+      this.$router.replace({ name: "media" })
+    },
+  },
   methods: {
     startMicrophoneStream() {
       this.initMicrophone()

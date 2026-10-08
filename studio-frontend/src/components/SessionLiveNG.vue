@@ -178,7 +178,7 @@ export default {
     this.aquireWakeLock()
     document.addEventListener("visibilitychange", this.renewWakeLock)
     bus.$on(
-      `websocket/orga_${this.currentOrganizationScope}_session_cleared`,
+      `websocket/orga_${this.sessionOrganizationId}_session_cleared`,
       this.clear,
     )
     // }, 1000)
@@ -204,7 +204,7 @@ export default {
     this.releaseWakeLock()
     document.removeEventListener("visibilitychange", this.renewWakeLock)
     bus.$off(
-      `websocket/orga_${this.currentOrganizationScope}_session_cleared`,
+      `websocket/orga_${this.sessionOrganizationId}_session_cleared`,
       this.clear,
     )
   },
@@ -548,7 +548,10 @@ export default {
         console.error("[SessionLiveNG] watermark PATCH failed", req)
         return
       }
-      this.session.meta["@watermark"] = next
+      this.$store.dispatch("sessions/updateOrCreateSession", {
+        id: this.session.id,
+        meta: { ...this.session.meta, "@watermark": next },
+      })
     },
 
     bindWatermarkSync() {

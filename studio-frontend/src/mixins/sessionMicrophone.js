@@ -182,6 +182,8 @@ export const sessionMicrophoneMixin = {
     async setupRecordRaw() {
       this.debugSessionMicrophone("Starting downsampler")
       await this.downSampler.start(this.mic)
+      // Stopped meanwhile (session ended, view destroyed): stay stopped.
+      if (this.p_closed) return
       this.downSampler.addEventListener(EVENT_TO_LISTEN, this.onAudioFrameRaw)
       this.wantsRecording = true
       this.p_startFrameWatchdog()
@@ -230,8 +232,20 @@ export const sessionMicrophoneMixin = {
     startMicrophone() {
       this.wantsRecording = true
     },
+    // The session is over: release the microphone and the audio websocket
+    // for good, the status goes back to idle.
+    stopRecording() {
+      this.wantsRecording = false
+      this.microphoneStarted = false
+      this.p_close()
+    },
   },
   watch: {
+    // Ended or deleted elsewhere (other tab, server, backoffice): nothing
+    // can be recorded into it anymore. Expects the host's `session`.
+    "session.status"(status) {
+      if (status === "terminated") this.stopRecording()
+    },
     microphoneStatus(newVal) {
       console.log("micro status", newVal)
     },

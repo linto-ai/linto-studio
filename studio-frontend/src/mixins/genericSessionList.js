@@ -1,58 +1,54 @@
-import { bus } from "../main"
-
-// TODO: don't receive event if loading
+// Session lists keep their order and pagination (ids from the API) and read
+// the session objects from the sessions store, kept up to date by the
+// websocket feed (App.vue): an update or an end shows up by itself.
+// The host defines fetchSessions(), which calls setSessionList().
+// Quick sessions ("@" names) are never listed.
+function isListedSession(session) {
+  return session.name?.[0] !== "@"
+}
 
 export const genericSessionList = {
   data() {
     return {
       loading: true,
       error: null,
-      sessionList: [],
+      sessionIds: [],
     }
+  },
+  created() {
+    // Plain instance field: a store subscription is not reactive state.
+    this.unsubscribeSessionsFeed = this.$store.subscribeAction({
+      after: (action) => this.onSessionsFeedAction(action),
+    })
   },
   mounted() {
     this.fetchSessions()
-
-    if (this.$apiEventWS.state.isConnected) {
-      this.subscribeToWebsocket()
-    }
-
-    bus.$on(
-      `websocket/orga_${this.currentOrganizationScope}_session_update`,
-      this.onSessionUpdateEvent.bind(this),
-    )
   },
   beforeDestroy() {
-    this.$apiEventWS.unSubscribeSessionsUpdate()
-    bus.$off(`websocket/orga_${this.currentOrganizationScope}_session_update`)
+    this.unsubscribeSessionsFeed()
+  },
+  computed: {
+    sessionList() {
+      const getSessionById = this.$store.getters["sessions/getSessionById"]
+      return this.sessionIds.map((id) => getSessionById(id)).filter(Boolean)
+    },
   },
   methods: {
-    subscribeToWebsocket() {
-      this.$apiEventWS.subscribeSessionsUpdate(this.currentOrganizationScope)
+    setSessionList(sessions) {
+      this.$store.dispatch("sessions/updateOrCreateSessions", sessions)
+      this.sessionIds = sessions.map((session) => session.id)
     },
-    onSessionUpdateEvent(value) {
-      const sessionIndexes = {}
-
-      for (const sessionIndex in this.sessionList) {
-        const session = this.sessionList[sessionIndex]
-        sessionIndexes[session.id] = sessionIndex
-      }
-
-      for (const updatedSession of value.updated) {
-        const sessionIndex = sessionIndexes[updatedSession.id]
-        const currentSession = this.sessionList[sessionIndex]
-        this.$set(this.sessionList, sessionIndex, {
-          ...currentSession,
-          ...updatedSession,
-        })
-      }
+    // A new session may belong to this list (and to this page): the API
+    // knows its place.
+    onSessionsFeedAction({ type, payload }) {
+      if (type !== "sessions/applySessionsUpdate") return
+      if (payload.added?.some(isListedSession)) this.fetchSessions()
     },
   },
   watch: {
-    "$apiEventWS.state.isConnected"(newValue, oldValue) {
-      if (newValue) {
-        this.subscribeToWebsocket()
-      }
+    // Changes pushed during a websocket outage are lost: reload.
+    "$apiEventWS.state.isConnected"(isConnected) {
+      if (isConnected) this.fetchSessions()
     },
   },
 }

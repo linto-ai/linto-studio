@@ -99,7 +99,8 @@ export default {
     },
     ...mapGetters("system", ["sidebarOpen", "isMobile", "isImpersonatingUser"]),
     ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
-    ...mapGetters("quickSession", ["quickSession"]),
+    // A terminated quick session no longer blocks anything
+    ...mapGetters("quickSession", { quickSession: "runningQuickSession" }),
   },
   beforeMount() {
     if (this.isMobile === false && this.sidebarOpen === undefined) {

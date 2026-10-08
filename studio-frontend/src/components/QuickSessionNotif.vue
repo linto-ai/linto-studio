@@ -19,13 +19,13 @@
     <!-- buttons -->
     <Button
       v-if="isVisio"
-      :to="{ name: 'quick session' }"
+      :to="quickSessionRoute"
       :label="$t('quick_session.notif.visio.continue_button')"
       size="sm"
       variant="secondary" />
     <Button
       v-else
-      :to="{ name: 'quick session' }"
+      :to="quickSessionRoute"
       :label="$t('quick_session.notif.default.continue_button')"
       size="sm"
       variant="secondary" />
@@ -69,6 +69,14 @@ export default {
     },
   },
   computed: {
+    // The quick session's own organization: the route param drives the
+    // organization whose sessions feed is watched (see App.vue).
+    quickSessionRoute() {
+      return {
+        name: "quick session",
+        params: { organizationId: this.quickSession?.organizationId },
+      }
+    },
     isVisio() {
       return this.quickSessionBot !== null
     },

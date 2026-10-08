@@ -78,6 +78,7 @@
         @sidebar-open="editorSidebarOpen = $event" />
 
       <Modal
+        v-if="!isTerminated"
         :withActions="false"
         title="Setup microphone"
         v-model="showMicrophoneSetup"

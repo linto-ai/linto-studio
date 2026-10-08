@@ -11,7 +11,7 @@
       <p class="quick-session-placeholder__subtitle">{{ subtitle }}</p>
     </div>
     <Button
-      :to="{ name: 'quick session' }"
+      :to="quickSessionRoute"
       :label="continueLabel"
       icon="arrow-right"
       variant="primary" />
@@ -25,6 +25,14 @@ export default {
   name: "QuickSessionPlaceholder",
   computed: {
     ...mapGetters("quickSession", ["quickSession", "quickSessionBot"]),
+    // The quick session's own organization: the route param drives the
+    // organization whose sessions feed is watched (see App.vue).
+    quickSessionRoute() {
+      return {
+        name: "quick session",
+        params: { organizationId: this.quickSession?.organizationId },
+      }
+    },
     // A bot means the running session is a videoconference, otherwise it is a
     // plain microphone recording.
     isVisio() {

@@ -82,6 +82,12 @@ export default {
     isAuthenticated: function () {
       return isAuthenticated()
     },
+    // The scope set by the router, without the default organization fallback
+    // of getCurrentOrganizationScope: subscribing to it first, while the
+    // route's organization is still loading, would watch a stale org.
+    sessionsOrganizationId() {
+      return this.$store.state.organizations.currentOrganizationScope
+    },
   },
   beforeCreate() {
     // Load theme-specific styles dynamically
@@ -118,6 +124,17 @@ export default {
     }
   },
   watch: {
+    // One feed of the organization sessions for the whole app, following
+    // the current organization: pages read the sessions store and never
+    // subscribe themselves (public links use their own connection).
+    sessionsOrganizationId: {
+      handler(organizationId) {
+        if (this.isAuthenticated && organizationId) {
+          this.$apiEventWS.subscribeSessionsUpdate(organizationId)
+        }
+      },
+      immediate: true,
+    },
     isLoading: {
       handler(value) {
         if (value) {

@@ -18,7 +18,9 @@
       :currentOrganizationScope="currentOrganizationScope"
       :session="quickSession">
     </SessionLiveMicrophone>
+    <!-- Nothing left to save once the session ended elsewhere -->
     <ModalSaveQuickSession
+      v-if="quickSession?.status !== 'terminated'"
       v-model="isModalSaveOpen"
       :placeholder="defaultName"
       @cancel="onSaveModalCancel" />
@@ -67,9 +69,6 @@ export default {
     // sessionStorage.setItem("startQuickSession", false)
     // this.fetchData()
   },
-  beforeDestroy() {
-    this.$apiEventWS.unSubscribeSessionsUpdate()
-  },
   computed: {
     ...mapGetters("quickSession", [
       "quickSession",
@@ -82,7 +81,7 @@ export default {
     }),
   },
   methods: {
-    ...mapActions("quickSession", ["saveQuickSession"]),
+    ...mapActions("quickSession", ["saveQuickSession", "syncQuickSession"]),
     async saveSession() {
       if (this.quickSessionBot) {
         this.defaultName = this.$t("quick_session.live_visio.default_name", {
@@ -109,15 +108,10 @@ export default {
     },
   },
   watch: {
-    "$apiEventWS.state.isConnected": {
-      handler(value) {
-        if (value) {
-          this.$apiEventWS.subscribeSessionsUpdate(
-            this.currentOrganizationScope,
-          )
-        }
-      },
-      immediate: true,
+    // The sessions feed (App.vue) re-subscribes by itself after an outage,
+    // but what happened during it is lost: ask the API.
+    "$apiEventWS.state.isConnected"(isConnected) {
+      if (isConnected) this.syncQuickSession()
     },
   },
   components: {

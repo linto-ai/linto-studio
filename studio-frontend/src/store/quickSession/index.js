@@ -2,6 +2,7 @@ import i18n from "@/i18n"
 
 import {
   apiGetQuickSession,
+  apiGetQuickSessionResult,
   apiStopBot,
   getBotForChannelId,
   apiDeleteQuickSession,
@@ -11,26 +12,39 @@ import {
 import { capitalizeFirstLetter } from "@/tools/capitalizeFirstLetter.js"
 import router from "@/routers/app-router"
 
+// The session object itself lives in the sessions store, kept up to date by
+// the websocket feed: this module only knows which session is the quick one.
 const state = {
-  quickSession: null,
+  quickSessionId: null,
   loading: true,
   saving: false,
   quickSessionBot: null,
 }
 
 const getters = {
-  quickSession: (state) => state.quickSession,
+  // The quick session loaded in this tab, still there once terminated so
+  // that its page can show the end.
+  quickSession: (state, getters, rootState, rootGetters) => {
+    if (!state.quickSessionId) return null
+    return rootGetters["sessions/getSessionById"](state.quickSessionId) ?? null
+  },
+  // The quick session still recording: what the rest of the app reacts to
+  // (banner, creation forms replaced by a placeholder).
+  runningQuickSession: (state, getters) => {
+    if (getters.quickSession?.status === "terminated") return null
+    return getters.quickSession
+  },
   loading: (state) => state.loading,
   saving: (state) => state.saving,
   quickSessionBot: (state) => state.quickSessionBot,
 }
 
 const mutations = {
-  setQuickSession(state, value) {
-    state.quickSession = value
+  setQuickSessionId(state, value) {
+    state.quickSessionId = value
   },
   clearQuickSession(state) {
-    state.quickSession = null
+    state.quickSessionId = null
     state.quickSessionBot = null
   },
   setLoading(state, value) {
@@ -42,9 +56,6 @@ const mutations = {
   setQuickSessionBot(state, value) {
     state.quickSessionBot = value
   },
-  setQuickSessionStatus(state, status) {
-    state.quickSession = { ...state.quickSession, status }
-  },
 }
 
 const actions = {
@@ -53,7 +64,8 @@ const actions = {
     try {
       const quickSession = await apiGetQuickSession()
       if (quickSession) {
-        commit("setQuickSession", quickSession)
+        commit("sessions/updateOrCreateSession", quickSession, { root: true })
+        commit("setQuickSessionId", quickSession.id)
 
         const channel = quickSession.channels[0]
 
@@ -62,14 +74,11 @@ const actions = {
           channel.id,
         )
 
-        if (
-          botReq.status == "success" &&
-          botReq.data &&
-          botReq.data?.bots?.length > 0
-        ) {
-          const sessionBot = botReq.data?.bots[0]
-          commit("setQuickSessionBot", sessionBot)
-        }
+        // Always overwritten: a bot left by a previous (visio) quick session
+        // would show this one as a visio.
+        const sessionBot =
+          botReq.status == "success" ? (botReq.data?.bots?.[0] ?? null) : null
+        commit("setQuickSessionBot", sessionBot)
       } else {
         commit("clearQuickSession")
       }
@@ -79,6 +88,19 @@ const actions = {
     }
     commit("setLoading", false)
   },
+  // The websocket only pushes changes: one missed during an outage (the
+  // session ended or deleted meanwhile) is caught up here.
+  async syncQuickSession({ state, commit }) {
+    const quickSessionId = state.quickSessionId
+    if (!quickSessionId) return
+    const result = await apiGetQuickSessionResult()
+    if (result.status === "error") return
+    if (result.session?.id === quickSessionId) {
+      commit("sessions/updateOrCreateSession", result.session, { root: true })
+    } else {
+      commit("sessions/markSessionTerminated", quickSessionId, { root: true })
+    }
+  },
   // Server-side pause: stops the live (and its credit count) whatever the
   // microphone does. Returns whether the server accepted it.
   async pauseQuickSession({ commit, getters, rootGetters }) {
@@ -87,7 +109,11 @@ const actions = {
       getters.quickSession.id,
     )
     if (req.status === "error") return false
-    commit("setQuickSessionStatus", "paused")
+    commit(
+      "sessions/updateOrCreateSession",
+      { id: getters.quickSession.id, status: "paused" },
+      { root: true },
+    )
     return true
   },
   async resumeQuickSession({ commit, getters, rootGetters }) {
@@ -96,7 +122,11 @@ const actions = {
       getters.quickSession.id,
     )
     if (req.status === "error") return false
-    commit("setQuickSessionStatus", "active")
+    commit(
+      "sessions/updateOrCreateSession",
+      { id: getters.quickSession.id, status: "active" },
+      { root: true },
+    )
     return true
   },
   async saveQuickSession(

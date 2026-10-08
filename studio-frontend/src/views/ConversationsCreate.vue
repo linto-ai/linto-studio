@@ -406,7 +406,8 @@ export default {
         !!this.quickSession
       )
     },
-    ...mapGetters("quickSession", ["quickSession"]),
+    // A terminated quick session no longer blocks anything
+    ...mapGetters("quickSession", { quickSession: "runningQuickSession" }),
     ...mapGetters("billing", ["isLiveCreditExhausted"]),
   },
   methods: {

@@ -18,8 +18,6 @@
   </div>
 </template>
 <script>
-import { bus } from "@/main"
-
 import { apiGetSessionsPaginated } from "@/api/session.js"
 import { genericSessionList } from "@/mixins/genericSessionList"
 import sortSessionByDate from "@/tools/sortSessionByDate"
@@ -45,20 +43,22 @@ export default {
   },
   watch: {
     currentPage() {
+      this.loading = true
       this.fetchSessions()
     },
   },
   methods: {
+    // The spinner is shown by the caller: background refreshes keep the
+    // list on screen.
     async fetchSessions() {
-      this.loading = true
       try {
         const result = await apiGetSessionsPaginated(
           this.currentOrganizationScope,
           this.currentPage,
         )
-        this.sessionList = result.list
-          .filter((s) => s.name[0] != "@")
-          .sort(sortSessionByDate)
+        this.setSessionList(
+          result.list.filter((s) => s.name[0] != "@").sort(sortSessionByDate),
+        )
         this.totalPages = Math.ceil(result.count / result.pageSize)
       } catch (e) {
         console.error(e)

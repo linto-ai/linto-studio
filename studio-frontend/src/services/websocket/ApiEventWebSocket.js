@@ -54,6 +54,8 @@ export default class ApiEventWebSocket {
     this.currentEditorConversationId = null
     this.editorHandlers = null
     this.currentSessionOrganizationId = null
+    this.currentMediaOrganizationId = null
+    this.reconnectTimer = null
     this.test = false
     this.textPartialForTest = ""
     this.currentToken = null
@@ -93,6 +95,12 @@ export default class ApiEventWebSocket {
         debugWSSession("connected to socket.io server", msg)
         this.setStatus(WEBSOCKET_STATUS.CONNECTED)
         this.subscribeFolderUpdate()
+
+        // Room membership does not survive a reconnection: re-watch the
+        // organization sessions (events missed during the outage are lost).
+        if (this.currentSessionOrganizationId) {
+          this.p_attachSessionsUpdate(this.currentSessionOrganizationId)
+        }
 
         // Editor room membership does not survive a reconnection: re-join.
         // The fresh join ack re-seeds the locks state through onJoined.
@@ -183,7 +191,8 @@ export default class ApiEventWebSocket {
     // e.g. a rolling restart) socket.io does NOT auto-reconnect, so the
     // manual connect() below is the only recovery path — do not early-return
     // here or the socket dies silently forever.
-    setTimeout(() => {
+    clearTimeout(this.reconnectTimer)
+    this.reconnectTimer = setTimeout(() => {
       if (!this.socket.connected) {
         this.socket.connect()
       }
@@ -204,6 +213,10 @@ export default class ApiEventWebSocket {
       this.handleVisibilityChange,
     )
     window.removeEventListener("online", this.handleNetworkOnline)
+    // Closed for good: a pending reconnection or a connect handler must not
+    // bring the connection or its sessions feed back.
+    clearTimeout(this.reconnectTimer)
+    this.currentSessionOrganizationId = null
     this.socket.close()
     this.setStatus(WEBSOCKET_STATUS.IDLE)
   }
@@ -447,34 +460,48 @@ export default class ApiEventWebSocket {
     this.socket.off("translation")
   }
 
+  // Feeds the sessions store with the organization sessions changes. One
+  // organization at a time per connection; kept across reconnections, so a
+  // caller subscribes once, connected yet or not.
   subscribeSessionsUpdate(organizationId) {
-    this.unSubscribeSessionsUpdate()
+    if (this.currentSessionOrganizationId === organizationId) return
+    this.p_detachSessionsUpdate()
     this.currentSessionOrganizationId = organizationId
-    this.socket.emit("watch_organization_session", organizationId)
-    // TODO: generalize every this.socket.on(event_name) to bus.$emit(`websocket/${event_name}`)
-    this.socket.on(`orga_${organizationId}_session_update`, (value) => {
-      store.dispatch("sessions/updateSession", value)
-      bus.$emit(`websocket/orga_${organizationId}_session_update`, value)
-    })
+    if (this.state.isConnected) this.p_attachSessionsUpdate(organizationId)
+  }
 
+  unSubscribeSessionsUpdate() {
+    this.p_detachSessionsUpdate()
+    this.currentSessionOrganizationId = null
+    // Server side, sessions and media share the organization room: leaving
+    // it for the sessions also stopped the media feed.
+    if (this.currentMediaOrganizationId && this.state.isConnected) {
+      this.socket.emit(
+        "watch_organization_media",
+        this.currentMediaOrganizationId,
+      )
+    }
+  }
+
+  p_attachSessionsUpdate(organizationId) {
+    // off before on: also runs on every reconnection.
+    this.socket.off(`orga_${organizationId}_session_update`)
+    this.socket.off(`orga_${organizationId}_session_cleared`)
+    this.socket.emit("watch_organization_session", organizationId)
+    this.socket.on(`orga_${organizationId}_session_update`, (value) => {
+      store.dispatch("sessions/applySessionsUpdate", value)
+    })
     this.socket.on(`orga_${organizationId}_session_cleared`, (value) => {
       bus.$emit(`websocket/orga_${organizationId}_session_cleared`, value)
     })
   }
 
-  unSubscribeSessionsUpdate() {
-    if (this.currentSessionOrganizationId) {
-      this.socket.emit(
-        "unwatch_organization_session",
-        this.currentSessionOrganizationId,
-      )
-      this.socket.off(
-        `orga_${this.currentSessionOrganizationId}_session_update`,
-      )
-      this.socket.off(
-        `orga_${this.currentSessionOrganizationId}_session_cleared`,
-      )
-    }
+  p_detachSessionsUpdate() {
+    const organizationId = this.currentSessionOrganizationId
+    if (!organizationId || !this.socket) return
+    this.socket.emit("unwatch_organization_session", organizationId)
+    this.socket.off(`orga_${organizationId}_session_update`)
+    this.socket.off(`orga_${organizationId}_session_cleared`)
   }
 
   subscribeMediaUpdate(organizationId) {
@@ -650,6 +677,15 @@ export default class ApiEventWebSocket {
         "unwatch_organization_media",
         this.currentMediaOrganizationId,
       )
+      this.currentMediaOrganizationId = null
+      // Server side, media and sessions share the organization room:
+      // leaving it for the media also stopped the sessions feed.
+      if (this.currentSessionOrganizationId && this.state.isConnected) {
+        this.socket.emit(
+          "watch_organization_session",
+          this.currentSessionOrganizationId,
+        )
+      }
     }
 
     this.socket.off("conversation_deleted")

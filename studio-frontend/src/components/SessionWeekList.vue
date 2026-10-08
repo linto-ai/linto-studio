@@ -58,8 +58,9 @@ export default {
   },
   mounted() {},
   methods: {
+    // The spinner is shown by the caller: background refreshes keep the
+    // list on screen.
     async fetchSessions() {
-      this.loading = true
       try {
         const response = await apiGetSessionsBetweenDates(
           this.currentOrganizationScope,
@@ -67,12 +68,14 @@ export default {
           this.sundayDate,
         )
 
-        this.sessionList = response.sessions.filter(
-          (s) =>
-            s.name[0] != "@" &&
-            s.scheduleOn &&
-            new Date(s.scheduleOn) >= this.mondayDate &&
-            new Date(s.scheduleOn) <= this.sundayDate,
+        this.setSessionList(
+          response.sessions.filter(
+            (s) =>
+              s.name[0] != "@" &&
+              s.scheduleOn &&
+              new Date(s.scheduleOn) >= this.mondayDate &&
+              new Date(s.scheduleOn) <= this.sundayDate,
+          ),
         )
         this.loading = false
       } catch (error) {
@@ -90,6 +93,7 @@ export default {
   },
   watch: {
     startDate(value) {
+      this.loading = true
       this.fetchSessions()
     },
   },

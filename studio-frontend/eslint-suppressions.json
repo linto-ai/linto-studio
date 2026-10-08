@@ -372,11 +372,6 @@
       "count": 2
     }
   },
-  "src/components/SessionActiveList.vue": {
-    "no-unused-vars": {
-      "count": 1
-    }
-  },
   "src/components/SessionCard.vue": {
     "no-unused-vars": {
       "count": 1
@@ -453,11 +448,6 @@
   },
   "src/components/SessionLiveActions.vue": {
     "no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/components/SessionLiveNG.vue": {
-    "vue/no-mutating-props": {
       "count": 1
     }
   },
@@ -987,9 +977,6 @@
     }
   },
   "src/layouts/v2-layout.vue": {
-    "no-unused-vars": {
-      "count": 1
-    },
     "vue/no-unused-components": {
       "count": 3
     }
@@ -1014,11 +1001,6 @@
       "count": 1
     }
   },
-  "src/mixins/genericSessionList.js": {
-    "no-unused-vars": {
-      "count": 1
-    }
-  },
   "src/mixins/orgaRole.js": {
     "no-unused-vars": {
       "count": 1
@@ -1036,7 +1018,7 @@
   },
   "src/mixins/session.js": {
     "no-unused-vars": {
-      "count": 5
+      "count": 4
     }
   },
   "src/mixins/sessionMicrophone.js": {
@@ -1305,7 +1287,7 @@
       "count": 1
     },
     "no-unused-vars": {
-      "count": 3
+      "count": 2
     }
   },
   "src/views/SessionsList.vue": {

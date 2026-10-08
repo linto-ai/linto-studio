@@ -465,8 +465,13 @@ export default {
     },
   },
   methods: {
-    onSessionUpdatePostProcess(newSession) {
-      this.initValues()
+    // Live data only (channels stream status): never overwrite what the user
+    // is editing. $set: the REST channels may not carry streamStatus yet.
+    onSessionUpdatePostProcess(session) {
+      for (const channel of this.localChannels) {
+        const updated = session.channels?.find((c) => c.id === channel.id)
+        if (updated) this.$set(channel, "streamStatus", updated.streamStatus)
+      }
     },
     async updateSessionAlias(alias) {
       this.closeModalEditSessionAlias()
@@ -541,7 +546,6 @@ export default {
         content: this.fieldWatermarkSettings.value.content,
         pinned: this.fieldWatermarkPinned.value,
       })
-      this.session.meta["@watermark"].pinned = this.fieldWatermarkPinned.value
     },
     openWatermarkSettings() {
       this.showWatermarkSettings = true
@@ -622,7 +626,7 @@ export default {
             redirect: false,
           })
           this.$emit("session_update", res.data)
-          this.session = { ...this.session, ...res.data }
+          this.$store.dispatch("sessions/updateOrCreateSession", res.data)
         } else {
           bus.$emit("app_notif", {
             status: "error",

@@ -10,34 +10,37 @@
           :speaking="speaking" />
 
         <div class="flex1"></div>
-        <Button
-          v-if="!isRecordedInOtherTab"
-          @click="toggleMute"
-          variant="secondary"
-          size="sm"
-          :icon="wantsRecording ? 'microphone' : 'microphone-slash'"
-          :aria-pressed="String(!wantsRecording)"
-          :label="
-            wantsRecording
-              ? $t('quick_session.live.mute_microphone_button')
-              : $t('quick_session.live.start_microphone_button')
-          " />
-        <SessionLiveActions
-          :session="session"
-          :showStop="false"
-          :showDelete="false"
-          :showPauseResume="false"
-          fakeStatus="active"
-          @cleared="$emit('onSessionUpdated')" />
-        <Button
-          @click="$emit('onSave')"
-          variant="primary"
-          size="sm"
-          :label="$t('quick_session.live.save_button')" />
+        <template v-if="!isSessionTerminated">
+          <Button
+            v-if="!isRecordedInOtherTab"
+            @click="toggleMute"
+            variant="secondary"
+            size="sm"
+            :icon="wantsRecording ? 'microphone' : 'microphone-slash'"
+            :aria-pressed="String(!wantsRecording)"
+            :label="
+              wantsRecording
+                ? $t('quick_session.live.mute_microphone_button')
+                : $t('quick_session.live.start_microphone_button')
+            " />
+          <SessionLiveActions
+            :session="session"
+            :showStop="false"
+            :showDelete="false"
+            :showPauseResume="false"
+            fakeStatus="active"
+            @cleared="$emit('onSessionUpdated')" />
+          <Button
+            @click="$emit('onSave')"
+            variant="primary"
+            size="sm"
+            :label="$t('quick_session.live.save_button')" />
+        </template>
       </div>
     </template>
     <div class="relative flex flex1 col">
-      <template v-if="isFirstChannelLive">
+      <SessionEnded v-if="isSessionTerminated" :session="session" />
+      <template v-else-if="isFirstChannelLive">
         <SessionLiveNG
           ref="sessionLiveNG"
           :currentOrganizationScope="currentOrganizationScope"
@@ -57,6 +60,7 @@
         @retry="retryAudioConnection"
         @reconfigure="showMicrophoneSetup = true" />
       <Modal
+        v-if="!isSessionTerminated"
         :withActions="false"
         :title="$t('session.microphone_setup_title')"
         :overlayClose="false"
@@ -79,6 +83,7 @@ import MicrophoneStatus from "@/components/molecules/MicrophoneStatus.vue"
 import MicrophonePlaceholder from "@/components/molecules/MicrophonePlaceholder.vue"
 import SessionSetupMicrophone from "@/components/SessionSetupMicrophone.vue"
 import SessionLiveActions from "@/components/SessionLiveActions.vue"
+import SessionEnded from "@/components/SessionEnded.vue"
 import TabLock from "@/lib/TabLock.js"
 
 import V2Layout from "@/layouts/v2-layout.vue"
@@ -128,10 +133,15 @@ export default {
   },
   computed: {
     displayedMicrophoneStatus() {
+      if (this.isSessionTerminated) return "idle"
       return this.isRecordedInOtherTab ? "other_tab" : this.microphoneStatus
     },
     isSessionPaused() {
       return this.session.status === "paused"
+    },
+    // Ended or deleted elsewhere, see sessions/applySessionsUpdate
+    isSessionTerminated() {
+      return this.session.status === "terminated"
     },
     breadcrumbItems() {
       return [
@@ -224,6 +234,7 @@ export default {
     MicrophonePlaceholder,
     SessionSetupMicrophone,
     SessionLiveActions,
+    SessionEnded,
   },
 }
 </script>

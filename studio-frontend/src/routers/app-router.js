@@ -167,6 +167,19 @@ const authGuards = {
       if (!quickSession) {
         return { redirect: true, nextRoute: { name: "not_found" } }
       }
+      // Shown under its own organization: the sessions feed (App.vue)
+      // follows the route's organization, and the end of the quick session
+      // is only broadcast to it.
+      const organizationId = quickSession.organizationId
+      const isMember =
+        store.getters["organizations/getOrganizationById"](organizationId) !==
+        undefined
+      if (isMember && to.params.organizationId !== organizationId) {
+        return {
+          redirect: true,
+          nextRoute: { ...to, params: { ...to.params, organizationId } },
+        }
+      }
     } else {
       store.dispatch("quickSession/loadQuickSession").catch(() => {})
     }

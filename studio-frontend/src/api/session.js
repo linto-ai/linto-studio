@@ -556,6 +556,13 @@ export async function apiGetQuickSessionByOrganization(
 }
 
 export async function apiGetQuickSession(notif) {
+  const result = await apiGetQuickSessionResult(notif)
+  return result.session ?? null
+}
+
+// Tells a failed request ({ status: "error" }) apart from a user without
+// quick session ({ status: "success", session: null }).
+export async function apiGetQuickSessionResult(notif) {
   const getSession = await sendRequest(
     `${BASE_API}/users/self/quickMeeting/`,
     { method: "get" },
@@ -564,18 +571,13 @@ export async function apiGetQuickSession(notif) {
   )
 
   if (getSession.status === "error") {
-    return null
+    return { status: "error" }
   }
 
-  if (!getSession?.data?.sessions) {
-    return null
+  return {
+    status: "success",
+    session: getSession?.data?.sessions?.[0] ?? null,
   }
-
-  if (getSession.data.sessions.length === 0) {
-    return null
-  }
-
-  return getSession.data.sessions[0]
 }
 
 export async function apiCreateQuickSession(organizationScope, data, notif) {
