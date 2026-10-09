@@ -39,6 +39,12 @@ async function waitForConnection() {
   return connected
 }
 
+// The organization sessions feed, like the classic app (App.vue): one
+// subscription for the whole app, kept across reconnections by the socket.
+export function watchOrganizationSessions(organizationId) {
+  socket.subscribeSessionsUpdate(organizationId)
+}
+
 export function watchOrganizationMedia(organizationId) {
   socket.subscribeMediaUpdate(organizationId)
 }

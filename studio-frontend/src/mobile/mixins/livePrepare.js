@@ -1,23 +1,24 @@
+import { mapGetters } from "vuex"
 import {
   loadLiveProfiles,
-  loadRunningLiveSession,
   startLiveSession,
   stopLiveSession,
 } from "@/mobile/services/live/liveSession.js"
+import { connectRealtime } from "@/mobile/services/realtime/mediaUpdates.js"
 import { buildLiveChannel } from "@/mobile/tools/buildLiveChannel.js"
 import { listProfileTranslations } from "@/mobile/tools/listProfileTranslations.js"
 import { suggestTranslationTargets } from "@/mobile/tools/suggestTranslationTargets.js"
 import { buildRecordingName } from "@/mobile/tools/buildRecordingName.js"
 
 // State of the live preparation page: profiles, the running session if
-// any, the user's choices, and the start/stop calls. The live page itself
-// is the in-app LiveSession view.
+// any (quickSession store, kept up to date by the sessions feed), the user's
+// choices, and the start/stop calls. The live page itself is the in-app
+// LiveSession view.
 export const livePrepareMixin = {
   data() {
     return {
       loading: true,
       profiles: [],
-      runningSession: null,
       profileId: null,
       translations: [],
       keepAudio: true,
@@ -28,6 +29,7 @@ export const livePrepareMixin = {
     }
   },
   computed: {
+    ...mapGetters("quickSession", { runningSession: "runningQuickSession" }),
     liveOrganizationId() {
       return this.$store.getters["organizations/getCurrentOrganizationScope"]
     },
@@ -51,12 +53,13 @@ export const livePrepareMixin = {
     },
   },
   async created() {
-    const [profiles, running] = await Promise.all([
+    // Live feed: a session ended elsewhere leaves the running card by itself
+    connectRealtime()
+    const [profiles] = await Promise.all([
       loadLiveProfiles(this.liveOrganizationId),
-      loadRunningLiveSession(),
+      this.$store.dispatch("quickSession/loadQuickSession"),
     ])
     this.profiles = profiles
-    this.runningSession = running
     this.profileId = profiles[0]?.id ?? null
     this.loading = false
   },
@@ -88,14 +91,15 @@ export const livePrepareMixin = {
         this.$i18n.locale,
         this.$t("mobile.live.default_name"),
       )
+      // The session's own organization: it may have been started elsewhere
       const result = await stopLiveSession(
-        this.liveOrganizationId,
+        this.runningSession.organizationId,
         this.runningSession.id,
         name,
       )
       this.stopping = false
       if (result.ok) {
-        this.runningSession = null
+        this.$store.commit("quickSession/clearQuickSession")
         this.$store.dispatch(
           "system/showSuccess",
           this.$t("mobile.live.stopped"),

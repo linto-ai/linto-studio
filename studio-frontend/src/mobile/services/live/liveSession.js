@@ -1,13 +1,12 @@
 import {
   apiGetTranscriberProfilesByOrganization,
   apiCreateQuickSession,
-  apiGetQuickSession,
   apiDeleteQuickSession,
 } from "@/api/session.js"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 
-// Live sessions from the phone: profiles that allow a quick meeting, the
-// session already running (one per user), start and stop. None throws.
+// Live sessions from the phone: profiles that allow a quick meeting, start
+// and stop (the running one lives in the quickSession store). None throws.
 
 export async function loadLiveProfiles(organizationId) {
   try {
@@ -17,14 +16,6 @@ export async function loadLiveProfiles(organizationId) {
   } catch (error) {
     console.error("cannot load live profiles", error)
     return []
-  }
-}
-
-export async function loadRunningLiveSession() {
-  try {
-    return (await apiGetQuickSession()) ?? null
-  } catch {
-    return null
   }
 }
 

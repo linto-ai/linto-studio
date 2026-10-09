@@ -25,8 +25,13 @@ export const liveSessionMixin = {
   },
   computed: {
     ...mapGetters("quickSession", { session: "quickSession" }),
+    // The session's own organization: it may have been started elsewhere,
+    // in another organization than the one picked on the phone.
     organizationId() {
-      return this.$store.getters["organizations/getCurrentOrganizationScope"]
+      return (
+        this.session?.organizationId ??
+        this.$store.getters["organizations/getCurrentOrganizationScope"]
+      )
     },
     channel() {
       return this.session?.channels?.[0] ?? null
@@ -45,15 +50,14 @@ export const liveSessionMixin = {
     await Promise.all([loadEditor(), connectRealtime()])
     this.editorReady = true
     await this.$store.dispatch("quickSession/loadQuickSession")
+    // Left while loading: starting the microphone now would leave it on
+    // with nothing to stop it.
+    if (this._isDestroyed) return
     if (!this.session) {
       this.$router.replace({ name: "live" })
       return
     }
-    this.socket.subscribeSessionsUpdate(this.organizationId)
     this.startMicrophoneStream()
-  },
-  beforeDestroy() {
-    this.socket.unSubscribeSessionsUpdate?.()
   },
   watch: {
     // Ended elsewhere (desktop, backoffice, server): the microphone already
