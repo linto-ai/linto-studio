@@ -41,7 +41,7 @@
 
     <h3>h4 utility classes - .field-label / .card-title / .section-caption</h3>
     <div class="flex col gap-small">
-      <h4 class="field-label">Field label (FormInput, QuotaMeter)</h4>
+      <h4 class="field-label">Field label (FormInput)</h4>
       <h4 class="card-title">Card title (template name, sub-section)</h4>
       <h4 class="section-caption">Section caption (muted, above a list)</h4>
     </div>
@@ -104,51 +104,6 @@
     <p class="components-hint">
       No explicit size prop passed to any of the 3 icons above — each one
       follows the font-size of its own wrapper (1rem / 2rem / 3rem).
-    </p>
-
-    <h3>QuotaMeter - success / warning / danger / unlimited</h3>
-    <div class="flex col gap-tiny" style="max-width: 260px">
-      <QuotaMeter
-        label="Offline transcription"
-        icon="file-audio"
-        :used="120"
-        :limit="600"
-        unit="minutes" />
-      <QuotaMeter
-        label="AI generations"
-        icon="sparkle"
-        :used="42"
-        :limit="50"
-        unit="count" />
-      <QuotaMeter
-        label="Chat messages"
-        icon="chat-circle-dots"
-        :used="110"
-        :limit="100"
-        unit="count" />
-      <QuotaMeter
-        label="Business plan"
-        :used="4200"
-        :limit="null"
-        unit="minutes" />
-    </div>
-    <p class="components-hint">
-      Status comes from the used/limit ratio: success under 80%, warning from
-      80%, danger at 100%+ (last example above). A null limit renders as
-      unlimited instead of a ratio.
-    </p>
-
-    <h3>UsageBar - always fills with what is consumed</h3>
-    <div class="flex col gap-small" style="max-width: 260px">
-      <UsageBar :value="30" :max="120" />
-      <UsageBar :value="100" :max="120" />
-      <UsageBar :value="120" :max="120" />
-      <UsageBar :value="120" :max="120" tone="neutral" />
-    </div>
-    <p class="components-hint">
-      Success, warning from 80 % used, danger at 100 %, and the neutral tone of
-      a spent pack. Quota tiles and pack cards share it, so the bar means the
-      same thing everywhere.
     </p>
 
     <h3>PackOffer - a pack to buy (radio, v-model)</h3>

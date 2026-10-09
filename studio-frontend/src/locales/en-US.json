@@ -13,16 +13,13 @@
         "ends_on": "Subscription cancelled: it ends on {date}, no further invoice will be issued."
       },
       "usage": {
-        "title": "Included in your plan",
         "load_error": "Couldn't load the organization's usage and plan.",
-        "renews_on": "Renews on {date}",
-        "renews_and_resets_on": "Renews and resets quotas on {date}",
-        "quota_reset_on": "Quotas reset on {date}",
         "member_consumption_link": "View usage per member"
       },
       "meter": {
         "import": "File transcription",
-        "ai": "AI credits"
+        "ai": "AI credits",
+        "live": "Live transcription"
       },
       "buy_pack": "Buy a pack",
       "no_pack_available": "No pack is offered with this organization's plan.",
@@ -37,19 +34,55 @@
         "intro_with_validity": "One-time payment, no subscription · pack valid for {validity}.",
         "confirm": "Continue to payment",
         "pay": "Pay {price}",
-        "price_excl_tax": "{price} excl. tax",
         "per_hour": "{price} / h",
         "saving": "−{percent}%",
         "group": {
-          "live": "Live microphone and video conferencing",
+          "live": "Live transcription",
           "transcription": "File transcription"
         },
         "kind": {
-          "live": "Live mic and video calls",
+          "live": "Live transcription",
           "transcription": "File transcription"
         },
         "price": "Price",
-        "rate": "Rate"
+        "rate": "Rate",
+        "kind_with_ai": "Files + AI",
+        "selection": "{kind} · {duration}",
+        "selection_with_ai": "{kind} · {duration} and {credits} AI credits",
+        "ai_credits_offered": "+{credits} AI credits included",
+        "pitch": {
+          "live": {
+            "headline": "Your meetings, transcribed live.",
+            "input": {
+              "title": "Microphone or video call",
+              "text": "The text appears in real time"
+            },
+            "speakers": {
+              "title": "Speaker separation",
+              "text": "Who is speaking, at all times"
+            },
+            "translation": {
+              "title": "Live translation",
+              "text": "Follow the conversation in your language"
+            },
+            "counting": "Time is counted per language: an hour of meeting with one translation uses 2 h of the pack."
+          },
+          "transcription": {
+            "headline": "Your audio and video files, ready to review.",
+            "media": {
+              "title": "Audio and video",
+              "text": "Interviews, lectures, conferences"
+            },
+            "speakers": {
+              "title": "Speaker separation",
+              "text": "Who is speaking, at all times"
+            },
+            "ai": {
+              "title": "AI summarizes for you",
+              "text": "And answers your questions"
+            }
+          }
+        }
       },
       "overview_load_error": "Couldn't load payment details and invoices.",
       "payment": {
@@ -88,16 +121,54 @@
       },
       "admin_only": "Only the organization's administrators can access billing.",
       "lots": {
-        "title": "Packs",
+        "title": "Your packs",
         "offered": "Free",
         "exhausted": "Spent",
         "remaining": "left | left",
-        "consumed_label": "Minutes used",
         "consumed": "Used",
         "expires_on": "Expires on",
-        "subtitle": "Prepaid hours, on top of your plan",
-        "empty": "No pack yet. Live transcription runs on packs.",
-        "consumed_of": "{consumed} of {total}"
+        "subtitle": "Prepaid hours, shared with the whole organization.",
+        "empty": "You have no pack yet. A one-time payment, no subscription.",
+        "consumed_of": "{consumed} of {total}",
+        "subtitle_with_validity": "Prepaid hours, valid {validity}, shared with the whole organization.",
+        "current": "In use",
+        "ai_credits_left": "{remaining} AI credit left of {total} | {remaining} AI credits left of {total}"
+      },
+      "balances": {
+        "title": "Available to your organization",
+        "subtitle": "Your plan is used first, then your packs, starting with the one that expires soonest.",
+        "available_minutes": "available | available",
+        "available_credits": "credit available | credits available",
+        "remaining_of": "{remaining} of {total}",
+        "resets_on": "Resets on {date}",
+        "expires_on": "Expires on {date}",
+        "next_expiry_on": "Next expiry on {date}",
+        "source": {
+          "plan": "{plan} plan",
+          "packs": "{count} pack | {count} packs",
+          "ai_packs": "Included with the Files pack | Included with the Files packs",
+          "offered_minutes": "Free minutes",
+          "offered_credits": "Free credits"
+        },
+        "ai": {
+          "chat": "Question to the assistant",
+          "generation": "Summary generation",
+          "cost": "{count} credit | {count} credits"
+        },
+        "live": {
+          "buy": "Buy live hours",
+          "from_hourly_price": "From {price} / h",
+          "prepaid": "Live runs on prepaid hour packs."
+        },
+        "shortcut": {
+          "minutes": "+{duration}",
+          "minutes_and_ai": "+{duration} and {credits} AI credits",
+          "price": "for {price}",
+          "price_and_validity": "for {price}, valid {validity}"
+        },
+        "used_minutes": "used | used",
+        "used_credits": "credit used | credits used",
+        "resets_on_inline": "resets on {date}"
       }
     },
     "unlimited": "Unlimited",

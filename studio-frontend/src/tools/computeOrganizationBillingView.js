@@ -1,5 +1,3 @@
-import { computeQuotaMeters } from "./billingMeters.js"
-
 const FREE_PLAN_KEY = "free_payg"
 
 // comp and managed orgs are billed outside the SaaS: whatever plan the
@@ -12,21 +10,6 @@ const UNMETERED_PLAN = {
   renewalAt: null,
   cancelsAtPeriodEnd: false,
 }
-
-// Quotas shown on the billing tab, in display order, with their label and
-// icon. api.calls is left out: it only matters to API integrators.
-const DISPLAYED_METERS = [
-  {
-    key: "import.minutes",
-    labelKey: "billing.settings.meter.import",
-    icon: "file-audio",
-  },
-  {
-    key: "ai.credits",
-    labelKey: "billing.settings.meter.ai",
-    icon: "sparkle",
-  },
-]
 
 /**
  * What the billing settings tab shows for one organization, derived from its
@@ -49,7 +32,6 @@ export function computeOrganizationBillingView({
   const planKey = usage?.planKey || subscription?.planKey || FREE_PLAN_KEY
   const plan = (plans || []).find((p) => p.planKey === planKey) || null
   const isFree = planKey === FREE_PLAN_KEY
-  const meters = computeDisplayedMeters(usage?.capabilities)
   const mode = usage?.mode || "normal"
 
   const view = {
@@ -66,18 +48,8 @@ export function computeOrganizationBillingView({
     // The portal needs a Stripe customer: a plan set at the backoffice
     // (manual, comp, managed) has none.
     canManageSubscription: !isFree && !!subscription?.stripeSubscriptionId,
-    meters,
-    quotaResetAt: meters.find((meter) => meter.resetAt)?.resetAt || null,
     renewalAt: subscription?.currentPeriodEnd || null,
     cancelsAtPeriodEnd: subscription?.cancelAtPeriodEnd === true,
   }
   return view.isUnmetered ? { ...view, ...UNMETERED_PLAN } : view
-}
-
-function computeDisplayedMeters(capabilities) {
-  const meters = computeQuotaMeters(capabilities)
-  return DISPLAYED_METERS.map(({ key, labelKey, icon }) => {
-    const meter = meters.find((m) => m.key === key)
-    return meter ? { ...meter, labelKey, icon } : null
-  }).filter(Boolean)
 }

@@ -7,25 +7,8 @@ const PLANS = [
   { planKey: "business", displayName: "Business", pricing: { perSeat: true } },
 ]
 
-const RESET_AT = "2026-10-28T00:00:00.000Z"
-
-function quota(used, limit, unit = "count") {
-  return { type: "quota", used, limit, unit, resetAt: RESET_AT }
-}
-
 function usageFor(planKey, extra = {}) {
-  return {
-    planKey,
-    mode: "normal",
-    capabilities: {
-      "api.calls": quota(3, 100),
-      "import.minutes": quota(30, 120, "minutes"),
-      "ai.credits": quota(12, 20, "credits"),
-      collaboration: { type: "boolean", enabled: false },
-    },
-    live: { balance: 45, expiresAt: "2027-09-01", unmetered: false },
-    ...extra,
-  }
+  return { planKey, mode: "normal", ...extra }
 }
 
 const STRIPE_SUBSCRIPTION = {
@@ -128,27 +111,6 @@ test("a cancellation at period end is reported", (t) => {
   t.true(view.cancelsAtPeriodEnd)
 })
 
-test("keeps the displayed quotas only, in display order", (t) => {
-  const view = computeOrganizationBillingView({
-    organization: { personal: true },
-    usage: usageFor("free_payg"),
-    subscription: null,
-    plans: PLANS,
-  })
-  t.deepEqual(
-    view.meters.map((meter) => [meter.key, meter.labelKey]),
-    [
-      ["import.minutes", "billing.settings.meter.import"],
-      ["ai.credits", "billing.settings.meter.ai"],
-    ],
-  )
-  t.true(view.meters.every((meter) => typeof meter.icon === "string"))
-  t.is(view.meters[0].used, 30)
-  t.is(view.meters[0].limit, 120)
-  t.is(view.meters[0].unit, "minutes")
-  t.is(view.quotaResetAt, RESET_AT)
-})
-
 test("a locked team organization is reported", (t) => {
   const view = computeOrganizationBillingView({
     organization: { personal: false },
@@ -171,6 +133,4 @@ test("an organization without usage yet falls back to the free plan", (t) => {
   t.true(view.isFree)
   t.false(view.canUpgradeToPremium)
   t.false(view.isUnmetered)
-  t.deepEqual(view.meters, [])
-  t.is(view.quotaResetAt, null)
 })

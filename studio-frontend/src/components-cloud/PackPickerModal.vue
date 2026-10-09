@@ -11,12 +11,21 @@
     :disabled-action-apply="!selectedPack"
     @submit="submit">
     <div class="pack-picker flex col gap-medium">
-      <p class="pack-picker__intro">{{ intro }}</p>
       <fieldset
         v-for="group in groups"
         :key="group.kind"
-        class="pack-picker__group">
-        <SectionHeading tag="legend" :title="computeGroupTitle(group.kind)" />
+        class="pack-picker__group"
+        :style="computeGroupPalette(group.kind)"
+        :aria-describedby="computePitchId(group.kind)">
+        <legend class="pack-picker__legend">
+          <span class="pack-picker__overline">{{
+            computeGroupTitle(group.kind)
+          }}</span>
+          <h3 v-if="computeHeadline(group.kind)" class="pack-picker__headline">
+            {{ computeHeadline(group.kind) }}
+          </h3>
+        </legend>
+        <PackKindPitch :id="computePitchId(group.kind)" :kind="group.kind" />
         <div class="pack-picker__options">
           <PackOffer
             v-for="pack in group.packs"
@@ -27,23 +36,36 @@
         </div>
       </fieldset>
     </div>
+
+    <template #actions-left>
+      <p class="pack-picker__summary">
+        <strong v-if="selectionLabel">{{ selectionLabel }}</strong>
+        <span>{{ intro }}</span>
+      </p>
+    </template>
   </Modal>
 </template>
 
 <script>
 import Modal from "@/components/molecules/Modal.vue"
-import SectionHeading from "@/components/molecules/SectionHeading.vue"
+import PackKindPitch from "@/components-cloud/PackKindPitch.vue"
 import PackOffer from "@/components-cloud/PackOffer.vue"
+import { PACK_KIND_PITCHES } from "@/const/packKindPitches"
 import { computeDefaultPackKey } from "@/tools/computeDefaultPackKey"
 import { computePackGroups } from "@/tools/computePackGroups"
-import { computeValidityDuration } from "@/tools/computeValidityDuration"
+import { computePackLook } from "@/tools/computePackLook"
+import { computePackPalette } from "@/tools/computePackPalette"
+import { formatPackValidity } from "@/tools/formatPackValidity"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
+import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
 
-// Picks one prepaid pack to buy. The purchase itself (Checkout redirect)
-// belongs to the parent, which receives the chosen packKey on submit.
+// Picks one prepaid pack to buy: one group per kind, what the kind is for,
+// then its packs; the footer sums up the choice and the terms. The purchase
+// itself (Checkout redirect) belongs to the parent, which receives the
+// chosen packKey on submit.
 export default {
   name: "PackPickerModal",
-  components: { Modal, SectionHeading, PackOffer },
+  components: { Modal, PackKindPitch, PackOffer },
   props: {
     value: { type: Boolean, default: false },
     // Packs the organization may buy (see computePurchasablePacks)
@@ -73,22 +95,22 @@ export default {
         this.packs.find((pack) => pack.packKey === this.selectedPackKey) || null
       )
     },
+    // "File transcription · 5 h and 50 AI credits"
+    selectionLabel() {
+      if (!this.selectedPack) return null
+      const values = {
+        kind: this.computeGroupTitle(this.selectedPack.kind),
+        duration: formatMinutesDuration(this.selectedPack.minutes),
+        credits: this.selectedPack.aiCredits,
+      }
+      return this.selectedPack.aiCredits > 0
+        ? this.$t("billing.settings.packs.selection_with_ai", values)
+        : this.$t("billing.settings.packs.selection", values)
+    },
     // One-off payment, and the validity every pack shares, if they do
     intro() {
-      const oneOff = this.$t("billing.settings.packs.intro")
-      const validityDays = [
-        ...new Set(this.packs.map((pack) => pack.validityDays)),
-      ]
-      const duration =
-        validityDays.length === 1
-          ? computeValidityDuration(validityDays[0])
-          : null
-      if (!duration) return oneOff
-      const validity = new Intl.NumberFormat(this.$i18n.locale, {
-        style: "unit",
-        unit: duration.unit,
-        unitDisplay: "long",
-      }).format(duration.value)
+      const validity = formatPackValidity(this.packs, this.$i18n.locale)
+      if (!validity) return this.$t("billing.settings.packs.intro")
       return this.$t("billing.settings.packs.intro_with_validity", {
         validity,
       })
@@ -96,7 +118,7 @@ export default {
     applyLabel() {
       if (!this.selectedPack) return this.$t("billing.settings.packs.confirm")
       return this.$t("billing.settings.packs.pay", {
-        price: this.computePriceLabel(
+        price: this.formatAmount(
           this.selectedPack.amountCents,
           this.selectedPack.currency,
         ),
@@ -115,6 +137,17 @@ export default {
     submit() {
       if (this.selectedPackKey) this.$emit("submit", this.selectedPackKey)
     },
+    computeGroupPalette(kind) {
+      return computePackPalette(computePackLook(kind).color)
+    },
+    computeHeadline(kind) {
+      const headlineKey = PACK_KIND_PITCHES[kind]?.headlineKey
+      return headlineKey ? this.$t(headlineKey) : null
+    },
+    // Ties the group to its features, when the kind has some
+    computePitchId(kind) {
+      return PACK_KIND_PITCHES[kind] ? `pack-pitch-${kind}` : null
+    },
     computeGroupTitle(kind) {
       const titleKey = `billing.settings.packs.group.${kind}`
       return this.$te(titleKey) ? this.$t(titleKey) : kind
@@ -122,29 +155,17 @@ export default {
     formatAmount(amountCents, currency) {
       return formatCurrencyAmount(amountCents, currency, this.$i18n.locale)
     },
-    // Catalog prices are excluding VAT: Stripe Checkout adds the tax.
-    computePriceLabel(amountCents, currency) {
-      return this.$t("billing.settings.packs.price_excl_tax", {
-        price: this.formatAmount(amountCents, currency),
-      })
-    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
 .pack-picker {
-  &__intro {
-    margin: 0;
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-  }
-
-  // Groups are told apart by their titles and the room between them
+  // Groups are told apart by their titles and a rule between them
   &__group {
     display: flex;
     flex-direction: column;
-    gap: var(--small-gap);
+    gap: var(--medium-gap);
     min-width: 0;
     margin: 0;
     padding: 0;
@@ -152,12 +173,54 @@ export default {
 
     & + & {
       padding-top: var(--medium-gap);
+      border-top: 1px solid var(--neutral-20);
+    }
+  }
+
+  // A rendered legend sits apart from the group's flex layout: floated, it
+  // is laid out as plain content, spaced like the cards.
+  &__legend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tiny-gap);
+    float: left;
+    width: 100%;
+    padding: 0;
+  }
+
+  &__overline {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--pack-accent);
+  }
+
+  &__headline {
+    // Global headings span the row and carry margins
+    width: auto;
+    margin: 0;
+    font-size: var(--text-xl);
+    font-weight: 700;
+  }
+
+  // The choice and the terms, beside the pay button; above it on a narrow
+  // screen
+  &__summary {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin: 0;
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+
+    @media (max-width: 768px) {
+      flex-basis: 100%;
     }
 
-    // A rendered legend sits apart from the group's flex layout: floated,
-    // it is laid out as plain content, spaced like the cards.
-    > legend {
-      float: left;
+    strong {
+      font-size: var(--text-sm);
+      color: var(--text-primary);
     }
   }
 
@@ -190,5 +253,10 @@ export default {
 // The modal body is tinted by default: plain here, the cards bring the color
 .pack-picker-modal .modal-body {
   background: var(--background-primary);
+}
+
+// Lets the summary of the choice take a line of its own on a narrow screen
+.pack-picker-modal .modal-footer {
+  flex-wrap: wrap;
 }
 </style>

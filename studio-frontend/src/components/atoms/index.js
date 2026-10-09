@@ -34,9 +34,6 @@ import FilterChip from "./FilterChip.vue"
 import InputItem from "./InputItem.vue"
 import CopyButton from "./CopyButton.vue"
 import FavoriteStar from "./FavoriteStar.vue"
-import QuotaMeter from "./QuotaMeter.vue"
-import UsageTile from "./UsageTile.vue"
-import UsageBar from "./UsageBar.vue"
 import SearchInput from "./SearchInput.vue"
 
 const components = [
@@ -76,9 +73,6 @@ const components = [
   InputItem,
   CopyButton,
   FavoriteStar,
-  QuotaMeter,
-  UsageTile,
-  UsageBar,
   SearchInput,
 ]
 

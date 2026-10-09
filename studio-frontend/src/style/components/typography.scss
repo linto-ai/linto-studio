@@ -94,7 +94,7 @@
 // the class looks on paper. Being in the same layer as that h4 rule lets
 // normal specificity (class > tag) decide, which is what we actually want.
 @layer theme {
-  // Shared look for a field/meter caption label (FormInput, QuotaMeter…).
+  // Shared look for a field caption label (FormInput…).
   // Layout (display, margin) stays local to each component — only the
   // typographic identity lives here.
   .field-label {

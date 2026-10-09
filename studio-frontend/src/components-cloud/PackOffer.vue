@@ -17,10 +17,18 @@
         :checked="value === pack.packKey"
         @change="$emit('input', pack.packKey)" />
     </template>
+    <AiCreditsNote v-if="pack.aiCredits > 0">
+      <strong>{{
+        $t("billing.settings.packs.ai_credits_offered", {
+          credits: pack.aiCredits,
+        })
+      }}</strong>
+    </AiCreditsNote>
   </PackCard>
 </template>
 
 <script>
+import AiCreditsNote from "@/components-cloud/AiCreditsNote.vue"
 import PackCard from "@/components/atoms/PackCard.vue"
 import { computeDurationParts } from "@/tools/computeDurationParts"
 import { computePackLook } from "@/tools/computePackLook"
@@ -31,7 +39,7 @@ import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 // fieldset around it (the kind of pack) names the group, so no kind label.
 export default {
   name: "PackOffer",
-  components: { PackCard },
+  components: { AiCreditsNote, PackCard },
   props: {
     // A pack of computePackGroups: catalog fields + hourlyCents, savingPercent
     pack: { type: Object, required: true },
@@ -53,14 +61,13 @@ export default {
         percent: this.pack.savingPercent,
       })
     },
-    // Catalog prices are excluding VAT: Stripe Checkout adds the tax.
+    // Catalog prices, shown without a tax mention: whether Stripe Checkout
+    // adds VAT depends on its tax settings.
     details() {
       return [
         {
           label: this.$t("billing.settings.packs.price"),
-          value: this.$t("billing.settings.packs.price_excl_tax", {
-            price: this.formatAmount(this.pack.amountCents),
-          }),
+          value: this.formatAmount(this.pack.amountCents),
         },
         {
           label: this.$t("billing.settings.packs.rate"),
