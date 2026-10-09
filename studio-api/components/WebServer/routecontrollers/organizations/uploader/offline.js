@@ -1,7 +1,9 @@
 const debug = require("debug")(
   `linto:components:WebServer:routecontrollers:organizations:uploader:offline`,
 )
+const path = require("path")
 const axios = require(`${process.cwd()}/lib/utility/axios`)
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 const { storeFile, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
@@ -52,9 +54,9 @@ async function offline(conversation, isConversation = true) {
     const audio = conversation.metadata.audio
     if (audio.mimetype === "audio/wav" || audio.filename.endsWith(".wav")) {
       let file_data = await storeFile(
-        conversation.metadata.audio,
+        audio,
         STORE_TYPE.AUDIO_SESSION,
-        conversation.type.from_session_id,
+        path.parse(audio.filename).name,
       )
       conversation = await addFileMetadataToConversation(
         conversation,
@@ -119,7 +121,12 @@ async function sessionReq(conversationId) {
       await new Promise((resolve) => setTimeout(resolve, delay))
       attempts++
     }
-    if (attempts === maxAttempts) return
+    if (attempts === maxAttempts) {
+      logger.error(
+        `sessionReq: audio ${filePath} of conversation ${conversationId} never showed up, offline transcription skipped`,
+      )
+      return
+    }
     // Read before offline(): the model update it runs strips the conversation's _id.
     const orgId = conversation.organization?.organizationId?.toString()
     const userId = conversation.owner?.toString()
@@ -136,7 +143,9 @@ async function sessionReq(conversationId) {
       ref: { conversationId: String(conversationId), sessionId },
     })
   } catch (err) {
-    debug(err)
+    logger.error(
+      `sessionReq: offline transcription of conversation ${conversationId} failed: ${err?.stack || err}`,
+    )
   }
 }
 

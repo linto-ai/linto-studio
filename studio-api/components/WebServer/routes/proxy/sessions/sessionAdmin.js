@@ -1,3 +1,13 @@
+const { deleteSessionAudioFiles } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
+
+// The Session API only drops the row, its recordings live on the shared volume.
+async function dropSessionAudio(result, req) {
+  await deleteSessionAudioFiles(req.params.id)
+  return result
+}
+
 module.exports = (webServer) => {
   return {
     basePath: "/api/administration",
@@ -38,7 +48,12 @@ module.exports = (webServer) => {
           },
           {
             path: "/sessions/:id",
-            method: ["get", "put", "delete"],
+            method: ["get", "put"],
+          },
+          {
+            path: "/sessions/:id",
+            method: ["delete"],
+            executeAfterResult: [dropSessionAudio],
           },
           {
             path: "/sessions/:id/stop",

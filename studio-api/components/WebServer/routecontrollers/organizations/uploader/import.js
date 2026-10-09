@@ -15,7 +15,7 @@ const CONVERSATION_RIGHT = require(
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
-const { storeFile, STORE_TYPE } = require(
+const { storeFile, deleteFile, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -31,17 +31,30 @@ const { segmentNormalizeText } = require(
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 
-async function addFileToConv(conversation, req) {
+// The stored audio is removed when the conversation cannot be created.
+async function createImportedConversation(conversation, req) {
+  let file_data
   if (req.files) {
     const fileData = {
       ...req.files.file,
       name: utf8.decode(req.files.file.name),
     }
-    let file_data = await storeFile(fileData, STORE_TYPE.AUDIO)
-    conversation = await addFileMetadataToConversation(conversation, file_data)
+    file_data = await storeFile(fileData, STORE_TYPE.AUDIO)
   }
-
-  return conversation
+  try {
+    if (file_data) {
+      conversation = await addFileMetadataToConversation(
+        conversation,
+        file_data,
+      )
+    }
+    setJobsDataToImport(conversation)
+    const result = await model.conversations.create(conversation)
+    if (result.insertedCount !== 1) throw new ConversationError()
+  } catch (err) {
+    if (file_data) deleteFile(file_data.storageFilePath)
+    throw err
+  }
 }
 
 function setJobsDataToImport(conversation) {
@@ -103,10 +116,7 @@ async function importConv(req, res) {
   if (imported.text) conversation.text = imported.text
   if (imported.speakers) conversation.speakers = imported.speakers
 
-  await addFileToConv(conversation, req)
-  setJobsDataToImport(conversation)
-  const result = await model.conversations.create(conversation)
-  if (result.insertedCount !== 1) throw new ConversationError()
+  await createImportedConversation(conversation, req)
 
   res.status(200).send({ message: "Conversation imported" })
 }
@@ -137,7 +147,6 @@ async function importTranscription(req, res) {
   requireValidAccess(parseInt(req.body.membersRight), req.body.securityLevel)
 
   let conversation = initConversation(req.body, req.body.userId, "imported")
-  await addFileToConv(conversation, req)
 
   let filter = {}
   if (req.body.segmentWordSize)
@@ -161,10 +170,7 @@ async function importTranscription(req, res) {
     normalizeTranscription,
     conversation,
   )
-  setJobsDataToImport(conversation)
-
-  const result = await model.conversations.create(conversation)
-  if (result.insertedCount !== 1) throw new ConversationError()
+  await createImportedConversation(conversation, req)
 
   res.status(200).send({ message: "Conversation imported" })
   return

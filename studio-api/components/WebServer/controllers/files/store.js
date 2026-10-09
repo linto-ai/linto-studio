@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require("uuid")
 const fs = require("fs")
 const path = require("path")
 
-const { transformAudio, mergeAudio, mergeChannel } = require(
+const { transformAudio, mergeAudio, hasAudioStream } = require(
   `${process.cwd()}/components/WebServer/controllers/files/transform`,
 )
 const { FileUnsupportedMediaType } = require(
@@ -57,6 +57,58 @@ const IMAGE_MAGIC_NUMBERS = [
   { extension: ".webp", offset: 8, bytes: Buffer.from("WEBP") },
 ]
 
+// Media accepted for a conversation: anything ffmpeg can turn into audio.
+const MEDIA_EXTENSIONS = [
+  ".wav",
+  ".mp3",
+  ".m4a",
+  ".aac",
+  ".ogg",
+  ".oga",
+  ".opus",
+  ".flac",
+  ".wma",
+  ".amr",
+  ".aiff",
+  ".aif",
+  ".caf",
+  ".webm",
+  ".weba",
+  ".mp4",
+  ".m4v",
+  ".mov",
+  ".mkv",
+  ".avi",
+  ".wmv",
+  ".mpg",
+  ".mpeg",
+  ".3gp",
+]
+
+// Declared type first (cheap), the content is then probed once on disk.
+function assertSupportedMedia(file) {
+  const mimetype = (file.mimetype || "").toLowerCase()
+  const extension = path.extname(file.name || "").toLowerCase()
+  if (
+    mimetype.startsWith("audio/") ||
+    mimetype.startsWith("video/") ||
+    MEDIA_EXTENSIONS.includes(extension)
+  ) {
+    return
+  }
+  throw new FileUnsupportedMediaType(
+    `Unsupported media type "${mimetype || extension || "unknown"}", an audio or video file is expected`,
+  )
+}
+
+async function assertAudioContent(filePath, fileName) {
+  if (!(await hasAudioStream(filePath))) {
+    throw new FileUnsupportedMediaType(
+      `No audio stream found in "${fileName}", an audio or video file is expected`,
+    )
+  }
+}
+
 // Detect the image type from its content, the client file name cannot be trusted.
 function detectImageExtension(data) {
   const match = IMAGE_MAGIC_NUMBERS.find(
@@ -92,25 +144,26 @@ async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
 
       const store_path = `${getStorageFolder()}/${getAudioFolder()}`
       const audio_merged = `${store_path}/${fileName}.mp3`
-      const audio_merged_channel = `${store_path}_multiple_chanel.mp3`
 
-      files.file.map((file) => {
-        const filePath = `${store_path}/${uuidv4()}_tmp${path.extname(file.name)}`
-        fs.writeFileSync(filePath, file.data)
-        tmp_stored_file.push(filePath)
-      })
-
-      await mergeAudio(tmp_stored_file, audio_merged)
-      // await mergeChannel(tmp_stored_file, audio_merged_channel)
-
-      tmp_stored_file.map((tmp_file) => {
-        deleteFile(tmp_file)
-      })
+      files.file.forEach(assertSupportedMedia)
+      try {
+        for (const file of files.file) {
+          const filePath = `${store_path}/${uuidv4()}_tmp${path.extname(file.name)}`
+          fs.writeFileSync(filePath, file.data)
+          tmp_stored_file.push(filePath)
+          await assertAudioContent(filePath, file.name)
+        }
+        await mergeAudio(tmp_stored_file, audio_merged)
+      } catch (err) {
+        deleteFile(audio_merged)
+        throw err
+      } finally {
+        tmp_stored_file.forEach(deleteFile)
+      }
 
       return {
         filePath: `${process.env.VOLUME_AUDIO_PATH}/${fileName}.mp3`,
         storageFilePath: audio_merged,
-        storageFilePathChanel: audio_merged_channel,
         filename: fileName,
       }
     } else if (type === STORE_TYPE.AUDIO) {
@@ -119,16 +172,23 @@ async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
       const output_audio = `${store_path}.mp3`
 
       let filePath = `${store_path}_tmp${fileExtension}` // origine file
-      if (files.filePath) {
-        // we are in URL mode
-        filePath = files.filePath
-        await transformAudio(files.filePath, output_audio)
-      } else {
-        fs.writeFileSync(filePath, files.data)
+      try {
+        if (files.filePath) {
+          // we are in URL mode
+          filePath = files.filePath
+        } else {
+          assertSupportedMedia(files)
+          fs.writeFileSync(filePath, files.data)
+        }
+        await assertAudioContent(filePath, files.name)
         await transformAudio(filePath, output_audio)
+      } catch (err) {
+        deleteFile(output_audio)
+        throw err
+      } finally {
+        deleteFile(filePath)
       }
 
-      deleteFile(filePath)
       return {
         filePath: `${process.env.VOLUME_AUDIO_PATH}/${fileName}.mp3`,
         storageFilePath: output_audio,
@@ -139,7 +199,13 @@ async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
       const output_audio = `${store_path}.mp3`
       let filePath = `${getStorageFolder()}/${files.filepath}`
 
-      await transformAudio(filePath, output_audio)
+      // The session recording is kept on failure, it cannot be re-recorded.
+      try {
+        await transformAudio(filePath, output_audio)
+      } catch (err) {
+        deleteFile(output_audio)
+        throw err
+      }
       deleteFile(filePath)
 
       return {
@@ -155,6 +221,28 @@ async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
 
 function defaultPicture() {
   return `pictures/default.jpg`
+}
+
+// Session recordings share the volume with the Session API as <sessionId>-<channelId>.<ext>;
+// the ones a conversation still points to are kept.
+async function deleteSessionAudioFiles(sessionId) {
+  if (!sessionId) return
+  const model = require(`${process.cwd()}/lib/mongodb/models`)
+  const folder = getAudioSessionFolder()
+  let entries = []
+  try {
+    entries = await fs.promises.readdir(`${getStorageFolder()}/${folder}`)
+  } catch (error) {
+    debug("Session audio folder not readable : ", folder)
+    return
+  }
+  for (const entry of entries) {
+    if (!entry.startsWith(`${sessionId}-`)) continue
+    const filepath = `${folder}/${entry}`
+    if ((await model.conversations.countByAudioFilepath(filepath)) === 0) {
+      deleteFile(`${getStorageFolder()}/${filepath}`)
+    }
+  }
 }
 
 function deleteFile(filePath) {
@@ -310,6 +398,7 @@ module.exports = {
   defaultPicture,
   deleteFile,
   deleteAudioFileIfOrphaned,
+  deleteSessionAudioFiles,
   getStorageFolder,
   getPictureFolder,
   getAudioFolder,
