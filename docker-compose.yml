@@ -3,7 +3,7 @@ version: "3.7"
 services:
   studio-mongo:
     container_name: studio-mongo
-    image: mongo:latest
+    image: mongo:9.0
     volumes:
       - ./storages/mongo-database/:/data/db
     networks:
