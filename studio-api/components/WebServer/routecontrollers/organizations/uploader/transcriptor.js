@@ -167,40 +167,45 @@ async function transcribe(isSingleFile, req, res, next) {
       isSingleFile,
     )
     const formData = await prepareFileFormData(req.files, req.body.url)
-    const options = await prepareRequest(
-      formData.form,
-      req.body.transcriptionConfig,
-      isSingleFile,
-      speakerIdHeaders,
-    )
     req.body.file_data = formData.file_data
 
-    // SaaS gate: probe the stored file's duration so the plugin refuses (402)
-    // before the ASR is paid for. No probe and no gate when the plugin is absent.
-    if (saas.enabled()) {
-      let seconds = 0
-      try {
-        const probed = await addAudioDuration(
-          { metadata: {} },
-          formData.file_data,
-        )
-        seconds = probed?.metadata?.audio?.duration || 0
-      } catch (e) {
-        debug(`import duration probe failed: ${e && e.message}`)
-      }
-      await saas.enforce({
-        orgId: req.params.organizationId,
-        capability: "import.minutes",
-        seconds,
-        userId: req.payload?.data?.userId,
-      })
-    }
+    let conversation
+    let processingJob
+    try {
+      const options = await prepareRequest(
+        formData.form,
+        req.body.transcriptionConfig,
+        isSingleFile,
+        speakerIdHeaders,
+      )
 
-    const processingJob = await axios.postFormData(
-      transcriptionService,
-      options,
-    )
-    const conversation = await createConversation(processingJob, req.body)
+      // SaaS gate: probe the stored file's duration so the plugin refuses (402)
+      // before the ASR is paid for. No probe and no gate when the plugin is absent.
+      if (saas.enabled()) {
+        let seconds = 0
+        try {
+          const probed = await addAudioDuration(
+            { metadata: {} },
+            formData.file_data,
+          )
+          seconds = probed?.metadata?.audio?.duration || 0
+        } catch (e) {
+          debug(`import duration probe failed: ${e && e.message}`)
+        }
+        await saas.enforce({
+          orgId: req.params.organizationId,
+          capability: "import.minutes",
+          seconds,
+          userId: req.payload?.data?.userId,
+        })
+      }
+
+      processingJob = await axios.postFormData(transcriptionService, options)
+      conversation = await createConversation(processingJob, req.body)
+    } catch (err) {
+      deleteFile(formData.file_data.storageFilePath)
+      throw err
+    }
 
     // SaaS metering: the audio ingested. No-op in OSS.
     await saas.record({

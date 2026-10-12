@@ -44,7 +44,28 @@ async function mergeAudio(files, audioPath) {
   await handleStreamProcess(streamProcess)
 }
 
-async function mergeChannel(files, audioPath) {}
+// True when ffprobe finds at least one audio stream in the file.
+async function hasAudioStream(filePath) {
+  const probe = spawn("ffprobe", [
+    "-v",
+    "error",
+    "-select_streams",
+    "a",
+    "-show_entries",
+    "stream=codec_type",
+    "-of",
+    "csv=p=0",
+    filePath,
+  ])
+  try {
+    const output = await handleStreamProcess(probe)
+    return output.includes("audio")
+  } catch (error) {
+    // A missing ffprobe (spawn error) is a server fault, not an unsupported file.
+    if (error.code) throw error
+    return false
+  }
+}
 
 // Fixed rate so every stored sample has the same format
 const VOICE_SAMPLE_RATE = 48000
@@ -86,8 +107,10 @@ async function probeAudioDuration(filePath) {
 }
 
 async function handleStreamProcess(streamProcess) {
+  let stdout = ""
   await new Promise((resolve, reject) => {
     streamProcess.stdout.on("data", (data) => {
+      stdout += data
       debug(`stdout: ${data}`)
     })
 
@@ -109,12 +132,13 @@ async function handleStreamProcess(streamProcess) {
       }
     })
   })
+  return stdout
 }
 
 module.exports = {
   transformAudio,
   mergeAudio,
-  mergeChannel,
+  hasAudioStream,
   convertToFlac,
   probeAudioDuration,
 }

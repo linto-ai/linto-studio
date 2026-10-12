@@ -220,3 +220,39 @@ describe("initCaptionsForConversation members right", () => {
     expect(captions[0].organization.membersRight).toEqual(3)
   })
 })
+
+describe("initCaptionsForConversation offline recording", () => {
+  beforeAll(() => {
+    process.env.VOLUME_AUDIO_SESSION_PATH = "session_audio"
+    process.env.VOLUME_AUDIO_PATH = "audios"
+  })
+
+  test("live and offline on one channel: the live caption shares the mp3 encoded for that channel", async () => {
+    const session = buildDualRecognizerSession()
+    session.channels[0].compressAudio = false
+    session.channels[0].keepAudio = true
+    session.channels[0].meta = {
+      transcriptionService: {
+        serviceName: "whisper",
+        endpoint: "whisper",
+        lang: "fr-FR",
+        config: {},
+      },
+    }
+    const captions = await initCaptionsForConversation(session)
+    const offline = captions.find(
+      (c) => c.jobs.transcription.state === "waiting",
+    )
+    const live = captions.find(
+      (c) =>
+        c.jobs.transcription.state === "done" &&
+        c.type.mode !== TYPES.TRANSLATION,
+    )
+    expect(offline.metadata.audio.filepath).toEqual(
+      "session_audio/session-dual-rec-0.wav",
+    )
+    expect(live.metadata.audio.filepath).toEqual(
+      "audios/session-dual-rec-0.mp3",
+    )
+  })
+})

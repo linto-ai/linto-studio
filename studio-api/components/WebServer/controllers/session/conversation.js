@@ -14,7 +14,7 @@ const DEFAULT_MEMBER_RIGHTS = RIGHTS.READ + RIGHTS.COMMENT
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
-const { storeFile, STORE_TYPE } = require(
+const { storeFile, deleteSessionAudioFiles, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 const {
@@ -251,9 +251,10 @@ async function initCaptionsForConversation(sessionData, name) {
             "audio",
           )
         } else {
+          // Shares the mp3 the offline transcription of this channel encodes.
           caption.metadata.audio = generateAudioMetadata(
-            session.id,
-            "mp3", //we force mp3, it's encoded in studio-api
+            audioId,
+            "mp3",
             "audio",
           )
         }
@@ -586,6 +587,15 @@ async function storeSessionFromStop(req, next) {
 async function storeQuickMeetingFromStop(req, next) {
   try {
     if (req.query.trash === "true") {
+      // Stop first so the transcriber has flushed its recording before it is dropped.
+      try {
+        await stopSessionAndFetch(req.params.id)
+      } catch (err) {
+        logger.warn(
+          `trash: session ${req.params.id} unreachable, dropping its audio anyway: ${err?.message || err}`,
+        )
+      }
+      await deleteSessionAudioFiles(req.params.id)
       next()
     } else {
       const sessionCheck = await axios.get(
