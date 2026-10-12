@@ -7,6 +7,8 @@ import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import { generateId } from "@/tools/generateId"
+import { isMediaFromOtherOrganization } from "@/tools/isMediaFromOtherOrganization"
+import { apiGetConversationById } from "@/api/conversation.js"
 
 const socketioUrl = getEnv("VUE_APP_SESSION_WS")
 const socketioPath = getEnv("VUE_APP_SESSION_WS_PATH")
@@ -40,6 +42,8 @@ const debugWSEditor = customDebug("Websocket:Editor:debug")
 // Ack timeout for editor commands — past this, the save is reported failed
 // (the edit stays applied locally; server broadcasts reconcile later).
 const EDITOR_ACK_TIMEOUT_MS = 5000
+// Delay to batch the processing count reload after media events.
+const PROCESSING_COUNT_DELAY_MS = 500
 export default class ApiEventWebSocket {
   constructor() {
     this.state = Vue.observable({
@@ -47,7 +51,12 @@ export default class ApiEventWebSocket {
       // Derived from status, kept as a plain flag because many components
       // watch it ("websocketInstance.state.isConnected").
       isConnected: false,
+      // Bumped on every connection but the first one. Events pushed while
+      // the socket was down are lost for good: views watch this to reload
+      // what they show (the first connection has nothing to catch up).
+      reconnectionCount: 0,
     })
+    this.hasConnectedOnce = false
 
     this.socket = null
     this.currentChannelId = null
@@ -56,6 +65,7 @@ export default class ApiEventWebSocket {
     this.currentSessionOrganizationId = null
     this.currentMediaOrganizationId = null
     this.reconnectTimer = null
+    this.processingCountTimer = null
     this.test = false
     this.textPartialForTest = ""
     this.currentToken = null
@@ -94,12 +104,18 @@ export default class ApiEventWebSocket {
       this.socket.on("connect", (msg) => {
         debugWSSession("connected to socket.io server", msg)
         this.setStatus(WEBSOCKET_STATUS.CONNECTED)
+        if (this.hasConnectedOnce) this.state.reconnectionCount++
+        this.hasConnectedOnce = true
         this.subscribeFolderUpdate()
 
         // Room membership does not survive a reconnection: re-watch the
         // organization sessions (events missed during the outage are lost).
         if (this.currentSessionOrganizationId) {
           this.p_attachSessionsUpdate(this.currentSessionOrganizationId)
+        }
+        // Same for the organization media.
+        if (this.currentMediaOrganizationId) {
+          this.p_attachMediaUpdate(this.currentMediaOrganizationId)
         }
 
         // Editor room membership does not survive a reconnection: re-join.
@@ -504,115 +520,107 @@ export default class ApiEventWebSocket {
     this.socket.off(`orga_${organizationId}_session_cleared`)
   }
 
+  // Feeds the media store modules of the organization. Kept across
+  // reconnections, so a caller subscribes once, connected yet or not.
   subscribeMediaUpdate(organizationId) {
-    if (!this.socket) return
     this.unSubscribeMediaUdate()
     this.currentMediaOrganizationId = organizationId
+    if (this.state.isConnected) this.p_attachMediaUpdate(organizationId)
+  }
+
+  p_attachMediaUpdate(organizationId) {
+    // off before on: also runs on every reconnection.
+    this.p_offMediaListeners()
     this.socket.emit("watch_organization_media", organizationId)
 
     this.socket.on("conversation_deleted", ({ id: mediaId, status }) => {
       const statusFormatted =
         status === "done" || status === "error" ? status : "processing"
-
       store.dispatch(
-        `${this.currentMediaOrganizationId}/${statusFormatted}/conversations/deleteMedias`,
+        `${organizationId}/${statusFormatted}/conversations/deleteMedias`,
         { ids: [mediaId], callApi: false },
       )
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/${statusFormatted}/conversations/decreaseCount`,
-      )
+      this.p_refreshProcessingCount(organizationId)
     })
 
+    // Only conversation_created and conversation_processing carry the
+    // organization; the other media events only carry an id.
     this.socket.on("conversation_created", (media) => {
       debugWSMedia("conversation_created", media)
-      if (media.jobs?.transcription?.state === "done") {
-        store.dispatch(
-          `${this.currentMediaOrganizationId}/done/conversations/prependMedias`,
-          [media],
-        )
-        store.dispatch(
-          `${this.currentMediaOrganizationId}/done/conversations/increaseCount`,
-        )
-        return
-      }
+      if (isMediaFromOtherOrganization(media, organizationId)) return
+      const status =
+        media.jobs?.transcription?.state === "done" ? "done" : "processing"
       store.dispatch(
-        `${this.currentMediaOrganizationId}/processing/conversations/prependMedias`,
+        `${organizationId}/${status}/conversations/prependMedias`,
         [media],
       )
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/processing/conversations/increaseCount`,
-      )
+      this.p_refreshProcessingCount(organizationId)
     })
 
     this.socket.on("conversation_processing", (value) => {
       for (const media of value) {
+        if (isMediaFromOtherOrganization(media, organizationId)) continue
         debugWSMedia(
           "Updating media job",
           structuredClone(media?.jobs?.transcription),
         )
         store.dispatch(
-          `${this.currentMediaOrganizationId}/processing/conversations/updateMedia`,
+          `${organizationId}/processing/conversations/updateMedia`,
           { mediaId: media._id, media: { jobs: media.jobs }, patch: true },
         )
       }
     })
 
-    this.socket.on("conversation_processing_done", (mediaId) => {
+    this.socket.on("conversation_processing_done", async (mediaId) => {
       debugWSMedia("conversation_processing_done", mediaId)
+      const processingMedia = this.p_removeProcessingMedia(
+        organizationId,
+        mediaId,
+      )
 
-      const processingMedia =
-        store.getters[
-          `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
-        ](mediaId)
-
-      // Remove from processing store
-      if (processingMedia) {
-        store.dispatch(
-          `${this.currentMediaOrganizationId}/processing/conversations/deleteMedias`,
-          { ids: [mediaId], callApi: false },
-        )
+      // Not in the loaded processing list: fetched, which also tells its
+      // organization (the event only carries the id) and the user's access.
+      const media = processingMedia
+        ? { ...processingMedia, jobs: { transcription: { state: "done" } } }
+        : await apiGetConversationById(mediaId)
+      if (!media?._id || isMediaFromOtherOrganization(media, organizationId)) {
+        return
       }
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/processing/conversations/decreaseCount`,
-      )
-
-      // Add to done store (inbox)
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/done/conversations/prependMedias`,
-        [
-          processingMedia
-            ? { ...processingMedia, jobs: { transcription: { state: "done" } } }
-            : mediaId,
-        ],
-      )
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/done/conversations/increaseCount`,
-      )
+      store.dispatch(`${organizationId}/done/conversations/prependMedias`, [
+        media,
+      ])
     })
 
     this.socket.on("conversation_processing_error", (mediaId) => {
       debugWSMedia("conversation_processing_error", mediaId)
-
-      const processingMedia =
-        store.getters[
-          `${this.currentMediaOrganizationId}/processing/conversations/getMediaById`
-        ](mediaId)
-
-      // Remove from processing store
-      if (processingMedia) {
-        store.dispatch(
-          `${this.currentMediaOrganizationId}/processing/conversations/deleteMedias`,
-          { ids: [mediaId], callApi: false },
-        )
-      }
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/processing/conversations/decreaseCount`,
-      )
-
-      store.dispatch(
-        `${this.currentMediaOrganizationId}/error/conversations/increaseCount`,
-      )
+      this.p_removeProcessingMedia(organizationId, mediaId)
     })
+  }
+
+  // Returns the media when it was in the loaded processing list.
+  p_removeProcessingMedia(organizationId, mediaId) {
+    const scope = `${organizationId}/processing/conversations`
+    const processingMedia = store.getters[`${scope}/getMediaById`](mediaId)
+    if (processingMedia) {
+      store.dispatch(`${scope}/deleteMedias`, {
+        ids: [mediaId],
+        callApi: false,
+      })
+    }
+    this.p_refreshProcessingCount(organizationId)
+    return processingMedia
+  }
+
+  // The sidebar processing count is read from the API rather than guessed
+  // with +1/-1, which drifted on events about medias of another organization
+  // or outside the loaded pages. Batched: a burst of events makes one request.
+  p_refreshProcessingCount(organizationId) {
+    clearTimeout(this.processingCountTimer)
+    this.processingCountTimer = setTimeout(() => {
+      store.dispatch(
+        `${organizationId}/processing/conversations/loadStatusCount`,
+      )
+    }, PROCESSING_COUNT_DELAY_MS)
   }
 
   subscribeFolderUpdate(organizationId) {
@@ -671,13 +679,14 @@ export default class ApiEventWebSocket {
   }
 
   unSubscribeMediaUdate() {
+    // Forgotten even without a socket yet: the connect handler must not
+    // attach the feed of a page already gone.
+    const organizationId = this.currentMediaOrganizationId
+    this.currentMediaOrganizationId = null
+    clearTimeout(this.processingCountTimer)
     if (!this.socket) return
-    if (this.currentMediaOrganizationId) {
-      this.socket.emit(
-        "unwatch_organization_media",
-        this.currentMediaOrganizationId,
-      )
-      this.currentMediaOrganizationId = null
+    if (organizationId) {
+      this.socket.emit("unwatch_organization_media", organizationId)
       // Server side, media and sessions share the organization room:
       // leaving it for the media also stopped the sessions feed.
       if (this.currentSessionOrganizationId && this.state.isConnected) {
@@ -688,6 +697,10 @@ export default class ApiEventWebSocket {
       }
     }
 
+    this.p_offMediaListeners()
+  }
+
+  p_offMediaListeners() {
     this.socket.off("conversation_deleted")
     this.socket.off("conversation_created")
     this.socket.off("conversation_processing_error")

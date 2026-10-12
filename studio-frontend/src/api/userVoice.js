@@ -1,4 +1,4 @@
-import { sendRequest } from "../tools/sendRequest"
+import { sendRequest, throwIfError } from "../tools/sendRequest"
 import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
@@ -33,8 +33,7 @@ export async function apiCreateUserVoiceSample(
     notif,
     { "Content-Type": "multipart/form-data" },
   )
-  if (requestRes.status === "error") throw new Error(requestRes.message)
-  return requestRes.data
+  return throwIfError(requestRes).data
 }
 
 export async function apiGetUserVoiceSampleAudio(id) {

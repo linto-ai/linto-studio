@@ -1,5 +1,6 @@
 import {
   connectRealtime,
+  realtimeState,
   watchOrganizationMedia,
   stopWatchingMedia,
 } from "@/mobile/services/realtime/mediaUpdates.js"
@@ -24,6 +25,9 @@ export const mediaListMixin = {
     hasMore() {
       return this.$store.getters[`${this.storeScope}/hasMore`] ?? false
     },
+    reconnectionCount() {
+      return realtimeState().reconnectionCount
+    },
   },
   watch: {
     status: "reloadMedias",
@@ -31,6 +35,9 @@ export const mediaListMixin = {
     organizationId(newId, oldId) {
       if (newId && newId !== oldId) this.watchAndReload()
     },
+    // The socket re-watches the media by itself after an outage, but what
+    // happened during it is lost: reload.
+    reconnectionCount: "reloadMedias",
   },
   created() {
     this.watchAndReload()
@@ -39,9 +46,11 @@ export const mediaListMixin = {
     stopWatchingMedia()
   },
   methods: {
+    // Subscribed before connecting: the socket attaches the feed once
+    // connected, and a page left meanwhile has already unsubscribed.
     async watchAndReload() {
-      await connectRealtime()
       watchOrganizationMedia(this.organizationId)
+      connectRealtime()
       await this.reloadMedias()
     },
     // The inbox (no folder in the route) and a search span every folder;

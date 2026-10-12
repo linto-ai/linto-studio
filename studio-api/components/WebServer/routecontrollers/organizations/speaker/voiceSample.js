@@ -4,7 +4,6 @@ const {
   resolveStoragePath,
   deleteSampleFile,
   parseAudioDuration,
-  storeAndCreateSample,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)
 
 const {
@@ -22,7 +21,12 @@ const { verifyOwnership } = require(
 const triggers = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
-const limits = require(`${process.cwd()}/lib/dao/speakerIdentification/limits`)
+const { enrolSample } = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/enrolment`,
+)
+const { SPEAKER_TYPE } = require(
+  `${process.cwd()}/lib/dao/speakerIdentification/naming`,
+)
 
 function validateAudioFile(audioFile) {
   _validateAudioFile(audioFile, VoiceSampleUnsupportedMediaType, VoiceSampleError)
@@ -91,38 +95,25 @@ async function createVoiceSample(req, res, next) {
     const audioFile = req.files.audio
     validateAudioFile(audioFile)
 
-    // Quantitative limits per label (07 §5 Q8)
     const existingSamples = await model.voiceSamples.getBySpeakerLabelId(
       req.params.labelId,
     )
-    if (existingSamples.length >= limits.maxSamplesPerLabel()) {
-      throw new VoiceSampleError(
-        `Maximum number of voice samples per speaker reached (${limits.maxSamplesPerLabel()})`,
-      )
-    }
-
-    const payload = {
-      speakerLabelId: req.params.labelId,
-      collectionId: label.collectionId.toString(),
-      organizationId: req.params.organizationId,
-    }
-    const audioDuration = parseAudioDuration(req.body.audioDuration)
-    if (audioDuration !== undefined) {
-      const totalDuration = existingSamples.reduce(
-        (sum, s) => sum + (s.audioDuration || 0),
-        0,
-      )
-      if (totalDuration + audioDuration > limits.maxTotalDurationPerLabel()) {
-        throw new VoiceSampleError(
-          `Maximum total duration of voice samples per speaker reached (${limits.maxTotalDurationPerLabel()}s)`,
-        )
-      }
-      payload.audioDuration = audioDuration
-    }
-
-    const created = await storeAndCreateSample(
-      audioFile, payload, model.voiceSamples, VoiceSampleError,
-    )
+    const created = await enrolSample({
+      audioFile,
+      payload: {
+        speakerLabelId: req.params.labelId,
+        collectionId: label.collectionId.toString(),
+        organizationId: req.params.organizationId,
+        audioDuration: parseAudioDuration(req.body.audioDuration),
+      },
+      subject: {
+        organizationId: req.params.organizationId,
+        subjectType: SPEAKER_TYPE.LABEL,
+        subjectId: req.params.labelId,
+      },
+      existingSamples,
+      ErrorClass: VoiceSampleError,
+    })
 
     // Recompute the label voiceprint and re-upsert it in Qdrant
     // (fire-and-forget; syncState reflects progress).

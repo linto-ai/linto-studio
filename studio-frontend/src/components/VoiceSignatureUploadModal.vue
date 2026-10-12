@@ -3,11 +3,16 @@
     :title="$t('speaker_diarization.upload_modal_title')"
     v-model="isOpen"
     :textActionApply="$t('speaker_diarization.upload_save')"
-    :disabledActionApply="uploadedFiles.length === 0 || submitting"
+    :disabledActionApply="
+      uploadedFiles.length === 0 || hasTooShortFile || submitting
+    "
     :loading="submitting"
+    :closeOnApply="false"
     size="md"
     @submit="submitUpload">
     <div class="voice-upload">
+      <VoiceSampleGuidelines />
+
       <div v-if="uploadedFiles.length > 0" class="voice-upload__file-list">
         <div
           v-for="(file, index) in uploadedFiles"
@@ -26,6 +31,10 @@
               @click="removeFile(index)" />
           </div>
           <audio :src="file.url" controls class="voice-upload__audio"></audio>
+          <VoiceSampleTooShortWarning
+            v-if="file.tooShort"
+            :durationSeconds="file.duration" />
+          <VoiceSampleUploadError v-if="file.error" :message="file.error" />
         </div>
       </div>
 
@@ -48,14 +57,22 @@ import Droparea from "@/components/molecules/Droparea.vue"
 import { apiCreateVoiceSample } from "@/api/voiceSample.js"
 import { formatCompactDuration } from "@/tools/formatDuration.js"
 import { audioDuration } from "@/tools/audioDuration.js"
-
-const UPLOAD_ERROR_KEYS_BY_STATUS = {
-  415: "speaker_diarization.upload_error_unsupported_format",
-}
+import { isVoiceSampleTooShort } from "@/tools/isVoiceSampleTooShort.js"
+import { voiceSampleUploadErrorMessage } from "@/tools/voiceSampleUploadErrorMessage.js"
+import VoiceSampleGuidelines from "@/components/VoiceSampleGuidelines.vue"
+import VoiceSampleUploadError from "@/components/VoiceSampleUploadError.vue"
+import VoiceSampleTooShortWarning from "@/components/VoiceSampleTooShortWarning.vue"
 
 export default {
   name: "VoiceSignatureUploadModal",
-  components: { Modal, Button, Droparea },
+  components: {
+    Modal,
+    Button,
+    Droparea,
+    VoiceSampleGuidelines,
+    VoiceSampleTooShortWarning,
+    VoiceSampleUploadError,
+  },
   props: {
     value: { type: Boolean, required: true },
     organizationId: { type: String, required: true },
@@ -77,6 +94,9 @@ export default {
         this.$emit("input", value)
         if (!value) this.resetAll()
       },
+    },
+    hasTooShortFile() {
+      return this.uploadedFiles.some((file) => file.tooShort)
     },
   },
   methods: {
@@ -100,7 +120,13 @@ export default {
       } catch {
         duration = null
       }
-      this.uploadedFiles.push({ file, url, duration })
+      this.uploadedFiles.push({
+        file,
+        url,
+        duration,
+        tooShort: isVoiceSampleTooShort(duration),
+        error: null,
+      })
     },
     removeFile(index) {
       const removed = this.uploadedFiles.splice(index, 1)
@@ -131,10 +157,18 @@ export default {
             )
           }),
         )
-        const successCount = results.filter(
-          (r) => r.status === "fulfilled",
-        ).length
-        const failureCount = results.length - successCount
+        results.forEach((result, index) => {
+          const entry = this.uploadedFiles[index]
+          entry.error = null
+          if (result.status === "rejected") {
+            entry.error = voiceSampleUploadErrorMessage(
+              result.reason,
+              this.$t.bind(this),
+            )
+          }
+        })
+        const refused = this.uploadedFiles.filter((entry) => entry.error)
+        const successCount = results.length - refused.length
 
         if (successCount > 0) {
           this.$store.dispatch("system/addNotification", {
@@ -146,33 +180,22 @@ export default {
             type: "success",
             timeout: 5000,
           })
-          this.resetAll()
           this.$emit("created")
-          this.$emit("input", false)
         }
 
-        if (failureCount > 0) {
-          const firstFailure = results.find(
-            (r) => r.status === "rejected",
-          ).reason
-          const detailKey = UPLOAD_ERROR_KEYS_BY_STATUS[firstFailure?.status]
-          const detail = detailKey ? this.$t(detailKey) : firstFailure?.message
-          let message
-          if (detail) {
-            message = this.$tc(
-              "speaker_diarization.upload_error_count",
-              failureCount,
-              { count: failureCount, message: detail },
-            )
-          } else {
-            message = this.$t("speaker_diarization.upload_error")
-          }
-          this.$store.dispatch("system/addNotification", {
-            message,
-            type: "error",
-            timeout: 5000,
-          })
+        if (refused.length === 0) {
+          this.resetAll()
+          this.$emit("input", false)
+          return
         }
+
+        // Only the refused files stay, with their reason
+        for (const entry of this.uploadedFiles) {
+          if (!refused.includes(entry) && entry.url) {
+            URL.revokeObjectURL(entry.url)
+          }
+        }
+        this.uploadedFiles = refused
       } catch (err) {
         this.$store.dispatch("system/addNotification", {
           message: err.message || this.$t("speaker_diarization.upload_error"),

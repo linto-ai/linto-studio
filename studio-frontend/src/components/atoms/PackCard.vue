@@ -30,7 +30,7 @@
     <span class="pack-card__header">
       <Avatar :icon="icon" tag="span" size="md" circle padded />
       <span v-if="label" class="pack-card__label">{{ label }}</span>
-      <span v-if="$slots['header-end']" class="pack-card__header-end">
+      <span v-if="$scopedSlots['header-end']" class="pack-card__header-end">
         <slot name="header-end" />
       </span>
     </span>
@@ -67,6 +67,8 @@
 </template>
 
 <script>
+import { computePackPalette } from "@/tools/computePackPalette"
+
 const MOTIF_WIDTH = 240
 const MOTIF_HEIGHT = 160
 // Sound waves around a point near the top right corner
@@ -124,10 +126,7 @@ export default {
   },
   computed: {
     paletteStyle() {
-      return {
-        "--pack-accent": `var(--material-${this.color}-800)`,
-        "--pack-accent-soft": `var(--material-${this.color}-50)`,
-      }
+      return computePackPalette(this.color)
     },
     // Waves spread from the top right corner, curves rise from the bottom
     motifAlignment() {

@@ -1,8 +1,5 @@
 <template>
-  <section class="upcoming-invoice flex col gap-small">
-    <h3 class="upcoming-invoice__title">
-      {{ $t("billing.settings.upcoming.title") }}
-    </h3>
+  <div class="upcoming-invoice flex col gap-small">
     <div class="flex align-center wrap gap-medium">
       <output class="upcoming-invoice__amount">{{
         formatAmount(invoice.totalCents)
@@ -40,7 +37,7 @@
         </tfoot>
       </table>
     </details>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -49,6 +46,7 @@ import { formatFullDate } from "@/tools/formatFullDate"
 
 // Stripe's preview of the next invoice (proration, tax and discounts
 // included): the amounts are shown as Stripe computed them, never recomputed.
+// The section around it carries its title.
 export default {
   name: "UpcomingInvoiceSummary",
   props: {
@@ -85,13 +83,6 @@ export default {
   border: 1px solid var(--neutral-20);
   border-radius: 4px;
   background: var(--background-primary);
-
-  &__title {
-    margin: 0;
-    font-size: var(--text-sm);
-    font-weight: 600;
-    color: var(--text-secondary);
-  }
 
   &__amount {
     font-size: var(--text-2xl);

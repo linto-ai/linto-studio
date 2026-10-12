@@ -38,6 +38,8 @@ export default {
     disabledActionDelete: { type: Boolean, default: false },
     disabledActionCancel: { type: Boolean, default: false },
     disabledActionApply: { type: Boolean, default: false },
+    // false: the parent closes it (e.g. once the submit succeeded)
+    closeOnApply: { type: Boolean, default: true },
     disabledClose: { type: Boolean, default: false },
     iconActionApply: { type: String, default: "check" },
     iconActionCancel: { type: String, default: "x-circle" },
@@ -166,7 +168,7 @@ export default {
       this.$emit("submit", e)
       this.$emit("on-confirm", e)
       this.$emit("confirm", e)
-      this.close(e)
+      if (this.closeOnApply) this.close(e)
       e?.preventDefault()
     },
     deleteHandler(e) {

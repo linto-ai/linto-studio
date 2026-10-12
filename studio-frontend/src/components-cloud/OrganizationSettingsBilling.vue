@@ -30,11 +30,10 @@
 
     <Loading v-if="loading" block />
     <template v-else>
-      <UpcomingInvoiceSummary
-        v-if="upcomingInvoice"
-        :invoice="upcomingInvoice" />
+      <!-- A cancelled subscription is an alert: it stays on top, where the
+           next invoice it replaces is not -->
       <p
-        v-else-if="subscriptionEndsAt"
+        v-if="!upcomingInvoice && subscriptionEndsAt"
         class="organization-billing__notice flex align-center gap-small">
         <PhIcon name="calendar-x" />
         <time :datetime="subscriptionEndsAt">{{
@@ -45,16 +44,9 @@
       </p>
 
       <section class="organization-billing__section flex col gap-small">
-        <SectionHeading :title="$t('billing.settings.usage.title')">
-          <template v-if="!usageFailed && periodLines.length" #subtitle>
-            <time
-              v-for="line in periodLines"
-              :key="line.labelKey"
-              :datetime="line.date"
-              >{{ line.label }}</time
-            >
-          </template>
-        </SectionHeading>
+        <SectionHeading
+          :title="$t('billing.settings.balances.title')"
+          :subtitle="balancesSubtitle" />
         <div v-if="usageFailed" class="organization-billing__error">
           <p>{{ $t("billing.settings.usage.load_error") }}</p>
           <Button
@@ -69,15 +61,31 @@
           <p v-if="view.isLocked" class="organization-billing__locked">
             {{ $t("billing.team_plan_required") }}
           </p>
-          <div class="organization-billing__tiles">
-            <QuotaMeter
-              v-for="meter in view.meters"
-              :key="meter.key"
-              :label="$t(meter.labelKey)"
-              :icon="meter.icon"
-              :used="meter.used"
-              :limit="meter.limit"
-              :unit="meter.unit" />
+          <div class="organization-billing__balances">
+            <BalanceCard
+              v-for="balance in balances"
+              :key="balance.key"
+              :balance="balance"
+              :title="$t(BALANCE_LOOKS[balance.key].titleKey)"
+              :icon="BALANCE_LOOKS[balance.key].icon"
+              :planName="offerName">
+              <AiCreditCosts
+                v-if="balance.key === 'ai' && balance.costs"
+                :costs="balance.costs" />
+              <LiveBalanceHelp
+                v-else-if="balance.key === 'live' && !balance.isUnlimited"
+                :available="balance.available"
+                :offer="liveOffer"
+                @buy="openPackPurchase('live')" />
+              <PackOfferShortcut
+                v-else-if="
+                  balance.key === 'transcription' &&
+                  !balance.isUnlimited &&
+                  hasTranscriptionShortcut
+                "
+                :offer="transcriptionOffer"
+                @select="openPackPurchase" />
+            </BalanceCard>
           </div>
           <router-link
             v-if="view.isPerSeat"
@@ -93,14 +101,14 @@
         class="organization-billing__section flex col gap-small">
         <SectionHeading
           :title="$t('billing.settings.lots.title')"
-          :subtitle="$t('billing.settings.lots.subtitle')">
+          :subtitle="packsSubtitle">
           <template #actions>
             <Button
               variant="secondary"
               size="sm"
               icon="plus"
               :disabled="!canBuyPack"
-              @click="openPackPurchase">
+              @click="openPackPurchase()">
               {{ $t("billing.settings.buy_pack") }}
             </Button>
           </template>
@@ -135,6 +143,13 @@
         </Button>
       </div>
       <template v-else>
+        <section
+          v-if="upcomingInvoice"
+          class="organization-billing__section flex col gap-small">
+          <SectionHeading :title="$t('billing.settings.upcoming.title')" />
+          <UpcomingInvoiceSummary :invoice="upcomingInvoice" />
+        </section>
+
         <section
           v-if="showPaymentSection"
           class="organization-billing__section flex col gap-small">
@@ -184,6 +199,7 @@
 
     <PackPurchaseModal
       v-model="isPackPurchaseOpen"
+      :kind="packPurchaseKind"
       :returnUrl="packPurchaseReturnUrl" />
   </div>
 </template>
@@ -197,28 +213,50 @@ import {
   apiGetCredits,
 } from "@/api/cloud"
 import { SETTINGS_QUERY_PARAM } from "@/const/settingsQueryParam"
+import { computeAvailableBalances } from "@/tools/computeAvailableBalances"
 import { computeBillingReturnUrl } from "@/tools/computeBillingReturnUrl"
 import { computeOrganizationBillingView } from "@/tools/computeOrganizationBillingView"
+import { computePackKindOffers } from "@/tools/computePackKindOffers"
 import { computePackLots } from "@/tools/computePackLots"
 import { computePaymentMethodSummary } from "@/tools/computePaymentMethodSummary"
 import { formatFullDate } from "@/tools/formatFullDate"
+import { formatPackValidity } from "@/tools/formatPackValidity"
+import AiCreditCosts from "@/components-cloud/AiCreditCosts.vue"
+import BalanceCard from "@/components-cloud/BalanceCard.vue"
 import InvoiceTable from "@/components-cloud/InvoiceTable.vue"
 import HorizontalScroller from "@/components/molecules/HorizontalScroller.vue"
+import LiveBalanceHelp from "@/components-cloud/LiveBalanceHelp.vue"
 import SectionHeading from "@/components/molecules/SectionHeading.vue"
 import PackLot from "@/components-cloud/PackLot.vue"
+import PackOfferShortcut from "@/components-cloud/PackOfferShortcut.vue"
 import PackPurchaseModal from "@/components-cloud/PackPurchaseModal.vue"
 import UpcomingInvoiceSummary from "@/components-cloud/UpcomingInvoiceSummary.vue"
 
-// Billing of the current organization (org admins only): usage and packs,
-// then what Stripe knows (next invoice, payment method, invoices). Every
-// Stripe page opened from here comes back to this tab.
+// Title and icon of each balance of computeAvailableBalances
+const BALANCE_LOOKS = {
+  transcription: {
+    titleKey: "billing.settings.meter.import",
+    icon: "file-audio",
+  },
+  live: { titleKey: "billing.settings.meter.live", icon: "microphone" },
+  ai: { titleKey: "billing.settings.meter.ai", icon: "sparkle" },
+}
+
+// Billing of the current organization (org admins only): what is left to
+// use and the packs, then what is paid, as Stripe knows it (next invoice,
+// payment method, invoices). Every Stripe page opened from here comes back
+// to this tab.
 export default {
   name: "OrganizationSettingsBilling",
   components: {
+    AiCreditCosts,
+    BalanceCard,
     InvoiceTable,
     HorizontalScroller,
+    LiveBalanceHelp,
     SectionHeading,
     PackLot,
+    PackOfferShortcut,
     PackPurchaseModal,
     UpcomingInvoiceSummary,
   },
@@ -233,7 +271,10 @@ export default {
       overviewFailed: false,
       creditLots: [],
       isPackPurchaseOpen: false,
+      // Kind of pack offered by the purchase modal, every kind when null
+      packPurchaseKind: null,
       packPurchaseReturnUrl: null,
+      BALANCE_LOOKS,
       // portal | payment_method: the Stripe page being opened
       pendingRedirect: null,
     }
@@ -243,6 +284,7 @@ export default {
       "usage",
       "subscription",
       "plans",
+      "packs",
       "purchasablePacks",
     ]),
     organizationId() {
@@ -263,43 +305,68 @@ export default {
         this.view.plan?.displayName || this.$t("billing.settings.free_plan")
       )
     },
+    // The plan itself, for the balance lines: a comp or managed org still
+    // has one ("Business plan · Unlimited")
+    offerName() {
+      return (
+        this.view.plan?.displayName || this.$t("billing.settings.free_plan")
+      )
+    },
     packLots() {
-      return computePackLots(this.creditLots)
+      return computePackLots(this.creditLots, {
+        consumedKinds: this.consumedLotKinds,
+      })
+    },
+    // Kinds of lots the plan draws on: a file pack bought on Free is left
+    // untouched by Premium
+    consumedLotKinds() {
+      return this.balances
+        .filter((balance) => balance.consumesLots)
+        .map((balance) => balance.lotKind)
     },
     // A locked team org can't use any quota, bought minutes included
     canBuyPack() {
       return !this.view.isLocked && this.purchasablePacks.length > 0
     },
     // A subscription cancelled at period end has no next invoice: its end
-    // date takes that place.
+    // date is shown on top instead, as an alert.
     subscriptionEndsAt() {
       return this.view.cancelsAtPeriodEnd ? this.view.renewalAt : null
     },
-    // Quotas reset every month while a yearly plan renews once a year: one
-    // line per date, merged when they fall on the same day.
-    periodLines() {
-      const renewal =
-        this.view.renewalAt && !this.view.cancelsAtPeriodEnd
-          ? this.computePeriod(
-              "billing.settings.usage.renews_on",
-              this.view.renewalAt,
-            )
-          : null
-      const reset = this.view.quotaResetAt
-        ? this.computePeriod(
-            "billing.settings.usage.quota_reset_on",
-            this.view.quotaResetAt,
-          )
-        : null
-      if (renewal && reset && renewal.dateLabel === reset.dateLabel) {
-        return [
-          this.computePeriod(
-            "billing.settings.usage.renews_and_resets_on",
-            this.view.renewalAt,
-          ),
-        ]
-      }
-      return [renewal, reset].filter(Boolean)
+    balances() {
+      return computeAvailableBalances({
+        usage: this.usage,
+        lots: this.creditLots,
+      })
+    },
+    balancesSubtitle() {
+      if (this.view.isUnmetered) return null
+      return this.$t("billing.settings.balances.subtitle")
+    },
+    packsSubtitle() {
+      const validity = formatPackValidity(this.packs, this.$i18n.locale)
+      if (!validity) return this.$t("billing.settings.lots.subtitle")
+      return this.$t("billing.settings.lots.subtitle_with_validity", {
+        validity,
+      })
+    },
+    // A locked team org can't buy anything, so it is offered nothing
+    kindOffers() {
+      if (!this.canBuyPack) return []
+      return computePackKindOffers(this.purchasablePacks)
+    },
+    liveOffer() {
+      return this.findKindOffer("live")
+    },
+    transcriptionOffer() {
+      return this.findKindOffer("transcription")
+    },
+    // The file pack is offered in its balance until one is in use
+    hasTranscriptionShortcut() {
+      if (!this.transcriptionOffer) return false
+      return !this.packLots.some(
+        (lot) => lot.kind === "transcription" && !lot.isExhausted,
+      )
     },
     // Member usage lives in the Members tab of these settings: the router
     // opens it from the settings query parameter.
@@ -348,34 +415,31 @@ export default {
     formatFullDate,
     async loadBilling() {
       this.loading = true
-      const [usage, subscriptions, overview, packs] = await Promise.all([
-        this.fetchUsage(this.organizationId),
-        this.fetchSubscriptions(this.organizationId),
-        apiGetBillingOverview(this.organizationId),
-        this.fetchPacks(),
-        this.loadCreditLots(),
-      ])
+      const [usage, subscriptions, overview, packs, hasLots] =
+        await Promise.all([
+          this.fetchUsage(this.organizationId),
+          this.fetchSubscriptions(this.organizationId),
+          apiGetBillingOverview(this.organizationId),
+          this.fetchPacks(),
+          this.loadCreditLots(),
+        ])
       // Without the subscription or the pack catalog the plan buttons would
-      // silently lie (no "Manage", no pack): shown as a failure to retry.
-      this.usageFailed = !usage || !Array.isArray(subscriptions) || !packs
+      // silently lie (no "Manage", no pack), without the lots the balances
+      // would: shown as a failure to retry.
+      this.usageFailed =
+        !usage || !Array.isArray(subscriptions) || !packs || !hasLots
       this.overview = overview || null
       this.overviewFailed = !overview
       this.loading = false
     },
-    // The packs are a section of their own: without them the rest of the tab
-    // still works, so a failure just shows the section empty.
+    // Whether the lots could be read
     async loadCreditLots() {
       const credits = await apiGetCredits(this.organizationId)
       this.creditLots = credits?.lots || []
+      return !!credits
     },
-    computePeriod(labelKey, date) {
-      const dateLabel = formatFullDate(date, this.$i18n.locale)
-      return {
-        labelKey,
-        date,
-        dateLabel,
-        label: this.$t(labelKey, { date: dateLabel }),
-      }
+    findKindOffer(kind) {
+      return this.kindOffers.find((offer) => offer.kind === kind) || null
     },
     manageSubscription() {
       this.pendingRedirect = "portal"
@@ -386,7 +450,8 @@ export default {
       return this.openPortal("payment_method_update")
     },
     // Every Stripe page opened from here comes back to this tab
-    openPackPurchase() {
+    openPackPurchase(kind = null) {
+      this.packPurchaseKind = kind
       this.packPurchaseReturnUrl = computeBillingReturnUrl(window.location.href)
       this.isPackPurchaseOpen = true
     },
@@ -435,10 +500,11 @@ export default {
     border-top: 1px solid var(--neutral-20);
   }
 
-  &__tiles {
+  // Cards of a row share their height, their footers aligned at the bottom
+  &__balances {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    gap: var(--small-gap);
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--medium-gap);
   }
 
   &__notice,

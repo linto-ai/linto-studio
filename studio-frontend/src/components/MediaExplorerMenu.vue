@@ -129,7 +129,7 @@ export default {
     processingCount() {
       return (
         this.$store.getters[
-          `${this.getCurrentOrganizationScope}/processing/conversations/count`
+          `${this.getCurrentOrganizationScope}/processing/conversations/statusCount`
         ] || 0
       )
     },
@@ -161,6 +161,12 @@ export default {
           `${orgId}/processing/conversations/loadStatusCount`,
         )
       },
+    },
+    // Changes pushed during a websocket outage are lost: reload the count.
+    "$apiEventWS.state.reconnectionCount"() {
+      const orgId = this.getCurrentOrganizationScope
+      if (!orgId) return
+      this.$store.dispatch(`${orgId}/processing/conversations/loadStatusCount`)
     },
   },
   methods: {

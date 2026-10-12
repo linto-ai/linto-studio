@@ -142,7 +142,7 @@
 
     <ModalDeleteConversations
       :visible="showDeleteModal"
-      :medias="[reactiveSelectedMedia || selectedMedia]"
+      :medias="[selectedMedia]"
       @close="showDeleteModal = false" />
   </div>
 </template>

@@ -1,42 +1,35 @@
 <template>
-  <Alert
-    :visible="visible"
+  <Modal
+    :value="visible"
     :title="title"
-    :message="content"
-    @confirm="onConfirm"
-    @cancel="onCancel"></Alert>
-  <!-- <Modal
-    :title="title"
-    value
-    @on-cancel="($event) => this.$emit('on-cancel')"
-    @on-confirm="($event) => this.$emit('on-confirm')"
-    :actionBtnLabel="button_label"
-    :no-apply="conversationsInError.length > 0"
-    small
-    :customClassButton="customClassButton">
+    size="sm"
+    :withActionDelete="hasMedias"
+    :withActionApply="!hasMedias"
+    :textActionDelete="button_label"
+    :textActionApply="button_label"
+    @delete="onDelete"
+    @cancel="$emit('cancel')"
+    @close="$emit('close')">
     <p>{{ content }}</p>
-    <ul v-if="conversationsInError.length > 0">
-      <li v-for="conv of conversationsInError">
-        {{ conv.name }}
-      </li>
-    </ul>
-  </Modal> -->
+  </Modal>
 </template>
 <script>
 import { mediaScopeMixin } from "@/mixins/mediaScope"
+import Modal from "@/components/molecules/Modal.vue"
 
 export default {
+  components: { Modal },
   mixins: [mediaScopeMixin],
   props: {
     medias: { type: Array, required: true },
     visible: { type: Boolean, required: true },
   },
-  data() {
-    return {}
-  },
   computed: {
     conversationsCount() {
       return this.medias.length
+    },
+    hasMedias() {
+      return this.conversationsCount > 0
     },
     title() {
       if (this.conversationsCount > 0) {
@@ -69,15 +62,10 @@ export default {
       return this.$i18n.t("conversation.delete_modal_multiple_empty.button")
     },
   },
-  mounted() {},
   methods: {
-    onConfirm() {
+    onDelete() {
       this.deleteMedias(this.medias.map((media) => media._id))
       this.$emit("confirm")
-    },
-    closeModal() {},
-    onCancel() {
-      this.$emit("cancel")
     },
   },
 }

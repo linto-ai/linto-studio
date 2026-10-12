@@ -82,7 +82,7 @@ class VoiceSampleModel extends MongoModel {
         speakerLabelId: this.getObjectId(speakerLabelId),
       }
       return await this.mongoRequest(query, {
-        sort: { created: -1 },
+        sort: { created: 1 },
       })
     } catch (error) {
       console.error(error)
@@ -111,7 +111,7 @@ class VoiceSampleModel extends MongoModel {
         collectionId: this.getObjectId(collectionId),
       }
       return await this.mongoRequest(query, {
-        sort: { created: -1 },
+        sort: { created: 1 },
       })
     } catch (error) {
       console.error(error)
@@ -125,7 +125,7 @@ class VoiceSampleModel extends MongoModel {
         organizationId: this.getObjectId(organizationId),
       }
       return await this.mongoRequest(query, {
-        sort: { created: -1 },
+        sort: { created: 1 },
       })
     } catch (error) {
       console.error(error)
@@ -142,7 +142,7 @@ class VoiceSampleModel extends MongoModel {
         userId: userId,
       }
       return await this.mongoRequest(query, {
-        sort: { created: -1 },
+        sort: { created: 1 },
       })
     } catch (error) {
       console.error(error)
@@ -160,7 +160,7 @@ class VoiceSampleModel extends MongoModel {
         audioFilePath: { $exists: true, $ne: null },
       }
       return await this.mongoRequest(query, {
-        sort: { created: -1 },
+        sort: { created: 1 },
       })
     } catch (error) {
       console.error(error)

@@ -270,8 +270,8 @@
             "schema": {
               "type": "object",
               "properties": {
-                "audio": { "type": "string", "format": "binary" },
-                "audioDuration": { "type": "number" }
+                "audio": { "type": "string", "format": "binary", "description": "Audio file, at most SPEAKER_ID_MAX_SAMPLE_SIZE_MB and at least SPEAKER_ID_MIN_SAMPLE_DURATION seconds long; a wav is stored as 48 kHz flac" },
+                "audioDuration": { "type": "number", "description": "Duration in seconds, used only when the file duration cannot be read" }
               },
               "required": ["audio"]
             }
@@ -282,7 +282,9 @@
         "201": { "description": "Sample created" },
         "400": { "$ref": "#/components/responses/BadRequest" },
         "401": { "$ref": "#/components/responses/Unauthorized" },
-        "415": { "description": "Unsupported audio format" }
+        "415": { "description": "Unsupported audio format" },
+        "422": { "description": "Sample too different from the speaker voiceprint (cosine similarity under SPEAKER_ID_MIN_SAMPLE_SIMILARITY); the file is not stored" },
+        "503": { "description": "Speaker identification service unreachable, the sample is not stored; retry later" }
       }
     }
   },
