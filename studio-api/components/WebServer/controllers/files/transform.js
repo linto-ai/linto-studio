@@ -46,6 +46,45 @@ async function mergeAudio(files, audioPath) {
 
 async function mergeChannel(files, audioPath) {}
 
+// Fixed rate so every stored sample has the same format
+const VOICE_SAMPLE_RATE = 48000
+async function convertToFlac(filePath, flacFilePath) {
+  const streamProcess = spawn(
+    "ffmpeg",
+    [
+      "-y",
+      "-i",
+      `${filePath}`,
+      "-vn",
+      "-ar",
+      `${VOICE_SAMPLE_RATE}`,
+      "-c:a",
+      "flac",
+      flacFilePath,
+    ],
+    { detached: true },
+  )
+  await handleStreamProcess(streamProcess)
+}
+
+async function probeAudioDuration(filePath) {
+  const probe = spawn("ffprobe", [
+    "-v",
+    "error",
+    "-show_entries",
+    "format=duration",
+    "-of",
+    "csv=p=0",
+    `${filePath}`,
+  ])
+  let output = ""
+  probe.stdout.on("data", (data) => {
+    output += data
+  })
+  await handleStreamProcess(probe)
+  return parseFloat(output)
+}
+
 async function handleStreamProcess(streamProcess) {
   await new Promise((resolve, reject) => {
     streamProcess.stdout.on("data", (data) => {
@@ -76,4 +115,6 @@ module.exports = {
   transformAudio,
   mergeAudio,
   mergeChannel,
+  convertToFlac,
+  probeAudioDuration,
 }

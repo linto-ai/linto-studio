@@ -111,6 +111,13 @@ SPEAKER_ID_MAX_COLLECTIONS_PER_ORG=20
 SPEAKER_ID_MAX_LABELS_PER_COLLECTION=100
 SPEAKER_ID_MAX_SAMPLES_PER_LABEL=10
 SPEAKER_ID_MAX_TOTAL_DURATION_PER_LABEL=600
+# Minimum length (seconds) of one voice sample, measured on the uploaded file.
+SPEAKER_ID_MIN_SAMPLE_DURATION=20
+# Maximum size (MB) of one uploaded voice sample; 30 s of mono wav weighs 5.8 MB at 96 kHz.
+SPEAKER_ID_MAX_SAMPLE_SIZE_MB=10
+# Minimum cosine similarity between a new voice sample and the speaker voiceprint
+# (same scale as identification). Below it the upload is refused; 0 disables the check.
+SPEAKER_ID_MIN_SAMPLE_SIMILARITY=0.6
 
 DISABLE_USER_CREATION=false
 DISABLE_USER_INVITATION=false

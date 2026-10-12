@@ -5,7 +5,6 @@ const {
   deleteSampleFile,
   cascadeDeleteSampleFiles,
   parseAudioDuration,
-  storeAndCreateSample,
   VOICE_SAMPLE_TYPE,
   STORAGE_MODE,
   SYNC_STATE,
@@ -37,6 +36,9 @@ const { verifyOrgMembership } = require(
 const triggers = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
 )
+const { enrolSample } = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/enrolment`,
+)
 
 function validateAudioFile(audioFile) {
   _validateAudioFile(audioFile, UserVoiceSampleUnsupportedMediaType, UserVoiceSampleError)
@@ -66,33 +68,17 @@ async function createUserVoiceSample(req, res, next) {
     validateAudioFile(audioFile)
 
     const existingSamples = await model.voiceSamples.getByUserId(userId)
-    if (existingSamples.length >= limits.maxSamplesPerLabel()) {
-      throw new UserVoiceSampleError(
-        `Maximum number of voice samples reached (${limits.maxSamplesPerLabel()})`,
-      )
-    }
-
-    const payload = {
-      type: VOICE_SAMPLE_TYPE.USER,
-      userId,
-    }
-    const audioDuration = parseAudioDuration(req.body.audioDuration)
-    if (audioDuration !== undefined) {
-      const totalDuration = existingSamples.reduce(
-        (sum, s) => sum + (s.audioDuration || 0),
-        0,
-      )
-      if (totalDuration + audioDuration > limits.maxTotalDurationPerLabel()) {
-        throw new UserVoiceSampleError(
-          `Maximum total duration of voice samples reached (${limits.maxTotalDurationPerLabel()}s)`,
-        )
-      }
-      payload.audioDuration = audioDuration
-    }
-
-    const created = await storeAndCreateSample(
-      audioFile, payload, model.voiceSamples, UserVoiceSampleError,
-    )
+    const created = await enrolSample({
+      audioFile,
+      payload: {
+        type: VOICE_SAMPLE_TYPE.USER,
+        userId,
+        audioDuration: parseAudioDuration(req.body.audioDuration),
+      },
+      subject: { subjectType: SPEAKER_TYPE.USER, subjectId: userId },
+      existingSamples,
+      ErrorClass: UserVoiceSampleError,
+    })
 
     // Recompute the voiceprint from the user samples and re-upsert it in every
     // opted-in organization collection (fire-and-forget, status via polling).
