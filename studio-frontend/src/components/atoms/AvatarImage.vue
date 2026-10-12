@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import userAvatar from "@/tools/userAvatar"
+import userAvatar from "@/tools/user/userAvatar"
 
 export default {
   name: "AvatarImage",

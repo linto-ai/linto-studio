@@ -271,8 +271,8 @@ import EMPTY_FIELD from "@/const/emptyField"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import isSameDateTimeWithoutSeconds from "@/tools/isSameDateTimeWithoutSeconds.js"
-import isAuthenticated from "@/tools/isAuthenticated.js"
+import isSameDateTimeWithoutSeconds from "@/tools/date/isSameDateTimeWithoutSeconds.js"
+import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 import { getEnv } from "@/tools/getEnv"
 
 import { apiUpdateSession } from "@/api/session.js"

@@ -1,4 +1,4 @@
-import { getExtensionForMimeType } from "@/tools/audioMimeTypes.js"
+import { getExtensionForMimeType } from "@/tools/audio/audioMimeTypes.js"
 import * as queue from "@/mobile/services/recording/queue.js"
 
 // The audio of a local recording as one File, assembled from its chunks.

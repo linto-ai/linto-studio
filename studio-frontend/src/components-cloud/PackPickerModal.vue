@@ -10,35 +10,26 @@
     icon-action-apply="credit-card"
     :disabled-action-apply="!selectedPack"
     @submit="submit">
-    <div class="pack-picker flex col gap-medium">
-      <fieldset
+    <div class="flex col gap-medium">
+      <PackOfferGroup
         v-for="group in groups"
         :key="group.kind"
-        class="pack-picker__group"
-        :style="computeGroupPalette(group.kind)"
-        :aria-describedby="computePitchId(group.kind)">
-        <legend class="pack-picker__legend">
-          <span class="pack-picker__overline">{{
-            computeGroupTitle(group.kind)
-          }}</span>
-          <h3 v-if="computeHeadline(group.kind)" class="pack-picker__headline">
-            {{ computeHeadline(group.kind) }}
-          </h3>
-        </legend>
-        <PackKindPitch :id="computePitchId(group.kind)" :kind="group.kind" />
-        <div class="pack-picker__options">
-          <PackOffer
-            v-for="pack in group.packs"
-            :key="pack.packKey"
-            v-model="selectedPackKey"
-            name="pack"
-            :pack="pack" />
-        </div>
-      </fieldset>
+        :title="$t(group.titleKey)"
+        :headline-key="group.headlineKey"
+        :features="group.features"
+        :note-key="group.noteKey"
+        :palette="group.palette">
+        <PackOffer
+          v-for="pack in group.packs"
+          :key="pack.packKey"
+          v-model="selectedPackKey"
+          name="pack"
+          :pack="pack" />
+      </PackOfferGroup>
     </div>
 
     <template #actions-left>
-      <p class="pack-picker__summary">
+      <p class="pack-picker-summary">
         <strong v-if="selectionLabel">{{ selectionLabel }}</strong>
         <span>{{ intro }}</span>
       </p>
@@ -48,14 +39,11 @@
 
 <script>
 import Modal from "@/components/molecules/Modal.vue"
-import PackKindPitch from "@/components-cloud/PackKindPitch.vue"
 import PackOffer from "@/components-cloud/PackOffer.vue"
-import { PACK_KIND_PITCHES } from "@/const/packKindPitches"
-import { computeDefaultPackKey } from "@/tools/computeDefaultPackKey"
-import { computePackGroups } from "@/tools/computePackGroups"
-import { computePackLook } from "@/tools/computePackLook"
-import { computePackPalette } from "@/tools/computePackPalette"
-import { formatPackValidity } from "@/tools/formatPackValidity"
+import PackOfferGroup from "@/components-cloud/PackOfferGroup.vue"
+import { computeDefaultPackKey } from "@/tools/billing/pack/computeDefaultPackKey"
+import { computePackOfferGroups } from "@/tools/billing/pack/computePackOfferGroups"
+import { formatPackValidity } from "@/tools/billing/pack/formatPackValidity"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
 
@@ -65,7 +53,7 @@ import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
 // chosen packKey on submit.
 export default {
   name: "PackPickerModal",
-  components: { Modal, PackKindPitch, PackOffer },
+  components: { Modal, PackOffer, PackOfferGroup },
   props: {
     value: { type: Boolean, default: false },
     // Packs the organization may buy (see computePurchasablePacks)
@@ -88,7 +76,7 @@ export default {
       },
     },
     groups() {
-      return computePackGroups(this.packs)
+      return computePackOfferGroups(this.packs)
     },
     selectedPack() {
       return (
@@ -99,7 +87,7 @@ export default {
     selectionLabel() {
       if (!this.selectedPack) return null
       const values = {
-        kind: this.computeGroupTitle(this.selectedPack.kind),
+        kind: this.$t(`billing.settings.packs.group.${this.selectedPack.kind}`),
         duration: formatMinutesDuration(this.selectedPack.minutes),
         credits: this.selectedPack.aiCredits,
       }
@@ -137,21 +125,6 @@ export default {
     submit() {
       if (this.selectedPackKey) this.$emit("submit", this.selectedPackKey)
     },
-    computeGroupPalette(kind) {
-      return computePackPalette(computePackLook(kind).color)
-    },
-    computeHeadline(kind) {
-      const headlineKey = PACK_KIND_PITCHES[kind]?.headlineKey
-      return headlineKey ? this.$t(headlineKey) : null
-    },
-    // Ties the group to its features, when the kind has some
-    computePitchId(kind) {
-      return PACK_KIND_PITCHES[kind] ? `pack-pitch-${kind}` : null
-    },
-    computeGroupTitle(kind) {
-      const titleKey = `billing.settings.packs.group.${kind}`
-      return this.$te(titleKey) ? this.$t(titleKey) : kind
-    },
     formatAmount(amountCents, currency) {
       return formatCurrencyAmount(amountCents, currency, this.$i18n.locale)
     },
@@ -160,91 +133,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pack-picker {
-  // Groups are told apart by their titles and a rule between them
-  &__group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--medium-gap);
-    min-width: 0;
-    margin: 0;
-    padding: 0;
-    border: none;
+// The choice and the terms, beside the pay button; above it on a narrow
+// screen
+.pack-picker-summary {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 
-    & + & {
-      padding-top: var(--medium-gap);
-      border-top: 1px solid var(--neutral-20);
-    }
+  @media (max-width: 768px) {
+    flex-basis: 100%;
   }
 
-  // A rendered legend sits apart from the group's flex layout: floated, it
-  // is laid out as plain content, spaced like the cards.
-  &__legend {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tiny-gap);
-    float: left;
-    width: 100%;
-    padding: 0;
-  }
-
-  &__overline {
-    font-size: var(--text-xs);
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--pack-accent);
-  }
-
-  &__headline {
-    // Global headings span the row and carry margins
-    width: auto;
-    margin: 0;
-    font-size: var(--text-xl);
-    font-weight: 700;
-  }
-
-  // The choice and the terms, beside the pay button; above it on a narrow
-  // screen
-  &__summary {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    margin: 0;
-    font-size: var(--text-xs);
-    color: var(--text-secondary);
-
-    @media (max-width: 768px) {
-      flex-basis: 100%;
-    }
-
-    strong {
-      font-size: var(--text-sm);
-      color: var(--text-primary);
-    }
-  }
-
-  // Room around the cards for the ring of the chosen one. On a narrow
-  // screen each group is one row that scrolls sideways, like the bought
-  // packs of the billing tab.
-  &__options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--medium-gap);
-    padding: var(--tiny-gap);
-
-    @media (max-width: 768px) {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-      scroll-snap-type: x mandatory;
-      scroll-padding-inline: var(--tiny-gap);
-
-      > * {
-        flex-shrink: 0;
-        scroll-snap-align: start;
-      }
-    }
+  strong {
+    font-size: var(--text-sm);
+    color: var(--text-primary);
   }
 }
 </style>

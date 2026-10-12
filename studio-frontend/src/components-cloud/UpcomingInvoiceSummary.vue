@@ -42,7 +42,7 @@
 
 <script>
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
-import { formatFullDate } from "@/tools/formatFullDate"
+import { formatFullDate } from "@/tools/date/formatFullDate"
 
 // Stripe's preview of the next invoice (proration, tax and discounts
 // included): the amounts are shown as Stripe computed them, never recomputed.

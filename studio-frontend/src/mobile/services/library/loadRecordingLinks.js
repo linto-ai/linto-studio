@@ -1,4 +1,4 @@
-import { sendRequest } from "@/tools/sendRequest.js"
+import { sendRequest } from "@/tools/request/sendRequest.js"
 import { apiGetMetadataLLMService } from "@/api/service.js"
 import { getEnv } from "@/tools/getEnv"
 

@@ -1,4 +1,4 @@
-import { sendRequest } from "../tools/sendRequest"
+import { sendRequest } from "../tools/request/sendRequest"
 import { getEnv } from "@/tools/getEnv"
 
 // The SaaS plugin (linto-saas) is mounted at /cloud on studio-api, sibling to

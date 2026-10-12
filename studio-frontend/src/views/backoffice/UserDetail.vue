@@ -21,7 +21,7 @@
 import { apiGetPublicUserById } from "@/api/user.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { impersonationMixin } from "@/mixins/impersonation.js"
-import { userName } from "@/tools/userName.js"
+import { userName } from "@/tools/user/userName.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"

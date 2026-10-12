@@ -1,4 +1,4 @@
-import { getImpersonatedOrgId } from "@/tools/getImpersonatedOrgId.js"
+import { getImpersonatedOrgId } from "@/tools/backoffice/getImpersonatedOrgId.js"
 
 const state = {
   organizations: {}, // key: organizationId, value: organization

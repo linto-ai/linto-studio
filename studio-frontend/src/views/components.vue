@@ -209,8 +209,8 @@ import GenericTable from "@/components/molecules/GenericTable.vue"
 import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
 import PackLot from "@/components-cloud/PackLot.vue"
 import PackOffer from "@/components-cloud/PackOffer.vue"
-import { computePackGroups } from "@/tools/computePackGroups"
-import { computePackLots } from "@/tools/computePackLots"
+import { computePackGroups } from "@/tools/billing/pack/computePackGroups"
+import { computePackLots } from "@/tools/billing/pack/computePackLots"
 
 // Catalog-shaped packs and API-shaped lots, for the pack cards below
 const DEMO_PACKS = [

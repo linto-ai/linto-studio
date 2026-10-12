@@ -9,7 +9,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex"
 import PackPickerModal from "@/components-cloud/PackPickerModal.vue"
-import { computeCheckoutReturnUrl } from "@/tools/computeCheckoutReturnUrl"
+import { computeCheckoutReturnUrl } from "@/tools/billing/computeCheckoutReturnUrl"
 
 // Buys a prepaid pack from anywhere: picks it, then leaves for the Stripe
 // Checkout, which comes back to returnUrl (the router tells the outcome).

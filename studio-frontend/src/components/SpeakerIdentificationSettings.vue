@@ -196,7 +196,7 @@ import Modal from "@/components/molecules/Modal.vue"
 import SpeakerLabelCollectionDetail from "@/components/SpeakerLabelCollectionDetail.vue"
 import SpeakerLabelDetail from "@/components/SpeakerLabelDetail.vue"
 import DiarizationCollectionCard from "@/components/DiarizationCollectionCard.vue"
-import { COLLECTION_TYPE, STORAGE_MODE } from "@/tools/voiceprintConstants.js"
+import { COLLECTION_TYPE, STORAGE_MODE } from "@/tools/voiceprint/voiceprintConstants.js"
 
 export default {
   name: "SpeakerIdentificationSettings",

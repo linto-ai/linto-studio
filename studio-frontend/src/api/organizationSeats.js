@@ -1,5 +1,5 @@
 import { apiUpdateUserRoleInOrganisation } from "./user.js"
-import { grantSeatsToMembers } from "@/tools/grantSeatsToMembers.js"
+import { grantSeatsToMembers } from "@/tools/seats/grantSeatsToMembers.js"
 
 /**
  * Gives a seat to each member of a batch by assigning their role, sequentially.

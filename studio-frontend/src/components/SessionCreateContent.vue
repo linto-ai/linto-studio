@@ -158,7 +158,7 @@ import { bus } from "@/main.js"
 import { testName } from "@/tools/fields/testName"
 import { getEnv } from "@/tools/getEnv"
 import { generateId } from "@/tools/generateId.js"
-import { meetsMetaSecurityLevel } from "@/tools/filterBySecurityLevel"
+import { meetsMetaSecurityLevel } from "@/tools/rights/filterBySecurityLevel"
 
 import EMPTY_FIELD from "@/const/emptyField"
 
@@ -179,7 +179,7 @@ import MetadataList from "@/components/MetadataList.vue"
 import ModalEditMetadata from "@/components/ModalEditMetadata.vue"
 import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
-import { extractTranslationLangCode } from "@/tools/translationUtils"
+import { extractTranslationLangCode } from "@/tools/transcription/translationUtils"
 
 export default {
   mixins: [formsMixin, organizationSecurityLevelMixin],

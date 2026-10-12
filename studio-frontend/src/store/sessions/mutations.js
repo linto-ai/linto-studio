@@ -1,5 +1,5 @@
 import Vue from "vue"
-import mergeSession from "../../tools/mergeSession.js"
+import mergeSession from "../../tools/session/mergeSession.js"
 
 // Sessions are replaced, never mutated in place, and new ids go through
 // Vue.set: views read them through getters and must see every change.

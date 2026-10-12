@@ -101,8 +101,8 @@
 <script>
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import MicrophoneStatusBanner from "@/components/molecules/MicrophoneStatusBanner.vue"
-import { resolveSessionBanner } from "@/tools/resolveSessionBanner.js"
-import { computeLiveCreditLevel } from "@/tools/computeLiveCreditLevel.js"
+import { resolveSessionBanner } from "@/tools/session/resolveSessionBanner.js"
+import { computeLiveCreditLevel } from "@/tools/billing/computeLiveCreditLevel.js"
 import { createRestoredFlashMixin } from "@/mixins/restoredFlash.js"
 
 // Single banner slot for a live session view: websocket outage first,

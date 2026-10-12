@@ -1,4 +1,4 @@
-import { getSupportedRecordingMimeType } from "@/tools/audioMimeTypes.js"
+import { getSupportedRecordingMimeType } from "@/tools/audio/audioMimeTypes.js"
 import { buildAudioConstraints } from "@/mobile/tools/buildAudioConstraints.js"
 
 const CHUNK_INTERVAL_MS = 10_000

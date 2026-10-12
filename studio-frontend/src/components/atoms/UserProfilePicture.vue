@@ -12,8 +12,8 @@
   </div>
 </template>
 <script>
-import { userName } from "@/tools/userName.js"
-import userAvatar from "@/tools/userAvatar"
+import { userName } from "@/tools/user/userName.js"
+import userAvatar from "@/tools/user/userAvatar"
 
 export default {
   name: "UserProfilePicture",

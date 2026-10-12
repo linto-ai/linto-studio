@@ -1,6 +1,6 @@
 import { apiGetOptedInMembers } from "@/api/voiceprintCollection.js"
 import { apiGetSpeakerLabels } from "@/api/speakerLabel.js"
-import { COLLECTION_TYPE } from "@/tools/voiceprintConstants.js"
+import { COLLECTION_TYPE } from "@/tools/voiceprint/voiceprintConstants.js"
 
 // Names of the voices enrolled in a collection. Organization collections
 // are fed by opted-in members, custom ones by managed speaker labels.

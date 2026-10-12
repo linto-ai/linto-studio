@@ -6,7 +6,7 @@ import {
   apiUpdateMultipleUsersInMultipleConversations,
   apiSearchUser,
 } from "@/api/user.js"
-import { indexConversationRightByUsers } from "@/tools/indexConversationRightByUsers.js"
+import { indexConversationRightByUsers } from "@/tools/rights/indexConversationRightByUsers.js"
 
 const INVITED_RIGHT = 1
 

@@ -1,4 +1,4 @@
-import { getUserRightFromConversation } from "../../tools/getUserRightFromConversation.js"
+import { getUserRightFromConversation } from "../../tools/rights/getUserRightFromConversation.js"
 import RIGHTS from "../../const/userRights.js"
 import { ORGANIZATION_ROLES } from "../../const/organizationRoles.js"
 

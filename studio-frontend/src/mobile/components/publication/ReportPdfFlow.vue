@@ -21,7 +21,7 @@ import ReportTemplatesSheet from "@/mobile/components/publication/ReportTemplate
 import PdfReader from "@/mobile/components/publication/PdfReader.vue"
 import { exportReportPdf } from "@/mobile/services/publication/exportReportPdf.js"
 import { shareFile } from "@/mobile/services/export/shareFile.js"
-import { getTemplateDisplayName } from "@/tools/getTemplateDisplayName.js"
+import { getTemplateDisplayName } from "@/tools/publication/getTemplateDisplayName.js"
 
 // "Download" on an AI report of the editor: pick a publication template of
 // the service, read the PDF in the app, then share or save it. start() is

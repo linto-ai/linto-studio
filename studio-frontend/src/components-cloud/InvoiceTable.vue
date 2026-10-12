@@ -42,7 +42,7 @@
 
 <script>
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
-import { formatFullDate } from "@/tools/formatFullDate"
+import { formatFullDate } from "@/tools/date/formatFullDate"
 
 // Statuses that need the admin's attention stand out; the label always
 // says the status, the color only doubles it.

@@ -4,10 +4,10 @@ import {
   saveOriginalAuth,
   clearOriginalAuth,
   isImpersonatingUser,
-} from "@/tools/userImpersonation.js"
-import { getCookie } from "@/tools/getCookie"
-import { setCookie } from "@/tools/setCookie"
-import { clearImpersonatedOrgId } from "@/tools/clearImpersonatedOrgId.js"
+} from "@/tools/backoffice/userImpersonation.js"
+import { getCookie } from "@/tools/auth/getCookie"
+import { setCookie } from "@/tools/auth/setCookie"
+import { clearImpersonatedOrgId } from "@/tools/backoffice/clearImpersonatedOrgId.js"
 import { apiImpersonateUser } from "@/api/user.js"
 
 const state = {

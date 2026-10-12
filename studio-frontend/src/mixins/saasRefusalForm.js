@@ -1,6 +1,6 @@
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
-import { computeSaasRefusal } from "@/tools/computeSaasRefusal"
-import { formatFullDate } from "@/tools/formatFullDate"
+import { computeSaasRefusal } from "@/tools/billing/computeSaasRefusal"
+import { formatFullDate } from "@/tools/date/formatFullDate"
 
 // State of a form refused by the SaaS (402/403): the raw response body set by
 // the form, and what to show for it (SaasRefusalMessage above the submit row,

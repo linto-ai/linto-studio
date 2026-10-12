@@ -51,7 +51,7 @@
 import ServiceEditor from "./ServiceEditor.vue"
 import ServicePicker from "./ServicePicker.vue"
 import Loading from "@/components/atoms/Loading.vue"
-import { meetsSecurityLevel } from "@/tools/filterBySecurityLevel"
+import { meetsSecurityLevel } from "@/tools/rights/filterBySecurityLevel"
 
 export default {
   props: {

@@ -74,7 +74,7 @@ import ModalCreateSystemToken from "@/components/ModalCreateSystemToken.vue"
 import ModalDeleteToken from "@/components/ModalDeleteToken.vue"
 import ModalRenewSystemToken from "@/components/ModalRenewSystemToken.vue"
 import ModalViewToken from "@/components/ModalViewToken.vue"
-import { formatDateLocale } from "@/tools/formatDate"
+import { formatDateLocale } from "@/tools/date/formatDate"
 
 export default {
   mixins: [platformRoleMixin],

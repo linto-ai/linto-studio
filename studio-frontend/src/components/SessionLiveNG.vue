@@ -26,8 +26,8 @@ import { markRaw } from "vue"
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
 import { liveCreditPollingMixin } from "@/mixins/liveCreditPolling.js"
 import { livePackPurchaseMixin } from "@/mixins/livePackPurchase.js"
-import sessionToEditorDocument from "@/tools/sessionToEditorDocument.js"
-import processSessionCaptions from "@/tools/processSessionCaptions.js"
+import sessionToEditorDocument from "@/tools/session/sessionToEditorDocument.js"
+import processSessionCaptions from "@/tools/session/processSessionCaptions.js"
 import {
   apiGetSessionChannelTurns,
   apiGetPublicSessionChannelTurns,
@@ -38,11 +38,11 @@ import {
   createSubtitlePlugin,
 } from "@linto-ai/transcript-ui-webcomponent"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
-import classifySessionTurn from "@/tools/classifySessionTurn"
+import classifySessionTurn from "@/tools/session/classifySessionTurn"
 import {
   computeTurnStartDate,
   computeTurnEndDate,
-} from "@/tools/computeTurnTime.js"
+} from "@/tools/transcription/computeTurnTime.js"
 import { getEnv } from "@/tools/getEnv"
 import { readBrandColor } from "@/tools/readBrandColor"
 import { bus } from "@/tools/eventBus.js"

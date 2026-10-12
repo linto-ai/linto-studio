@@ -116,7 +116,7 @@ import transriberImageFromtype from "@/tools/transriberImageFromtype.js"
 import {
   normalizeAvailableTranslations,
   extractTranslationLangCode,
-} from "@/tools/translationUtils.js"
+} from "@/tools/transcription/translationUtils.js"
 
 export default {
   props: {

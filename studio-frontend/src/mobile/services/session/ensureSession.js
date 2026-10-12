@@ -1,5 +1,5 @@
 import store from "@/mobile/store.js"
-import { logout } from "@/tools/logout"
+import { logout } from "@/tools/auth/logout"
 import { pickDefaultOrganization } from "@/mobile/tools/pickDefaultOrganization.js"
 
 // Loads the user, its organizations and the current organization scope once.

@@ -28,7 +28,7 @@
 <script>
 import Button from "@/components/atoms/Button.vue"
 import PhIcon from "@/components/atoms/PhIcon.vue"
-import { getTemplateDisplayName } from "@/tools/getTemplateDisplayName.js"
+import { getTemplateDisplayName } from "@/tools/publication/getTemplateDisplayName.js"
 
 // LinTO templates of the service, offered as a starting point for a custom one.
 export default {

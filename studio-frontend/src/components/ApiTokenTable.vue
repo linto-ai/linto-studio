@@ -103,9 +103,9 @@ import ModalDeleteToken from "./ModalDeleteToken.vue"
 import ModalRenewToken from "./ModalRenewToken.vue"
 import ModalViewToken from "./ModalViewToken.vue"
 import ModalEditToken from "./ModalEditToken.vue"
-import { formatDateLocale } from "@/tools/formatDate"
-import { isTokenExpiringSoon } from "@/tools/isTokenExpiringSoon"
-import userAvatar from "@/tools/userAvatar"
+import { formatDateLocale } from "@/tools/date/formatDate"
+import { isTokenExpiringSoon } from "@/tools/auth/isTokenExpiringSoon"
+import userAvatar from "@/tools/user/userAvatar"
 
 export default {
   props: {

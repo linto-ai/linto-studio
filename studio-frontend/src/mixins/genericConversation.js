@@ -8,7 +8,7 @@ import {
 import { apiGetUsersByConversationId } from "@/api/user.js"
 
 import USER_RIGHTS from "@/const/userRights.js"
-import { getCookie } from "@/tools/getCookie.js"
+import { getCookie } from "@/tools/auth/getCookie.js"
 import { conversationModelMixin } from "./conversationModel.js"
 
 export const genericConversationMixin = {

@@ -1,6 +1,6 @@
-import { isQuotaUnlimited } from "@/tools/billingMeters"
-import { isLiveCreditExhausted } from "@/tools/isLiveCreditExhausted"
-import { computePurchasablePacks } from "@/tools/computePurchasablePacks"
+import { isQuotaUnlimited } from "@/tools/billing/billingMeters"
+import { isLiveCreditExhausted } from "@/tools/billing/isLiveCreditExhausted"
+import { computePurchasablePacks } from "@/tools/billing/pack/computePurchasablePacks"
 
 // i18n label per metered capability (quota rules of the catalog).
 const METER_LABEL = {

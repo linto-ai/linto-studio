@@ -1,5 +1,5 @@
 import { getEnv } from "@/tools/getEnv"
-import { getCookie } from "@/tools/getCookie"
+import { getCookie } from "@/tools/auth/getCookie"
 import { shouldRedirectToMobileApp } from "@/mobile/tools/shouldRedirectToMobileApp.js"
 import { isPhoneDevice } from "@/mobile/tools/isPhoneDevice.js"
 import { MOBILE_OPT_OUT_COOKIE } from "@/mobile/const/optOutCookie.js"

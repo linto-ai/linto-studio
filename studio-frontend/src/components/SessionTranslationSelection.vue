@@ -15,7 +15,7 @@
 import { Fragment } from "vue-fragment"
 
 import { bus } from "@/main.js"
-import { extractTranslationLangCode } from "@/tools/translationUtils.js"
+import { extractTranslationLangCode } from "@/tools/transcription/translationUtils.js"
 export default {
   props: {
     selectedChannel: {

@@ -10,7 +10,7 @@
 
 <script>
 import PhIcon from "@/components/atoms/PhIcon.vue"
-import { lockedPlanHint } from "@/tools/lockedPlanHint.js"
+import { lockedPlanHint } from "@/tools/billing/lockedPlanHint.js"
 
 // Upload entry of the template grid. Locked, it names the plan that unlocks it.
 export default {

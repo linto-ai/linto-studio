@@ -54,7 +54,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
-import { isCollaboratorRole } from "@/tools/isCollaboratorRole.js"
+import { isCollaboratorRole } from "@/tools/seats/isCollaboratorRole.js"
 
 export default {
   name: "MemberUsageTable",

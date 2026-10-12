@@ -4,9 +4,9 @@ import {
   apiGetExportContent,
 } from "@/api/service.js"
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
-import { filterLLMServicesBySecurityLevel } from "@/tools/filterBySecurityLevel.js"
+import { filterLLMServicesBySecurityLevel } from "@/tools/rights/filterBySecurityLevel.js"
 import { mapStatus } from "@/tools/llm/mapStatus.js"
-import { computeEpochMs } from "@/tools/computeEpochMs.js"
+import { computeEpochMs } from "@/tools/date/computeEpochMs.js"
 import { loadVersions } from "../loadVersions.js"
 import { loadGenerations } from "../loadGenerations.js"
 

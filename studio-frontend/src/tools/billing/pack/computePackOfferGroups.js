@@ -1,0 +1,28 @@
+import { PACK_KIND_PITCHES } from "../../../const/pack/packKindPitches.js"
+import { computePackGroups } from "./computePackGroups.js"
+import { computePackLook } from "./computePackLook.js"
+import { computePackPalette } from "./computePackPalette.js"
+
+/**
+ * Groups of the purchase modal, ready to render: the packs of each kind (see
+ * computePackGroups) with the i18n keys of the kind name, of its headline
+ * and counting note, its features, and its color palette. A kind without a
+ * pitch gets no name, no headline, no features and no note.
+ * @param {Array<{packKey: string, kind: string, minutes: number, amountCents: number}>} packs
+ * @returns {Array<{kind: string, packs: Array, titleKey: string|null, headlineKey: string|null, features: Array, noteKey: string|null, palette: object}>}
+ */
+export function computePackOfferGroups(packs) {
+  return computePackGroups(packs).map(computePackOfferGroup)
+}
+
+function computePackOfferGroup(group) {
+  const pitch = PACK_KIND_PITCHES[group.kind]
+  return {
+    ...group,
+    titleKey: pitch?.titleKey ?? null,
+    headlineKey: pitch?.headlineKey ?? null,
+    features: pitch?.features ?? [],
+    noteKey: pitch?.noteKey ?? null,
+    palette: computePackPalette(computePackLook(group.kind).color),
+  }
+}

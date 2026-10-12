@@ -120,10 +120,10 @@
 
 <script>
 import { apiGrantSeatsToMembers } from "@/api/organizationSeats.js"
-import { computeProratedSeatPrice } from "@/tools/computeProratedSeatPrice.js"
-import { computeSeatsNeeded } from "@/tools/computeSeatsNeeded.js"
+import { computeProratedSeatPrice } from "@/tools/seats/computeProratedSeatPrice.js"
+import { computeSeatsNeeded } from "@/tools/seats/computeSeatsNeeded.js"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
-import { userName } from "@/tools/userName.js"
+import { userName } from "@/tools/user/userName.js"
 
 import Modal from "@/components/molecules/Modal.vue"
 import OrgaRoleSelector from "@/components/molecules/OrgaRoleSelector.vue"

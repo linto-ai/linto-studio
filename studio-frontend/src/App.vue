@@ -34,7 +34,7 @@ import { mapActions, mapGetters } from "vuex"
 import { bus } from "@/main"
 
 import { customDebug } from "@/tools/customDebug.js"
-import isAuthenticated from "@/tools/isAuthenticated.js"
+import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 import getCurrentTheme from "@/tools/getCurrentTheme.js"
 import { getEnv } from "@/tools/getEnv"
 

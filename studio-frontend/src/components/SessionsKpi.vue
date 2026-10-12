@@ -35,8 +35,8 @@ import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalSessionStats from "@/components/ModalSessionStats.vue"
 import { getSessionListKpi } from "@/api/kpi"
-import { timeToHMS } from "@/tools/timeToHMS"
-import { userName } from "@/tools/userName"
+import { timeToHMS } from "@/tools/date/timeToHMS"
+import { userName } from "@/tools/user/userName"
 export default {
   props: {
     organizationId: {

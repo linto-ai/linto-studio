@@ -155,7 +155,7 @@ import {
   apiGetOptedInMemberSampleAudio,
 } from "@/api/voiceprintCollection.js"
 import { apiGetSpeakerLabel, apiUpdateSpeakerLabel } from "@/api/speakerLabel.js"
-import { formatDateOrDash } from "@/tools/formatDate.js"
+import { formatDateOrDash } from "@/tools/date/formatDate.js"
 import { formatCompactDuration } from "@/tools/formatDuration.js"
 import { voiceSignaturePlaybackMixin } from "@/mixins/voiceSignaturePlayback.js"
 

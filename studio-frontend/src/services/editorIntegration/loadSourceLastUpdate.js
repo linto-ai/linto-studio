@@ -1,5 +1,5 @@
 import { apiGetConversationLastUpdate } from "@/api/conversation"
-import { computeEpochMs } from "@/tools/computeEpochMs.js"
+import { computeEpochMs } from "@/tools/date/computeEpochMs.js"
 
 // Seeds the "last modified" timestamp of a channel's source track from the
 // server. Reports are generated from the channel conversation, i.e. its

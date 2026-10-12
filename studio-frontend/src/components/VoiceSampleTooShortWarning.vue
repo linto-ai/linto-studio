@@ -6,7 +6,7 @@
 
 <script>
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
-import { VOICE_SAMPLE_DURATION } from "@/tools/voiceprintConstants.js"
+import { VOICE_SAMPLE_DURATION } from "@/tools/voiceprint/voiceprintConstants.js"
 
 export default {
   name: "VoiceSampleTooShortWarning",

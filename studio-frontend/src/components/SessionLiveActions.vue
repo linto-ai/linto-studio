@@ -141,7 +141,7 @@
 import { bus } from "@/main.js"
 
 import { sessionModelMixin } from "@/mixins/sessionModel.js"
-import isSessionStarted from "@/tools/isSessionStarted.js"
+import isSessionStarted from "@/tools/session/isSessionStarted.js"
 
 import {
   apiPauseSession,

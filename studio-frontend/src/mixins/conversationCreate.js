@@ -5,7 +5,7 @@ import { apiGetTranscriptionService } from "@/api/service"
 import { apiCreateConversation } from "@/api/conversation"
 import { testFieldEmpty } from "@/tools/fields/testEmpty.js"
 import { testService } from "@/tools/fields/testService.js"
-import { meetsSecurityLevel } from "@/tools/filterBySecurityLevel"
+import { meetsSecurityLevel } from "@/tools/rights/filterBySecurityLevel"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { debounceMixin } from "@/mixins/debounce"
@@ -16,7 +16,7 @@ import EMPTY_FIELD from "@/const/emptyField"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import generateServiceConfig from "@/tools/generateServiceConfig"
 import { getEnv } from "@/tools/getEnv"
-import { isSaasRefusal } from "@/tools/isSaasRefusal"
+import { isSaasRefusal } from "@/tools/billing/isSaasRefusal"
 
 export default {
   mixins: [formsMixin, debounceMixin, saasRefusalFormMixin],

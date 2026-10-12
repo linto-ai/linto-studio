@@ -111,7 +111,7 @@ import { orgaRoleMixin } from "@/mixins/orgaRole"
 import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
 
 import { getEnv } from "@/tools/getEnv"
-import { isQualifiedForCrossSubtitles } from "@/tools/translationUtils.js"
+import { isQualifiedForCrossSubtitles } from "@/tools/transcription/translationUtils.js"
 
 import Loading from "@/components/atoms/Loading.vue"
 import SessionEnded from "@/components/SessionEnded.vue"

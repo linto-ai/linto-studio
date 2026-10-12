@@ -1,7 +1,7 @@
-import { sendRequest } from "../tools/sendRequest"
+import { sendRequest } from "../tools/request/sendRequest"
 
 import { getEnv } from "@/tools/getEnv"
-import { sendMultipartFormData } from "@/tools/sendMultipartFormData"
+import { sendMultipartFormData } from "@/tools/request/sendMultipartFormData"
 import stripHiddenTranscriberProfileSecrets from "@/tools/stripHiddenTranscriberProfileSecrets.js"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")

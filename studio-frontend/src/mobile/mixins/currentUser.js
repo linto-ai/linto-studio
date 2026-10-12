@@ -1,7 +1,7 @@
 import { mapGetters } from "vuex"
-import { userName } from "@/tools/userName"
+import { userName } from "@/tools/user/userName"
 import { computeInitials } from "@/mobile/tools/computeInitials.js"
-import { orgDisplayName } from "@/tools/orgDisplayName"
+import { orgDisplayName } from "@/tools/user/orgDisplayName"
 import { getOrganizationRoleKey } from "@/mobile/tools/getOrganizationRoleKey.js"
 
 // Everything a mobile page needs to display "who am I, in which org".

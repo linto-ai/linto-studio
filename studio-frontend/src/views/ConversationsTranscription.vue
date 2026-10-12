@@ -43,7 +43,7 @@ import {
   apiGetAudioWaveFormFromConversation,
 } from "@/api/conversation"
 import { customDebug } from "@/tools/customDebug"
-import { computeEpochMs } from "@/tools/computeEpochMs.js"
+import { computeEpochMs } from "@/tools/date/computeEpochMs.js"
 import { readBrandColor } from "@/tools/readBrandColor"
 
 const debug = customDebug("vue:editor")

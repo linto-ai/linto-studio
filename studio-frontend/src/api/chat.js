@@ -1,6 +1,6 @@
-import { sendRequest } from "../tools/sendRequest"
+import { sendRequest } from "../tools/request/sendRequest"
 import { getEnv } from "@/tools/getEnv"
-import { getCookie } from "@/tools/getCookie"
+import { getCookie } from "@/tools/auth/getCookie"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 

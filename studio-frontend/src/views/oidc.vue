@@ -4,7 +4,7 @@
 <script>
 import Loading from "@/components/atoms/Loading.vue"
 import { getOidcToken, apiGetPersonalUserInfo } from "@/api/user.js"
-import { setCookie } from "@/tools/setCookie.js"
+import { setCookie } from "@/tools/auth/setCookie.js"
 
 export default {
   props: {},

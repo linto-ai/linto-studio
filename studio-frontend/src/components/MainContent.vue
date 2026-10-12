@@ -6,7 +6,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
-import isAuthenticated from "@/tools/isAuthenticated.js"
+import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 
 import V2Layout from "@/layouts/v2-layout.vue"
 

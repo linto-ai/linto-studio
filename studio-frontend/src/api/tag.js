@@ -1,4 +1,4 @@
-import { sendRequest, throwIfError } from "../tools/sendRequest"
+import { sendRequest, throwIfError } from "../tools/request/sendRequest"
 import COLORS from "../const/colors"
 
 import { getEnv } from "@/tools/getEnv"

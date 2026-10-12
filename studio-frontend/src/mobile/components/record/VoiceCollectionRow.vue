@@ -30,7 +30,7 @@
 
 <script>
 import PhIcon from "@/components/atoms/PhIcon.vue"
-import { COLLECTION_TYPE } from "@/tools/voiceprintConstants.js"
+import { COLLECTION_TYPE } from "@/tools/voiceprint/voiceprintConstants.js"
 
 // One voice collection: a checkbox to use it, and a caret that unfolds the
 // enrolled voices (fetched by the parent through `load-voices`).

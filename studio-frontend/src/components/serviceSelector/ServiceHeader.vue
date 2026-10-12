@@ -35,7 +35,7 @@
 import extractLocales from "@/tools/extractLocales"
 import { getEnv } from "@/tools/getEnv"
 import { SECURITY_LEVEL_ICONS } from "@/const/securityLevels"
-import { normalizeSecurityLevel } from "@/tools/filterBySecurityLevel"
+import { normalizeSecurityLevel } from "@/tools/rights/filterBySecurityLevel"
 
 export default {
   props: {

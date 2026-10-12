@@ -28,7 +28,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import getTextTurnWithTranslation from "@/tools/getTextTurnWithTranslation.js"
+import getTextTurnWithTranslation from "@/tools/transcription/getTextTurnWithTranslation.js"
 export default {
   props: {
     turn: {

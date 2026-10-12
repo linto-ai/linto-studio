@@ -218,9 +218,9 @@ import {
   apiAdminGetLedgerExport,
 } from "@/api/cloud.js"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount.js"
-import { buildManualPlanPayload } from "@/tools/buildManualPlanPayload.js"
-import { parseSeatCount } from "@/tools/parseSeatCount.js"
-import { buildLedgerExportQuery } from "@/tools/buildLedgerExportQuery.js"
+import { buildManualPlanPayload } from "@/tools/backoffice/buildManualPlanPayload.js"
+import { parseSeatCount } from "@/tools/seats/parseSeatCount.js"
+import { buildLedgerExportQuery } from "@/tools/backoffice/buildLedgerExportQuery.js"
 import { formsMixin } from "@/mixins/forms.js"
 import EMPTY_FIELD from "@/const/emptyField"
 import { testName } from "@/tools/fields/testName"

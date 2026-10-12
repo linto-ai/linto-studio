@@ -214,9 +214,9 @@ import {
   apiAdminGrantCredits,
   apiAdminRefundLot,
 } from "@/api/cloud"
-import { formatDateOrDash } from "@/tools/formatDate"
+import { formatDateOrDash } from "@/tools/date/formatDate"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
-import { buildOrgModePayload } from "@/tools/buildOrgModePayload"
+import { buildOrgModePayload } from "@/tools/backoffice/buildOrgModePayload"
 import Alert from "@/components/atoms/Alert.vue"
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 

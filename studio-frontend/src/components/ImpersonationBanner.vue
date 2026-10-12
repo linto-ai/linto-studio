@@ -14,7 +14,7 @@
 </template>
 <script>
 import { mapGetters } from "vuex"
-import { userName } from "@/tools/userName.js"
+import { userName } from "@/tools/user/userName.js"
 
 export default {
   computed: {

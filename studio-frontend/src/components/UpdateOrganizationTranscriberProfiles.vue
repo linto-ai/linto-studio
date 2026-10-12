@@ -55,7 +55,7 @@ import { apiGetTranscriberProfilesByOrganization } from "@/api/session.js"
 import { sortArray } from "@/tools/sortList.js"
 
 import { apiAdminDeleteTranscriberProfile } from "@/api/admin.js"
-import bulkRequest from "@/tools/bulkRequest.js"
+import bulkRequest from "@/tools/request/bulkRequest.js"
 
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"
 import ModalTranscriberProfile from "@/components/ModalTranscriberProfile.vue"

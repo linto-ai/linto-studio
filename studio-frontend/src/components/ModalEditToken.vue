@@ -53,7 +53,7 @@ import {
 } from "@/api/token.js"
 import Avatar from "@/components/atoms/Avatar.vue"
 import Button from "@/components/atoms/Button.vue"
-import userAvatar from "@/tools/userAvatar"
+import userAvatar from "@/tools/user/userAvatar"
 
 const ACCEPTED_AVATAR_TYPES = [
   "image/jpeg",

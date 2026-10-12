@@ -1,5 +1,5 @@
-import { getCookie } from "@/tools/getCookie"
-import { logout } from "@/tools/logout"
+import { getCookie } from "@/tools/auth/getCookie"
+import { logout } from "@/tools/auth/logout"
 import {
   apiGetPersonalUserInfo,
   apiUpdateUserInfo,

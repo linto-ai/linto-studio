@@ -177,8 +177,8 @@ import Checkbox from "@/components/atoms/Checkbox.vue"
 import FavoriteStar from "@/components/atoms/FavoriteStar.vue"
 
 import { getEnv } from "@/tools/getEnv"
-import { userName } from "@/tools/userName"
-import userAvatar from "@/tools/userAvatar"
+import { userName } from "@/tools/user/userName"
+import userAvatar from "@/tools/user/userAvatar"
 
 import MediaExplorerChipStatus from "./MediaExplorerChipStatus.vue"
 import SecurityLevelIndicator from "@/components/SecurityLevelIndicator.vue"

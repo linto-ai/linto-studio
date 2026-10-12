@@ -1,6 +1,6 @@
-import { getCookie } from "@/tools/getCookie"
-import { getUserRoleInOrganization } from "@/tools/getUserRoleInOrganization"
-import { orgDisplayName } from "@/tools/orgDisplayName"
+import { getCookie } from "@/tools/auth/getCookie"
+import { getUserRoleInOrganization } from "@/tools/rights/getUserRoleInOrganization"
+import { orgDisplayName } from "@/tools/user/orgDisplayName"
 const getters = {
   getOrganizations(state) {
     return state.organizations

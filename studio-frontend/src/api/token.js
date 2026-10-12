@@ -1,5 +1,5 @@
-import { sendRequest } from "../tools/sendRequest"
-import { sendMultipartFormData } from "../tools/sendMultipartFormData"
+import { sendRequest } from "../tools/request/sendRequest"
+import { sendMultipartFormData } from "../tools/request/sendMultipartFormData"
 import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")

@@ -127,7 +127,7 @@ import {
   filterByMetaSecurityLevel,
   meetsSecurityLevel,
   meetsMetaSecurityLevel,
-} from "@/tools/filterBySecurityLevel"
+} from "@/tools/rights/filterBySecurityLevel"
 
 import SessionTranslationSelection from "@/components/SessionTranslationSelection.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"

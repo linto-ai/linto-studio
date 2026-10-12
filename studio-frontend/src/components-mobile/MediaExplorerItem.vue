@@ -84,8 +84,8 @@ import Tooltip from "@/components/atoms/Tooltip.vue"
 import Button from "@/components/atoms/Button.vue"
 import Avatar from "@/components/atoms/Avatar.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
-import { userName } from "@/tools/userName"
-import userAvatar from "@/tools/userAvatar"
+import { userName } from "@/tools/user/userName"
+import userAvatar from "@/tools/user/userAvatar"
 
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 

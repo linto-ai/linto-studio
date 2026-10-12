@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import { computeProratedSeatPrice } from "@/tools/computeProratedSeatPrice.js"
+import { computeProratedSeatPrice } from "@/tools/seats/computeProratedSeatPrice.js"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 import { generateId } from "@/tools/generateId.js"
 

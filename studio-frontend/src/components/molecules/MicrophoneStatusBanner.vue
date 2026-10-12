@@ -26,7 +26,7 @@
 
 <script>
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
-import { MICROPHONE_BANNER_STATUSES } from "@/tools/resolveSessionBanner.js"
+import { MICROPHONE_BANNER_STATUSES } from "@/tools/session/resolveSessionBanner.js"
 
 export default {
   name: "MicrophoneStatusBanner",

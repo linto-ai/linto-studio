@@ -102,7 +102,7 @@ import {
   apiAdminDeleteTranscriberProfile,
 } from "@/api/admin.js"
 
-import bulkRequest from "@/tools/bulkRequest.js"
+import bulkRequest from "@/tools/request/bulkRequest.js"
 import { sortArray } from "@/tools/sortList.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"

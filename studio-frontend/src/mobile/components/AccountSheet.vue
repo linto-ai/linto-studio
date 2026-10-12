@@ -67,7 +67,7 @@ import BottomSheet from "@/mobile/components/BottomSheet.vue"
 import ListRow from "@/mobile/components/ListRow.vue"
 import { setLanguage } from "@/mobile/services/preferences/setLanguage.js"
 import { optOutOfMobileApp } from "@/mobile/services/preferences/optOutOfMobileApp.js"
-import { logout } from "@/tools/logout"
+import { logout } from "@/tools/auth/logout"
 
 export default {
   name: "AccountSheet",

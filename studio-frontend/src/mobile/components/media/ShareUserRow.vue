@@ -15,7 +15,7 @@
 
 <script>
 import ShareRightSelect from "@/mobile/components/media/ShareRightSelect.vue"
-import { userName } from "@/tools/userName"
+import { userName } from "@/tools/user/userName"
 import { computeInitials } from "@/mobile/tools/computeInitials.js"
 
 // One person in the share sheet with the right the conversation grants

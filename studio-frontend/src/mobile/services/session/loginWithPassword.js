@@ -1,5 +1,5 @@
 import { apiLoginUser } from "@/api/user.js"
-import { setCookie } from "@/tools/setCookie"
+import { setCookie } from "@/tools/auth/setCookie"
 
 const AUTH_COOKIE_DAYS = 7
 const REFRESH_COOKIE_DAYS = 14

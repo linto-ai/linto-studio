@@ -9,13 +9,13 @@ import {
   apiUpdateVoiceprintCollection,
   apiDeleteVoiceprintCollection,
 } from "@/api/voiceprintCollection"
-import { indexOrganizationsRoles } from "@/tools/indexOrganizationsRoles"
+import { indexOrganizationsRoles } from "@/tools/rights/indexOrganizationsRoles"
 import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import createMediaModule from "../modules/mediaModuleFactory"
-import { setCookie } from "@/tools/setCookie"
-import { setImpersonatedOrgId } from "@/tools/setImpersonatedOrgId.js"
-import { clearImpersonatedOrgId } from "@/tools/clearImpersonatedOrgId.js"
+import { setCookie } from "@/tools/auth/setCookie"
+import { setImpersonatedOrgId } from "@/tools/backoffice/setImpersonatedOrgId.js"
+import { clearImpersonatedOrgId } from "@/tools/backoffice/clearImpersonatedOrgId.js"
 
 const actions = {
   async fetchOrganizations({ commit, rootGetters }) {

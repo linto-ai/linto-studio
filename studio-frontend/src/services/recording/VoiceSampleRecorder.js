@@ -1,5 +1,5 @@
 import WebVoiceSDK from "@linto-ai/webvoicesdk"
-import { encodeWav } from "../../tools/encodeWav.js"
+import { encodeWav } from "../../tools/audio/encodeWav.js"
 
 // Same processing as the live session capture (mixins/microphone.js)
 const CAPTURE_CONSTRAINTS = Object.freeze({

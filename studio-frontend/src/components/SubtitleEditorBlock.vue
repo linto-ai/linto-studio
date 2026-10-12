@@ -40,7 +40,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import { timeToHMS } from "../tools/timeToHMS"
+import { timeToHMS } from "../tools/date/timeToHMS"
 export default {
   props: {
     userInfo: {

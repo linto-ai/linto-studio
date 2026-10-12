@@ -9,7 +9,7 @@ import {
   roleIsSuperAdministrator,
   isAtLeastSystemAdministrator,
   computeRoleValue,
-} from "@/tools/platformRoles.js"
+} from "@/tools/rights/platformRoles.js"
 
 const PLATFORM_ROLES = [
   {

@@ -1,4 +1,4 @@
-import { sendRequest } from "@/tools/sendRequest"
+import { sendRequest } from "@/tools/request/sendRequest"
 import { getEnv } from "@/tools/getEnv"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")

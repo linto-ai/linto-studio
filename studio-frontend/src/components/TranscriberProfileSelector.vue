@@ -77,8 +77,8 @@ import { sortArray } from "@/tools/sortList.js"
 import {
   meetsMetaSecurityLevel,
   sortDisabledLast,
-} from "@/tools/filterBySecurityLevel"
-import { normalizeAvailableTranslations } from "@/tools/translationUtils.js"
+} from "@/tools/rights/filterBySecurityLevel"
+import { normalizeAvailableTranslations } from "@/tools/transcription/translationUtils.js"
 import transriberImageFromtype from "@/tools/transriberImageFromtype.js"
 import GenericTable from "@/components/molecules/GenericTable.vue"
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"

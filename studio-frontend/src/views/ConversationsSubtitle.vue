@@ -50,7 +50,7 @@ import {
   apiAddScreen,
   apiDeleteScreen,
 } from "@/api/subtitle.js"
-import { computeScreenWords } from "@/tools/computeScreenWords.js"
+import { computeScreenWords } from "@/tools/transcription/computeScreenWords.js"
 
 import { subtitleMixin } from "@/mixins/subtitle.js"
 

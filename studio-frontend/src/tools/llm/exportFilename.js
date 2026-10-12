@@ -1,4 +1,4 @@
-import { formatTimestamp } from "../formatDate.js"
+import { formatTimestamp } from "../date/formatDate.js"
 
 // Builds a download filename of the form `<slug>_<timestamp>.<ext>`.
 // Spaces in the source name are replaced with underscores; the extension

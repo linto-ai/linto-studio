@@ -1,6 +1,6 @@
 import { apiExportWithTemplate } from "@/api/publication.js"
 import { exportFilename } from "@/tools/llm/exportFilename.js"
-import { getTemplateDisplayName } from "@/tools/getTemplateDisplayName.js"
+import { getTemplateDisplayName } from "@/tools/publication/getTemplateDisplayName.js"
 
 // An AI report rendered as PDF with a publication template, as a File ready
 // to show or share. Same export endpoint as the classic publication modal.

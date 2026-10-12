@@ -46,7 +46,7 @@
 <script>
 import { bus } from "@/main.js"
 import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
-import userAvatar from "@/tools/userAvatar"
+import userAvatar from "@/tools/user/userAvatar"
 import { mapActions } from "vuex"
 
 export default {

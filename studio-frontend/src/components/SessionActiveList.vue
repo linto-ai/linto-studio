@@ -20,7 +20,7 @@
 <script>
 import { apiGetSessionsPaginated } from "@/api/session.js"
 import { genericSessionList } from "@/mixins/genericSessionList"
-import sortSessionByDate from "@/tools/sortSessionByDate"
+import sortSessionByDate from "@/tools/session/sortSessionByDate"
 
 import Loading from "@/components/atoms/Loading.vue"
 import ErrorPage from "@/components/ErrorPage.vue"

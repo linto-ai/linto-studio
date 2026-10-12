@@ -14,7 +14,7 @@
 <script>
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
-import { formatPackValidity } from "@/tools/formatPackValidity"
+import { formatPackValidity } from "@/tools/billing/pack/formatPackValidity"
 
 // A pack offered right where its minutes would show: what it adds, for how
 // much and how long ("+5 h and 50 AI credits, for €10, valid 12

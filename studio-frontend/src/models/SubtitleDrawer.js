@@ -1,4 +1,4 @@
-import splitPartialSubtitles from "../tools/splitPartialSubtitles"
+import splitPartialSubtitles from "../tools/transcription/splitPartialSubtitles"
 
 export class SubtitleDrawer {
   constructor(

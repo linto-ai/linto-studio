@@ -53,7 +53,7 @@ import {
   clearCheckoutDraft,
 } from "@/components/OnboardingWizard.d/checkoutDraft.js"
 import { apiCreateCheckout } from "@/api/cloud.js"
-import { computeCheckoutReturnUrl } from "@/tools/computeCheckoutReturnUrl"
+import { computeCheckoutReturnUrl } from "@/tools/billing/computeCheckoutReturnUrl"
 
 const CHECKOUT_INTERVAL = { monthly: "month", annual: "year" }
 const EMPTY_ORGANIZATION_DRAFT = { organizationName: "", seats: null }

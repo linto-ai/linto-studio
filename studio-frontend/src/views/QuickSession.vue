@@ -37,7 +37,7 @@ import {
   getBotForChannelId,
   apiStopBot,
 } from "@/api/session.js"
-import { userName } from "@/tools/userName.js"
+import { userName } from "@/tools/user/userName.js"
 import { capitalizeFirstLetter } from "@/tools/capitalizeFirstLetter.js"
 
 import SessionLiveMicrophone from "@/components/SessionLiveMicrophone.vue"

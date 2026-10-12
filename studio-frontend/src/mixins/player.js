@@ -3,7 +3,7 @@ import {
   apiGetAudioWaveFormFromConversation,
 } from "../api/conversation.js"
 import { bus } from "@/main.js"
-import { timeToHMS } from "../tools/timeToHMS.js"
+import { timeToHMS } from "../tools/date/timeToHMS.js"
 export const playerMixin = {
   props: {
     conversationId: {

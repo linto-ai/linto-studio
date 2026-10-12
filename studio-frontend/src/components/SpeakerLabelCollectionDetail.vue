@@ -182,7 +182,7 @@
 <script>
 import Button from "@/components/atoms/Button.vue"
 import Modal from "@/components/molecules/Modal.vue"
-import { formatDateOrDash } from "@/tools/formatDate.js"
+import { formatDateOrDash } from "@/tools/date/formatDate.js"
 import {
   apiGetVoiceprintCollection,
   apiGetOptedInMembers,
@@ -194,7 +194,7 @@ import {
   apiDeleteSpeakerLabel,
 } from "@/api/speakerLabel.js"
 import { apiGetVoiceSamples } from "@/api/voiceSample.js"
-import { COLLECTION_TYPE } from "@/tools/voiceprintConstants.js"
+import { COLLECTION_TYPE } from "@/tools/voiceprint/voiceprintConstants.js"
 import { formatCompactDuration } from "@/tools/formatDuration.js"
 
 export default {

@@ -36,7 +36,7 @@ import TimelinePlugin from "../../node_modules/wavesurfer.js/dist/plugins/timeli
 import { bus } from "@/main.js"
 import { playerMixin } from "@/mixins/player.js"
 import { ScreenList } from "../models/screenList"
-import { timeToHMS } from "../tools/timeToHMS"
+import { timeToHMS } from "../tools/date/timeToHMS"
 
 import AppPlayerHeader from "@/components/AppPlayerHeader.vue"
 import Loading from "@/components/atoms/Loading.vue"

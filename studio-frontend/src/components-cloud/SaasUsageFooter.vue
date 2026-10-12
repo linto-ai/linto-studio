@@ -47,7 +47,7 @@ import { mapGetters, mapActions } from "vuex"
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration.js"
-import { formatDateDayMonth } from "@/tools/formatDateDayMonth.js"
+import { formatDateDayMonth } from "@/tools/date/formatDateDayMonth.js"
 
 export default {
   name: "SaasUsageFooter",

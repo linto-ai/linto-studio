@@ -74,9 +74,9 @@
 import { mapGetters } from "vuex"
 import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
 import PlanCard from "@/components/molecules/PlanCard.vue"
-import { computeQuotaMonthlyEquivalent } from "@/tools/computeQuotaMonthlyEquivalent"
-import { computeTranscriptionQuotaLabel } from "@/tools/computeTranscriptionQuotaLabel"
-import { computeAnnualPriceInfo } from "@/tools/computeAnnualPriceInfo"
+import { computeQuotaMonthlyEquivalent } from "@/tools/billing/computeQuotaMonthlyEquivalent"
+import { computeTranscriptionQuotaLabel } from "@/tools/billing/computeTranscriptionQuotaLabel"
+import { computeAnnualPriceInfo } from "@/tools/billing/computeAnnualPriceInfo"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 
 // Plan catalog keys (linto-studio-cloud-service/src/plans/catalog.js), in

@@ -25,7 +25,7 @@
   </div>
 </template>
 <script>
-import isAuthenticated from "@/tools/isAuthenticated.js"
+import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 
 import SessionStatus from "@/components/SessionStatus.vue"
 import SessionLiveActions from "@/components/SessionLiveActions.vue"

@@ -72,11 +72,11 @@ import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import { getEnv } from "@/tools/getEnv"
 
 import { apiCreateQuickSession } from "@/api/session.js"
-import { isSaasRefusal } from "@/tools/isSaasRefusal"
+import { isSaasRefusal } from "@/tools/billing/isSaasRefusal"
 import SaasRefusalMessage from "@/components-cloud/SaasRefusalMessage.vue"
 import SaasRefusalAction from "@/components-cloud/SaasRefusalAction.vue"
 import { saasRefusalFormMixin } from "@/mixins/saasRefusalForm.js"
-import { buildQuickSessionChannel } from "@/tools/buildQuickSessionChannel.js"
+import { buildQuickSessionChannel } from "@/tools/session/buildQuickSessionChannel.js"
 
 export default {
   mixins: [formsMixin, organizationSecurityLevelMixin, saasRefusalFormMixin],

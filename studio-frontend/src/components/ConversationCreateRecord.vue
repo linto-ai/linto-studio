@@ -18,7 +18,7 @@
 // import WebVoiceSDK from "@linto-ai/webvoicesdk"
 import WebVoiceSDK from "@linto-ai/webvoicesdk"
 import EMPTY_FIELD from "@/const/emptyField.js"
-import { audioDuration } from "@/tools/audioDuration.js"
+import { audioDuration } from "@/tools/audio/audioDuration.js"
 
 export default {
   props: {

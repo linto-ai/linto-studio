@@ -1,7 +1,7 @@
 import {
   extractTranslationLangCode,
   normalizeAvailableTranslations,
-} from "../../tools/translationUtils.js"
+} from "../../tools/transcription/translationUtils.js"
 
 /**
  * Translation targets offered by a live profile (config.availableTranslations,

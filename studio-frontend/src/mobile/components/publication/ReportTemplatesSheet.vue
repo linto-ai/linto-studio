@@ -26,7 +26,7 @@
 <script>
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
 import ListRow from "@/mobile/components/ListRow.vue"
-import { getTemplateDisplayName } from "@/tools/getTemplateDisplayName.js"
+import { getTemplateDisplayName } from "@/tools/publication/getTemplateDisplayName.js"
 
 // Publication templates of one AI service; picking one exports the report
 // as PDF with it. The row being exported says so until the PDF is ready.

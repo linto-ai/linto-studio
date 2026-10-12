@@ -1,4 +1,4 @@
-import isAuthenticated from "@/tools/isAuthenticated.js"
+import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 import { ensureSession } from "@/mobile/services/session/ensureSession.js"
 import store from "@/mobile/store.js"
 import { getEnv } from "@/tools/getEnv"

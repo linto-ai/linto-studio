@@ -80,8 +80,8 @@
 </template>
 <script>
 import Button from "@/components/atoms/Button.vue"
-import { COLLECTION_TYPE, STORAGE_MODE } from "@/tools/voiceprintConstants.js"
-import resolveDiarizationCollectionName from "@/tools/resolveDiarizationCollectionName.js"
+import { COLLECTION_TYPE, STORAGE_MODE } from "@/tools/voiceprint/voiceprintConstants.js"
+import resolveDiarizationCollectionName from "@/tools/voiceprint/resolveDiarizationCollectionName.js"
 import { apiGetOptedInMembers } from "@/api/voiceprintCollection.js"
 import { apiGetSpeakerLabels } from "@/api/speakerLabel.js"
 

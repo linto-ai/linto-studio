@@ -201,9 +201,9 @@ import PublicationTemplateHelp from "@/components/molecules/PublicationTemplateH
 import PublicationTemplateCard from "@/components/PublicationTemplateCard.vue"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
-import { getTemplateDisplayName } from "@/tools/getTemplateDisplayName.js"
+import { getTemplateDisplayName } from "@/tools/publication/getTemplateDisplayName.js"
 import { formatFileSize } from "@/tools/formatFileSize.js"
-import { lockedPlanHint } from "@/tools/lockedPlanHint.js"
+import { lockedPlanHint } from "@/tools/billing/lockedPlanHint.js"
 
 const DOCX_MIME_TYPE =
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"

@@ -31,7 +31,7 @@
 import AiCreditsNote from "@/components-cloud/AiCreditsNote.vue"
 import PackCard from "@/components/atoms/PackCard.vue"
 import { computeDurationParts } from "@/tools/computeDurationParts"
-import { computePackLook } from "@/tools/computePackLook"
+import { computePackLook } from "@/tools/billing/pack/computePackLook"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 
 // One pack of the catalog, as a radio choice (v-model: the chosen packKey).

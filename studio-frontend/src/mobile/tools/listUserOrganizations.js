@@ -1,4 +1,4 @@
-import { getUserRoleInOrganization } from "../../tools/getUserRoleInOrganization.js"
+import { getUserRoleInOrganization } from "../../tools/rights/getUserRoleInOrganization.js"
 
 /**
  * The user's organizations as the picker shows them: a display name (the

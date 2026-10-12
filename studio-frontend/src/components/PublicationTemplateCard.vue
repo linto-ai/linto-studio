@@ -42,9 +42,9 @@
 <script>
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import SwitchInput from "@/components/atoms/SwitchInput.vue"
-import { canDeletePublicationTemplate } from "@/tools/canDeletePublicationTemplate.js"
-import { canSharePublicationTemplate } from "@/tools/canSharePublicationTemplate.js"
-import { getTemplateDisplayName } from "@/tools/getTemplateDisplayName.js"
+import { canDeletePublicationTemplate } from "@/tools/publication/canDeletePublicationTemplate.js"
+import { canSharePublicationTemplate } from "@/tools/publication/canSharePublicationTemplate.js"
+import { getTemplateDisplayName } from "@/tools/publication/getTemplateDisplayName.js"
 
 const DEFAULT_TEMPLATE_ICON = "file-text"
 

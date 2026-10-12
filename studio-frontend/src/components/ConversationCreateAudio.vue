@@ -43,7 +43,7 @@
 </template>
 <script>
 import EMPTY_FIELD from "@/const/emptyField"
-import { generateFileField } from "@/tools/generateFileField.js"
+import { generateFileField } from "@/tools/fields/generateFileField.js"
 import { generateId } from "@/tools/generateId.js"
 
 import ConversationCreateUpload from "@/components/ConversationCreateUpload.vue"

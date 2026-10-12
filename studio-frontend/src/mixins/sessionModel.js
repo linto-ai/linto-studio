@@ -1,4 +1,4 @@
-import isSessionStarted from "@/tools/isSessionStarted"
+import isSessionStarted from "@/tools/session/isSessionStarted"
 import { getEnv } from "@/tools/getEnv"
 
 export const sessionModelMixin = {

@@ -1176,7 +1176,7 @@
       "count": 1
     }
   },
-  "src/tools/divideTurn.js": {
+  "src/tools/transcription/divideTurn.js": {
     "no-useless-assignment": {
       "count": 2
     }
@@ -1191,17 +1191,17 @@
       "count": 1
     }
   },
-  "src/tools/getUserRoleInOrganization.js": {
+  "src/tools/rights/getUserRoleInOrganization.js": {
     "no-unused-vars": {
       "count": 1
     }
   },
-  "src/tools/test/mergeSession.js": {
+  "src/tools/session/test/mergeSession.js": {
     "no-dupe-keys": {
       "count": 2
     }
   },
-  "src/tools/test/mergeTurns.js": {
+  "src/tools/transcription/test/mergeTurns.js": {
     "no-unused-vars": {
       "count": 2
     }

@@ -1,6 +1,6 @@
 import conversationsPerPage from "../const/conversationsPerPage"
-import { sendMultipartFormData } from "../tools/sendMultipartFormData"
-import { sendRequest } from "../tools/sendRequest"
+import { sendMultipartFormData } from "../tools/request/sendMultipartFormData"
+import { sendRequest } from "../tools/request/sendRequest"
 
 import { getEnv } from "@/tools/getEnv"
 

@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { computePackPalette } from "@/tools/computePackPalette"
+import { computePackPalette } from "@/tools/billing/pack/computePackPalette"
 
 const MOTIF_WIDTH = 240
 const MOTIF_HEIGHT = 160

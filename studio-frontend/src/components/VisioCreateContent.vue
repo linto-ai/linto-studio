@@ -75,7 +75,7 @@ import { bus } from "@/main.js"
 import EMPTY_FIELD from "@/const/emptyField.js"
 import { testVisioUrl } from "@/tools/fields/testVisioUrl"
 import { isValidUrl } from "@/tools/isValidUrl"
-import { inferVisioProvider } from "@/tools/inferVisioProvider"
+import { inferVisioProvider } from "@/tools/session/inferVisioProvider"
 import { formsMixin } from "@/mixins/forms.js"
 import { organizationSecurityLevelMixin } from "@/mixins/organizationSecurityLevel.js"
 import generateServiceConfig from "@/tools/generateServiceConfig"
@@ -85,7 +85,7 @@ import {
   apiDeleteQuickSession,
 } from "@/api/session.js"
 import { testQuickSessionSettings } from "@/tools/fields/testQuickSessionSettings"
-import { buildQuickSessionChannel } from "@/tools/buildQuickSessionChannel.js"
+import { buildQuickSessionChannel } from "@/tools/session/buildQuickSessionChannel.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import QuickSessionSettings from "@/components/QuickSessionSettings.vue"
@@ -96,7 +96,7 @@ import SaasRefusalAction from "@/components-cloud/SaasRefusalAction.vue"
 import { saasRefusalFormMixin } from "@/mixins/saasRefusalForm.js"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import { getEnv } from "@/tools/getEnv"
-import { isSaasRefusal } from "@/tools/isSaasRefusal"
+import { isSaasRefusal } from "@/tools/billing/isSaasRefusal"
 
 export default {
   mixins: [formsMixin, organizationSecurityLevelMixin, saasRefusalFormMixin],

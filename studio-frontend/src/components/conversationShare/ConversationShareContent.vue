@@ -100,8 +100,8 @@ import { apiUpdateMultipleUsersInMultipleConversations } from "@/api/user.js"
 
 import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
-import { getUserRightFromConversation } from "@/tools/getUserRightFromConversation.js"
-import { indexConversationRightByUsers } from "@/tools/indexConversationRightByUsers.js"
+import { getUserRightFromConversation } from "@/tools/rights/getUserRightFromConversation.js"
+import { indexConversationRightByUsers } from "@/tools/rights/indexConversationRightByUsers.js"
 import { computeCommonOwnerId } from "@/tools/computeCommonOwnerId.js"
 
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"

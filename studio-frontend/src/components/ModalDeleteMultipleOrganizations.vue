@@ -17,7 +17,7 @@
 </template>
 <script>
 import { apiDeleteOrganisation } from "@/api/organisation.js"
-import bulkRequest from "@/tools/bulkRequest.js"
+import bulkRequest from "@/tools/request/bulkRequest.js"
 import { bus } from "@/main"
 
 import Modal from "@/components/molecules/Modal.vue"

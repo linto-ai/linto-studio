@@ -45,7 +45,7 @@ import MediaSessionInfo from "./MediaSessionInfo.vue"
 import ModalSessionTemplateInfo from "./ModalSessionTemplateInfo.vue"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import { formatLanguageMixin } from "@/mixins/formatLanguage"
-import resolveDiarizationCollectionName from "@/tools/resolveDiarizationCollectionName.js"
+import resolveDiarizationCollectionName from "@/tools/voiceprint/resolveDiarizationCollectionName.js"
 
 // Models that punctuate inline: punctuation is always applied regardless of
 // the punctuationConfig flag.

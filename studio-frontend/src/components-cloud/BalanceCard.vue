@@ -56,7 +56,7 @@ import BalanceBar from "@/components/atoms/BalanceBar.vue"
 import { computeDurationParts } from "@/tools/computeDurationParts"
 import { computePluralChoice } from "@/tools/computePluralChoice"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
-import { formatShortDate } from "@/tools/formatShortDate"
+import { formatShortDate } from "@/tools/date/formatShortDate"
 
 // What is left of one kind of usage (file transcription, live, AI credits):
 // the total available, then one line per source (the plan quota, then the

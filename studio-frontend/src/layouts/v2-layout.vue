@@ -47,7 +47,7 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import isAuthenticated from "@/tools/isAuthenticated.js"
+import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 import { mapGetters } from "vuex"
 
 import BurgerMenu from "@/components-mobile/BurgerMenu.vue"

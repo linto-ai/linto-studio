@@ -392,16 +392,16 @@ import FormRadio from "@/components/molecules/FormRadio.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import Droparea from "@/components/molecules/Droparea.vue"
-import { formatDateOrDash } from "@/tools/formatDate.js"
+import { formatDateOrDash } from "@/tools/date/formatDate.js"
 import VoiceSampleGuidelines from "@/components/VoiceSampleGuidelines.vue"
 import VoiceSampleTooShortWarning from "@/components/VoiceSampleTooShortWarning.vue"
 import VoiceSampleUploadError from "@/components/VoiceSampleUploadError.vue"
 import {
   STORAGE_MODE,
   VOICE_SAMPLE_DURATION,
-} from "@/tools/voiceprintConstants.js"
-import { isVoiceSampleTooShort } from "@/tools/isVoiceSampleTooShort.js"
-import { voiceSampleUploadErrorMessage } from "@/tools/voiceSampleUploadErrorMessage.js"
+} from "@/tools/voiceprint/voiceprintConstants.js"
+import { isVoiceSampleTooShort } from "@/tools/voiceprint/isVoiceSampleTooShort.js"
+import { voiceSampleUploadErrorMessage } from "@/tools/voiceprint/voiceSampleUploadErrorMessage.js"
 import { VoiceSampleRecorder } from "@/services/recording/VoiceSampleRecorder.js"
 import {
   apiGetUserVoiceSamples,
@@ -415,7 +415,7 @@ import {
   apiUpdateStorageMode,
 } from "@/api/userVoice.js"
 import { formatDuration, formatCompactDuration } from "@/tools/formatDuration.js"
-import { audioDuration } from "@/tools/audioDuration.js"
+import { audioDuration } from "@/tools/audio/audioDuration.js"
 import { voiceSignaturePlaybackMixin } from "@/mixins/voiceSignaturePlayback.js"
 
 function defaultVoiceprintStatus() {

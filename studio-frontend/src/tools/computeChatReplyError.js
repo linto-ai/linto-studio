@@ -1,4 +1,4 @@
-import { computeSaasRefusal } from "./computeSaasRefusal.js"
+import { computeSaasRefusal } from "./billing/computeSaasRefusal.js"
 
 // Refusals a plan change lifts: an admin is offered the upgrade, anyone else
 // is told to ask one. The others (unverified email, unknown) have no upgrade.

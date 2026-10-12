@@ -117,7 +117,7 @@ import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import SessionsKpi from "@/components/SessionsKpi.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import KpiExportDropdown from "@/components/KpiExportDropdown.vue"
-import { timeToHMS } from "@/tools/timeToHMS"
+import { timeToHMS } from "@/tools/date/timeToHMS"
 
 // SaaS event action -> i18n leaf (underscored; action strings contain dots).
 const SAAS_ACTION_KEY = {

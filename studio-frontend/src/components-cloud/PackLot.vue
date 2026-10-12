@@ -25,10 +25,10 @@ import PackCard from "@/components/atoms/PackCard.vue"
 import AiCreditsNote from "@/components-cloud/AiCreditsNote.vue"
 import BalanceBar from "@/components/atoms/BalanceBar.vue"
 import { computeDurationParts } from "@/tools/computeDurationParts"
-import { computePackKindLabelKey } from "@/tools/computePackKindLabelKey"
+import { computePackKindLabelKey } from "@/tools/billing/pack/computePackKindLabelKey"
 import { computePluralChoice } from "@/tools/computePluralChoice"
-import { computePackLook } from "@/tools/computePackLook"
-import { formatShortDate } from "@/tools/formatShortDate"
+import { computePackLook } from "@/tools/billing/pack/computePackLook"
+import { formatShortDate } from "@/tools/date/formatShortDate"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
 
 // Sources of minutes nobody paid for: the welcome lot of a plan, a manual

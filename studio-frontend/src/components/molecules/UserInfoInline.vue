@@ -30,7 +30,7 @@
   </div>
 </template>
 <script>
-import { getUserInfo } from "@/tools/getUserInfo.js"
+import { getUserInfo } from "@/tools/auth/getUserInfo.js"
 import { getEnv } from "@/tools/getEnv"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
 export default {
