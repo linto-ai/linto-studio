@@ -117,6 +117,18 @@ function buildOrganizationHooks() {
       if (rows.length !== 1) return false
       return throwIfError(await model.organizations.activatePending(orgId))
     },
+    // What Stripe prefills at Checkout: the buyer's e-mail (the owner's when
+    // the buyer has none, an API account), and the org name as customer name
+    billingContact: async ({ orgId, userId }) => {
+      const [orgs, buyerEmail] = await Promise.all([
+        model.organizations.getByIdFilter(orgId, { name: 1, owner: 1 }),
+        emailOf(userId),
+      ])
+      const org = throwIfError(orgs)[0] || null
+      const owner = org && org.owner !== userId ? org.owner : null
+      const email = buyerEmail || (await emailOf(owner))
+      return { email, name: org ? org.name : null }
+    },
     // Anchor of a free org's monthly quotas (SPEC-SAAS §1.5): they reset on the
     // monthly anniversary of the org, as a paid org's do on its billing day.
     createdAt: async (orgId) => {
@@ -135,6 +147,15 @@ function buildOrganizationHooks() {
     },
     remove: (orgId) => orgaUtility.deleteOrganizationCascade(orgId),
   }
+}
+
+// E-mail of a user, null for no id, an unknown user or an account without one
+async function emailOf(userId) {
+  if (!userId) return null
+  const rows = throwIfError(
+    await model.users.getByIdFilter(userId, { email: 1 }),
+  )
+  return (rows[0] && rows[0].email) || null
 }
 
 // The plugin's view of a caller, read by the engine on gated requests and,
