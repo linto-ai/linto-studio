@@ -53,6 +53,7 @@ async function onDeleteTurn({ io, socket }, payload, ack) {
       turnId,
       ...(removedSpeakerId && { removedSpeakerId }),
       version: updated.version,
+      lastUpdate: updated.lastUpdate,
     })
     reply({ ok: true, version: updated.version })
   } catch (err) {

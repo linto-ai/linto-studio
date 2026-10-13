@@ -1,3 +1,6 @@
+// last_update string the model reports having written; broadcasts carry it.
+const LAST_UPDATE = "2026-09-30T10:00:00+02:00"
+
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
   conversationEditor: {
     renameEditorSpeaker: jest.fn(),
@@ -102,7 +105,10 @@ test("undoes a rename_speaker: cursor swap passes, restores the old name, does N
     previousHead: "rev-0",
   })
   model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
-  model.conversationEditor.renameEditorSpeaker.mockResolvedValue({ version: 8 })
+  model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
+    version: 8,
+    lastUpdate: LAST_UPDATE,
+  })
   const ctx = makeCtx()
   const ack = jest.fn()
 
@@ -125,6 +131,7 @@ test("undoes a rename_speaker: cursor swap passes, restores the old name, does N
     speakerId: "spk-1",
     name: "Marie",
     version: 8,
+    lastUpdate: LAST_UPDATE,
     revisionId: "rev-0",
     // The revision we just undid IS the redo target from the new cursor.
     redoRevisionId: "oid:rev-1",
@@ -146,7 +153,10 @@ test("undoes an update_turn_speaker: restores the previous assignment and hints 
     previousHead: "rev-0",
   })
   model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
-  model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({ version: 10 })
+  model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
+    version: 10,
+    lastUpdate: LAST_UPDATE,
+  })
   const ctx = makeCtx()
   const ack = jest.fn()
 
@@ -165,6 +175,7 @@ test("undoes an update_turn_speaker: restores the previous assignment and hints 
     speaker: { id: "spk-2", name: "Thomas" },
     removedSpeakerId: "spk-1",
     version: 10,
+    lastUpdate: LAST_UPDATE,
     revisionId: "rev-0",
     redoRevisionId: "oid:rev-3",
   })
@@ -182,7 +193,10 @@ test("undoes a replace_speaker: resurrects fromSpeaker and broadcasts editor:spe
     previousHead: null,
   })
   model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
-  model.conversationEditor.restoreReplacedSpeaker.mockResolvedValue({ version: 9 })
+  model.conversationEditor.restoreReplacedSpeaker.mockResolvedValue({
+    version: 9,
+    lastUpdate: LAST_UPDATE,
+  })
   const ctx = makeCtx()
   const ack = jest.fn()
 
@@ -200,6 +214,7 @@ test("undoes a replace_speaker: resurrects fromSpeaker and broadcasts editor:spe
     toSpeakerId: "spk-2",
     turnIds: ["turn-1", "turn-3"],
     version: 9,
+    lastUpdate: LAST_UPDATE,
     revisionId: null,
     redoRevisionId: "oid:rev-2",
   })

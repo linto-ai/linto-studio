@@ -56,16 +56,19 @@ class ConversationEditorModel extends MongoModel {
    * Save one edited turn. Field-level $set so fields this write doesn't own
    * (raw_segment, lang) survive, and editorVersion is bumped in the same
    * atomic write. Returns null when the conversation or turn no longer exists.
+   * lastUpdate is the exact last_update string written, for the broadcast.
+   * @returns {Promise<{version:number, lastUpdate:string}|null>}
    */
   async updateEditorTurn(
     conversationId,
     turnId,
     { segment, words, stime, etime },
   ) {
+    const lastUpdate = moment().format()
     const set = {
       "text.$.segment": segment,
       "text.$.words": words,
-      last_update: moment().format(),
+      last_update: lastUpdate,
     }
     if (stime !== undefined) set["text.$.stime"] = stime
     if (etime !== undefined) set["text.$.etime"] = etime
@@ -81,15 +84,17 @@ class ConversationEditorModel extends MongoModel {
           includeResultMetadata: false,
         },
       )
-    return result ? { version: result.editorVersion } : null
+    return result ? { version: result.editorVersion, lastUpdate } : null
   }
 
   /**
    * Replace one turn by its two halves in a single atomic pipeline update
    * that also bumps editorVersion. Returns null when the conversation or
    * turn no longer exists.
+   * @returns {Promise<{version:number, lastUpdate:string}|null>}
    */
   async splitEditorTurn(conversationId, turnId, leftTurn, rightTurn) {
+    const lastUpdate = moment().format()
     const result = await MongoDriver.constructor.db
       .collection(this.collection)
       .findOneAndUpdate(
@@ -120,7 +125,7 @@ class ConversationEditorModel extends MongoModel {
                 },
               },
               editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
-              last_update: moment().format(),
+              last_update: lastUpdate,
             },
           },
         ],
@@ -130,13 +135,14 @@ class ConversationEditorModel extends MongoModel {
           includeResultMetadata: false,
         },
       )
-    return result ? { version: result.editorVersion } : null
+    return result ? { version: result.editorVersion, lastUpdate } : null
   }
 
   /**
    * Replace two adjacent turns by their merged result. Adjacency is part of
    * the filter ($expr): if the array changed concurrently nothing is written.
    * Returns null when the pair is gone or no longer adjacent.
+   * @returns {Promise<{version:number, lastUpdate:string}|null>}
    */
   async mergeEditorTurns(
     conversationId,
@@ -144,6 +150,7 @@ class ConversationEditorModel extends MongoModel {
     secondTurnId,
     mergedTurn,
   ) {
+    const lastUpdate = moment().format()
     const adjacencyExpr = {
       $let: {
         vars: { idx: { $indexOfArray: ["$text.turn_id", firstTurnId] } },
@@ -192,7 +199,7 @@ class ConversationEditorModel extends MongoModel {
                 },
               },
               editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
-              last_update: moment().format(),
+              last_update: lastUpdate,
             },
           },
         ],
@@ -202,7 +209,7 @@ class ConversationEditorModel extends MongoModel {
           includeResultMetadata: false,
         },
       )
-    return result ? { version: result.editorVersion } : null
+    return result ? { version: result.editorVersion, lastUpdate } : null
   }
 
   /**
@@ -218,9 +225,10 @@ class ConversationEditorModel extends MongoModel {
    * Reading undoHead separately, before this write, left a race window
    * spanning the whole handler where a concurrent mutation could move the
    * head first and silently strand the recorded revision unreachable.
-   * @returns {Promise<{version:number, previousSpeaker:object|undefined, undoHead:import("mongodb").ObjectId|null}|null>}
+   * @returns {Promise<{version:number, lastUpdate:string, previousSpeaker:object|undefined, undoHead:import("mongodb").ObjectId|null}|null>}
    */
   async updateEditorTurnSpeaker(conversationId, turnId, speaker) {
+    const lastUpdate = moment().format()
     const before = await MongoDriver.constructor.db
       .collection(this.collection)
       .findOneAndUpdate(
@@ -283,7 +291,7 @@ class ConversationEditorModel extends MongoModel {
           {
             $set: {
               editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
-              last_update: moment().format(),
+              last_update: lastUpdate,
             },
           },
         ],
@@ -299,6 +307,7 @@ class ConversationEditorModel extends MongoModel {
     )?.speaker_id
     return {
       version: (before.editorVersion ?? 0) + 1,
+      lastUpdate,
       previousSpeaker: (before.speakers || []).find(
         (s) => s.speaker_id === previousSpeakerId,
       ),
@@ -310,8 +319,10 @@ class ConversationEditorModel extends MongoModel {
    * Remove one turn and drop unreferenced speakers, atomically. The filter
    * requires a second turn to exist: the track's last turn cannot be deleted.
    * Returns null when the conversation or turn is gone, or on the last turn.
+   * @returns {Promise<{version:number, lastUpdate:string}|null>}
    */
   async deleteEditorTurn(conversationId, turnId) {
+    const lastUpdate = moment().format()
     const result = await MongoDriver.constructor.db
       .collection(this.collection)
       .findOneAndUpdate(
@@ -347,7 +358,7 @@ class ConversationEditorModel extends MongoModel {
           {
             $set: {
               editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
-              last_update: moment().format(),
+              last_update: lastUpdate,
             },
           },
         ],
@@ -357,7 +368,7 @@ class ConversationEditorModel extends MongoModel {
           includeResultMetadata: false,
         },
       )
-    return result ? { version: result.editorVersion } : null
+    return result ? { version: result.editorVersion, lastUpdate } : null
   }
 
   /**
@@ -368,10 +379,11 @@ class ConversationEditorModel extends MongoModel {
    * previous name and the current undo head in the SAME atomic op — the
    * new version is then just before+1, no extra read needed (see
    * recordSpeakerRevision, EditorHandler/handlers/onRenameSpeaker.js).
-   * @returns {Promise<{version: number, previousName: string, undoHead: import("mongodb").ObjectId|null}|null>}
+   * @returns {Promise<{version: number, lastUpdate: string, previousName: string, undoHead: import("mongodb").ObjectId|null}|null>}
    *   null when the conversation or the speaker no longer exists.
    */
   async renameEditorSpeaker(conversationId, speakerId, name) {
+    const lastUpdate = moment().format()
     const before = await MongoDriver.constructor.db
       .collection(this.collection)
       .findOneAndUpdate(
@@ -382,7 +394,7 @@ class ConversationEditorModel extends MongoModel {
         {
           $set: {
             "speakers.$.speaker_name": name,
-            last_update: moment().format(),
+            last_update: lastUpdate,
           },
           $inc: { editorVersion: 1 },
         },
@@ -398,6 +410,7 @@ class ConversationEditorModel extends MongoModel {
     if (!before) return null
     return {
       version: (before.editorVersion ?? 0) + 1,
+      lastUpdate,
       previousName: before.speakers[0].speaker_name,
       undoHead: before.undoHead ?? null,
     }
@@ -435,9 +448,10 @@ class ConversationEditorModel extends MongoModel {
    * a turn reassigned onto fromSpeakerId in between would be moved by this
    * pipeline (it operates on live data) but missing from the undo snapshot
    * (see recordSpeakerRevision, EditorHandler/handlers/onReplaceSpeaker.js).
-   * @returns {Promise<{version:number, fromSpeaker:object, turnIds:string[], undoHead:import("mongodb").ObjectId|null}|null>}
+   * @returns {Promise<{version:number, lastUpdate:string, fromSpeaker:object, turnIds:string[], undoHead:import("mongodb").ObjectId|null}|null>}
    */
   async replaceEditorSpeaker(conversationId, fromSpeakerId, toSpeakerId) {
+    const lastUpdate = moment().format()
     const before = await MongoDriver.constructor.db
       .collection(this.collection)
       .findOneAndUpdate(
@@ -486,7 +500,7 @@ class ConversationEditorModel extends MongoModel {
           {
             $set: {
               editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
-              last_update: moment().format(),
+              last_update: lastUpdate,
             },
           },
         ],
@@ -499,6 +513,7 @@ class ConversationEditorModel extends MongoModel {
     if (!before) return null
     return {
       version: (before.editorVersion ?? 0) + 1,
+      lastUpdate,
       fromSpeaker: (before.speakers || []).find((s) => s.speaker_id === fromSpeakerId),
       turnIds: (before.text || [])
         .filter((t) => t.speaker_id === fromSpeakerId)
@@ -516,8 +531,10 @@ class ConversationEditorModel extends MongoModel {
    * already guarantees nothing else touched this pair since.
    * Returns null when the conversation is gone or fromSpeaker already exists
    * (defensive no-op against a duplicate apply).
+   * @returns {Promise<{version:number, lastUpdate:string}|null>}
    */
   async restoreReplacedSpeaker(conversationId, fromSpeaker, toSpeakerId, turnIds) {
+    const lastUpdate = moment().format()
     const result = await MongoDriver.constructor.db
       .collection(this.collection)
       .findOneAndUpdate(
@@ -568,7 +585,7 @@ class ConversationEditorModel extends MongoModel {
           {
             $set: {
               editorVersion: { $add: [{ $ifNull: ["$editorVersion", 0] }, 1] },
-              last_update: moment().format(),
+              last_update: lastUpdate,
             },
           },
         ],
@@ -578,7 +595,7 @@ class ConversationEditorModel extends MongoModel {
           includeResultMetadata: false,
         },
       )
-    return result ? { version: result.editorVersion } : null
+    return result ? { version: result.editorVersion, lastUpdate } : null
   }
 }
 

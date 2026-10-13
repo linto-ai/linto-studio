@@ -42,6 +42,7 @@ async function onRenameSpeaker({ io, socket }, payload, ack) {
       speakerId,
       name,
       version: updated.version,
+      lastUpdate: updated.lastUpdate,
       revisionId,
       // A fresh mutation always forks away from anything undo-able-back-to:
       // redoRevisionId is provably null right after it (nothing could have

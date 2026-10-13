@@ -56,6 +56,7 @@ async function onReplaceSpeaker({ io, socket }, payload, ack) {
       fromSpeakerId,
       toSpeakerId,
       version: updated.version,
+      lastUpdate: updated.lastUpdate,
       revisionId,
       // @see onRenameSpeaker.js
       redoRevisionId: null,

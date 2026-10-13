@@ -45,9 +45,7 @@ const hasLiveUpdate = computed(() => core.live?.hasLiveUpdate.value ?? false)
 
 // Set here rather than on a global stylesheet: the value stays scoped to the
 // reading surface, and the partial turn inherits it like any other.
-const transcriptFontSize = computed(
-  () => `${core.transcriptFontSize.value}px`,
-)
+const transcriptFontSize = computed(() => `${core.transcriptFontSize.value}px`)
 
 // With the partial text hidden, the panel would sit perfectly still between
 // two finalized turns — nothing left to say the session is still listening.
@@ -270,7 +268,7 @@ onBeforeUnmount(() => {
   align-items: center;
 }
 
-.resume-scroll-btn {
+.transcript-ui-root .resume-scroll-btn {
   /* No backdrop-filter: this button is sticky inside the tall scroll
      container, where a backdrop-filter makes WebRender allocate a render
      target spanning the whole scroll height — multi-GB on a long transcript. */

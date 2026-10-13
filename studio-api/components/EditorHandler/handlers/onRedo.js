@@ -82,6 +82,7 @@ async function onRedo({ io, socket }, payload, ack) {
       translationId,
       ...applied.payload,
       version: applied.version,
+      lastUpdate: applied.lastUpdate,
       revisionId: revision._id,
       redoRevisionId,
     })

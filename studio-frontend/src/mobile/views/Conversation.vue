@@ -12,7 +12,7 @@
       <linto-editor
         v-if="ready"
         ref="editor"
-        :locale="$i18n.locale"
+        :locale="editorLocale"
         no-theme-toggle />
       <p v-else class="m-muted m-conversation__state">
         {{ $t("mobile.common.loading") }}
@@ -21,7 +21,6 @@
     <ReportPdfFlow
       v-if="ready"
       ref="reportPdf"
-      :conversation-id="$route.params.conversationId"
       :conversation-name="name"
       :organization-id="organizationId" />
   </div>
@@ -35,6 +34,7 @@ import {
   connectRealtime,
   realtimeSocket,
 } from "@/mobile/services/realtime/mediaUpdates.js"
+import { computeLanguageCode } from "@/tools/computeLanguageCode.js"
 
 // The same editor web component as the classic page, inside the mobile
 // app, with a back link to the media list.
@@ -43,6 +43,12 @@ export default {
   components: { PageHeader, ReportPdfFlow },
   data() {
     return { ready: false, failed: false, name: "", organizationId: null }
+  },
+  computed: {
+    // The editor only knows bare languages: "en", not the app's "en-US".
+    editorLocale() {
+      return computeLanguageCode(this.$i18n.locale)
+    },
   },
   async created() {
     this.session = new ConversationEditorSession({

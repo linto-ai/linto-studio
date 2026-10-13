@@ -1,6 +1,7 @@
 import type { TurnDeleted } from "@linto-ai/transcript-ui-core"
 import type { EditorPluginState } from "../types"
 import { trackBroadcastVersion } from "../tools/trackBroadcastVersion"
+import { trackBroadcastLastUpdate } from "../tools/trackBroadcastLastUpdate"
 import { findTranslationStore } from "../tools/findTranslationStore"
 import { removeSpeakerIfUnused } from "../tools/removeSpeakerIfUnused"
 
@@ -10,6 +11,10 @@ export function applyTurnDeleted(
   state: EditorPluginState,
   deleted: TurnDeleted,
 ): void {
+  // First: even a skipped broadcast (own echo, stale, not-loaded track,
+  // turn under the caret) reports a server-side modification.
+  trackBroadcastLastUpdate(state, deleted.translationId, deleted.lastUpdate)
+
   // Version gate: stale broadcasts are skipped, a gap triggers a refetch.
   if (!trackBroadcastVersion(state, deleted.translationId, deleted.version)) return
 

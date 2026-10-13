@@ -106,6 +106,7 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
       speaker: { id: speaker.speaker_id, name: speaker.speaker_name },
       ...(removedSpeakerId && { removedSpeakerId }),
       version: updated.version,
+      lastUpdate: updated.lastUpdate,
       revisionId,
       // @see onRenameSpeaker.js
       redoRevisionId: null,

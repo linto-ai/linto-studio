@@ -16,6 +16,6 @@ export async function loadRecordingLinks(conversationId) {
     const missing = result?.error?.response?.status === 404
     return { conversation: null, missing, documents: [] }
   }
-  const documents = await apiGetMetadataLLMService(conversationId)
+  const documents = (await apiGetMetadataLLMService(conversationId)) ?? []
   return { conversation: result.data, missing: false, documents }
 }

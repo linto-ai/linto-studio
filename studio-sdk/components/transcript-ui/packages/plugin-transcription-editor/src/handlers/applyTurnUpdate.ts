@@ -1,6 +1,7 @@
 import type { TurnUpdate } from "@linto-ai/transcript-ui-core"
 import type { EditorPluginState } from "../types"
 import { trackBroadcastVersion } from "../tools/trackBroadcastVersion"
+import { trackBroadcastLastUpdate } from "../tools/trackBroadcastLastUpdate"
 import { utils } from "@linto-ai/transcript-ui-core"
 
 const { wordsFromApi } = utils
@@ -11,6 +12,10 @@ export function applyTurnUpdate(
   state: EditorPluginState,
   update: TurnUpdate,
 ): void {
+  // First: even a skipped broadcast (own echo, stale, not-loaded track,
+  // turn under the caret) reports a server-side modification.
+  trackBroadcastLastUpdate(state, update.translationId, update.lastUpdate)
+
   // Version gate: stale broadcasts are skipped, a gap triggers a refetch.
   if (!trackBroadcastVersion(state, update.translationId, update.version)) return
 

@@ -28,7 +28,10 @@ export function createTranslationStore(
   const turns = shallowRef<Turn[]>(init.turns)
   const lastModifiedAt = ref<number | null>(null)
 
-  function setLastModifiedAt(ts: number | null): void {
+  function advanceLastModifiedAt(ts: number | null): void {
+    if (ts == null || !Number.isFinite(ts)) return
+    const current = lastModifiedAt.value
+    if (current != null && ts <= current) return
     lastModifiedAt.value = ts
   }
 
@@ -118,7 +121,7 @@ export function createTranslationStore(
     audio,
     turns,
     lastModifiedAt,
-    setLastModifiedAt,
+    advanceLastModifiedAt,
     addTurn,
     prependTurns,
     updateTurn,

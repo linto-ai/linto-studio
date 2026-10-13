@@ -63,6 +63,9 @@ function onDelete(sessionId: string): void {
 function onSend(content: string): void {
   core.emit("chat:send", { content })
 }
+function onErrorAction(messageId: string, actionId: string): void {
+  core.emit("chat:errorAction", { messageId, actionId })
+}
 </script>
 
 <template>
@@ -131,7 +134,8 @@ function onSend(content: string): void {
             <ChatMessageList
               :messages="chat.allMessages.value"
               :has-active-session="chat.activeSessionId.value !== null"
-              :is-loading="chat.isLoadingSession.value" />
+              :is-loading="chat.isLoadingSession.value"
+              @error-action="onErrorAction" />
             <ChatComposer
               :disabled="chat.isStreaming.value || chat.isLoadingSession.value"
               @send="onSend" />

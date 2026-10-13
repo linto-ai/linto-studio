@@ -74,6 +74,7 @@ async function onUndo({ io, socket }, payload, ack) {
       translationId,
       ...applied.payload,
       version: applied.version,
+      lastUpdate: applied.lastUpdate,
       revisionId: revision.previousHead,
       redoRevisionId: objectRevisionId,
     })

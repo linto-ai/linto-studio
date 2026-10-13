@@ -30,13 +30,13 @@ export default {
   name: "ReportPdfFlow",
   components: { ReportTemplatesSheet, PdfReader },
   props: {
-    conversationId: { type: String, required: true },
     conversationName: { type: String, default: "" },
     organizationId: { type: String, default: null },
   },
   data() {
     return {
       jobId: null,
+      conversationId: null,
       sheetOpen: false,
       loading: false,
       templates: [],
@@ -47,8 +47,9 @@ export default {
     }
   },
   methods: {
-    async start({ serviceId, jobId }) {
+    async start({ serviceId, jobId, conversationId }) {
       this.jobId = jobId
+      this.conversationId = conversationId
       this.templates = []
       this.loading = true
       this.sheetOpen = true

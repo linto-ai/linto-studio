@@ -4,13 +4,13 @@
       <!-- no-theme-toggle: this view's chrome has no dark values, and unlike
            the live session nothing here listens to "theme:change" — the
            switch would darken the editor inside a light page. -->
-      <linto-editor ref="editor" :locale="$i18n.locale" no-theme-toggle />
+      <linto-editor ref="editor" :locale="editorLocale" no-theme-toggle />
     </div>
     <PublicationModal
       v-model="publicationModal.open"
       :jobId="publicationModal.jobId"
       :serviceId="publicationModal.serviceId"
-      :conversationId="conversationId"
+      :conversationId="publicationModal.conversationId"
       :organizationId="organizationId"
       :conversationName="conversationName" />
   </LayoutV2>
@@ -23,7 +23,6 @@ import USER_RIGHTS from "@/const/userRights.js"
 import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
 import {
   apiGetConversationById,
-  apiGetConversationLastUpdate,
   apiGetUserRightFromConversation,
 } from "@/api/conversation"
 
@@ -33,8 +32,9 @@ import {
   mapApiTurns,
 } from "@linto-ai/transcript-ui-webcomponent"
 
-import { setupLLMServices } from "@/services/llmServicesIntegration"
-import { setupChat } from "@/services/chatIntegration"
+import { ChannelAssistants } from "@/services/assistantsIntegration/ChannelAssistants.js"
+import { loadTrackLastUpdate } from "@/services/editorIntegration/loadTrackLastUpdate.js"
+import { computeAssistantsTrack } from "@/tools/llm/computeAssistantsTrack.js"
 import { apiGetChatStatus } from "@/api/chat"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
@@ -44,6 +44,8 @@ import {
   apiGetAudioWaveFormFromConversation,
 } from "@/api/conversation"
 import { customDebug } from "@/tools/customDebug"
+import { computeEpochMs } from "@/tools/computeEpochMs.js"
+import { computeLanguageCode } from "@/tools/computeLanguageCode.js"
 
 const debug = customDebug("vue:editor")
 export default {
@@ -59,11 +61,15 @@ export default {
       conversationName: "",
       core: null,
       isDestroyed: false,
-      llmDispose: null,
-      chatDispose: null,
-      editListeners: [],
+      assistants: null,
+      coreListeners: [],
       canWrite: false,
-      publicationModal: { open: false, jobId: null, serviceId: null },
+      publicationModal: {
+        open: false,
+        jobId: null,
+        serviceId: null,
+        conversationId: null,
+      },
       verbatimFormats: [
         { format: "docx", labelKey: "format.docx" },
         { format: "pdf", labelKey: "format.pdf" },
@@ -72,6 +78,12 @@ export default {
         { format: "whisperx", labelKey: "format.whisperx" },
       ],
     }
+  },
+  computed: {
+    // The editor only knows bare languages: "en", not the app's "en-US".
+    editorLocale() {
+      return computeLanguageCode(this.$i18n.locale)
+    },
   },
   async mounted() {
     const { doc, organizationId, securityLevel, name } =
@@ -101,12 +113,10 @@ export default {
   },
   beforeDestroy() {
     this.isDestroyed = true
-    this.editListeners.forEach((fn) => fn?.())
-    this.editListeners = []
-    this.llmDispose?.()
-    this.llmDispose = null
-    this.chatDispose?.()
-    this.chatDispose = null
+    this.coreListeners.forEach((fn) => fn?.())
+    this.coreListeners = []
+    this.assistants?.destroy()
+    this.assistants = null
     this.$apiEventWS.leaveEditorRoom()
   },
   methods: {
@@ -173,6 +183,9 @@ export default {
           // Reconnection: any loaded track the server says is ahead gets
           // refetched — the whole point of the version safety net.
           core.transcriptionEditor?.reconcileVersions(ack.versions ?? {})
+          // Broadcasts missed while disconnected may concern a track that is
+          // not loaded (hence not refetched): reseed its timestamp.
+          this.loadAssistantsTrackLastUpdate()
         },
         onTurnLocked: (lock) => core.transcriptionEditor?.setTurnLock(lock),
         onTurnUnlocked: (ref) => core.transcriptionEditor?.clearTurnLock(ref),
@@ -193,10 +206,10 @@ export default {
           core.transcriptionEditor?.applySpeakerRestored(restored),
       })
 
-      // setupLLMServices returns { dispose }; store the disposer so it matches
-      // chatDispose (a bare function) and beforeDestroy can call llmDispose().
-      this.llmDispose = setupLLMServices(core, {
-        conversationId: this.conversationId,
+      // Starts on the source of the first channel, then follows the displayed
+      // track.
+      const assistants = new ChannelAssistants(core, {
+        conversationId: doc.channels[0].id,
         organizationId: this.organizationId,
         securityLevel: this.securityLevel,
         conversationName: this.conversationName,
@@ -205,10 +218,11 @@ export default {
         t: (key, params) => this.$t(key, params),
         notify: (type, message) =>
           this.$store.dispatch("system/addNotification", { type, message }),
-        openPublication: ({ jobId, serviceId }) => {
-          this.publicationModal = { open: true, jobId, serviceId }
+        openPublication: (request) => {
+          this.publicationModal = { open: true, ...request }
         },
-      }).dispose
+      })
+      this.assistants = markRaw(assistants)
 
       // Chat assistant: only wire it when the backend feature is enabled, so
       // the SDK's "ask" button stays disabled otherwise (core.chat absent).
@@ -217,18 +231,13 @@ export default {
       }))
       // Destroyed during the await: everything below (chat, collab connection,
       // sync timers, edit listeners) is created after beforeDestroy ran, so it
-      // would leak. llmDispose was set before the await, so beforeDestroy
-      // already disposed it; just stop here.
+      // would leak. The assistants were set before the await, so beforeDestroy
+      // already destroyed them; just stop here.
       if (this.isDestroyed || !this.$refs.editor) return
-      if (chatEnabled) {
-        this.chatDispose = setupChat(core, {
-          conversationId: this.conversationId,
-        })
-      }
+      if (chatEnabled) this.assistants.enableChat()
 
       core.setDocument(doc)
-      this.pushTranscriptionLastUpdate()
-      this.attachEditListeners()
+      this.loadAssistantsTrackLastUpdate()
 
       // The REST skeleton carries no content: turns and speakers are loaded
       // per translation, lazily — now for the active one, then on every
@@ -265,11 +274,11 @@ export default {
     async fetchTranslationContent(channel, translation) {
       channel.isLoadingHistory.value = true
       try {
-        // editorVersion fetched WITH the content (same backend read): the
-        // version baseline always matches what is displayed.
+        // editorVersion and last_update fetched WITH the content (same
+        // backend read): the baselines always match what is displayed.
         const conv = await apiGetConversationById(
           translation.id,
-          ["text", "speakers", "editorVersion"].toString(),
+          ["text", "speakers", "editorVersion", "last_update"].toString(),
         )
         if (this.isDestroyed || !conv) return
         for (const s of conv.speakers ?? []) {
@@ -280,6 +289,7 @@ export default {
           translation.id,
           conv.editorVersion ?? 0,
         )
+        translation.advanceLastModifiedAt(computeEpochMs(conv.last_update))
         // Whole content arrives in one fetch: mark the history complete so
         // the panel shows its "beginning of transcription" boundary.
         channel.hasMoreHistory.value = false
@@ -292,47 +302,24 @@ export default {
 
     attachTranslationLoader() {
       const load = () => this.loadActiveTranslation()
-      this.editListeners.push(
+      this.coreListeners.push(
         this.core.on("translation:change", load),
         this.core.on("channel:change", load),
+        this.core.on("translation:change", () =>
+          this.loadAssistantsTrackLastUpdate(),
+        ),
+        this.core.on("channel:change", () =>
+          this.loadAssistantsTrackLastUpdate(),
+        ),
       )
     },
 
-    async pushTranscriptionLastUpdate() {
-      try {
-        const res = await apiGetConversationLastUpdate(this.conversationId)
-        const lastUpdate = res?.last_update
-        if (!lastUpdate) return
-        const ts = new Date(lastUpdate).getTime()
-        if (!Number.isFinite(ts)) return
-        this.markTranscriptionEdited(ts)
-      } catch (e) {
-        console.error("[host] failed to fetch conversation last update", e)
-      }
-    },
-
-    // Pushes a "last modified" timestamp to the active translation so the
-    // SDK can drive the "compte rendu obsolète" status. Triggered by:
-    //   - initial fetch (server-side timestamp at mount)
-    //   - every local edit event (turn:* / speaker:*)
-    markTranscriptionEdited(ts) {
-      const translation =
-        this.core?.activeChannel?.value?.activeTranslation?.value
-      translation?.setLastModifiedAt(ts ?? Date.now())
-    },
-
-    attachEditListeners() {
-      const core = this.core
-      if (!core) return
-      const bump = () => this.markTranscriptionEdited()
-      this.editListeners = [
-        core.on("turn:add", bump),
-        core.on("turn:update", bump),
-        core.on("turn:remove", bump),
-        core.on("speaker:add", bump),
-        core.on("speaker:update", bump),
-        core.on("speaker:remove", bump),
-      ]
+    // Reports are generated from the displayed track: seed the timestamp they
+    // are compared against. Later modifications come with the editor
+    // broadcasts.
+    loadAssistantsTrackLastUpdate() {
+      const channel = this.core?.activeChannel?.value
+      if (channel) loadTrackLastUpdate(computeAssistantsTrack(channel))
     },
   },
 }

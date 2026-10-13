@@ -6,11 +6,7 @@
       @retry-websocket="websocketInstance.retry()"
       @retry-microphone="$emit('retry-microphone')"
       @reconfigure-microphone="$emit('reconfigure-microphone')" />
-    <linto-editor
-      ref="editor"
-      :locale="$i18n.locale.split('-')[0]"
-      no-header
-      no-verbatim />
+    <linto-editor ref="editor" :locale="editorLocale" no-header no-verbatim />
   </div>
 </template>
 
@@ -38,6 +34,7 @@ import { getEnv } from "@/tools/getEnv"
 import { bus } from "@/tools/eventBus.js"
 import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
 import { customDebug } from "@/tools/customDebug"
+import { computeLanguageCode } from "@/tools/computeLanguageCode.js"
 
 const PAGE_SIZE = 50
 const TRANSCRIPT_FONT_SIZE_KEY = "editor.transcriptFontSize"
@@ -144,6 +141,10 @@ export default {
     }
   },
   computed: {
+    // The editor only knows bare languages: "en", not the app's "en-US".
+    editorLocale() {
+      return computeLanguageCode(this.$i18n.locale)
+    },
     activeChannelObj() {
       return (
         this.session.channels?.find(

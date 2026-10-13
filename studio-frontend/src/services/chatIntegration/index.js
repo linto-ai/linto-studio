@@ -15,9 +15,11 @@ import { onCreateSession } from "./actions/onCreateSession"
 import { onDeleteSession } from "./actions/onDeleteSession"
 import { onRenameSession } from "./actions/onRenameSession"
 import { onSend } from "./actions/onSend"
+import { resetChat } from "./helpers"
 
 export function setupChat(core, { conversationId }) {
-  core.use(createChatPlugin())
+  // Once per editor: the rest is set up again for each conversation.
+  if (!core.chat) core.use(createChatPlugin())
 
   const ctx = { core, conversationId }
 
@@ -36,5 +38,11 @@ export function setupChat(core, { conversationId }) {
     core.on("chat:send", ({ content }) => onSend(ctx, content)),
   ]
 
-  return () => unsub.forEach((fn) => fn?.())
+  // A drawer left open across a channel change shows the new sessions.
+  if (core.chat.drawerOpen.value) onLoadSessions(ctx)
+
+  return function dispose() {
+    unsub.forEach((fn) => fn?.())
+    resetChat(core)
+  }
 }

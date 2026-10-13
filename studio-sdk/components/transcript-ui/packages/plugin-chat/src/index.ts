@@ -3,12 +3,13 @@ import type {
   Core,
   CorePlugin,
   ChatMessage,
+  ChatMessageError,
   ChatSession,
   ChatPluginApi,
 } from "@linto-ai/transcript-ui-core"
 import ChatDrawer from "./ChatDrawer.vue"
 
-export type { ChatMessage, ChatSession, ChatPluginApi }
+export type { ChatMessage, ChatMessageError, ChatSession, ChatPluginApi }
 export { ChatDrawer }
 
 const STREAMING_MESSAGE_ID = "__streaming__"

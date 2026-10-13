@@ -43,8 +43,7 @@ onBeforeUnmount(() => {
     <canvas
       ref="canvas"
       class="subtitle-canvas"
-      :class="{ 'subtitle-canvas--shrunk': watermarkVisible }"
-      :height="canvasHeight"></canvas>
+      :class="{ 'subtitle-canvas--shrunk': watermarkVisible }"></canvas>
     <SubtitleWatermark :visible="watermarkVisible" />
   </div>
 </template>

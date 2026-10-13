@@ -23,3 +23,11 @@ export function mapMessage(message, index) {
     tokenCount: message.tokenCount,
   }
 }
+
+// The drawer keeps nothing of the conversation it leaves.
+export function resetChat(core) {
+  core.chat?.streamAbort()
+  core.chat?.setSessions([])
+  core.chat?.setActiveSession(null)
+  core.chat?.setMessages([])
+}

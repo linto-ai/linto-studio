@@ -2,7 +2,8 @@ import { describe, expect, it } from "bun:test"
 import { createTranscriptionEditorPlugin } from "../index"
 import type { TranscriptionEditorOptions } from "../index"
 import { makeTestCore } from "@linto-ai/transcript-ui-core/test-utils"
-import type { Core } from "@linto-ai/transcript-ui-core"
+import { createCore } from "@linto-ai/transcript-ui-core"
+import type { Core, TurnUpdate } from "@linto-ai/transcript-ui-core"
 
 function makeEditorCore(options?: TranscriptionEditorOptions): Core {
   const core = makeTestCore()
@@ -1100,5 +1101,218 @@ describe("createTranscriptionEditorPlugin — locks state", () => {
       turnId: "turn-2",
     })
     expect(core.transcriptionEditor!.getTurnLock("turn-2")).toBeUndefined()
+  })
+})
+
+describe("createTranscriptionEditorPlugin — broadcast lastUpdate", () => {
+  const T1 = "2026-09-30T10:00:00+02:00"
+  const T2 = "2026-09-30T10:05:00+02:00"
+
+  function makeUpdate(overrides: Partial<TurnUpdate> = {}): TurnUpdate {
+    return {
+      translationId: "tr-1",
+      turnId: "turn-1",
+      text: "texte serveur",
+      words: [{ word: "texte" }, { word: "serveur" }],
+      ...overrides,
+    }
+  }
+
+  function lastModifiedAt(core: Core, translationId: string): number | null {
+    return core.activeChannel.value!.translations.get(translationId)!
+      .lastModifiedAt.value
+  }
+
+  it("advances lastModifiedAt on a broadcast for a loaded track", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applyTurnUpdate(makeUpdate({ lastUpdate: T1 }))
+    expect(lastModifiedAt(core, "tr-1")).toBe(Date.parse(T1))
+  })
+
+  it("advances lastModifiedAt for a not-loaded track (no turn applied)", () => {
+    const core = createCore()
+    core.setDocument({
+      title: "test",
+      speakers: new Map(),
+      channels: [
+        {
+          id: "ch-1",
+          name: "channel 1",
+          duration: 60,
+          translations: [
+            { id: "tr-1", languages: ["fr"], isSource: true, turns: [] },
+            { id: "tr-2", languages: ["en"], isSource: false, turns: [] },
+          ],
+        },
+      ],
+    })
+    core.use(createTranscriptionEditorPlugin())
+
+    core.transcriptionEditor!.applyTurnUpdate(
+      makeUpdate({ translationId: "tr-2", lastUpdate: T1 }),
+    )
+
+    expect(lastModifiedAt(core, "tr-2")).toBe(Date.parse(T1))
+    expect(lastModifiedAt(core, "tr-1")).toBeNull()
+    expect(
+      core.activeChannel.value!.translations.get("tr-2")!.turns.value,
+    ).toEqual([])
+  })
+
+  it("advances lastModifiedAt even when the version gate skips the broadcast", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.setTranslationVersion("tr-1", 5)
+
+    // Own echo / stale (v5 ≤ known): not applied, still a server modification.
+    core.transcriptionEditor!.applyTurnUpdate(
+      makeUpdate({ version: 5, lastUpdate: T1 }),
+    )
+
+    expect(
+      core.activeChannel.value!.sourceTranslation.getTurn("turn-1")!.words,
+    ).toEqual([])
+    expect(lastModifiedAt(core, "tr-1")).toBe(Date.parse(T1))
+  })
+
+  // Every apply* handler, each with a stale broadcast (version ≤ known): the
+  // timestamp must be recorded BEFORE the version gate returns.
+  const wireTurn = {
+    turnId: "turn-1",
+    text: "texte",
+    words: [],
+    speakerId: "spk-1",
+    language: "fr",
+  }
+  const broadcastKinds: [
+    string,
+    (
+      editor: NonNullable<Core["transcriptionEditor"]>,
+      lastUpdate: string,
+    ) => void,
+  ][] = [
+    [
+      "turn_updated",
+      (e, lastUpdate) =>
+        e.applyTurnUpdate(makeUpdate({ version: 5, lastUpdate })),
+    ],
+    [
+      "turn_split",
+      (e, lastUpdate) =>
+        e.applyTurnSplit({
+          translationId: "tr-1",
+          originalTurnId: "turn-1",
+          turns: [wireTurn, { ...wireTurn, turnId: "turn-1b" }],
+          version: 5,
+          lastUpdate,
+        }),
+    ],
+    [
+      "turns_merged",
+      (e, lastUpdate) =>
+        e.applyTurnsMerged({
+          translationId: "tr-1",
+          mergedTurnId: "turn-1",
+          removedTurnId: "turn-2",
+          turn: wireTurn,
+          version: 5,
+          lastUpdate,
+        }),
+    ],
+    [
+      "turn_deleted",
+      (e, lastUpdate) =>
+        e.applyTurnDeleted({
+          translationId: "tr-1",
+          turnId: "turn-2",
+          version: 5,
+          lastUpdate,
+        }),
+    ],
+    [
+      "turn_speaker_updated",
+      (e, lastUpdate) =>
+        e.applyTurnSpeakerUpdated({
+          translationId: "tr-1",
+          turnId: "turn-1",
+          speaker: { id: "spk-2", name: "Bob" },
+          version: 5,
+          lastUpdate,
+        }),
+    ],
+    [
+      "speaker_renamed",
+      (e, lastUpdate) =>
+        e.applySpeakerRenamed({
+          translationId: "tr-1",
+          speakerId: "spk-1",
+          name: "Marie-Claire",
+          version: 5,
+          lastUpdate,
+        }),
+    ],
+    [
+      "speaker_replaced",
+      (e, lastUpdate) =>
+        e.applySpeakerReplaced({
+          translationId: "tr-1",
+          fromSpeakerId: "spk-1",
+          toSpeakerId: "spk-2",
+          version: 5,
+          lastUpdate,
+        }),
+    ],
+    [
+      "speaker_restored",
+      (e, lastUpdate) =>
+        e.applySpeakerRestored({
+          translationId: "tr-1",
+          fromSpeaker: { speaker_id: "spk-1", speaker_name: "Alice" },
+          toSpeakerId: "spk-2",
+          turnIds: ["turn-1"],
+          version: 5,
+          lastUpdate,
+        }),
+    ],
+  ]
+
+  for (const [kind, apply] of broadcastKinds) {
+    it(`advances on a version-gated ${kind} broadcast`, () => {
+      const core = makeEditorCore()
+      const turnsBefore =
+        core.activeChannel.value!.sourceTranslation.turns.value
+      core.transcriptionEditor!.setTranslationVersion("tr-1", 5)
+
+      apply(core.transcriptionEditor!, T2)
+
+      expect(lastModifiedAt(core, "tr-1")).toBe(Date.parse(T2))
+      // The gate did skip it: the content is untouched.
+      expect(core.activeChannel.value!.sourceTranslation.turns.value).toBe(
+        turnsBefore,
+      )
+    })
+  }
+
+  it("never goes backward (out-of-order broadcasts)", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applyTurnUpdate(makeUpdate({ lastUpdate: T2 }))
+    core.transcriptionEditor!.applyTurnUpdate(makeUpdate({ lastUpdate: T1 }))
+    expect(lastModifiedAt(core, "tr-1")).toBe(Date.parse(T2))
+  })
+
+  it("ignores a missing or invalid lastUpdate", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applyTurnUpdate(makeUpdate())
+    expect(lastModifiedAt(core, "tr-1")).toBeNull()
+
+    core.transcriptionEditor!.applyTurnUpdate(
+      makeUpdate({ lastUpdate: "not a date" }),
+    )
+    expect(lastModifiedAt(core, "tr-1")).toBeNull()
+
+    core.transcriptionEditor!.applyTurnUpdate(makeUpdate({ lastUpdate: T1 }))
+    core.transcriptionEditor!.applyTurnUpdate(
+      makeUpdate({ lastUpdate: "not a date" }),
+    )
+    expect(lastModifiedAt(core, "tr-1")).toBe(Date.parse(T1))
   })
 })

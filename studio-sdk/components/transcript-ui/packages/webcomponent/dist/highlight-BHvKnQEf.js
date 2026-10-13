@@ -1,4 +1,4 @@
-import { p as purify } from "./index-KdxVwSUj.js";
+import { p as purify_default } from "./index-nx2_GMWf.js";
 var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 function getDefaultExportFromCjs(x) {
   return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
@@ -3064,9 +3064,9 @@ function highlightCode(code, lang) {
   const name = ALIASES[lang] ?? lang;
   const grammar = Prism$1.languages[name];
   if (!grammar) return null;
-  return purify.sanitize(Prism$1.highlight(code, grammar, name));
+  return purify_default.sanitize(Prism$1.highlight(code, grammar, name));
 }
 export {
   highlightCode
 };
-//# sourceMappingURL=highlight-V5WKBeUH.js.map
+//# sourceMappingURL=highlight-BHvKnQEf.js.map

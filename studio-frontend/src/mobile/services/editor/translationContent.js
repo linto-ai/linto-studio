@@ -1,4 +1,5 @@
 import { apiGetConversationById } from "@/api/conversation"
+import { computeEpochMs } from "@/tools/computeEpochMs.js"
 
 // A translation's content (turns + speakers) lives in its child
 // conversation and is fetched lazily, once per track. Same contract as the
@@ -34,7 +35,7 @@ async function fetchTranslationContent(
   try {
     const conversation = await apiGetConversationById(
       translation.id,
-      ["text", "speakers", "editorVersion"].toString(),
+      ["text", "speakers", "editorVersion", "last_update"].toString(),
     )
     if (!conversation) return
     for (const speaker of conversation.speakers ?? []) {
@@ -45,6 +46,7 @@ async function fetchTranslationContent(
       translation.id,
       conversation.editorVersion ?? 0,
     )
+    translation.advanceLastModifiedAt(computeEpochMs(conversation.last_update))
     channel.hasMoreHistory.value = false
   } catch (error) {
     console.error("cannot load translation content", error)

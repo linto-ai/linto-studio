@@ -56,6 +56,7 @@ async function onUpdateTurn({ io, socket }, payload, ack) {
       stime: retimed.stime,
       etime: retimed.etime,
       version: updated.version,
+      lastUpdate: updated.lastUpdate,
     })
     reply({ ok: true, version: updated.version })
   } catch (err) {

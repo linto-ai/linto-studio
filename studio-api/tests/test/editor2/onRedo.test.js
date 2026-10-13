@@ -1,3 +1,6 @@
+// last_update string the model reports having written; broadcasts carry it.
+const LAST_UPDATE = "2026-09-30T10:00:00+02:00"
+
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
   conversationEditor: {
     renameEditorSpeaker: jest.fn(),
@@ -87,7 +90,10 @@ test("redoes a rename_speaker: cursor swap passes, re-applies the new name", asy
     // Second call: is there yet another step to redo to? Not in this case.
     .mockResolvedValueOnce(null)
   model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
-  model.conversationEditor.renameEditorSpeaker.mockResolvedValue({ version: 9 })
+  model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
+    version: 9,
+    lastUpdate: LAST_UPDATE,
+  })
   const ctx = makeCtx()
   const ack = jest.fn()
 
@@ -118,6 +124,7 @@ test("redoes a rename_speaker: cursor swap passes, re-applies the new name", asy
     speakerId: "spk-1",
     name: "Marie D.",
     version: 9,
+    lastUpdate: LAST_UPDATE,
     revisionId: "rev-1",
     redoRevisionId: null,
   })
@@ -138,7 +145,10 @@ test("redoes a rename_speaker, and there's yet ANOTHER step to redo to", async (
     })
     .mockResolvedValueOnce({ _id: "rev-2", type: "rename_speaker" })
   model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
-  model.conversationEditor.renameEditorSpeaker.mockResolvedValue({ version: 9 })
+  model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
+    version: 9,
+    lastUpdate: LAST_UPDATE,
+  })
   const ctx = makeCtx()
   const ack = jest.fn()
 
@@ -161,7 +171,10 @@ test("a further redo target of an unsupported type is reported as no target at a
     })
     .mockResolvedValueOnce({ _id: "rev-2", type: "split_turn" })
   model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
-  model.conversationEditor.renameEditorSpeaker.mockResolvedValue({ version: 9 })
+  model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
+    version: 9,
+    lastUpdate: LAST_UPDATE,
+  })
   const ctx = makeCtx()
   const ack = jest.fn()
 
@@ -185,7 +198,10 @@ test("redoes an update_turn_speaker: re-applies the new assignment and hints rem
     })
     .mockResolvedValueOnce(null)
   model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
-  model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({ version: 11 })
+  model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
+    version: 11,
+    lastUpdate: LAST_UPDATE,
+  })
   const ctx = makeCtx()
   const ack = jest.fn()
 
@@ -203,6 +219,7 @@ test("redoes an update_turn_speaker: re-applies the new assignment and hints rem
     speaker: { id: "spk-1", name: "Marie" },
     removedSpeakerId: "spk-2",
     version: 11,
+    lastUpdate: LAST_UPDATE,
     revisionId: "rev-4",
     redoRevisionId: null,
   })
@@ -217,7 +234,10 @@ test("redoes a replace_speaker: replays the merge forward, broadcasts editor:spe
     })
     .mockResolvedValueOnce(null)
   model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
-  model.conversationEditor.replaceEditorSpeaker.mockResolvedValue({ version: 10 })
+  model.conversationEditor.replaceEditorSpeaker.mockResolvedValue({
+    version: 10,
+    lastUpdate: LAST_UPDATE,
+  })
   const ctx = makeCtx()
   const ack = jest.fn()
 
@@ -233,6 +253,7 @@ test("redoes a replace_speaker: replays the merge forward, broadcasts editor:spe
     fromSpeakerId: "spk-1",
     toSpeakerId: "spk-2",
     version: 10,
+    lastUpdate: LAST_UPDATE,
     revisionId: "rev-2",
     redoRevisionId: null,
   })

@@ -46,14 +46,17 @@ export function buildTranscriptionEditorPlugin(
   })
 }
 
-// Server broadcasts flow one way into the editor plugin.
-export function buildEditorRoomHandlers(core) {
+// Server broadcasts flow one way into the editor plugin. afterJoin runs on
+// every successful (re)join ack: broadcasts missed while disconnected may
+// concern tracks that are not loaded, hence not refetched.
+export function buildEditorRoomHandlers(core, afterJoin) {
   const editor = () => core.transcriptionEditor
   return {
     onJoined: (ack) => {
       if (!ack?.ok) return
       editor()?.setLocks(ack.locks ?? [])
       editor()?.reconcileVersions(ack.versions ?? {})
+      afterJoin?.()
     },
     onTurnLocked: (lock) => editor()?.setTurnLock(lock),
     onTurnUnlocked: (ref) => editor()?.clearTurnLock(ref),

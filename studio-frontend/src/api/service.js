@@ -78,6 +78,8 @@ export async function getLLMService(organizationId, securityLevel) {
   }
 }
 
+// The generated documents (LLM jobs) of a conversation; null when the request
+// failed, so that callers never mistake a failure for "no job".
 export async function apiGetMetadataLLMService(conversationId) {
   const req = await sendRequest(
     `${BASE_API}/conversations/${conversationId}/export/list`,
@@ -89,7 +91,7 @@ export async function apiGetMetadataLLMService(conversationId) {
   if (req.status === "success") {
     return req.data || []
   } else {
-    return []
+    return null
   }
 }
 
