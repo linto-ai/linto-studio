@@ -10756,7 +10756,7 @@ const _sfc_main$P = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-BHvKnQEf.js");
+        const { highlightCode } = await import("./highlight-BK42yKYV.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -30639,6 +30639,10 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
       if (articleStatus.value !== "done") return false;
       return !hasContent.value;
     });
+    const articleView = computed(() => {
+      if (articleStatus.value !== "done") return articleStatus.value;
+      return isEmpty.value ? "empty" : "content";
+    });
     const isUpdated = computed(() => {
       const channel = core.activeChannel.value;
       const transcriptionModifiedAt = channel ? computeReportTrack(channel).lastModifiedAt.value : null;
@@ -30675,7 +30679,8 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
     }
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("section", _hoisted_1$6, [
-        createVNode(unref(DocumentArticle), {
+        (openBlock(), createBlock(unref(DocumentArticle), {
+          key: articleView.value,
           status: articleStatus.value,
           progress: progress.value,
           onRetry: onRegenerate
@@ -30789,13 +30794,13 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
             ]),
             key: "2"
           } : void 0
-        ]), 1032, ["status", "progress"])
+        ]), 1032, ["status", "progress"]))
       ]);
     };
   }
 });
-const _style_0$6 = "\n.llm-service-panel[data-v-8d4af132] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.llm-service-panel__reading-status[data-v-8d4af132] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.llm-service-panel__reading-actions[data-v-8d4af132] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.llm-service-panel__reading[data-v-8d4af132] {\n  padding: var(--spacing-xl) var(--spacing-lg);\n}\n.llm-service-panel__empty[data-v-8d4af132] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-8d4af132] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n";
-const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$6]], ["__scopeId", "data-v-8d4af132"]]);
+const _style_0$6 = "\n.llm-service-panel[data-v-c909b521] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.llm-service-panel__reading-status[data-v-c909b521] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.llm-service-panel__reading-actions[data-v-c909b521] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.llm-service-panel__reading[data-v-c909b521] {\n  padding: var(--spacing-xl) var(--spacing-lg);\n}\n.llm-service-panel__empty[data-v-c909b521] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-c909b521] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n";
+const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$6]], ["__scopeId", "data-v-c909b521"]]);
 function createService(init) {
   return {
     id: init.id,
@@ -31713,4 +31718,4 @@ export {
   purify_default as p,
   register as r
 };
-//# sourceMappingURL=index-nx2_GMWf.js.map
+//# sourceMappingURL=index-s6Vj1tS6.js.map

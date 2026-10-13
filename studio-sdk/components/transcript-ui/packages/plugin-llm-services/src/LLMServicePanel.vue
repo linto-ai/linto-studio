@@ -63,6 +63,16 @@ const isEmpty = computed<boolean>(() => {
   return !hasContent.value
 })
 
+// What the article shows: "processing", "error", "empty" or "content". Used
+// as its key, so a change of state replaces the whole article instead of
+// switching its content in place: switching in place left the previous
+// content in the DOM when changing to a never generated track (empty state
+// stuck next to the spinner, then next to the editor).
+const articleView = computed<string>(() => {
+  if (articleStatus.value !== "done") return articleStatus.value
+  return isEmpty.value ? "empty" : "content"
+})
+
 // "Up to date" = the displayed generation is at least as recent as the
 // transcription's last server-side modification. The generation date, not
 // the version date: editing and saving the report by hand creates a version
@@ -115,6 +125,7 @@ function onSave(): void {
 <template>
   <section class="llm-service-panel">
     <DocumentArticle
+      :key="articleView"
       :status="articleStatus"
       :progress="progress"
       @retry="onRegenerate">
