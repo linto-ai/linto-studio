@@ -12,7 +12,7 @@ import TranslationSelector from "./TranslationSelector.vue"
 import SelectionActionBar from "./SelectionActionBar.vue"
 import { useIsMobile } from "../composables/useIsMobile"
 import { provideTurnSelection } from "../composables/useTurnSelection"
-import { useCore, type LLMService } from "../core"
+import { useCore, computeCanChat, type LLMService } from "../core"
 
 const props = withDefaults(
   defineProps<{
@@ -87,6 +87,17 @@ const activeTranslationId = computed(
 const speakerList = computed(() => Array.from(speakers.values()))
 
 const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB)
+
+// Installing the chat plugin offers the chat; the capability says whether
+// this reader may use it. core.chat is a plain field, invisible to Vue: the
+// drawer the plugin registers in the reactive core.components is what makes
+// a late install (the host checks first that its backend offers the chat)
+// show up. core.chat is still read, by the template: it is unset again when
+// the plugin is released, while its component stays registered.
+const chatOffered = computed(
+  () =>
+    !!core.components.chatDrawer && computeCanChat(core.capabilities.value),
+)
 
 // remove split when shrinking in mobile view
 watch(isMobile, (mobile) => {
@@ -165,7 +176,7 @@ function onTranslationChange(translationId: string) {
       :duration="core.activeChannel.value?.duration ?? 0"
       :speaker-count="speakers.size"
       :is-mobile="isMobile"
-      :can-ask="!!core.chat"
+      :can-ask="chatOffered && !!core.chat"
       :can-undo="core.transcriptionEditor?.canUndo.value ?? false"
       :can-redo="core.transcriptionEditor?.canRedo.value ?? false"
       @toggle-sidebar="core.setSidebarOpen(!core.sidebarOpen.value)"
@@ -239,7 +250,9 @@ function onTranslationChange(translationId: string) {
     <component
       :is="core.components.subtitleFullscreen"
       v-if="core.subtitle?.isFullscreen.value" />
-    <component :is="core.components.chatDrawer" v-if="core.chat" />
+    <component
+      :is="core.components.chatDrawer"
+      v-if="chatOffered && !!core.chat" />
     <div
       v-if="isMobile && (channels.length > 1 || translations.length > 1)"
       class="mobile-selectors">

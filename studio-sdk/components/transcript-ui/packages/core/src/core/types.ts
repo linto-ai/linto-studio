@@ -11,9 +11,26 @@ import type {
 
 // ── Capabilities ────────────────────────────────────────────────────────
 
+/** What the reader may do with the reports (llm-services plugin). Separate
+ *  permissions rather than levels: a host can offer forcing a generation
+ *  without editing (e.g. a phone app). */
+export interface SummaryCapabilities {
+  /** Generate a report that is missing or out of date. */
+  generate: boolean
+  /** Edit and save a report by hand. */
+  edit: boolean
+  /** Generate again a report that is already up to date. */
+  forceGenerate: boolean
+}
+
 export interface CoreCapabilities {
   text: "edit" | "view"
   speakers: "edit" | "view"
+  /** Left unset: DEFAULT_SUMMARY_CAPABILITIES. */
+  summary?: SummaryCapabilities
+  /** Whether the reader may chat, once a chat plugin is installed. Left
+   *  unset: "enabled". */
+  chat?: "enabled" | "disabled"
 }
 
 // ── Event Map ──────────────────────────────────────────────────────────
@@ -26,7 +43,12 @@ export interface CoreEventMap {
   /** A new document was loaded via setDocument (channels rebuilt). */
   "document:change": void
   "channel:change": { channelId: string }
-  "translation:change": { translationId: string | null }
+  "translation:change": { channelId: string; translationId: string | null }
+  /** The displayed track changed: another channel, or another track of the
+   *  active channel. Follows channel:change / translation:change, so a
+   *  consumer of "what is on screen" listens to this one alone. Not emitted
+   *  by setDocument: read core.activeChannel once the document is set. */
+  "activeTrack:change": { channelId: string; translationId: string }
   "turn:add": { turn: Turn; translationId: string }
   "turn:update": { turn: Turn; translationId: string }
   "turn:remove": { turnId: string; translationId: string }
@@ -467,7 +489,11 @@ export interface SubtitlePluginApi {
 
 // ── LLM Services Plugin API ─────────────────────────────────────────────
 
+/** "loading": the host is fetching the state of the report (opening, or the
+ *  followed track changed). Nothing to show yet, and no action either: the
+ *  report may well exist. */
 export type LLMServiceStatus =
+  | "loading"
   | "idle"
   | "queued"
   | "processing"

@@ -91,6 +91,7 @@ const fr = {
   "llmService.download": "Télécharger",
   "llmService.split": "Afficher le verbatim à côté",
   "llmService.generated": "Généré par IA",
+  "llmService.loading": "Chargement…",
   "llmService.processing": "Génération en cours…",
   "llmService.queued": "En file d'attente…",
   "llmService.empty": "Aucun contenu",

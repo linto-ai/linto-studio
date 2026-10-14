@@ -1,12 +1,18 @@
 export { createCore } from './createCore'
 export { provideCore, useCore } from './useCore'
 export { CROSS_TRANSLATION_ID } from './stores'
+export {
+  DEFAULT_SUMMARY_CAPABILITIES,
+  computeSummaryCapabilities,
+  computeCanChat,
+} from './capabilities'
 export type {
   Core,
   CorePlugin,
   CoreEventMap,
   CoreOptions,
   CoreCapabilities,
+  SummaryCapabilities,
   TurnEventKey,
   UISlot,
   ReadableTranslation,

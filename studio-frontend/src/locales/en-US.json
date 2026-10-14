@@ -702,7 +702,8 @@
     },
     "error": {
       "form_invalid": "Error: please check the form",
-      "no_audio_file": "Error: you did not upload any audio file"
+      "no_audio_file": "Error: you did not upload any audio file",
+      "load_failed": "Unable to open this conversation."
     },
     "export": {
       "docx": "Export DOCX",

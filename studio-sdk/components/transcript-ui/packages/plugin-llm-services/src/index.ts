@@ -20,6 +20,7 @@ export type {
   LLMServicesPluginApi,
 }
 export { LLMServicePanel }
+export { computeReportTrack } from "./utils/computeReportTrack"
 
 interface InternalLLMService {
   readonly id: string

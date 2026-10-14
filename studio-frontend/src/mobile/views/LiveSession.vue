@@ -79,7 +79,7 @@ export default {
   mixins: [liveSessionMixin],
   data() {
     return {
-      // Both pushed by the editor. <linto-editor> is mounted with no-header
+      // Both pushed by the editor. <linto-transcript-ui> is mounted with no-header
       // here, so its sidebar — subtitles, voice playback, live settings,
       // speakers — has no opener of its own and this bar carries it.
       // editorIsMobile is always true on a phone, but it also says the
@@ -199,7 +199,7 @@ export default {
   min-height: 0;
 }
 
-.m-live-session__body :deep(linto-editor) {
+.m-live-session__body :deep(linto-transcript-ui) {
   --color-primary: var(--m-primary);
   --color-background: var(--m-bg);
   --color-surface: var(--m-surface);
