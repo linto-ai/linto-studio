@@ -17,7 +17,8 @@ import { getEnv } from "@/tools/getEnv"
 
 import Loading from "vue-loading-overlay"
 
-import { register as registerLintoEditor } from "@linto-ai/transcript-ui-webcomponent"
+import { register as registerTranscriptUi } from "@linto-ai/transcript-ui-webcomponent"
+import { TRANSCRIPT_UI_TAG_NAME } from "@/const/transcriptUiTagName.js"
 
 import "vue-loading-overlay/dist/vue-loading.css"
 
@@ -42,5 +43,5 @@ if (!redirectingToMobileApp) {
     render: (h) => h(App),
   }).$mount("#app")
 
-  registerLintoEditor()
+  registerTranscriptUi(TRANSCRIPT_UI_TAG_NAME)
 }

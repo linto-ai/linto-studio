@@ -1,6 +1,6 @@
 {
   "name": "@linto-ai/transcript-ui-webcomponent",
-  "version": "0.9.23-unstable.2026101302",
+  "version": "0.9.23-unstable.2026101402",
   "description": "@linto-ai/transcript-ui packaged as a <linto-editor> Web Component, for non-Vue hosts",
   "keywords": [
     "web-component",

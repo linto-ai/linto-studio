@@ -83,13 +83,14 @@ export async function apiDeleteChatSession(conversationId, sessionId) {
 
 /**
  * Send a chat message with SSE streaming.
- * Uses native fetch (not axios) for streaming support.
+ * Uses native fetch (not axios) for streaming support. Aborting `signal`
+ * stops reading the stream: no callback is called after that.
  */
 export async function apiSendChatMessage(
   conversationId,
   sessionId,
   content,
-  { onToken, onDone, onError },
+  { onToken, onDone, onError, signal },
 ) {
   const userToken = getCookie("authToken")
   const url = `${BASE_API}/conversations/${conversationId}/chat/sessions/${sessionId}/messages`
@@ -102,6 +103,7 @@ export async function apiSendChatMessage(
         Authorization: `Bearer ${userToken}`,
       },
       body: JSON.stringify({ content }),
+      signal,
     })
 
     if (!response.ok) {
@@ -139,6 +141,7 @@ export async function apiSendChatMessage(
       }
     }
   } catch (err) {
+    if (signal?.aborted) return
     onError(err.message || "Network error")
   }
 }

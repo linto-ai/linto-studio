@@ -40,7 +40,7 @@ export const liveSessionMixin = {
     },
   },
   async created() {
-    // The live component mounts <linto-editor> synchronously: the custom
+    // The live component mounts <linto-transcript-ui> synchronously: the custom
     // element must be registered before it renders.
     await Promise.all([loadEditor(), connectRealtime()])
     this.editorReady = true

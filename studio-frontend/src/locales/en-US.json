@@ -351,7 +351,8 @@
     },
     "error": {
       "form_invalid": "Error: please check the form",
-      "no_audio_file": "Error: you did not upload any audio file"
+      "no_audio_file": "Error: you did not upload any audio file",
+      "load_failed": "Unable to open this conversation."
     },
     "export": {
       "docx": "Export DOCX",
@@ -1849,20 +1850,7 @@
   },
   "actions": "Actions",
   "chat": {
-    "title": "Chat",
-    "start": "Start a chat",
-    "description": "Ask questions about this conversation",
-    "new_chat": "New chat",
-    "send": "Send",
-    "placeholder": "Ask a question about this conversation...",
-    "history": "History",
-    "empty_state": "Ask a question to start a chat",
-    "empty_chat": "Ask your first question",
-    "rename": "Rename",
-    "delete_session": "Delete",
-    "delete_confirm_inline": "Delete \"{name}\"?",
-    "error": "An error occurred",
-    "streaming": "Generating response..."
+    "error": "An error occurred"
   },
   "speaker_diarization": {
     "title": "Speaker identification",

@@ -352,7 +352,8 @@
     },
     "error": {
       "form_invalid": "Erreur : veuillez vérifier les champs du formulaire",
-      "no_audio_file": "Erreur : veuillez ajouter un fichier audio"
+      "no_audio_file": "Erreur : veuillez ajouter un fichier audio",
+      "load_failed": "Impossible d'ouvrir cette conversation."
     },
     "export": {
       "docx": "Télécharger en DOCX",
@@ -1849,20 +1850,7 @@
     "y": "Année | Années"
   },
   "chat": {
-    "title": "Chat",
-    "start": "Démarrer un chat",
-    "description": "Posez vos questions sur cette conversation",
-    "new_chat": "Nouveau chat",
-    "send": "Envoyer",
-    "placeholder": "Posez une question sur cette conversation...",
-    "history": "Historique",
-    "empty_state": "Posez une question pour démarrer la conversation",
-    "empty_chat": "Posez votre première question",
-    "rename": "Renommer",
-    "delete_session": "Supprimer",
-    "delete_confirm_inline": "Supprimer « {name} » ?",
-    "error": "Une erreur est survenue",
-    "streaming": "Génération de la réponse en cours..."
+    "error": "Une erreur est survenue"
   },
   "speaker_diarization": {
     "title": "Identification des locuteurs",

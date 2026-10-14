@@ -6,7 +6,11 @@
       @retry-websocket="websocketInstance.retry()"
       @retry-microphone="$emit('retry-microphone')"
       @reconfigure-microphone="$emit('reconfigure-microphone')" />
-    <linto-editor ref="editor" :locale="editorLocale" no-header no-verbatim />
+    <linto-transcript-ui
+      ref="editor"
+      :locale="editorLocale"
+      no-header
+      no-verbatim />
   </div>
 </template>
 
@@ -46,7 +50,7 @@ function applyTheme(theme) {
 }
 
 // The editor cannot read the app's palette through CSS (its own tokens sit
-// closer to its content than anything we set on <linto-editor>), so the brand
+// closer to its content than anything we set on <linto-transcript-ui>), so the brand
 // colour is pushed. It is re-read after every theme switch: each theme
 // declares its own primary for dark.
 function readBrandColor() {
@@ -596,7 +600,7 @@ export default {
   min-height: 0;
 }
 
-linto-editor {
+linto-transcript-ui {
   display: block;
   flex: 1;
   min-height: 0;

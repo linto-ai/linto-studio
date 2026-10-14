@@ -9122,7 +9122,10 @@ var LintoEditor = (function(exports) {
       const normalized = translationId === sourceTranslation.id ? null : translationId;
       if (normalized === activeTranslationId.value) return;
       activeTranslationId.value = normalized;
-      emit2("translation:change", { translationId: activeTranslation.value.id });
+      emit2("translation:change", {
+        channelId: id,
+        translationId: activeTranslation.value.id
+      });
     }
     function reset() {
       for (const translation of translations.values()) {
@@ -9673,7 +9676,19 @@ var LintoEditor = (function(exports) {
       if (channelId === activeChannelId.value) return;
       activeChannelId.value = channelId;
       emit2("channel:change", { channelId });
+      emitActiveTrackChange();
     }
+    function emitActiveTrackChange() {
+      const channel = activeChannel.value;
+      if (!channel) return;
+      emit2("activeTrack:change", {
+        channelId: channel.id,
+        translationId: channel.activeTranslation.value.id
+      });
+    }
+    on("translation:change", ({ channelId }) => {
+      if (channelId === activeChannel.value?.id) emitActiveTrackChange();
+    });
     function setChannel(channelId, channel) {
       if (!channels.has(channelId)) return;
       for (const translation of channel.translations) {
@@ -9741,6 +9756,13 @@ var LintoEditor = (function(exports) {
       throw new Error("useCore() requires a parent provideCore()");
     }
     return core;
+  }
+  const DEFAULT_SUMMARY_CAPABILITIES = Object.freeze({ generate: true, edit: true, forceGenerate: false });
+  function computeSummaryCapabilities(capabilities) {
+    return capabilities.summary ?? DEFAULT_SUMMARY_CAPABILITIES;
+  }
+  function computeCanChat(capabilities) {
+    return capabilities.chat !== "disabled";
   }
   const _hoisted_1$K = ["aria-label"];
   const _sfc_main$T = /* @__PURE__ */ defineComponent({
@@ -10495,6 +10517,7 @@ var LintoEditor = (function(exports) {
     "llmService.download": "Télécharger",
     "llmService.split": "Afficher le verbatim à côté",
     "llmService.generated": "Généré par IA",
+    "llmService.loading": "Chargement…",
     "llmService.processing": "Génération en cours…",
     "llmService.queued": "En file d'attente…",
     "llmService.empty": "Aucun contenu",
@@ -10639,6 +10662,7 @@ var LintoEditor = (function(exports) {
     "llmService.download": "Download",
     "llmService.split": "Show verbatim alongside",
     "llmService.generated": "AI-generated",
+    "llmService.loading": "Loading…",
     "llmService.processing": "Generating…",
     "llmService.queued": "Queued…",
     "llmService.empty": "No content",
@@ -11142,8 +11166,8 @@ pre[class*="language-"] {
       };
     }
   });
-  const _style_0$F = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-863d0b18] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-863d0b18] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-863d0b18] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-863d0b18] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-863d0b18] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-863d0b18] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-863d0b18] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-863d0b18] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-863d0b18] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-863d0b18] {\n  flex: 1;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-863d0b18]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-863d0b18]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-863d0b18]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-863d0b18]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-863d0b18] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-863d0b18] {\n  cursor: pointer;\n  appearance: auto;\n}\n.form-field__input--error[data-v-863d0b18] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-863d0b18]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-863d0b18] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-863d0b18] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-863d0b18] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-863d0b18] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-863d0b18] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-863d0b18] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-863d0b18] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-863d0b18] {\n    transition: none;\n}\n}\n";
-  const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["styles", [_style_0$F]], ["__scopeId", "data-v-863d0b18"]]);
+  const _style_0$F = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-71449c79] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-71449c79] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-71449c79] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-71449c79] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-71449c79] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-71449c79] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-71449c79] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-71449c79] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-71449c79] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-71449c79] {\n  flex: 1;\n  /* A flex item does not shrink below its content by default: a select as\n     wide as its longest option would overflow its container. */\n  min-width: 0;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-71449c79]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-71449c79]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-71449c79]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-71449c79]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-71449c79] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-71449c79] {\n  cursor: pointer;\n  appearance: auto;\n  /* The selected label is cut when the field is narrower than it; the\n     options list still shows it whole. */\n  text-overflow: ellipsis;\n}\n.form-field__input--error[data-v-71449c79] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-71449c79]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-71449c79] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-71449c79] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-71449c79] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-71449c79] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-71449c79] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-71449c79] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-71449c79] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-71449c79] {\n    transition: none;\n}\n}\n";
+  const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["styles", [_style_0$F]], ["__scopeId", "data-v-71449c79"]]);
   const _hoisted_1$F = ["disabled", "aria-label"];
   const _sfc_main$N = /* @__PURE__ */ defineComponent({
     __name: "EditableText",
@@ -22686,27 +22710,35 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   const _hoisted_6$a = { class: "document-article__body" };
   const _hoisted_7$4 = {
     key: 0,
+    class: "document-article__center",
+    role: "status",
+    "aria-live": "polite"
+  };
+  const _hoisted_8$3 = { class: "document-article__loading-text" };
+  const _hoisted_9$2 = {
+    key: 1,
     class: "document-article__center document-article__center--processing",
     role: "status",
     "aria-live": "polite"
   };
-  const _hoisted_8$3 = ["value"];
-  const _hoisted_9$2 = {
+  const _hoisted_10$2 = ["value"];
+  const _hoisted_11$1 = {
     key: 0,
     class: "document-article__progress-value"
   };
-  const _hoisted_10$2 = {
-    key: 1,
+  const _hoisted_12$1 = {
+    key: 2,
     class: "document-article__center document-article__center--error",
     role: "alert"
   };
-  const _hoisted_11$1 = { class: "document-article__error-text" };
+  const _hoisted_13$1 = { class: "document-article__error-text" };
   const _sfc_main$D = /* @__PURE__ */ defineComponent({
     __name: "DocumentArticle",
     props: {
       status: { default: "done", type: String },
       progress: { type: Number },
-      errorMessage: { type: String }
+      errorMessage: { type: String },
+      retryable: { type: Boolean, default: true }
     },
     emits: ["retry"],
     setup(__props, { emit: __emit }) {
@@ -22738,7 +22770,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             ])
           ])) : createCommentVNode("", true),
           createBaseVNode("div", _hoisted_6$a, [
-            props.status === "processing" ? (openBlock(), createElementBlock("div", _hoisted_7$4, [
+            props.status === "loading" ? (openBlock(), createElementBlock("div", _hoisted_7$4, [
+              createVNode(EditorIcon, {
+                name: "spinner",
+                spin: "",
+                size: 24
+              }),
+              createBaseVNode("span", _hoisted_8$3, toDisplayString(unref(t2)("llmService.loading")), 1)
+            ])) : props.status === "processing" ? (openBlock(), createElementBlock("div", _hoisted_9$2, [
               createVNode(EditorIcon, {
                 name: "spinner",
                 spin: "",
@@ -22748,11 +22787,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                 class: "document-article__progress",
                 max: 100,
                 value: progressValue.value ?? void 0
-              }, null, 8, _hoisted_8$3),
-              progressValue.value !== null ? (openBlock(), createElementBlock("span", _hoisted_9$2, toDisplayString(progressValue.value) + "% ", 1)) : createCommentVNode("", true)
-            ])) : props.status === "error" ? (openBlock(), createElementBlock("div", _hoisted_10$2, [
-              createBaseVNode("p", _hoisted_11$1, toDisplayString(errorText.value), 1),
-              createVNode(Button, {
+              }, null, 8, _hoisted_10$2),
+              progressValue.value !== null ? (openBlock(), createElementBlock("span", _hoisted_11$1, toDisplayString(progressValue.value) + "% ", 1)) : createCommentVNode("", true)
+            ])) : props.status === "error" ? (openBlock(), createElementBlock("div", _hoisted_12$1, [
+              createBaseVNode("p", _hoisted_13$1, toDisplayString(errorText.value), 1),
+              props.retryable ? (openBlock(), createBlock(Button, {
+                key: 0,
                 variant: "primary",
                 icon: "refresh-cw",
                 onClick: _cache[0] || (_cache[0] = ($event) => emit2("retry"))
@@ -22761,15 +22801,15 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                   createTextVNode(toDisplayString(unref(t2)("llmService.retry")), 1)
                 ]),
                 _: 1
-              })
-            ])) : renderSlot(_ctx.$slots, "default", {}, void 0, true, 2)
+              })) : createCommentVNode("", true)
+            ])) : renderSlot(_ctx.$slots, "default", {}, void 0, true, 3)
           ])
         ], 8, _hoisted_1$w);
       };
     }
   });
-  const _style_0$v = "\n.document-article[data-v-dda12eb4] {\n  /* One row of buttons plus padding and border. Declared rather than\n     measured: slot content must stay on one line (truncate, don't wrap), and\n     content stuck right under the toolbar (the markdown editor's toolbar)\n     reads this value as its offset. */\n  --document-toolbar-height: 49px;\n\n  width: min(1088px, calc(100% - 16px));\n  max-width: 1088px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-dda12eb4] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  height: var(--document-toolbar-height);\n  padding: 0 var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-dda12eb4],\n.document-article__toolbar-right[data-v-dda12eb4] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-dda12eb4] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-dda12eb4] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-dda12eb4] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__center--processing[data-v-dda12eb4] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-dda12eb4] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-dda12eb4] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-dda12eb4] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n@media (max-width: 767px) {\n.document-article[data-v-dda12eb4] {\n    margin: var(--spacing-sm) auto;\n}\n}\n.document-article__error-text[data-v-dda12eb4] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
-  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$v]], ["__scopeId", "data-v-dda12eb4"]]);
+  const _style_0$v = "\n.document-article[data-v-77dc2cd6] {\n  /* One row of buttons plus padding and border. Declared rather than\n     measured: slot content must stay on one line (truncate, don't wrap), and\n     content stuck right under the toolbar (the markdown editor's toolbar)\n     reads this value as its offset. */\n  --document-toolbar-height: 49px;\n\n  width: min(1088px, calc(100% - 16px));\n  max-width: 1088px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-77dc2cd6] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  height: var(--document-toolbar-height);\n  padding: 0 var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-77dc2cd6],\n.document-article__toolbar-right[data-v-77dc2cd6] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-77dc2cd6] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-77dc2cd6] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-77dc2cd6] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__loading-text[data-v-77dc2cd6] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.document-article__center--processing[data-v-77dc2cd6] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-77dc2cd6] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-77dc2cd6] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-77dc2cd6] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n@media (max-width: 767px) {\n.document-article[data-v-77dc2cd6] {\n    margin: var(--spacing-sm) auto;\n}\n}\n.document-article__error-text[data-v-77dc2cd6] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
+  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$v]], ["__scopeId", "data-v-77dc2cd6"]]);
   const _sfc_main$C = /* @__PURE__ */ defineComponent({
     __name: "DownloadMenu",
     props: {
@@ -25599,6 +25639,9 @@ ${text2}` : text2;
       );
       const speakerList = computed(() => Array.from(speakers.values()));
       const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB);
+      const chatOffered = computed(
+        () => !!core.components.chatDrawer && computeCanChat(core.capabilities.value)
+      );
       watch(isMobile, (mobile) => {
         if (mobile && isSplit.value) isSplit.value = false;
       });
@@ -25657,7 +25700,7 @@ ${text2}` : text2;
             duration: unref(core).activeChannel.value?.duration ?? 0,
             "speaker-count": unref(speakers).size,
             "is-mobile": unref(isMobile),
-            "can-ask": !!unref(core).chat,
+            "can-ask": chatOffered.value && !!unref(core).chat,
             "can-undo": unref(core).transcriptionEditor?.canUndo.value ?? false,
             "can-redo": unref(core).transcriptionEditor?.canRedo.value ?? false,
             onToggleSidebar: _cache[0] || (_cache[0] = ($event) => unref(core).setSidebarOpen(!unref(core).sidebarOpen.value)),
@@ -25735,7 +25778,7 @@ ${text2}` : text2;
           ]) : createCommentVNode("", true),
           unref(core).subtitle?.isVisible.value && !unref(isMobile) && !unref(core).subtitle.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleBanner), { key: 3 })) : createCommentVNode("", true),
           unref(core).subtitle?.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleFullscreen), { key: 4 })) : createCommentVNode("", true),
-          unref(core).chat ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.chatDrawer), { key: 5 })) : createCommentVNode("", true),
+          chatOffered.value && !!unref(core).chat ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.chatDrawer), { key: 5 })) : createCommentVNode("", true),
           unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_2$d, [
             channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$n, {
               key: 0,
@@ -25754,8 +25797,8 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$g = "\n.editor-layout[data-v-8b1fb5fb] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-8b1fb5fb] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-8b1fb5fb] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-8b1fb5fb] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-8b1fb5fb] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-8b1fb5fb] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-8b1fb5fb] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-8b1fb5fb] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-8b1fb5fb] {\n    grid-template-columns: 1fr;\n}\n}\n";
-  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$g]], ["__scopeId", "data-v-8b1fb5fb"]]);
+  const _style_0$g = "\n.editor-layout[data-v-879efb4a] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-879efb4a] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-879efb4a] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-879efb4a] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-879efb4a] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-879efb4a] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-879efb4a] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-879efb4a] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-879efb4a] {\n    grid-template-columns: 1fr;\n}\n}\n";
+  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$g]], ["__scopeId", "data-v-879efb4a"]]);
   const _hoisted_1$e = {
     class: "editor-loading",
     role: "status",
@@ -30619,16 +30662,21 @@ section.turn:has([data-state="open"]) {
       const core = useCore();
       const { t: t2 } = useI18n();
       const { isMobile } = useIsMobile();
-      const isReadOnly = computed(() => isMobile.value);
+      const permissions = computed(
+        () => computeSummaryCapabilities(core.capabilities.value)
+      );
+      const isReadOnly = computed(() => isMobile.value || !permissions.value.edit);
       function toggleSplit() {
         emit2("update:split", !props.split);
       }
       const articleStatus = computed(() => {
         const s2 = props.service.status.value;
+        if (s2 === "loading") return "loading";
         if (s2 === "queued" || s2 === "processing") return "processing";
         if (s2 === "error") return "error";
         return "done";
       });
+      const isLoading = computed(() => articleStatus.value === "loading");
       const progress = computed(() => props.service.progress.value);
       const content = computed(() => props.service.content.value);
       const busy = computed(() => props.service.busy.value);
@@ -30656,6 +30704,9 @@ section.turn:has([data-state="open"]) {
           currentGeneration?.createdAt ?? null
         );
       });
+      const canRegenerate = computed(
+        () => isUpdated.value ? permissions.value.forceGenerate : permissions.value.generate
+      );
       const draft = /* @__PURE__ */ ref(content.value);
       watch(content, (next2) => {
         draft.value = next2;
@@ -30685,12 +30736,14 @@ section.turn:has([data-state="open"]) {
             key: articleView.value,
             status: articleStatus.value,
             progress: progress.value,
+            retryable: permissions.value.generate,
             onRetry: onRegenerate
           }, createSlots({
             default: withCtx(() => [
               isEmpty.value ? (openBlock(), createElementBlock("div", _hoisted_2$6, [
                 createBaseVNode("p", _hoisted_3$6, toDisplayString(unref(t2)("llmService.empty")), 1),
-                createVNode(unref(Button), {
+                permissions.value.generate ? (openBlock(), createBlock(unref(Button), {
+                  key: 0,
                   variant: "primary",
                   icon: "sparkles",
                   disabled: busy.value,
@@ -30700,7 +30753,7 @@ section.turn:has([data-state="open"]) {
                     createTextVNode(toDisplayString(unref(t2)("llmService.generate")), 1)
                   ]),
                   _: 1
-                }, 8, ["disabled"])
+                }, 8, ["disabled"])) : createCommentVNode("", true)
               ])) : !isReadOnly.value ? (openBlock(), createBlock(unref(MarkdownEditor), {
                 key: 1,
                 modelValue: draft.value,
@@ -30710,7 +30763,7 @@ section.turn:has([data-state="open"]) {
                 createBaseVNode("div", _hoisted_4$5, [
                   createVNode(LLMServiceStatus, { "is-updated": isUpdated.value }, null, 8, ["is-updated"]),
                   createBaseVNode("div", _hoisted_5$5, [
-                    !isUpdated.value ? (openBlock(), createBlock(unref(Button), {
+                    canRegenerate.value ? (openBlock(), createBlock(unref(Button), {
                       key: 0,
                       variant: "secondary",
                       icon: "refresh-cw",
@@ -30754,7 +30807,7 @@ section.turn:has([data-state="open"]) {
                   variant: "secondary",
                   icon: "refresh-cw",
                   loading: articleStatus.value === "processing",
-                  disabled: isUpdated.value || busy.value || articleStatus.value === "processing",
+                  disabled: !canRegenerate.value || busy.value || isLoading.value || articleStatus.value === "processing",
                   "aria-label": unref(t2)("llmService.regenerate"),
                   title: unref(t2)("llmService.regenerate"),
                   onClick: onRegenerate
@@ -30762,7 +30815,7 @@ section.turn:has([data-state="open"]) {
               ]),
               key: "0"
             } : void 0,
-            !isReadOnly.value ? {
+            !isReadOnly.value && !isLoading.value ? {
               name: "toolbar-center",
               fn: withCtx(() => [
                 createVNode(LLMServiceStatus, { "is-updated": isUpdated.value }, null, 8, ["is-updated"])
@@ -30796,13 +30849,13 @@ section.turn:has([data-state="open"]) {
               ]),
               key: "2"
             } : void 0
-          ]), 1032, ["status", "progress"]))
+          ]), 1032, ["status", "progress", "retryable"]))
         ]);
       };
     }
   });
-  const _style_0$6 = "\n.llm-service-panel[data-v-c909b521] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.llm-service-panel__reading-status[data-v-c909b521] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.llm-service-panel__reading-actions[data-v-c909b521] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.llm-service-panel__reading[data-v-c909b521] {\n  padding: var(--spacing-xl) var(--spacing-lg);\n}\n.llm-service-panel__empty[data-v-c909b521] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-c909b521] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n";
-  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$6]], ["__scopeId", "data-v-c909b521"]]);
+  const _style_0$6 = "\n.llm-service-panel[data-v-7650a39f] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.llm-service-panel__reading-status[data-v-7650a39f] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.llm-service-panel__reading-actions[data-v-7650a39f] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.llm-service-panel__reading[data-v-7650a39f] {\n  padding: var(--spacing-xl) var(--spacing-lg);\n}\n.llm-service-panel__empty[data-v-7650a39f] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.llm-service-panel__empty-text[data-v-7650a39f] {\n  margin: 0;\n  max-width: 400px;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n";
+  const LLMServicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["styles", [_style_0$6]], ["__scopeId", "data-v-7650a39f"]]);
   function createService(init) {
     return {
       id: init.id,
@@ -34778,6 +34831,7 @@ section.turn:has([data-state="open"]) {
     highlightCode
   }, Symbol.toStringTag, { value: "Module" }));
   exports.LintoEditor = LintoEditor2;
+  exports.computeReportTrack = computeReportTrack;
   exports.createAudioPlugin = createAudioPlugin;
   exports.createChatPlugin = createChatPlugin;
   exports.createLLMServicesPlugin = createLLMServicesPlugin;

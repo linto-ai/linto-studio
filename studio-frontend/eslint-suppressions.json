@@ -84,11 +84,6 @@
       "count": 1
     }
   },
-  "src/components/ChatDrawer.vue": {
-    "vue/no-reserved-component-names": {
-      "count": 1
-    }
-  },
   "src/components/ConversationCreateAudio.vue": {
     "no-unused-vars": {
       "count": 4
@@ -350,7 +345,7 @@
   },
   "src/components/PublicationSection.vue": {
     "no-unused-vars": {
-      "count": 3
+      "count": 1
     }
   },
   "src/components/QuickSessionNotif.vue": {
@@ -1088,37 +1083,7 @@
       "count": 3
     }
   },
-  "src/services/llmServicesIntegration/actions/loadServices.js": {
-    "no-useless-assignment": {
-      "count": 1
-    }
-  },
-  "src/services/llmServicesIntegration/actions/onLlmJobComplete.js": {
-    "no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/services/llmServicesIntegration/actions/onRegenerate.js": {
-    "no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/services/llmServicesIntegration/index.js": {
-    "no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/services/llmServicesIntegration/loadGenerations.js": {
-    "no-useless-assignment": {
-      "count": 1
-    }
-  },
   "src/services/websocket/ApiEventWebSocket.js": {
-    "no-unused-vars": {
-      "count": 2
-    }
-  },
-  "src/store/chat.js": {
     "no-unused-vars": {
       "count": 2
     }

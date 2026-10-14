@@ -6,22 +6,20 @@
     <p v-if="failed" class="m-muted m-conversation__state">
       {{ $t("mobile.conversation.load_failed") }}
     </p>
-    <div v-else class="m-conversation__editor">
-      <!-- no-theme-toggle: same as the classic conversation view — this
-           shell has no dark values and nothing follows "theme:change". -->
-      <linto-editor
-        v-if="ready"
+    <div v-else-if="ready" class="m-conversation__editor">
+      <!-- no-theme-toggle: this shell has no dark values. -->
+      <linto-transcript-ui
         ref="editor"
         :locale="editorLocale"
         no-theme-toggle />
-      <p v-else class="m-muted m-conversation__state">
-        {{ $t("mobile.common.loading") }}
-      </p>
     </div>
+    <p v-else class="m-muted m-conversation__state">
+      {{ $t("mobile.common.loading") }}
+    </p>
     <ReportPdfFlow
       v-if="ready"
       ref="reportPdf"
-      :conversation-name="name"
+      :conversation-name="conversationName"
       :organization-id="organizationId" />
   </div>
 </template>
@@ -29,20 +27,29 @@
 <script>
 import PageHeader from "@/mobile/components/PageHeader.vue"
 import ReportPdfFlow from "@/mobile/components/publication/ReportPdfFlow.vue"
-import { ConversationEditorSession } from "@/mobile/services/editor/ConversationEditorSession.js"
+import { loadEditor } from "@/mobile/services/editor/loadEditor.js"
 import {
   connectRealtime,
   realtimeSocket,
 } from "@/mobile/services/realtime/mediaUpdates.js"
+import { apiGetConversationWithRight } from "@/api/conversation.d/apiGetConversationWithRight.js"
+import { TranscriptionController } from "@/services/transcriptUi/TranscriptionController/index.js"
+import { SummaryController } from "@/services/transcriptUi/SummaryController/index.js"
+import { ChatController } from "@/services/transcriptUi/ChatController/index.js"
+import { convRoleMixin } from "@/mixins/convRole.js"
 import { computeLanguageCode } from "@/tools/computeLanguageCode.js"
 
-// The same editor web component as the classic page, inside the mobile
-// app, with a back link to the media list.
 export default {
   name: "MobileConversation",
   components: { PageHeader, ReportPdfFlow },
+  mixins: [convRoleMixin],
   data() {
-    return { ready: false, failed: false, name: "", organizationId: null }
+    return {
+      ready: false,
+      failed: false,
+      organizationId: null,
+      conversationName: "",
+    }
   },
   computed: {
     // The editor only knows bare languages: "en", not the app's "en-US".
@@ -50,30 +57,83 @@ export default {
       return computeLanguageCode(this.$i18n.locale)
     },
   },
-  async created() {
-    this.session = new ConversationEditorSession({
-      conversationId: this.$route.params.conversationId,
-      socket: realtimeSocket,
-      store: this.$store,
-      i18n: this.$i18n,
-      openPublication: (request) => this.$refs.reportPdf?.start(request),
-    })
-    try {
-      await connectRealtime()
-      await this.session.load()
-    } catch (error) {
-      console.error("cannot open conversation", error)
+  async mounted() {
+    // The web component is fetched on demand: registered alongside the load.
+    // The socket carries the editing protocol; a late connection is fine,
+    // the editor room is joined again on connect.
+    const [editorModule, loaded] = await Promise.all([
+      loadEditor().catch((error) => console.error(error)),
+      apiGetConversationWithRight(this.$route.params.conversationId),
+      connectRealtime(),
+    ])
+    // Left during the load: beforeDestroy already ran, nothing to wire.
+    if (this._isDestroyed) return
+    if (!editorModule || !loaded) {
       this.failed = true
       return
     }
-    this.name = this.session.name
-    this.organizationId = this.session.document.organizationId
+    this.organizationId = loaded.conversation.organizationId
+    this.conversationName = loaded.conversation.name
     this.ready = true
     await this.$nextTick()
-    await this.session.mount(this.$refs.editor)
+    if (this._isDestroyed) return
+    this.mountTranscriptUi(this.$refs.editor.core, loaded)
   },
   beforeDestroy() {
-    this.session?.destroy()
+    this.transcription?.destroy()
+    this.summary?.destroy()
+    this.chat?.destroy()
+  },
+  methods: {
+    // The document is set before the controllers exist: they all start
+    // from a core that knows its channels and tracks.
+    mountTranscriptUi(core, { conversation, right }) {
+      core.capabilities.value = this.computeCapabilities(right)
+      core.setDocument(conversation.doc)
+      this.transcription = new TranscriptionController(core, {
+        conversationId: this.$route.params.conversationId,
+        conversationName: conversation.name,
+        socket: realtimeSocket,
+        t: this.translate,
+        notify: this.notify,
+      })
+      this.summary = new SummaryController(core, {
+        organizationId: conversation.organizationId,
+        securityLevel: conversation.securityLevel,
+        socket: realtimeSocket,
+        locale: this.$i18n.locale,
+        t: this.translate,
+        notify: this.notify,
+        openPublication: this.openPublication,
+      })
+      this.chat = new ChatController(core, { t: this.translate })
+    },
+    translate(key, params) {
+      return this.$t(key, params)
+    },
+    notify(type, message) {
+      this.$store.dispatch("system/addNotification", { type, message })
+    },
+    // "Download" on a report: exported as a PDF read in the app
+    openPublication(request) {
+      this.$refs.reportPdf?.start(request)
+    },
+    // Summaries are generated in the mobile app, never edited. Forcing a
+    // regeneration takes every right: organization admin, owner, or full
+    // rights shared.
+    computeCapabilities(right) {
+      const mode = this.hasWriteRight(right) ? "edit" : "view"
+      return {
+        text: mode,
+        speakers: mode,
+        summary: {
+          generate: this.hasWriteRight(right),
+          edit: false,
+          forceGenerate: this.hasFullRight(right),
+        },
+        chat: this.hasReadRight(right) ? "enabled" : "disabled",
+      }
+    },
   },
 }
 </script>
@@ -91,12 +151,12 @@ export default {
   flex-direction: column;
 }
 
-.m-conversation__editor linto-editor {
+.m-conversation__editor linto-transcript-ui {
   display: block;
   flex: 1;
   min-height: 0;
   --color-primary: var(--m-primary);
-  --color-primary-hover: #0e7a65;
+  --color-primary-hover: var(--m-primary);
   --color-background: var(--m-bg);
   --color-surface: var(--m-surface);
   --color-text-primary: var(--m-text);

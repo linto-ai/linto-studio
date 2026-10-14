@@ -8,7 +8,11 @@ import {
 } from "@linto-ai/transcript-ui-ui"
 import { computed, ref, watch } from "vue"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
-import { useCore, useIsMobile } from "@linto-ai/transcript-ui-core"
+import {
+  useCore,
+  useIsMobile,
+  computeSummaryCapabilities,
+} from "@linto-ai/transcript-ui-core"
 import type { LLMService } from "@linto-ai/transcript-ui-core"
 import LLMServiceStatus from "./LLMServiceStatus.vue"
 import { computeIsUpToDate } from "./utils/computeIsUpToDate"
@@ -27,10 +31,14 @@ const core = useCore()
 const { t } = useI18n()
 const { isMobile } = useIsMobile()
 
-// Phones only read the document: editing, saving and the split view stay on
-// larger screens. Downloading stays (the mobile app turns it into a PDF
-// export), and regenerating is offered once the transcription has changed.
-const isReadOnly = computed(() => isMobile.value)
+const permissions = computed(() =>
+  computeSummaryCapabilities(core.capabilities.value),
+)
+
+// Read only without the edit permission, and on phones whatever the
+// permissions: editing, saving and the split view stay on larger screens.
+// Downloading stays (the mobile app turns it into a PDF export).
+const isReadOnly = computed(() => isMobile.value || !permissions.value.edit)
 
 function toggleSplit(): void {
   emit("update:split", !props.split)
@@ -38,10 +46,15 @@ function toggleSplit(): void {
 
 const articleStatus = computed<DocumentArticleStatus>(() => {
   const s = props.service.status.value
+  if (s === "loading") return "loading"
   if (s === "queued" || s === "processing") return "processing"
   if (s === "error") return "error"
   return "done"
 })
+
+// The state of the report is not known yet: no action, no "up to date"
+// either (there is nothing to compare yet).
+const isLoading = computed(() => articleStatus.value === "loading")
 
 const progress = computed(() => props.service.progress.value)
 const content = computed(() => props.service.content.value)
@@ -92,6 +105,13 @@ const isUpdated = computed<boolean>(() => {
   )
 })
 
+// Out of date: generating is enough. Up to date: it takes forcing.
+const canRegenerate = computed<boolean>(() =>
+  isUpdated.value
+    ? permissions.value.forceGenerate
+    : permissions.value.generate,
+)
+
 const draft = ref(content.value)
 
 watch(content, (next) => {
@@ -128,6 +148,7 @@ function onSave(): void {
       :key="articleView"
       :status="articleStatus"
       :progress="progress"
+      :retryable="permissions.generate"
       @retry="onRegenerate">
       <template v-if="!isReadOnly" #toolbar-left>
         <Button
@@ -141,13 +162,18 @@ function onSave(): void {
           variant="secondary"
           icon="refresh-cw"
           :loading="articleStatus === 'processing'"
-          :disabled="isUpdated || busy || articleStatus === 'processing'"
+          :disabled="
+            !canRegenerate ||
+            busy ||
+            isLoading ||
+            articleStatus === 'processing'
+          "
           :aria-label="t('llmService.regenerate')"
           :title="t('llmService.regenerate')"
           @click="onRegenerate" />
       </template>
 
-      <template v-if="!isReadOnly" #toolbar-center>
+      <template v-if="!isReadOnly && !isLoading" #toolbar-center>
         <LLMServiceStatus :is-updated="isUpdated" />
       </template>
 
@@ -173,6 +199,7 @@ function onSave(): void {
       <div v-if="isEmpty" class="llm-service-panel__empty" role="status">
         <p class="llm-service-panel__empty-text">{{ t("llmService.empty") }}</p>
         <Button
+          v-if="permissions.generate"
           variant="primary"
           icon="sparkles"
           :disabled="busy"
@@ -188,7 +215,7 @@ function onSave(): void {
           <LLMServiceStatus :is-updated="isUpdated" />
           <div class="llm-service-panel__reading-actions">
             <Button
-              v-if="!isUpdated"
+              v-if="canRegenerate"
               variant="secondary"
               icon="refresh-cw"
               :disabled="busy"
