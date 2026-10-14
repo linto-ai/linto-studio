@@ -164,7 +164,27 @@ export function createCore(options: CoreOptions = {}): Core {
     if (channelId === activeChannelId.value) return
     activeChannelId.value = channelId
     emit("channel:change", { channelId })
+    // A channel change restores the track that channel was on, without a
+    // translation:change of its own.
+    emitActiveTrackChange()
   }
+
+  // ── Active track ───────────────────────────────────────────────────
+
+  function emitActiveTrackChange(): void {
+    const channel = activeChannel.value
+    if (!channel) return
+    emit("activeTrack:change", {
+      channelId: channel.id,
+      translationId: channel.activeTranslation.value.id,
+    })
+  }
+
+  // A channel store doesn't know whether it is the displayed one: the core
+  // relays its translation:change only for the active channel.
+  on("translation:change", ({ channelId }) => {
+    if (channelId === activeChannel.value?.id) emitActiveTrackChange()
+  })
 
   function setChannel(channelId: string, channel: Channel): void {
     if (!channels.has(channelId)) return

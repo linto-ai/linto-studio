@@ -65,7 +65,10 @@ export function createChannelStore(
     const normalized = translationId === sourceTranslation.id ? null : translationId
     if (normalized === activeTranslationId.value) return
     activeTranslationId.value = normalized
-    emit("translation:change", { translationId: activeTranslation.value.id })
+    emit("translation:change", {
+      channelId: id,
+      translationId: activeTranslation.value.id,
+    })
   }
 
   function reset(): void {

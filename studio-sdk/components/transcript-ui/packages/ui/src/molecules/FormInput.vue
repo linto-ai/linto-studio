@@ -394,6 +394,9 @@ defineExpose({
 
 .form-field__input {
   flex: 1;
+  /* A flex item does not shrink below its content by default: a select as
+     wide as its longest option would overflow its container. */
+  min-width: 0;
   box-sizing: border-box;
   height: var(--field-height);
   padding: 0 var(--field-padding-x);
@@ -439,6 +442,9 @@ defineExpose({
 .form-field__input--select {
   cursor: pointer;
   appearance: auto;
+  /* The selected label is cut when the field is narrower than it; the
+     options list still shows it whole. */
+  text-overflow: ellipsis;
 }
 
 .form-field__input--error {

@@ -92,6 +92,7 @@ const en: Record<keyof typeof fr, string> = {
   'llmService.download': 'Download',
   'llmService.split': 'Show verbatim alongside',
   'llmService.generated': 'AI-generated',
+  'llmService.loading': 'Loading…',
   'llmService.processing': 'Generating…',
   'llmService.queued': 'Queued…',
   'llmService.empty': 'No content',

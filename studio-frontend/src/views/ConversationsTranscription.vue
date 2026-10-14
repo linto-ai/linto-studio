@@ -1,12 +1,20 @@
 <template>
   <LayoutV2 noHeader>
-    <div class="transcription-editor-wrapper">
-      <!-- no-theme-toggle: this view's chrome has no dark values, and unlike
-           the live session nothing here listens to "theme:change" — the
-           switch would darken the editor inside a light page. -->
-      <linto-editor ref="editor" :locale="$i18n.locale" no-theme-toggle />
+    <p v-if="failed" class="transcription-state">
+      {{ $t("conversation.error.load_failed") }}
+    </p>
+    <div v-else-if="ready" class="transcription-editor-wrapper">
+      <!-- no-theme-toggle: this view's chrome has no dark values. -->
+      <linto-transcript-ui
+        ref="editor"
+        :locale="editorLocale"
+        no-theme-toggle />
     </div>
+    <p v-else class="transcription-state">
+      {{ $t("conversation.loading.conversation_data") }}
+    </p>
     <PublicationModal
+      v-if="ready"
       v-model="publicationModal.open"
       :jobId="publicationModal.jobId"
       :serviceId="publicationModal.serviceId"
@@ -15,306 +23,146 @@
       :conversationName="conversationName" />
   </LayoutV2>
 </template>
+
 <script>
-import { markRaw } from "vue"
-
-import USER_RIGHTS from "@/const/userRights.js"
-import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
-
-import { apiGetConversationAsDoc } from "@/api/conversation.d/apiGetConversationAsDoc.js"
-import {
-  apiGetConversationById,
-  apiGetUserRightFromConversation,
-} from "@/api/conversation"
-
-import {
-  createTranscriptionEditorPlugin,
-  createAudioPlugin,
-  mapApiTurns,
-} from "@linto-ai/transcript-ui-webcomponent"
-
-import { ChannelAssistants } from "@/services/assistantsIntegration/ChannelAssistants.js"
-import { loadSourceLastUpdate } from "@/services/editorIntegration/loadSourceLastUpdate.js"
-
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import PublicationModal from "@/components/molecules/PublicationModal.vue"
-import {
-  apiGetAudioFileFromConversation,
-  apiGetAudioWaveFormFromConversation,
-} from "@/api/conversation"
-import { customDebug } from "@/tools/customDebug"
-import { computeEpochMs } from "@/tools/date/computeEpochMs.js"
+import { apiGetConversationWithRight } from "@/api/conversation.d/apiGetConversationWithRight.js"
+import { TranscriptionController } from "@/services/transcriptUi/TranscriptionController/index.js"
+import { SummaryController } from "@/services/transcriptUi/SummaryController/index.js"
+import { ChatController } from "@/services/transcriptUi/ChatController/index.js"
+import { convRoleMixin } from "@/mixins/convRole.js"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import { readBrandColor } from "@/tools/readBrandColor"
+import { computeLanguageCode } from "@/tools/computeLanguageCode.js"
 
-const debug = customDebug("vue:editor")
 export default {
+  name: "ConversationsTranscription",
   components: { LayoutV2, PublicationModal },
+  mixins: [convRoleMixin],
   props: {
     userInfo: { type: Object, required: true },
   },
   data() {
     return {
-      conversationId: this.$route.params.conversationId,
+      ready: false,
+      failed: false,
       organizationId: null,
-      securityLevel: null,
       conversationName: "",
-      core: null,
-      isDestroyed: false,
-      assistants: null,
-      coreListeners: [],
-      canWrite: false,
       publicationModal: {
         open: false,
         jobId: null,
         serviceId: null,
         conversationId: null,
       },
-      verbatimFormats: [
-        { format: "docx", labelKey: "format.docx" },
-        { format: "pdf", labelKey: "format.pdf" },
-        { format: "txt", labelKey: "format.txt" },
-        { format: "json", labelKey: "format.json" },
-        { format: "whisperx", labelKey: "format.whisperx" },
-      ],
     }
+  },
+  computed: {
+    // The editor only knows bare languages: "en", not the app's "en-US".
+    editorLocale() {
+      return computeLanguageCode(this.$i18n.locale)
+    },
   },
   async mounted() {
-    const { doc, organizationId, securityLevel, name } =
-      await apiGetConversationAsDoc(this.conversationId)
-    // mounted() is async: the user can navigate away mid-await, in which case
-    // beforeDestroy already ran. Bail at every await boundary so we never wire
-    // up an editor that is no longer in the DOM (see initEditor).
-    if (this.isDestroyed) return
-    this.organizationId = organizationId
-    this.securityLevel = securityLevel
-    this.conversationName = name
-
-    // A failure here must not block the editor: degrade to read-only.
-    try {
-      const { right } = await apiGetUserRightFromConversation(
-        this.conversationId,
-      )
-      this.canWrite = USER_RIGHTS.hasRightAccess(right, USER_RIGHTS.WRITE)
-      debug("canWrite", this.canWrite)
-    } catch (e) {
-      console.error("[host] failed to fetch conversation right", e)
-      this.canWrite = false
+    const loaded = await apiGetConversationWithRight(
+      this.$route.params.conversationId,
+    )
+    // Left during the load: beforeDestroy already ran, nothing to wire.
+    if (this._isDestroyed) return
+    if (!loaded) {
+      this.failed = true
+      return
     }
-    if (this.isDestroyed) return
-
-    await this.initEditor(doc)
+    this.organizationId = loaded.conversation.organizationId
+    this.conversationName = loaded.conversation.name
+    this.ready = true
+    await this.$nextTick()
+    if (this._isDestroyed) return
+    this.mountTranscriptUi(this.$refs.editor.core, loaded)
   },
   beforeDestroy() {
-    this.isDestroyed = true
-    this.coreListeners.forEach((fn) => fn?.())
-    this.coreListeners = []
-    this.assistants?.destroy()
-    this.assistants = null
-    this.$apiEventWS.leaveEditorRoom()
+    this.transcription?.destroy()
+    this.summary?.destroy()
+    this.chat?.destroy()
   },
   methods: {
-    async initEditor(doc) {
-      const el = this.$refs.editor
-      // Torn down during the async mount: the custom element is gone, so there
-      // is nothing to wire up (and destructuring `el` would throw).
-      if (this.isDestroyed || !el) return
-      const { core } = el
-      this.core = markRaw(core)
+    // The document is set before the controllers exist: they all start
+    // from a core that knows its channels and tracks.
+    mountTranscriptUi(core, { conversation, right }) {
       // The editor's theme tokens can't be overridden from outside the web
       // component: the brand colour is pushed (no theme switch here)
       core.primaryColor.value = readBrandColor() || null
-      core.use(
-        createAudioPlugin({
-          resolveSrc: async (source) => {
-            const res = await apiGetAudioFileFromConversation(source.src, false)
-            if (res?.status !== "success" || !res.data || res.data.size === 0) {
-              throw new Error("Audio unavailable")
-            }
-            return URL.createObjectURL(res.data)
-          },
-          resolveWaveform: async (source) => {
-            const res = await apiGetAudioWaveFormFromConversation(
-              source.src,
-              false,
-            )
-            if (res?.status !== "success" || !Array.isArray(res.data?.data)) {
-              return null
-            }
-            return res.data.data
-          },
-        }),
-      )
-
-      // Lock+save editor: mutations go through the shared socket.io
-      // connection (see "Editor v2" design); the room is joined below.
-      core.use(
-        createTranscriptionEditorPlugin({
-          saveTurn: (payload) => this.$apiEventWS.saveEditorTurn(payload),
-          lockTurn: (payload) => this.$apiEventWS.lockEditorTurn(payload),
-          unlockTurn: (payload) => this.$apiEventWS.unlockEditorTurn(payload),
-          splitTurn: (payload) => this.$apiEventWS.splitEditorTurn(payload),
-          mergeTurns: (payload) => this.$apiEventWS.mergeEditorTurns(payload),
-          deleteTurn: (payload) => this.$apiEventWS.deleteEditorTurn(payload),
-          updateTurnSpeaker: (payload) =>
-            this.$apiEventWS.updateEditorTurnSpeaker(payload),
-          renameSpeaker: (payload) =>
-            this.$apiEventWS.renameEditorSpeaker(payload),
-          replaceSpeaker: (payload) =>
-            this.$apiEventWS.replaceEditorSpeaker(payload),
-          undo: (payload) => this.$apiEventWS.undoEditor(payload),
-          redo: (payload) => this.$apiEventWS.redoEditor(payload),
-          refetchTranslation: (translationId) =>
-            this.refetchTranslation(translationId),
-        }),
-      )
-      const mode = this.canWrite ? "edit" : "view"
-      core.capabilities.value = { text: mode, speakers: mode }
-      core.verbatimFormats.value = this.verbatimFormats
-      // Lock state flows one way: server broadcasts → plugin setters. The
-      // join ack (and every reconnection re-ack) reseeds the whole map.
-      this.$apiEventWS.joinEditorRoom(this.conversationId, {
-        onJoined: (ack) => {
-          if (!ack?.ok) return
-          core.transcriptionEditor?.setLocks(ack.locks ?? [])
-          // Reconnection: any loaded track the server says is ahead gets
-          // refetched — the whole point of the version safety net.
-          core.transcriptionEditor?.reconcileVersions(ack.versions ?? {})
-          // Broadcasts missed while disconnected may concern a source track
-          // that is not loaded (hence not refetched): reseed its timestamp.
-          this.loadActiveSourceLastUpdate()
-        },
-        onTurnLocked: (lock) => core.transcriptionEditor?.setTurnLock(lock),
-        onTurnUnlocked: (ref) => core.transcriptionEditor?.clearTurnLock(ref),
-        onTurnUpdated: (update) =>
-          core.transcriptionEditor?.applyTurnUpdate(update),
-        onTurnSplit: (split) => core.transcriptionEditor?.applyTurnSplit(split),
-        onTurnsMerged: (merge) =>
-          core.transcriptionEditor?.applyTurnsMerged(merge),
-        onTurnDeleted: (deleted) =>
-          core.transcriptionEditor?.applyTurnDeleted(deleted),
-        onTurnSpeakerUpdated: (update) =>
-          core.transcriptionEditor?.applyTurnSpeakerUpdated(update),
-        onSpeakerRenamed: (renamed) =>
-          core.transcriptionEditor?.applySpeakerRenamed(renamed),
-        onSpeakerReplaced: (replaced) =>
-          core.transcriptionEditor?.applySpeakerReplaced(replaced),
-        onSpeakerRestored: (restored) =>
-          core.transcriptionEditor?.applySpeakerRestored(restored),
+      core.capabilities.value = this.computeCapabilities(right)
+      core.setDocument(conversation.doc)
+      this.transcription = new TranscriptionController(core, {
+        conversationId: this.$route.params.conversationId,
+        conversationName: conversation.name,
+        socket: this.$apiEventWS,
+        t: this.translate,
+        notify: this.notify,
       })
-
-      // Starts on the first channel of the document, then follows the active one.
-      const assistants = new ChannelAssistants(core, {
-        conversationId: doc.channels[0].id,
-        organizationId: this.organizationId,
-        securityLevel: this.securityLevel,
-        conversationName: this.conversationName,
-        apiEventWS: this.$apiEventWS,
+      this.summary = new SummaryController(core, {
+        organizationId: conversation.organizationId,
+        securityLevel: conversation.securityLevel,
+        socket: this.$apiEventWS,
         locale: this.$i18n.locale,
-        t: (key, params) => this.$t(key, params),
-        notify: (type, message) =>
-          this.$store.dispatch("system/addNotification", { type, message }),
-        openPublication: (request) => {
-          this.publicationModal = { open: true, ...request }
-        },
-        isOrganizationAdmin: () =>
-          this.$store.getters["organizations/getUserRoleInOrganization"] ===
-          ORGANIZATION_ROLES.ADMINISTRATOR,
-        openUpgradeModal: (refusal) =>
-          this.$store.dispatch("billing/openUpgradeModal", refusal),
+        t: this.translate,
+        notify: this.notify,
+        openPublication: this.openPublication,
       })
-      this.assistants = markRaw(assistants)
-
-      await this.assistants.enableChatIfAvailable()
-      // Destroyed during the await: everything below (collab connection, sync
-      // timers, edit listeners) is created after beforeDestroy ran, so it
-      // would leak. The assistants were set before the await, so beforeDestroy
-      // already destroyed them; just stop here.
-      if (this.isDestroyed || !this.$refs.editor) return
-
-      core.setDocument(doc)
-      this.loadActiveSourceLastUpdate()
-
-      // The REST skeleton carries no content: turns and speakers are loaded
-      // per translation, lazily — now for the active one, then on every
-      // track/channel switch.
-      this.attachTranslationLoader()
-      this.loadActiveTranslation()
+      this.chat = new ChatController(core, {
+        t: this.translate,
+        notify: this.notify,
+        isOrganizationAdmin: this.isOrganizationAdmin,
+        openUpgradeModal: this.openUpgradeModal,
+      })
     },
-
-    // A translation's content is its child conversation's text+speakers.
-    // Already-loaded tracks are kept as-is (turns present = trivial cache).
-    async loadActiveTranslation() {
-      const channel = this.core?.activeChannel?.value
-      if (!channel) return
-      const translation = channel.translations.get(
-        channel.activeTranslation.value.id,
-      )
-      if (!translation || translation.turns.value.length > 0) return
-      await this.fetchTranslationContent(channel, translation)
+    translate(key, params) {
+      return this.$t(key, params)
     },
-
-    // Version-gap or reconnection resync: reload the track unconditionally.
-    async refetchTranslation(translationId) {
-      const core = this.core
-      if (!core) return
-      for (const channel of core.channels.values()) {
-        const translation = channel.translations.get(translationId)
-        if (translation) {
-          await this.fetchTranslationContent(channel, translation)
-          return
-        }
-      }
+    notify(type, message) {
+      this.$store.dispatch("system/addNotification", { type, message })
     },
-
-    async fetchTranslationContent(channel, translation) {
-      channel.isLoadingHistory.value = true
-      try {
-        // editorVersion and last_update fetched WITH the content (same
-        // backend read): the baselines always match what is displayed.
-        const conv = await apiGetConversationById(
-          translation.id,
-          ["text", "speakers", "editorVersion", "last_update"].toString(),
-        )
-        if (this.isDestroyed || !conv) return
-        for (const s of conv.speakers ?? []) {
-          this.core.speakers.ensure(s.speaker_id, s.speaker_name)
-        }
-        translation.setTurns(mapApiTurns(conv.text ?? []))
-        this.core.transcriptionEditor?.setTranslationVersion(
-          translation.id,
-          conv.editorVersion ?? 0,
-        )
-        translation.advanceLastModifiedAt(computeEpochMs(conv.last_update))
-        // Whole content arrives in one fetch: mark the history complete so
-        // the panel shows its "beginning of transcription" boundary.
-        channel.hasMoreHistory.value = false
-      } catch (err) {
-        console.error("[host] failed to load translation content", err)
-      } finally {
-        channel.isLoadingHistory.value = false
-      }
-    },
-
-    attachTranslationLoader() {
-      const load = () => this.loadActiveTranslation()
-      this.coreListeners.push(
-        this.core.on("translation:change", load),
-        this.core.on("channel:change", load),
-        this.core.on("channel:change", () => this.loadActiveSourceLastUpdate()),
+    isOrganizationAdmin() {
+      return (
+        this.$store.getters["organizations/getUserRoleInOrganization"] ===
+        ORGANIZATION_ROLES.ADMINISTRATOR
       )
     },
-
-    // Reports are generated from the channel conversation (its source track):
-    // seed the timestamp they are compared against. Later modifications come
-    // with the editor broadcasts.
-    loadActiveSourceLastUpdate() {
-      loadSourceLastUpdate(this.core?.activeChannel?.value)
+    // A SaaS refusal (quota, plan) offers to upgrade
+    openUpgradeModal(refusal) {
+      this.$store.dispatch("billing/openUpgradeModal", refusal)
+    },
+    // "Download" on a report
+    openPublication(request) {
+      this.publicationModal = { open: true, ...request }
+    },
+    // Forcing a regeneration takes every right: organization admin, owner,
+    // or full rights shared.
+    computeCapabilities(right) {
+      const mode = this.hasWriteRight(right) ? "edit" : "view"
+      return {
+        text: mode,
+        speakers: mode,
+        summary: {
+          generate: this.hasWriteRight(right),
+          edit: this.hasWriteRight(right),
+          forceGenerate: this.hasFullRight(right),
+        },
+        chat: this.hasReadRight(right) ? "enabled" : "disabled",
+      }
     },
   },
 }
 </script>
 
 <style scoped>
+.transcription-state {
+  margin: auto;
+  padding: var(--large-gap);
+  color: var(--text-secondary);
+}
+
 .transcription-editor-wrapper {
   position: relative;
   display: flex;
@@ -322,7 +170,7 @@ export default {
   min-height: 0;
 }
 
-linto-editor {
+linto-transcript-ui {
   display: block;
   flex: 1;
   min-height: 0;
