@@ -20,6 +20,8 @@ async function inviteNewUser(email) {
   )
   if (createdUser.insertedCount !== 1) throw new UserError()
   const id = createdUser.insertedId.toString()
+  // An invited account joins an existing workspace, no onboarding wizard
+  throwIfError(await model.users.update({ _id: id, onboarded: true }))
 
   const invitedUser = await model.users.getById(id, true)
   const magicId = invitedUser[0].authLink.magicId || null
