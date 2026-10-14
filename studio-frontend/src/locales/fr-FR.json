@@ -1470,6 +1470,7 @@
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
+    "personal_space_name": "Mon espace : {name}",
     "kpi": {
       "error": "Une erreur est survenue lors de la récupération des données",
       "session_avg_watch_time": "Temps moyen passé sur la transcription",

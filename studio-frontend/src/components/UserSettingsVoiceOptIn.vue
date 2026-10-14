@@ -210,7 +210,7 @@
           </thead>
           <tbody>
             <tr v-for="org in organizations" :key="org.organizationId">
-              <td>{{ org.organizationName }}</td>
+              <td>{{ organizationDisplayName(org) }}</td>
               <td class="voice-optin__orgs-switch-cell">
                 <SwitchInput
                   :value="org.voiceprintEnabled"
@@ -417,6 +417,7 @@ import {
 import { formatDuration, formatCompactDuration } from "@/tools/formatDuration.js"
 import { audioDuration } from "@/tools/audio/audioDuration.js"
 import { voiceSignaturePlaybackMixin } from "@/mixins/voiceSignaturePlayback.js"
+import { mapGetters } from "vuex"
 
 function defaultVoiceprintStatus() {
   return { hasVoiceprint: false, storageMode: STORAGE_MODE.AUDIO, audioSamplesCount: 0, lastUpdate: null }
@@ -474,6 +475,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters("organizations", {
+      userOrganizations: "getOrganizationsWithUserContext",
+    }),
     hasSamples() {
       return this.signatures.length > 0
     },
@@ -586,6 +590,13 @@ export default {
     this.fetchData()
   },
   methods: {
+    // The user's own personal space shows as "my space", like everywhere else
+    organizationDisplayName(org) {
+      const known = this.userOrganizations.find(
+        (o) => o._id === org.organizationId,
+      )
+      return known?.displayName ?? org.organizationName
+    },
     async fetchData(silent = false) {
       if (!silent) this.loading = true
       try {

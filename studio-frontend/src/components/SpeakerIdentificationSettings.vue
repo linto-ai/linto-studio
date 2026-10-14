@@ -237,12 +237,12 @@ export default {
   },
   computed: {
     ...mapGetters("organizations", {
-      currentOrganization: "getCurrentOrganization",
+      currentOrganizationDisplayName: "getCurrentOrganizationDisplayName",
       collections: "getVoiceprintCollections",
     }),
     orgName() {
       return (
-        this.currentOrganization?.name ||
+        this.currentOrganizationDisplayName ||
         this.$t("speaker_diarization.gdpr_your_org")
       )
     },

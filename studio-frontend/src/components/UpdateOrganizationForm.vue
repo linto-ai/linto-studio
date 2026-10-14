@@ -2,9 +2,12 @@
   <form @submit="updateOrganization">
     <section>
       <h2>{{ $t("organisation.general_settings") }}</h2>
-      <!--Organization Name -->
+      <!--Organization Name, fixed for the user's own personal space -->
       <FormInput
-        :readonly="!(isAdmin || (isSystemAdministrator && isBackofficePage))"
+        :readonly="
+          isOwnPersonalOrganization ||
+          !(isAdmin || (isSystemAdministrator && isBackofficePage))
+        "
         :field="orgaName"
         v-model="orgaName.value" />
       <FormInput
@@ -22,6 +25,7 @@
   </form>
 </template>
 <script>
+import { mapGetters } from "vuex"
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 
@@ -33,6 +37,7 @@ import EMPTY_FIELD from "@/const/emptyField"
 
 import { testName } from "@/tools/fields/testName"
 import { testContent } from "@/tools/fields/testContent"
+import { isOwnPersonalOrganization } from "@/tools/user/isOwnPersonalOrganization"
 
 import { apiUpdateOrganisation } from "@/api/organisation.js"
 
@@ -64,14 +69,27 @@ export default {
       organizationId: this.currentOrganization._id,
     }
   },
+  created() {
+    if (this.isOwnPersonalOrganization) {
+      this.orgaName.value = this.$t("organisation.personal_space_name", {
+        name: this.currentOrganization.name,
+      })
+    }
+  },
   mounted() {},
+  computed: {
+    ...mapGetters("user", { userId: "getUserId" }),
+    isOwnPersonalOrganization() {
+      return isOwnPersonalOrganization(this.currentOrganization, this.userId)
+    },
+  },
   methods: {
     async updateOrganization(event) {
       event.preventDefault()
       if (this.testFields()) {
-        let payload = {
-          name: this.orgaName.value.trim(),
-          description: this.orgaDescription.value,
+        let payload = { description: this.orgaDescription.value }
+        if (!this.isOwnPersonalOrganization) {
+          payload.name = this.orgaName.value.trim()
         }
 
         let req = await apiUpdateOrganisation(this.organizationId, payload, {

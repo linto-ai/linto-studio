@@ -1476,6 +1476,7 @@
     "description_description": "The description of your organisation",
     "description_label": "Description",
     "general_settings": "General settings",
+    "personal_space_name": "My space: {name}",
     "kpi": {
       "error": "An error occurred while retrieving the data",
       "session_avg_watch_time": "Average time spent on the transcription",
