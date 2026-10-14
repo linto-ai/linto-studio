@@ -2,14 +2,16 @@
   "account_created": {
     "title": "Account Validation",
     "subject": "Account Validation",
-    "email_message_intro": "Congratulations, you have just created an account on {{origin}}! Your email address is linked to your account and identifies it. To finalize the creation of your account, please click the verification link below. This will help us ensure that you are the rightful owner of this email address."
+    "email_message_intro": "Congratulations, you have just created an account on {{origin}}! Your email address is linked to your account and identifies it. To finalize the creation of your account, please click the verification link below. This will help us ensure that you are the rightful owner of this email address.",
+    "email_button": "Validate my account"
   },
   "reset_password": {
     "title": "One-Time Login Link",
     "subject": "One-Time Login Link",
     "email_intro": "A password reset request was made for your account associated with the email address {{email}}. To log in immediately, use the unique link below, valid for 30 minutes. Click this link to continue:",
     "email_tip": "If you no longer have access to your password, remember to update it in “My Account” > “Change Password.”",
-    "email_ignore": "If you did not request a password reset, you can safely ignore this email."
+    "email_ignore": "If you did not request a password reset, you can safely ignore this email.",
+    "email_button": "Sign in"
   },
   "account_create_invite_organization": {
     "title": "Organization Invitation",
@@ -17,12 +19,15 @@
     "email_invitation": "You have received an invitation to the organization {{orgaName}} on the LinTO Studio platform from {{sharedByEmail}}.",
     "email_account_linking": "Use the unique link below to access this resource and link an account to your identifying email address. Don’t forget to set a password for future logins by going to “My Account” > “Change Password.”",
     "email_expiry_notice": "This link is valid for 48 hours.",
-    "email_cta_intro": "Click the link to access your account:"
+    "email_cta_intro": "Click the link to access your account:",
+    "email_button": "Access my account"
   },
   "invite_organization": {
     "title": "Organization Invitation",
     "subject": "Organization Invitation",
-    "email_invitation": "You have received an invitation to the organization {{orgaName}} from {{sharedByEmail}}."
+    "email_invitation": "You have received an invitation to the organization {{orgaName}} from {{sharedByEmail}}.",
+    "email_cta_intro": "Click the button to access the organization:",
+    "email_button": "Access the organization"
   },
   "update_organization_right": {
     "title": "Update of Your Rights in an Organization",
@@ -39,13 +44,15 @@
     "subject": "Email Address Verification",
     "email_info": "You have recently changed your email address on the LinTO Studio platform.",
     "email_verification_cta": "Click the link below to verify that you are the rightful owner of the email address you provided.",
-    "email_expiry_notice": "This link is valid for 30 minutes."
+    "email_expiry_notice": "This link is valid for 30 minutes.",
+    "email_button": "Verify my address"
   },
   "share_conversation": {
     "title": "Conversation Sharing",
     "subject": "Conversation Sharing",
     "email_shared_by": "You have received a media transcription on the LinTO Studio platform from {{sharedByEmail}}.",
-    "email_cta_intro": "Click the link to access the shared transcription:"
+    "email_cta_intro": "Click the link to access the shared transcription:",
+    "email_button": "Open the transcription"
   },
   "share_conversation_external": {
     "title": "Conversation Sharing",
@@ -53,13 +60,15 @@
     "email_shared_by": "You have received a media transcription on the LinTO Studio platform from {{sharedByEmail}}.",
     "email_account_linking": "Use the unique link below to access this resource and link an account to your identifying email address. Don’t forget to set a password for future logins by going to “My Account” > “Change Password.”",
     "email_expiry_notice": "This link is valid for 48 hours.",
-    "email_cta_intro": "Click the link to access your account as well as the shared transcription:"
+    "email_cta_intro": "Click the link to access your account as well as the shared transcription:",
+    "email_button": "Access my account"
   },
   "share_conversation_right_update": {
     "title": "Update of Your Rights on a Conversation",
     "subject": "Update of Your Rights on a Conversation",
     "email_shared_by": "You have received an update of rights on a media transcription on the LinTO Studio platform from {{sharedByEmail}}.",
-    "email_cta_intro": "Click the link to access the shared transcription:"
+    "email_cta_intro": "Click the link to access the shared transcription:",
+    "email_button": "Open the transcription"
   },
   "share_multiple_conversation_right": {
     "title": "Update of Your Rights on Multiple Conversations",

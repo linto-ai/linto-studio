@@ -25,8 +25,11 @@ const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
-const { UserNotFound, UserError } = require(
+const { UserNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
+)
+const { resolveInvitee } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
 
 // Default right of the organization members, kept out of the generic PATCH
@@ -81,7 +84,8 @@ async function getRightsByConversation(req, res, next) {
   }
 }
 
-async function updateConversationRights(req, res, next) {
+// magicId: given for an account without password, the mails carry a login link
+async function updateConversationRights(req, res, next, magicId = null) {
   try {
     if (req.body.right === undefined || !req.params.userId)
       throw new ConversationMetadataRequire("UserId is required")
@@ -137,12 +141,22 @@ async function updateConversationRights(req, res, next) {
         if (sharedBy.length !== 1) throw new UserNotFound()
         const sharedByEmail =
           sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
-        await Mailing.conversationRightUpdate(
-          user,
-          req,
-          sharedByEmail,
-          req.params.conversationId,
-        )
+        if (magicId) {
+          await Mailing.conversationSharedNewUser(
+            user.email,
+            req,
+            magicId,
+            sharedByEmail,
+            req.params.conversationId,
+          )
+        } else {
+          await Mailing.conversationRightUpdate(
+            user,
+            req,
+            sharedByEmail,
+            req.params.conversationId,
+          )
+        }
       }
     }
 
@@ -152,7 +166,15 @@ async function updateConversationRights(req, res, next) {
       const sharedByEmail =
         sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
 
-      if (req.body.notify !== false) {
+      if (req.body.notify !== false && magicId) {
+        await Mailing.conversationSharedNewUser(
+          user.email,
+          req,
+          magicId,
+          sharedByEmail,
+          req.params.conversationId,
+        )
+      } else if (req.body.notify !== false) {
         Mailing.conversationShared(
           user,
           req,
@@ -187,72 +209,16 @@ async function updateConversationRights(req, res, next) {
   }
 }
 
-async function inviteNewUser(req, res, next) {
+async function inviteUserByEmail(req, res, next) {
   try {
-    if (process.env.DISABLE_USER_INVITATION === "true")
-      throw new UserError("User invitation is disabled")
+    if (req.body.right) req.body.right = parseInt(req.body.right)
+    else req.body.right = RIGHTS.READ
 
-    const email = req.body.email
-    const createdUser = await model.users.createExternal({ email })
-
-    // Create new user personal organization
-    if (createdUser.insertedCount !== 1) throw new UserError()
-    const userId = createdUser.insertedId.toString()
-    const magicId = createdUser.ops[0].authLink.magicId
-
-    if (magicId) {
-      const createOrganization = await model.organizations.createDefault(
-        userId,
-        email,
-        {},
-      )
-      if (createOrganization.insertedCount !== 1) {
-        await model.users.delete(userId)
-        throw new UserError()
-      }
-
-      // Share conversation to created user
-      const sharedBy = await model.users.getById(req.payload.data.userId)
-      if (sharedBy.length !== 1) throw new UserNotFound()
-      const sharedByEmail =
-        sharedBy[0].email || sharedBy[0].firstname || "LinTO Studio"
-      if (req.body.notify !== false) {
-        await Mailing.conversationSharedNewUser(
-          email,
-          req,
-          magicId,
-          sharedByEmail,
-          req.params.conversationId,
-        )
-      }
-
-      await model.conversations.addSharedUser(req.params.conversationId, {
-        userId,
-        sharedBy: req.payload.data.userId,
-        right: 1,
-      })
-    }
-
-    res.status(200).send({
-      message: "Invitation sent",
-    })
+    const invited = await resolveInvitee(req.body.email)
+    req.params.userId = invited.id
+    updateConversationRights(req, res, next, invited.magicId)
   } catch (err) {
     next(err)
-  }
-}
-
-async function inviteUserByEmail(req, res, next) {
-  if (req.body.right) req.body.right = parseInt(req.body.right)
-  else req.body.right = RIGHTS.READ
-
-  const user = await model.users.getByEmail(req.body.email)
-  if (user.length === 1) {
-    // Share to an internal user
-    req.params.userId = user[0]._id.toString()
-    updateConversationRights(req, res, next)
-  } else {
-    // Share to an external user
-    inviteNewUser(req, res, next)
   }
 }
 

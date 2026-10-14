@@ -1,5 +1,10 @@
+const BRAND_COLOR = "#11977c"
+
 module.exports = function () {
   return `
+    <mj-attributes>
+      <mj-button background-color="${BRAND_COLOR}" color="#ffffff" font-size="16px" border-radius="4px" align="left" />
+    </mj-attributes>
     <mj-style>
       .mail-header {
         background-color: #f0f0f0;
@@ -10,7 +15,7 @@ module.exports = function () {
         text-align: center !important;
       }
       .mail-footer {
-        background-color: #0aa9a5;
+        background-color: ${BRAND_COLOR};
       }
       .mail-footer-text div {
         color: #ffffff !important;
