@@ -217,10 +217,7 @@ export default {
       formData.append("password", this.password.value)
       formData.append("organizationName", this.defaultOrganizationName)
 
-      const res = await apiCreateUser(formData, {
-        timeout: null,
-        redirect: false,
-      })
+      const res = await apiCreateUser(formData, null)
       if (res.message === "User address already use") {
         this.state = "personal-information"
         this.email.error = this.$t("user_creation.email_already_exists")

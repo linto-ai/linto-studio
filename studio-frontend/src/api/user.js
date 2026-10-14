@@ -118,7 +118,7 @@ export async function apiLoginUserMagicLink(magicId) {
       psw: "psw", // Needed
       magicId,
     },
-    {},
+    null,
   )
 }
 
