@@ -709,6 +709,7 @@
       "json": "Export JSON",
       "pdf": "Export PDF",
       "srt": "Export SRT",
+      "subtitles_title": "Download subtitles",
       "title": "Download verbatim",
       "txt": "Export TXT",
       "vtt": "Export VTT",

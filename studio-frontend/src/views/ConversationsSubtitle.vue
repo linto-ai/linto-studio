@@ -21,7 +21,7 @@
               icon="upload"
               variant="primary"
               size="sm"
-              :label="$t('conversation.export.title')" />
+              :label="$t('conversation.export.subtitles_title')" />
           </template>
         </PopoverList>
       </div>
