@@ -129,7 +129,7 @@ EXPORT_DISCLAIMER=
 # Export timeout in milliseconds (default: 10 minutes)
 EXPORT_TIMEOUT_MS=600000
 
-# ORGANIZATION_DEFAULT_PERMISSIONS supported values are "upload,summary,session,microphone,bot"
+# ORGANIZATION_DEFAULT_PERMISSIONS supported values are "upload,summary,session,microphone,bot,speaker_identification"
 ORGANIZATION_DEFAULT_PERMISSIONS=upload,summary,session,microphone,bot
 
 
