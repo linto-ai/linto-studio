@@ -47,7 +47,11 @@ async function applyUpdateTurnSpeaker(translationId, target, leftSpeakerId) {
   const updated = await model.conversationEditor.updateEditorTurnSpeaker(
     translationId,
     target.turnId,
-    { speaker_id: target.speakerId, speaker_name: target.speakerName },
+    {
+      speaker_id: target.speakerId,
+      speaker_name: target.speakerName,
+      defined: Boolean(target.defined),
+    },
   )
   if (!updated) return null
   const removedSpeakerId =

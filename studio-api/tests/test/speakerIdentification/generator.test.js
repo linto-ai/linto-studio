@@ -166,4 +166,25 @@ describe("transcriptionToConversation - speaker identification", () => {
     )
     expect(unknowns.length).toBe(2)
   })
+  it("(d) flags the name as defined only when it comes from speaker identification", () => {
+    const u1 = uuidv4()
+    const legacy = transcriptionToConversation(
+      makeTranscript({ spk1Name: "spk1", spk2Name: "spk2", uuidName: u1 }),
+      makeConversation(),
+    )
+    expect(legacy.speakers.map((s) => s.defined)).toEqual([false, false, false])
+
+    const identified = transcriptionToConversation(
+      makeTranscript({ spk1Name: "spk1", spk2Name: "Alice", uuidName: u1 }),
+      makeConversation({ diarizationConfig: { speakerIdentificationConfig: {} } }),
+    )
+    const byName = Object.fromEntries(
+      identified.speakers.map((s) => [s.speaker_name, s.defined]),
+    )
+    expect(byName).toEqual({
+      Alice: true,
+      "Unknown speaker 1": false,
+      "Unknown speaker 2": false,
+    })
+  })
 })

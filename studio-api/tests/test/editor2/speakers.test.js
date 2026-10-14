@@ -142,6 +142,7 @@ describe("onUpdateTurnSpeaker", () => {
     ).toHaveBeenCalledWith("tr-1", "turn-2", {
       speaker_id: "spk-1",
       speaker_name: "Marie",
+      defined: false,
     })
     const [event, broadcast] = ctx.emit.mock.calls[0]
     expect(event).toBe("editor:turn_speaker_updated")
@@ -165,8 +166,18 @@ describe("onUpdateTurnSpeaker", () => {
     expect(model.editorRevisions.insert).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "update_turn_speaker",
-        before: { turnId: "turn-2", speakerId: "spk-2", speakerName: "Thomas" },
-        after: { turnId: "turn-2", speakerId: "spk-1", speakerName: "Marie" },
+        before: {
+          turnId: "turn-2",
+          speakerId: "spk-2",
+          speakerName: "Thomas",
+          defined: false,
+        },
+        after: {
+          turnId: "turn-2",
+          speakerId: "spk-1",
+          speakerName: "Marie",
+          defined: false,
+        },
       }),
     )
     expect(
@@ -209,6 +220,8 @@ describe("onUpdateTurnSpeaker", () => {
     expect(speaker.speaker_name).toBe("Julie")
     expect(speaker.speaker_id).toBeDefined()
     expect(speaker.speaker_id).not.toBe("spk-1")
+    // A name typed by a user is a defined name.
+    expect(speaker.defined).toBe(true)
     const [, broadcast] = ctx.emit.mock.calls[0]
     expect(broadcast.speaker.name).toBe("Julie")
   })

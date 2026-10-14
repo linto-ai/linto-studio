@@ -46,9 +46,14 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
       speaker = {
         speaker_id: existing.speaker_id,
         speaker_name: existing.speaker_name,
+        defined: Boolean(existing.defined),
       }
     } else {
-      speaker = { speaker_id: randomUUID(), speaker_name: speakerName }
+      speaker = {
+        speaker_id: randomUUID(),
+        speaker_name: speakerName,
+        defined: true,
+      }
     }
 
     // Already assigned: nothing to write, nothing to broadcast.
@@ -86,11 +91,13 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
             turnId,
             speakerId: updated.previousSpeaker.speaker_id,
             speakerName: updated.previousSpeaker.speaker_name,
+            defined: Boolean(updated.previousSpeaker.defined),
           },
           after: {
             turnId,
             speakerId: speaker.speaker_id,
             speakerName: speaker.speaker_name,
+            defined: speaker.defined,
           },
           previousHead: updated.undoHead,
           author: socket.data.editorUser,

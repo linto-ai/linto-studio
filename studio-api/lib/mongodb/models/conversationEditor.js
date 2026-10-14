@@ -394,6 +394,7 @@ class ConversationEditorModel extends MongoModel {
         {
           $set: {
             "speakers.$.speaker_name": name,
+            "speakers.$.defined": true,
             last_update: lastUpdate,
           },
           $inc: { editorVersion: 1 },

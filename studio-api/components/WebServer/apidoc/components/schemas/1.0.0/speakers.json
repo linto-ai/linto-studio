@@ -17,13 +17,18 @@
       "etime": {
         "type": "number",
         "description": "end of the first speak time"
+      },
+      "defined": {
+        "type": "boolean",
+        "description": "true when the name was set by speaker identification or by a user, false for a generated placeholder"
       }
     },
     "example": {
       "speaker_id": "60ac8c45-751e-4cf9-8617-833313dd2d12",
       "speaker_name": "speaker",
       "stime": 0,
-      "etime": 16.23
+      "etime": 16.23,
+      "defined": false
     }
   }
 }

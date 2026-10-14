@@ -124,6 +124,7 @@ function transcriptionToConversation(transcript, conversation) {
           speaker_name: segment.spk_id,
           stime: segment.start,
           etime: segment.end,
+          defined: false,
         }
         if (!speaker.speaker_name) speaker.speaker_name = "speaker"
         conversation.speakers.push(speaker)
@@ -153,7 +154,8 @@ function transcriptionToConversation(transcript, conversation) {
     if (speakerIdentificationRequested(conversation)) {
       // Speaker identification mode: attach the confidence score to identified
       // speakers (Q7) and rename the unidentified ones to "Unknown speaker N"
-      // (Q1). Identified speakers keep their label/member name.
+      // (Q1). Identified speakers keep their label/member name, and are the
+      // only ones whose name is defined.
       const scores = buildScoreMap(transcript)
       let unknown_num = 1
       conversation.speakers.map((speaker) => {
@@ -163,6 +165,8 @@ function transcriptionToConversation(transcript, conversation) {
         if (isUnidentifiedTag(speaker.speaker_name)) {
           speaker.speaker_name = "Unknown speaker " + unknown_num
           unknown_num++
+        } else {
+          speaker.defined = true
         }
       })
     } else {

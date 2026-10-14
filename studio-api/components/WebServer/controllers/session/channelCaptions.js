@@ -7,10 +7,14 @@ const DEFAULT_TRANSLATION_NAME = "Automatic Translation"
 
 function ensureSpeaker(caption, channel_caption) {
   let speakerName
+  // Only a locutor given by the session is a defined name
+  let defined = false
   if (caption.type.mode === TYPES.TRANSLATION)
     speakerName = DEFAULT_TRANSLATION_NAME
-  else if (channel_caption.locutor) speakerName = channel_caption.locutor
-  else speakerName = DEFAULT_SPEAKER_NAME
+  else if (channel_caption.locutor) {
+    speakerName = channel_caption.locutor
+    defined = true
+  } else speakerName = DEFAULT_SPEAKER_NAME
 
   let existingSpeaker = caption.speakers.find(
     (speaker) => speaker.speaker_name === speakerName,
@@ -22,6 +26,7 @@ function ensureSpeaker(caption, channel_caption) {
       speaker_name: speakerName,
       stime: channel_caption.start,
       etime: channel_caption.end,
+      defined,
     }
     caption.speakers.push(newSpeaker)
     return newSpeaker.speaker_id

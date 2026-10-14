@@ -126,7 +126,8 @@
           "speaker_id": "60ac8c45-751e-4cf9-8617-833313dd2d12",
           "speaker_name": "speaker",
           "stime": 0,
-          "etime": 16.23
+          "etime": 16.23,
+          "defined": false
         }
       ],
       "text": [
