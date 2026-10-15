@@ -210,7 +210,7 @@ test("redoes an update_turn_speaker: re-applies the new assignment and hints rem
   expect(model.conversationEditor.updateEditorTurnSpeaker).toHaveBeenCalledWith(
     "tr-1",
     "turn-2",
-    { speaker_id: "spk-1", speaker_name: "Marie" },
+    { speaker_id: "spk-1", speaker_name: "Marie", defined: false },
   )
   // Leaving spk-2 (the "before" side) behind this time — opposite direction.
   expect(ctx.emit).toHaveBeenCalledWith("editor:turn_speaker_updated", {

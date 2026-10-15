@@ -165,7 +165,7 @@ test("undoes an update_turn_speaker: restores the previous assignment and hints 
   expect(model.conversationEditor.updateEditorTurnSpeaker).toHaveBeenCalledWith(
     "tr-1",
     "turn-2",
-    { speaker_id: "spk-2", speaker_name: "Thomas" },
+    { speaker_id: "spk-2", speaker_name: "Thomas", defined: false },
   )
   // Leaving spk-1 (the "after" side) behind: hinted so clients can drop it
   // from their local list if it's now unused (they re-check themselves).

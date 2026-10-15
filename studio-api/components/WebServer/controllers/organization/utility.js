@@ -8,6 +8,9 @@ const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 const { OrganizationError, OrganizationConflict } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
+const { adoptDefaultOrganization } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/defaultOrganization`,
+)
 const { resolveInvitee } = require(
   `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
@@ -108,6 +111,7 @@ async function inviteMemberByEmail({
       email + " is already in " + organization.name,
     )
   organization.users.push({ userId: invited.id, role: parseInt(role) })
+  await adoptDefaultOrganization(invited.id, organization)
 
   if (invited.magicId) {
     await Mailing.organizationAccountCreate(

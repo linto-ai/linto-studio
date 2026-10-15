@@ -156,9 +156,10 @@ describe("processChannelCaptions", () => {
       expect(caption.text).toHaveLength(31)
     })
 
-    it("uses a single 'Automatic Translation' speaker", () => {
+    it("uses a single 'Automatic Translation' speaker, not a defined name", () => {
       expect(caption.speakers).toHaveLength(1)
       expect(caption.speakers[0].speaker_name).toEqual("Automatic Translation")
+      expect(caption.speakers[0].defined).toBe(false)
     })
 
     it("replaces segment/raw_segment with the Estonian translation", () => {
@@ -210,6 +211,9 @@ describe("processChannelCaptions", () => {
       )
       const alice = caption.speakers.find((s) => s.speaker_name === "Alice")
       expect(unknown).toBeDefined()
+      // Only a locutor given by the session is a defined name.
+      expect(unknown.defined).toBe(false)
+      expect(alice.defined).toBe(true)
       expect(alice).toBeDefined()
 
       const withoutLocutorTurn = caption.text.find(

@@ -126,13 +126,6 @@ export default {
     sharedFolder() {
       return { _id: "shared", name: this.$t("navigation.tabs.shared") }
     },
-    processingCount() {
-      return (
-        this.$store.getters[
-          `${this.getCurrentOrganizationScope}/processing/conversations/statusCount`
-        ] || 0
-      )
-    },
     isProcessingActive() {
       return this.$route.name === "explore-processing"
     },

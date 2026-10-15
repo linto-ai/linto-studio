@@ -27,6 +27,9 @@ const platform_access = require(
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const { adoptDefaultOrganization } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/defaultOrganization`,
+)
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 const saas = require(`${process.cwd()}/lib/saas`)
@@ -115,7 +118,10 @@ function buildOrganizationHooks() {
     activate: async (orgId) => {
       const rows = throwIfError(await model.organizations.getById(orgId))
       if (rows.length !== 1) return false
-      return throwIfError(await model.organizations.activatePending(orgId))
+      if (!throwIfError(await model.organizations.activatePending(orgId)))
+        return false
+      await adoptDefaultOrganization(rows[0].owner, rows[0])
+      return true
     },
     // What Stripe prefills at Checkout: the buyer's e-mail (the owner's when
     // the buyer has none, an API account), and the org name as customer name

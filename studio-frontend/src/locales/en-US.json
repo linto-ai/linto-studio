@@ -712,6 +712,7 @@
       "json": "Export JSON",
       "pdf": "Export PDF",
       "srt": "Export SRT",
+      "subtitles_title": "Download subtitles",
       "title": "Download verbatim",
       "txt": "Export TXT",
       "vtt": "Export VTT",
@@ -1164,6 +1165,10 @@
     "favorite": "Favourite",
     "no_media": "No media",
     "no_media_found": "No media found",
+    "no_media_found_processing": "No media found here, but one media is being transcribed. | No media found here, but {count} media are being transcribed.",
+    "processing_link": "See the media being processed",
+    "all_processed": "All media have been processed.",
+    "back_to_medias": "Back to media",
     "error_fetching": "Error fetching media",
     "error_deleting": "Error deleting media",
     "source": {
@@ -1479,6 +1484,7 @@
     "description_description": "The description of your organisation",
     "description_label": "Description",
     "general_settings": "General settings",
+    "personal_space_name": "My space: {name}",
     "kpi": {
       "error": "An error occurred while retrieving the data",
       "session_avg_watch_time": "Average time spent on the transcription",
@@ -1536,6 +1542,7 @@
     "sso": {
       "title": "Organisation SSO",
       "enabled_label": "Enable SSO",
+      "enabled_disabled_reason": "SSO is enabled once the configuration is saved",
       "issuer_url_label": "Issuer URL",
       "client_id_label": "Client ID",
       "client_secret_label": "Client secret",
@@ -2059,7 +2066,7 @@
       "live_options_title": "Transcription options",
       "offline_transcription_label": "Offline transcription",
       "only_offline_available": "Only offline transcription is available in your organisation",
-      "only_offline_live_credit_exhausted": "Live transcription credit spent: only transcription after the recording is available.",
+      "only_offline_live_credit_exhausted": "No live transcription credit available: only transcription after the recording is available.",
       "keep_audio_disabled_because_offline": "Audio should be saved when offline transcription is enabled",
       "live_or_offline_should_be_selected": "You must select either live or offline transcription",
       "start_error": "Couldn't start the session. Please try again in a moment.",

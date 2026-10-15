@@ -7,7 +7,29 @@
       :loadingNextPage="loadingNextPage"
       enable-pagination
       class="relative"
-      @load-more="handleLoadMore" />
+      @load-more="handleLoadMore">
+      <template #empty v-if="processing || showProcessingHint">
+        <div
+          v-if="processing"
+          class="explore-next__empty flex col align-center gap-small">
+          <span>{{ $t("media_explorer.all_processed") }}</span>
+          <router-link class="underline" :to="mediasRoute">
+            {{ $t("media_explorer.back_to_medias") }}
+          </router-link>
+        </div>
+        <div v-else class="explore-next__empty flex col align-center gap-small">
+          <span>{{ processingHint }}</span>
+          <router-link
+            class="underline"
+            :to="{
+              name: 'explore-processing',
+              params: { organizationId: getCurrentOrganizationScope },
+            }">
+            {{ $t("media_explorer.processing_link") }}
+          </router-link>
+        </div>
+      </template>
+    </MediaExplorer>
   </LayoutV2>
 </template>
 
@@ -21,6 +43,7 @@ import { bus } from "@/main"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
+import { computePluralChoice } from "@/tools/computePluralChoice"
 
 // Stops the infinite scroll from hammering the API when the next page keeps
 // failing: the observer fires again as soon as loadingNextPage is reset.
@@ -62,14 +85,39 @@ export default {
       return this.$store.getters[`${this.storeScope}/getSortOrder`]
     },
     ...mapGetters("system", { pageIsLoading: "isLoading" }),
+    // Organization inbox or one of its folders, as opposed to a search, the
+    // processing tab, favorites or shared.
+    browsingOrgFolders() {
+      return (
+        this.getCurrentScope === "organization" &&
+        !this.processing &&
+        !this.hasActiveSearch
+      )
+    },
+    // Medias still transcribing live in the processing tab: say so instead of
+    // leaving an inbox or folder looking empty.
+    showProcessingHint() {
+      return this.browsingOrgFolders && this.processingCount > 0
+    },
+    mediasRoute() {
+      return {
+        name: "explore",
+        params: { organizationId: this.getCurrentOrganizationScope },
+      }
+    },
+    processingHint() {
+      const count = this.processingCount
+      return this.$tc(
+        "media_explorer.no_media_found_processing",
+        computePluralChoice(count, this.$i18n.locale),
+        { count },
+      )
+    },
+    // undefined: every folder (search, processing, favorites, shared); null: the
+    // inbox, unfiled conversations only; otherwise the selected folder.
     effectiveFolderId() {
-      if (this.hasActiveSearch) return undefined // Global search across all folders
-      if (this.processing) return undefined
-      const routeFolderId = this.$route.params.folderId
-      if (routeFolderId) return routeFolderId
-      // In organization scope inbox (no folder selected), show only unfiled conversations
-      if (this.getCurrentScope === "organization") return null
-      return undefined
+      if (!this.browsingOrgFolders) return undefined
+      return this.$route.params.folderId || null
     },
   },
   mounted() {
@@ -138,6 +186,17 @@ export default {
         }
       }
     },
+    // The last media of the processing tab just finished: its sidebar entry
+    // disappears too, so the user is told and sent back to the medias.
+    notifyAllProcessed() {
+      this.$store.dispatch("system/addNotification", {
+        message: this.$t("media_explorer.all_processed"),
+        type: "success",
+        timeout: 5000,
+        closable: true,
+      })
+      this.$router.push(this.mediasRoute)
+    },
     async handleLoadMore() {
       if (this.nextPageFailedAttempts >= MAX_NEXT_PAGE_ATTEMPTS) return
       this.loadingNextPage = true
@@ -160,6 +219,10 @@ export default {
         this.$apiEventWS.unSubscribeFolderUpdate()
         this.init()
       }
+    },
+    "medias.length"(count, previousCount) {
+      if (!this.processing || this.loading) return
+      if (previousCount > 0 && count === 0) this.notifyAllProcessed()
     },
     $route() {
       this.$store.dispatch(`${this.storeScope}/clearSidebarFilterTagIds`)
@@ -185,6 +248,10 @@ export default {
   .main__content {
     padding: 0;
   }
+}
+
+.explore-next__empty {
+  color: var(--text-muted, #666);
 }
 
 .explore-next__infinite-loading {

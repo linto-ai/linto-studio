@@ -75,7 +75,7 @@
           :loading="state === 'sending'" />
       </div>
       <div class="form-field" v-if="formError !== null">
-        <span class="form-error">{{ formError }}</span>
+        <span class="error-field">{{ formError }}</span>
       </div>
     </form>
 
@@ -217,11 +217,8 @@ export default {
       formData.append("password", this.password.value)
       formData.append("organizationName", this.defaultOrganizationName)
 
-      const res = await apiCreateUser(formData, {
-        timeout: null,
-        redirect: false,
-      })
-      if (res.message === "User address already use") {
+      const res = await apiCreateUser(formData, null)
+      if (res.error?.response?.status === 409) {
         this.state = "personal-information"
         this.email.error = this.$t("user_creation.email_already_exists")
       } else if (res.status === "success") {

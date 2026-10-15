@@ -713,6 +713,7 @@
       "json": "Télécharger en JSON",
       "pdf": "Télécharger en PDF",
       "srt": "Télécharger en SRT",
+      "subtitles_title": "Télécharger les sous-titres",
       "title": "Télécharger le verbatim",
       "txt": "Télécharger en TXT",
       "vtt": "Télécharger en VTT",
@@ -1158,6 +1159,10 @@
     "favorite": "Favoris",
     "no_media": "Aucun média",
     "no_media_found": "Aucun média trouvé",
+    "no_media_found_processing": "Aucun média trouvé ici, mais un média est en cours de transcription. | Aucun média trouvé ici, mais {count} médias sont en cours de transcription.",
+    "processing_link": "Voir les médias en traitement",
+    "all_processed": "Tous les médias ont été traités.",
+    "back_to_medias": "Retour aux médias",
     "error_fetching": "Erreur lors de la récupération des médias",
     "error_deleting": "Erreur lors de la suppression des médias",
     "source": {
@@ -1473,6 +1478,7 @@
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
+    "personal_space_name": "Mon espace : {name}",
     "kpi": {
       "error": "Une erreur est survenue lors de la récupération des données",
       "session_avg_watch_time": "Temps moyen passé sur la transcription",
@@ -1530,6 +1536,7 @@
     "sso": {
       "title": "Connexion SSO de l'organisation",
       "enabled_label": "Activer le SSO",
+      "enabled_disabled_reason": "Le SSO est activé à l'enregistrement de la configuration",
       "issuer_url_label": "URL de l'émetteur (issuer)",
       "client_id_label": "Identifiant client (client ID)",
       "client_secret_label": "Secret client",
@@ -2053,7 +2060,7 @@
       "live_options_title": "Options de la transcription",
       "offline_transcription_label": "Transcription après l'enregistrement",
       "only_offline_available": "Seule la transcription après l'enregistrement est disponible dans votre organisation",
-      "only_offline_live_credit_exhausted": "Crédit de transcription en direct épuisé : seule la transcription après l'enregistrement est disponible.",
+      "only_offline_live_credit_exhausted": "Aucun crédit de transcription en direct disponible : seule la transcription après l'enregistrement est disponible.",
       "keep_audio_disabled_because_offline": "L'audio doit être conservé pour permettre la transcription après l'enregistrement",
       "live_or_offline_should_be_selected": "Au moins une option de transcription doit être sélectionnée",
       "start_error": "Impossible de démarrer la session. Réessayez dans un instant.",
