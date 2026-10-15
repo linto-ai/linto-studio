@@ -312,7 +312,7 @@ export default {
       background: repeating-linear-gradient(
         -45deg,
         var(--primary-color) 0 2px,
-        transparent 2px 3px
+        transparent 2px 4px
       );
     }
   }

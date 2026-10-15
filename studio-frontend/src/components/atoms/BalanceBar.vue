@@ -70,8 +70,8 @@ export default {
   &__segment--hatched &__fill {
     background: repeating-linear-gradient(
       -45deg,
-      var(--balance-bar-fill-color) 0 3px,
-      transparent 3px 5px
+      var(--balance-bar-fill-color) 0 4px,
+      transparent 4px 8px
     );
   }
 }
