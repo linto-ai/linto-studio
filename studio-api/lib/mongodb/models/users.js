@@ -61,13 +61,13 @@ function generatePasswordHash(password) {
   return { salt, passwordHash }
 }
 
-function generateAuthLink(email) {
+function generateAuthLink(email, validity = VALIDITY_DATE.SHORT) {
   return {
     magicId: randomstring.generate({
       charset: "alphanumeric",
       length: 20,
     }),
-    validityDate: VALIDITY_DATE.generateValidityDate(VALIDITY_DATE.SHORT), // 30 minutes
+    validityDate: VALIDITY_DATE.generateValidityDate(validity),
     email,
   }
 }
@@ -110,7 +110,7 @@ class UsersModel extends MongoModel {
     }
   }
 
-  async create(payload) {
+  async create(payload, linkValidity) {
     try {
       const dateTime = moment().format()
       delete payload.password
@@ -119,7 +119,7 @@ class UsersModel extends MongoModel {
       if (!payload.fromSso) payload.fromSso = false
       const userPayload = {
         ...payload,
-        authLink: generateAuthLink(payload.email),
+        authLink: generateAuthLink(payload.email, linkValidity),
         ...defaultUserPayload,
         role: ROLE.defaultUserRole(),
         created: dateTime,
@@ -207,7 +207,7 @@ class UsersModel extends MongoModel {
     }
   }
 
-  async createExternal(payload, fromSso = false) {
+  async createExternal(payload, fromSso = false, linkValidity) {
     try {
       const dateTime = moment().format()
       delete payload.password
@@ -233,7 +233,7 @@ class UsersModel extends MongoModel {
         externalPayload.verifiedEmail = [payload.email]
       }
 
-      return await this.create(externalPayload)
+      return await this.create(externalPayload, linkValidity)
     } catch (error) {
       console.error(error)
       return error
@@ -410,21 +410,9 @@ class UsersModel extends MongoModel {
       const query = {
         _id: this.getObjectId(payload._id),
       }
-      const magicId = randomstring.generate({
-        charset: "alphanumeric",
-        length: 20,
-      })
-      const validityDate = VALIDITY_DATE.generateValidityDate(
-        VALIDITY_DATE.SHORT,
-      )
+      const authLink = generateAuthLink(payload.email)
 
-      let mutableElements = {
-        authLink: {
-          magicId,
-          validityDate,
-          email: payload.email,
-        },
-      }
+      let mutableElements = { authLink }
 
       if (payload.accountNotifications) {
         // in case accountNotifications is define, but the necessary key are not provided, we set then to false by default
@@ -441,8 +429,31 @@ class UsersModel extends MongoModel {
       )
       return {
         ...mongo_result,
-        data: { magicId },
+        data: { magicId: authLink.magicId },
       }
+    } catch (error) {
+      return error
+    }
+  }
+
+  // Keeps a live magicId so links sent in earlier emails stay valid
+  async renewAuthLink(user, validity) {
+    try {
+      let authLink
+      if (user.authLink?.magicId) {
+        authLink = {
+          ...user.authLink,
+          validityDate: VALIDITY_DATE.generateValidityDate(validity),
+        }
+      } else {
+        authLink = generateAuthLink(user.email, validity)
+      }
+      const mongo_result = await this.mongoUpdateOne(
+        { _id: this.getObjectId(user._id) },
+        "$set",
+        { authLink },
+      )
+      return { ...mongo_result, data: { magicId: authLink.magicId } }
     } catch (error) {
       return error
     }

@@ -8,7 +8,7 @@ const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 const { OrganizationError, OrganizationConflict } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
-const { inviteNewUser } = require(
+const { resolveInvitee } = require(
   `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
 const { ConversationError, ConversationNotFound } = require(
@@ -94,11 +94,7 @@ async function inviteMemberByEmail({
   origin,
 }) {
   const organizationId = organization._id.toString()
-  const existing = throwIfError(await model.users.getByEmail(email))
-  const isNewAccount = existing.length === 0
-  const invited = isNewAccount
-    ? await inviteNewUser(email)
-    : { id: existing[0]._id.toString(), magicId: null }
+  const invited = await resolveInvitee(email)
 
   const added = throwIfError(
     await model.organizations.addMember(
@@ -113,7 +109,7 @@ async function inviteMemberByEmail({
     )
   organization.users.push({ userId: invited.id, role: parseInt(role) })
 
-  if (isNewAccount) {
+  if (invited.magicId) {
     await Mailing.organizationAccountCreate(
       email,
       origin,

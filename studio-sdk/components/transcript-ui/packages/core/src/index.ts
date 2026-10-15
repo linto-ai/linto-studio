@@ -4,6 +4,9 @@ export {
   provideCore,
   useCore,
   CROSS_TRANSLATION_ID,
+  DEFAULT_SUMMARY_CAPABILITIES,
+  computeSummaryCapabilities,
+  computeCanChat,
 } from './core'
 export type {
   Core,
@@ -11,6 +14,7 @@ export type {
   CoreEventMap,
   CoreOptions,
   CoreCapabilities,
+  SummaryCapabilities,
   UISlot,
   TurnEventKey,
   ReadableTranslation,

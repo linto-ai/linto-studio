@@ -1,15 +1,16 @@
-import { L, c, a, b, d, e, f, m, g, h, r } from "./index-BDQFL3Or.js";
+import { L, c, a, b, d, e, f, g, m, h, i, r } from "./index-Bm5xEmCH.js";
 export {
   L as LintoEditor,
-  c as createAudioPlugin,
-  a as createChatPlugin,
-  b as createLLMServicesPlugin,
-  d as createLivePlugin,
-  e as createSubtitlePlugin,
-  f as createTranscriptionEditorPlugin,
+  c as computeReportTrack,
+  a as createAudioPlugin,
+  b as createChatPlugin,
+  d as createLLMServicesPlugin,
+  e as createLivePlugin,
+  f as createSubtitlePlugin,
+  g as createTranscriptionEditorPlugin,
   m as mapApiDocument,
-  g as mapApiTurns,
-  h as mapWhisperXDocument,
+  h as mapApiTurns,
+  i as mapWhisperXDocument,
   r as register
 };
 //# sourceMappingURL=linto-editor.js.map

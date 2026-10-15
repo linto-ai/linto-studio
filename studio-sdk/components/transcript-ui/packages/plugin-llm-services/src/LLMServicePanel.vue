@@ -8,10 +8,15 @@ import {
 } from "@linto-ai/transcript-ui-ui"
 import { computed, ref, watch } from "vue"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
-import { useCore, useIsMobile } from "@linto-ai/transcript-ui-core"
+import {
+  useCore,
+  useIsMobile,
+  computeSummaryCapabilities,
+} from "@linto-ai/transcript-ui-core"
 import type { LLMService } from "@linto-ai/transcript-ui-core"
 import LLMServiceStatus from "./LLMServiceStatus.vue"
 import { computeIsUpToDate } from "./utils/computeIsUpToDate"
+import { computeReportTrack } from "./utils/computeReportTrack"
 
 const props = defineProps<{
   service: LLMService
@@ -26,10 +31,14 @@ const core = useCore()
 const { t } = useI18n()
 const { isMobile } = useIsMobile()
 
-// Phones only read the document: editing, saving and the split view stay on
-// larger screens. Downloading stays (the mobile app turns it into a PDF
-// export), and regenerating is offered once the transcription has changed.
-const isReadOnly = computed(() => isMobile.value)
+const permissions = computed(() =>
+  computeSummaryCapabilities(core.capabilities.value),
+)
+
+// Read only without the edit permission, and on phones whatever the
+// permissions: editing, saving and the split view stay on larger screens.
+// Downloading stays (the mobile app turns it into a PDF export).
+const isReadOnly = computed(() => isMobile.value || !permissions.value.edit)
 
 function toggleSplit(): void {
   emit("update:split", !props.split)
@@ -37,10 +46,15 @@ function toggleSplit(): void {
 
 const articleStatus = computed<DocumentArticleStatus>(() => {
   const s = props.service.status.value
+  if (s === "loading") return "loading"
   if (s === "queued" || s === "processing") return "processing"
   if (s === "error") return "error"
   return "done"
 })
+
+// The state of the report is not known yet: no action, no "up to date"
+// either (there is nothing to compare yet).
+const isLoading = computed(() => articleStatus.value === "loading")
 
 const progress = computed(() => props.service.progress.value)
 const content = computed(() => props.service.content.value)
@@ -62,16 +76,26 @@ const isEmpty = computed<boolean>(() => {
   return !hasContent.value
 })
 
+// What the article shows: "processing", "error", "empty" or "content". Used
+// as its key, so a change of state replaces the whole article instead of
+// switching its content in place: switching in place left the previous
+// content in the DOM when changing to a never generated track (empty state
+// stuck next to the spinner, then next to the editor).
+const articleView = computed<string>(() => {
+  if (articleStatus.value !== "done") return articleStatus.value
+  return isEmpty.value ? "empty" : "content"
+})
+
 // "Up to date" = the displayed generation is at least as recent as the
 // transcription's last server-side modification. The generation date, not
 // the version date: editing and saving the report by hand creates a version
 // but does not make it reflect the transcription. When either date is missing,
 // default to up to date (no negative signal to show).
 const isUpdated = computed<boolean>(() => {
-  // Reports are generated from the channel conversation, i.e. its source
-  // track, whatever track is displayed.
-  const transcriptionModifiedAt =
-    core.activeChannel.value?.sourceTranslation.lastModifiedAt.value ?? null
+  const channel = core.activeChannel.value
+  const transcriptionModifiedAt = channel
+    ? computeReportTrack(channel).lastModifiedAt.value
+    : null
   const currentGeneration = props.service.generations.value.find(
     (g) => g.generationId === props.service.currentGenerationId.value,
   )
@@ -80,6 +104,13 @@ const isUpdated = computed<boolean>(() => {
     currentGeneration?.createdAt ?? null,
   )
 })
+
+// Out of date: generating is enough. Up to date: it takes forcing.
+const canRegenerate = computed<boolean>(() =>
+  isUpdated.value
+    ? permissions.value.forceGenerate
+    : permissions.value.generate,
+)
 
 const draft = ref(content.value)
 
@@ -114,8 +145,10 @@ function onSave(): void {
 <template>
   <section class="llm-service-panel">
     <DocumentArticle
+      :key="articleView"
       :status="articleStatus"
       :progress="progress"
+      :retryable="permissions.generate"
       @retry="onRegenerate">
       <template v-if="!isReadOnly" #toolbar-left>
         <Button
@@ -129,13 +162,18 @@ function onSave(): void {
           variant="secondary"
           icon="refresh-cw"
           :loading="articleStatus === 'processing'"
-          :disabled="isUpdated || busy || articleStatus === 'processing'"
+          :disabled="
+            !canRegenerate ||
+            busy ||
+            isLoading ||
+            articleStatus === 'processing'
+          "
           :aria-label="t('llmService.regenerate')"
           :title="t('llmService.regenerate')"
           @click="onRegenerate" />
       </template>
 
-      <template v-if="!isReadOnly" #toolbar-center>
+      <template v-if="!isReadOnly && !isLoading" #toolbar-center>
         <LLMServiceStatus :is-updated="isUpdated" />
       </template>
 
@@ -161,6 +199,7 @@ function onSave(): void {
       <div v-if="isEmpty" class="llm-service-panel__empty" role="status">
         <p class="llm-service-panel__empty-text">{{ t("llmService.empty") }}</p>
         <Button
+          v-if="permissions.generate"
           variant="primary"
           icon="sparkles"
           :disabled="busy"
@@ -176,7 +215,7 @@ function onSave(): void {
           <LLMServiceStatus :is-updated="isUpdated" />
           <div class="llm-service-panel__reading-actions">
             <Button
-              v-if="!isUpdated"
+              v-if="canRegenerate"
               variant="secondary"
               icon="refresh-cw"
               :disabled="busy"

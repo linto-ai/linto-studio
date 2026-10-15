@@ -195,3 +195,54 @@ describe("createCore — theme", () => {
     expect(events).toBe(0)
   })
 })
+
+describe("createCore — active track", () => {
+  function track(id: string, isSource: boolean) {
+    return { id, languages: ["fr"], isSource, turns: [] }
+  }
+
+  function createDocumentCore() {
+    installViewport(false)
+    const core = createCore()
+    core.setDocument({
+      title: "",
+      speakers: new Map(),
+      channels: [
+        {
+          id: "ch-1",
+          name: "",
+          duration: 0,
+          translations: [track("src-1", true), track("en-1", false)],
+        },
+        {
+          id: "ch-2",
+          name: "",
+          duration: 0,
+          translations: [track("src-2", true), track("en-2", false)],
+        },
+      ],
+    })
+    const seen: Array<{ channelId: string; translationId: string }> = []
+    core.on("activeTrack:change", (payload) => seen.push(payload))
+    return { core, seen }
+  }
+
+  it("announces a track change of the active channel", () => {
+    const { core, seen } = createDocumentCore()
+    core.channels.get("ch-1")!.setActiveTranslation("en-1")
+    expect(seen).toEqual([{ channelId: "ch-1", translationId: "en-1" }])
+  })
+
+  it("announces a channel change with the track that channel was on", () => {
+    const { core, seen } = createDocumentCore()
+    core.channels.get("ch-2")!.setActiveTranslation("en-2")
+    core.setActiveChannel("ch-2")
+    expect(seen).toEqual([{ channelId: "ch-2", translationId: "en-2" }])
+  })
+
+  it("stays silent for a track change of another channel", () => {
+    const { core, seen } = createDocumentCore()
+    core.channels.get("ch-2")!.setActiveTranslation("en-2")
+    expect(seen).toEqual([])
+  })
+})

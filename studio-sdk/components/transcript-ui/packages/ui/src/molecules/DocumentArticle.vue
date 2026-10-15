@@ -4,15 +4,17 @@ import EditorIcon from "../atoms/EditorIcon.vue"
 import Button from "../atoms/Button.vue"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 
-export type DocumentArticleStatus = "done" | "processing" | "error"
+export type DocumentArticleStatus = "done" | "loading" | "processing" | "error"
 
 const props = withDefaults(
   defineProps<{
     status?: DocumentArticleStatus
     progress?: number
     errorMessage?: string
+    /** Offer the retry button on error. */
+    retryable?: boolean
   }>(),
-  { status: "done" },
+  { status: "done", retryable: true },
 )
 
 const emit = defineEmits<{
@@ -55,7 +57,17 @@ const progressValue = computed(() => {
 
     <div class="document-article__body">
       <div
-        v-if="props.status === 'processing'"
+        v-if="props.status === 'loading'"
+        class="document-article__center"
+        role="status"
+        aria-live="polite">
+        <EditorIcon name="spinner" spin :size="24" />
+        <span class="document-article__loading-text">
+          {{ t("llmService.loading") }}
+        </span>
+      </div>
+      <div
+        v-else-if="props.status === 'processing'"
         class="document-article__center document-article__center--processing"
         role="status"
         aria-live="polite">
@@ -75,7 +87,11 @@ const progressValue = computed(() => {
         class="document-article__center document-article__center--error"
         role="alert">
         <p class="document-article__error-text">{{ errorText }}</p>
-        <Button variant="primary" icon="refresh-cw" @click="emit('retry')">
+        <Button
+          v-if="props.retryable"
+          variant="primary"
+          icon="refresh-cw"
+          @click="emit('retry')">
           {{ t("llmService.retry") }}
         </Button>
       </div>
@@ -145,6 +161,11 @@ const progressValue = computed(() => {
   gap: var(--spacing-sm);
   padding: var(--spacing-xl) var(--spacing-md);
   text-align: center;
+}
+
+.document-article__loading-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
 .document-article__center--processing {

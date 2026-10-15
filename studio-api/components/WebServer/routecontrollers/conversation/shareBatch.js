@@ -21,7 +21,7 @@ const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
-const { inviteNewUser } = require(
+const { resolveInvitee } = require(
   `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
 
@@ -161,17 +161,17 @@ async function usersCheck(users_list, method) {
     user.conversations = []
 
     if (user.id === undefined) {
-      // in case of user.email is used
-      let u = await model.users.getByEmail(user.email)
-
-      if (u.length === 0) {
-        if (method === method_delete) continue // skip the user on delete request, probably an error from the client
-        u = await inviteNewUser(user.email)
-        user.id = u.id
-        user.magicId = u.magicId
-      } else {
-        user.private = u[0].private
+      if (method === method_delete) {
+        // never creates an account, an unknown email is a client mistake
+        const u = await model.users.getByEmail(user.email)
+        if (u.length === 0) continue
         user.id = u[0]._id
+        user.private = u[0].private
+      } else {
+        const invited = await resolveInvitee(user.email)
+        user.id = invited.id
+        user.private = invited.private
+        if (invited.magicId) user.magicId = invited.magicId
       }
     } else {
       let u = await model.users.getById(user.id)
