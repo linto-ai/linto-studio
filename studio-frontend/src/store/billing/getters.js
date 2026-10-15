@@ -72,7 +72,7 @@ export default {
   // the fallback while it loads. Quota and credit capabilities are "available",
   // their limit is enforced server-side.
   can: (s, g) => (capability) => {
-    if (g.isUnmetered) return true
+    if (g.mode === "managed") return true
     if (g.locked) return false
     const c = s.usage?.capabilities?.[capability]
     if (c) {
