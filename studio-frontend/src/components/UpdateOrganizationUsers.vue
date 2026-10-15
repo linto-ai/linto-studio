@@ -36,7 +36,7 @@
     <form class="organization-users__search" role="search" @submit.prevent>
       <SearchInput
         v-model="search"
-        v-if="visibleRows.length > 0"
+        v-if="rows.length > 0 || search"
         :label="$t('seats.search_label')"
         :placeholder="$t('seats.search_placeholder')" />
     </form>
