@@ -26,6 +26,13 @@ export const mediaScopeMixin = {
     hasActiveSearch() {
       return !!this.searchValue || this.selectedTagsIds.length > 0
     },
+    processingCount() {
+      return (
+        this.$store.getters[
+          `${this.getCurrentOrganizationScope}/processing/conversations/statusCount`
+        ] || 0
+      )
+    },
   },
   methods: {
     clearSelectedMedias() {
