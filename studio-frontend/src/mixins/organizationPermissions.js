@@ -72,7 +72,9 @@ export const organizationPermissionsMixin = {
     canBotInCurrentOrganization() {
       return this.hasBotPermission(this.organizationPermissions)
     },
+    // SaaS: a team organization that lost its plan transcribes nothing
     canStartConversationInCurrentOrganization() {
+      if (this.$store.getters["billing/locked"]) return false
       return (
         this.canUploadInCurrentOrganization ||
         this.canSessionInCurrentOrganization ||

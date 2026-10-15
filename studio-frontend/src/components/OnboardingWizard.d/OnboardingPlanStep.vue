@@ -10,11 +10,9 @@
         {{ contextMessage }}
       </p>
 
-      <SegmentedControl
+      <OnboardingBillingPeriod
         class="onboarding-plan__period"
         :value="billingPeriod"
-        :options="periodOptions"
-        :aria-label="$t('onboarding.billing_period.label')"
         @input="$emit('change-period', $event)" />
     </div>
 
@@ -72,8 +70,8 @@
 </template>
 <script>
 import { mapGetters } from "vuex"
-import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
 import PlanCard from "@/components/molecules/PlanCard.vue"
+import OnboardingBillingPeriod from "./OnboardingBillingPeriod.vue"
 import { computeQuotaMonthlyEquivalent } from "@/tools/billing/computeQuotaMonthlyEquivalent"
 import { computeTranscriptionQuotaLabel } from "@/tools/billing/computeTranscriptionQuotaLabel"
 import { computeAnnualPriceInfo } from "@/tools/billing/computeAnnualPriceInfo"
@@ -96,7 +94,7 @@ const PLAN_LOCALE_KEY = {
 
 export default {
   name: "OnboardingPlanStep",
-  components: { SegmentedControl, PlanCard },
+  components: { OnboardingBillingPeriod, PlanCard },
   props: {
     title: { type: String, default: null },
     subtitle: { type: String, default: null },
@@ -131,15 +129,6 @@ export default {
         return this.$t("billing.team_plan_required")
       }
       return ""
-    },
-    periodOptions() {
-      return [
-        {
-          name: "monthly",
-          label: this.$t("onboarding.billing_period.monthly"),
-        },
-        { name: "annual", label: this.$t("onboarding.billing_period.annual") },
-      ]
     },
     // Real pricing and quotas from the catalog API, marketing copy (tagline,
     // static feature lines) from local i18n.

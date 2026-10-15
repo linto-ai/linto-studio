@@ -12,7 +12,7 @@
           <span class="menu-org-switcher__org-name">{{ orgName }}</span>
           <IsCloud>
             <Chip
-              v-if="isFree && !isUnmetered"
+              v-if="isFree && !isUnmetered && !locked"
               :value="planLabel"
               class="menu-org-switcher__plan" />
           </IsCloud>
@@ -67,7 +67,8 @@ export default {
       currentOrgScope: "getCurrentOrganizationScope",
       orgName: "getCurrentOrganizationDisplayName",
     }),
-    ...mapGetters("billing", ["planLabel", "isFree", "isUnmetered"]),
+    // A locked org has no plan to show: it reads as Free but is not
+    ...mapGetters("billing", ["planLabel", "isFree", "isUnmetered", "locked"]),
     userAvatar() {
       return userAvatar(this.userInfo)
     },

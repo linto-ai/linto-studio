@@ -31,7 +31,8 @@
         class="start-button" />
 
       <IsCloud v-if="isAuthenticated && !backoffice">
-        <SaasUsageFooter />
+        <LockedOrganizationFooter v-if="isOrganizationLocked" />
+        <SaasUsageFooter v-else />
       </IsCloud>
     </div>
   </nav>
@@ -52,6 +53,7 @@ import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
 import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
 import MediaExplorerMenuLabels from "@/components/MediaExplorerMenuLabels.vue"
 import SaasUsageFooter from "@/components-cloud/SaasUsageFooter.vue"
+import LockedOrganizationFooter from "@/components-cloud/LockedOrganizationFooter.vue"
 
 export default {
   mixins: [orgaRoleMixin, organizationPermissionsMixin],
@@ -92,6 +94,7 @@ export default {
       userInfo: "getUserInfos",
       isAuthenticated: "isAuthenticated",
     }),
+    ...mapGetters("billing", { isOrganizationLocked: "locked" }),
     organizationsList() {
       return Object.values(this.organizations)
     },
@@ -127,6 +130,7 @@ export default {
     MediaExplorerMenuLabels,
     IsCloud,
     SaasUsageFooter,
+    LockedOrganizationFooter,
   },
 }
 </script>

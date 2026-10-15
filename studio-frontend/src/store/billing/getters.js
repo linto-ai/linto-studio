@@ -17,10 +17,12 @@ export default {
   usage: (s) => s.usage,
   usageByMember: (s) => s.usageByMember,
   subscription: (s) => s.subscription,
+  subscriptions: (s) => s.subscriptions,
   loading: (s) => s.loading,
   upgradeModalOpen: (s) => s.upgradeModalOpen,
   upgradeReason: (s) => s.upgradeReason,
   upgradePlanKey: (s) => s.upgradePlanKey,
+  reactivationRequested: (s) => s.reactivationRequested,
   planKey: (s) => s.usage?.planKey || s.subscription?.planKey || "free_payg",
   // normal | comp | managed
   mode: (s) => s.usage?.mode || s.subscription?.mode || "normal",
@@ -117,5 +119,7 @@ export default {
 
   // True when any quota is exhausted (drives the upsell emphasis).
   needsUpgrade: (s, g) =>
-    g.meters.some((m) => !m.unlimited && m.remaining != null && m.remaining <= 0),
+    g.meters.some(
+      (m) => !m.unlimited && m.remaining != null && m.remaining <= 0,
+    ),
 }

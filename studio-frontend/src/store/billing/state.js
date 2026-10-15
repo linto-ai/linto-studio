@@ -2,6 +2,7 @@ export default {
   plans: [],
   packs: null, // GET /cloud/packs, null until loaded
   subscription: null, // current org subscription doc (org admin only)
+  subscriptions: [], // every subscription row of the current org, ended ones included (org admin only)
   usage: null, // { planKey, mode, seats, capabilities: {...}, live: {...} }
   usageByMember: null, // { planKey, seats, members: { userId: {cap:{used,events}} } }
   loading: false,
@@ -13,4 +14,6 @@ export default {
   // Plan the wizard opens on instead of the plan list (e.g. "business" from
   // the "create an organization" button) | null
   upgradePlanKey: null,
+  // The wizard opens on the reactivation of the plan a team org lost
+  reactivationRequested: false,
 }

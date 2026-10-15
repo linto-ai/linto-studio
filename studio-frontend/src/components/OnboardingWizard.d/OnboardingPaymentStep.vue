@@ -14,7 +14,7 @@
 
     <footer class="onboarding-payment__actions">
       <Button
-        v-if="status === 'ready' && isBusiness"
+        v-if="status === 'ready' && waitsForOrganization"
         variant="primary"
         icon-right="arrow-right"
         @click="$emit('open-organization', organizationId)">
@@ -33,15 +33,24 @@
 const POLL_INTERVAL_MS = 2000
 const POLL_MAX_ATTEMPTS = 15
 
-// Checkout came back successful, but the subscription (and a Business org)
-// only exists once Stripe's webhook has been processed: poll until it shows.
+// Checkout came back successful, but the subscription (and a Business org
+// bought with it) only exists once Stripe's webhook has been processed: poll
+// until it shows.
 export default {
   name: "OnboardingPaymentStep",
   props: {
     planKey: { type: String, required: true },
-    // The org the plan was bought for, as returned by the checkout: the
-    // personal org (Premium) or the new org, hidden until the webhook (Business)
+    // The org the plan was bought for, as returned by the checkout: an
+    // existing org (Premium, reactivated Business) or the new org, hidden
+    // until the webhook (Business)
     organizationId: { type: String, default: null },
+    // What the webhook brings: "organization" (bought with the plan, revealed
+    // when paid) or "plan" (an existing org switching to it)
+    waitFor: {
+      type: String,
+      required: true,
+      validator: (value) => ["organization", "plan"].includes(value),
+    },
     organizationName: { type: String, default: "" },
   },
   data() {
@@ -52,8 +61,8 @@ export default {
     }
   },
   computed: {
-    isBusiness() {
-      return this.planKey === "business"
+    waitsForOrganization() {
+      return this.waitFor === "organization"
     },
     title() {
       return this.status === "ready"
@@ -63,7 +72,7 @@ export default {
     message() {
       if (this.status === "waiting") {
         return this.$t(
-          this.isBusiness
+          this.waitsForOrganization
             ? "onboarding.payment.waiting_organization"
             : "onboarding.payment.waiting_plan",
         )
@@ -71,7 +80,7 @@ export default {
       if (this.status === "timeout") {
         return this.$t("onboarding.payment.timeout")
       }
-      return this.isBusiness
+      return this.waitsForOrganization
         ? this.$t("onboarding.payment.ready_organization", {
             name: this.organizationName,
           })
@@ -87,7 +96,7 @@ export default {
   methods: {
     async poll() {
       this.attempts += 1
-      const done = this.isBusiness
+      const done = this.waitsForOrganization
         ? await this.findOrganization()
         : await this.isPlanActive()
       if (done) {

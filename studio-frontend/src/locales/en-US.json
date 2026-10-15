@@ -186,7 +186,7 @@
     "upgrade_done": "Welcome to {plan}!",
     "limit_reached": "You've reached the limit of your plan.",
     "feature_locked": "This feature is included in a team plan.",
-    "team_plan_required": "This organization no longer has a team plan: its features are blocked until it is back on Business. Members and their roles are kept.",
+    "team_plan_required": "This organization's Business plan has ended. Your members and your content are kept.",
     "feature_locked_plan": "This feature is included in the {plan} plan.",
     "feature_locked_paid": "This feature is included in paid plans.",
     "footer": {
@@ -255,6 +255,12 @@
       "not_available": "This feature isn't included in this organization's plan.",
       "contact_admin": "Contact an administrator of the organization.",
       "unknown": "Couldn't check this organization's plan right now. Please try again in a moment."
+    },
+    "locked": {
+      "status": "Business plan expired",
+      "reactivate": "Reactivate the plan",
+      "contact_admin": "Contact an administrator to reactivate it.",
+      "reactivation_unavailable": "The reactivation could not be opened. Try again in a moment."
     }
   },
   "seats": {
@@ -1460,6 +1466,10 @@
         "organization_creation_not_supported": "Organization creation is not available right now.",
         "plan_not_synced_to_stripe": "This plan cannot be purchased yet."
       }
+    },
+    "reactivation": {
+      "title": "Reactivate the {plan} plan",
+      "description": "The members of “{name}” and their roles are kept. Choose the billing period and the number of collaborator seats."
     }
   },
   "organisation": {

@@ -43,7 +43,25 @@
         }}</time>
       </p>
 
-      <section class="organization-billing__section flex col gap-small">
+      <!-- A locked org consumes nothing: its balances mean nothing until the
+           plan is back, the way back replaces them -->
+      <div
+        v-if="view.isLocked"
+        class="flex row align-center justify-between gap-small wrap">
+        <p class="organization-billing__locked">
+          {{ $t("billing.team_plan_required") }}
+        </p>
+        <Button
+          variant="primary"
+          size="sm"
+          icon="arrow-counter-clockwise"
+          :loading="pendingRedirect === 'reactivation'"
+          :disabled="pendingRedirect === 'reactivation'"
+          @click="reactivate">
+          {{ $t("billing.locked.reactivate") }}
+        </Button>
+      </div>
+      <section v-else class="organization-billing__section flex col gap-small">
         <SectionHeading
           :title="$t('billing.settings.balances.title')"
           :subtitle="balancesSubtitle" />
@@ -58,9 +76,6 @@
           </Button>
         </div>
         <template v-else>
-          <p v-if="view.isLocked" class="organization-billing__locked">
-            {{ $t("billing.team_plan_required") }}
-          </p>
           <div class="organization-billing__balances">
             <BalanceCard
               v-for="balance in balances"
@@ -275,7 +290,7 @@ export default {
       packPurchaseKind: null,
       packPurchaseReturnUrl: null,
       BALANCE_LOOKS,
-      // portal | payment_method: the Stripe page being opened
+      // portal | payment_method | reactivation: the Stripe page being opened
       pendingRedirect: null,
     }
   },
@@ -411,6 +426,7 @@ export default {
       "fetchSubscriptions",
       "fetchPacks",
       "openUpgradeModal",
+      "openReactivationModal",
     ]),
     formatFullDate,
     async loadBilling() {
@@ -469,6 +485,15 @@ export default {
       }
       this.pendingRedirect = null
       this.notify("error", this.$t("billing.settings.stripe_error"))
+    },
+    // The tab is admin-only: its reader may buy the lost plan back
+    async reactivate() {
+      this.pendingRedirect = "reactivation"
+      const opened = await this.openReactivationModal()
+      this.pendingRedirect = null
+      if (!opened) {
+        this.notify("error", this.$t("billing.locked.reactivation_unavailable"))
+      }
     },
     notify(status, message) {
       bus.$emit("app_notif", { status, message, timeout: 5000 })
@@ -533,6 +558,7 @@ export default {
   }
 
   &__locked {
+    flex: 1;
     margin: 0;
     color: var(--danger-color);
   }

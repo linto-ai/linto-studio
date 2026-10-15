@@ -186,7 +186,7 @@
     "upgrade_done": "Bienvenue dans {plan} !",
     "limit_reached": "Vous avez atteint la limite de votre offre.",
     "feature_locked": "Cette fonctionnalité est incluse dans une offre équipe.",
-    "team_plan_required": "Cette organisation n'a plus d'offre équipe : ses fonctions sont bloquées jusqu'au retour sur une offre Business. Les membres et leurs rôles sont conservés.",
+    "team_plan_required": "L'offre Business de cette organisation a pris fin. Vos membres et vos contenus sont conservés.",
     "feature_locked_plan": "Cette fonctionnalité est incluse dans l'offre {plan}.",
     "feature_locked_paid": "Cette fonctionnalité est incluse dans les offres payantes.",
     "footer": {
@@ -255,6 +255,12 @@
       "not_available": "Cette fonctionnalité n'est pas incluse dans l'offre de cette organisation.",
       "contact_admin": "Contactez un administrateur de l'organisation.",
       "unknown": "Impossible de vérifier l'offre de cette organisation pour le moment. Réessayez dans un instant."
+    },
+    "locked": {
+      "status": "Offre Business expirée",
+      "reactivate": "Réactiver l'offre",
+      "contact_admin": "Contactez un administrateur pour la réactiver.",
+      "reactivation_unavailable": "Impossible d'ouvrir la réactivation. Réessayez dans un instant."
     }
   },
   "seats": {
@@ -1454,6 +1460,10 @@
         "organization_creation_not_supported": "La création d'organisation n'est pas disponible pour le moment.",
         "plan_not_synced_to_stripe": "Cette offre n'est pas encore disponible au paiement."
       }
+    },
+    "reactivation": {
+      "title": "Réactiver l'offre {plan}",
+      "description": "Les membres de « {name} » et leurs rôles sont conservés. Choisissez la formule et le nombre de licences collaborateur."
     }
   },
   "organisation": {

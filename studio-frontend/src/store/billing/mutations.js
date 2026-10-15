@@ -8,6 +8,9 @@ export default {
   setSubscription(state, subscription) {
     state.subscription = subscription || null
   },
+  setSubscriptions(state, subscriptions) {
+    state.subscriptions = Array.isArray(subscriptions) ? subscriptions : []
+  },
   setUsage(state, usage) {
     state.usage = usage || null
   },
@@ -25,9 +28,14 @@ export default {
     state.upgradeModalOpen = true
     state.upgradePlanKey = planKey
   },
+  openReactivationModal(state) {
+    state.upgradeModalOpen = true
+    state.reactivationRequested = true
+  },
   closeUpgradeModal(state) {
     state.upgradeModalOpen = false
     state.upgradeReason = null
     state.upgradePlanKey = null
+    state.reactivationRequested = false
   },
 }

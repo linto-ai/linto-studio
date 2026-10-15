@@ -7,6 +7,7 @@ import {
   apiCreateCreditsCheckout,
   apiGetPacks,
 } from "@/api/cloud"
+import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 
 function currentOrg(rootGetters, orgId) {
   return orgId || rootGetters["organizations/getCurrentOrganizationScope"]
@@ -71,13 +72,27 @@ export default {
       ? subs.find((x) => ["active", "trialing", "past_due"].includes(x.status))
       : null
     commit("setSubscription", active || null)
+    commit("setSubscriptions", subs)
     return subs
   },
 
   // Opens the onboarding/upgrade wizard (OnboardingWizard.vue). `reason` is
   // the optional { code, reason, capability, remaining } gating detail from
   // a 402/403 SaaS response, shown as a contextual hint.
-  openUpgradeModal({ commit }, reason = null) {
+  // A refusal in a locked team org comes from the lost plan: the plan list
+  // can't lift it (Premium is refused to a team org, Business would create a
+  // new one), so its admin goes to the reactivation instead. Opened without a
+  // reason (return from Stripe, footer), the wizard stays where it is told.
+  async openUpgradeModal(
+    { commit, dispatch, getters, rootGetters },
+    reason = null,
+  ) {
+    const isAdmin =
+      rootGetters["organizations/getUserRoleInOrganization"] ===
+      ORGANIZATION_ROLES.ADMINISTRATOR
+    if (reason && getters.locked && isAdmin) {
+      if (await dispatch("openReactivationModal")) return
+    }
     commit("openUpgradeModal", reason)
   },
   // Opens the wizard straight on one plan's own step. The catalog is loaded
@@ -85,6 +100,26 @@ export default {
   async openUpgradeModalOnPlan({ commit, dispatch, state }, planKey) {
     if (!state.plans.length) await dispatch("fetchPlans")
     commit("openUpgradeModalOnPlan", planKey)
+  },
+  // Opens the wizard on the reactivation of Business, the plan a locked team
+  // org lost. Its ended subscription seeds the seats and the period, all its
+  // members (API keys included, the API bills them a seat too) the floor.
+  // False when the catalog can't be read: the wizard would have nothing to show.
+  async openReactivationModal({ commit, dispatch, state }) {
+    await Promise.all([
+      state.plans.length ? null : dispatch("fetchPlans"),
+      dispatch("fetchSubscriptions"),
+      dispatch(
+        "organizations/loadCurrentOrganizationAllUsers",
+        {
+          forceRefresh: true,
+        },
+        { root: true },
+      ),
+    ])
+    if (!state.plans.some((plan) => plan.planKey === "business")) return false
+    commit("openReactivationModal")
+    return true
   },
   closeUpgradeModal({ commit }) {
     commit("closeUpgradeModal")

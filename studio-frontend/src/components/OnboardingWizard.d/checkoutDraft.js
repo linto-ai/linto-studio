@@ -1,5 +1,6 @@
 // What the wizard needs to resume after the Stripe round-trip (full page
-// reload): the chosen plan and, for Business, the organization being bought.
+// reload): the chosen plan, the step it was bought from and, for Business,
+// the organization being bought or the seats of the one being reactivated.
 const STORAGE_KEY = "onboardingCheckoutDraft"
 
 export function writeCheckoutDraft(draft) {
