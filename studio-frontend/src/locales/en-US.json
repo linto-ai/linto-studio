@@ -1164,6 +1164,8 @@
     "no_media_found": "No media found",
     "no_media_found_processing": "No media found here, but one media is being transcribed. | No media found here, but {count} media are being transcribed.",
     "processing_link": "See the media being processed",
+    "all_processed": "All media have been processed.",
+    "back_to_medias": "Back to media",
     "error_fetching": "Error fetching media",
     "error_deleting": "Error deleting media",
     "source": {

@@ -1158,6 +1158,8 @@
     "no_media_found": "Aucun média trouvé",
     "no_media_found_processing": "Aucun média trouvé ici, mais un média est en cours de transcription. | Aucun média trouvé ici, mais {count} médias sont en cours de transcription.",
     "processing_link": "Voir les médias en traitement",
+    "all_processed": "Tous les médias ont été traités.",
+    "back_to_medias": "Retour aux médias",
     "error_fetching": "Erreur lors de la récupération des médias",
     "error_deleting": "Erreur lors de la suppression des médias",
     "source": {

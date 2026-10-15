@@ -8,8 +8,16 @@
       enable-pagination
       class="relative"
       @load-more="handleLoadMore">
-      <template #empty v-if="showProcessingHint">
-        <div class="explore-next__empty flex col align-center gap-small">
+      <template #empty v-if="processing || showProcessingHint">
+        <div
+          v-if="processing"
+          class="explore-next__empty flex col align-center gap-small">
+          <span>{{ $t("media_explorer.all_processed") }}</span>
+          <router-link class="underline" :to="mediasRoute">
+            {{ $t("media_explorer.back_to_medias") }}
+          </router-link>
+        </div>
+        <div v-else class="explore-next__empty flex col align-center gap-small">
           <span>{{ processingHint }}</span>
           <router-link
             class="underline"
@@ -90,6 +98,12 @@ export default {
     // leaving an inbox or folder looking empty.
     showProcessingHint() {
       return this.browsingOrgFolders && this.processingCount > 0
+    },
+    mediasRoute() {
+      return {
+        name: "explore",
+        params: { organizationId: this.getCurrentOrganizationScope },
+      }
     },
     processingHint() {
       const count = this.processingCount
@@ -172,6 +186,17 @@ export default {
         }
       }
     },
+    // The last media of the processing tab just finished: its sidebar entry
+    // disappears too, so the user is told and sent back to the medias.
+    notifyAllProcessed() {
+      this.$store.dispatch("system/addNotification", {
+        message: this.$t("media_explorer.all_processed"),
+        type: "success",
+        timeout: 5000,
+        closable: true,
+      })
+      this.$router.push(this.mediasRoute)
+    },
     async handleLoadMore() {
       if (this.nextPageFailedAttempts >= MAX_NEXT_PAGE_ATTEMPTS) return
       this.loadingNextPage = true
@@ -194,6 +219,10 @@ export default {
         this.$apiEventWS.unSubscribeFolderUpdate()
         this.init()
       }
+    },
+    "medias.length"(count, previousCount) {
+      if (!this.processing || this.loading) return
+      if (previousCount > 0 && count === 0) this.notifyAllProcessed()
     },
     $route() {
       this.$store.dispatch(`${this.storeScope}/clearSidebarFilterTagIds`)
