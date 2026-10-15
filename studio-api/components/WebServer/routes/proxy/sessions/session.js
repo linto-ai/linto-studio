@@ -247,7 +247,7 @@ module.exports = (webServer) => {
       {
         // Meeting Manager access
         scrapPath: /^\/organizations\/[^/]+/,
-        // SaaS: the Sessions mode is not part of the plans (managed orgs only).
+        // SaaS: gated by the live.sessions entitlement (plans catalog).
         requireEntitlement: { capability: "live.sessions", methods: ["post"] },
         paths: [
           {
