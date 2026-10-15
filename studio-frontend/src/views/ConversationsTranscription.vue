@@ -8,7 +8,20 @@
       <linto-transcript-ui
         ref="editor"
         :locale="editorLocale"
-        no-theme-toggle />
+        no-theme-toggle>
+        <!-- noHeader drops the app header and its menu button: the editor's
+             header hosts it instead. The slot attribute sits on a native
+             element: Vue 2 consumes it on a component (Button). -->
+        <div v-if="!sidebarOpen" slot="header-start" class="flex">
+          <Button
+            icon="sidebar-simple"
+            iconWeight="regular"
+            border-color="transparent"
+            :aria-label="$t('navigation.open_sidebar')"
+            @click.stop="openSidebar"
+            class="sidebar-toggle icon-only" />
+        </div>
+      </linto-transcript-ui>
     </div>
     <p v-else class="transcription-state">
       {{ $t("conversation.loading.conversation_data") }}
@@ -32,6 +45,7 @@ import { TranscriptionController } from "@/services/transcriptUi/TranscriptionCo
 import { SummaryController } from "@/services/transcriptUi/SummaryController/index.js"
 import { ChatController } from "@/services/transcriptUi/ChatController/index.js"
 import { convRoleMixin } from "@/mixins/convRole.js"
+import { mapGetters } from "vuex"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import { readBrandColor } from "@/tools/readBrandColor"
 import { computeLanguageCode } from "@/tools/computeLanguageCode.js"
@@ -58,6 +72,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters("system", ["sidebarOpen"]),
     // The editor only knows bare languages: "en", not the app's "en-US".
     editorLocale() {
       return computeLanguageCode(this.$i18n.locale)
@@ -86,6 +101,9 @@ export default {
     this.chat?.destroy()
   },
   methods: {
+    openSidebar() {
+      this.$store.dispatch("system/toggleSidebar")
+    },
     // The document is set before the controllers exist: they all start
     // from a core that knows its channels and tracks.
     mountTranscriptUi(core, { conversation, right }) {
@@ -161,6 +179,12 @@ export default {
   margin: auto;
   padding: var(--large-gap);
   color: var(--text-secondary);
+}
+
+/* The app header's toggle has a fixed height: here it spans the editor's header. */
+.sidebar-toggle {
+  height: auto;
+  align-self: stretch;
 }
 
 .transcription-editor-wrapper {

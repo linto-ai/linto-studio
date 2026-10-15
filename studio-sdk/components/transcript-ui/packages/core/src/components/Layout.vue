@@ -182,7 +182,9 @@ function onTranslationChange(translationId: string) {
       @toggle-sidebar="core.setSidebarOpen(!core.sidebarOpen.value)"
       @open-chat="core.chat?.setDrawerOpen(true)"
       @undo="core.transcriptionEditor?.undo()"
-      @redo="core.transcriptionEditor?.redo()" />
+      @redo="core.transcriptionEditor?.redo()">
+      <template #start><slot name="header-start" /></template>
+    </Header>
     <TabBar
       :model-value="activeTab"
       :show-verbatim="props.showVerbatim"

@@ -2,6 +2,10 @@
 FROM node:22.22.0 AS deps
 WORKDIR /app
 COPY studio-frontend/package*.json studio-frontend/
+# The editor comes from the monorepo, not npm ("file:" dependency): npm ci
+# only links it, so its manifest is enough here — its dist joins in the
+# builder stage, and an SDK change doesn't re-run the install.
+COPY studio-sdk/components/transcript-ui/packages/webcomponent/package.json studio-sdk/components/transcript-ui/packages/webcomponent/
 WORKDIR /app/studio-frontend
 RUN npm ci
 
@@ -9,6 +13,8 @@ RUN npm ci
 FROM node:22.22.0 AS builder
 WORKDIR /app
 COPY --from=deps /app /app
+# Committed dist: the whole package, nothing to build.
+COPY studio-sdk/components/transcript-ui/packages/webcomponent/dist /app/studio-sdk/components/transcript-ui/packages/webcomponent/dist
 COPY studio-frontend/ /app/studio-frontend/
 WORKDIR /app/studio-frontend
 RUN npm run build

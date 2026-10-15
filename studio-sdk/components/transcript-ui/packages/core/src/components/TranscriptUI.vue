@@ -79,7 +79,12 @@ defineExpose({ core })
       v-if="core.channels.size"
       :show-header="!props.noHeader"
       :show-verbatim="!props.noVerbatim"
-      :show-theme-toggle="!props.noThemeToggle" />
+      :show-theme-toggle="!props.noThemeToggle">
+      <!-- Declared on the custom element's root component so Vue renders a
+           native <slot>: the host's children with slot="header-start" land
+           in the header. -->
+      <template #header-start><slot name="header-start" /></template>
+    </Layout>
     <EditorErrorOverlay v-if="error" :message="error" />
     <EditorLoadingOverlay v-else-if="isLoading" />
   </div>

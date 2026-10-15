@@ -1323,6 +1323,7 @@
       "logout": "Logout",
       "title": "User menu"
     },
+    "open_sidebar": "Open menu",
     "toggle_sidebar": "Collapse menu",
     "conversation": {
       "start": "Transcribe"

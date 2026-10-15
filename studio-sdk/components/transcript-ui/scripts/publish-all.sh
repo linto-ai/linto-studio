@@ -9,23 +9,32 @@
 # never actually uploads). Pass --live to really publish.
 #
 # Usage:
-#   ./scripts/publish-all.sh 1.0.0                 # dry run — safe to try anytime
-#   ./scripts/publish-all.sh 1.0.0 --live          # the real thing
-#   ./scripts/publish-all.sh 1.0.0 --live --yes    # no confirmation prompt (CI)
-#   ./scripts/publish-all.sh 1.0.0-unstable.42 --live --tag latest-unstable
+#   ./scripts/publish-all.sh                       # dry run of an unstable build
+#   ./scripts/publish-all.sh --live                # the real thing
+#   ./scripts/publish-all.sh 1.0.0 --live --yes    # explicit version, no prompt (CI)
+#   ./scripts/publish-all.sh 1.0.0-unstable.202610151200 --live --tag latest-unstable
+#
+# Without a version, an unstable build is published ("latest-unstable"), at
+# the version scripts/computeVersion.mjs computes from the registry — the one
+# the Jenkinsfile ships from next. Stables are master's job (the Jenkinsfile
+# passes the version explicitly).
 #
 # --tag sets the npm dist-tag (default "latest"); prereleases must use another
 # tag so they never become what a plain `npm install` resolves to.
+#
+# The bump is a one-off: the manifests and bun.lock are put back afterwards,
+# so it never ends up in a commit (package.json stays a plain x.y.z floor,
+# see computeVersion.mjs).
 set -euo pipefail
 
 usage() {
-  echo "Usage: $0 <version> [--live] [--tag <dist-tag>] [--yes]" >&2
+  echo "Usage: $0 [<version>] [--live] [--tag <dist-tag>] [--yes]" >&2
   exit 1
 }
 
 version=""
 mode=""
-dist_tag="latest"
+dist_tag=""
 assume_yes=""
 
 while [ $# -gt 0 ]; do
@@ -47,10 +56,19 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-[ -n "$version" ] || usage
-[ -n "$dist_tag" ] || usage
-
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+current_version="$(node -p "require('$root_dir/package.json').version")"
+
+if [ -z "$version" ]; then
+  version="$(node "$root_dir/scripts/computeVersion.mjs" unstable)"
+  dist_tag="${dist_tag:-latest-unstable}"
+fi
+dist_tag="${dist_tag:-latest}"
+
+if [[ "$version" == *-* && "$dist_tag" == "latest" ]]; then
+  echo "Refusing to publish prerelease $version as \"latest\": pass --tag latest-unstable." >&2
+  exit 1
+fi
 
 publish_flag="--dry-run"
 if [ "$mode" = "--live" ]; then
@@ -97,6 +115,23 @@ bump_version() {
     fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + "\n")
   ' "$pkg_json" "$version"
 }
+
+manifests=(package.json bun.lock)
+for name in "${order[@]}"; do
+  manifests+=("packages/$name/package.json")
+done
+
+restore_manifests() {
+  tar -C "$root_dir" -xf "$backup_dir/manifests.tar"
+  rm -rf "$backup_dir"
+  echo "Manifests put back to $current_version."
+}
+
+if [ "$version" != "$current_version" ]; then
+  backup_dir="$(mktemp -d)"
+  tar -C "$root_dir" -cf "$backup_dir/manifests.tar" "${manifests[@]}"
+  trap restore_manifests EXIT
+fi
 
 echo "Bumping every publishable package to $version..."
 bump_version "$root_dir/package.json"

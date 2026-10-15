@@ -10780,7 +10780,7 @@ const _sfc_main$P = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-Cf2L4a_7.js");
+        const { highlightCode } = await import("./highlight-26CiyIg3.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -10945,7 +10945,7 @@ const _hoisted_3$p = {
 const _hoisted_4$g = { class: "form-field__input-wrapper" };
 const _hoisted_5$e = ["id", "disabled", "required", "aria-required", "aria-invalid", "aria-describedby"];
 const _hoisted_6$b = ["value"];
-const _hoisted_7$5 = ["type", "id", "disabled", "readonly", "placeholder", "autocomplete", "required", "aria-required", "aria-invalid", "aria-describedby"];
+const _hoisted_7$6 = ["type", "id", "disabled", "readonly", "placeholder", "autocomplete", "required", "aria-required", "aria-invalid", "aria-describedby"];
 const _hoisted_8$4 = {
   key: 3,
   class: "form-field__actions"
@@ -11127,7 +11127,7 @@ const _sfc_main$O = /* @__PURE__ */ defineComponent({
             onKeydown,
             onBlur: _cache[4] || (_cache[4] = ($event) => emit2("blur", $event)),
             onFocus: _cache[5] || (_cache[5] = ($event) => emit2("focus", $event))
-          }), null, 16, _hoisted_7$5)), [
+          }), null, 16, _hoisted_7$6)), [
             [vModelDynamic, draft.value]
           ]),
           showConfirmationButtons.value ? (openBlock(), createElementBlock("div", _hoisted_8$4, [
@@ -22706,7 +22706,7 @@ const _hoisted_3$i = { class: "document-article__toolbar-left" };
 const _hoisted_4$d = { class: "document-article__toolbar-center" };
 const _hoisted_5$c = { class: "document-article__toolbar-right" };
 const _hoisted_6$a = { class: "document-article__body" };
-const _hoisted_7$4 = {
+const _hoisted_7$5 = {
   key: 0,
   class: "document-article__center",
   role: "status",
@@ -22768,7 +22768,7 @@ const _sfc_main$D = /* @__PURE__ */ defineComponent({
           ])
         ])) : createCommentVNode("", true),
         createBaseVNode("div", _hoisted_6$a, [
-          props.status === "loading" ? (openBlock(), createElementBlock("div", _hoisted_7$4, [
+          props.status === "loading" ? (openBlock(), createElementBlock("div", _hoisted_7$5, [
             createVNode(EditorIcon, {
               name: "spinner",
               spin: "",
@@ -23129,14 +23129,15 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
 const _style_0$t = "\n.turn-text-editor[data-v-597e2575] {\n  margin: 0;\n  white-space: pre-wrap;\n  overflow-wrap: anywhere;\n  cursor: text;\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  padding: 0;\n}\n";
 const TurnTextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$t]], ["__scopeId", "data-v-597e2575"]]);
 const _hoisted_1$t = { class: "editor-header" };
-const _hoisted_2$n = { class: "header-main" };
-const _hoisted_3$g = { class: "document-title" };
-const _hoisted_4$b = {
+const _hoisted_2$n = { class: "header-content" };
+const _hoisted_3$g = { class: "header-main" };
+const _hoisted_4$b = { class: "document-title" };
+const _hoisted_5$a = {
   key: 0,
   class: "document-meta"
 };
-const _hoisted_5$a = { class: "header-right" };
-const _hoisted_6$8 = { key: 0 };
+const _hoisted_6$8 = { class: "header-right" };
+const _hoisted_7$4 = { key: 0 };
 const _sfc_main$y = /* @__PURE__ */ defineComponent({
   __name: "Header",
   props: {
@@ -23172,86 +23173,89 @@ const _sfc_main$y = /* @__PURE__ */ defineComponent({
     );
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("header", _hoisted_1$t, [
+        renderSlot(_ctx.$slots, "start", {}, void 0, true),
         createBaseVNode("div", _hoisted_2$n, [
-          createBaseVNode("h1", _hoisted_3$g, toDisplayString(formattedTitle.value), 1),
-          metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_4$b, [
-            (openBlock(true), createElementBlock(Fragment, null, renderList(metaParts.value, (part, i2) => {
-              return openBlock(), createElementBlock("span", {
-                key: i2,
-                class: "document-meta__part"
-              }, toDisplayString(part), 1);
-            }), 128))
-          ])) : createCommentVNode("", true)
-        ]),
-        createBaseVNode("div", _hoisted_5$a, [
-          __props.isMobile ? (openBlock(), createBlock(unref(Button), {
-            key: 0,
-            variant: "transparent",
-            "aria-label": unref(t2)("header.openSidebar"),
-            onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("toggleSidebar"))
-          }, {
-            icon: withCtx(() => [
-              createVNode(unref(EditorIcon), {
-                name: "users",
-                size: 16
-              })
-            ]),
-            _: 1
-          }, 8, ["aria-label"])) : createCommentVNode("", true),
-          props.canUndo || props.canRedo ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
-            createVNode(unref(Button), {
-              variant: "secondary",
-              "aria-label": unref(t2)("header.undo"),
-              disabled: !props.canUndo,
-              onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("undo"))
+          createBaseVNode("div", _hoisted_3$g, [
+            createBaseVNode("h1", _hoisted_4$b, toDisplayString(formattedTitle.value), 1),
+            metaParts.value.length ? (openBlock(), createElementBlock("div", _hoisted_5$a, [
+              (openBlock(true), createElementBlock(Fragment, null, renderList(metaParts.value, (part, i2) => {
+                return openBlock(), createElementBlock("span", {
+                  key: i2,
+                  class: "document-meta__part"
+                }, toDisplayString(part), 1);
+              }), 128))
+            ])) : createCommentVNode("", true)
+          ]),
+          createBaseVNode("div", _hoisted_6$8, [
+            __props.isMobile ? (openBlock(), createBlock(unref(Button), {
+              key: 0,
+              variant: "transparent",
+              "aria-label": unref(t2)("header.openSidebar"),
+              onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("toggleSidebar"))
             }, {
               icon: withCtx(() => [
                 createVNode(unref(EditorIcon), {
-                  name: "undo",
+                  name: "users",
                   size: 16
                 })
               ]),
               _: 1
-            }, 8, ["aria-label", "disabled"]),
+            }, 8, ["aria-label"])) : createCommentVNode("", true),
+            props.canUndo || props.canRedo ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+              createVNode(unref(Button), {
+                variant: "secondary",
+                "aria-label": unref(t2)("header.undo"),
+                disabled: !props.canUndo,
+                onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("undo"))
+              }, {
+                icon: withCtx(() => [
+                  createVNode(unref(EditorIcon), {
+                    name: "undo",
+                    size: 16
+                  })
+                ]),
+                _: 1
+              }, 8, ["aria-label", "disabled"]),
+              createVNode(unref(Button), {
+                variant: "secondary",
+                "aria-label": unref(t2)("header.redo"),
+                disabled: !props.canRedo,
+                onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("redo"))
+              }, {
+                icon: withCtx(() => [
+                  createVNode(unref(EditorIcon), {
+                    name: "redo",
+                    size: 16
+                  })
+                ]),
+                _: 1
+              }, 8, ["aria-label", "disabled"])
+            ], 64)) : createCommentVNode("", true),
             createVNode(unref(Button), {
-              variant: "secondary",
-              "aria-label": unref(t2)("header.redo"),
-              disabled: !props.canRedo,
-              onClick: _cache[2] || (_cache[2] = ($event) => _ctx.$emit("redo"))
+              variant: "primary",
+              "aria-label": unref(t2)("header.ask"),
+              disabled: !props.canAsk,
+              onClick: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("openChat"))
             }, {
               icon: withCtx(() => [
                 createVNode(unref(EditorIcon), {
-                  name: "redo",
+                  name: "sparkles",
                   size: 16
                 })
+              ]),
+              default: withCtx(() => [
+                !__props.isMobile ? (openBlock(), createElementBlock("span", _hoisted_7$4, toDisplayString(unref(t2)("header.ask")), 1)) : createCommentVNode("", true)
               ]),
               _: 1
             }, 8, ["aria-label", "disabled"])
-          ], 64)) : createCommentVNode("", true),
-          createVNode(unref(Button), {
-            variant: "primary",
-            "aria-label": unref(t2)("header.ask"),
-            disabled: !props.canAsk,
-            onClick: _cache[3] || (_cache[3] = ($event) => _ctx.$emit("openChat"))
-          }, {
-            icon: withCtx(() => [
-              createVNode(unref(EditorIcon), {
-                name: "sparkles",
-                size: 16
-              })
-            ]),
-            default: withCtx(() => [
-              !__props.isMobile ? (openBlock(), createElementBlock("span", _hoisted_6$8, toDisplayString(unref(t2)("header.ask")), 1)) : createCommentVNode("", true)
-            ]),
-            _: 1
-          }, 8, ["aria-label", "disabled"])
+          ])
         ])
       ]);
     };
   }
 });
-const _style_0$s = '\n.editor-header[data-v-491cf8ab] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-main[data-v-491cf8ab] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-491cf8ab] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-491cf8ab] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-491cf8ab] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-491cf8ab]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-491cf8ab] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.editor-header[data-v-491cf8ab] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-491cf8ab] {\n    font-size: var(--font-size-base);\n}\n}\n';
-const Header = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["styles", [_style_0$s]], ["__scopeId", "data-v-491cf8ab"]]);
+const _style_0$s = '\n.editor-header[data-v-af95f1f0] {\n  display: flex;\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-content[data-v-af95f1f0] {\n  display: flex;\n  flex: 1;\n  min-width: 0;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.header-main[data-v-af95f1f0] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-af95f1f0] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-af95f1f0] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-af95f1f0] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-af95f1f0]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-af95f1f0] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.header-content[data-v-af95f1f0] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-af95f1f0] {\n    font-size: var(--font-size-base);\n}\n}\n';
+const Header = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["styles", [_style_0$s]], ["__scopeId", "data-v-af95f1f0"]]);
 const TRANSCRIPTION_TAB = "__transcription__";
 const VERBATIM_TAB = "__verbatim__";
 function useIsMobile() {
@@ -25705,7 +25709,12 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
           onOpenChat: _cache[1] || (_cache[1] = ($event) => unref(core).chat?.setDrawerOpen(true)),
           onUndo: _cache[2] || (_cache[2] = ($event) => unref(core).transcriptionEditor?.undo()),
           onRedo: _cache[3] || (_cache[3] = ($event) => unref(core).transcriptionEditor?.redo())
-        }, null, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask", "can-undo", "can-redo"])) : createCommentVNode("", true),
+        }, {
+          start: withCtx(() => [
+            renderSlot(_ctx.$slots, "header-start", {}, void 0, true)
+          ]),
+          _: 3
+        }, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask", "can-undo", "can-redo"])) : createCommentVNode("", true),
         createVNode(_sfc_main$x, {
           "model-value": activeTab.value,
           "show-verbatim": props.showVerbatim,
@@ -25795,8 +25804,8 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$g = "\n.editor-layout[data-v-879efb4a] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-879efb4a] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-879efb4a] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-879efb4a] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-879efb4a] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-879efb4a] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-879efb4a] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-879efb4a] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-879efb4a] {\n    grid-template-columns: 1fr;\n}\n}\n";
-const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$g]], ["__scopeId", "data-v-879efb4a"]]);
+const _style_0$g = "\n.editor-layout[data-v-c2a90b68] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-c2a90b68] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-c2a90b68] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-c2a90b68] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-c2a90b68] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-c2a90b68] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-c2a90b68] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-c2a90b68] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-c2a90b68] {\n    grid-template-columns: 1fr;\n}\n}\n";
+const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$g]], ["__scopeId", "data-v-c2a90b68"]]);
 const _hoisted_1$e = {
   class: "editor-loading",
   role: "status",
@@ -25925,7 +25934,12 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
           "show-header": !props.noHeader,
           "show-verbatim": !props.noVerbatim,
           "show-theme-toggle": !props.noThemeToggle
-        }, null, 8, ["show-header", "show-verbatim", "show-theme-toggle"])) : createCommentVNode("", true),
+        }, {
+          "header-start": withCtx(() => [
+            renderSlot(_ctx.$slots, "header-start")
+          ]),
+          _: 3
+        }, 8, ["show-header", "show-verbatim", "show-theme-toggle"])) : createCommentVNode("", true),
         unref(error) ? (openBlock(), createBlock(EditorErrorOverlay, {
           key: 1,
           message: unref(error)
@@ -31772,4 +31786,4 @@ export {
   purify_default as p,
   register as r
 };
-//# sourceMappingURL=index-Bm5xEmCH.js.map
+//# sourceMappingURL=index-oJ0ekD83.js.map

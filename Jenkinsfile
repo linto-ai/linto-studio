@@ -82,32 +82,14 @@ def buildSaasImage(version) {
     }
 }
 
-// npm publish of the transcript-ui SDK: master ships package.json's version as "latest" (skipped if already
-// on the registry), next ships <version>-unstable.<UTC timestamp> as "latest-unstable".
-def publishSdk(distTag) {
+// npm publish of the transcript-ui SDK, at the version scripts/computeVersion.mjs derives from the registry:
+// "stable" (master) ships the next stable as "latest", "unstable" (next) ships
+// <next stable>-unstable.<UTC minute> as "latest-unstable". package.json only holds a floor (a minor or
+// major release is a bump committed there); a suffixed one stops the build.
+def publishSdk(channel) {
     def sdkDir = 'studio-sdk/components/transcript-ui'
-    def sdkPackage = '@linto-ai/transcript-ui'
-    def baseVersion = sh(
-        returnStdout: true,
-        script: "grep -m1 '\"version\"' ${sdkDir}/package.json | sed -E 's/.*\"version\": *\"([^\"]+)\".*/\\1/'"
-    ).trim()
+    def distTag = channel == 'stable' ? 'latest' : 'latest-unstable'
 
-    def version = baseVersion
-    if (distTag == 'latest-unstable') {
-        def stamp = sh(returnStdout: true, script: 'date -u +%Y%m%d%H%M').trim()
-        version = "${baseVersion}-unstable.${stamp}"
-    } else {
-        def alreadyPublished = sh(
-            returnStatus: true,
-            script: "curl -sf -o /dev/null https://registry.npmjs.org/${sdkPackage.replace('/', '%2F')}/${baseVersion}"
-        ) == 0
-        if (alreadyPublished) {
-            echo "SDK ${sdkPackage}@${baseVersion} is already on npm, skipping (bump ${sdkDir}/package.json)."
-            return
-        }
-    }
-
-    echo "Publishing SDK ${sdkPackage}@${version} to npm (dist-tag: ${distTag})..."
     // "npm-linto-jenkins": secret text credential holding an npm granular access token with publish rights
     withCredentials([string(credentialsId: 'npm-linto-jenkins', variable: 'NPM_CONFIG_TOKEN')]) {
         try {
@@ -119,7 +101,10 @@ def publishSdk(distTag) {
                     npm install -g bun
                     export PATH=/tmp/npm-global/bin:\$PATH
                     node --version && bun --version
-                    cd ${sdkDir} && bash scripts/publish-all.sh ${version} --live --tag ${distTag} --yes
+                    cd ${sdkDir}
+                    version=\$(node scripts/computeVersion.mjs ${channel})
+                    echo "Publishing SDK @linto-ai/transcript-ui@\$version to npm (dist-tag: ${distTag})..."
+                    bash scripts/publish-all.sh "\$version" --live --tag ${distTag} --yes
                 """
             }
         } finally {
@@ -143,11 +128,6 @@ def performBuildForFile(changedFiles, version, commit_sha) {
         buildDockerfile('studio-api', version, commit_sha)
     }
 
-    if (changedFiles.contains('studio-sdk/components/transcript-ui')) {
-        echo 'Files in studio-sdk/components/transcript-ui path are modified. Publishing the SDK to npm...'
-        publishSdk(version == 'latest-unstable' ? 'latest-unstable' : 'latest')
-    }
-
     if (changedFiles.contains('studio-frontend') || changedFiles.contains('studio-sdk')) {
         echo 'Files in studio-frontend path are modified. Running specific build steps for studio-frontend...'
         buildDockerfile('studio-frontend', version, commit_sha, '', '.')
@@ -158,10 +138,17 @@ def performBuildForFile(changedFiles, version, commit_sha) {
         buildDockerfile('studio-websocket', version, commit_sha)
     }
 
-    // Last, so a failure on the private side never holds back the public images
+    // After the public images, so a failure on the private side never holds them back
     if (changedFiles.contains('studio-api')) {
         echo 'Files in studio-api path are modified. Running specific build steps for studio-api-saas...'
         buildSaasImage(version)
+    }
+
+    // After every image: the frontend bundles the SDK's committed dist, not the npm package, so a failed
+    // publish (registry down, expired token, suffixed version) must not hold back any deploy
+    if (changedFiles.contains('studio-sdk/components/transcript-ui')) {
+        echo 'Files in studio-sdk/components/transcript-ui path are modified. Publishing the SDK to npm...'
+        publishSdk(version == 'latest-unstable' ? 'unstable' : 'stable')
     }
 }
 

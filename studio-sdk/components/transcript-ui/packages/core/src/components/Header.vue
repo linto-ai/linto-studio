@@ -46,49 +46,54 @@ const metaParts = computed(() =>
 
 <template>
   <header class="editor-header">
-    <div class="header-main">
-      <h1 class="document-title">{{ formattedTitle }}</h1>
-      <div v-if="metaParts.length" class="document-meta">
-        <span
-          v-for="(part, i) in metaParts"
-          :key="i"
-          class="document-meta__part">
-          {{ part }}
-        </span>
+    <!-- Host-provided controls, e.g. a button reopening the app's menu.
+         Outside the padded content: they reach the header's edges. -->
+    <slot name="start" />
+    <div class="header-content">
+      <div class="header-main">
+        <h1 class="document-title">{{ formattedTitle }}</h1>
+        <div v-if="metaParts.length" class="document-meta">
+          <span
+            v-for="(part, i) in metaParts"
+            :key="i"
+            class="document-meta__part">
+            {{ part }}
+          </span>
+        </div>
       </div>
-    </div>
-    <div class="header-right">
-      <Button
-        v-if="isMobile"
-        variant="transparent"
-        :aria-label="t('header.openSidebar')"
-        @click="$emit('toggleSidebar')">
-        <template #icon><EditorIcon name="users" :size="16" /></template>
-      </Button>
-      <template v-if="props.canUndo || props.canRedo">
+      <div class="header-right">
         <Button
-          variant="secondary"
-          :aria-label="t('header.undo')"
-          :disabled="!props.canUndo"
-          @click="$emit('undo')">
-          <template #icon><EditorIcon name="undo" :size="16" /></template>
+          v-if="isMobile"
+          variant="transparent"
+          :aria-label="t('header.openSidebar')"
+          @click="$emit('toggleSidebar')">
+          <template #icon><EditorIcon name="users" :size="16" /></template>
         </Button>
+        <template v-if="props.canUndo || props.canRedo">
+          <Button
+            variant="secondary"
+            :aria-label="t('header.undo')"
+            :disabled="!props.canUndo"
+            @click="$emit('undo')">
+            <template #icon><EditorIcon name="undo" :size="16" /></template>
+          </Button>
+          <Button
+            variant="secondary"
+            :aria-label="t('header.redo')"
+            :disabled="!props.canRedo"
+            @click="$emit('redo')">
+            <template #icon><EditorIcon name="redo" :size="16" /></template>
+          </Button>
+        </template>
         <Button
-          variant="secondary"
-          :aria-label="t('header.redo')"
-          :disabled="!props.canRedo"
-          @click="$emit('redo')">
-          <template #icon><EditorIcon name="redo" :size="16" /></template>
+          variant="primary"
+          :aria-label="t('header.ask')"
+          :disabled="!props.canAsk"
+          @click="$emit('openChat')">
+          <template #icon><EditorIcon name="sparkles" :size="16" /></template>
+          <span v-if="!isMobile">{{ t("header.ask") }}</span>
         </Button>
-      </template>
-      <Button
-        variant="primary"
-        :aria-label="t('header.ask')"
-        :disabled="!props.canAsk"
-        @click="$emit('openChat')">
-        <template #icon><EditorIcon name="sparkles" :size="16" /></template>
-        <span v-if="!isMobile">{{ t("header.ask") }}</span>
-      </Button>
+      </div>
     </div>
   </header>
 </template>
@@ -96,14 +101,20 @@ const metaParts = computed(() =>
 <style scoped>
 .editor-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-lg);
   min-height: var(--header-height);
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-surface);
   flex-shrink: 0;
+}
+
+.header-content {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
 }
 
 .header-main {
@@ -150,7 +161,7 @@ const metaParts = computed(() =>
 }
 
 @media (max-width: 767px) {
-  .editor-header {
+  .header-content {
     padding: var(--spacing-xs) var(--spacing-md);
   }
 
