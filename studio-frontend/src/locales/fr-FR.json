@@ -1533,6 +1533,7 @@
     "sso": {
       "title": "Connexion SSO de l'organisation",
       "enabled_label": "Activer le SSO",
+      "enabled_disabled_reason": "Le SSO est activé à l'enregistrement de la configuration",
       "issuer_url_label": "URL de l'émetteur (issuer)",
       "client_id_label": "Identifiant client (client ID)",
       "client_secret_label": "Secret client",

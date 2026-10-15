@@ -9,6 +9,8 @@
           <FormCheckbox
             :field="enabled"
             v-model="enabled.value"
+            :disabled="!isConfigured"
+            :disabledReason="$t('organisation.sso.enabled_disabled_reason')"
             switchDisplay />
 
           <FormInput :field="issuerUrl" v-model="issuerUrl.value" />
@@ -117,7 +119,7 @@ export default {
       isConfigured: false,
       enabled: {
         ...EMPTY_FIELD,
-        value: true,
+        value: false,
         label: this.$t("organisation.sso.enabled_label"),
       },
       issuerUrl: {
@@ -196,7 +198,10 @@ export default {
       this.isConfigured = config !== null
       this.clientSecret.required = !this.isConfigured
       this.clientSecret.value = ""
-      if (!config) return
+      if (!config) {
+        this.enabled.value = false
+        return
+      }
       this.enabled.value = config.enabled !== false
       this.issuerUrl.value = config.issuerUrl ?? ""
       this.clientId.value = config.clientId ?? ""
@@ -206,8 +211,9 @@ export default {
       this.tokenUrl.value = config.tokenUrl ?? ""
       this.userInfoUrl.value = config.userInfoUrl ?? ""
     },
+    // A new configuration is saved enabled; the switch only applies afterwards.
     formValues() {
-      const values = { enabled: this.enabled.value }
+      const values = { enabled: this.isConfigured ? this.enabled.value : true }
       for (const name of TEXT_FIELDS) values[name] = this[name].value
       return values
     },

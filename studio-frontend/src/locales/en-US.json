@@ -1539,6 +1539,7 @@
     "sso": {
       "title": "Organisation SSO",
       "enabled_label": "Enable SSO",
+      "enabled_disabled_reason": "SSO is enabled once the configuration is saved",
       "issuer_url_label": "Issuer URL",
       "client_id_label": "Client ID",
       "client_secret_label": "Client secret",
