@@ -31,10 +31,9 @@
       "packs": {
         "title": "Acheter un pack",
         "intro": "Paiement unique, sans abonnement.",
-        "intro_with_validity": "Paiement unique, sans abonnement · pack valable {validity}.",
+        "intro_with_validity": "Paiement unique, sans abonnement. Pack valable {validity}.",
         "confirm": "Continuer vers le paiement",
         "pay": "Payer {price}",
-        "per_hour": "{price} / h",
         "saving": "−{percent} %",
         "group": {
           "live": "Transcription en direct",
@@ -44,42 +43,45 @@
           "live": "Transcription en direct",
           "transcription": "Transcription de fichiers"
         },
-        "price": "Prix",
-        "rate": "Tarif",
         "kind_with_ai": "Fichiers + IA",
-        "selection": "{kind} · {duration}",
-        "selection_with_ai": "{kind} · {duration} et {credits} crédits IA",
-        "ai_credits_offered": "+{credits} crédits IA offerts",
+        "selection": "{kind}, {duration}",
+        "selection_with_ai": "{kind}, {duration} et {credits} crédits IA",
+        "hourly_rate": "{price} de l'heure",
+        "hourly_rate_with_saving": "{price}/h, {saving} économisés",
+        "ai_credits_included": {
+          "title": "{credits} crédits IA inclus dans chaque pack",
+          "text": "Pour résumer vos fichiers et leur poser des questions, sans supplément."
+        },
         "pitch": {
           "live": {
-            "headline": "Vos réunions transcrites en direct.",
+            "headline": "Ne prenez plus de notes en réunion.",
             "input": {
               "title": "Micro ou visioconférence",
-              "text": "Le texte apparaît en temps réel"
+              "text": "Relisez ce qui vient d'être dit, sans interrompre."
             },
             "speakers": {
               "title": "Séparation des locuteurs",
-              "text": "Qui parle, à chaque instant"
+              "text": "Chaque intervention attribuée à son auteur."
             },
             "translation": {
               "title": "Traduction en direct",
-              "text": "Suivez les échanges dans votre langue"
+              "text": "Suivez les échanges dans votre langue."
             },
-            "counting": "Le temps est décompté par langue : une heure de réunion avec une traduction utilise 2 h du pack."
+            "counting": "Avec la traduction, chaque langue est décomptée : une heure de réunion traduite en anglais utilise 2 heures du pack."
           },
           "transcription": {
-            "headline": "Vos fichiers audio et vidéo, prêts à relire.",
+            "headline": "Déposez l'enregistrement, relisez le texte.",
             "media": {
               "title": "Audio et vidéo",
-              "text": "Interviews, cours, conférences"
-            },
-            "speakers": {
-              "title": "Séparation des locuteurs",
-              "text": "Qui parle, à chaque instant"
+              "text": "Interviews, cours, conférences."
             },
             "ai": {
               "title": "L'IA résume pour vous",
-              "text": "Et répond à vos questions"
+              "text": "Et répond à vos questions sur le contenu."
+            },
+            "subtitles": {
+              "title": "Sous-titres générés",
+              "text": "Prêts à intégrer à vos vidéos."
             }
           }
         }

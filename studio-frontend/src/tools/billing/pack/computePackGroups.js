@@ -1,7 +1,8 @@
 /**
  * Packs of the purchase modal, grouped by kind (live, transcription…) in the
  * order the kinds first appear, each pack with its hourly price and, when it
- * beats the dearest hourly price of its group, the saving in percent. The
+ * beats the dearest hourly price of its group, the saving in percent and in
+ * cents (what the same hours cost at that dearest price, minus its own). The
  * hourly price is a catalog figure shown to compare packs: the amount charged
  * is still Stripe's (tax added at checkout).
  * @param {Array<{packKey: string, kind: string, minutes: number, amountCents: number}>} packs
@@ -27,6 +28,7 @@ function computeGroupPacks(packs) {
       hourlyPrices[index],
       dearestHourlyCents,
     ),
+    savingCents: computeSavingCents(pack, dearestHourlyCents),
   }))
 }
 
@@ -39,5 +41,12 @@ function computeHourlyCents(pack) {
 function computeSavingPercent(hourlyCents, dearestHourlyCents) {
   if (!dearestHourlyCents || hourlyCents >= dearestHourlyCents) return null
   const saving = Math.round((1 - hourlyCents / dearestHourlyCents) * 100)
+  return saving > 0 ? saving : null
+}
+
+// null when there is nothing to save, like the percent
+function computeSavingCents(pack, dearestHourlyCents) {
+  const saving =
+    Math.round((dearestHourlyCents * pack.minutes) / 60) - pack.amountCents
   return saving > 0 ? saving : null
 }

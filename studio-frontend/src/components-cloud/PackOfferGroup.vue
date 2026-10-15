@@ -2,7 +2,7 @@
   <fieldset
     class="pack-offer-group"
     :style="palette"
-    :aria-describedby="hasPitch ? pitchId : null">
+    :aria-describedby="describedBy">
     <legend class="pack-offer-group__legend">
       <span class="pack-offer-group__overline">{{ title }}</span>
       <h3 v-if="headlineKey" class="pack-offer-group__headline">
@@ -10,41 +10,50 @@
       </h3>
     </legend>
 
-    <div v-if="hasPitch" :id="pitchId" class="pack-offer-group__pitch">
-      <ul v-if="features.length > 0" class="pack-offer-group__features">
-        <li
-          v-for="feature in features"
-          :key="feature.key"
-          class="pack-offer-group__feature">
-          <Avatar
-            :icon="feature.icon"
-            tag="span"
-            size="lg"
-            circle
-            padded
-            tone="soft" />
-          <span class="pack-offer-group__feature-text">
-            <strong>{{ $t(`${feature.key}.title`) }}</strong>
-            <span>{{ $t(`${feature.key}.text`) }}</span>
-          </span>
-        </li>
-      </ul>
-      <p v-if="noteKey" class="pack-offer-group__note">
-        <PhIcon name="info" />
-        <span>{{ $t(noteKey) }}</span>
-      </p>
+    <ul
+      v-if="features.length > 0"
+      :id="featuresId"
+      class="pack-offer-group__features">
+      <li
+        v-for="feature in features"
+        :key="feature.key"
+        class="pack-offer-group__feature">
+        <Avatar
+          :icon="feature.icon"
+          tag="span"
+          size="lg"
+          circle
+          padded
+          tone="neutral" />
+        <span class="pack-offer-group__feature-text">
+          <strong>{{ $t(`${feature.key}.title`) }}</strong>
+          <span>{{ $t(`${feature.key}.text`) }}</span>
+        </span>
+      </li>
+    </ul>
+
+    <div class="pack-offer-group__body">
+      <div class="pack-offer-group__options">
+        <slot />
+      </div>
+      <div v-if="$scopedSlots.aside" class="pack-offer-group__aside">
+        <slot name="aside" />
+      </div>
     </div>
 
-    <div class="pack-offer-group__options">
-      <slot />
-    </div>
+    <p v-if="noteKey" :id="noteId" class="pack-offer-group__note">
+      <PhIcon name="info" />
+      <span>{{ $t(noteKey) }}</span>
+    </p>
   </fieldset>
 </template>
 
 <script>
 // The packs of one kind in the purchase modal: the kind name, a headline,
-// what the kind is for (features, counting note), then its packs (default
-// slot, PackOffer radios). Colored by the palette of the kind.
+// what the kind is for (features), its packs (default slot, PackOffer
+// radios) with what they all include beside them (aside slot), then how the
+// kind is counted. Grey but for the kind name and the aside, colored by the
+// palette of the kind; the cards bring their own color.
 export default {
   name: "PackOfferGroup",
   props: {
@@ -60,11 +69,18 @@ export default {
     palette: { type: Object, required: true },
   },
   computed: {
-    hasPitch() {
-      return this.features.length > 0 || !!this.noteKey
+    featuresId() {
+      return `pack-offer-group-features-${this._uid}`
     },
-    pitchId() {
-      return `pack-offer-group-pitch-${this._uid}`
+    noteId() {
+      return `pack-offer-group-note-${this._uid}`
+    },
+    describedBy() {
+      const ids = [
+        this.features.length > 0 && this.featuresId,
+        this.noteKey && this.noteId,
+      ].filter(Boolean)
+      return ids.length > 0 ? ids.join(" ") : null
     },
   },
 }
@@ -113,12 +129,6 @@ export default {
     font-weight: 700;
   }
 
-  &__pitch {
-    display: flex;
-    flex-direction: column;
-    gap: var(--small-gap);
-  }
-
   &__features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
@@ -129,11 +139,8 @@ export default {
   }
 
   &__feature {
-    // The icon takes the kind color, on its pale wash
-    --avatar-background: var(--pack-accent-soft);
-    --avatar-color: var(--pack-accent);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--small-gap);
     font-size: var(--text-xs);
   }
@@ -162,27 +169,58 @@ export default {
     }
   }
 
-  // Room around the cards for the ring of the chosen one. On a narrow
-  // screen each group is one row that scrolls sideways, like the bought
-  // packs of the billing tab.
-  &__options {
+  // Three cards a row, what they include taking the rest of the row (or a
+  // row of its own). Padded for the ring of the chosen card. On a narrow
+  // screen the cards are one row that scrolls sideways, like the bought packs
+  // of the billing tab, and the aside goes under it.
+  &__body {
+    --pack-offer-gap: var(--medium-gap);
     display: flex;
     flex-wrap: wrap;
-    gap: var(--medium-gap);
+    gap: var(--pack-offer-gap);
     padding: var(--tiny-gap);
+  }
 
-    @media (max-width: 768px) {
-      flex-wrap: nowrap;
+  &__options {
+    display: contents;
+
+    // The cards come from the parent's slot, out of this scope
+    > :deep(*) {
+      flex: 0 0 calc((100% - 2 * var(--pack-offer-gap)) / 3);
+    }
+  }
+
+  &__aside {
+    display: flex;
+    flex: 1 1 12rem;
+
+    > :deep(*) {
+      flex: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    &__options {
+      display: flex;
+      flex-basis: 100%;
+      gap: var(--pack-offer-gap);
+      min-width: 0;
+      // Room for the ring of the chosen card, inside the scrolled area
+      margin: calc(-1 * var(--tiny-gap));
+      padding: var(--tiny-gap);
       overflow-x: auto;
       overscroll-behavior-x: contain;
       scroll-snap-type: x mandatory;
       scroll-padding-inline: var(--tiny-gap);
 
-      // The cards come from the parent's slot, out of this scope
       > :deep(*) {
-        flex-shrink: 0;
+        flex: 0 0 15rem;
         scroll-snap-align: start;
       }
+    }
+
+    &__aside {
+      flex-basis: 100%;
     }
   }
 }

@@ -3,12 +3,9 @@
     tag="label"
     class="pack-offer"
     :color="look.color"
-    :icon="look.icon"
     :motif="look.motif"
-    :amount="amount"
-    :badge="badge"
-    :details="details">
-    <template #header-end>
+    :amount="amount">
+    <template #header-start>
       <input
         type="radio"
         class="pack-offer__radio"
@@ -17,18 +14,17 @@
         :checked="value === pack.packKey"
         @change="$emit('input', pack.packKey)" />
     </template>
-    <AiCreditsNote v-if="pack.aiCredits > 0">
-      <strong>{{
-        $t("billing.settings.packs.ai_credits_offered", {
-          credits: pack.aiCredits,
-        })
-      }}</strong>
-    </AiCreditsNote>
+    <template v-if="badge" #header-end>
+      <span class="pack-offer__badge">{{ badge }}</span>
+    </template>
+    <template #footer>
+      <span class="pack-offer__price">{{ price }}</span>
+      <span class="pack-offer__rate">{{ rate }}</span>
+    </template>
   </PackCard>
 </template>
 
 <script>
-import AiCreditsNote from "@/components-cloud/AiCreditsNote.vue"
 import PackCard from "@/components/atoms/PackCard.vue"
 import { computeDurationParts } from "@/tools/computeDurationParts"
 import { computePackLook } from "@/tools/billing/pack/computePackLook"
@@ -36,12 +32,14 @@ import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 
 // One pack of the catalog, as a radio choice (v-model: the chosen packKey).
 // The whole card is the radio's label, so its text is the radio's name; the
-// fieldset around it (the kind of pack) names the group, so no kind label.
+// fieldset around it (the kind of pack) names the group, so no kind label
+// nor icon. The AI credits a pack comes with are told by the group.
 export default {
   name: "PackOffer",
-  components: { AiCreditsNote, PackCard },
+  components: { PackCard },
   props: {
-    // A pack of computePackGroups: catalog fields + hourlyCents, savingPercent
+    // A pack of computePackGroups: catalog fields + hourlyCents, savingPercent,
+    // savingCents
     pack: { type: Object, required: true },
     // packKey of the chosen pack
     value: { type: String, default: null },
@@ -63,19 +61,19 @@ export default {
     },
     // Catalog prices, shown without a tax mention: whether Stripe Checkout
     // adds VAT depends on its tax settings.
-    details() {
-      return [
-        {
-          label: this.$t("billing.settings.packs.price"),
-          value: this.formatAmount(this.pack.amountCents),
-        },
-        {
-          label: this.$t("billing.settings.packs.rate"),
-          value: this.$t("billing.settings.packs.per_hour", {
-            price: this.formatAmount(this.pack.hourlyCents),
-          }),
-        },
-      ]
+    price() {
+      return this.formatAmount(this.pack.amountCents)
+    },
+    // "9 € per hour", or "8 €/h, 20 € saved" once it beats the dearest pack
+    rate() {
+      const price = this.formatAmount(this.pack.hourlyCents)
+      if (!this.pack.savingCents) {
+        return this.$t("billing.settings.packs.hourly_rate", { price })
+      }
+      return this.$t("billing.settings.packs.hourly_rate_with_saving", {
+        price,
+        saving: this.formatAmount(this.pack.savingCents),
+      })
     },
   },
   methods: {
@@ -91,12 +89,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// Wide enough to never read as a square
-.pack-offer {
-  width: 16rem;
-  max-width: 100%;
-}
-
 // A ring, filled with a primary dot once checked. Focus shows on the whole
 // card (PackCard), not on this small ring.
 .pack-offer__radio {
@@ -120,5 +112,31 @@ export default {
   &:focus-visible {
     outline: none;
   }
+}
+
+.pack-offer__badge {
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--neutral-20);
+  border-radius: 999px;
+  background: var(--background-primary);
+  color: var(--pack-accent);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pack-offer__price {
+  font-size: var(--text-md);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pack-offer__rate {
+  min-width: 0;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  text-align: right;
 }
 </style>

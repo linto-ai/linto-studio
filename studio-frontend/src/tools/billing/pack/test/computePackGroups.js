@@ -57,10 +57,19 @@ test("computes the hourly price and the saving against the dearest pack", (t) =>
   )
 })
 
+test("computes the amount saved against the dearest hourly price", (t) => {
+  const [live] = computePackGroups([LIVE_5H, LIVE_20H, LIVE_50H])
+  t.deepEqual(
+    live.packs.map((p) => p.savingCents),
+    [null, 2000, 10000],
+  )
+})
+
 test("a lone pack has no saving", (t) => {
   const [transcription] = computePackGroups([TRANSCRIPTION_5H])
   t.is(transcription.packs[0].hourlyCents, 200)
   t.is(transcription.packs[0].savingPercent, null)
+  t.is(transcription.packs[0].savingCents, null)
 })
 
 test("returns no group without a catalog", (t) => {

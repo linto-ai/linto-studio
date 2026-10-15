@@ -25,8 +25,8 @@ export const PACK_KIND_PITCHES = {
         key: "billing.settings.packs.pitch.transcription.media",
       },
       {
-        icon: "users",
-        key: "billing.settings.packs.pitch.transcription.speakers",
+        icon: "subtitles",
+        key: "billing.settings.packs.pitch.transcription.subtitles",
       },
       { icon: "sparkle", key: "billing.settings.packs.pitch.transcription.ai" },
     ],

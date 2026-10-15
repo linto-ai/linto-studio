@@ -28,7 +28,8 @@
     </svg>
 
     <span class="pack-card__header">
-      <Avatar :icon="icon" tag="span" size="md" circle padded />
+      <slot name="header-start" />
+      <Avatar v-if="icon" :icon="icon" tag="span" size="md" circle padded />
       <span v-if="label" class="pack-card__label">{{ label }}</span>
       <span v-if="$scopedSlots['header-end']" class="pack-card__header-end">
         <slot name="header-end" />
@@ -63,6 +64,10 @@
         <span v-else class="pack-card__detail-value">{{ detail.value }}</span>
       </span>
     </span>
+
+    <span v-if="$scopedSlots.footer" class="pack-card__footer">
+      <slot name="footer" />
+    </span>
   </component>
 </template>
 
@@ -91,7 +96,8 @@ export default {
     // Material color family of the kind (teal, blue…): a pale and a deep
     // shade of it, inverted together by the dark theme.
     color: { type: String, required: true },
-    icon: { type: String, required: true },
+    // Icon of the kind next to the label; none when the context shows it
+    icon: { type: String, default: null },
     // Small caps title next to the icon; none when the context names it
     label: { type: String, default: null },
     // faded: a dashed, muted card, for a pack that no longer counts (spent)
@@ -285,6 +291,18 @@ export default {
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
+  }
+
+  // Free content along the bottom edge, under a rule (the price of a pack
+  // to buy)
+  &__footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--small-gap);
+    margin-top: auto;
+    padding-top: var(--small-gap);
+    border-top: 1px solid var(--neutral-20);
   }
 
   // Spread along the bottom edge, on one line: a label too long for the card

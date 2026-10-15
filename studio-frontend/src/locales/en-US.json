@@ -31,10 +31,9 @@
       "packs": {
         "title": "Buy a pack",
         "intro": "One-time payment, no subscription.",
-        "intro_with_validity": "One-time payment, no subscription · pack valid for {validity}.",
+        "intro_with_validity": "One-time payment, no subscription. Pack valid for {validity}.",
         "confirm": "Continue to payment",
         "pay": "Pay {price}",
-        "per_hour": "{price} / h",
         "saving": "−{percent}%",
         "group": {
           "live": "Live transcription",
@@ -44,42 +43,45 @@
           "live": "Live transcription",
           "transcription": "File transcription"
         },
-        "price": "Price",
-        "rate": "Rate",
         "kind_with_ai": "Files + AI",
-        "selection": "{kind} · {duration}",
-        "selection_with_ai": "{kind} · {duration} and {credits} AI credits",
-        "ai_credits_offered": "+{credits} AI credits included",
+        "selection": "{kind}, {duration}",
+        "selection_with_ai": "{kind}, {duration} and {credits} AI credits",
+        "hourly_rate": "{price} per hour",
+        "hourly_rate_with_saving": "{price}/h, {saving} saved",
+        "ai_credits_included": {
+          "title": "{credits} AI credits included in every pack",
+          "text": "To summarize your files and ask them questions, at no extra cost."
+        },
         "pitch": {
           "live": {
-            "headline": "Your meetings, transcribed live.",
+            "headline": "Stop taking notes in meetings.",
             "input": {
               "title": "Microphone or video call",
-              "text": "The text appears in real time"
+              "text": "Read back what was just said, without interrupting."
             },
             "speakers": {
               "title": "Speaker separation",
-              "text": "Who is speaking, at all times"
+              "text": "Each contribution credited to its speaker."
             },
             "translation": {
               "title": "Live translation",
-              "text": "Follow the conversation in your language"
+              "text": "Follow the conversation in your language."
             },
-            "counting": "Time is counted per language: an hour of meeting with one translation uses 2 h of the pack."
+            "counting": "With translation, each language is counted: an hour of meeting translated into English uses 2 hours of the pack."
           },
           "transcription": {
-            "headline": "Your audio and video files, ready to review.",
+            "headline": "Drop the recording, read the text.",
             "media": {
               "title": "Audio and video",
-              "text": "Interviews, lectures, conferences"
-            },
-            "speakers": {
-              "title": "Speaker separation",
-              "text": "Who is speaking, at all times"
+              "text": "Interviews, lectures, conferences."
             },
             "ai": {
               "title": "AI summarizes for you",
-              "text": "And answers your questions"
+              "text": "And answers your questions about the content."
+            },
+            "subtitles": {
+              "title": "Generated subtitles",
+              "text": "Ready to add to your videos."
             }
           }
         }

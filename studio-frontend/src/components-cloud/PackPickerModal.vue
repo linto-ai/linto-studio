@@ -25,6 +25,9 @@
           v-model="selectedPackKey"
           name="pack"
           :pack="pack" />
+        <template v-if="group.aiCredits" #aside>
+          <PackAiCreditsIncluded :credits="group.aiCredits" />
+        </template>
       </PackOfferGroup>
     </div>
 
@@ -39,6 +42,7 @@
 
 <script>
 import Modal from "@/components/molecules/Modal.vue"
+import PackAiCreditsIncluded from "@/components-cloud/PackAiCreditsIncluded.vue"
 import PackOffer from "@/components-cloud/PackOffer.vue"
 import PackOfferGroup from "@/components-cloud/PackOfferGroup.vue"
 import { computeDefaultPackKey } from "@/tools/billing/pack/computeDefaultPackKey"
@@ -48,12 +52,13 @@ import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
 
 // Picks one prepaid pack to buy: one group per kind, what the kind is for,
-// then its packs; the footer sums up the choice and the terms. The purchase
+// then its packs and what they all include; the footer sums up the choice
+// and the terms. The purchase
 // itself (Checkout redirect) belongs to the parent, which receives the
 // chosen packKey on submit.
 export default {
   name: "PackPickerModal",
-  components: { Modal, PackOffer, PackOfferGroup },
+  components: { Modal, PackAiCreditsIncluded, PackOffer, PackOfferGroup },
   props: {
     value: { type: Boolean, default: false },
     // Packs the organization may buy (see computePurchasablePacks)
@@ -83,7 +88,7 @@ export default {
         this.packs.find((pack) => pack.packKey === this.selectedPackKey) || null
       )
     },
-    // "File transcription · 5 h and 50 AI credits"
+    // "File transcription, 5 h and 50 AI credits"
     selectionLabel() {
       if (!this.selectedPack) return null
       const values = {
