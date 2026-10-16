@@ -783,7 +783,9 @@
       "create_speaker_label": "Nom du locuteur",
       "edit_speaker_button": "Renommer le locuteur",
       "edit_speaker_label": "Nom du locuteur",
-      "merge_speaker_button": "Fusionner \"{name}\" avec un autre locuteur"
+      "merge_speaker_button": "Fusionner \"{name}\" avec un autre locuteur",
+      "placeholder_name": "Locuteur {number}",
+      "placeholder_name_unnumbered": "Locuteur"
     },
     "status": {
       "diarization": "Séparation des locuteurs",
