@@ -9,6 +9,7 @@
           @inviteUser="addToMembers"
           @removeUser="removeFromMembers"
           :currentUsers="members"
+          :roleOptions="inviteRoleOptions"
           :usersEmailPending="usersEmailPending"
           :includeSelf="isBackofficePage"></UserInvite>
         <template #locked>
@@ -165,10 +166,12 @@ import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
 import { computeBillingInterval } from "@/tools/billing/computeBillingInterval.js"
 import { computeMemberRights } from "@/tools/members/computeMemberRights.js"
 import { computeMemberUsageRows } from "@/tools/members/computeMemberUsageRows.js"
+import { computeInviteRoleOptions } from "@/tools/seats/computeInviteRoleOptions.js"
 import { computeSeatRoleOptions } from "@/tools/seats/computeSeatRoleOptions.js"
 import { computeSeatPrice } from "@/tools/seats/computeSeatPrice"
 import { computeSeatSummary } from "@/tools/seats/computeSeatSummary.js"
 import { computeSeatsNeeded } from "@/tools/seats/computeSeatsNeeded.js"
+import { isCollaboratorRole } from "@/tools/seats/isCollaboratorRole.js"
 import { computeUsageColumns } from "@/tools/members/computeUsageColumns.js"
 import { filterMembersByText } from "@/tools/members/filterMembersByText.js"
 import { formatUsageAmount } from "@/tools/members/formatUsageAmount.js"
@@ -425,11 +428,21 @@ export default {
         available: this.seatSummary.available,
       })
     },
-    seatRoleOptions() {
-      const maxRole = this.isBackofficePage
+    grantableMaxRole() {
+      return this.isBackofficePage
         ? ORGANIZATION_ROLES.ADMINISTRATOR
         : this.userRole
-      return computeSeatRoleOptions(this.userRoles, maxRole)
+    },
+    seatRoleOptions() {
+      return computeSeatRoleOptions(this.userRoles, this.grantableMaxRole)
+    },
+    // Without a seat cap (OSS, comp or managed org) nothing is greyed out.
+    inviteRoleOptions() {
+      return computeInviteRoleOptions(
+        this.userRoles,
+        this.grantableMaxRole,
+        !this.seatSummary.isFull,
+      )
     },
     defaultSeatRole() {
       return this.seatRoleOptions[0]?.value ?? ORGANIZATION_ROLES.UPLOADER
@@ -587,19 +600,16 @@ export default {
       const req = await apiAddUserToOrganisation(
         this.organizationId,
         user.email,
-        ORGANIZATION_ROLES.MEMBER,
+        user.role,
         {
           timeout: 3000,
           redirect: false,
         },
       )
       if (req.status === "success") {
-        this.members = [
-          ...this.members,
-          { ...user, role: ORGANIZATION_ROLES.MEMBER },
-        ]
-        // A new member is free and read-only: show the tab they landed in.
-        this.activeTab = MEMBERS_TAB
+        this.members = [...this.members, user]
+        // Show the tab the new member landed in.
+        this.activeTab = isCollaboratorRole(user.role) ? SEATS_TAB : MEMBERS_TAB
       }
       this.usersEmailPending = this.usersEmailPending.filter(
         (email) => email !== user.email,

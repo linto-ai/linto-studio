@@ -2,6 +2,7 @@
   <div class="flex col">
     <select
       :id="p_id"
+      :class="{ fullwidth }"
       :value="valueKey(value)"
       :disabled="disabled"
       :aria-label="ariaLabel || undefined"
@@ -40,6 +41,8 @@ export default {
     buttonClass: { type: String, default: "" },
     id: { type: String, default: null },
     disabled: { type: Boolean, default: false },
+    // A class on the component lands on the wrapper, not on the select.
+    fullwidth: { type: Boolean, default: false },
     // Accessible name when no visible <label> points at the select.
     ariaLabel: { type: String, default: "" },
     valueKey: { type: Function, default: (value) => value },

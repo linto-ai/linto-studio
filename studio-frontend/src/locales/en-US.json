@@ -1024,6 +1024,7 @@
     "inscription_disabled": "Registration and invitations are deactivated on the platform",
     "invite": "Invite",
     "pending": "Pending",
+    "role_no_seat": "{role} (no seat available)",
     "search_label": "Search user"
   },
   "lang": {
