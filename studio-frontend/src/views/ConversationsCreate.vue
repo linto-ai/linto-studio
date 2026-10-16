@@ -241,8 +241,8 @@ export default {
     }
   },
   async created() {
-    // The session tab depends on the org's billing mode and the quick session
-    // tabs on its live balance: know them before any tab renders.
+    // The session tab depends on the org's plan and the quick session tabs on
+    // its live balance: know them before any tab renders.
     if (getEnv("VUE_APP_MODE") === "cloud") {
       await this.$store.dispatch(
         "billing/fetchUsage",
@@ -375,7 +375,6 @@ export default {
       if (
         this.isAtLeastMeetingManager &&
         this.canSessionInCurrentOrganization
-        //&&!this.isSessionOfferExcluded
       ) {
         res.push({
           name: "session",
@@ -386,16 +385,6 @@ export default {
       }
 
       return res
-    },
-    // Sessions are a separate offer in SaaS, not part of any plan: an org in
-    // the normal (self-serve) mode doesn't see the tab; comp and managed
-    // orgs, set up by hand, keep it. An unknown mode (usage not loaded or
-    // failed) hides nothing: the server still refuses what isn't sold.
-    isSessionOfferExcluded() {
-      return (
-        getEnv("VUE_APP_MODE") === "cloud" &&
-        this.$store.getters["billing/usage"]?.mode === "normal"
-      )
     },
     // A user can only have one quick session at a time: when one already
     // exists, the live/visio creation forms are replaced by a placeholder.

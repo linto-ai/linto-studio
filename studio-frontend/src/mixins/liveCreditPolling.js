@@ -8,17 +8,20 @@ const POLL_INTERVAL_MS = 60 * 1000
 // source is a usage fetch every minute (the server debits once a minute);
 // a pushed event can replace it later without touching the consumers, which
 // only read `liveCredit`.
-// Expects the host component to have `isFromPublicLink` and
+// Expects the host component to have `session`, `isFromPublicLink` and
 // `currentOrganizationScope` props.
 export const liveCreditPollingMixin = {
   computed: {
     // Only the org's own members watch its credit: a public viewer, or a
     // viewer whose store holds another org's usage, would see a wrong figure.
+    // Only a microphone or visio session ("user" visibility) spends live
+    // credit, the Sessions mode never does (SPEC-SAAS §1.2).
     isLiveCreditWatched() {
       return (
         IS_MODE_CLOUD &&
         !this.isFromPublicLink &&
-        !!this.currentOrganizationScope
+        !!this.currentOrganizationScope &&
+        this.session?.visibility === "user"
       )
     },
     // live block of the org usage summary, null when not watched.

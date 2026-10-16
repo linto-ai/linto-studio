@@ -1,6 +1,8 @@
 import { ORGANIZATION_PERMISSIONS } from "@/const/organizationPermissions"
 import { getEnv } from "@/tools/getEnv"
 
+const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
+
 export const organizationPermissionsMixin = {
   methods: {
     hasNoPermission(permission) {
@@ -60,10 +62,10 @@ export const organizationPermissionsMixin = {
     canSummaryInCurrentOrganization() {
       return this.hasSummaryPermission(this.organizationPermissions)
     },
-    // SaaS: the Sessions mode is sold on quote, to managed organizations only.
+    // SaaS: also gated by the live.sessions entitlement (plans catalog).
     canSessionInCurrentOrganization() {
       if (!this.hasSessionPermission(this.organizationPermissions)) return false
-      if (getEnv("VUE_APP_MODE") !== "cloud") return true
+      if (!IS_MODE_CLOUD) return true
       return this.$store.getters["billing/can"]("live.sessions")
     },
     canMicrophoneInCurrentOrganization() {

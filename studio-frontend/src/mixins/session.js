@@ -404,8 +404,12 @@ export const sessionMixin = {
     isWebsocketConnected() {
       return this.websocketInstance?.state.isConnected ?? false
     },
+    // Without its organization the router falls back to the default one.
     sessionListRoute() {
-      return `/interface/sessionsList`
+      return {
+        name: "sessionsList",
+        params: { organizationId: this.sessionOrganizationId },
+      }
     },
     settingsRoute() {
       return `/interface/${this.sessionOrganizationId}/sessions/${this.sessionId}/settings`
