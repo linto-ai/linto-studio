@@ -782,7 +782,9 @@
       "create_speaker_label": "Speaker name",
       "edit_speaker_button": "Edit the speaker",
       "edit_speaker_label": "Speaker name",
-      "merge_speaker_button": "Merge \"{name}\" with another speaker"
+      "merge_speaker_button": "Merge \"{name}\" with another speaker",
+      "placeholder_name": "Speaker {number}",
+      "placeholder_name_unnumbered": "Speaker"
     },
     "status": {
       "diarization": "Speakers split",

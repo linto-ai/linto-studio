@@ -2,6 +2,7 @@ import { VERBATIM_FORMATS } from "@/const/verbatimFormats.js"
 import { buildAudioPlugin } from "./buildAudioPlugin.js"
 import { buildTranscriptionEditorPlugin } from "./buildTranscriptionEditorPlugin.js"
 import { buildEditorRoomHandlers } from "./buildEditorRoomHandlers.js"
+import { createSpeakerLabels } from "./createSpeakerLabels.js"
 import { loadActiveTrackContent } from "./actions/loadActiveTrackContent.js"
 import { refetchTrack } from "./actions/refetchTrack.js"
 import { exportVerbatim } from "./actions/exportVerbatim.js"
@@ -23,6 +24,7 @@ export class TranscriptionController {
     this.t = t
     this.notify = notify
     this.destroyed = false
+    this.speakerLabels = createSpeakerLabels(t)
     // Track id → its load in progress (see loadTrackContent)
     this.pendingTrackLoads = new Map()
     // Channel id → number of its tracks loading
@@ -34,7 +36,10 @@ export class TranscriptionController {
       ),
     )
     core.verbatimFormats.value = VERBATIM_FORMATS
-    socket.joinEditorRoom(conversationId, buildEditorRoomHandlers(core))
+    socket.joinEditorRoom(
+      conversationId,
+      buildEditorRoomHandlers(core, this.speakerLabels),
+    )
     this.offActiveTrackChange = core.on("activeTrack:change", () =>
       this.loadActiveTrackContent(),
     )
