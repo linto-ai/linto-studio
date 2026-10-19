@@ -26,7 +26,7 @@ const fromSpeaker = computed(() =>
 )
 
 const candidates = computed(() =>
-  Array.from(core.speakers.all.values()).filter(
+  core.activeSpeakers.value.filter(
     (s) => s.id !== props.fromSpeakerId,
   ),
 )

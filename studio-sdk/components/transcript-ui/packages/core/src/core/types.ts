@@ -744,6 +744,9 @@ export interface Core {
   readonly speakers: SpeakersStore
   readonly channels: Map<string, ChannelStore>
   readonly activeChannel: ComputedRef<ChannelStore | undefined>
+  /** Speakers of the active translation's turns, the ones a listing shows:
+   *  `speakers` spans every loaded track. */
+  readonly activeSpeakers: ComputedRef<Speaker[]>
 
   /** Reading size of the transcript text, in pixels. Chrome (buttons,
    *  headers, the sidebar) keeps its own scale. Writable: there is nothing to

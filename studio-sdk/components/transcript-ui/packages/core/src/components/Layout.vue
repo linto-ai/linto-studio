@@ -84,7 +84,7 @@ const translations = computed(
 const activeTranslationId = computed(
   () => core.activeChannel.value?.activeTranslation.value.id ?? "",
 )
-const speakerList = computed(() => Array.from(speakers.values()))
+const speakerList = core.activeSpeakers
 
 const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB)
 
@@ -174,7 +174,7 @@ function onTranslationChange(translationId: string) {
       :title="core.title.value"
       :date="core.date.value"
       :duration="core.activeChannel.value?.duration ?? 0"
-      :speaker-count="speakers.size"
+      :speaker-count="speakerList.length"
       :is-mobile="isMobile"
       :can-ask="chatOffered && !!core.chat"
       :can-undo="core.transcriptionEditor?.canUndo.value ?? false"
