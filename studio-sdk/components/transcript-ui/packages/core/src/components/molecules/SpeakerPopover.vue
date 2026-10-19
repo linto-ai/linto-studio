@@ -22,7 +22,7 @@ const isCreatingNew = ref(false)
 const newName = ref("")
 const newInputRef = useTemplateRef<{ focus: () => void }>("newInput")
 
-const speakers = computed(() => Array.from(core.speakers.all.values()))
+const speakers = core.activeSpeakers
 
 const newSpeakerField = computed<FormField>(() => ({
   placeholder: t("speakerPopover.newSpeakerPlaceholder"),

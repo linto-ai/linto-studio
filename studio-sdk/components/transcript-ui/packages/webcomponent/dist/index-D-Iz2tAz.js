@@ -9174,6 +9174,12 @@ function ensureDocumentSpeakers(doc2) {
   }
   return refs;
 }
+function listActiveSpeakers(turns, speakers) {
+  const usedIds = new Set(turns.map((turn) => turn.speakerId));
+  return Array.from(speakers.values()).filter(
+    (speaker) => usedIds.has(speaker.id)
+  );
+}
 function hexToRgba(hex, alpha) {
   const cleaned = hex.replace("#", "");
   const r2 = parseInt(cleaned.substring(0, 2), 16);
@@ -9652,6 +9658,12 @@ function createCore(options = {}) {
   const activeChannel = computed(
     () => channels.get(activeChannelId.value) ?? [...channels.values()][0]
   );
+  const activeSpeakers = computed((previous) => {
+    const turns = activeChannel.value?.activeTranslation.value.turns.value ?? [];
+    const next2 = listActiveSpeakers(turns, speakers.all);
+    const unchanged = previous?.length === next2.length && next2.every((speaker, index) => speaker === previous[index]);
+    return unchanged ? previous : next2;
+  });
   function onActiveTranslation(event, handler) {
     return on(event, (payload) => {
       const channel = activeChannel.value;
@@ -9736,6 +9748,7 @@ function createCore(options = {}) {
     speakers,
     channels,
     activeChannel,
+    activeSpeakers,
     transcriptFontSize,
     theme,
     primaryColor,
@@ -10795,7 +10808,7 @@ const _sfc_main$P = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-BImb-M8q.js");
+        const { highlightCode } = await import("./highlight-B0r9doyc.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -23975,7 +23988,7 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
     const isCreatingNew = /* @__PURE__ */ ref(false);
     const newName = /* @__PURE__ */ ref("");
     const newInputRef = useTemplateRef("newInput");
-    const speakers = computed(() => Array.from(core.speakers.all.values()));
+    const speakers = core.activeSpeakers;
     const newSpeakerField = computed(() => ({
       placeholder: t2("speakerPopover.newSpeakerPlaceholder"),
       customParams: { "aria-label": t2("speakerPopover.newSpeaker") }
@@ -24029,7 +24042,7 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
       return openBlock(), createBlock(unref(_sfc_main$J), {
         open: isOpen.value,
         "onUpdate:open": _cache[1] || (_cache[1] = ($event) => isOpen.value = $event),
-        items: speakers.value,
+        items: unref(speakers),
         "item-key": (s2) => s2.id,
         "is-current": (s2) => s2.id === __props.currentSpeakerId,
         onSelect: onPickExisting
@@ -24076,8 +24089,8 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$p = "\n.transcript-ui-root .speaker-popover-trigger[data-v-cb805d51] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-popover-trigger[data-v-cb805d51]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.speaker-popover-name[data-v-cb805d51] {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
-const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-cb805d51"]]);
+const _style_0$p = "\n.transcript-ui-root .speaker-popover-trigger[data-v-fc1a34cf] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-popover-trigger[data-v-fc1a34cf]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.speaker-popover-name[data-v-fc1a34cf] {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
+const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-fc1a34cf"]]);
 const turnSelectionKey = /* @__PURE__ */ Symbol("turnSelection");
 function getTurnText(turn) {
   if (turn.words.length > 0) {
@@ -25059,7 +25072,7 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
       () => props.fromSpeakerId ? core.speakers.all.get(props.fromSpeakerId) : void 0
     );
     const candidates = computed(
-      () => Array.from(core.speakers.all.values()).filter(
+      () => core.activeSpeakers.value.filter(
         (s2) => s2.id !== props.fromSpeakerId
       )
     );
@@ -25151,8 +25164,8 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$j = "\n.merge-dialog[data-v-6f764c0c] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-6f764c0c]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-6f764c0c] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-6f764c0c] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-6f764c0c] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-6f764c0c] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
-const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$j]], ["__scopeId", "data-v-6f764c0c"]]);
+const _style_0$j = "\n.merge-dialog[data-v-6dca25b7] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-6dca25b7]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-6dca25b7] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-6dca25b7] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-6dca25b7] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-6dca25b7] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
+const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$j]], ["__scopeId", "data-v-6dca25b7"]]);
 const _hoisted_1$h = { class: "speaker-sidebar" };
 const _hoisted_2$f = {
   key: 0,
@@ -25666,7 +25679,7 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
     const activeTranslationId = computed(
       () => core.activeChannel.value?.activeTranslation.value.id ?? ""
     );
-    const speakerList = computed(() => Array.from(speakers.values()));
+    const speakerList = core.activeSpeakers;
     const showTranscription = computed(() => activeTab.value === TRANSCRIPTION_TAB);
     const chatOffered = computed(
       () => !!core.components.chatDrawer && computeCanChat(core.capabilities.value)
@@ -25727,7 +25740,7 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
           title: unref(core).title.value,
           date: unref(core).date.value,
           duration: unref(core).activeChannel.value?.duration ?? 0,
-          "speaker-count": unref(speakers).size,
+          "speaker-count": unref(speakerList).length,
           "is-mobile": unref(isMobile),
           "can-ask": chatOffered.value && !!unref(core).chat,
           "can-undo": unref(core).transcriptionEditor?.canUndo.value ?? false,
@@ -25773,7 +25786,7 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
           ], 2),
           !unref(isMobile) && panels.value.length === 1 ? (openBlock(), createBlock(SpeakerSidebar, {
             key: 0,
-            speakers: speakerList.value,
+            speakers: unref(speakerList),
             channels: channels.value,
             "selected-channel-id": unref(core).activeChannelId.value,
             translations: translations.value,
@@ -25790,7 +25803,7 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
           }, {
             default: withCtx(() => [
               createVNode(SpeakerSidebar, {
-                speakers: speakerList.value,
+                speakers: unref(speakerList),
                 channels: channels.value,
                 "selected-channel-id": unref(core).activeChannelId.value,
                 translations: translations.value,
@@ -25831,8 +25844,8 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$g = "\n.editor-layout[data-v-c2a90b68] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-c2a90b68] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-c2a90b68] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-c2a90b68] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-c2a90b68] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-c2a90b68] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-c2a90b68] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-c2a90b68] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-c2a90b68] {\n    grid-template-columns: 1fr;\n}\n}\n";
-const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$g]], ["__scopeId", "data-v-c2a90b68"]]);
+const _style_0$g = "\n.editor-layout[data-v-4a024201] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-4a024201] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-4a024201] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-4a024201] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-4a024201] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-4a024201] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-4a024201] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-4a024201] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-4a024201] {\n    grid-template-columns: 1fr;\n}\n}\n";
+const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$g]], ["__scopeId", "data-v-4a024201"]]);
 const _hoisted_1$e = {
   class: "editor-loading",
   role: "status",
@@ -31831,4 +31844,4 @@ export {
   purify_default as p,
   register as r
 };
-//# sourceMappingURL=index--_oHkG45.js.map
+//# sourceMappingURL=index-D-Iz2tAz.js.map

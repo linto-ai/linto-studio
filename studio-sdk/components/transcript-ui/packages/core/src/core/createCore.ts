@@ -1,6 +1,6 @@
 import { ref, computed, shallowReactive, watch, type Component } from "vue"
 import type { DownloadFormat } from "@linto-ai/transcript-ui-ui"
-import type { Channel, EditorDocument } from "../types/editor"
+import type { Channel, EditorDocument, Speaker } from "../types/editor"
 import type {
   Core,
   CoreOptions,
@@ -18,6 +18,7 @@ import { createChannelStore } from "./stores/channelStore"
 import type { ChannelStore } from "./types"
 import { ensureDocumentSpeakers } from "./helpers/ensureDocumentSpeakers"
 import { ensureSpeakersFromTurns } from "./helpers/ensureSpeakersFromTurns"
+import { listActiveSpeakers } from "./helpers/listActiveSpeakers"
 import * as utils from "../utils"
 
 /** 1.125rem, the --font-size-base the transcript used before it was tunable. */
@@ -113,6 +114,17 @@ export function createCore(options: CoreOptions = {}): Core {
   const activeChannel = computed<ChannelStore | undefined>(() =>
     channels.get(activeChannelId.value) ?? [...channels.values()][0],
   )
+
+  // Same array while the speakers are unchanged: a text edit re-renders no
+  // speaker listing.
+  const activeSpeakers = computed<Speaker[]>((previous) => {
+    const turns = activeChannel.value?.activeTranslation.value.turns.value ?? []
+    const next = listActiveSpeakers(turns, speakers.all)
+    const unchanged =
+      previous?.length === next.length &&
+      next.every((speaker, index) => speaker === previous[index])
+    return unchanged ? previous : next
+  })
 
   // ── Scoped events ─────────────────────────────────────────────────
 
@@ -237,6 +249,7 @@ export function createCore(options: CoreOptions = {}): Core {
     speakers,
     channels,
     activeChannel,
+    activeSpeakers,
     transcriptFontSize,
     theme,
     primaryColor,
