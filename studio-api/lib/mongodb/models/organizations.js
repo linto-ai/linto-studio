@@ -23,6 +23,10 @@ const public_projection = { token: 0, sso: 0 }
 // Orgs bought with a plan stay hidden until paid (see createPending)
 const VISIBLE = { pendingCheckout: { $exists: false } }
 
+const SORTABLE_COMPUTED_FIELDS = {
+  userNumber: { $size: { $ifNull: ["$users", []] } },
+}
+
 class OrganizationModel extends MongoModel {
   constructor() {
     super("organizations")
@@ -233,6 +237,7 @@ class OrganizationModel extends MongoModel {
           query,
           public_projection,
           filter,
+          SORTABLE_COMPUTED_FIELDS,
         )
     } catch (error) {
       console.error(error)

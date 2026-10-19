@@ -55,7 +55,12 @@ class MongoModel {
     }
   }
 
-  async mongoAggregatePaginate(query, projection, paginate = {}) {
+  async mongoAggregatePaginate(
+    query,
+    projection,
+    paginate = {},
+    computedFields,
+  ) {
     const size = parseInt(paginate.size) || 100
     const page = parseInt(paginate.page) || 0
     const sortField = paginate.sortField || "_id"
@@ -68,6 +73,13 @@ class MongoModel {
         { $skip: size * page },
         { $limit: size },
       ]
+
+      // A field absent from the documents is computed before $sort
+      if (computedFields?.[sortField]) {
+        paginatedResultPipeline.unshift({
+          $addFields: { [sortField]: computedFields[sortField] },
+        })
+      }
 
       if (!projection.skipProjection) {
         paginatedResultPipeline.push({ $project: projection })
