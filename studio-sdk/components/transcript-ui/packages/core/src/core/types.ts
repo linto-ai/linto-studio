@@ -594,6 +594,9 @@ export interface LivePartialEventData {
 export interface LiveFinalEventData {
   turnId: string
   speakerId: string | null
+  /** false when speakerId is a generic provider tag ("Guest-1", "spk_0").
+   *  Absent when unknown. @see Speaker.defined */
+  speakerDefined?: boolean
   text?: string
   words: Array<{
     id: string
@@ -624,6 +627,8 @@ export interface LiveTranslationEventData {
   startTime: number
   endTime: number
   speakerId: string | null
+  /** @see LiveFinalEventData.speakerDefined */
+  speakerDefined?: boolean
 }
 
 export interface LivePluginApi {

@@ -27,6 +27,7 @@ const {
   checkChannelsSecurityLevel,
   checkSessionMembersRight,
   chainBeforeResult,
+  annotateSessionCaptions,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -127,6 +128,7 @@ module.exports = (webServer) => {
               (jsonString, req) => {
                 return generatPublicToken(jsonString, req)
               },
+              annotateSessionCaptions,
             ],
           },
           {
@@ -138,6 +140,7 @@ module.exports = (webServer) => {
               (jsonString) => {
                 return cleanPublicChannelContent(jsonString)
               },
+              annotateSessionCaptions,
             ],
           },
         ],
@@ -151,14 +154,14 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["get"],
             executeBeforeResult: forwardSessionAlias,
-            executeAfterResult: [afterProxyAccess],
+            executeAfterResult: [afterProxyAccess, annotateSessionCaptions],
             forwardParams: proxyForwardParams,
           },
           {
             path: "/organizations/:organizationId/sessions/:id/channels/:channelId",
             method: ["get"],
             executeBeforeResult: forwardSessionAlias,
-            executeAfterResult: [afterProxyAccess],
+            executeAfterResult: [afterProxyAccess, annotateSessionCaptions],
             forwardParams: proxyForwardParams,
           },
           {

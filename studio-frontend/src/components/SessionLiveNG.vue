@@ -500,6 +500,7 @@ export default {
       const baseTurn = {
         turnId: computeSessionTurnUniqueId(content),
         speakerId: content.locutor ?? null,
+        speakerDefined: content.locutorDefined,
         words: [],
         startDate: computeTurnStartDate(content),
         endDate: computeTurnEndDate(content),
@@ -523,6 +524,7 @@ export default {
         startDate: computeTurnStartDate(content),
         endDate: computeTurnEndDate(content),
         speakerId: content.locutor,
+        speakerDefined: content.locutorDefined,
       })
     },
 

@@ -10795,7 +10795,7 @@ const _sfc_main$P = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-CQog18zy.js");
+        const { highlightCode } = await import("./highlight-BImb-M8q.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -26592,8 +26592,19 @@ function createLivePlugin(options = {}) {
         if (store.hasTurn(turn.id)) store.updateTurn(turn.id, turn);
         else store.addTurn(turn);
       }
+      function ensureEventSpeaker(speakerId, defined) {
+        if (!speakerId) return;
+        const existing = core.speakers.all.get(speakerId);
+        if (!existing) {
+          core.speakers.ensure(speakerId, speakerId, defined);
+          return;
+        }
+        if (defined !== void 0 && existing.name === speakerId) {
+          core.speakers.update(speakerId, { defined });
+        }
+      }
       function onFinal(event, channelId) {
-        if (event.speakerId) core.speakers.ensure(event.speakerId);
+        ensureEventSpeaker(event.speakerId, event.speakerDefined);
         const channel = core.channels.get(channelId);
         if (!channel) {
           immediateClearPartial();
@@ -26636,7 +26647,7 @@ function createLivePlugin(options = {}) {
         for (const event of events) {
           if (event.speakerId && !seen.has(event.speakerId)) {
             seen.add(event.speakerId);
-            core.speakers.ensure(event.speakerId);
+            ensureEventSpeaker(event.speakerId, event.speakerDefined);
           }
         }
         const sourceTurns = [];
@@ -26694,6 +26705,7 @@ function createLivePlugin(options = {}) {
         }
         const trStore = channel.translations.get(_event.language);
         if (trStore) {
+          ensureEventSpeaker(_event.speakerId, _event.speakerDefined);
           const turn = finalEventToTranslationTurn(
             { ..._event },
             _event
@@ -31819,4 +31831,4 @@ export {
   purify_default as p,
   register as r
 };
-//# sourceMappingURL=index-e2_4JXga.js.map
+//# sourceMappingURL=index--_oHkG45.js.map

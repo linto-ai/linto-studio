@@ -4,7 +4,8 @@ import type { Core } from "@linto-ai/transcript-ui-core"
 import { createLivePlugin } from "../index"
 
 /** One channel, a French source and an English translation track — enough
- *  for both partial paths (source, and translated/cross). */
+ *  for both partial paths (source, and translated/cross). Tracks are keyed
+ *  by language, as live hosts do: final translations look them up that way. */
 function makeLiveCore(silenceDelay?: number): Core {
   const core = createCore()
   core.setDocument({
@@ -16,8 +17,8 @@ function makeLiveCore(silenceDelay?: number): Core {
         name: "channel 1",
         duration: 0,
         translations: [
-          { id: "tr-fr", languages: ["fr"], isSource: true, turns: [] },
-          { id: "tr-en", languages: ["en"], isSource: false, turns: [] },
+          { id: "fr", languages: ["fr"], isSource: true, turns: [] },
+          { id: "en", languages: ["en"], isSource: false, turns: [] },
         ],
       },
     ],
@@ -83,7 +84,7 @@ describe("createLivePlugin — partials visibility", () => {
 
   it("gates translated partials too, not just the source ones", () => {
     const core = makeLiveCore()
-    core.activeChannel.value!.setActiveTranslation("tr-en")
+    core.activeChannel.value!.setActiveTranslation("en")
 
     sendTranslatedPartial(core, "hello the")
     expect(core.live!.partial.value).toBe("hello the")
@@ -151,7 +152,7 @@ describe("createLivePlugin — speech activity", () => {
 
   it("counts translated partials as speech too", () => {
     const core = makeLiveCore(30)
-    core.activeChannel.value!.setActiveTranslation("tr-en")
+    core.activeChannel.value!.setActiveTranslation("en")
 
     sendTranslatedPartial(core, "hello")
     expect(core.live!.isSpeechActive.value).toBe(true)
@@ -160,5 +161,121 @@ describe("createLivePlugin — speech activity", () => {
   it("defaults to a two-second delay, host-tunable at runtime", () => {
     expect(makeLiveCore().live!.silenceDelay.value).toBe(6000)
     expect(makeLiveCore(500).live!.silenceDelay.value).toBe(500)
+  })
+})
+
+function sendFinal(
+  core: Core,
+  speakerId: string | null,
+  speakerDefined?: boolean,
+): void {
+  core.live!.onFinal(
+    {
+      turnId: `turn-${Math.random()}`,
+      speakerId,
+      ...(speakerDefined !== undefined ? { speakerDefined } : {}),
+      text: "bonjour",
+      words: [],
+      startTime: 0,
+      endTime: 1,
+      language: "fr",
+    },
+    "ch-1",
+  )
+}
+
+describe("createLivePlugin — speaker placeholder flag", () => {
+  it("creates a placeholder speaker from a generic locutor", () => {
+    const core = makeLiveCore()
+    sendFinal(core, "Guest-1", false)
+
+    const speaker = core.speakers.all.get("Guest-1")
+    expect(speaker?.name).toBe("Guest-1")
+    expect(speaker?.defined).toBe(false)
+  })
+
+  it("leaves the flag out when the event does not carry it", () => {
+    const core = makeLiveCore()
+    sendFinal(core, "Alice")
+
+    const speaker = core.speakers.all.get("Alice")
+    expect(speaker?.name).toBe("Alice")
+    expect(speaker).not.toHaveProperty("defined")
+  })
+
+  it("flags a speaker first created by a translated turn", () => {
+    const core = makeLiveCore()
+    core.live!.onTranslation({
+      turnId: "turn-1",
+      language: "en",
+      sourceLanguage: "fr",
+      text: "hello",
+      final: true,
+      startTime: 0,
+      endTime: 1,
+      speakerId: "spk_1",
+    })
+    expect(core.speakers.all.has("spk_1")).toBe(true)
+    expect(core.speakers.all.get("spk_1")).not.toHaveProperty("defined")
+
+    sendFinal(core, "spk_1", false)
+    expect(core.speakers.all.get("spk_1")?.defined).toBe(false)
+  })
+
+  it("carries the flag of a final translation event", () => {
+    const core = makeLiveCore()
+    core.live!.onTranslation({
+      turnId: "turn-1",
+      language: "en",
+      sourceLanguage: "fr",
+      text: "hello",
+      final: true,
+      startTime: 0,
+      endTime: 1,
+      speakerId: "Guest-2",
+      speakerDefined: false,
+    })
+    expect(core.speakers.all.get("Guest-2")?.defined).toBe(false)
+  })
+
+  it("keeps a renamed speaker's name over a later placeholder flag", () => {
+    const core = makeLiveCore()
+    sendFinal(core, "Guest-1", false)
+    core.speakers.update("Guest-1", { name: "Alice", defined: true })
+
+    sendFinal(core, "Guest-1", false)
+    expect(core.speakers.all.get("Guest-1")?.defined).toBe(true)
+  })
+
+  it("flags speakers of a history batch", () => {
+    const core = makeLiveCore()
+    core.live!.prependFinalBatch(
+      [
+        {
+          turnId: "turn-1",
+          speakerId: "spk_0",
+          speakerDefined: false,
+          text: "bonjour",
+          words: [],
+          startTime: 0,
+          endTime: 1,
+          language: "fr",
+        },
+        {
+          turnId: "turn-2",
+          speakerId: "Bob",
+          speakerDefined: true,
+          text: "salut",
+          words: [],
+          startTime: 1,
+          endTime: 2,
+          language: "fr",
+        },
+      ],
+      "ch-1",
+    )
+
+    expect(core.speakers.all.get("spk_0")?.defined).toBe(false)
+    expect(core.speakers.all.get("Bob")?.defined).toBe(true)
   })
 })

@@ -11,6 +11,9 @@ const mm = require("music-metadata")
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
+const { isGenericSpeakerName } = require(
+  `${process.cwd()}/lib/utility/isGenericSpeakerName`,
+)
 
 //Parse the stt transcription to for conversation mongodb model
 function initConversation(metadata, userId, job_id) {
@@ -171,13 +174,12 @@ function transcriptionToConversation(transcript, conversation) {
         }
       })
     } else {
-      // Imported transcriptions can carry real names: only a diarization tag
-      // or the "speaker" fallback (missing spk_id) is a placeholder.
+      // Imported transcriptions can carry real names: only a generic name
+      // (diarization tag, uuid, "speaker" fallback of a missing spk_id) is a
+      // placeholder. Evaluated on the original name, before the uuid rename.
       let speaker_num = 1
       conversation.speakers.map((speaker) => {
-        speaker.defined =
-          speaker.speaker_name !== "speaker" &&
-          !isUnidentifiedTag(speaker.speaker_name)
+        speaker.defined = !isGenericSpeakerName(speaker.speaker_name)
         if (uuid.validate(speaker.speaker_name)) {
           speaker.speaker_name = "speaker" + speaker_num
           speaker_num++

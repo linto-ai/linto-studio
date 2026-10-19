@@ -28,6 +28,8 @@ export default function processSessionCaptions({
         text: c.text ?? null,
         words: [],
         speakerId: c.locutor ?? null,
+        // false when the locutor is a generic provider tag ("Guest-1", "spk_0")
+        speakerDefined: c.locutorDefined,
         startDate: computeTurnStartDate(c),
         endDate: computeTurnEndDate(c),
         language: c.lang ?? defaultLanguage,

@@ -26594,8 +26594,19 @@ section.turn:has([data-state="open"]) {
           if (store.hasTurn(turn.id)) store.updateTurn(turn.id, turn);
           else store.addTurn(turn);
         }
+        function ensureEventSpeaker(speakerId, defined) {
+          if (!speakerId) return;
+          const existing = core.speakers.all.get(speakerId);
+          if (!existing) {
+            core.speakers.ensure(speakerId, speakerId, defined);
+            return;
+          }
+          if (defined !== void 0 && existing.name === speakerId) {
+            core.speakers.update(speakerId, { defined });
+          }
+        }
         function onFinal(event, channelId) {
-          if (event.speakerId) core.speakers.ensure(event.speakerId);
+          ensureEventSpeaker(event.speakerId, event.speakerDefined);
           const channel = core.channels.get(channelId);
           if (!channel) {
             immediateClearPartial();
@@ -26638,7 +26649,7 @@ section.turn:has([data-state="open"]) {
           for (const event of events) {
             if (event.speakerId && !seen.has(event.speakerId)) {
               seen.add(event.speakerId);
-              core.speakers.ensure(event.speakerId);
+              ensureEventSpeaker(event.speakerId, event.speakerDefined);
             }
           }
           const sourceTurns = [];
@@ -26696,6 +26707,7 @@ section.turn:has([data-state="open"]) {
           }
           const trStore = channel.translations.get(_event.language);
           if (trStore) {
+            ensureEventSpeaker(_event.speakerId, _event.speakerDefined);
             const turn = finalEventToTranslationTurn(
               { ..._event },
               _event

@@ -2,6 +2,9 @@ const debug = require("debug")(
   "linto:components:BrokerClient:controllers:MqttEventsDelivery",
 )
 const logger = require(`${process.cwd()}/lib/logger/logger`)
+const { annotateLocutorDefined } = require(
+  `${process.cwd()}/lib/utility/annotateLocutorDefined`,
+)
 
 module.exports = function () {
   this.mainClient.on("message", (topic, message) => {
@@ -45,7 +48,7 @@ function handleTranscriberMessage(topic, message) {
   }
 
   try {
-    const parsedMessage = JSON.parse(message.toString())
+    const parsedMessage = annotateLocutorDefined(JSON.parse(message.toString()))
     this.app.components["IoHandler"].emit(
       action,
       session_id + "/" + channel_index,

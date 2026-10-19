@@ -28,6 +28,9 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const crypto = require("crypto")
 
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const { annotateLocutorDefined } = require(
+  `${process.cwd()}/lib/utility/annotateLocutorDefined`,
+)
 
 function verifyPublicSessionPassword(storedHash, inputPassword) {
   const inputKey = crypto.pbkdf2Sync(
@@ -339,6 +342,46 @@ function cleanPublicChannelContent(jsonString) {
   throw new UnauthorizedProxy()
 }
 
+// translatedCaptions is an array on a session, and an object of arrays keyed
+// by segmentId on a paginated channel: flatten both into captions.
+function computeTranslatedCaptionsList(translatedCaptions) {
+  if (Array.isArray(translatedCaptions)) return translatedCaptions
+  if (translatedCaptions && typeof translatedCaptions === "object")
+    return Object.values(translatedCaptions).flat()
+  return []
+}
+
+// Flag every caption of a channel with locutorDefined. Returns how many
+// captions carry a locutor.
+function annotateChannelCaptions(channel) {
+  const captions = [
+    ...(Array.isArray(channel?.closedCaptions) ? channel.closedCaptions : []),
+    ...computeTranslatedCaptionsList(channel?.translatedCaptions),
+  ]
+  let annotated = 0
+  for (const caption of captions) {
+    annotateLocutorDefined(caption)
+    if (caption?.locutorDefined !== undefined) annotated++
+  }
+  return annotated
+}
+
+// Proxy after-result for a session or a single channel payload: tell the live
+// page which locutors are generated placeholders, the same way the websocket
+// messages do, so a reload mid-session shows the same speakers.
+async function annotateSessionCaptions(jsonString) {
+  let body
+  try {
+    body = JSON.parse(jsonString)
+  } catch (err) {
+    return jsonString
+  }
+  const channels = Array.isArray(body?.channels) ? body.channels : [body]
+  let annotated = 0
+  for (const channel of channels) annotated += annotateChannelCaptions(channel)
+  return annotated > 0 ? JSON.stringify(body) : jsonString
+}
+
 module.exports = {
   forceQueryParams,
   createQuickMeeting,
@@ -355,4 +398,5 @@ module.exports = {
   chainBeforeResult,
   cleanPublicSessionContent,
   cleanPublicChannelContent,
+  annotateSessionCaptions,
 }
