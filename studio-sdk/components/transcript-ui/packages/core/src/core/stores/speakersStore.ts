@@ -11,8 +11,12 @@ export function createSpeakersStore(
 ): SpeakersStore & { clear(): void } {
   const all = shallowReactive(new Map<string, Speaker>())
 
-  function ensure(speakerId: string | null, name?: string): void {
-    const speaker = ensureSpeaker(all, speakerId, name)
+  function ensure(
+    speakerId: string | null,
+    name?: string,
+    defined?: boolean,
+  ): void {
+    const speaker = ensureSpeaker(all, speakerId, name, defined)
     if (!speaker) return
     all.set(speaker.id, speaker)
     emit("speaker:add", { speaker })

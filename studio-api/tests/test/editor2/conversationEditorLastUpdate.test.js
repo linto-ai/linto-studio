@@ -89,7 +89,7 @@ describe.each([
   ],
   [
     "renameEditorSpeaker",
-    () => conversationEditor.renameEditorSpeaker("conv-1", "spk-1", "Marie D."),
+    () => conversationEditor.renameEditorSpeaker("conv-1", "spk-1", "Marie D.", true),
   ],
   [
     "replaceEditorSpeaker",

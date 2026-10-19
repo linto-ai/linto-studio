@@ -211,7 +211,7 @@ describe("processChannelCaptions", () => {
       )
       const alice = caption.speakers.find((s) => s.speaker_name === "Alice")
       expect(unknown).toBeDefined()
-      // Only a locutor given by the session is a defined name.
+      // Only a real name given by the session is a defined name.
       expect(unknown.defined).toBe(false)
       expect(alice.defined).toBe(true)
       expect(alice).toBeDefined()
@@ -336,6 +336,36 @@ describe("processChannelCaptions", () => {
       ).speaker_id
       const aliceTurns = caption.text.filter((t) => t.speaker_id === aliceId)
       expect(aliceTurns).toHaveLength(2)
+    })
+  })
+
+  describe("provider diarization tags", () => {
+    it("keeps the tag as name but marks it as a placeholder, real names stay defined", () => {
+      const locutors = ["Guest-1", "spk_0", "Unknown", "Alice"]
+      const channel = {
+        diarization: true,
+        closedCaptions: locutors.map((locutor, i) => ({
+          segmentId: i + 1,
+          start: i,
+          end: i + 1,
+          text: `t${i}`,
+          lang: "fr-FR",
+          locutor,
+        })),
+      }
+      const caption = makeCaption()
+      processChannelCaptions(channel, caption, true)
+
+      expect(
+        Object.fromEntries(
+          caption.speakers.map((s) => [s.speaker_name, s.defined]),
+        ),
+      ).toEqual({
+        "Guest-1": false,
+        spk_0: false,
+        Unknown: false,
+        Alice: true,
+      })
     })
   })
 

@@ -2,8 +2,12 @@ import { mapApiTurns } from "@linto-ai/transcript-ui-webcomponent"
 import { computeEpochMs } from "@/tools/date/computeEpochMs.js"
 
 export function applyTrackContent(core, channel, track, content) {
+  // A refetch carries the whole truth: a speaker already known is synced
+  // too (renamed or undone while this tab was offline).
   for (const speaker of content.speakers ?? []) {
-    core.speakers.ensure(speaker.speaker_id, speaker.speaker_name)
+    const { speaker_id: id, speaker_name: name, defined } = speaker
+    core.speakers.ensure(id, name, defined)
+    core.speakers.update(id, { name, defined })
   }
   track.setTurns(mapApiTurns(content.text ?? []))
   core.transcriptionEditor?.setTranslationVersion(

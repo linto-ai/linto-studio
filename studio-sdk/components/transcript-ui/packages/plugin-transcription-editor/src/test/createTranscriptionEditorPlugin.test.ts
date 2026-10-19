@@ -798,6 +798,49 @@ describe("createTranscriptionEditorPlugin — speaker applies", () => {
     expect(core.speakers.all.has("spk-1")).toBe(true)
   })
 
+  it("applyTurnSpeakerUpdated carries the placeholder flag", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applyTurnSpeakerUpdated({
+      translationId: "tr-1",
+      turnId: "turn-2",
+      speaker: { id: "spk-new", name: "spk3", defined: false },
+      version: 4,
+    })
+    expect(core.speakers.all.get("spk-new")?.defined).toBe(false)
+
+    core.transcriptionEditor!.applyTurnSpeakerUpdated({
+      translationId: "tr-1",
+      turnId: "turn-1",
+      speaker: { id: "spk-new", name: "Julie", defined: true },
+      version: 5,
+    })
+    expect(core.speakers.all.get("spk-new")).toMatchObject({
+      name: "Julie",
+      defined: true,
+    })
+  })
+
+  it("applySpeakerRenamed defines the speaker, or brings a placeholder back on undo", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applySpeakerRenamed({
+      translationId: "tr-1",
+      speakerId: "spk-1",
+      name: "spk1",
+      defined: false,
+      version: 6,
+    })
+    expect(core.speakers.all.get("spk-1")?.defined).toBe(false)
+
+    // No flag (older server): a rename means a real name.
+    core.transcriptionEditor!.applySpeakerRenamed({
+      translationId: "tr-1",
+      speakerId: "spk-1",
+      name: "Marie",
+      version: 7,
+    })
+    expect(core.speakers.all.get("spk-1")?.defined).toBe(true)
+  })
+
   it("applySpeakerRenamed updates the global store", () => {
     const core = makeEditorCore()
     core.transcriptionEditor!.applySpeakerRenamed({
@@ -967,6 +1010,24 @@ describe("createTranscriptionEditorPlugin — undo/redo", () => {
     expect(source.getTurn("turn-3")?.speakerId).toBe("spk-1")
     expect(source.getTurn("turn-2")?.speakerId).toBe("spk-2")
     expect(core.transcriptionEditor!.canUndo.value).toBe(false)
+  })
+
+  it("applySpeakerRestored resurrects a placeholder as a placeholder", () => {
+    const core = makeEditorCore()
+    core.transcriptionEditor!.applySpeakerReplaced({
+      translationId: "tr-1",
+      fromSpeakerId: "spk-1",
+      toSpeakerId: "spk-2",
+      version: 1,
+    })
+    core.transcriptionEditor!.applySpeakerRestored({
+      translationId: "tr-1",
+      fromSpeaker: { speaker_id: "spk-1", speaker_name: "spk1", defined: false },
+      toSpeakerId: "spk-2",
+      turnIds: ["turn-1", "turn-3"],
+      version: 2,
+    })
+    expect(core.speakers.all.get("spk-1")?.defined).toBe(false)
   })
 })
 

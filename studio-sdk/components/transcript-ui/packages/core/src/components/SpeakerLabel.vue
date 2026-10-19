@@ -54,9 +54,10 @@ const speakerColor = computed(() => props.speaker?.color ?? "transparent")
 // The placeholder for an unnamed speaker is an invitation to assign one, so it
 // belongs where the label is a trigger. Read-only — a live session has no
 // speaker assignment — it would only be noise nobody can act on.
-const displayName = computed(
-  () => props.speaker?.name ?? (props.interactive ? t("speaker.unknown") : ""),
-)
+const displayName = computed(() => {
+  if (props.speaker) return utils.computeSpeakerDisplayName(props.speaker, t)
+  return props.interactive ? t("speaker.unknown") : ""
+})
 </script>
 
 <template>

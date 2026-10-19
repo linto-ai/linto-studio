@@ -114,15 +114,18 @@ test("redoes a rename_speaker: cursor swap passes, re-applies the new name", asy
     "oid:rev-0",
     "rev-1",
   )
+  // No flag on the revision (recorded before it existed): a real name.
   expect(model.conversationEditor.renameEditorSpeaker).toHaveBeenCalledWith(
     "tr-1",
     "spk-1",
     "Marie D.",
+    true,
   )
   expect(ctx.emit).toHaveBeenCalledWith("editor:speaker_renamed", {
     translationId: "tr-1",
     speakerId: "spk-1",
     name: "Marie D.",
+    defined: true,
     version: 9,
     lastUpdate: LAST_UPDATE,
     revisionId: "rev-1",
@@ -210,19 +213,49 @@ test("redoes an update_turn_speaker: re-applies the new assignment and hints rem
   expect(model.conversationEditor.updateEditorTurnSpeaker).toHaveBeenCalledWith(
     "tr-1",
     "turn-2",
-    { speaker_id: "spk-1", speaker_name: "Marie", defined: false },
+    { speaker_id: "spk-1", speaker_name: "Marie", defined: true },
   )
   // Leaving spk-2 (the "before" side) behind this time — opposite direction.
   expect(ctx.emit).toHaveBeenCalledWith("editor:turn_speaker_updated", {
     translationId: "tr-1",
     turnId: "turn-2",
-    speaker: { id: "spk-1", name: "Marie" },
+    speaker: { id: "spk-1", name: "Marie", defined: true },
     removedSpeakerId: "spk-2",
     version: 11,
     lastUpdate: LAST_UPDATE,
     revisionId: "rev-4",
     redoRevisionId: null,
   })
+})
+
+test("redoes a rename of a placeholder: re-applies the real name with defined true", async () => {
+  model.editorRevisions.findByPreviousHead
+    .mockResolvedValueOnce({
+      _id: "rev-1",
+      type: "rename_speaker",
+      before: { speakerId: "spk-1", name: "spk2", defined: false },
+      after: { speakerId: "spk-1", name: "Marie", defined: true },
+    })
+    .mockResolvedValueOnce(null)
+  model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
+  model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
+    version: 9,
+    lastUpdate: LAST_UPDATE,
+  })
+  const ctx = makeCtx()
+
+  await onRedo(ctx, { translationId: "tr-1", revisionId: "rev-0" }, jest.fn())
+
+  expect(model.conversationEditor.renameEditorSpeaker).toHaveBeenCalledWith(
+    "tr-1",
+    "spk-1",
+    "Marie",
+    true,
+  )
+  expect(ctx.emit).toHaveBeenCalledWith(
+    "editor:speaker_renamed",
+    expect.objectContaining({ speakerId: "spk-1", name: "Marie", defined: true }),
+  )
 })
 
 test("redoes a replace_speaker: replays the merge forward, broadcasts editor:speaker_replaced", async () => {

@@ -4,6 +4,7 @@ import { ref, computed, nextTick, useTemplateRef, watch } from "vue"
 import { useCore } from "../../core"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { switchTurnSpeaker, createSpeakerAndAssign } from "../../core/helpers"
+import { computeSpeakerDisplayName } from "../../utils"
 import type { Speaker } from "../../types/editor"
 
 const props = defineProps<{
@@ -98,7 +99,9 @@ function onCancelNew(): void {
     </template>
     <template #item="{ item }">
       <SpeakerIndicator :color="item.color" />
-      <span class="speaker-popover-name">{{ item.name }}</span>
+      <span class="speaker-popover-name">{{
+        computeSpeakerDisplayName(item, t)
+      }}</span>
     </template>
     <template #footer>
       <Button

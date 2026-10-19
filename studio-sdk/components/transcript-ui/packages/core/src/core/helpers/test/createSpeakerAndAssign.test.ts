@@ -10,6 +10,7 @@ describe("createSpeakerAndAssign", () => {
     const speaker = core.speakers.all.get(id!)
     expect(speaker?.name).toBe("Julie")
     expect(speaker?.color).toBeTruthy()
+    expect(speaker?.defined).toBe(true)
     expect(
       core.activeChannel.value?.sourceTranslation.getTurn("turn-1")?.speakerId,
     ).toBe(id)

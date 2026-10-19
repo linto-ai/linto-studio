@@ -5,8 +5,9 @@ export function ensureSpeaker(
   speakers: Map<string, Speaker>,
   speakerId: string | null,
   name?: string,
+  defined?: boolean,
 ): Speaker | null {
   if (!speakerId) return null
   if (speakers.has(speakerId)) return null
-  return addSpeaker(speakers, speakerId, name ?? speakerId)
+  return addSpeaker(speakers, speakerId, name ?? speakerId, defined)
 }

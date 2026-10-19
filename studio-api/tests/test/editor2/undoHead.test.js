@@ -47,16 +47,50 @@ describe("conversationEditor.renameEditorSpeaker", () => {
       "conv-1",
       "spk-1",
       "Marie D.",
+      true,
     )
 
     expect(result).toEqual({
       version: 6,
       lastUpdate: writtenLastUpdate(),
       previousName: "Marie",
+      // No flag in the pre-image (legacy data): a real name.
+      previousDefined: true,
       undoHead: "rev-0",
     })
-    const [, , options] = mockCollection.findOneAndUpdate.mock.calls[0]
+    const [, update, options] = mockCollection.findOneAndUpdate.mock.calls[0]
+    expect(update.$set["speakers.$.defined"]).toBe(true)
     expect(options.returnDocument).toBe("before")
+  })
+
+  test("writes the given defined flag and returns the placeholder's previous one", async () => {
+    mockCollection.findOneAndUpdate.mockResolvedValue({
+      editorVersion: 5,
+      speakers: [{ speaker_id: "spk-1", speaker_name: "Marie", defined: true }],
+    })
+
+    // An undo bringing back a placeholder name passes defined false.
+    const undo = await conversationEditor.renameEditorSpeaker(
+      "conv-1",
+      "spk-1",
+      "spk2",
+      false,
+    )
+    const [, update] = mockCollection.findOneAndUpdate.mock.calls[0]
+    expect(update.$set["speakers.$.speaker_name"]).toBe("spk2")
+    expect(update.$set["speakers.$.defined"]).toBe(false)
+    expect(undo.previousDefined).toBe(true)
+
+    mockCollection.findOneAndUpdate.mockResolvedValue({
+      speakers: [{ speaker_id: "spk-1", speaker_name: "spk2", defined: false }],
+    })
+    const rename = await conversationEditor.renameEditorSpeaker(
+      "conv-1",
+      "spk-1",
+      "Marie",
+      true,
+    )
+    expect(rename.previousDefined).toBe(false)
   })
 
   test("missing editorVersion/undoHead default to 0/null", async () => {
@@ -68,12 +102,14 @@ describe("conversationEditor.renameEditorSpeaker", () => {
       "conv-1",
       "spk-1",
       "Marie D.",
+      true,
     )
 
     expect(result).toEqual({
       version: 1,
       lastUpdate: writtenLastUpdate(),
       previousName: "Marie",
+      previousDefined: true,
       undoHead: null,
     })
   })
@@ -95,22 +131,28 @@ describe("conversationEditor.updateEditorTurnSpeaker", () => {
         { turn_id: "turn-2", speaker_id: "spk-2" },
       ],
       speakers: [
-        { speaker_id: "spk-1", speaker_name: "Marie" },
+        { speaker_id: "spk-1", speaker_name: "spk1", defined: false },
         { speaker_id: "spk-2", speaker_name: "Thomas" },
       ],
       undoHead: "rev-0",
     })
 
+    // A stale copy (e.g. from a revision): the stored entry wins.
     const result = await conversationEditor.updateEditorTurnSpeaker(
       "conv-1",
       "turn-2",
-      { speaker_id: "spk-1", speaker_name: "Marie" },
+      { speaker_id: "spk-1", speaker_name: "Marie", defined: true },
     )
 
     expect(result).toEqual({
       version: 10,
       lastUpdate: writtenLastUpdate(),
       previousSpeaker: { speaker_id: "spk-2", speaker_name: "Thomas" },
+      assignedSpeaker: {
+        speaker_id: "spk-1",
+        speaker_name: "spk1",
+        defined: false,
+      },
       undoHead: "rev-0",
     })
     const [, , options] = mockCollection.findOneAndUpdate.mock.calls[0]
@@ -133,6 +175,8 @@ describe("conversationEditor.updateEditorTurnSpeaker", () => {
       version: 1,
       lastUpdate: writtenLastUpdate(),
       previousSpeaker: { speaker_id: "spk-2", speaker_name: "Thomas" },
+      // Absent from the pre-image: the inserted speaker itself.
+      assignedSpeaker: { speaker_id: "spk-1", speaker_name: "Marie" },
       undoHead: null,
     })
   })

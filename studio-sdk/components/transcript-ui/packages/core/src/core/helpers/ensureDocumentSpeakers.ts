@@ -1,14 +1,18 @@
 import type { EditorDocument } from "../../types/editor"
 
-export function ensureDocumentSpeakers(
-  doc: EditorDocument,
-): { id: string; name: string }[] {
+interface SpeakerRef {
+  id: string
+  name: string
+  defined?: boolean
+}
+
+export function ensureDocumentSpeakers(doc: EditorDocument): SpeakerRef[] {
   const seen = new Set<string>()
-  const refs: { id: string; name: string }[] = []
+  const refs: SpeakerRef[] = []
 
   for (const [id, speaker] of doc.speakers) {
     seen.add(id)
-    refs.push({ id, name: speaker.name })
+    refs.push({ id, name: speaker.name, defined: speaker.defined })
   }
 
   for (const channel of doc.channels) {

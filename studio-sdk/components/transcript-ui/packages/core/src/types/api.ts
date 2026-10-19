@@ -24,6 +24,8 @@ export interface ApiTurn {
 export interface ApiSpeaker {
   speaker_id: string
   speaker_name: string
+  /** @see Speaker.defined */
+  defined?: boolean
   stime: number
   etime: number
 }

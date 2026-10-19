@@ -1,19 +1,23 @@
 const { v4: uuidv4 } = require("uuid")
 
 const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
+const { isGenericSpeakerName } = require(
+  `${process.cwd()}/lib/utility/isGenericSpeakerName`,
+)
 
 const DEFAULT_SPEAKER_NAME = "Unknown speaker"
 const DEFAULT_TRANSLATION_NAME = "Automatic Translation"
 
 function ensureSpeaker(caption, channel_caption) {
   let speakerName
-  // Only a locutor given by the session is a defined name
+  // Only a real name given by the session is defined: a diarization tag of
+  // the provider ("Guest-1", "spk_0") is a placeholder like our fallbacks
   let defined = false
   if (caption.type.mode === TYPES.TRANSLATION)
     speakerName = DEFAULT_TRANSLATION_NAME
   else if (channel_caption.locutor) {
     speakerName = channel_caption.locutor
-    defined = true
+    defined = !isGenericSpeakerName(channel_caption.locutor)
   } else speakerName = DEFAULT_SPEAKER_NAME
 
   let existingSpeaker = caption.speakers.find(

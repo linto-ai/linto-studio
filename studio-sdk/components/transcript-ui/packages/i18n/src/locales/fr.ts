@@ -69,6 +69,8 @@ const fr = {
   "transcription.lockedBy": "En cours de modification par {name}",
   "transcription.mergeTurns": "Fusionner avec le tour précédent",
   "speaker.unknown": "Intervenant non connu",
+  "speaker.placeholderLabel": "Intervenant",
+  "speaker.placeholderLabelNumbered": "Intervenant {number}",
   "transcription.cancelEdit": "Annuler la modification",
   "transcription.turnEditor": "Texte du tour de parole (Entrée pour enregistrer, Échap pour annuler)",
   "transcription.loadingHistory": "Chargement…",

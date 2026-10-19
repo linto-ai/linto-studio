@@ -6,7 +6,7 @@ import { useCore } from "../core"
 import * as utils from "../utils"
 
 const core = useCore()
-const { locale } = useI18n()
+const { t, locale } = useI18n()
 
 const turns = computed(
   () => core.activeChannel.value?.activeTranslation.value.turns.value ?? [],
@@ -21,7 +21,8 @@ const displayNames = computed(
 
 function speakerName(id: string | null): string {
   if (id == null) return ""
-  return speakers.get(id)?.name ?? id
+  const speaker = speakers.get(id)
+  return speaker ? utils.computeSpeakerDisplayName(speaker, t) : id
 }
 
 function languageName(code: string): string {

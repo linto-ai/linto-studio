@@ -21,6 +21,7 @@ async function onRenameSpeaker({ io, socket }, payload, ack) {
       translationId,
       speakerId,
       name,
+      true,
     )
     if (!updated) {
       return reply({ ok: false, reason: "unknown_speaker" })
@@ -30,8 +31,12 @@ async function onRenameSpeaker({ io, socket }, payload, ack) {
       translationId,
       parentId,
       type: "rename_speaker",
-      before: { speakerId, name: updated.previousName },
-      after: { speakerId, name },
+      before: {
+        speakerId,
+        name: updated.previousName,
+        defined: updated.previousDefined,
+      },
+      after: { speakerId, name, defined: true },
       previousHead: updated.undoHead,
       author: socket.data.editorUser,
     })
@@ -41,6 +46,7 @@ async function onRenameSpeaker({ io, socket }, payload, ack) {
       translationId,
       speakerId,
       name,
+      defined: true,
       version: updated.version,
       lastUpdate: updated.lastUpdate,
       revisionId,

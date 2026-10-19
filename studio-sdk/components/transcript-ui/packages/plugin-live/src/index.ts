@@ -195,8 +195,28 @@ export function createLivePlugin(
         else store.addTurn(turn)
       }
 
+      // Live speakers are named after the locutor itself; the event tells
+      // whether that locutor is a generic provider tag (@see Speaker.defined).
+      function ensureEventSpeaker(
+        speakerId: string | null,
+        defined: boolean | undefined,
+      ): void {
+        if (!speakerId) return
+        const existing = core.speakers.all.get(speakerId)
+        if (!existing) {
+          core.speakers.ensure(speakerId, speakerId, defined)
+          return
+        }
+        // A speaker first seen without the flag (e.g. created by a translated
+        // turn) takes it from the next event carrying it — unless it was
+        // renamed meanwhile: the flag describes the locutor, not the new name.
+        if (defined !== undefined && existing.name === speakerId) {
+          core.speakers.update(speakerId, { defined })
+        }
+      }
+
       function onFinal(event: LiveFinalEvent, channelId: string): void {
-        if (event.speakerId) core.speakers.ensure(event.speakerId)
+        ensureEventSpeaker(event.speakerId, event.speakerDefined)
 
         const channel = core.channels.get(channelId)
         if (!channel) {
@@ -256,7 +276,7 @@ export function createLivePlugin(
         for (const event of events) {
           if (event.speakerId && !seen.has(event.speakerId)) {
             seen.add(event.speakerId)
-            core.speakers.ensure(event.speakerId)
+            ensureEventSpeaker(event.speakerId, event.speakerDefined)
           }
         }
 
@@ -326,6 +346,7 @@ export function createLivePlugin(
 
         const trStore = channel.translations.get(_event.language)
         if (trStore) {
+          ensureEventSpeaker(_event.speakerId, _event.speakerDefined)
           const turn = finalEventToTranslationTurn(
             { ..._event, words: [] },
             _event,

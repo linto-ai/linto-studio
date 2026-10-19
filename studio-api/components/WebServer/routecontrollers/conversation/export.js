@@ -22,6 +22,9 @@ const path = require("path")
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
 
 const { jsonToPlainText } = require("json-to-plain-text")
+const { computeSpeakerDisplayName } = require(
+  `${process.cwd()}/lib/utility/computeSpeakerDisplayName`,
+)
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const {
@@ -196,11 +199,13 @@ async function exportConversation(req, res, next) {
         await handleWhisperXFormat(res, metadata, conversation)
         break
       case "text":
+        localizeSpeakerNames(conversation, metadata, req.query.locale)
         await handleTextFormat(res, metadata, conversation)
         break
       case "odt":
       case "docx":
       case "verbatim":
+        localizeSpeakerNames(conversation, metadata, req.query.locale)
         await handleVerbatimFormat(res, req.query, conversation, metadata)
         break
       default:
@@ -758,6 +763,28 @@ async function handleTextFormat(res, metadata, conversation) {
 async function handleVerbatimFormat(res, query, conversation, metadata) {
   const file = await docx.generateVerbatimDocx(query, conversation, metadata)
   sendFileAsResponse(res, file, query)
+}
+
+/**
+ * Human-readable exports show placeholder speakers (defined === false) with a
+ * label in the interface language. Runs after filtering, on the prepared
+ * turns; the stored names stay untouched for JSON and the LLM services.
+ */
+function localizeSpeakerNames(conversation, metadata, locale) {
+  const names = {}
+  for (const speaker of conversation.speakers || []) {
+    names[speaker.speaker_id] = computeSpeakerDisplayName(speaker, locale)
+  }
+  conversation.text = conversation.text.map((turn) => ({
+    ...turn,
+    speaker_name: names[turn.speaker_id] ?? turn.speaker_name,
+  }))
+  // Same order as prepateData built it from conversation.speakers.
+  if (metadata.speakers) {
+    metadata.speakers = (conversation.speakers || []).map(
+      (speaker) => names[speaker.speaker_id],
+    )
+  }
 }
 
 async function prepareConversation(conversation, filter) {

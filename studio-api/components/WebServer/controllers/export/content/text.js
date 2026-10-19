@@ -17,6 +17,9 @@ const {
 
 const { createTextRun } = require("./documentComponents.js")
 const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
+const { computeSpeakerDisplayName } = require(
+  `${process.cwd()}/lib/utility/computeSpeakerDisplayName`,
+)
 const { format, parseISO, addSeconds } = require("date-fns")
 
 const { en } = require("date-fns/locale")
@@ -134,9 +137,12 @@ function processTurnTable(paragraphs_content, conversation, data, query) {
     lines.push({
       datetime: datetime,
       language: displayLang,
-      speaker: conversation.speakers.find(
-        (speaker) => speaker.speaker_id === text.speaker_id,
-      ).speaker_name,
+      speaker: computeSpeakerDisplayName(
+        conversation.speakers.find(
+          (speaker) => speaker.speaker_id === text.speaker_id,
+        ),
+        query.locale,
+      ),
       text: text.segment,
     })
   }
