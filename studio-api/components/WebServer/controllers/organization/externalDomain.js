@@ -14,7 +14,9 @@ const { OrganizationError } = require(
  * One Studio organization per external domain.
  *
  * `PUT /api/v1/organizations/{root}/entitlements/domains/{domain}` gives the
- * domain its own organization: same creation path as `POST /api/organizations`
+ * domain its own organization once it carries a right LinTO serves (a domain
+ * declared without one leaves nothing behind in Studio): same creation path
+ * as `POST /api/organizations`
  * (the caller becomes ADMIN and owner, default permissions, system categories,
  * shared ASR profiles apply as they do to any organization), plus the two
  * marks that make it ours:
@@ -25,9 +27,10 @@ const { OrganizationError } = require(
  *   metadata.managed               managed by LinTO (plans are driven by the
  *                                  entitlements, not by a self-service plan)
  *
- * It is created ONCE and never deleted by these routes: `features: {}` takes
- * the rights away, the organization and its data stay (removing one is an
- * administration act, never the effect of a message).
+ * It is created ONCE, with the first right LinTO serves (the caller decides
+ * when: see `putDomainEntitlement`), and never deleted by these routes:
+ * `features: {}` takes the rights away, the organization and its data stay
+ * (removing one is an administration act, never the effect of a message).
  */
 async function ensureDomainOrganization({
   rootOrganizationId,
@@ -35,12 +38,9 @@ async function ensureDomainOrganization({
   provider,
   callerId,
 }) {
-  const existing = await model.organizations.getByExternalDomain(
-    rootOrganizationId,
-    domain,
-  )
-  if (Array.isArray(existing) && existing.length > 0) {
-    return { organization: existing[0], created: false }
+  const existing = await findDomainOrganization({ rootOrganizationId, domain })
+  if (existing) {
+    return { organization: existing, created: false }
   }
 
   const payload = {
@@ -79,4 +79,13 @@ async function ensureDomainOrganization({
   return { organization: created[0], created: true }
 }
 
-module.exports = { ensureDomainOrganization }
+/** The organization of `domain` under the root, or null. Never creates one. */
+async function findDomainOrganization({ rootOrganizationId, domain }) {
+  const existing = await model.organizations.getByExternalDomain(
+    rootOrganizationId,
+    domain,
+  )
+  return Array.isArray(existing) && existing.length > 0 ? existing[0] : null
+}
+
+module.exports = { ensureDomainOrganization, findDomainOrganization }

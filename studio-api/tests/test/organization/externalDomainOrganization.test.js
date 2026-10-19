@@ -24,7 +24,7 @@ jest.mock(`${process.cwd()}/lib/logger/logger`, () => ({
 }))
 
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
-const { ensureDomainOrganization } = require(
+const { ensureDomainOrganization, findDomainOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/externalDomain`,
 )
 
@@ -100,4 +100,27 @@ test("a failed creation is a 400, not a half-created organization", async () => 
       callerId: CALLER,
     }),
   ).rejects.toMatchObject({ status: 400 })
+})
+
+test("findDomainOrganization looks the organization up, never creates one", async () => {
+  expect(
+    await findDomainOrganization({
+      rootOrganizationId: ROOT,
+      domain: "collectivite.fr",
+    }),
+  ).toBeNull()
+  expect(mockModel.organizations.getByExternalDomain).toHaveBeenCalledWith(
+    ROOT,
+    "collectivite.fr",
+  )
+
+  mockModel.organizations.getByExternalDomain.mockResolvedValue([
+    { _id: DOMAIN_ORG, name: "collectivite.fr" },
+  ])
+  const found = await findDomainOrganization({
+    rootOrganizationId: ROOT,
+    domain: "collectivite.fr",
+  })
+  expect(found._id).toBe(DOMAIN_ORG)
+  expect(mockModel.organizations.create).not.toHaveBeenCalled()
 })

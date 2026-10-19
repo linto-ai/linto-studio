@@ -37,9 +37,13 @@ const mockModel = {
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => mockModel)
 
 const mockEnsureOrg = jest.fn()
+const mockFindOrg = jest.fn()
 jest.mock(
   `${process.cwd()}/components/WebServer/controllers/organization/externalDomain`,
-  () => ({ ensureDomainOrganization: (...a) => mockEnsureOrg(...a) }),
+  () => ({
+    ensureDomainOrganization: (...a) => mockEnsureOrg(...a),
+    findDomainOrganization: (...a) => mockFindOrg(...a),
+  }),
 )
 const mockRevoke = jest.fn()
 const mockReactivate = jest.fn()
@@ -106,6 +110,7 @@ beforeEach(() => {
     organization: { _id: DOMAIN_ORG, name: "collectivite.fr" },
     created: true,
   })
+  mockFindOrg.mockResolvedValue(null)
 })
 
 describe("features", () => {
@@ -281,6 +286,38 @@ describe("PUT users/{email}", () => {
     expect(badDate.err.status).toBe(400)
     expect(mockModel.externalEntitlements.upsert).not.toHaveBeenCalled()
   })
+
+  test("recording alone is no LinTO right: it revokes the key, never wakes it", async () => {
+    const { status, body } = await call(putUserEntitlement, {
+      params: { organizationId: ROOT, email: "jdoe@twake.app" },
+      body: {
+        subject: "jdoe",
+        features: { recording: true },
+        updatedAt: "2026-09-15T10:32:00Z",
+      },
+    })
+    expect(status).toBe(200)
+    expect(body.features).toEqual({ recording: true })
+    expect(mockReactivate).not.toHaveBeenCalled()
+    expect(mockRevoke).toHaveBeenCalledWith({
+      provider: "external",
+      subject: "jdoe",
+      email: "jdoe@twake.app",
+    })
+  })
+
+  test.each([
+    ["summary", { summary: true }],
+    ["translation", { translation: true }],
+    ["transcription.async", { transcription: { async: true } }],
+  ])("%s alone is a LinTO right: it wakes the key", async (_, features) => {
+    await call(putUserEntitlement, {
+      params: { organizationId: ROOT, email: "jdoe@twake.app" },
+      body: { subject: "jdoe", features },
+    })
+    expect(mockReactivate).toHaveBeenCalledTimes(1)
+    expect(mockRevoke).not.toHaveBeenCalled()
+  })
 })
 
 describe("DELETE users/{email}", () => {
@@ -413,10 +450,7 @@ describe("PUT domains/{domain}", () => {
         updatedAt: "2026-09-14T10:32:00.000Z",
       },
     ])
-    mockEnsureOrg.mockResolvedValue({
-      organization: { _id: DOMAIN_ORG },
-      created: false,
-    })
+    mockFindOrg.mockResolvedValue({ _id: DOMAIN_ORG })
     const { status, body } = await call(putDomainEntitlement, {
       params: { organizationId: ROOT, domain: "collectivite.fr" },
       body: { features: {}, updatedAt: "2026-09-20T10:32:00Z" },
@@ -424,8 +458,85 @@ describe("PUT domains/{domain}", () => {
     expect(status).toBe(200)
     expect(body.features).toEqual({})
     expect(body.domainOrganizationId).toBe(DOMAIN_ORG)
+    // looked up, never created again
+    expect(mockFindOrg).toHaveBeenCalledWith({
+      rootOrganizationId: ROOT,
+      domain: "collectivite.fr",
+    })
+    expect(mockEnsureOrg).not.toHaveBeenCalled()
     // a domain never fans out a revocation: the gates read the state live
     expect(mockRevoke).not.toHaveBeenCalled()
+  })
+
+  test.each([
+    ["no feature", {}],
+    ["recording alone", { recording: true }],
+    [
+      "every LinTO feature off",
+      { transcription: { live: false }, summary: false },
+    ],
+  ])(
+    "a domain declared with %s creates no organization (domainOrganizationId: null)",
+    async (_, features) => {
+      const { status, body } = await call(putDomainEntitlement, {
+        params: { organizationId: ROOT, domain: "trialtest.fr" },
+        body: { features, updatedAt: "2026-10-12T10:00:00Z" },
+      })
+      expect(status).toBe(200)
+      expect(mockEnsureOrg).not.toHaveBeenCalled()
+      expect(mockFindOrg).toHaveBeenCalledWith({
+        rootOrganizationId: ROOT,
+        domain: "trialtest.fr",
+      })
+      expect(body.domainOrganizationId).toBeNull()
+      expect(body.features).toEqual(features)
+      // the state itself is recorded: resolve answers it (recording reaches Meet)
+      expect(mockModel.externalEntitlements.upsert).toHaveBeenCalledTimes(1)
+      expect(
+        mockModel.externalEntitlements.upsert.mock.calls[0][1]
+          .domainOrganizationId,
+      ).toBeNull()
+    },
+  )
+
+  test("the organization is born with the first LinTO right, and stays", async () => {
+    const domain = "trialtest.fr"
+    const put = (features, updatedAt) =>
+      call(putDomainEntitlement, {
+        params: { organizationId: ROOT, domain },
+        body: { features, updatedAt },
+      })
+
+    // a trial with no right: nothing in Studio
+    const trial = await put({}, "2026-10-12T10:00:00Z")
+    expect(trial.body.domainOrganizationId).toBeNull()
+    expect(mockEnsureOrg).not.toHaveBeenCalled()
+
+    // the domain subscribes: its organization is created now
+    mockModel.externalEntitlements.getDomain.mockResolvedValue([
+      { _id: "y", ...trial.body, created: "c" },
+    ])
+    const paying = await put(
+      { ...LIVE, recording: true },
+      "2026-10-13T10:00:00Z",
+    )
+    expect(mockEnsureOrg).toHaveBeenCalledTimes(1)
+    expect(mockEnsureOrg).toHaveBeenCalledWith({
+      rootOrganizationId: ROOT,
+      domain,
+      provider: "external",
+      callerId: CALLER,
+    })
+    expect(paying.body.domainOrganizationId).toBe(DOMAIN_ORG)
+
+    // back to the free plan: the rights go, the organization stays
+    mockModel.externalEntitlements.getDomain.mockResolvedValue([
+      { _id: "y", ...paying.body, created: "c" },
+    ])
+    mockFindOrg.mockResolvedValue({ _id: DOMAIN_ORG })
+    const free = await put({}, "2026-10-14T10:00:00Z")
+    expect(free.body.domainOrganizationId).toBe(DOMAIN_ORG)
+    expect(mockEnsureOrg).toHaveBeenCalledTimes(1)
   })
 
   test("an older updatedAt is ignored before any organization is created", async () => {

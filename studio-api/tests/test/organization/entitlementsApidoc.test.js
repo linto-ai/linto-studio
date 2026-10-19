@@ -59,4 +59,19 @@ describe("entitlements apidoc", () => {
     }
     expect(LINTO_FEATURES).not.toContain("recording")
   })
+
+  test("domainOrganizationId is nullable: no organization without a LinTO right", () => {
+    const domain =
+      apidoc[
+        "/api/v1/organizations/{organizationId}/entitlements/domains/{domain}"
+      ]
+    for (const method of ["put", "get"]) {
+      const property =
+        domain[method].responses["200"].content["application/json"].schema
+          .properties.domainOrganizationId
+      expect(property.nullable).toBe(true)
+      expect(property.description).toMatch(/null/)
+    }
+    expect(domain.put.description).toMatch(/creates nothing in Studio/)
+  })
 })

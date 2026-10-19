@@ -343,7 +343,7 @@
     "put": {
       "tags": ["entitlements"],
       "summary": "Declare the AI rights of a whole email domain",
-      "description": "Same fields as a person, without `subject`. Every user whose email is in that domain inherits these rights, with no per-user call; a record set on a person wins over their domain. The first call also creates the Studio organization of the domain (managed, named after the domain, attached to the root organization by `metadata.parentOrganizationId`, the caller ADMIN and owner); the keys of its members are born there. `features: {}` takes the rights away — the organization and its data stay: removing one is an administration act, never the effect of a message, and no route here ever deletes an organization. Auth: an API key that is ADMIN (6) of `{organizationId}` and carries the platform role ORGANIZATION_INITIATOR (2).",
+      "description": "Same fields as a person, without `subject`. Every user whose email is in that domain inherits these rights, with no per-user call; a record set on a person wins over their domain. The first call that carries a right LinTO serves (`transcription.live`, `transcription.async`, `summary`, `translation`) also creates the Studio organization of the domain (managed, named after the domain, attached to the root organization by `metadata.parentOrganizationId`, the caller ADMIN and owner); the keys of its members are born there. A domain declared without such a right (`features: {}`, or `recording` alone) creates nothing in Studio and answers `domainOrganizationId: null`. `features: {}` takes the rights away — the organization and its data stay: removing one is an administration act, never the effect of a message, and no route here ever deletes an organization. Auth: an API key that is ADMIN (6) of `{organizationId}` and carries the platform role ORGANIZATION_INITIATOR (2).",
       "parameters": [
         {
           "$ref": "#/components/parameters/OrganizationId"
@@ -443,7 +443,8 @@
                   },
                   "domainOrganizationId": {
                     "type": "string",
-                    "description": "the Studio organization of that domain, created by this route and attached to the root by `metadata.parentOrganizationId`. Keys of the domain members are born there."
+                    "nullable": true,
+                    "description": "the Studio organization of that domain, created by the first call that carries a right LinTO serves and attached to the root by `metadata.parentOrganizationId`; `null` while the domain never had one. Keys of the domain members are born there."
                   },
                   "features": {
                     "type": "object",
@@ -560,7 +561,8 @@
                   },
                   "domainOrganizationId": {
                     "type": "string",
-                    "description": "the Studio organization of that domain, created by this route and attached to the root by `metadata.parentOrganizationId`. Keys of the domain members are born there."
+                    "nullable": true,
+                    "description": "the Studio organization of that domain, created by the first call that carries a right LinTO serves and attached to the root by `metadata.parentOrganizationId`; `null` while the domain never had one. Keys of the domain members are born there."
                   },
                   "features": {
                     "type": "object",

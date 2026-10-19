@@ -12,8 +12,11 @@ const KIND_DOMAIN = EntitlementModel.KIND_DOMAIN
 const { EntitlementInvalid, EntitlementNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/entitlement`,
 )
-const { ensureDomainOrganization } = require(
+const { ensureDomainOrganization, findDomainOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/externalDomain`,
+)
+const { hasLintoFeature } = require(
+  `${process.cwd()}/components/WebServer/controllers/entitlement/resolve`,
 )
 const { revokeLinkedKey, reactivateLinkedKey } = require(
   `${process.cwd()}/components/WebServer/controllers/entitlement/key`,
@@ -30,7 +33,8 @@ const { normalizeEmail, normalizeDomain } = require(
  *   PUT    users/{email}      upsert a person's state (never creates a key)
  *   DELETE users/{email}      the person is gone: erase their state
  *   PUT    domains/{domain}   upsert an organization's state; creates the
- *                             Studio organization of that domain, once
+ *                             Studio organization of that domain, once, with
+ *                             its first right LinTO serves
  *   GET    users/{email}, GET domains/{domain}   support and replay control
  *
  * `{org}` is the ROOT organization of that external system; B2C users live
@@ -187,10 +191,12 @@ async function putUserEntitlement(req, res, next) {
       throw new EntitlementInvalid("Entitlement not written")
     }
 
-    // The key carries the identity, never the rights: taking every feature
-    // away drops its tokens (hygiene), giving them back re-activates it.
+    // The key carries the identity, never the rights: taking every LinTO
+    // feature away drops its tokens (hygiene), giving one back re-activates
+    // it. `recording` alone is no LinTO right (the exchange mints no token
+    // for it), so it neither keeps nor wakes the key. [P13]
     const identity = { provider, subject: subject || email, email }
-    if (EntitlementModel.hasActiveFeature(record.features)) {
+    if (hasLintoFeature(record.features)) {
       await reactivateLinkedKey(identity)
     } else {
       await revokeLinkedKey(identity)
@@ -272,18 +278,28 @@ async function putDomainEntitlement(req, res, next) {
       return res.status(200).send({ ...present(existing), ignored: true })
     }
 
-    // The organization of the domain is created once and never removed: the
-    // rights come and go, the organization and its data stay.
-    const { organization } = await ensureDomainOrganization({
-      rootOrganizationId: organizationId,
-      domain,
-      provider,
-      callerId: req.payload.data.userId,
-    })
+    // The organization of the domain is born with its first right LinTO
+    // serves, as the keys of its members are: a domain declared without one
+    // (a free plan, a trial, `recording` alone) leaves no empty organization
+    // behind. Once created it is never removed: the rights come and go, the
+    // organization and its data stay.
+    const organization = hasLintoFeature(values.features)
+      ? (
+          await ensureDomainOrganization({
+            rootOrganizationId: organizationId,
+            domain,
+            provider,
+            callerId: req.payload.data.userId,
+          })
+        ).organization
+      : await findDomainOrganization({
+          rootOrganizationId: organizationId,
+          domain,
+        })
 
     const record = {
       ...key,
-      domainOrganizationId: organization._id.toString(),
+      domainOrganizationId: organization ? organization._id.toString() : null,
       features: values.features,
       plan: values.plan !== undefined ? values.plan : (existing?.plan ?? null),
       updatedAt: values.updatedAt,
