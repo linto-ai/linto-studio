@@ -18,7 +18,12 @@ export function applySpeakerRenamed(
   // Version gate: stale broadcasts are skipped, a gap triggers a refetch.
   if (!trackBroadcastVersion(state, renamed.translationId, renamed.version)) return
 
-  state.core.speakers.update(renamed.speakerId, { name: renamed.name })
+  // An undo may bring a placeholder back (defined: false); an older server
+  // sends no flag, and a rename means a real name.
+  state.core.speakers.update(renamed.speakerId, {
+    name: renamed.name,
+    defined: renamed.defined ?? true,
+  })
   trackUndoRedoHeads(
     state,
     renamed.translationId,

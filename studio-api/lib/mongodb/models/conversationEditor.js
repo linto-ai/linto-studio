@@ -225,7 +225,9 @@ class ConversationEditorModel extends MongoModel {
    * Reading undoHead separately, before this write, left a race window
    * spanning the whole handler where a concurrent mutation could move the
    * head first and silently strand the recorded revision unreachable.
-   * @returns {Promise<{version:number, lastUpdate:string, previousSpeaker:object|undefined, undoHead:import("mongodb").ObjectId|null}|null>}
+   * assignedSpeaker is the speaker entry the turn now points at: the stored
+   * one when it already existed (only inserted when absent), else `speaker`.
+   * @returns {Promise<{version:number, lastUpdate:string, previousSpeaker:object|undefined, assignedSpeaker:object, undoHead:import("mongodb").ObjectId|null}|null>}
    */
   async updateEditorTurnSpeaker(conversationId, turnId, speaker) {
     const lastUpdate = moment().format()
@@ -311,6 +313,10 @@ class ConversationEditorModel extends MongoModel {
       previousSpeaker: (before.speakers || []).find(
         (s) => s.speaker_id === previousSpeakerId,
       ),
+      assignedSpeaker:
+        (before.speakers || []).find(
+          (s) => s.speaker_id === speaker.speaker_id,
+        ) ?? speaker,
       undoHead: before.undoHead ?? null,
     }
   }
@@ -379,10 +385,14 @@ class ConversationEditorModel extends MongoModel {
    * previous name and the current undo head in the SAME atomic op — the
    * new version is then just before+1, no extra read needed (see
    * recordSpeakerRevision, EditorHandler/handlers/onRenameSpeaker.js).
-   * @returns {Promise<{version: number, lastUpdate: string, previousName: string, undoHead: import("mongodb").ObjectId|null}|null>}
+   *
+   * `defined` is false only when an undo brings a placeholder name back; a
+   * user rename always passes true. previousDefined follows the same rule
+   * as everywhere else: only an explicit false is a placeholder.
+   * @returns {Promise<{version: number, lastUpdate: string, previousName: string, previousDefined: boolean, undoHead: import("mongodb").ObjectId|null}|null>}
    *   null when the conversation or the speaker no longer exists.
    */
-  async renameEditorSpeaker(conversationId, speakerId, name) {
+  async renameEditorSpeaker(conversationId, speakerId, name, defined) {
     const lastUpdate = moment().format()
     const before = await MongoDriver.constructor.db
       .collection(this.collection)
@@ -394,7 +404,7 @@ class ConversationEditorModel extends MongoModel {
         {
           $set: {
             "speakers.$.speaker_name": name,
-            "speakers.$.defined": true,
+            "speakers.$.defined": defined,
             last_update: lastUpdate,
           },
           $inc: { editorVersion: 1 },
@@ -413,6 +423,7 @@ class ConversationEditorModel extends MongoModel {
       version: (before.editorVersion ?? 0) + 1,
       lastUpdate,
       previousName: before.speakers[0].speaker_name,
+      previousDefined: before.speakers[0].defined !== false,
       undoHead: before.undoHead ?? null,
     }
   }

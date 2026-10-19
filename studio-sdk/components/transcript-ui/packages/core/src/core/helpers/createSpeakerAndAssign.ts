@@ -9,7 +9,12 @@ export function createSpeakerAndAssign(
 ): string | null {
   const trimmed = name.trim()
   if (!trimmed) return null
-  const speaker = addSpeaker(core.speakers.all, crypto.randomUUID(), trimmed)
+  const speaker = addSpeaker(
+    core.speakers.all,
+    crypto.randomUUID(),
+    trimmed,
+    true,
+  )
   core.speakers.updateOrCreate(speaker)
   switchTurnSpeaker(core, turnId, speaker.id)
   return speaker.id

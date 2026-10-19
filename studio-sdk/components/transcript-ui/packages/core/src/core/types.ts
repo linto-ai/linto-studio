@@ -172,7 +172,7 @@ export interface ChannelStore {
 
 export interface SpeakersStore {
   readonly all: Map<string, Speaker>
-  ensure(speakerId: string | null, name?: string): void
+  ensure(speakerId: string | null, name?: string, defined?: boolean): void
   update(speakerId: string, patch: Partial<Omit<Speaker, "id">>): void
   updateOrCreate(speaker: Speaker): void
   delete(speakerId: string): void
@@ -323,7 +323,8 @@ export interface TurnDeleted {
 export interface TurnSpeakerUpdated {
   translationId: string
   turnId: string
-  speaker: { id: string; name: string }
+  /** defined: @see Speaker.defined — absent from older servers (real name). */
+  speaker: { id: string; name: string; defined?: boolean }
   removedSpeakerId?: string
   version?: number
   /** Server last_update of the track after this mutation. */
@@ -338,6 +339,10 @@ export interface SpeakerRenamed {
   translationId: string
   speakerId: string
   name: string
+  /** @see Speaker.defined — true for a user rename, the previous value for
+   *  an undo (undoing "spk2" -> "Marie" brings the placeholder back).
+   *  Absent from older servers: a rename means a real name. */
+  defined?: boolean
   version?: number
   /** Server last_update of the track after this mutation. */
   lastUpdate?: string
@@ -377,7 +382,7 @@ export interface SpeakerReplaced {
  *  replace_speaker re-broadcasts SpeakerReplaced, not this. */
 export interface SpeakerRestored {
   translationId: string
-  fromSpeaker: { speaker_id: string; speaker_name: string }
+  fromSpeaker: { speaker_id: string; speaker_name: string; defined?: boolean }
   toSpeakerId: string
   turnIds: string[]
   version?: number

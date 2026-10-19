@@ -16,4 +16,21 @@ describe("renameSpeaker", () => {
     expect(core.speakers.all.get("spk-1")?.name).toBe("Marie")
     expect(core.speakers.all.has("spk-404")).toBe(false)
   })
+
+  it("turns a placeholder into a defined speaker", () => {
+    const core = makeTestCore()
+    core.speakers.update("spk-1", { name: "spk1", defined: false })
+    renameSpeaker(core, "spk-1", "Marie")
+    expect(core.speakers.all.get("spk-1")).toMatchObject({
+      name: "Marie",
+      defined: true,
+    })
+  })
+
+  it("keeps a placeholder renamed to its own stored name", () => {
+    const core = makeTestCore()
+    core.speakers.update("spk-1", { name: "spk1", defined: false })
+    renameSpeaker(core, "spk-1", "spk1")
+    expect(core.speakers.all.get("spk-1")?.defined).toBe(false)
+  })
 })

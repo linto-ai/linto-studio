@@ -70,6 +70,8 @@ const en: Record<keyof typeof fr, string> = {
   'transcription.lockedBy': 'Being edited by {name}',
   'transcription.mergeTurns': 'Merge with previous turn',
   'speaker.unknown': 'Unknown speaker',
+  'speaker.placeholderLabel': 'Speaker',
+  'speaker.placeholderLabelNumbered': 'Speaker {number}',
   'transcription.cancelEdit': 'Cancel edit',
   'transcription.turnEditor': 'Turn text (Enter to save, Escape to cancel)',
   'transcription.loadingHistory': 'Loading…',

@@ -15,6 +15,7 @@ export function renameSpeaker(
   if (state.core.capabilities.value.speakers !== "edit") return
   const trimmed = name.trim()
   const existing = state.core.speakers.all.get(speakerId)
+  // A placeholder renamed to its own stored name stays a placeholder.
   if (!existing || !trimmed || trimmed === existing.name) return
 
   const store = getActiveTranslationStore(state.core)

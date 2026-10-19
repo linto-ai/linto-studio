@@ -3,10 +3,13 @@ import { sendMultipartFormData } from "../tools/request/sendMultipartFormData"
 import { sendRequest } from "../tools/request/sendRequest"
 
 import { getEnv } from "@/tools/getEnv"
+import i18n from "@/i18n"
 
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 
 const DEFAULT_PAGE_SIZE = conversationsPerPage
+// The downloads send the client timezone and the interface locale, read at
+// call time since it can change: the exports label placeholder speakers in it.
 const CLIENT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 export async function apiGetGenericConversationsList(
@@ -442,7 +445,7 @@ export async function apiGetJsonFileFromConversation(
   notif,
 ) {
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=${format}&timezone=${CLIENT_TIMEZONE}`,
+    `${BASE_API}/conversations/${conversationId}/download?format=${format}&timezone=${CLIENT_TIMEZONE}&locale=${i18n.locale}`,
     { method: "post" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },
@@ -465,7 +468,7 @@ export async function apiGetTextFileFromConversation(
   notif,
 ) {
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=text&timezone=${CLIENT_TIMEZONE}`,
+    `${BASE_API}/conversations/${conversationId}/download?format=text&timezone=${CLIENT_TIMEZONE}&locale=${i18n.locale}`,
     { method: "post" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },
@@ -487,7 +490,7 @@ export async function apiGetDocxFileFromConversation(
   notif,
 ) {
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=docx&preview=${preview}&timezone=${CLIENT_TIMEZONE}`,
+    `${BASE_API}/conversations/${conversationId}/download?format=docx&preview=${preview}&timezone=${CLIENT_TIMEZONE}&locale=${i18n.locale}`,
     { method: "post", responseType: "blob" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },
@@ -521,7 +524,7 @@ export async function apiGetGenericFileFromConversation(
   const safeFlavor = flavor ?? ""
   const safeOutputType = llmOutputType ?? ""
   return await sendRequest(
-    `${BASE_API}/conversations/${conversationId}/download?format=${format}&preview=${preview}&flavor=${safeFlavor}&regenerate=${regenerate}&title=${title}&llmOutputType=${safeOutputType}&timezone=${CLIENT_TIMEZONE}`,
+    `${BASE_API}/conversations/${conversationId}/download?format=${format}&preview=${preview}&flavor=${safeFlavor}&regenerate=${regenerate}&title=${title}&llmOutputType=${safeOutputType}&timezone=${CLIENT_TIMEZONE}&locale=${i18n.locale}`,
     { method: "post", responseType: "blob" },
     {
       filter: { speaker: speakers.join(","), keyword: keywords.join(",") },

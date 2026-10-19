@@ -119,10 +119,12 @@ test("undoes a rename_speaker: cursor swap passes, restores the old name, does N
     "oid:rev-1",
     "rev-0",
   )
+  // A revision recorded before the `defined` flag existed restores a real name.
   expect(model.conversationEditor.renameEditorSpeaker).toHaveBeenCalledWith(
     "tr-1",
     "spk-1",
     "Marie",
+    true,
   )
   // The reply/broadcast carry the cursor's NEW position (previousHead) — what
   // the client would send to undo further, or as-is to redo back forward.
@@ -130,6 +132,7 @@ test("undoes a rename_speaker: cursor swap passes, restores the old name, does N
     translationId: "tr-1",
     speakerId: "spk-1",
     name: "Marie",
+    defined: true,
     version: 8,
     lastUpdate: LAST_UPDATE,
     revisionId: "rev-0",
@@ -142,6 +145,35 @@ test("undoes a rename_speaker: cursor swap passes, restores the old name, does N
     revisionId: "rev-0",
     redoRevisionId: "oid:rev-1",
   })
+})
+
+test("undoes a rename of a placeholder: brings the placeholder back with defined false", async () => {
+  model.editorRevisions.findById.mockResolvedValue({
+    translationId: "tr-1",
+    type: "rename_speaker",
+    before: { speakerId: "spk-1", name: "spk2", defined: false },
+    after: { speakerId: "spk-1", name: "Marie", defined: true },
+    previousHead: "rev-0",
+  })
+  model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
+  model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
+    version: 8,
+    lastUpdate: LAST_UPDATE,
+  })
+  const ctx = makeCtx()
+
+  await onUndo(ctx, { translationId: "tr-1", revisionId: "rev-1" }, jest.fn())
+
+  expect(model.conversationEditor.renameEditorSpeaker).toHaveBeenCalledWith(
+    "tr-1",
+    "spk-1",
+    "spk2",
+    false,
+  )
+  expect(ctx.emit).toHaveBeenCalledWith(
+    "editor:speaker_renamed",
+    expect.objectContaining({ speakerId: "spk-1", name: "spk2", defined: false }),
+  )
 })
 
 test("undoes an update_turn_speaker: restores the previous assignment and hints removedSpeakerId for the one being left", async () => {
@@ -165,20 +197,94 @@ test("undoes an update_turn_speaker: restores the previous assignment and hints 
   expect(model.conversationEditor.updateEditorTurnSpeaker).toHaveBeenCalledWith(
     "tr-1",
     "turn-2",
-    { speaker_id: "spk-2", speaker_name: "Thomas", defined: false },
+    // No flag on the revision (recorded before it existed): a real name.
+    { speaker_id: "spk-2", speaker_name: "Thomas", defined: true },
   )
   // Leaving spk-1 (the "after" side) behind: hinted so clients can drop it
   // from their local list if it's now unused (they re-check themselves).
   expect(ctx.emit).toHaveBeenCalledWith("editor:turn_speaker_updated", {
     translationId: "tr-1",
     turnId: "turn-2",
-    speaker: { id: "spk-2", name: "Thomas" },
+    speaker: { id: "spk-2", name: "Thomas", defined: true },
     removedSpeakerId: "spk-1",
     version: 10,
     lastUpdate: LAST_UPDATE,
     revisionId: "rev-0",
     redoRevisionId: "oid:rev-3",
   })
+})
+
+test("undoes an update_turn_speaker back onto a placeholder: keeps defined false", async () => {
+  model.editorRevisions.findById.mockResolvedValue({
+    translationId: "tr-1",
+    type: "update_turn_speaker",
+    before: {
+      turnId: "turn-2",
+      speakerId: "spk-2",
+      speakerName: "spk2",
+      defined: false,
+    },
+    after: {
+      turnId: "turn-2",
+      speakerId: "spk-1",
+      speakerName: "Marie",
+      defined: true,
+    },
+    previousHead: "rev-0",
+  })
+  model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
+  model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
+    version: 10,
+    lastUpdate: LAST_UPDATE,
+  })
+  const ctx = makeCtx()
+
+  await onUndo(ctx, { translationId: "tr-1", revisionId: "rev-3" }, jest.fn())
+
+  expect(model.conversationEditor.updateEditorTurnSpeaker).toHaveBeenCalledWith(
+    "tr-1",
+    "turn-2",
+    { speaker_id: "spk-2", speaker_name: "spk2", defined: false },
+  )
+  expect(ctx.emit).toHaveBeenCalledWith(
+    "editor:turn_speaker_updated",
+    expect.objectContaining({
+      speaker: { id: "spk-2", name: "spk2", defined: false },
+    }),
+  )
+})
+
+test("undoes an update_turn_speaker onto a speaker still stored: broadcasts its stored name and flag", async () => {
+  // Recorded by the previous code: Boolean(undefined) turned a legacy real
+  // name into defined: false, and Marie has been renamed since.
+  model.editorRevisions.findById.mockResolvedValue({
+    translationId: "tr-1",
+    type: "update_turn_speaker",
+    before: {
+      turnId: "turn-2",
+      speakerId: "spk-2",
+      speakerName: "Marie",
+      defined: false,
+    },
+    after: { turnId: "turn-2", speakerId: "spk-1", speakerName: "Thomas" },
+    previousHead: "rev-0",
+  })
+  model.conversationEditor.swapConversationUndoHead.mockResolvedValue(true)
+  model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
+    version: 10,
+    lastUpdate: LAST_UPDATE,
+    assignedSpeaker: { speaker_id: "spk-2", speaker_name: "Marie Curie" },
+  })
+  const ctx = makeCtx()
+
+  await onUndo(ctx, { translationId: "tr-1", revisionId: "rev-3" }, jest.fn())
+
+  expect(ctx.emit).toHaveBeenCalledWith(
+    "editor:turn_speaker_updated",
+    expect.objectContaining({
+      speaker: { id: "spk-2", name: "Marie Curie", defined: true },
+    }),
+  )
 })
 
 test("undoes a replace_speaker: resurrects fromSpeaker and broadcasts editor:speaker_restored", async () => {

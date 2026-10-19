@@ -46,7 +46,9 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
       speaker = {
         speaker_id: existing.speaker_id,
         speaker_name: existing.speaker_name,
-        defined: Boolean(existing.defined),
+        // Only an explicit false is a placeholder: legacy speakers without
+        // the flag carry a real name.
+        defined: existing.defined !== false,
       }
     } else {
       speaker = {
@@ -91,7 +93,7 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
             turnId,
             speakerId: updated.previousSpeaker.speaker_id,
             speakerName: updated.previousSpeaker.speaker_name,
-            defined: Boolean(updated.previousSpeaker.defined),
+            defined: updated.previousSpeaker.defined !== false,
           },
           after: {
             turnId,
@@ -110,7 +112,11 @@ async function onUpdateTurnSpeaker({ io, socket }, payload, ack) {
     io.to(computeEditorRoomName(parentId)).emit("editor:turn_speaker_updated", {
       translationId,
       turnId,
-      speaker: { id: speaker.speaker_id, name: speaker.speaker_name },
+      speaker: {
+        id: speaker.speaker_id,
+        name: speaker.speaker_name,
+        defined: speaker.defined,
+      },
       ...(removedSpeakerId && { removedSpeakerId }),
       version: updated.version,
       lastUpdate: updated.lastUpdate,

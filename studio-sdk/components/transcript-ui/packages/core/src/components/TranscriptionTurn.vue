@@ -59,7 +59,9 @@ const showLanguage = computed(() => {
 const isSelected = computed(() => selection.isSelected(props.turn.id))
 
 const checkboxLabel = computed(() => {
-  const name = props.speaker?.name ?? ""
+  const name = props.speaker
+    ? utils.computeSpeakerDisplayName(props.speaker, t)
+    : ""
   const key = isSelected.value ? "selection.deselect" : "selection.select"
   return t(key).replace("{name}", name)
 })

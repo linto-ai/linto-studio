@@ -19,7 +19,7 @@ async function fetchTrackContent(transcriptionController, channel, track) {
   endChannelLoad(transcriptionController, channel)
   // Destroyed during the fetch: the core is gone with the page.
   if (transcriptionController.destroyed || !content) return
-  applyTrackContent(transcriptionController, channel, track, content)
+  applyTrackContent(transcriptionController.core, channel, track, content)
 }
 
 // The loading indicator belongs to the channel: it stays on while any of

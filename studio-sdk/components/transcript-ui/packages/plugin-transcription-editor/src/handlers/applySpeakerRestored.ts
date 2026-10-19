@@ -31,6 +31,7 @@ export function applySpeakerRestored(
   state.core.speakers.ensure(
     restored.fromSpeaker.speaker_id,
     restored.fromSpeaker.speaker_name,
+    restored.fromSpeaker.defined,
   )
 
   const store = findTranslationStore(state.core, restored.translationId)

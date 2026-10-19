@@ -32,6 +32,9 @@ export interface Speaker {
   id: string
   name: string
   color: string
+  /** false: the name is a generated placeholder ("spk2", "Unknown speaker 2"),
+   *  shown as a localized label instead. Absent means a real name. */
+  defined?: boolean
 }
 
 export interface AudioSource {

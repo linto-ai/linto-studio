@@ -138,7 +138,7 @@ export function createCore(options: CoreOptions = {}): Core {
     channels.clear()
 
     for (const spkRef of ensureDocumentSpeakers(doc)) {
-      speakers.ensure(spkRef.id, spkRef.name)
+      speakers.ensure(spkRef.id, spkRef.name, spkRef.defined)
     }
 
     for (const ch of doc.channels) {

@@ -8,6 +8,7 @@ import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { useCore } from "../core"
 import { useIsMobile } from "../composables/useIsMobile"
 import { renameSpeaker } from "../core/helpers"
+import { computeSpeakerDisplayName } from "../utils"
 import type { Speaker } from "../types/editor"
 import type { LLMServiceGenerationStatus, TranslationInfo } from "../core"
 
@@ -301,9 +302,12 @@ function onSelectVersion(versionNumber: number): void {
       <ul class="speaker-list">
         <li v-for="speaker in speakers" :key="speaker.id" class="speaker-item">
           <SpeakerIndicator :color="speaker.color" />
+          <!-- A placeholder starts empty, its label only hinted: confirming
+               without typing must not store "Intervenant 2" as a real name. -->
           <EditableText
             class="speaker-name"
-            :model-value="speaker.name"
+            :model-value="speaker.defined === false ? '' : speaker.name"
+            :placeholder="computeSpeakerDisplayName(speaker, t)"
             :disabled="!canEditSpeakers"
             :aria-label="t('sidebar.renameSpeaker')"
             @commit="onRename(speaker.id, $event)" />

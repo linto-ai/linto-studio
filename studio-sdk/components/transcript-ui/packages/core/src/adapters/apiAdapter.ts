@@ -10,6 +10,7 @@ export function mapApiDocument(raw: ApiDocument): EditorDocument {
       id: s.speaker_id,
       name: s.speaker_name,
       color: '',
+      defined: s.defined,
     })
   }
 

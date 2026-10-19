@@ -142,14 +142,15 @@ describe("onUpdateTurnSpeaker", () => {
     ).toHaveBeenCalledWith("tr-1", "turn-2", {
       speaker_id: "spk-1",
       speaker_name: "Marie",
-      defined: false,
+      // No flag in DB (legacy data): a real name, never a placeholder.
+      defined: true,
     })
     const [event, broadcast] = ctx.emit.mock.calls[0]
     expect(event).toBe("editor:turn_speaker_updated")
     expect(broadcast).toEqual({
       translationId: "tr-1",
       turnId: "turn-2",
-      speaker: { id: "spk-1", name: "Marie" },
+      speaker: { id: "spk-1", name: "Marie", defined: true },
       removedSpeakerId: "spk-2",
       version: 3,
       lastUpdate: LAST_UPDATE,
@@ -170,19 +171,60 @@ describe("onUpdateTurnSpeaker", () => {
           turnId: "turn-2",
           speakerId: "spk-2",
           speakerName: "Thomas",
-          defined: false,
+          defined: true,
         },
         after: {
           turnId: "turn-2",
           speakerId: "spk-1",
           speakerName: "Marie",
-          defined: false,
+          defined: true,
         },
       }),
     )
     expect(
       model.conversationEditor.swapConversationUndoHead,
     ).toHaveBeenCalledWith("tr-1", null, "rev-id")
+  })
+
+  test("keeps a placeholder speaker's defined false, in the write, the broadcast and the revision", async () => {
+    model.conversations.getById.mockResolvedValue([
+      {
+        ...CONV,
+        speakers: [
+          { speaker_id: "spk-1", speaker_name: "spk1", defined: false },
+          { speaker_id: "spk-2", speaker_name: "spk2", defined: false },
+        ],
+      },
+    ])
+    model.conversationEditor.updateEditorTurnSpeaker.mockResolvedValue({
+      version: 3,
+      lastUpdate: LAST_UPDATE,
+      previousSpeaker: {
+        speaker_id: "spk-2",
+        speaker_name: "spk2",
+        defined: false,
+      },
+      undoHead: null,
+    })
+    const ctx = makeCtx()
+
+    await onUpdateTurnSpeaker(ctx, { ...BASE, speakerId: "spk-1" }, jest.fn())
+
+    expect(
+      model.conversationEditor.updateEditorTurnSpeaker,
+    ).toHaveBeenCalledWith("tr-1", "turn-2", {
+      speaker_id: "spk-1",
+      speaker_name: "spk1",
+      defined: false,
+    })
+    const [, broadcast] = ctx.emit.mock.calls[0]
+    expect(broadcast.speaker).toEqual({ id: "spk-1", name: "spk1", defined: false })
+    expect(model.editorRevisions.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        before: expect.objectContaining({ speakerId: "spk-2", defined: false }),
+        after: expect.objectContaining({ speakerId: "spk-1", defined: false }),
+      }),
+    )
   })
 
   test("no GC when the previous speaker still has turns", async () => {
@@ -223,7 +265,11 @@ describe("onUpdateTurnSpeaker", () => {
     // A name typed by a user is a defined name.
     expect(speaker.defined).toBe(true)
     const [, broadcast] = ctx.emit.mock.calls[0]
-    expect(broadcast.speaker.name).toBe("Julie")
+    expect(broadcast.speaker).toEqual({
+      id: speaker.speaker_id,
+      name: "Julie",
+      defined: true,
+    })
   })
 
   test("already assigned: acks ok without writing nor broadcasting", async () => {
@@ -268,6 +314,7 @@ describe("onRenameSpeaker", () => {
       version: 6,
       lastUpdate: LAST_UPDATE,
       previousName: "Marie",
+      previousDefined: true,
       undoHead: null,
     })
     const ctx = makeCtx()
@@ -279,15 +326,18 @@ describe("onRenameSpeaker", () => {
       ack,
     )
 
+    // A user rename always defines the name.
     expect(model.conversationEditor.renameEditorSpeaker).toHaveBeenCalledWith(
       "tr-1",
       "spk-1",
       "Marie D.",
+      true,
     )
     expect(ctx.emit).toHaveBeenCalledWith("editor:speaker_renamed", {
       translationId: "tr-1",
       speakerId: "spk-1",
       name: "Marie D.",
+      defined: true,
       version: 6,
       lastUpdate: LAST_UPDATE,
       revisionId: "rev-id",
@@ -302,14 +352,39 @@ describe("onRenameSpeaker", () => {
     expect(model.editorRevisions.insert).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "rename_speaker",
-        before: { speakerId: "spk-1", name: "Marie" },
-        after: { speakerId: "spk-1", name: "Marie D." },
+        before: { speakerId: "spk-1", name: "Marie", defined: true },
+        after: { speakerId: "spk-1", name: "Marie D.", defined: true },
         previousHead: null,
       }),
     )
     expect(
       model.conversationEditor.swapConversationUndoHead,
     ).toHaveBeenCalledWith("tr-1", null, "rev-id")
+  })
+
+  test("renaming a placeholder records its previous defined false, so undo brings it back", async () => {
+    model.conversationEditor.renameEditorSpeaker.mockResolvedValue({
+      version: 6,
+      lastUpdate: LAST_UPDATE,
+      previousName: "spk2",
+      previousDefined: false,
+      undoHead: null,
+    })
+    const ctx = makeCtx()
+
+    await onRenameSpeaker(
+      ctx,
+      { translationId: "tr-1", speakerId: "spk-2", name: "Marie" },
+      jest.fn(),
+    )
+
+    expect(model.editorRevisions.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "rename_speaker",
+        before: { speakerId: "spk-2", name: "spk2", defined: false },
+        after: { speakerId: "spk-2", name: "Marie", defined: true },
+      }),
+    )
   })
 
   test("refuses an empty name and an unknown speaker", async () => {
@@ -428,6 +503,7 @@ describe("recordSpeakerRevision resilience", () => {
       translationId: "tr-1",
       speakerId: "spk-1",
       name: "Marie D.",
+      defined: true,
       version: 6,
       lastUpdate: LAST_UPDATE,
       revisionId: null,

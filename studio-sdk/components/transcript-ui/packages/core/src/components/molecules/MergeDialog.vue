@@ -4,6 +4,7 @@ import { ref, computed, watch, useTemplateRef } from "vue"
 import { useCore } from "../../core"
 import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { countTurnsForSpeaker, mergeSpeakers } from "../../core/helpers"
+import { computeSpeakerDisplayName } from "../../utils"
 
 const props = defineProps<{
   open: boolean
@@ -31,7 +32,10 @@ const candidates = computed(() =>
 )
 
 const targetOptions = computed(() =>
-  candidates.value.map((c) => ({ value: c.id, label: c.name })),
+  candidates.value.map((c) => ({
+    value: c.id,
+    label: computeSpeakerDisplayName(c, t),
+  })),
 )
 
 const targetField = computed(() => ({
@@ -84,7 +88,8 @@ function onConfirm(): void {
         {{ t('mergeDialog.title') }}
       </h2>
       <p class="merge-dialog-description">
-        <strong>{{ fromSpeaker.name }}</strong> · {{ affectedCount }}
+        <strong>{{ computeSpeakerDisplayName(fromSpeaker, t) }}</strong> ·
+        {{ affectedCount }}
         {{ t('mergeDialog.turnsAffected') }}
       </p>
       <FormInput

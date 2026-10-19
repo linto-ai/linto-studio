@@ -187,4 +187,43 @@ describe("transcriptionToConversation - speaker identification", () => {
       "Unknown speaker 2": false,
     })
   })
+
+  it("(e) without identification: diarization tags and the 'speaker' fallback are placeholders, imported names are defined", () => {
+    const u1 = uuidv4()
+    const conversation = transcriptionToConversation(
+      makeTranscript({ spk1Name: "Alice", spk2Name: null, uuidName: u1 }),
+      makeConversation(),
+    )
+    const byName = Object.fromEntries(
+      conversation.speakers.map((s) => [s.speaker_name, s.defined]),
+    )
+    expect(byName).toEqual({
+      // A real name from an imported transcription.
+      Alice: true,
+      // Missing spk_id falls back to "speaker".
+      speaker: false,
+      // A raw uuid is renamed speakerN and stays a placeholder.
+      speaker1: false,
+    })
+
+    const tags = transcriptionToConversation(
+      makeTranscript({ spk1Name: "SPK1", spk2Name: "spk12", uuidName: "Bob" }),
+      makeConversation(),
+    )
+    expect(
+      Object.fromEntries(tags.speakers.map((s) => [s.speaker_name, s.defined])),
+    ).toEqual({ SPK1: false, spk12: false, Bob: true })
+  })
+
+  it("(f) with identification: the 'speaker' fallback stays a placeholder, unrenamed", () => {
+    const conversation = transcriptionToConversation(
+      makeTranscript({ spk1Name: "Alice", spk2Name: null, uuidName: "spk3" }),
+      makeConversation({ diarizationConfig: { speakerIdentificationConfig: {} } }),
+    )
+    expect(
+      Object.fromEntries(
+        conversation.speakers.map((s) => [s.speaker_name, s.defined]),
+      ),
+    ).toEqual({ Alice: true, speaker: false, "Unknown speaker 1": false })
+  })
 })

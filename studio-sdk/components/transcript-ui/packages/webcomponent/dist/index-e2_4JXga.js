@@ -8814,22 +8814,24 @@ const SPEAKER_COLORS = [
   "#4E4CD2"
   // indigo
 ];
-function addSpeaker(speakers, id, name) {
+function addSpeaker(speakers, id, name, defined) {
   const color = SPEAKER_COLORS[speakers.size % SPEAKER_COLORS.length];
-  return { id, name, color };
+  const speaker = { id, name, color };
+  if (defined !== void 0) speaker.defined = defined;
+  return speaker;
 }
-function ensureSpeaker(speakers, speakerId, name) {
+function ensureSpeaker(speakers, speakerId, name, defined) {
   if (!speakerId) return null;
   if (speakers.has(speakerId)) return null;
-  return addSpeaker(speakers, speakerId, name ?? speakerId);
+  return addSpeaker(speakers, speakerId, name ?? speakerId, defined);
 }
 function speakerEquals(a4, b2) {
-  return a4.name === b2.name && a4.color === b2.color;
+  return a4.name === b2.name && a4.color === b2.color && a4.defined === b2.defined;
 }
 function createSpeakersStore(emit2) {
   const all = /* @__PURE__ */ shallowReactive(/* @__PURE__ */ new Map());
-  function ensure(speakerId, name) {
-    const speaker = ensureSpeaker(all, speakerId, name);
+  function ensure(speakerId, name, defined) {
+    const speaker = ensureSpeaker(all, speakerId, name, defined);
     if (!speaker) return;
     all.set(speaker.id, speaker);
     emit2("speaker:add", { speaker });
@@ -9158,7 +9160,7 @@ function ensureDocumentSpeakers(doc2) {
   const refs = [];
   for (const [id, speaker] of doc2.speakers) {
     seen.add(id);
-    refs.push({ id, name: speaker.name });
+    refs.push({ id, name: speaker.name, defined: speaker.defined });
   }
   for (const channel of doc2.channels) {
     for (const translation of channel.translations) {
@@ -9452,6 +9454,14 @@ function computeTurnPlainText$2(turn) {
   if (turn.words.length > 0) return turn.words.map((w2) => w2.text).join(" ");
   return turn.text ?? "";
 }
+function computeSpeakerDisplayName(speaker, t2) {
+  if (speaker.defined !== false) return speaker.name;
+  const digits = /(\d+)\s*$/.exec(speaker.name ?? "")?.[1];
+  if (digits === void 0) return t2("speaker.placeholderLabel");
+  return t2("speaker.placeholderLabelNumbered", {
+    number: parseInt(digits, 10)
+  });
+}
 function buildVerbatimText(title, turns) {
   const lines = [];
   if (title) lines.push(title, "");
@@ -9564,6 +9574,7 @@ const utils = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePropert
   buildTranslationItems,
   buildVerbatimText,
   carryWordTimes: carryWordTimes$1,
+  computeSpeakerDisplayName,
   computeTurnPlainText: computeTurnPlainText$2,
   downloadTextFile,
   extractLangCode,
@@ -9656,7 +9667,7 @@ function createCore(options = {}) {
     for (const channel of channels.values()) channel.dispose();
     channels.clear();
     for (const spkRef of ensureDocumentSpeakers(doc2)) {
-      speakers.ensure(spkRef.id, spkRef.name);
+      speakers.ensure(spkRef.id, spkRef.name, spkRef.defined);
     }
     for (const ch of doc2.channels) {
       channels.set(ch.id, createChannelStore(ch, emit2, on, speakers.ensure));
@@ -10493,6 +10504,8 @@ const fr = {
   "transcription.lockedBy": "En cours de modification par {name}",
   "transcription.mergeTurns": "Fusionner avec le tour précédent",
   "speaker.unknown": "Intervenant non connu",
+  "speaker.placeholderLabel": "Intervenant",
+  "speaker.placeholderLabelNumbered": "Intervenant {number}",
   "transcription.cancelEdit": "Annuler la modification",
   "transcription.turnEditor": "Texte du tour de parole (Entrée pour enregistrer, Échap pour annuler)",
   "transcription.loadingHistory": "Chargement…",
@@ -10638,6 +10651,8 @@ const en = {
   "transcription.lockedBy": "Being edited by {name}",
   "transcription.mergeTurns": "Merge with previous turn",
   "speaker.unknown": "Unknown speaker",
+  "speaker.placeholderLabel": "Speaker",
+  "speaker.placeholderLabelNumbered": "Speaker {number}",
   "transcription.cancelEdit": "Cancel edit",
   "transcription.turnEditor": "Turn text (Enter to save, Escape to cancel)",
   "transcription.loadingHistory": "Loading…",
@@ -10780,7 +10795,7 @@ const _sfc_main$P = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-26CiyIg3.js");
+        const { highlightCode } = await import("./highlight-CQog18zy.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -23806,9 +23821,10 @@ const _sfc_main$w = /* @__PURE__ */ defineComponent({
       return null;
     });
     const speakerColor = computed(() => props.speaker?.color ?? "transparent");
-    const displayName = computed(
-      () => props.speaker?.name ?? (props.interactive ? t2("speaker.unknown") : "")
-    );
+    const displayName = computed(() => {
+      if (props.speaker) return computeSpeakerDisplayName(props.speaker, t2);
+      return props.interactive ? t2("speaker.unknown") : "";
+    });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         class: normalizeClass(["speaker-label", { "speaker-label--interactive": __props.interactive }])
@@ -23831,8 +23847,8 @@ const _sfc_main$w = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$r = "\n.speaker-label[data-v-c7a3e9ae] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-c7a3e9ae] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.speaker-name--unknown[data-v-c7a3e9ae] {\n  font-weight: 400;\n  font-style: italic;\n  color: var(--color-text-muted);\n}\n.speaker-label--interactive:hover .speaker-name[data-v-c7a3e9ae] {\n  text-decoration: underline;\n}\n.timestamp[data-v-c7a3e9ae] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-c7a3e9ae] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
-const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$r]], ["__scopeId", "data-v-c7a3e9ae"]]);
+const _style_0$r = "\n.speaker-label[data-v-c4dc411a] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-c4dc411a] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.speaker-name--unknown[data-v-c4dc411a] {\n  font-weight: 400;\n  font-style: italic;\n  color: var(--color-text-muted);\n}\n.speaker-label--interactive:hover .speaker-name[data-v-c4dc411a] {\n  text-decoration: underline;\n}\n.timestamp[data-v-c4dc411a] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-c4dc411a] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
+const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$r]], ["__scopeId", "data-v-c4dc411a"]]);
 const _hoisted_1$q = {
   key: 0,
   class: "merge-turns"
@@ -23876,7 +23892,7 @@ function renameSpeaker$1(core, speakerId, newName) {
   const trimmed = newName.trim();
   const existing = core.speakers.all.get(speakerId);
   if (!existing || !trimmed || trimmed === existing.name) return;
-  core.speakers.update(speakerId, { name: trimmed });
+  core.speakers.update(speakerId, { name: trimmed, defined: true });
 }
 function switchTurnSpeaker$1(core, turnId, newSpeakerId) {
   for (const channel of core.channels.values()) {
@@ -23890,7 +23906,12 @@ function switchTurnSpeaker$1(core, turnId, newSpeakerId) {
 function createSpeakerAndAssign$1(core, turnId, name) {
   const trimmed = name.trim();
   if (!trimmed) return null;
-  const speaker = addSpeaker(core.speakers.all, crypto.randomUUID(), trimmed);
+  const speaker = addSpeaker(
+    core.speakers.all,
+    crypto.randomUUID(),
+    trimmed,
+    true
+  );
   core.speakers.updateOrCreate(speaker);
   switchTurnSpeaker$1(core, turnId, speaker.id);
   return speaker.id;
@@ -24022,7 +24043,7 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
           createVNode(unref(SpeakerIndicator), {
             color: item.color
           }, null, 8, ["color"]),
-          createBaseVNode("span", _hoisted_2$l, toDisplayString(item.name), 1)
+          createBaseVNode("span", _hoisted_2$l, toDisplayString(unref(computeSpeakerDisplayName)(item, unref(t2))), 1)
         ]),
         footer: withCtx(() => [
           !isCreatingNew.value ? (openBlock(), createBlock(unref(Button), {
@@ -24055,8 +24076,8 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$p = "\n.transcript-ui-root .speaker-popover-trigger[data-v-0679fde9] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-popover-trigger[data-v-0679fde9]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.speaker-popover-name[data-v-0679fde9] {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
-const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-0679fde9"]]);
+const _style_0$p = "\n.transcript-ui-root .speaker-popover-trigger[data-v-cb805d51] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-popover-trigger[data-v-cb805d51]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.speaker-popover-name[data-v-cb805d51] {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
+const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-cb805d51"]]);
 const turnSelectionKey = /* @__PURE__ */ Symbol("turnSelection");
 function getTurnText(turn) {
   if (turn.words.length > 0) {
@@ -24065,6 +24086,7 @@ function getTurnText(turn) {
   return turn.text ?? "";
 }
 function provideTurnSelection(turns, speakers, core) {
+  const { t: t2 } = useI18n();
   const selectedIds = /* @__PURE__ */ shallowReactive(/* @__PURE__ */ new Map());
   let lastToggledId = null;
   const count2 = computed(() => selectedIds.size);
@@ -24090,7 +24112,7 @@ function provideTurnSelection(turns, speakers, core) {
       toggle(turnId);
       return;
     }
-    const ids = turns.value.map((t2) => t2.id);
+    const ids = turns.value.map((t22) => t22.id);
     const fromIndex = ids.indexOf(lastToggledId);
     const toIndex = ids.indexOf(turnId);
     if (fromIndex === -1 || toIndex === -1) {
@@ -24109,15 +24131,15 @@ function provideTurnSelection(turns, speakers, core) {
     lastToggledId = null;
   }
   async function copyText() {
-    const selected = turns.value.filter((t2) => selectedIds.has(t2.id));
+    const selected = turns.value.filter((t22) => selectedIds.has(t22.id));
     const text2 = selected.map(getTurnText).join("\n\n");
     await navigator.clipboard.writeText(text2);
   }
   async function copyWithMetadata() {
-    const selected = turns.value.filter((t2) => selectedIds.has(t2.id));
+    const selected = turns.value.filter((t22) => selectedIds.has(t22.id));
     const blocks = selected.map((turn) => {
       const speaker = turn.speakerId ? speakers.get(turn.speakerId) : void 0;
-      const name = speaker?.name ?? "";
+      const name = speaker ? computeSpeakerDisplayName(speaker, t2) : "";
       const time = turn.startTime != null ? formatTime(turn.startTime) : "";
       const header = [name, time].filter(Boolean).join(" (") + (time ? ")" : "");
       const text2 = getTurnText(turn);
@@ -24130,7 +24152,7 @@ ${text2}` : text2;
     () => turns.value,
     (currentTurns) => {
       if (selectedIds.size === 0) return;
-      const currentIds = new Set(currentTurns.map((t2) => t2.id));
+      const currentIds = new Set(currentTurns.map((t22) => t22.id));
       for (const id of [...selectedIds.keys()]) {
         if (!currentIds.has(id)) selectedIds.delete(id);
       }
@@ -24247,7 +24269,7 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
     });
     const isSelected = computed(() => selection.isSelected(props.turn.id));
     const checkboxLabel = computed(() => {
-      const name = props.speaker?.name ?? "";
+      const name = props.speaker ? computeSpeakerDisplayName(props.speaker, t2) : "";
       const key = isSelected.value ? "selection.deselect" : "selection.select";
       return t2(key).replace("{name}", name);
     });
@@ -24465,8 +24487,8 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$o = "\n.turn[data-v-2b4ee8df] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-2b4ee8df] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n\n/* Reserve the edit-actions height (Button sm) so entering/leaving edit mode\n   never shifts the layout — but only where those actions can appear at all.\n   Read-only, the row holds a line of metadata and has no reason to be 36px\n   tall. */\n.turn-header--with-actions[data-v-2b4ee8df] {\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-2b4ee8df] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n\n/* Same reset as the popover's own trigger: the label IS the button. */\n.transcript-ui-root .speaker-trigger[data-v-2b4ee8df] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-trigger[data-v-2b4ee8df]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.turn[data-v-2b4ee8df]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-2b4ee8df] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--transcript-font-size);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-2b4ee8df] {\n  cursor: text;\n}\n.turn-text--editable[data-v-2b4ee8df]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-2b4ee8df] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-2b4ee8df]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-2b4ee8df] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-2b4ee8df] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-2b4ee8df 200ms ease;\n}\n@keyframes partial-fade-in-2b4ee8df {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-2b4ee8df] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-2b4ee8df] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-2b4ee8df],\n  .turn--active[data-v-2b4ee8df]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
-const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$o]], ["__scopeId", "data-v-2b4ee8df"]]);
+const _style_0$o = "\n.turn[data-v-e843be73] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-e843be73] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n\n/* Reserve the edit-actions height (Button sm) so entering/leaving edit mode\n   never shifts the layout — but only where those actions can appear at all.\n   Read-only, the row holds a line of metadata and has no reason to be 36px\n   tall. */\n.turn-header--with-actions[data-v-e843be73] {\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-e843be73] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n\n/* Same reset as the popover's own trigger: the label IS the button. */\n.transcript-ui-root .speaker-trigger[data-v-e843be73] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-trigger[data-v-e843be73]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.turn[data-v-e843be73]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-e843be73] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--transcript-font-size);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-e843be73] {\n  cursor: text;\n}\n.turn-text--editable[data-v-e843be73]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-e843be73] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-e843be73]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-e843be73] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-e843be73] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-e843be73 200ms ease;\n}\n@keyframes partial-fade-in-e843be73 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-e843be73] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-e843be73] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-e843be73],\n  .turn--active[data-v-e843be73]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
+const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$o]], ["__scopeId", "data-v-e843be73"]]);
 const _sfc_main$s = {};
 const _hoisted_1$n = {
   viewBox: "0 0 938 604",
@@ -24865,7 +24887,7 @@ const _sfc_main$o = /* @__PURE__ */ defineComponent({
   __name: "VerbatimPanel",
   setup(__props) {
     const core = useCore();
-    const { locale } = useI18n();
+    const { t: t2, locale } = useI18n();
     const turns = computed(
       () => core.activeChannel.value?.activeTranslation.value.turns.value ?? []
     );
@@ -24876,7 +24898,8 @@ const _sfc_main$o = /* @__PURE__ */ defineComponent({
     );
     function speakerName(id) {
       if (id == null) return "";
-      return speakers.get(id)?.name ?? id;
+      const speaker = speakers.get(id);
+      return speaker ? computeSpeakerDisplayName(speaker, t2) : id;
     }
     function languageName(code) {
       if (!code) return "";
@@ -24955,8 +24978,8 @@ const _sfc_main$o = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$k = "\n.verbatim-panel[data-v-7a077f5a] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.verbatim-panel__content[data-v-7a077f5a] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n}\n.verbatim-panel__header[data-v-7a077f5a] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-7a077f5a] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-7a077f5a] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-7a077f5a] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-7a077f5a] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-7a077f5a] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-7a077f5a] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-7a077f5a] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-7a077f5a] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n\n";
-const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$k]], ["__scopeId", "data-v-7a077f5a"]]);
+const _style_0$k = "\n.verbatim-panel[data-v-fd715e06] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.verbatim-panel__content[data-v-fd715e06] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n}\n.verbatim-panel__header[data-v-fd715e06] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-fd715e06] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-fd715e06] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-fd715e06] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-fd715e06] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-fd715e06] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-fd715e06] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-fd715e06] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-fd715e06] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n\n";
+const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$k]], ["__scopeId", "data-v-fd715e06"]]);
 const _sfc_main$n = /* @__PURE__ */ defineComponent({
   __name: "ChannelSelector",
   props: {
@@ -25041,7 +25064,10 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
       )
     );
     const targetOptions = computed(
-      () => candidates.value.map((c2) => ({ value: c2.id, label: c2.name }))
+      () => candidates.value.map((c2) => ({
+        value: c2.id,
+        label: computeSpeakerDisplayName(c2, t2)
+      }))
     );
     const targetField = computed(() => ({
       label: t2("mergeDialog.targetLabel"),
@@ -25088,7 +25114,7 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
         }, [
           createBaseVNode("h2", _hoisted_1$i, toDisplayString(unref(t2)("mergeDialog.title")), 1),
           createBaseVNode("p", _hoisted_2$g, [
-            createBaseVNode("strong", null, toDisplayString(fromSpeaker.value.name), 1),
+            createBaseVNode("strong", null, toDisplayString(unref(computeSpeakerDisplayName)(fromSpeaker.value, unref(t2))), 1),
             createTextVNode(" · " + toDisplayString(affectedCount.value) + " " + toDisplayString(unref(t2)("mergeDialog.turnsAffected")), 1)
           ]),
           createVNode(unref(FormInput), {
@@ -25125,8 +25151,8 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$j = "\n.merge-dialog[data-v-e658bcd0] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-e658bcd0]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-e658bcd0] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-e658bcd0] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-e658bcd0] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-e658bcd0] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
-const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$j]], ["__scopeId", "data-v-e658bcd0"]]);
+const _style_0$j = "\n.merge-dialog[data-v-6f764c0c] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-6f764c0c]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-6f764c0c] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-6f764c0c] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-6f764c0c] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-6f764c0c] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
+const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$j]], ["__scopeId", "data-v-6f764c0c"]]);
 const _hoisted_1$h = { class: "speaker-sidebar" };
 const _hoisted_2$f = {
   key: 0,
@@ -25452,11 +25478,12 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
                 }, null, 8, ["color"]),
                 createVNode(unref(EditableText), {
                   class: "speaker-name",
-                  "model-value": speaker.name,
+                  "model-value": speaker.defined === false ? "" : speaker.name,
+                  placeholder: unref(computeSpeakerDisplayName)(speaker, unref(t2)),
                   disabled: !canEditSpeakers.value,
                   "aria-label": unref(t2)("sidebar.renameSpeaker"),
                   onCommit: ($event) => onRename(speaker.id, $event)
-                }, null, 8, ["model-value", "disabled", "aria-label", "onCommit"]),
+                }, null, 8, ["model-value", "placeholder", "disabled", "aria-label", "onCommit"]),
                 canEditSpeakers.value && __props.speakers.length > 1 ? (openBlock(), createBlock(unref(_sfc_main$B), {
                   key: 0,
                   "speaker-name": speaker.name,
@@ -25490,8 +25517,8 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$i = "\n.speaker-sidebar[data-v-5f882421] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-5f882421] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-5f882421] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-5f882421] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-5f882421] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-5f882421]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-5f882421] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-5f882421] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-5f882421] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\nlabel.subtitle-toggle-label[data-v-5f882421] {\n  cursor: pointer;\n}\n.voice-playback-hint[data-v-5f882421] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-5f882421] {\n  color: var(--color-danger);\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-5f882421] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-5f882421] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-5f882421] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-5f882421] {\n  color: var(--color-success);\n}\n.history-generation__status--error[data-v-5f882421] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-5f882421],\n.history-generation__status--queued[data-v-5f882421] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-5f882421] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-5f882421] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-5f882421] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-5f882421] {\n    display: none;\n}\n}\n";
-const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["styles", [_style_0$i]], ["__scopeId", "data-v-5f882421"]]);
+const _style_0$i = "\n.speaker-sidebar[data-v-3ef7ee26] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-3ef7ee26] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-3ef7ee26] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-3ef7ee26] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-3ef7ee26] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-3ef7ee26]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-3ef7ee26] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-3ef7ee26] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-3ef7ee26] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\nlabel.subtitle-toggle-label[data-v-3ef7ee26] {\n  cursor: pointer;\n}\n.voice-playback-hint[data-v-3ef7ee26] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-3ef7ee26] {\n  color: var(--color-danger);\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-3ef7ee26] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-3ef7ee26] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-3ef7ee26] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-3ef7ee26] {\n  color: var(--color-success);\n}\n.history-generation__status--error[data-v-3ef7ee26] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-3ef7ee26],\n.history-generation__status--queued[data-v-3ef7ee26] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-3ef7ee26] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-3ef7ee26] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-3ef7ee26] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-3ef7ee26] {\n    display: none;\n}\n}\n";
+const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["styles", [_style_0$i]], ["__scopeId", "data-v-3ef7ee26"]]);
 const _sfc_main$j = /* @__PURE__ */ defineComponent({
   __name: "SidebarDrawer",
   props: {
@@ -26364,7 +26391,8 @@ function mapApiDocument(raw) {
     speakers.set(s2.speaker_id, {
       id: s2.speaker_id,
       name: s2.speaker_name,
-      color: ""
+      color: "",
+      defined: s2.defined
     });
   }
   const turns = mapApiTurns(raw.text);
@@ -30398,8 +30426,9 @@ function applyTurnSpeakerUpdated(state, update) {
   trackBroadcastLastUpdate(state, update.translationId, update.lastUpdate);
   if (!trackBroadcastVersion(state, update.translationId, update.version)) return;
   const { speakers } = state.core;
-  speakers.ensure(update.speaker.id, update.speaker.name);
-  speakers.update(update.speaker.id, { name: update.speaker.name });
+  const { id, name, defined } = update.speaker;
+  speakers.ensure(id, name, defined);
+  speakers.update(id, { name, defined });
   const store = findTranslationStore(state.core, update.translationId);
   if (store?.hasTurn(update.turnId)) {
     store.updateTurn(update.turnId, { speakerId: update.speaker.id });
@@ -30417,7 +30446,10 @@ function applyTurnSpeakerUpdated(state, update) {
 function applySpeakerRenamed(state, renamed) {
   trackBroadcastLastUpdate(state, renamed.translationId, renamed.lastUpdate);
   if (!trackBroadcastVersion(state, renamed.translationId, renamed.version)) return;
-  state.core.speakers.update(renamed.speakerId, { name: renamed.name });
+  state.core.speakers.update(renamed.speakerId, {
+    name: renamed.name,
+    defined: renamed.defined ?? true
+  });
   trackUndoRedoHeads(
     state,
     renamed.translationId,
@@ -30452,7 +30484,8 @@ function applySpeakerRestored(state, restored) {
   }
   state.core.speakers.ensure(
     restored.fromSpeaker.speaker_id,
-    restored.fromSpeaker.speaker_name
+    restored.fromSpeaker.speaker_name,
+    restored.fromSpeaker.defined
   );
   const store = findTranslationStore(state.core, restored.translationId);
   if (store) {
@@ -31786,4 +31819,4 @@ export {
   purify_default as p,
   register as r
 };
-//# sourceMappingURL=index-oJ0ekD83.js.map
+//# sourceMappingURL=index-e2_4JXga.js.map

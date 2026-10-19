@@ -12,7 +12,9 @@ import {
 } from "vue"
 import type { Turn, Speaker } from "../types/editor"
 import type { Core } from "../core/types"
+import { useI18n } from "@linto-ai/transcript-ui-i18n"
 import { formatTime } from "../utils/time"
+import { computeSpeakerDisplayName } from "../utils/computeSpeakerDisplayName"
 
 export interface TurnSelection {
   readonly count: ComputedRef<number>
@@ -39,6 +41,7 @@ export function provideTurnSelection(
   speakers: Map<string, Speaker>,
   core: Core,
 ): TurnSelection {
+  const { t } = useI18n()
   const selectedIds = shallowReactive(new Map<string, true>())
   let lastToggledId: string | null = null
 
@@ -104,7 +107,7 @@ export function provideTurnSelection(
       const speaker = turn.speakerId
         ? speakers.get(turn.speakerId)
         : undefined
-      const name = speaker?.name ?? ""
+      const name = speaker ? computeSpeakerDisplayName(speaker, t) : ""
       const time = turn.startTime != null ? formatTime(turn.startTime) : ""
       const header = [name, time].filter(Boolean).join(" (") + (time ? ")" : "")
       const text = getTurnText(turn)

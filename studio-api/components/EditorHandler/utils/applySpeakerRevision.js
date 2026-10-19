@@ -18,17 +18,21 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
  */
 
 async function applyRenameSpeaker(translationId, target) {
+  // Revisions recorded before the flag existed have no `defined`: treat them
+  // as real names, only an explicit false brings a placeholder back.
+  const defined = target.defined !== false
   const updated = await model.conversationEditor.renameEditorSpeaker(
     translationId,
     target.speakerId,
     target.name,
+    defined,
   )
   if (!updated) return null
   return {
     version: updated.version,
     lastUpdate: updated.lastUpdate,
     event: "editor:speaker_renamed",
-    payload: { speakerId: target.speakerId, name: target.name },
+    payload: { speakerId: target.speakerId, name: target.name, defined },
   }
 }
 
@@ -44,25 +48,37 @@ async function applyRenameSpeaker(translationId, target) {
  *   actually dropping it, so an occasional false positive is harmless.
  */
 async function applyUpdateTurnSpeaker(translationId, target, leftSpeakerId) {
+  // Same legacy rule as applyRenameSpeaker: a missing flag is a real name.
+  const defined = target.defined !== false
   const updated = await model.conversationEditor.updateEditorTurnSpeaker(
     translationId,
     target.turnId,
     {
       speaker_id: target.speakerId,
       speaker_name: target.speakerName,
-      defined: Boolean(target.defined),
+      defined,
     },
   )
   if (!updated) return null
   const removedSpeakerId =
     leftSpeakerId && leftSpeakerId !== target.speakerId ? leftSpeakerId : undefined
+  // A speaker still stored keeps its own name and flag: the revision's copy
+  // may be stale (renamed since, or recorded with a wrong flag).
+  const assigned = updated.assignedSpeaker ?? {
+    speaker_name: target.speakerName,
+    defined,
+  }
   return {
     version: updated.version,
     lastUpdate: updated.lastUpdate,
     event: "editor:turn_speaker_updated",
     payload: {
       turnId: target.turnId,
-      speaker: { id: target.speakerId, name: target.speakerName },
+      speaker: {
+        id: target.speakerId,
+        name: assigned.speaker_name,
+        defined: assigned.defined !== false,
+      },
       ...(removedSpeakerId && { removedSpeakerId }),
     },
   }

@@ -23,9 +23,11 @@ export function applyTurnSpeakerUpdated(
   const { speakers } = state.core
   // The broadcast carries the full speaker: a client that missed its
   // creation still ends up consistent (ensure creates, update syncs a
-  // possibly stale name).
-  speakers.ensure(update.speaker.id, update.speaker.name)
-  speakers.update(update.speaker.id, { name: update.speaker.name })
+  // possibly stale name). A missing `defined` (older server) means a real
+  // name, same as in the store.
+  const { id, name, defined } = update.speaker
+  speakers.ensure(id, name, defined)
+  speakers.update(id, { name, defined })
 
   const store = findTranslationStore(state.core, update.translationId)
   if (store?.hasTurn(update.turnId)) {

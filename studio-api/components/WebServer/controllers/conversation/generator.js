@@ -165,13 +165,19 @@ function transcriptionToConversation(transcript, conversation) {
         if (isUnidentifiedTag(speaker.speaker_name)) {
           speaker.speaker_name = "Unknown speaker " + unknown_num
           unknown_num++
-        } else {
+        } else if (speaker.speaker_name !== "speaker") {
+          // "speaker" is the fallback of a missing spk_id: a placeholder too
           speaker.defined = true
         }
       })
     } else {
+      // Imported transcriptions can carry real names: only a diarization tag
+      // or the "speaker" fallback (missing spk_id) is a placeholder.
       let speaker_num = 1
       conversation.speakers.map((speaker) => {
+        speaker.defined =
+          speaker.speaker_name !== "speaker" &&
+          !isUnidentifiedTag(speaker.speaker_name)
         if (uuid.validate(speaker.speaker_name)) {
           speaker.speaker_name = "speaker" + speaker_num
           speaker_num++
