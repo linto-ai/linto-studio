@@ -69,6 +69,7 @@ import {
 import { apiCreateCheckout } from "@/api/cloud.js"
 import { computeCheckoutReturnUrl } from "@/tools/billing/computeCheckoutReturnUrl"
 import { computeReactivationDefaults } from "@/tools/billing/computeReactivationDefaults"
+import { leavePageFor } from "@/tools/leavePageFor"
 
 const CHECKOUT_INTERVAL = { monthly: "month", annual: "year" }
 const EMPTY_ORGANIZATION_DRAFT = { organizationName: "", seats: null }
@@ -279,7 +280,8 @@ export default {
           checkoutStep: this.step,
           reactivationSeats: this.reactivationSeats,
         })
-        window.location.assign(url)
+        await leavePageFor(url)
+        this.checkoutLoading = false
         return
       }
       this.checkoutLoading = false

@@ -236,6 +236,7 @@ import { computePackLots } from "@/tools/billing/pack/computePackLots"
 import { computePaymentMethodSummary } from "@/tools/billing/computePaymentMethodSummary"
 import { formatFullDate } from "@/tools/date/formatFullDate"
 import { formatPackValidity } from "@/tools/billing/pack/formatPackValidity"
+import { leavePageFor } from "@/tools/leavePageFor"
 import AiCreditCosts from "@/components-cloud/AiCreditCosts.vue"
 import BalanceCard from "@/components-cloud/BalanceCard.vue"
 import InvoiceTable from "@/components-cloud/InvoiceTable.vue"
@@ -476,11 +477,12 @@ export default {
         returnUrl: computeBillingReturnUrl(window.location.href),
         flow,
       })
-      this.redirectToStripe(session)
+      return this.redirectToStripe(session)
     },
-    redirectToStripe(session) {
+    async redirectToStripe(session) {
       if (session?.url) {
-        window.location.assign(session.url)
+        await leavePageFor(session.url)
+        this.pendingRedirect = null
         return
       }
       this.pendingRedirect = null

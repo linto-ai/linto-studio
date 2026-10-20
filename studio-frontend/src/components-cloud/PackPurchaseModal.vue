@@ -10,6 +10,7 @@
 import { mapActions, mapGetters } from "vuex"
 import PackPickerModal from "@/components-cloud/PackPickerModal.vue"
 import { computeCheckoutReturnUrl } from "@/tools/billing/computeCheckoutReturnUrl"
+import { leavePageFor } from "@/tools/leavePageFor"
 
 // Buys a prepaid pack from anywhere: picks it, then leaves for the Stripe
 // Checkout, which comes back to returnUrl (the router tells the outcome).
@@ -71,7 +72,8 @@ export default {
           this.returnUrl ?? computeCheckoutReturnUrl(window.location.href),
       })
       if (checkoutUrl) {
-        window.location.assign(checkoutUrl)
+        await leavePageFor(checkoutUrl)
+        this.isRedirecting = false
         return
       }
       this.isRedirecting = false
