@@ -194,11 +194,21 @@ export default {
       if (requested) this.openReactivation()
     },
   },
+  mounted() {
+    window.addEventListener("pageshow", this.onPageShow)
+  },
+  beforeDestroy() {
+    window.removeEventListener("pageshow", this.onPageShow)
+  },
   methods: {
     ...mapActions("billing", ["openUpgradeModal", "closeUpgradeModal"]),
     ...mapActions("user", ["dismissOnboarding"]),
     ...mapActions("organizations", ["loadCurrentOrganizationAllUsers"]),
     clearCheckoutDraft,
+    // Back from Stripe, the back-forward cache restores the page mid-redirect
+    onPageShow(event) {
+      if (event.persisted) this.checkoutLoading = false
+    },
     selectPlan(planKey) {
       this.selectedPlan = planKey
       this.checkoutError = ""

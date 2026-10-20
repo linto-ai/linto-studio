@@ -419,6 +419,10 @@ export default {
   },
   mounted() {
     this.loadBilling()
+    window.addEventListener("pageshow", this.onPageShow)
+  },
+  beforeDestroy() {
+    window.removeEventListener("pageshow", this.onPageShow)
   },
   methods: {
     ...mapActions("billing", [
@@ -429,6 +433,10 @@ export default {
       "openReactivationModal",
     ]),
     formatFullDate,
+    // Back from Stripe, the back-forward cache restores the page mid-redirect
+    onPageShow(event) {
+      if (event.persisted) this.pendingRedirect = null
+    },
     async loadBilling() {
       this.loading = true
       const [usage, subscriptions, overview, packs, hasLots] =

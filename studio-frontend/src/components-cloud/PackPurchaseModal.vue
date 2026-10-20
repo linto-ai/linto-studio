@@ -56,8 +56,18 @@ export default {
       immediate: true,
     },
   },
+  mounted() {
+    window.addEventListener("pageshow", this.onPageShow)
+  },
+  beforeDestroy() {
+    window.removeEventListener("pageshow", this.onPageShow)
+  },
   methods: {
     ...mapActions("billing", ["loadPackCatalog", "startPackCheckout"]),
+    // Back from Stripe, the back-forward cache restores the page mid-redirect
+    onPageShow(event) {
+      if (event.persisted) this.isRedirecting = false
+    },
     async loadCatalog() {
       this.isLoadingCatalog = true
       await this.loadPackCatalog()
