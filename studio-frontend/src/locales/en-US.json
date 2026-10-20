@@ -191,6 +191,7 @@
     "feature_locked_paid": "This feature is included in paid plans.",
     "footer": {
       "usage": "{used} / {total}",
+      "packs": "Packs",
       "upgrade_cta": "Upgrade"
     },
     "mode": {

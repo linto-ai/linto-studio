@@ -14,6 +14,9 @@ export default {
   setUsage(state, usage) {
     state.usage = usage || null
   },
+  setCreditLots(state, lots) {
+    state.creditLots = Array.isArray(lots) ? lots : null
+  },
   setUsageByMember(state, data) {
     state.usageByMember = data || null
   },

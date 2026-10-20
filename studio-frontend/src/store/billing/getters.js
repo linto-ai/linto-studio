@@ -1,6 +1,7 @@
 import { isQuotaUnlimited } from "@/tools/billing/billingMeters"
 import { isLiveCreditExhausted } from "@/tools/billing/isLiveCreditExhausted"
 import { computePurchasablePacks } from "@/tools/billing/pack/computePurchasablePacks"
+import { computePackUsage } from "@/tools/billing/pack/computePackUsage"
 
 // i18n label per metered capability (quota rules of the catalog).
 const METER_LABEL = {
@@ -116,6 +117,15 @@ export default {
   // Headline meter for the sidebar footer bar.
   primaryMeter: (s, g) =>
     g.meters.find((m) => m.key === "import.minutes") || g.meters[0] || null,
+
+  // What was used of the transcription packs, null when the plan does not
+  // top its file quota up with them (a file pack bought on Free sits unused
+  // on Premium) or there is no pack
+  transcriptionPackUsage: (s) => {
+    const quota = s.usage?.capabilities?.["import.minutes"]
+    if (!quota?.topUp) return null
+    return computePackUsage(s.creditLots, "transcription")
+  },
 
   // True when any quota is exhausted (drives the upsell emphasis).
   needsUpgrade: (s, g) =>

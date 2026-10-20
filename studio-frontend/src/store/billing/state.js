@@ -4,6 +4,7 @@ export default {
   subscription: null, // current org subscription doc (org admin only)
   subscriptions: [], // every subscription row of the current org, ended ones included (org admin only)
   usage: null, // { planKey, mode, seats, capabilities: {...}, live: {...} }
+  creditLots: null, // `lots` of GET /cloud/credits/:orgId, null until loaded
   usageByMember: null, // { planKey, seats, members: { userId: {cap:{used,events}} } }
   loading: false,
   // Upgrade/onboarding wizard visibility, settable from anywhere (footer

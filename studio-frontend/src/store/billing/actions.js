@@ -6,6 +6,7 @@ import {
   apiChangeSubscription,
   apiCreateCreditsCheckout,
   apiGetPacks,
+  apiGetCredits,
 } from "@/api/cloud"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 
@@ -52,6 +53,15 @@ export default {
     const usage = await apiGetUsage(organizationId)
     if (usage) commit("setUsage", usage)
     return usage
+  },
+
+  // The prepaid lots of every kind; null when they can't be read.
+  async fetchCreditLots({ commit, rootGetters }, orgId) {
+    const organizationId = currentOrg(rootGetters, orgId)
+    if (!organizationId) return null
+    const credits = await apiGetCredits(organizationId)
+    if (credits) commit("setCreditLots", credits.lots)
+    return credits?.lots || null
   },
 
   async fetchUsageByMember({ commit, rootGetters }, orgId) {
@@ -142,11 +152,16 @@ export default {
     return subscription
   },
 
-  // What every member may load: the catalog and the org's usage summary.
+  // What every member may load: the catalog, the org's usage summary and its
+  // prepaid lots.
   async refresh({ commit, dispatch }, orgId) {
     commit("setLoading", true)
     try {
-      await Promise.all([dispatch("fetchPlans"), dispatch("fetchUsage", orgId)])
+      await Promise.all([
+        dispatch("fetchPlans"),
+        dispatch("fetchUsage", orgId),
+        dispatch("fetchCreditLots", orgId),
+      ])
     } finally {
       commit("setLoading", false)
     }

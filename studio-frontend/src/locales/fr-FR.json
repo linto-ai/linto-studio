@@ -191,6 +191,7 @@
     "feature_locked_paid": "Cette fonctionnalité est incluse dans les offres payantes.",
     "footer": {
       "usage": "{used} / {total}",
+      "packs": "Packs",
       "upgrade_cta": "Améliorer"
     },
     "mode": {

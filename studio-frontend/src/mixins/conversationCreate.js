@@ -344,11 +344,15 @@ export default {
       }
       this.refreshUsage()
     },
-    // The sidebar gauge and the next refusal read the file quota from the
-    // store: keep it in step with what was just used or refused.
+    // The sidebar gauges and the next refusal read the file quota and packs
+    // from the store: keep them in step with what was just used or refused.
     refreshUsage() {
       if (getEnv("VUE_APP_MODE") !== "cloud") return
       this.$store.dispatch("billing/fetchUsage", this.currentOrganizationScope)
+      this.$store.dispatch(
+        "billing/fetchCreditLots",
+        this.currentOrganizationScope,
+      )
     },
     emitError(errorMessage) {
       bus.$emit("app_notif", {

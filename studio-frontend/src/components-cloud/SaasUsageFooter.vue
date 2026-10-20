@@ -16,11 +16,7 @@
       </button>
     </div>
 
-    <progress
-      v-if="!primaryMeter.unlimited"
-      class="saas-usage-footer__bar"
-      :value="progressValue"
-      :max="progressMax"></progress>
+    <BalanceBar v-if="!primaryMeter.unlimited" :segments="planSegments" />
 
     <!-- The billing tab is for org admins: others only read the reset date -->
     <button
@@ -38,42 +34,83 @@
         {{ $t("billing.reset_on", { date: resetDateLabel }) }}
       </time>
     </p>
+
+    <!-- Packs never reset: under the plan reset date, apart from it -->
+    <div
+      v-if="transcriptionPackUsage"
+      class="saas-usage-footer__packs flex col"
+      :style="packPalette">
+      <p class="saas-usage-footer__label">
+        <span class="saas-usage-footer__plan">{{
+          $t("billing.footer.packs")
+        }}</span>
+        <span aria-hidden="true"> · </span>
+        <span>{{ packUsageLabel }}</span>
+      </p>
+      <BalanceBar :segments="packSegments" />
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex"
 
+import BalanceBar from "@/components/atoms/BalanceBar.vue"
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
+import { computePackLook } from "@/tools/billing/pack/computePackLook"
+import { computePackPalette } from "@/tools/billing/pack/computePackPalette"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration.js"
 import { formatDateDayMonth } from "@/tools/date/formatDateDayMonth.js"
 
 export default {
   name: "SaasUsageFooter",
   mixins: [orgaRoleMixin],
-  components: { PhIcon },
+  components: { BalanceBar, PhIcon },
   computed: {
     ...mapGetters("billing", [
       "isPaid",
       "isUnmetered",
       "planLabel",
       "primaryMeter",
+      "transcriptionPackUsage",
     ]),
+    // What was taken from the packs once the quota was spent counts in
+    // `used` too: the plan line stops at its own limit
+    planUsed() {
+      return Math.min(this.primaryMeter.used, this.primaryMeter.limit)
+    },
     // An unlimited quota has nothing to count against: the word says it all
     usageLabel() {
       const meter = this.primaryMeter
       if (meter.unlimited) return this.$t("billing.unlimited")
       return this.$t("billing.footer.usage", {
-        used: this.formatMeterAmount(meter.used),
+        used: this.formatMeterAmount(this.planUsed),
         total: this.formatMeterAmount(meter.limit),
       })
     },
-    progressValue() {
-      return this.primaryMeter.used
+    planSegments() {
+      return [
+        {
+          used: this.planUsed,
+          total: this.primaryMeter.limit,
+          pattern: "solid",
+        },
+      ]
     },
-    progressMax() {
-      return this.primaryMeter.limit
+    packUsageLabel() {
+      const { used, total } = this.transcriptionPackUsage
+      return this.$t("billing.footer.usage", {
+        used: formatMinutesDuration(used),
+        total: formatMinutesDuration(total),
+      })
+    },
+    packSegments() {
+      return [{ ...this.transcriptionPackUsage, pattern: "solid" }]
+    },
+    // The color of the transcription pack cards of the billing tab
+    packPalette() {
+      return computePackPalette(computePackLook("transcription").color)
     },
     resetDateLabel() {
       return formatDateDayMonth(this.primaryMeter.resetAt, this.$i18n.locale)
@@ -127,22 +164,6 @@ export default {
     }
   }
 
-  &__bar {
-    width: 100%;
-    height: 6px;
-    border: none;
-    border-radius: 3px;
-    overflow: hidden;
-
-    &::-webkit-progress-bar {
-      background: var(--neutral-30);
-      border-radius: 3px;
-    }
-    &::-moz-progress-bar {
-      border-radius: 3px;
-    }
-  }
-
   &__details {
     padding: 0;
     border: none;
@@ -160,6 +181,12 @@ export default {
         text-decoration: underline;
       }
     }
+  }
+
+  &__packs {
+    --balance-bar-fill: var(--pack-accent);
+    gap: var(--tiny-gap);
+    //margin-top: var(--small-gap);
   }
 }
 </style>
