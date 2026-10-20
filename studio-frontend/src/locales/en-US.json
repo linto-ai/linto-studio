@@ -134,14 +134,14 @@
         "consumed_of": "{consumed} of {total}",
         "subtitle_with_validity": "Prepaid hours, valid {validity}, shared with the whole organization.",
         "current": "In use",
-        "ai_credits_left": "{remaining} AI credit left of {total} | {remaining} AI credits left of {total}"
+        "ai_credits_used": "{used} AI credit used of {total} | {used} AI credits used of {total}"
       },
       "balances": {
         "title": "Available to your organization",
         "subtitle": "Your plan is used first, then your packs, starting with the one that expires soonest.",
         "available_minutes": "available | available",
         "available_credits": "credit available | credits available",
-        "remaining_of": "{remaining} of {total}",
+        "used_of": "{used} of {total}",
         "resets_on": "Resets on {date}",
         "expires_on": "Expires on {date}",
         "next_expiry_on": "Next expiry on {date}",

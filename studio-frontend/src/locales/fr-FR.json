@@ -134,14 +134,14 @@
         "consumed_of": "{consumed} sur {total}",
         "subtitle_with_validity": "Heures prépayées, valables {validity}, partagées avec toute l'organisation.",
         "current": "En cours",
-        "ai_credits_left": "{remaining} crédit IA restant sur {total} | {remaining} crédits IA restants sur {total}"
+        "ai_credits_used": "{used} crédit IA utilisé sur {total} | {used} crédits IA utilisés sur {total}"
       },
       "balances": {
         "title": "Disponible pour votre organisation",
         "subtitle": "Votre offre est utilisée en premier, puis vos packs, en commençant par celui qui expire le plus tôt.",
         "available_minutes": "disponible | disponibles",
         "available_credits": "crédit disponible | crédits disponibles",
-        "remaining_of": "{remaining} sur {total}",
+        "used_of": "{used} sur {total}",
         "resets_on": "Remise à zéro le {date}",
         "expires_on": "Expire le {date}",
         "next_expiry_on": "Prochaine expiration le {date}",

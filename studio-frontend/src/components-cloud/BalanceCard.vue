@@ -20,7 +20,11 @@
       </template>
     </p>
 
-    <BalanceBar :segments="segments" />
+    <!-- Nothing to measure an unlimited balance against: hidden, its room
+         kept so the lines stay aligned with the other cards -->
+    <BalanceBar
+      :segments="segments"
+      :class="{ 'balance-card__bar--hidden': balance.isUnlimited }" />
 
     <ul v-if="sourceLines.length" class="balance-card__sources">
       <li
@@ -93,14 +97,11 @@ export default {
         this.balance.available,
       )
     },
-    // The plan quota is plain, what packs add is hatched, like the swatches;
-    // an unlimited plan fills the bar
+    // The plan quota is plain, what packs add is hatched, like the swatches
     segments() {
-      if (this.balance.isUnlimited) {
-        return [{ remaining: 1, total: 1, pattern: "solid" }]
-      }
+      if (this.balance.isUnlimited) return []
       return this.balance.sources.map((source) => ({
-        remaining: source.remaining,
+        used: source.total - source.remaining,
         total: source.total,
         pattern: this.computePattern(source),
       }))
@@ -111,8 +112,8 @@ export default {
         type: source.type,
         pattern: this.computePattern(source),
         name: this.computeSourceName(source),
-        value: this.$t("billing.settings.balances.remaining_of", {
-          remaining: this.formatAmount(source.remaining),
+        value: this.$t("billing.settings.balances.used_of", {
+          used: this.formatAmount(source.total - source.remaining),
           total: this.formatAmount(source.total),
         }),
         ...this.computeSourceDate(source),
@@ -264,6 +265,10 @@ export default {
     margin-left: 0.25rem;
     font-size: var(--text-sm);
     color: var(--text-secondary);
+  }
+
+  &__bar--hidden {
+    visibility: hidden;
   }
 
   &__sources {

@@ -59,11 +59,11 @@ export default {
       })
       return this.$te(kindKey) ? this.$t(kindKey) : this.lot.kind
     },
-    // The bar shows what is left, like the balances above the packs
+    // The bar shows what was used, like the balances above the packs
     segments() {
       return [
         {
-          remaining: this.lot.remaining,
+          used: this.lot.consumed,
           total: this.lot.minutes,
           pattern: "solid",
         },
@@ -71,10 +71,11 @@ export default {
     },
     aiCreditsLabel() {
       const { remaining, total } = this.lot.aiCredits
+      const used = total - remaining
       return this.$tc(
-        "billing.settings.lots.ai_credits_left",
-        computePluralChoice(remaining, this.$i18n.locale),
-        { remaining, total },
+        "billing.settings.lots.ai_credits_used",
+        computePluralChoice(used, this.$i18n.locale),
+        { used, total },
       )
     },
     badge() {

@@ -14,15 +14,16 @@
 </template>
 
 <script>
-// What is left of a balance made of several sources (a plan quota, packs):
+// What was used of a balance made of several sources (a plan quota, packs):
 // one segment per source, as wide as the source is large, filled with what
-// it still holds. Decorative: the figures next to it carry the information,
-// and the pattern of a segment matches the swatch of its line of figures.
+// was used of it, the grey track being what is left. Decorative: the figures
+// next to it carry the information, and the pattern of a segment matches the
+// swatch of its line of figures.
 // The fill color comes from --balance-bar-fill (primary color by default).
 export default {
   name: "BalanceBar",
   props: {
-    // [{ remaining, total, pattern: "solid" | "hatched" }], in reading order
+    // [{ used, total, pattern: "solid" | "hatched" }], in reading order
     segments: { type: Array, required: true },
   },
   computed: {
@@ -32,7 +33,7 @@ export default {
   },
   methods: {
     computeFillPercent(segment) {
-      return Math.min(100, (segment.remaining / segment.total) * 100)
+      return Math.min(100, (segment.used / segment.total) * 100)
     },
   },
 }
