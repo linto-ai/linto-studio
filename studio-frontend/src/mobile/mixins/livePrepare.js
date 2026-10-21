@@ -8,6 +8,7 @@ import { buildLiveChannel } from "@/mobile/tools/buildLiveChannel.js"
 import { listProfileTranslations } from "@/mobile/tools/listProfileTranslations.js"
 import { suggestTranslationTargets } from "@/mobile/tools/suggestTranslationTargets.js"
 import { buildRecordingName } from "@/mobile/tools/buildRecordingName.js"
+import { refreshLiveCredit } from "@/mobile/services/billing/refreshLiveCredit.js"
 
 // State of the live preparation page: profiles, the running session if
 // any, the user's choices, and the start/stop calls. The live page itself
@@ -74,6 +75,8 @@ export const livePrepareMixin = {
       this.starting = false
       if (!result.ok) {
         this.failed = true
+        // A refusal for lack of credit turns the page into the pack purchase
+        refreshLiveCredit(this.$store, this.liveOrganizationId)
         return
       }
       this.openLivePage()

@@ -2,7 +2,7 @@
   <div class="m-page">
     <PageHeader :title="$t('mobile.home.live_title')" />
     <main class="m-page__content m-live">
-      <p v-if="loading" class="m-muted m-live__state">
+      <p v-if="loading || liveCreditLoading" class="m-muted m-live__state">
         {{ $t("mobile.common.loading") }}
       </p>
 
@@ -15,6 +15,15 @@
       <p v-else-if="profiles.length === 0" class="m-muted m-live__state">
         {{ $t("mobile.live.no_profile") }}
       </p>
+
+      <LiveCreditExhausted v-else-if="liveCreditExhausted">
+        <LivePackPurchaseForm
+          v-if="canBuyLivePack"
+          :packs="livePacks"
+          :buying="buyingPack"
+          @buy="buyLivePack" />
+        <InfoBanner v-else>{{ $t("mobile.live.ask_admin") }}</InfoBanner>
+      </LiveCreditExhausted>
 
       <form v-else class="m-live__form" @submit.prevent="start">
         <label v-if="profiles.length > 1" class="m-live__field">
@@ -51,6 +60,11 @@
             :label="$t('mobile.live.diarization')" />
         </div>
 
+        <LiveCreditBanner
+          v-if="meteredLive"
+          :live="meteredLive"
+          :can-recharge="canBuyLivePack"
+          @recharge="packSheetOpen = true" />
         <InfoBanner v-if="!online" tone="warning">{{
           $t("mobile.live.offline")
         }}</InfoBanner>
@@ -68,6 +82,15 @@
         <p class="m-muted m-live__note">{{ $t("mobile.live.screen_note") }}</p>
       </form>
     </main>
+
+    <BottomSheet
+      v-model="packSheetOpen"
+      :title="$t('mobile.live.recharge_title')">
+      <LivePackPurchaseForm
+        :packs="livePacks"
+        :buying="buyingPack"
+        @buy="buyLivePack" />
+    </BottomSheet>
   </div>
 </template>
 
@@ -78,6 +101,11 @@ import InfoBanner from "@/mobile/components/InfoBanner.vue"
 import ToggleRow from "@/mobile/components/ToggleRow.vue"
 import TranslationPicker from "@/mobile/components/live/TranslationPicker.vue"
 import LiveRunningCard from "@/mobile/components/live/LiveRunningCard.vue"
+import LiveCreditBanner from "@/mobile/components/live/LiveCreditBanner.vue"
+import LiveCreditExhausted from "@/mobile/components/live/LiveCreditExhausted.vue"
+import LivePackPurchaseForm from "@/mobile/components/live/LivePackPurchaseForm.vue"
+import BottomSheet from "@/mobile/components/BottomSheet.vue"
+import { liveCreditMixin } from "@/mobile/mixins/liveCredit.js"
 import { livePrepareMixin } from "@/mobile/mixins/livePrepare.js"
 import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 
@@ -90,8 +118,12 @@ export default {
     ToggleRow,
     TranslationPicker,
     LiveRunningCard,
+    LiveCreditBanner,
+    LiveCreditExhausted,
+    LivePackPurchaseForm,
+    BottomSheet,
   },
-  mixins: [livePrepareMixin],
+  mixins: [livePrepareMixin, liveCreditMixin],
   computed: {
     online() {
       return onlineStatus.online

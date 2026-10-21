@@ -180,6 +180,9 @@
     "screen_note": "L'écran reste allumé pendant le direct.",
     "start": "Commencer",
     "start_failed": "Impossible de démarrer le direct. Réessayez.",
+    "credit_remaining": "Crédit de direct restant : {duration}.",
+    "credit_low": "Crédit de direct bientôt épuisé : il reste {duration}.",
+    "credit_exhausted": "Plus de crédit de direct : le direct ne peut pas démarrer.",
     "no_profile": "Aucun profil de transcription en direct n'est disponible pour cette organisation.",
     "running_title": "Un direct est en cours",
     "running_text": "Vous avez déjà une session en cours. Reprenez-la ou terminez-la pour en démarrer une autre.",
@@ -197,7 +200,15 @@
     "end": "Terminer",
     "end_title": "Terminer le direct",
     "end_text": "La session devient une conversation dans vos médias.",
-    "keep_going": "Continuer le direct"
+    "keep_going": "Continuer le direct",
+    "credit_exhausted_badge": "Crédits épuisés",
+    "pack_legend": "Choisir un pack",
+    "buy_pack": "Acheter",
+    "buy_pack_selected": "Acheter {duration} · {price}",
+    "buy_failed": "Impossible d'ouvrir le paiement. Réessayez.",
+    "ask_admin": "Demandez à un administrateur de l'organisation de recharger le crédit de direct.",
+    "recharge": "Recharger",
+    "recharge_title": "Recharger le crédit de direct"
   },
   "conversation": {
     "load_failed": "Impossible d'ouvrir cette conversation."

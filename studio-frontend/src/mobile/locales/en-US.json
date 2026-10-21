@@ -180,6 +180,9 @@
     "screen_note": "The screen stays on during the live.",
     "start": "Start",
     "start_failed": "Could not start the live session. Try again.",
+    "credit_remaining": "Live credit left: {duration}.",
+    "credit_low": "Live credit running low: {duration} left.",
+    "credit_exhausted": "No live credit left: the live cannot start.",
     "no_profile": "No live transcription profile is available for this organization.",
     "running_title": "A live session is running",
     "running_text": "You already have a session running. Resume it or end it to start another one.",
@@ -197,7 +200,15 @@
     "end": "End",
     "end_title": "End the live",
     "end_text": "The session becomes a conversation in your media.",
-    "keep_going": "Keep going"
+    "keep_going": "Keep going",
+    "credit_exhausted_badge": "No credit left",
+    "pack_legend": "Choose a pack",
+    "buy_pack": "Buy",
+    "buy_pack_selected": "Buy {duration} · {price}",
+    "buy_failed": "Could not open the payment page. Try again.",
+    "ask_admin": "Ask an administrator of the organization to top up the live credit.",
+    "recharge": "Top up",
+    "recharge_title": "Top up live credit"
   },
   "conversation": {
     "load_failed": "Cannot open this conversation."
