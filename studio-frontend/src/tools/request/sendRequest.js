@@ -89,12 +89,14 @@ export async function sendRequest(
     let errMsg = payload?.message || error.code || error.message
     // SaaS gating: surface the upgrade flow globally (filtered services / quota
     // exhausted / feature locked) regardless of the caller, except for the
-    // capabilities whose forms show the refusal themselves (SaasRefusalMessage).
+    // capabilities whose forms show the refusal themselves (SaasRefusalMessage)
+    // and the backoffice, where the plan is never the viewer's to buy.
     const saasCode = error?.response?.data?.code
     if (
       (saasCode === "SAAS_QUOTA_EXCEEDED" ||
         saasCode === "SAAS_FEATURE_LOCKED") &&
-      !INLINE_REFUSAL_CAPABILITIES.includes(error.response.data.capability)
+      !INLINE_REFUSAL_CAPABILITIES.includes(error.response.data.capability) &&
+      !isBackOfficePage
     ) {
       store.dispatch("billing/openUpgradeModal", payload)
     }
