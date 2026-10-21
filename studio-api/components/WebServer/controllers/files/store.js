@@ -90,11 +90,16 @@ const MEDIA_EXTENSIONS = [
   ".3gp",
 ]
 
+// Sent when the client does not know the type (API clients without a file name):
+// they say nothing about the content, the probe on disk decides.
+const GENERIC_MIMETYPES = ["", "application/octet-stream"]
+
 // Declared type first (cheap), the content is then probed once on disk.
 function assertSupportedMedia(file) {
   const mimetype = (file.mimetype || "").toLowerCase()
   const extension = path.extname(file.name || "").toLowerCase()
   if (
+    GENERIC_MIMETYPES.includes(mimetype) ||
     mimetype.startsWith("audio/") ||
     mimetype.startsWith("video/") ||
     MEDIA_EXTENSIONS.includes(extension)
@@ -102,7 +107,7 @@ function assertSupportedMedia(file) {
     return
   }
   throw new FileUnsupportedMediaType(
-    `Unsupported media type "${mimetype || extension || "unknown"}", an audio or video file is expected`,
+    `Unsupported media type "${mimetype}", an audio or video file is expected`,
   )
 }
 
