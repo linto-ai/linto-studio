@@ -125,8 +125,10 @@ export default {
     },
   },
   methods: {
+    // A reload after an edit replaces the data in place: unmounting the page
+    // would reset every block and send the scroll back to the top.
     async fetchOrganization() {
-      this.loading = true
+      this.loading = this.organization === null
       this.organization = await apiGetOrganizationById(this.organizationId)
       this.loading = false
     },
