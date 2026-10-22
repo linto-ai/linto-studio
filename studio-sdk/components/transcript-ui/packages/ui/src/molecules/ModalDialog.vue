@@ -90,7 +90,7 @@ onMounted(() => {
   gap: var(--spacing-md);
   padding-bottom: var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
 }
 
 .modal-dialog-title {
@@ -114,8 +114,8 @@ onMounted(() => {
 .modal-dialog-actions {
   display: flex;
   justify-content: flex-end;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
   border-top: 1px solid var(--color-border);
-
+  border-top: 1px solid var(--color-border);
 }
 </style>
