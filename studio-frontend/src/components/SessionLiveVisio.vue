@@ -12,10 +12,29 @@
             fakeStatus="active"
             :disablePauseResume="true" />
           <Button
-            @click="$emit('onSave')"
-            :label="$t('quick_session.live.save_button')"
-            variant="primary"
-            size="sm" />
+            v-if="editorIsMobile && isFirstChannelLive"
+            @click="toggleEditorSidebar"
+            variant="secondary"
+            icon="person-simple-circle"
+            :aria-expanded="String(editorSidebarOpen)"
+            :aria-label="$t('session.detail_page.editor_sidebar_button')"
+            :title="$t('session.detail_page.editor_sidebar_button')" />
+          <IsMobile>
+            <Button
+              @click="$emit('onSave')"
+              icon="stop"
+              intent="destructive"
+              variant="primary"
+              :aria-label="$t('quick_session.live.save_button')"
+              :title="$t('quick_session.live.save_button')" />
+            <template #desktop>
+              <Button
+                @click="$emit('onSave')"
+                :label="$t('quick_session.live.save_button')"
+                variant="primary"
+                size="sm" />
+            </template>
+          </IsMobile>
         </template>
       </div>
     </template>
@@ -23,9 +42,12 @@
       <SessionEnded v-if="isSessionTerminated" :session="session" />
       <SessionLiveNG
         v-else-if="isFirstChannelLive"
+        ref="sessionLiveNG"
         :session="session"
         :currentOrganizationScope="currentOrganizationScope"
-        :websocketInstance="$apiEventWS" />
+        :websocketInstance="$apiEventWS"
+        @viewport-change="editorIsMobile = $event"
+        @sidebar-open="editorSidebarOpen = $event" />
       <VisioPlaceholder v-else />
     </div>
   </V2Layout>
@@ -52,6 +74,14 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      // Pushed by the editor, at ITS breakpoint — the app's own isMobile
+      // getter switches at 1100px, the editor's sidebar at 767px.
+      editorIsMobile: false,
+      editorSidebarOpen: false,
+    }
+  },
   computed: {
     breadcrumbItems() {
       return [
@@ -66,6 +96,11 @@ export default {
     },
     isFirstChannelLive() {
       return this.session.channels?.[0]?.enableLiveTranscripts
+    },
+  },
+  methods: {
+    toggleEditorSidebar() {
+      this.$refs.sessionLiveNG.toggleSidebar()
     },
   },
   components: {

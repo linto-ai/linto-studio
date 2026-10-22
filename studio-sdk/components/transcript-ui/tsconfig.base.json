@@ -17,6 +17,7 @@
       "@linto-ai/transcript-ui-plugin-chat": ["./packages/plugin-chat/src/index.ts"],
       "@linto-ai/transcript-ui-plugin-llm-services": ["./packages/plugin-llm-services/src/index.ts"],
       "@linto-ai/transcript-ui-plugin-subtitle": ["./packages/plugin-subtitle/src/index.ts"],
+      "@linto-ai/transcript-ui-plugin-notice": ["./packages/plugin-notice/src/index.ts"],
       "@linto-ai/transcript-ui-plugin-live": ["./packages/plugin-live/src/index.ts"],
       "@linto-ai/transcript-ui-plugin-transcription-editor": ["./packages/plugin-transcription-editor/src/index.ts"],
       "@linto-ai/transcript-ui-webcomponent": ["./packages/webcomponent/src/index.ts"]

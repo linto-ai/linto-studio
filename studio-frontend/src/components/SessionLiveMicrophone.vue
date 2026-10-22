@@ -11,18 +11,24 @@
 
         <div class="flex1"></div>
         <template v-if="!isSessionTerminated">
-          <Button
-            v-if="!isRecordedInOtherTab"
-            @click="toggleMute"
-            variant="secondary"
-            size="sm"
-            :icon="wantsRecording ? 'microphone' : 'microphone-slash'"
-            :aria-pressed="String(!wantsRecording)"
-            :label="
-              wantsRecording
-                ? $t('quick_session.live.mute_microphone_button')
-                : $t('quick_session.live.start_microphone_button')
-            " />
+          <IsMobile v-if="!isRecordedInOtherTab">
+            <Button
+              @click="toggleMute"
+              variant="secondary"
+              :icon="wantsRecording ? 'microphone' : 'microphone-slash'"
+              :aria-pressed="String(!wantsRecording)"
+              :aria-label="toggleMuteLabel"
+              :title="toggleMuteLabel" />
+            <template #desktop>
+              <Button
+                @click="toggleMute"
+                variant="secondary"
+                size="sm"
+                :icon="wantsRecording ? 'microphone' : 'microphone-slash'"
+                :aria-pressed="String(!wantsRecording)"
+                :label="toggleMuteLabel" />
+            </template>
+          </IsMobile>
           <SessionLiveActions
             :session="session"
             :showStop="false"
@@ -31,10 +37,29 @@
             fakeStatus="active"
             @cleared="$emit('onSessionUpdated')" />
           <Button
-            @click="$emit('onSave')"
-            variant="primary"
-            size="sm"
-            :label="$t('quick_session.live.save_button')" />
+            v-if="editorIsMobile && isFirstChannelLive"
+            @click="toggleEditorSidebar"
+            variant="secondary"
+            icon="person-simple-circle"
+            :aria-expanded="String(editorSidebarOpen)"
+            :aria-label="$t('session.detail_page.editor_sidebar_button')"
+            :title="$t('session.detail_page.editor_sidebar_button')" />
+          <IsMobile>
+            <Button
+              @click="$emit('onSave')"
+              icon="stop"
+              intent="destructive"
+              variant="primary"
+              :aria-label="$t('quick_session.live.save_button')"
+              :title="$t('quick_session.live.save_button')" />
+            <template #desktop>
+              <Button
+                @click="$emit('onSave')"
+                variant="primary"
+                size="sm"
+                :label="$t('quick_session.live.save_button')" />
+            </template>
+          </IsMobile>
         </template>
       </div>
     </template>
@@ -50,7 +75,9 @@
           @retry-microphone="retryAudioConnection"
           @reconfigure-microphone="showMicrophoneSetup = true"
           @buy-live-pack="pauseForPackPurchase"
-          @live-pack-purchase-cancel="undoPackPurchasePause" />
+          @live-pack-purchase-cancel="undoPackPurchasePause"
+          @viewport-change="editorIsMobile = $event"
+          @sidebar-open="editorSidebarOpen = $event" />
       </template>
       <MicrophonePlaceholder
         v-else-if="displayedMicrophoneStatus !== 'idle'"
@@ -117,6 +144,10 @@ export default {
       // What pauseForPackPurchase changed, undone if the purchase is dropped
       // (closed without leaving for the payment page).
       packPurchasePause: null,
+      // Pushed by the editor, at ITS breakpoint — the app's own isMobile
+      // getter switches at 1100px, the editor's sidebar at 767px.
+      editorIsMobile: false,
+      editorSidebarOpen: false,
     }
   },
   async created() {
@@ -143,6 +174,11 @@ export default {
     isSessionTerminated() {
       return this.session.status === "terminated"
     },
+    toggleMuteLabel() {
+      return this.wantsRecording
+        ? this.$t("quick_session.live.mute_microphone_button")
+        : this.$t("quick_session.live.start_microphone_button")
+    },
     breadcrumbItems() {
       return [
         {
@@ -155,6 +191,9 @@ export default {
     },
   },
   methods: {
+    toggleEditorSidebar() {
+      this.$refs.sessionLiveNG.toggleSidebar()
+    },
     toggleMute() {
       if (this.wantsRecording) {
         this.pauseMicrophone()

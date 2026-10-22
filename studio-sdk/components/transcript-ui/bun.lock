@@ -54,6 +54,7 @@
         "@linto-ai/transcript-ui-plugin-chat": "workspace:*",
         "@linto-ai/transcript-ui-plugin-live": "workspace:*",
         "@linto-ai/transcript-ui-plugin-llm-services": "workspace:*",
+        "@linto-ai/transcript-ui-plugin-notice": "workspace:*",
         "@linto-ai/transcript-ui-plugin-subtitle": "workspace:*",
         "@linto-ai/transcript-ui-plugin-transcription-editor": "workspace:*",
         "@linto-ai/transcript-ui-ui": "workspace:*",
@@ -106,6 +107,18 @@
     },
     "packages/plugin-llm-services": {
       "name": "@linto-ai/transcript-ui-plugin-llm-services",
+      "version": "0.9.24",
+      "dependencies": {
+        "@linto-ai/transcript-ui-core": "workspace:*",
+        "@linto-ai/transcript-ui-i18n": "workspace:*",
+        "@linto-ai/transcript-ui-ui": "workspace:*",
+      },
+      "peerDependencies": {
+        "vue": "^3.5.0",
+      },
+    },
+    "packages/plugin-notice": {
+      "name": "@linto-ai/transcript-ui-plugin-notice",
       "version": "0.9.24",
       "dependencies": {
         "@linto-ai/transcript-ui-core": "workspace:*",
@@ -173,6 +186,7 @@
         "@linto-ai/transcript-ui-plugin-chat": "workspace:*",
         "@linto-ai/transcript-ui-plugin-live": "workspace:*",
         "@linto-ai/transcript-ui-plugin-llm-services": "workspace:*",
+        "@linto-ai/transcript-ui-plugin-notice": "workspace:*",
         "@linto-ai/transcript-ui-plugin-subtitle": "workspace:*",
         "@linto-ai/transcript-ui-plugin-transcription-editor": "workspace:*",
         "@linto-ai/transcript-ui-ui": "workspace:*",
@@ -273,6 +287,8 @@
     "@linto-ai/transcript-ui-plugin-live": ["@linto-ai/transcript-ui-plugin-live@workspace:packages/plugin-live"],
 
     "@linto-ai/transcript-ui-plugin-llm-services": ["@linto-ai/transcript-ui-plugin-llm-services@workspace:packages/plugin-llm-services"],
+
+    "@linto-ai/transcript-ui-plugin-notice": ["@linto-ai/transcript-ui-plugin-notice@workspace:packages/plugin-notice"],
 
     "@linto-ai/transcript-ui-plugin-subtitle": ["@linto-ai/transcript-ui-plugin-subtitle@workspace:packages/plugin-subtitle"],
 

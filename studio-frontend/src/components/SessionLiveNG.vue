@@ -36,6 +36,7 @@ import {
 import {
   createLivePlugin,
   createSubtitlePlugin,
+  createNoticePlugin,
 } from "@linto-ai/transcript-ui-webcomponent"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 import classifySessionTurn from "@/tools/session/classifySessionTurn"
@@ -163,6 +164,11 @@ export default {
     },
   },
   watch: {
+    // A refetch of the session (start, clear, password) may bring a newer
+    // organization notice.
+    "session.organizationNotice"(content) {
+      if (this.core?.notice) this.core.notice.content.value = content ?? ""
+    },
     // Covers both the first connect (socket not ready at mount) and every
     // reconnect (isConnected goes false on disconnect); isConnected is kept
     // in sync with state.status by the ApiEventWebSocket state machine.
@@ -320,6 +326,9 @@ export default {
             readonly: this.isFromPublicLink,
           },
         }),
+      )
+      core.use(
+        createNoticePlugin({ content: this.session.organizationNotice ?? "" }),
       )
       if (!this.isFromPublicLink) {
         this.bindWatermarkSync()
@@ -534,6 +543,10 @@ export default {
 
     toggleSidebar() {
       this.core.setSidebarOpen(!this.core.sidebarOpen.value)
+    },
+
+    showNotice() {
+      this.core.notice.open()
     },
 
     async patchWatermark(settings) {

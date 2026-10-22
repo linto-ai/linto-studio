@@ -18,6 +18,7 @@
     "@linto-ai/transcript-ui-plugin-live": "workspace:*",
     "@linto-ai/transcript-ui-plugin-llm-services": "workspace:*",
     "@linto-ai/transcript-ui-plugin-subtitle": "workspace:*",
+    "@linto-ai/transcript-ui-plugin-notice": "workspace:*",
     "@linto-ai/transcript-ui-plugin-transcription-editor": "workspace:*",
     "prismjs": "^1.30.0",
     "vue": "^3.5.25"

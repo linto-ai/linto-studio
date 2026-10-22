@@ -503,6 +503,7 @@
     "pending_email": "A confirmation was sent to {email}. This address will replace the current one once validated.",
     "speaker_identification": "Speaker identification",
     "sso": "SSO",
+    "session_notice": "Session disclaimer",
     "speaker_recognition": "My voice signature"
   },
   "backoffice": {
@@ -1585,6 +1586,14 @@
       "title": "Organisation statistics",
       "medias": "Media"
     },
+    "session_notice": {
+      "title": "Session disclaimer",
+      "description": "This text is shown to every viewer of the organization's live sessions, behind the \"Disclaimer\" button. Markdown is supported. An empty text hides the button.",
+      "content_label": "Disclaimer text (Markdown)",
+      "save_button": "Save the disclaimer",
+      "save_success": "The session disclaimer has been saved",
+      "load_error": "The session disclaimer could not be loaded"
+    },
     "transcriber_profiles": {
       "title": "Transcriber profiles",
       "no_profiles": "No transcriber profiles link to this organisation"
@@ -1894,6 +1903,7 @@
       "session_not_started_title": "The session has not started yet",
       "settings_button": "Settings",
       "editor_sidebar_button": "Show transcription settings",
+      "notice_button": "Disclaimer",
       "delete_session_button": "Delete session",
       "stop_button": "Stop and save",
       "stop_force_button": "Force stop",

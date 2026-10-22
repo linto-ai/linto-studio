@@ -252,6 +252,12 @@ function onTranslationChange(translationId: string) {
     <component
       :is="core.components.subtitleFullscreen"
       v-if="core.subtitle?.isFullscreen.value" />
+    <!-- Same late install as the chat: reading the reactive
+         core.components first is what gets isOpen tracked when the host
+         installs the plugin after this first render. -->
+    <component
+      :is="core.components.noticeDialog"
+      v-if="core.components.noticeDialog && core.notice?.isOpen.value" />
     <component
       :is="core.components.chatDrawer"
       v-if="chatOffered && !!core.chat" />

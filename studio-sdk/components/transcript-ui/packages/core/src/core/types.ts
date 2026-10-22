@@ -191,6 +191,7 @@ export type UISlot =
   | "subtitleBanner"
   | "subtitleFullscreen"
   | "llmServicePanel"
+  | "noticeDialog"
 
 export interface CorePlugin {
   name: string
@@ -490,6 +491,16 @@ export interface SubtitlePluginApi {
   enterFullscreen(): void
   exitFullscreen(): void
   watermark?: WatermarkPluginApi
+}
+
+// ── Notice Plugin API ───────────────────────────────────────────────────
+
+export interface NoticePluginApi {
+  /** Markdown text shown in the dialog. */
+  content: Ref<string>
+  isOpen: Ref<boolean>
+  open(): void
+  close(): void
 }
 
 // ── LLM Services Plugin API ─────────────────────────────────────────────
@@ -793,6 +804,7 @@ export interface Core {
   transcriptionEditor?: TranscriptionEditorPluginApi
   live?: LivePluginApi
   subtitle?: SubtitlePluginApi
+  notice?: NoticePluginApi
   llmServices?: LLMServicesPluginApi
   chat?: ChatPluginApi
 

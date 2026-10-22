@@ -1,4 +1,4 @@
-import { L, c, a, b, d, e, f, g, m, h, i, r } from "./index-D-Iz2tAz.js";
+import { L, c, a, b, d, e, f, g, h, m, i, j, r } from "./index-5Zc26DLL.js";
 export {
   L as LintoEditor,
   c as computeReportTrack,
@@ -6,11 +6,12 @@ export {
   b as createChatPlugin,
   d as createLLMServicesPlugin,
   e as createLivePlugin,
-  f as createSubtitlePlugin,
-  g as createTranscriptionEditorPlugin,
+  f as createNoticePlugin,
+  g as createSubtitlePlugin,
+  h as createTranscriptionEditorPlugin,
   m as mapApiDocument,
-  h as mapApiTurns,
-  i as mapWhisperXDocument,
+  i as mapApiTurns,
+  j as mapWhisperXDocument,
   r as register
 };
 //# sourceMappingURL=linto-editor.js.map

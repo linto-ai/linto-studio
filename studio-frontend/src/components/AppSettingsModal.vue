@@ -103,6 +103,14 @@
                 </a>
               </li>
               <li
+                :class="{ active: selectedTab === 'sessionNotice' }"
+                v-if="canManageSessionNotice">
+                <a href="#" @click="selectTab('sessionNotice')">
+                  <ph-icon name="shield-warning" weight="bold"></ph-icon>
+                  <span>{{ $t("app_settings_modal.session_notice") }}</span>
+                </a>
+              </li>
+              <li
                 :class="{ active: selectedTab === 'apiTokens' }"
                 v-if="isAdmin">
                 <a href="#" @click="selectTab('apiTokens')">
@@ -183,6 +191,12 @@
             <UpdateOrganizationSso :currentOrganization="currentOrganization" />
           </HasEntitlement>
         </div>
+        <div
+          v-if="selectedTab === 'sessionNotice' && canManageSessionNotice"
+          class="app-settings__section">
+          <UpdateOrganizationSessionNotice
+            :currentOrganization="currentOrganization" />
+        </div>
       </template>
       <!-- Outside the impersonation block: the tab can be requested from the
            usage footer or a ?settings=billing link by someone who cannot see
@@ -210,6 +224,7 @@ import { apiSendVerificationLink } from "@/api/user.js"
 import { getEnv } from "@/tools/getEnv"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
 import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
@@ -224,6 +239,7 @@ import DevSubscribeButtons from "@/components-cloud/DevSubscribeButtons.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
 import UpdateOrganizationSso from "@/components/UpdateOrganizationSso.vue"
+import UpdateOrganizationSessionNotice from "@/components/UpdateOrganizationSessionNotice.vue"
 import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
@@ -233,7 +249,7 @@ import OrganizationSettingsBilling from "@/components-cloud/OrganizationSettings
 
 export default {
   name: "AppSettingsModal",
-  mixins: [orgaRoleMixin, platformRoleMixin],
+  mixins: [orgaRoleMixin, platformRoleMixin, organizationPermissionsMixin],
   components: {
     UserProfilePicture,
     UserSettingsPersonal,
@@ -248,6 +264,7 @@ export default {
     UpdateOrganizationUsers,
     UpdateOrganizationDeletion,
     UpdateOrganizationSso,
+    UpdateOrganizationSessionNotice,
     HasEntitlement,
     Modal,
     ApiTokenSettings,
@@ -288,6 +305,15 @@ export default {
     // impersonating (the whole org block is hidden then).
     canSeeBilling() {
       return this.isAdmin && !this.isImpersonatingCurrentOrganization
+    },
+    // Same rule as the API: an admin of an organization with the session
+    // permission. Not gated by the SaaS plan: a compliance text, not a feature.
+    canManageSessionNotice() {
+      return (
+        this.isAdmin &&
+        getEnv("VUE_APP_ENABLE_SESSION") === "true" &&
+        this.hasSessionPermission(this.organizationPermissions)
+      )
     },
     speakerIdentificationEnabled() {
       return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"

@@ -20,12 +20,15 @@ import {
   SUMMARY_MARKDOWN,
   KEYPOINTS_MARKDOWN,
   REPLY_MARKDOWN,
+  NOTICE_MARKDOWN,
 } from "./placeholderContent"
 import { createLivePlugin } from "@linto-ai/transcript-ui-plugin-live"
 import { createSubtitlePlugin } from "@linto-ai/transcript-ui-plugin-subtitle"
+import { createNoticePlugin } from "@linto-ai/transcript-ui-plugin-notice"
+import { Button } from "@linto-ai/transcript-ui-ui"
 import type { LivePartialEvent, LiveFinalEvent } from "@linto-ai/transcript-ui-plugin-live"
 
-// Live demo mode, `?live=1`: installs the live and subtitle plugins and lets
+// Live demo mode, `?live=1`: installs the live, subtitle and notice plugins and lets
 // the simulated feed below run. Off by default, so the playground still opens
 // on a finished transcript.
 const isLiveMode =
@@ -402,6 +405,7 @@ onMounted(async () => {
   if (isLiveMode) {
     core.use(createLivePlugin())
     core.use(createSubtitlePlugin())
+    core.use(createNoticePlugin({ content: NOTICE_MARKDOWN }))
   }
 
   setupChatMock()
@@ -513,5 +517,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <TranscriptUI ref="editor" locale="fr" />
+  <TranscriptUI ref="editor" locale="fr">
+    <template v-if="isLiveMode" #header-start>
+      <Button @click="core.notice?.open()">Avertissement</Button>
+    </template>
+  </TranscriptUI>
 </template>
