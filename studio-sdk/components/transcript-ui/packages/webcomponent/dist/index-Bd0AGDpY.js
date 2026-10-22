@@ -10812,7 +10812,7 @@ const _sfc_main$R = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-CixArC3K.js");
+        const { highlightCode } = await import("./highlight-WY8J0iVD.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -22946,8 +22946,8 @@ const _sfc_main$D = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _style_0$v = "\n.modal-dialog[data-v-50a4f34f] {\n  margin: auto;\n  max-width: 640px;\n  width: 90vw;\n  max-height: 85vh;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n\n/* Only while open: a closed <dialog> must keep its native display: none. */\n.modal-dialog[open][data-v-50a4f34f] {\n  display: flex;\n  flex-direction: column;\n  /*gap: var(--spacing-md);*/\n}\n.modal-dialog[data-v-50a4f34f]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.modal-dialog-header[data-v-50a4f34f] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  padding: var(--spacing-lg);\n}\n.modal-dialog-title[data-v-50a4f34f] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.modal-dialog-body[data-v-50a4f34f] {\n  flex: 1;\n  min-height: 0;\n  overflow: auto;\npadding: var(--spacing-lg);\n}\n.modal-dialog-body[data-v-50a4f34f]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.modal-dialog-actions[data-v-50a4f34f] {\n  display: flex;\n  justify-content: flex-end;\n   padding: var(--spacing-lg);\n}\n";
-const ModalDialog = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$v]], ["__scopeId", "data-v-50a4f34f"]]);
+const _style_0$v = "\n.modal-dialog[data-v-a6f83304] {\n  margin: auto;\n  max-width: 640px;\n  width: 90vw;\n  max-height: 85vh;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n\n/* Only while open: a closed <dialog> must keep its native display: none. */\n.modal-dialog[open][data-v-a6f83304] {\n  display: flex;\n  flex-direction: column;\n  /*gap: var(--spacing-md);*/\n}\n.modal-dialog[data-v-a6f83304]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.modal-dialog-header[data-v-a6f83304] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  padding: var(--spacing-md) var(--spacing-lg);\n}\n.modal-dialog-title[data-v-a6f83304] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.modal-dialog-body[data-v-a6f83304] {\n  flex: 1;\n  min-height: 0;\n  overflow: auto;\n  padding: var(--spacing-lg);\n}\n.modal-dialog-body[data-v-a6f83304]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.modal-dialog-actions[data-v-a6f83304] {\n  display: flex;\n  justify-content: flex-end;\n  padding: var(--spacing-md) var(--spacing-lg);\n  border-top: 1px solid var(--color-border);\n  border-top: 1px solid var(--color-border);\n}\n";
+const ModalDialog = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$v]], ["__scopeId", "data-v-a6f83304"]]);
 const _sfc_main$C = /* @__PURE__ */ defineComponent({
   __name: "SpeakerMenu",
   emits: ["merge"],
@@ -31985,4 +31985,4 @@ export {
   purify_default as p,
   register as r
 };
-//# sourceMappingURL=index-5Zc26DLL.js.map
+//# sourceMappingURL=index-Bd0AGDpY.js.map
