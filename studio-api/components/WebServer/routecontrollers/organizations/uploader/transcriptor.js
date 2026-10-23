@@ -9,6 +9,7 @@ const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const {
   addFileMetadataToConversation,
   addAudioDuration,
+  audioDuration,
   initConversation,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/generator`,
@@ -37,14 +38,26 @@ const {
   ConversationMetadataRequire,
   ConversationError,
   ConversationSecurityLevelForbidden,
+  ConversationNoTranscriptionService,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
-const { getTranscriptionServiceByEndpoint } = require(
+const { listTranscriptionServices, matchesEndpoint } = require(
   `${process.cwd()}/components/WebServer/controllers/services/utility`,
+)
+const { serviceEndpoint } = require(
+  `${process.cwd()}/components/WebServer/controllers/speakerIdentification/connector`,
+)
+const {
+  filterTranscriptionServices,
+  selectTranscriptionService,
+  serviceLanguage,
+} = require(`${process.cwd()}/lib/transcription/selectTranscriptionService`)
+const { buildTranscriptionConfig } = require(
+  `${process.cwd()}/lib/transcription/buildTranscriptionConfig`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 const saas = require(`${process.cwd()}/lib/saas`)
@@ -83,11 +96,16 @@ async function transcribe(isSingleFile, req, res, next) {
       ConversationMetadataRequire,
       "lang param is required",
     )
-    requireParam(
-      req.body.endpoint,
-      ConversationMetadataRequire,
-      "serviceEndpoint param is required",
-    )
+    // A request naming its service goes through as before; one naming none
+    // gets it picked below.
+    const serviceNamed = namesService(req.body)
+    if (serviceNamed) {
+      requireParam(
+        req.body.endpoint,
+        ConversationMetadataRequire,
+        "serviceEndpoint param is required",
+      )
+    }
 
     req.body.membersRight = isNaN(req.body.membersRight)
       ? CONVERSATION_RIGHT.READ
@@ -100,7 +118,6 @@ async function transcribe(isSingleFile, req, res, next) {
     if (req.body.securityLevel !== undefined && req.body.securityLevel !== "") {
       req.body.securityLevel = parseInt(req.body.securityLevel)
     }
-
     if (!SECURITY_LEVELS.isValid(req.body.securityLevel)) {
       throw new ConversationMetadataRequire(
         "Invalid securityLevel value. Allowed values: 0, 1, 2",
@@ -116,22 +133,22 @@ async function transcribe(isSingleFile, req, res, next) {
 
     // Confidentiality is enforced server-side here — the frontend gate is only
     // advisory. The conversation level cannot go below the organization's floor,
-    // and the chosen transcription model's security_level must meet that level.
+    // and the transcription model's security_level must meet that level.
     req.body.securityLevel = Math.max(
       SECURITY_LEVELS.getValueOrDefault(req.body.securityLevel),
       SECURITY_LEVELS.getValueOrDefault(orgExists[0].securityLevel),
     )
-    const chosenService = await getTranscriptionServiceByEndpoint(
-      req.body.endpoint,
-    )
-    if (
-      !chosenService ||
-      !SECURITY_LEVELS.isAllowed(
-        chosenService.security_level,
-        req.body.securityLevel,
+    // The named service must be among the models meeting the level; without
+    // a name, the models fitting the request are kept and the file's duration
+    // decides between them once it is stored.
+    const services = await listTranscriptionServices(req.body.securityLevel)
+    let candidates
+    if (serviceNamed) {
+      candidates = services.filter((service) =>
+        matchesEndpoint(service, req.body.endpoint),
       )
-    ) {
-      throw new ConversationSecurityLevelForbidden()
+      if (candidates.length === 0)
+        throw new ConversationSecurityLevelForbidden()
     }
 
     // Speaker identification: validate the requested collections and inject the
@@ -143,6 +160,18 @@ async function transcribe(isSingleFile, req, res, next) {
     // in a local variable: never stash them on req.body, where they could ride
     // along into a log payload (cf. logger/context.js DELETE body capture).
     const speakerIdHeaders = speakerId.headers
+
+    if (!serviceNamed) {
+      candidates = filterTranscriptionServices(services, {
+        language: req.body.lang,
+        diarization:
+          speakerId.transcriptionConfig.diarizationConfig?.enableDiarization ===
+          true,
+        speakerIdentification: speakerId.enabled,
+      })
+      if (candidates.length === 0)
+        throw new ConversationNoTranscriptionService()
+    }
 
     if (req.body.folderId && req.body.folderId !== "null") {
       const folderResult = await model.folders.getById(req.body.folderId)
@@ -162,16 +191,37 @@ async function transcribe(isSingleFile, req, res, next) {
       }
     }
 
-    const transcriptionService = getTranscriptionService(
-      req.body.endpoint,
-      isSingleFile,
-    )
     const formData = await prepareFileFormData(req.files, req.body.url)
     req.body.file_data = formData.file_data
 
     let conversation
     let processingJob
     try {
+      let seconds = null
+      if (!serviceNamed) {
+        seconds = await probeDuration(formData.file_data)
+        const service = selectTranscriptionService(candidates, {
+          language: req.body.lang,
+          duration: seconds,
+        })
+        debug(
+          `picked ${service.serviceName} for lang ${req.body.lang}, ${seconds}s, among ${candidates.map((c) => c.serviceName).join(", ")}`,
+        )
+        req.body.serviceName = service.serviceName
+        req.body.endpoint = serviceEndpoint(service)
+        req.body.lang = serviceLanguage(service, req.body.lang) ?? req.body.lang
+        req.body.transcriptionConfig = JSON.stringify(
+          buildTranscriptionConfig(service, {
+            language: req.body.lang,
+            config: speakerId.transcriptionConfig,
+          }),
+        )
+      }
+
+      const transcriptionService = getTranscriptionService(
+        req.body.endpoint,
+        isSingleFile,
+      )
       const options = await prepareRequest(
         formData.form,
         req.body.transcriptionConfig,
@@ -179,23 +229,14 @@ async function transcribe(isSingleFile, req, res, next) {
         speakerIdHeaders,
       )
 
-      // SaaS gate: probe the stored file's duration so the plugin refuses (402)
+      // SaaS gate: the stored file's duration lets the plugin refuse (402)
       // before the ASR is paid for. No probe and no gate when the plugin is absent.
       if (saas.enabled()) {
-        let seconds = 0
-        try {
-          const probed = await addAudioDuration(
-            { metadata: {} },
-            formData.file_data,
-          )
-          seconds = probed?.metadata?.audio?.duration || 0
-        } catch (e) {
-          debug(`import duration probe failed: ${e && e.message}`)
-        }
+        if (seconds === null) seconds = await probeDuration(formData.file_data)
         await saas.enforce({
           orgId: req.params.organizationId,
           capability: "import.minutes",
-          seconds,
+          seconds: seconds || 0,
           userId: req.payload?.data?.userId,
         })
       }
@@ -230,6 +271,23 @@ async function transcribe(isSingleFile, req, res, next) {
     return conversation
   } catch (err) {
     next(err)
+  }
+}
+
+// Whether the request names its transcription service, by name or endpoint.
+function namesService(body) {
+  return [body.serviceName, body.endpoint].some(
+    (value) => typeof value === "string" && value.trim() !== "",
+  )
+}
+
+// Seconds of the stored file, null when its metadata cannot be read.
+async function probeDuration(file_data) {
+  try {
+    return (await audioDuration(file_data)) || null
+  } catch (err) {
+    debug(`import duration probe failed: ${err && err.message}`)
+    return null
   }
 }
 

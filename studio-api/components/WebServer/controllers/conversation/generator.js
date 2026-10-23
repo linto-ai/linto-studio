@@ -212,22 +212,27 @@ async function addFileMetadataToConversation(conversation, file, endpoint) {
   return conversation
 }
 
-async function addAudioDuration(conversation, file) {
+// Seconds of a stored media file, from its metadata
+async function audioDuration(file) {
   const file_metadata = await mm.parseStream(
     fs.createReadStream(file.storageFilePath),
     { mimeType: "audio/mpeg" },
   )
-  delete file_metadata.native
+  return file_metadata.format.duration
+}
+
+async function addAudioDuration(conversation, file) {
   if (!conversation.metadata.audio) {
     conversation.metadata.audio = {}
   }
-  conversation.metadata.audio.duration = file_metadata.format.duration
+  conversation.metadata.audio.duration = await audioDuration(file)
   return conversation
 }
 
 module.exports = {
   transcriptionToConversation,
   addFileMetadataToConversation,
+  audioDuration,
   addAudioDuration,
   initConversation,
 }

@@ -29,14 +29,22 @@
                 },
                 "endpoint": {
                   "type": "string",
-                  "description": "Endpoint of the conversation (can fetch information from service api)"
+                  "description": "Endpoint of the transcription service (see the services api), required with serviceName. Without a named service, one is picked from lang, transcriptionConfig (diarization), speakerIdentificationCollections and the file duration, and transcriptionConfig is adapted to it"
+                },
+                "serviceName": {
+                  "type": "string",
+                  "description": "Name of the transcription service"
                 },
                 "lang": {
                   "type": "string",
-                  "description": "Language of the conversation"
+                  "description": "Language of the conversation, \"*\" for automatic detection; without a named service \"fr\" is accepted for \"fr-FR\""
                 },
                 "transcriptionConfig": {
                   "$ref": "#/components/schemas/TranscriptionConfig"
+                },
+                "speakerIdentificationCollections": {
+                  "type": "string",
+                  "description": "JSON array of voiceprint collection ids of the organization used to name the speakers"
                 },
                 "description": {
                   "type": "string",
@@ -66,7 +74,7 @@
                   "description": "Users to share the conversation with"
                 }
               },
-              "required": ["name", "endpoint", "lang"]
+              "required": ["name", "lang"]
             }
           }
         }

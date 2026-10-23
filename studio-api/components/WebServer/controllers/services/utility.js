@@ -10,59 +10,49 @@ const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
 
-async function listSaasServices(scope, securityLevel = null) {
+async function fetchGatewayServices(scope) {
   try {
-    const gateway_services = process.env.GATEWAY_SERVICES
-    let services = []
-
-    let host = gateway_services + "/gateway/services"
+    let host = process.env.GATEWAY_SERVICES + "/gateway/services"
     if (scope) host += `/${scope}`
-
-    const saas_service_info = await axios.get(host)
-
-    // Filter transcription services by security level (a service may only be
-    // used for a conversation whose level it meets). When no level is provided
-    // (securityLevel === null), nothing is filtered out.
-    for (const transcription_service of saas_service_info.transcription) {
-      if (
-        securityLevel === null ||
-        SECURITY_LEVELS.isAllowed(
-          transcription_service.security_level,
-          securityLevel,
-        )
-      ) {
-        services.push(transcription_service)
-      }
-    }
-
-    // NLP services are not filtered
-    for (const nlp_service of saas_service_info.nlp) {
-      services.push(nlp_service)
-    }
-
-    return services
+    return await axios.get(host)
   } catch (err) {
     throw new ServiceError("Gateway service unreachable")
   }
 }
 
-// Resolve a transcription service descriptor (carrying security_level) from the
-// endpoint the client sent. Used to enforce the confidentiality gate
-// server-side. Returns null when no service exposes that endpoint.
-async function getTranscriptionServiceByEndpoint(endpoint) {
-  const services = await listSaasServices()
+// Transcription services by security level (a service may only be used for a
+// conversation whose level it meets); a null level keeps them all.
+function filterBySecurityLevel(transcriptionServices, securityLevel) {
+  return transcriptionServices.filter((service) =>
+    SECURITY_LEVELS.isAllowed(service.security_level, securityLevel),
+  )
+}
+
+async function listSaasServices(scope, securityLevel = null) {
+  const saas_service_info = await fetchGatewayServices(scope)
+  // NLP services are not filtered
+  return [
+    ...filterBySecurityLevel(saas_service_info.transcription, securityLevel),
+    ...saas_service_info.nlp,
+  ]
+}
+
+async function listTranscriptionServices(securityLevel = null) {
+  const saas_service_info = await fetchGatewayServices()
+  return filterBySecurityLevel(saas_service_info.transcription, securityLevel)
+}
+
+// Whether a transcription service exposes the endpoint a client sent.
+function matchesEndpoint(service, endpoint) {
   const norm = (e) =>
     String(e || "")
       .replace(/^\/+/, "")
       .replace(/\/+$/, "")
   const target = norm(endpoint)
-  if (!target) return null
   return (
-    services.find(
-      (service) =>
-        Array.isArray(service.endpoints) &&
-        service.endpoints.some((ep) => norm(ep.endpoint) === target),
-    ) || null
+    target !== "" &&
+    Array.isArray(service.endpoints) &&
+    service.endpoints.some((ep) => norm(ep.endpoint) === target)
   )
 }
 
@@ -161,6 +151,7 @@ async function listLlmServices(
 
 module.exports = {
   listSaasServices,
+  listTranscriptionServices,
   listLlmServices,
-  getTranscriptionServiceByEndpoint,
+  matchesEndpoint,
 }

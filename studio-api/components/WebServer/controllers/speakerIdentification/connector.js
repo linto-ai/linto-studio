@@ -239,4 +239,5 @@ module.exports = {
   deleteSpeaker,
   dropCollection,
   getInfo,
+  serviceEndpoint,
 }

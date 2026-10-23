@@ -39,6 +39,9 @@ DB_MIGRATION_TARGET=1.9.0
 
 # STT Config
 GATEWAY_SERVICES=https://<domain>
+# Upload naming no service, automatic language: a file this long or longer
+# (seconds) goes to a nemo model, a shorter one to whisper
+TRANSCRIPTION_LONG_FILE_SECONDS=1800
 
 # Default segment resize for transcription results, request values take precedence
 DEFAULT_SEGMENT_CHAR_SIZE=2000
