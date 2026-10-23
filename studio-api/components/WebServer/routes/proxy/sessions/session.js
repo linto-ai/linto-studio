@@ -28,6 +28,7 @@ const {
   checkSessionMembersRight,
   chainBeforeResult,
   annotateSessionCaptions,
+  attachOrganizationNotice,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -129,6 +130,7 @@ module.exports = (webServer) => {
                 return generatPublicToken(jsonString, req)
               },
               annotateSessionCaptions,
+              attachOrganizationNotice,
             ],
           },
           {
@@ -154,7 +156,11 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["get"],
             executeBeforeResult: forwardSessionAlias,
-            executeAfterResult: [afterProxyAccess, annotateSessionCaptions],
+            executeAfterResult: [
+              afterProxyAccess,
+              annotateSessionCaptions,
+              attachOrganizationNotice,
+            ],
             forwardParams: proxyForwardParams,
           },
           {

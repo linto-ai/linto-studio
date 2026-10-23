@@ -100,6 +100,7 @@ order=(
   plugin-chat
   plugin-llm-services
   plugin-subtitle
+  plugin-notice
   plugin-live
   plugin-transcription-editor
   webcomponent

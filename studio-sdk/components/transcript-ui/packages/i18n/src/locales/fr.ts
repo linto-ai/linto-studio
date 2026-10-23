@@ -146,6 +146,8 @@ const fr = {
   "chat.emptyChat": "Démarre la conversation.",
   "chat.copy": "Copier",
   "markdown.copyCode": "Copier le code",
+  "notice.title": "Avertissement",
+  "modalDialog.close": "Fermer",
 } as const
 
 export default fr

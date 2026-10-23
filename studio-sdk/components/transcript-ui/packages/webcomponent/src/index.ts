@@ -35,6 +35,7 @@ export { createLivePlugin } from "@linto-ai/transcript-ui-plugin-live"
 export { createAudioPlugin } from "@linto-ai/transcript-ui-plugin-audio"
 export type { AudioPluginOptions } from "@linto-ai/transcript-ui-plugin-audio"
 export { createSubtitlePlugin } from "@linto-ai/transcript-ui-plugin-subtitle"
+export { createNoticePlugin } from "@linto-ai/transcript-ui-plugin-notice"
 export { createTranscriptionEditorPlugin } from "@linto-ai/transcript-ui-plugin-transcription-editor"
 export {
   createLLMServicesPlugin,

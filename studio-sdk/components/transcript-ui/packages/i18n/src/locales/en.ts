@@ -147,6 +147,8 @@ const en: Record<keyof typeof fr, string> = {
   'chat.emptyChat': 'Start the conversation.',
   'chat.copy': 'Copy',
   'markdown.copyCode': 'Copy code',
+  'notice.title': 'Disclaimer',
+  'modalDialog.close': 'Close',
 }
 
 export default en

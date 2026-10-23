@@ -39,6 +39,14 @@
               :aria-expanded="String(editorSidebarOpen)"
               :aria-label="$t('session.detail_page.editor_sidebar_button')"
               :title="$t('session.detail_page.editor_sidebar_button')" />
+
+            <Button
+              v-if="liveViewMounted && hasOrganizationNotice"
+              @click="showNotice"
+              variant="secondary"
+              icon="info"
+              :aria-label="$t('session.detail_page.notice_button')"
+              :title="$t('session.detail_page.notice_button')" />
           </div>
 
           <template #desktop>
@@ -49,6 +57,14 @@
               size="sm"
               :label="$t('session.detail_page.settings_button')"
               icon="gear" />
+
+            <Button
+              v-if="liveViewMounted && hasOrganizationNotice"
+              @click="showNotice"
+              variant="secondary"
+              size="sm"
+              :label="$t('session.detail_page.notice_button')"
+              icon="info" />
           </template>
         </IsMobile>
       </SessionHeader>
@@ -214,11 +230,22 @@ export default {
     toggleEditorSidebar() {
       this.$refs["sessionLiveNG"].toggleSidebar()
     },
+    showNotice() {
+      this.$refs["sessionLiveNG"].showNotice()
+    },
     closeSubtitleFullscreen() {
       this.showSubtitlesFullscreen = false
     },
   },
   computed: {
+    // Mirrors the template condition that mounts SessionLiveNG.
+    liveViewMounted() {
+      return this.sessionLoaded && !!this.selectedChannel && !this.isTerminated
+    },
+    // An organization without a disclaimer has no button.
+    hasOrganizationNotice() {
+      return !!this.session?.organizationNotice
+    },
     qualifiedForCrossSubtitles() {
       return isQualifiedForCrossSubtitles(
         this.selectedChannel.translations,

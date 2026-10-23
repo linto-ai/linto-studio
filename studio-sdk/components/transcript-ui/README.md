@@ -31,6 +31,7 @@ Each plugin is a separate package — install only what you need:
 - [Transcription editor](packages/plugin-transcription-editor/README.md) — collaborative turn/speaker editing (rename, split, merge, locks).
 - [Live](packages/plugin-live/README.md) — ingests a real-time transcription feed (partials/finals).
 - [Subtitle](packages/plugin-subtitle/README.md) — fullscreen/banner subtitle display, with an optional watermark.
+- [Notice](packages/plugin-notice/README.md) — a dialog showing a host-provided Markdown text (disclaimer, data protection notice).
 - [LLM services](packages/plugin-llm-services/README.md) — generated documents (summaries, reports) derived from the transcript.
 - [Chat](packages/plugin-chat/README.md) — a chat panel for talking with an LLM assistant about the transcript.
 

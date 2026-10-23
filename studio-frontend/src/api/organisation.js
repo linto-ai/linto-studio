@@ -104,6 +104,26 @@ export async function apiUpdateOrganisationSso(organizationId, payload, notif) {
   )
 }
 
+export async function apiGetOrganisationSessionNotice(organizationId) {
+  return await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/session-notice`,
+    { method: "get" },
+  )
+}
+
+export async function apiUpdateOrganisationSessionNotice(
+  organizationId,
+  content,
+  notif,
+) {
+  return await sendRequest(
+    `${BASE_API}/organizations/${organizationId}/session-notice`,
+    { method: "put" },
+    { content },
+    notif,
+  )
+}
+
 export async function apiDeleteOrganisationSso(organizationId, notif) {
   return await sendRequest(
     `${BASE_API}/organizations/${organizationId}/sso`,

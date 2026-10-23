@@ -9,6 +9,11 @@
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import { mediaProgressMixin } from "@/mixins/mediaProgress.js"
 
+// Not started yet: "waiting" is a job created but not dispatched (a live
+// whose audio is transcribed once it ends, an upload being sent to the
+// transcription service)
+const QUEUED_STATES = ["pending", "waiting"]
+
 // "Prêt", "Transcription 63 %", "Erreur": the job state of a media, with
 // an icon so the color is never alone.
 export default {
@@ -32,7 +37,7 @@ export default {
     label() {
       if (this.status === "done") return this.$t("mobile.media.status_done")
       if (this.status === "error") return this.$t("mobile.media.status_error")
-      if (this.status === "pending")
+      if (QUEUED_STATES.includes(this.status))
         return this.$t("mobile.media.status_pending")
       return this.$t(`mobile.media.step_${this.status}`, {
         progress: Math.floor(this.progress),

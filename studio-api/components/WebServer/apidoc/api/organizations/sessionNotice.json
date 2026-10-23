@@ -1,0 +1,99 @@
+{
+  "/api/organizations/{organizationId}/session-notice": {
+    "get": {
+      "tags": ["organizations admin"],
+      "summary": "Get the notice (disclaimer, data protection) shown to the viewers of the organization's sessions",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "Markdown, empty string when the organization has no notice"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "Not an admin of the organization, or the organization lacks the session permission"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "put": {
+      "tags": ["organizations admin"],
+      "summary": "Replace the notice shown to the viewers of the organization's sessions",
+      "description": "Available to the organizations allowed to create sessions. The notice is returned as organizationNotice on the session answers, public ones included. An empty content removes it.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["content"],
+              "properties": {
+                "content": {
+                  "type": "string",
+                  "maxLength": 20000,
+                  "description": "Markdown, trimmed. An empty string removes the notice",
+                  "example": "**Disclaimer**: this session is transcribed automatically."
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "The stored Markdown, empty string when removed"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "content is not a string or exceeds 20000 characters"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "Not an admin of the organization, or the organization lacks the session permission"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

@@ -9788,8 +9788,8 @@ var LintoEditor = (function(exports) {
   function computeCanChat(capabilities) {
     return capabilities.chat !== "disabled";
   }
-  const _hoisted_1$K = ["aria-label"];
-  const _sfc_main$T = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$M = ["aria-label"];
+  const _sfc_main$V = /* @__PURE__ */ defineComponent({
     __name: "Badge",
     props: {
       ariaLabel: { type: String }
@@ -9801,11 +9801,11 @@ var LintoEditor = (function(exports) {
           "aria-label": __props.ariaLabel
         }, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true)
-        ], 8, _hoisted_1$K);
+        ], 8, _hoisted_1$M);
       };
     }
   });
-  const _style_0$K = "\n.editor-badge[data-v-392808cc] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
+  const _style_0$L = "\n.editor-badge[data-v-392808cc] {\n  display: inline-flex;\n  align-items: center;\n  padding: 2px var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  font-weight: 500;\n  color: var(--color-text-muted);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border-light);\n  border-radius: var(--radius-sm);\n  white-space: nowrap;\n}\n";
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
@@ -9813,7 +9813,7 @@ var LintoEditor = (function(exports) {
     }
     return target;
   };
-  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$T, [["styles", [_style_0$K]], ["__scopeId", "data-v-392808cc"]]);
+  const Badge = /* @__PURE__ */ _export_sfc(_sfc_main$V, [["styles", [_style_0$L]], ["__scopeId", "data-v-392808cc"]]);
   const hasA11yProp = (props) => {
     for (const prop in props) {
       if (prop.startsWith("aria-") || prop === "role" || prop === "title") {
@@ -10276,12 +10276,12 @@ var LintoEditor = (function(exports) {
     md: 20,
     lg: 24
   };
-  const _hoisted_1$J = {
+  const _hoisted_1$L = {
     key: 1,
     class: "editor-icon editor-icon--missing",
     "aria-hidden": "true"
   };
-  const _sfc_main$S = /* @__PURE__ */ defineComponent({
+  const _sfc_main$U = /* @__PURE__ */ defineComponent({
     __name: "EditorIcon",
     props: {
       name: { type: String },
@@ -10300,18 +10300,18 @@ var LintoEditor = (function(exports) {
           style: normalizeStyle(style.value),
           class: normalizeClass(["editor-icon", { "editor-icon--spin": __props.spin }]),
           "aria-hidden": "true"
-        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$J, "?"));
+        }, null, 8, ["style", "class"])) : (openBlock(), createElementBlock("span", _hoisted_1$L, "?"));
       };
     }
   });
-  const _style_0$J = "\n.editor-icon[data-v-bdd2a2df] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-bdd2a2df] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-bdd2a2df] {\n  animation: editor-icon-spin-bdd2a2df 1s linear infinite;\n}\n@keyframes editor-icon-spin-bdd2a2df {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-bdd2a2df] {\n    animation: none;\n}\n}\n";
-  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$S, [["styles", [_style_0$J]], ["__scopeId", "data-v-bdd2a2df"]]);
-  const _hoisted_1$I = ["type", "disabled", "aria-disabled", "aria-label"];
-  const _hoisted_2$y = {
+  const _style_0$K = "\n.editor-icon[data-v-bdd2a2df] {\n  flex-shrink: 0;\n}\n.editor-icon--missing[data-v-bdd2a2df] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  opacity: 0.5;\n  font-size: 1em;\n  line-height: 1;\n}\n.editor-icon--spin[data-v-bdd2a2df] {\n  animation: editor-icon-spin-bdd2a2df 1s linear infinite;\n}\n@keyframes editor-icon-spin-bdd2a2df {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-icon--spin[data-v-bdd2a2df] {\n    animation: none;\n}\n}\n";
+  const EditorIcon = /* @__PURE__ */ _export_sfc(_sfc_main$U, [["styles", [_style_0$K]], ["__scopeId", "data-v-bdd2a2df"]]);
+  const _hoisted_1$K = ["type", "disabled", "aria-disabled", "aria-label"];
+  const _hoisted_2$z = {
     key: 3,
     class: "editor-btn__label"
   };
-  const _sfc_main$R = /* @__PURE__ */ defineComponent({
+  const _sfc_main$T = /* @__PURE__ */ defineComponent({
     __name: "Button",
     props: {
       label: { type: String },
@@ -10364,7 +10364,7 @@ var LintoEditor = (function(exports) {
             name: __props.icon,
             size: iconSize.value
           }, null, 8, ["name", "size"])) : _ctx.$slots.icon ? renderSlot(_ctx.$slots, "icon", {}, void 0, true, 2) : createCommentVNode("", true),
-          hasLabel.value ? (openBlock(), createElementBlock("span", _hoisted_2$y, [
+          hasLabel.value ? (openBlock(), createElementBlock("span", _hoisted_2$z, [
             renderSlot(_ctx.$slots, "default", {}, () => [
               createTextVNode(toDisplayString(__props.label), 1)
             ], true)
@@ -10374,13 +10374,13 @@ var LintoEditor = (function(exports) {
             name: __props.iconRight,
             size: iconSize.value
           }, null, 8, ["name", "size"])) : _ctx.$slots["icon-right"] ? renderSlot(_ctx.$slots, "icon-right", {}, void 0, true, 5) : createCommentVNode("", true)
-        ], 10, _hoisted_1$I);
+        ], 10, _hoisted_1$K);
       };
     }
   });
-  const _style_0$I = "\n.transcript-ui-root .editor-btn[data-v-050bd95b] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  /* Same reset as every other custom button in this codebase (see\n     EditableText, EditorCheckbox, Tabs, SpeakerPopover, TranscriptionTurn):\n     `all: unset` clears the UA button chrome (margin, appearance, inherited\n     font mismatches on Safari/Firefox, the Firefox ::-moz-focus-inner\n     padding) that the previous per-property overrides below left in place.\n     Every property the button actually needs is re-declared after it. */\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled {\n  cursor: not-allowed;\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-050bd95b] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes.\n   .transcript-ui-root prefix here too — not because Nextcloud could ever\n   target --btn-* directly, but because these vars are read by the BASE\n   .editor-btn rule (also prefixed, so specificity (0,3,0)): if a variant\n   rule sets the same custom property at a lower specificity (0,2,0), the\n   base rule's default wins over it regardless of source order, silently\n   breaking every variant. All rules touching --btn-* must stay at the same\n   specificity as the base rule. */\n.transcript-ui-root .editor-btn--sm[data-v-050bd95b] {\n  /* defaults */\n}\n.transcript-ui-root .editor-btn--md[data-v-050bd95b] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.transcript-ui-root .editor-btn--lg[data-v-050bd95b] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.transcript-ui-root .editor-btn--icon-only[data-v-050bd95b] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.transcript-ui-root .editor-btn--block[data-v-050bd95b] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.transcript-ui-root .editor-btn--primary[data-v-050bd95b] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--secondary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--tertiary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.transcript-ui-root .editor-btn--transparent[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Literal theme inversion: background = the theme's text color and\n   vice-versa — high contrast in both light and dark themes without\n   borrowing the primary color's semantics. */\n.transcript-ui-root .editor-btn--inverse[data-v-050bd95b] {\n  --btn-bg: var(--color-text-primary);\n  --btn-text: var(--color-background);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-text-secondary);\n  --btn-hover-text: var(--color-background);\n}\n\n/* Destructive intent overrides */\n.transcript-ui-root .editor-btn--destructive.editor-btn--primary[data-v-050bd95b] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--destructive.editor-btn--secondary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--destructive.editor-btn--tertiary[data-v-050bd95b],\n.transcript-ui-root .editor-btn--destructive.editor-btn--transparent[data-v-050bd95b] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n\n/* The transparent variant has no chrome when enabled — disabling it must not\n   ADD a box; the muted text alone carries the disabled signal. */\n.transcript-ui-root .editor-btn--transparent[data-v-050bd95b]:disabled {\n  --btn-bg: transparent;\n  --btn-border-color: transparent;\n  --btn-hover-bg: transparent;\n}\n\n/* Inverse stays a filled, borderless chip when disabled — dimmed, but the\n   silhouette must not change. */\n.transcript-ui-root .editor-btn--inverse[data-v-050bd95b]:disabled {\n  --btn-bg: var(--color-surface-hover);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n}\n";
-  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$R, [["styles", [_style_0$I]], ["__scopeId", "data-v-050bd95b"]]);
-  const _sfc_main$Q = /* @__PURE__ */ defineComponent({
+  const _style_0$J = "\n.transcript-ui-root .editor-btn[data-v-050bd95b] {\n  /* Default tokens — overridden by variant/intent/size modifiers */\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-sm);\n  --btn-font-size: var(--font-size-xs);\n  --btn-height: 32px;\n  --btn-gap: var(--spacing-xs);\n\n  /* Same reset as every other custom button in this codebase (see\n     EditableText, EditorCheckbox, Tabs, SpeakerPopover, TranscriptionTurn):\n     `all: unset` clears the UA button chrome (margin, appearance, inherited\n     font mismatches on Safari/Firefox, the Firefox ::-moz-focus-inner\n     padding) that the previous per-property overrides below left in place.\n     Every property the button actually needs is re-declared after it. */\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--btn-gap);\n  height: var(--btn-height);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  font-family: var(--font-family);\n  font-size: var(--btn-font-size);\n  font-weight: 500;\n  line-height: 1;\n  color: var(--btn-text);\n  background-color: var(--btn-bg);\n  border: 1px solid var(--btn-border-color);\n  border-radius: var(--radius-sm);\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background-color var(--transition-duration),\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:hover:not(:disabled) {\n  background-color: var(--btn-hover-bg);\n  color: var(--btn-hover-text);\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n\n/* Note: this rule is repeated lower in the file (after variants) to win the\n   cascade on the variant CSS vars. Keep this lightweight version for the\n   cursor and hover suppression. */\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled {\n  cursor: not-allowed;\n}\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled:hover {\n  background-color: var(--btn-bg);\n  color: var(--btn-text);\n}\n.editor-btn__label[data-v-050bd95b] {\n  /* //overflow: hidden;\n  text-overflow: ellipsis; */\n  text-overflow: ellipsis;\n  text-box: cap alphabetic;\n}\n\n/* Sizes.\n   .transcript-ui-root prefix here too — not because Nextcloud could ever\n   target --btn-* directly, but because these vars are read by the BASE\n   .editor-btn rule (also prefixed, so specificity (0,3,0)): if a variant\n   rule sets the same custom property at a lower specificity (0,2,0), the\n   base rule's default wins over it regardless of source order, silently\n   breaking every variant. All rules touching --btn-* must stay at the same\n   specificity as the base rule. */\n.transcript-ui-root .editor-btn--sm[data-v-050bd95b] {\n  /* defaults */\n}\n.transcript-ui-root .editor-btn--md[data-v-050bd95b] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-sm);\n  --btn-height: 40px;\n}\n.transcript-ui-root .editor-btn--lg[data-v-050bd95b] {\n  --btn-padding-y: 0;\n  --btn-padding-x: var(--spacing-md);\n  --btn-font-size: var(--font-size-base);\n  --btn-height: 44px;\n}\n\n/* Icon-only: square */\n.transcript-ui-root .editor-btn--icon-only[data-v-050bd95b] {\n  width: var(--btn-height);\n  padding: 0;\n}\n.transcript-ui-root .editor-btn--block[data-v-050bd95b] {\n  display: flex;\n  width: 100%;\n}\n\n/* Variants — default intent */\n.transcript-ui-root .editor-btn--primary[data-v-050bd95b] {\n  --btn-bg: var(--color-primary);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary-hover);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--secondary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-primary);\n  --btn-border-color: var(--color-primary);\n  --btn-hover-bg: var(--color-primary);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--tertiary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-primary);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n.transcript-ui-root .editor-btn--transparent[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-text-secondary);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n  --btn-hover-text: var(--color-text-primary);\n}\n\n/* Literal theme inversion: background = the theme's text color and\n   vice-versa — high contrast in both light and dark themes without\n   borrowing the primary color's semantics. */\n.transcript-ui-root .editor-btn--inverse[data-v-050bd95b] {\n  --btn-bg: var(--color-text-primary);\n  --btn-text: var(--color-background);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-text-secondary);\n  --btn-hover-text: var(--color-background);\n}\n\n/* Destructive intent overrides */\n.transcript-ui-root .editor-btn--destructive.editor-btn--primary[data-v-050bd95b] {\n  --btn-bg: var(--color-danger);\n  --btn-text: var(--color-white);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-hover);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--destructive.editor-btn--secondary[data-v-050bd95b] {\n  --btn-bg: transparent;\n  --btn-text: var(--color-danger);\n  --btn-border-color: var(--color-danger);\n  --btn-hover-bg: var(--color-danger);\n  --btn-hover-text: var(--color-white);\n}\n.transcript-ui-root .editor-btn--destructive.editor-btn--tertiary[data-v-050bd95b],\n.transcript-ui-root .editor-btn--destructive.editor-btn--transparent[data-v-050bd95b] {\n  --btn-text: var(--color-danger);\n  --btn-hover-bg: var(--color-danger-soft);\n  --btn-hover-text: var(--color-danger);\n}\n\n/* Disabled: gray-out regardless of variant. Placed after the variants so the\n   CSS var overrides win the cascade (same specificity, last declaration). */\n.transcript-ui-root .editor-btn[data-v-050bd95b]:disabled {\n  --btn-bg: var(--color-surface);\n  --btn-text: var(--color-text-muted);\n  --btn-border-color: var(--color-border);\n  --btn-hover-bg: var(--color-surface);\n  --btn-hover-text: var(--color-text-muted);\n}\n\n/* The transparent variant has no chrome when enabled — disabling it must not\n   ADD a box; the muted text alone carries the disabled signal. */\n.transcript-ui-root .editor-btn--transparent[data-v-050bd95b]:disabled {\n  --btn-bg: transparent;\n  --btn-border-color: transparent;\n  --btn-hover-bg: transparent;\n}\n\n/* Inverse stays a filled, borderless chip when disabled — dimmed, but the\n   silhouette must not change. */\n.transcript-ui-root .editor-btn--inverse[data-v-050bd95b]:disabled {\n  --btn-bg: var(--color-surface-hover);\n  --btn-border-color: transparent;\n  --btn-hover-bg: var(--color-surface-hover);\n}\n";
+  const Button = /* @__PURE__ */ _export_sfc(_sfc_main$T, [["styles", [_style_0$J]], ["__scopeId", "data-v-050bd95b"]]);
+  const _sfc_main$S = /* @__PURE__ */ defineComponent({
     __name: "CopyButton",
     props: {
       icon: { default: "copy", type: String },
@@ -10448,8 +10448,8 @@ var LintoEditor = (function(exports) {
       };
     }
   });
-  const _style_0$H = "\n.copy-btn--copied[data-v-7cea769e] {\n  color: var(--color-success);\n}\n.copy-icon-enter-active[data-v-7cea769e],\n.copy-icon-leave-active[data-v-7cea769e] {\n  transition:\n    opacity var(--transition-duration) ease,\n    scale var(--transition-duration) ease;\n}\n.copy-icon-enter-from[data-v-7cea769e] {\n  opacity: 0;\n  scale: 0.6;\n}\n.copy-icon-leave-to[data-v-7cea769e] {\n  opacity: 0;\n  scale: 0.6;\n}\n@media (prefers-reduced-motion: reduce) {\n.copy-icon-enter-active[data-v-7cea769e],\n  .copy-icon-leave-active[data-v-7cea769e] {\n    transition: none;\n}\n}\n";
-  const CopyButton = /* @__PURE__ */ _export_sfc(_sfc_main$Q, [["styles", [_style_0$H]], ["__scopeId", "data-v-7cea769e"]]);
+  const _style_0$I = "\n.copy-btn--copied[data-v-7cea769e] {\n  color: var(--color-success);\n}\n.copy-icon-enter-active[data-v-7cea769e],\n.copy-icon-leave-active[data-v-7cea769e] {\n  transition:\n    opacity var(--transition-duration) ease,\n    scale var(--transition-duration) ease;\n}\n.copy-icon-enter-from[data-v-7cea769e] {\n  opacity: 0;\n  scale: 0.6;\n}\n.copy-icon-leave-to[data-v-7cea769e] {\n  opacity: 0;\n  scale: 0.6;\n}\n@media (prefers-reduced-motion: reduce) {\n.copy-icon-enter-active[data-v-7cea769e],\n  .copy-icon-leave-active[data-v-7cea769e] {\n    transition: none;\n}\n}\n";
+  const CopyButton = /* @__PURE__ */ _export_sfc(_sfc_main$S, [["styles", [_style_0$I]], ["__scopeId", "data-v-7cea769e"]]);
   const fr = {
     "editor.loading": "Chargement…",
     "editor.loadError": "Erreur de chargement",
@@ -10595,7 +10595,9 @@ var LintoEditor = (function(exports) {
     "chat.emptyState": "Pose une question sur cette transcription.",
     "chat.emptyChat": "Démarre la conversation.",
     "chat.copy": "Copier",
-    "markdown.copyCode": "Copier le code"
+    "markdown.copyCode": "Copier le code",
+    "notice.title": "Avertissement",
+    "modalDialog.close": "Fermer"
   };
   const en = {
     "editor.loading": "Loading…",
@@ -10742,7 +10744,9 @@ var LintoEditor = (function(exports) {
     "chat.emptyState": "Ask a question about this transcript.",
     "chat.emptyChat": "Start the conversation.",
     "chat.copy": "Copy",
-    "markdown.copyCode": "Copy code"
+    "markdown.copyCode": "Copy code",
+    "notice.title": "Disclaimer",
+    "modalDialog.close": "Close"
   };
   const locales = { fr, en };
   const i18nKey = /* @__PURE__ */ Symbol("i18n");
@@ -10784,10 +10788,10 @@ var LintoEditor = (function(exports) {
       locale: fallbackLocale
     };
   }
-  const _hoisted_1$H = { class: "code-block" };
-  const _hoisted_2$x = ["innerHTML"];
-  const _hoisted_3$q = { key: 1 };
-  const _sfc_main$P = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$J = { class: "code-block" };
+  const _hoisted_2$y = ["innerHTML"];
+  const _hoisted_3$r = { key: 1 };
+  const _sfc_main$R = /* @__PURE__ */ defineComponent({
     __name: "CodeBlock",
     props: {
       code: { type: String },
@@ -10816,7 +10820,7 @@ var LintoEditor = (function(exports) {
         { immediate: true }
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$H, [
+        return openBlock(), createElementBlock("div", _hoisted_1$J, [
           !__props.streaming ? (openBlock(), createBlock(CopyButton, {
             key: 0,
             class: "code-block__copy",
@@ -10829,13 +10833,13 @@ var LintoEditor = (function(exports) {
             highlighted.value ? (openBlock(), createElementBlock("code", {
               key: 0,
               innerHTML: highlighted.value
-            }, null, 8, _hoisted_2$x)) : (openBlock(), createElementBlock("code", _hoisted_3$q, toDisplayString(__props.code), 1))
+            }, null, 8, _hoisted_2$y)) : (openBlock(), createElementBlock("code", _hoisted_3$r, toDisplayString(__props.code), 1))
           ])
         ]);
       };
     }
   });
-  const _style_0$G = "\n.code-block[data-v-ad87d1e4] {\n  position: relative;\n}\n.code-block__copy[data-v-ad87d1e4] {\n  position: absolute;\n  top: var(--spacing-xs);\n  right: var(--spacing-xs);\n  opacity: 0;\n  transition: opacity 0.15s ease;\n}\n.code-block:hover .code-block__copy[data-v-ad87d1e4],\n.code-block:focus-within .code-block__copy[data-v-ad87d1e4] {\n  opacity: 1;\n}\n.code-block pre[data-v-ad87d1e4] {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.code-block pre code[data-v-ad87d1e4] {\n  padding: 0;\n  background: none;\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n}\n@media (prefers-reduced-motion: reduce) {\n.code-block__copy[data-v-ad87d1e4] {\n    transition: none;\n}\n}\n";
+  const _style_0$H = "\n.code-block[data-v-ad87d1e4] {\n  position: relative;\n}\n.code-block__copy[data-v-ad87d1e4] {\n  position: absolute;\n  top: var(--spacing-xs);\n  right: var(--spacing-xs);\n  opacity: 0;\n  transition: opacity 0.15s ease;\n}\n.code-block:hover .code-block__copy[data-v-ad87d1e4],\n.code-block:focus-within .code-block__copy[data-v-ad87d1e4] {\n  opacity: 1;\n}\n.code-block pre[data-v-ad87d1e4] {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.code-block pre code[data-v-ad87d1e4] {\n  padding: 0;\n  background: none;\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n}\n@media (prefers-reduced-motion: reduce) {\n.code-block__copy[data-v-ad87d1e4] {\n    transition: none;\n}\n}\n";
   const _style_1 = `/**
  * prism.js default theme for JavaScript, CSS and HTML
  * Based on dabblet (http://dabblet.com)
@@ -10961,19 +10965,19 @@ pre[class*="language-"] {
 	cursor: help;
 }
 `;
-  const CodeBlock = /* @__PURE__ */ _export_sfc(_sfc_main$P, [["styles", [_style_0$G, _style_1]], ["__scopeId", "data-v-ad87d1e4"]]);
-  const _hoisted_1$G = {
+  const CodeBlock = /* @__PURE__ */ _export_sfc(_sfc_main$R, [["styles", [_style_0$H, _style_1]], ["__scopeId", "data-v-ad87d1e4"]]);
+  const _hoisted_1$I = {
     key: 0,
     class: "form-field__header"
   };
-  const _hoisted_2$w = ["for"];
-  const _hoisted_3$p = {
+  const _hoisted_2$x = ["for"];
+  const _hoisted_3$q = {
     key: 0,
     class: "form-field__required",
     "aria-hidden": "true"
   };
-  const _hoisted_4$g = { class: "form-field__input-wrapper" };
-  const _hoisted_5$e = ["id", "disabled", "required", "aria-required", "aria-invalid", "aria-describedby"];
+  const _hoisted_4$h = { class: "form-field__input-wrapper" };
+  const _hoisted_5$f = ["id", "disabled", "required", "aria-required", "aria-invalid", "aria-describedby"];
   const _hoisted_6$b = ["value"];
   const _hoisted_7$6 = ["type", "id", "disabled", "readonly", "placeholder", "autocomplete", "required", "aria-required", "aria-invalid", "aria-describedby"];
   const _hoisted_8$4 = {
@@ -10987,7 +10991,7 @@ pre[class*="language-"] {
   };
   const _hoisted_10$3 = ["id"];
   const _hoisted_11$2 = { class: "form-field__error" };
-  const _sfc_main$O = /* @__PURE__ */ defineComponent({
+  const _sfc_main$Q = /* @__PURE__ */ defineComponent({
     __name: "FormInput",
     props: {
       field: { type: Object },
@@ -11097,17 +11101,17 @@ pre[class*="language-"] {
         return openBlock(), createElementBlock("div", {
           class: normalizeClass(rootClasses.value)
         }, [
-          __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$G, [
+          __props.field.label ? (openBlock(), createElementBlock("div", _hoisted_1$I, [
             createBaseVNode("label", {
               class: "form-field__label",
               for: id.value
             }, [
               createTextVNode(toDisplayString(__props.field.label) + " ", 1),
-              isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$p, "*")) : createCommentVNode("", true)
-            ], 8, _hoisted_2$w),
+              isRequired.value ? (openBlock(), createElementBlock("span", _hoisted_3$q, "*")) : createCommentVNode("", true)
+            ], 8, _hoisted_2$x),
             renderSlot(_ctx.$slots, "content-after-label", {}, void 0, true)
           ])) : createCommentVNode("", true),
-          createBaseVNode("div", _hoisted_4$g, [
+          createBaseVNode("div", _hoisted_4$h, [
             renderSlot(_ctx.$slots, "default", {}, void 0, true),
             _ctx.$slots["custom-input"] ? renderSlot(_ctx.$slots, "custom-input", {
               id: id.value,
@@ -11135,7 +11139,7 @@ pre[class*="language-"] {
                   value: opt.value
                 }, toDisplayString(opt.label), 9, _hoisted_6$b);
               }), 128))
-            ], 16, _hoisted_5$e)), [
+            ], 16, _hoisted_5$f)), [
               [vModelSelect, draft.value]
             ]) : withDirectives((openBlock(), createElementBlock("input", mergeProps({
               key: 2,
@@ -11194,10 +11198,10 @@ pre[class*="language-"] {
       };
     }
   });
-  const _style_0$F = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-71449c79] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-71449c79] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-71449c79] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-71449c79] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-71449c79] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-71449c79] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-71449c79] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-71449c79] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-71449c79] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-71449c79] {\n  flex: 1;\n  /* A flex item does not shrink below its content by default: a select as\n     wide as its longest option would overflow its container. */\n  min-width: 0;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-71449c79]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-71449c79]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-71449c79]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-71449c79]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-71449c79] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-71449c79] {\n  cursor: pointer;\n  appearance: auto;\n  /* The selected label is cut when the field is narrower than it; the\n     options list still shows it whole. */\n  text-overflow: ellipsis;\n}\n.form-field__input--error[data-v-71449c79] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-71449c79]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-71449c79] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-71449c79] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-71449c79] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-71449c79] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-71449c79] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-71449c79] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-71449c79] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-71449c79] {\n    transition: none;\n}\n}\n";
-  const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["styles", [_style_0$F]], ["__scopeId", "data-v-71449c79"]]);
-  const _hoisted_1$F = ["disabled", "aria-label"];
-  const _sfc_main$N = /* @__PURE__ */ defineComponent({
+  const _style_0$G = "\n/* ── Root ──────────────────────────────────────────────────────────── */\n.form-field[data-v-71449c79] {\n  --field-height: 40px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-sm);\n\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  width: 100%;\n}\n.form-field--sm[data-v-71449c79] {\n  --field-height: 32px;\n  --field-padding-x: var(--spacing-sm);\n  --field-font-size: var(--font-size-xs);\n}\n.form-field--lg[data-v-71449c79] {\n  --field-height: 44px;\n  --field-padding-x: var(--spacing-md);\n  --field-font-size: var(--font-size-base);\n}\n.form-field--disabled[data-v-71449c79] {\n  opacity: 0.7;\n}\n\n/* ── Header (label row) ────────────────────────────────────────────── */\n.form-field__header[data-v-71449c79] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-sm);\n}\n.form-field__label[data-v-71449c79] {\n  display: block;\n  margin: 0;\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  line-height: 1.2;\n  color: var(--color-text-primary);\n}\n.form-field--error .form-field__label[data-v-71449c79] {\n  color: var(--color-danger);\n}\n.form-field__required[data-v-71449c79] {\n  margin-left: 2px;\n  color: var(--color-danger);\n}\n\n/* ── Input wrapper ─────────────────────────────────────────────────── */\n.form-field__input-wrapper[data-v-71449c79] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-sm);\n  width: 100%;\n}\n\n/* ── Input ─────────────────────────────────────────────────────────── */\n.form-field__input[data-v-71449c79] {\n  flex: 1;\n  /* A flex item does not shrink below its content by default: a select as\n     wide as its longest option would overflow its container. */\n  min-width: 0;\n  box-sizing: border-box;\n  height: var(--field-height);\n  padding: 0 var(--field-padding-x);\n  font-family: inherit;\n  font-size: var(--field-font-size);\n  line-height: 1.4;\n  color: var(--color-text-primary);\n  background-color: var(--color-background);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  outline: none;\n  transition:\n    border-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.form-field__input[data-v-71449c79]::placeholder {\n  color: var(--color-text-muted);\n  opacity: 1;\n}\n.form-field__input[data-v-71449c79]:hover:not(:disabled) {\n  border-color: var(--color-text-muted);\n}\n.form-field__input[data-v-71449c79]:focus-visible {\n  border-color: var(--color-primary);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-primary) 20%, transparent);\n}\n.form-field__input[data-v-71449c79]:disabled {\n  cursor: not-allowed;\n  background-color: var(--color-surface);\n  color: var(--color-text-muted);\n}\n.form-field__input--fullwidth[data-v-71449c79] {\n  width: 100%;\n  max-width: none;\n}\n.form-field__input--select[data-v-71449c79] {\n  cursor: pointer;\n  appearance: auto;\n  /* The selected label is cut when the field is narrower than it; the\n     options list still shows it whole. */\n  text-overflow: ellipsis;\n}\n.form-field__input--error[data-v-71449c79] {\n  border-color: var(--color-danger);\n}\n.form-field__input--error[data-v-71449c79]:focus-visible {\n  border-color: var(--color-danger);\n  box-shadow: 0 0 0 3px\n    color-mix(in srgb, var(--color-danger) 20%, transparent);\n}\n\n/* ── Confirmation actions ──────────────────────────────────────────── */\n.form-field__actions[data-v-71449c79] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.form-field__actions--placeholder[data-v-71449c79] {\n  /* Reserve space so showing the buttons doesn't shift layout. */\n  width: calc(var(--field-height) * 2 + var(--spacing-xs));\n  height: var(--field-height);\n  pointer-events: none;\n  opacity: 0;\n}\n\n/* ── Info / error ──────────────────────────────────────────────────── */\n.form-field__info[data-v-71449c79] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.form-field__error[data-v-71449c79] {\n  margin: 0;\n  font-size: var(--font-size-xs);\n  line-height: 1.2;\n  color: var(--color-danger);\n}\n\n/* ── Inline layout ─────────────────────────────────────────────────── */\n.form-field--inline[data-v-71449c79] {\n  flex-direction: row;\n  align-items: center;\n  gap: var(--spacing-md);\n}\n.form-field--inline .form-field__header[data-v-71449c79] {\n  flex-shrink: 0;\n  min-width: 120px;\n}\n.form-field--inline .form-field__input-wrapper[data-v-71449c79] {\n  flex: 1;\n}\n\n/* ── Reduced motion ────────────────────────────────────────────────── */\n@media (prefers-reduced-motion: reduce) {\n.form-field__input[data-v-71449c79] {\n    transition: none;\n}\n}\n";
+  const FormInput = /* @__PURE__ */ _export_sfc(_sfc_main$Q, [["styles", [_style_0$G]], ["__scopeId", "data-v-71449c79"]]);
+  const _hoisted_1$H = ["disabled", "aria-label"];
+  const _sfc_main$P = /* @__PURE__ */ defineComponent({
     __name: "EditableText",
     props: {
       modelValue: { type: String },
@@ -11271,12 +11275,12 @@ pre[class*="language-"] {
           disabled: __props.disabled,
           "aria-label": __props.ariaLabel,
           onClick: startEdit
-        }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$F));
+        }, toDisplayString(__props.modelValue || __props.placeholder), 9, _hoisted_1$H));
       };
     }
   });
-  const _style_0$E = "\n.transcript-ui-root .editable-text-display[data-v-ff6456c8] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.transcript-ui-root .editable-text-display[data-v-ff6456c8]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.transcript-ui-root .editable-text-display[data-v-ff6456c8]:disabled {\n  cursor: default;\n}\n";
-  const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["styles", [_style_0$E]], ["__scopeId", "data-v-ff6456c8"]]);
+  const _style_0$F = "\n.transcript-ui-root .editable-text-display[data-v-ff6456c8] {\n  all: unset;\n  cursor: text;\n  text-align: left;\n  font: inherit;\n  color: inherit;\n  line-height: inherit;\n  padding: 0;\n  border: 1px solid transparent;\n  border-radius: var(--radius-sm);\n  min-width: 0;\n}\n.transcript-ui-root .editable-text-display[data-v-ff6456c8]:not(:disabled):hover {\n  border-color: var(--color-border);\n}\n.transcript-ui-root .editable-text-display[data-v-ff6456c8]:disabled {\n  cursor: default;\n}\n";
+  const EditableText = /* @__PURE__ */ _export_sfc(_sfc_main$P, [["styles", [_style_0$F]], ["__scopeId", "data-v-ff6456c8"]]);
   function serialize(input) {
     if (typeof input === "string") return `'${input}'`;
     return new Serializer().serialize(input);
@@ -15751,7 +15755,7 @@ pre[class*="language-"] {
       update
     };
   }
-  const _hoisted_1$E = ["dir"];
+  const _hoisted_1$G = ["dir"];
   const PopperContentPropsDefaultValue = {
     side: "bottom",
     sideOffset: 0,
@@ -16044,7 +16048,7 @@ pre[class*="language-"] {
           "data-align",
           "dir",
           "style"
-        ]))], 12, _hoisted_1$E);
+        ]))], 12, _hoisted_1$G);
       };
     }
   });
@@ -17939,7 +17943,7 @@ pre[class*="language-"] {
     }
   });
   var DropdownMenuTrigger_default = DropdownMenuTrigger_vue_vue_type_script_setup_true_lang_default;
-  const _sfc_main$M = /* @__PURE__ */ defineComponent({
+  const _sfc_main$O = /* @__PURE__ */ defineComponent({
     __name: "EditorCheckbox",
     props: {
       modelValue: { type: Boolean },
@@ -17972,8 +17976,8 @@ pre[class*="language-"] {
       };
     }
   });
-  const _style_0$D = '\n.transcript-ui-root .checkbox[data-v-ed0978f7] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .checkbox[data-v-ed0978f7]:hover {\n  border-color: var(--color-primary);\n}\n.transcript-ui-root .checkbox[data-v-ed0978f7]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.transcript-ui-root .checkbox[data-state="checked"][data-v-ed0978f7] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-ed0978f7] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
-  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$D]], ["__scopeId", "data-v-ed0978f7"]]);
+  const _style_0$E = '\n.transcript-ui-root .checkbox[data-v-ed0978f7] {\n  all: unset;\n  width: 16px;\n  height: 16px;\n  flex-shrink: 0;\n  border: 1.5px solid var(--color-border);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  transition:\n    background-color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .checkbox[data-v-ed0978f7]:hover {\n  border-color: var(--color-primary);\n}\n.transcript-ui-root .checkbox[data-v-ed0978f7]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.transcript-ui-root .checkbox[data-state="checked"][data-v-ed0978f7] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.checkbox-indicator[data-v-ed0978f7] {\n  color: var(--color-white, #fff);\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n}\n';
+  const EditorCheckbox = /* @__PURE__ */ _export_sfc(_sfc_main$O, [["styles", [_style_0$E]], ["__scopeId", "data-v-ed0978f7"]]);
   function extend(destination) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = arguments[i2];
@@ -22061,10 +22065,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   function getShadowRootSelection(root2) {
     return root2.getSelection?.() ?? null;
   }
-  const _hoisted_1$D = { class: "markdown-editor" };
-  const _hoisted_2$v = ["aria-label"];
-  const _hoisted_3$o = ["contenteditable"];
-  const _sfc_main$L = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$F = { class: "markdown-editor" };
+  const _hoisted_2$w = ["aria-label"];
+  const _hoisted_3$p = ["contenteditable"];
+  const _sfc_main$N = /* @__PURE__ */ defineComponent({
     __name: "MarkdownEditor",
     props: {
       modelValue: { type: String },
@@ -22285,7 +22289,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         }
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$D, [
+        return openBlock(), createElementBlock("div", _hoisted_1$F, [
           !__props.disabled ? (openBlock(), createElementBlock("div", {
             key: 0,
             class: "markdown-editor__toolbar",
@@ -22396,7 +22400,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               title: unref(t2)("mdToolbar.redo"),
               onClick: _cache[8] || (_cache[8] = ($event) => execCmd("redo"))
             }, null, 8, ["aria-label", "title"])
-          ], 8, _hoisted_2$v)) : createCommentVNode("", true),
+          ], 8, _hoisted_2$w)) : createCommentVNode("", true),
           createBaseVNode("div", {
             ref: "editorEl",
             class: "markdown-editor__content",
@@ -22406,17 +22410,17 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             onPaste,
             onFocus: startSelectionListener,
             onBlur: stopSelectionListener
-          }, null, 40, _hoisted_3$o)
+          }, null, 40, _hoisted_3$p)
         ]);
       };
     }
   });
-  const _style_0$C = "\n.markdown-editor[data-v-a278828c] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-a278828c] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: var(--document-toolbar-height, 0px);\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-a278828c] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-a278828c] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-a278828c] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-a278828c] h1,\n.markdown-editor__content[data-v-a278828c] h2,\n.markdown-editor__content[data-v-a278828c] h3,\n.markdown-editor__content[data-v-a278828c] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-a278828c] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-a278828c] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-a278828c] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-a278828c] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-a278828c] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-a278828c] ul,\n.markdown-editor__content[data-v-a278828c] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-a278828c] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-a278828c] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-a278828c] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-a278828c] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-a278828c] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-a278828c] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-a278828c] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-a278828c] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-a278828c] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-a278828c] th,\n.markdown-editor__content[data-v-a278828c] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-a278828c] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-  const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$L, [["styles", [_style_0$C]], ["__scopeId", "data-v-a278828c"]]);
-  const _hoisted_1$C = { class: "markdown-view" };
-  const _hoisted_2$u = ["innerHTML"];
-  const _hoisted_3$n = ["innerHTML"];
-  const _sfc_main$K = /* @__PURE__ */ defineComponent({
+  const _style_0$D = "\n.markdown-editor[data-v-a278828c] {\n  display: flex;\n  flex-direction: column;\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.markdown-editor__toolbar[data-v-a278828c] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-xs) var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  position: sticky;\n  top: var(--document-toolbar-height, 0px);\n  z-index: 1;\n}\n.markdown-editor__separator[data-v-a278828c] {\n  width: 1px;\n  height: 20px;\n  background-color: var(--color-border);\n  margin: 0 var(--spacing-xs);\n}\n.markdown-editor__content[data-v-a278828c] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n  outline: none;\n  min-height: 200px;\n}\n.markdown-editor__content[data-v-a278828c] > *:first-child {\n  margin-top: 0;\n}\n.markdown-editor__content[data-v-a278828c] h1,\n.markdown-editor__content[data-v-a278828c] h2,\n.markdown-editor__content[data-v-a278828c] h3,\n.markdown-editor__content[data-v-a278828c] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-editor__content[data-v-a278828c] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-editor__content[data-v-a278828c] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-editor__content[data-v-a278828c] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-editor__content[data-v-a278828c] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-editor__content[data-v-a278828c] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-editor__content[data-v-a278828c] ul,\n.markdown-editor__content[data-v-a278828c] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-editor__content[data-v-a278828c] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-editor__content[data-v-a278828c] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n.markdown-editor__content[data-v-a278828c] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n.markdown-editor__content[data-v-a278828c] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n}\n.markdown-editor__content[data-v-a278828c] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-editor__content[data-v-a278828c] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-editor__content[data-v-a278828c] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-editor__content[data-v-a278828c] strong {\n  font-weight: 700;\n}\n.markdown-editor__content[data-v-a278828c] table {\n  border-collapse: collapse;\n  margin: var(--spacing-md) 0;\n}\n.markdown-editor__content[data-v-a278828c] th,\n.markdown-editor__content[data-v-a278828c] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-editor__content[data-v-a278828c] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+  const MarkdownEditor = /* @__PURE__ */ _export_sfc(_sfc_main$N, [["styles", [_style_0$D]], ["__scopeId", "data-v-a278828c"]]);
+  const _hoisted_1$E = { class: "markdown-view" };
+  const _hoisted_2$v = ["innerHTML"];
+  const _hoisted_3$o = ["innerHTML"];
+  const _sfc_main$M = /* @__PURE__ */ defineComponent({
     __name: "MarkdownView",
     props: {
       source: { type: String },
@@ -22426,18 +22430,18 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const props = __props;
       const segments = computed(() => renderMarkdownSegments(props.source));
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$C, [
+        return openBlock(), createElementBlock("div", _hoisted_1$E, [
           (openBlock(true), createElementBlock(Fragment, null, renderList(segments.value, (seg, i2) => {
             return openBlock(), createElementBlock(Fragment, { key: i2 }, [
               seg.type === "html" ? (openBlock(), createElementBlock("div", {
                 key: 0,
                 class: "markdown-view__html",
                 innerHTML: seg.html
-              }, null, 8, _hoisted_2$u)) : seg.type === "table" ? (openBlock(), createElementBlock("div", {
+              }, null, 8, _hoisted_2$v)) : seg.type === "table" ? (openBlock(), createElementBlock("div", {
                 key: 1,
                 class: "markdown-view__table",
                 innerHTML: seg.html
-              }, null, 8, _hoisted_3$n)) : (openBlock(), createBlock(CodeBlock, {
+              }, null, 8, _hoisted_3$o)) : (openBlock(), createBlock(CodeBlock, {
                 key: 2,
                 code: seg.code,
                 lang: seg.lang,
@@ -22449,18 +22453,18 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$B = "\n.markdown-view[data-v-b6eeece0] {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  /* Long URLs and identifiers wrap instead of running past a narrow\n     column (phones, chat), where the overflow would just be clipped. */\n  overflow-wrap: break-word;\n}\n\n/* No box: block children flow as direct children of .markdown-view so margin\n   collapsing keeps working across html/code segment boundaries. */\n.markdown-view__html[data-v-b6eeece0] {\n  display: contents;\n}\n\n/* Trim the outer margins of the first/last rendered block (reach through the\n   display:contents wrapper to the real content element). */\n.markdown-view > .markdown-view__html[data-v-b6eeece0]:first-child >  :first-child {\n  margin-top: 0;\n}\n.markdown-view > .markdown-view__html[data-v-b6eeece0]:last-child >  :last-child {\n  margin-bottom: 0;\n}\n.markdown-view > .markdown-view__table[data-v-b6eeece0]:first-child {\n  margin-top: 0;\n}\n.markdown-view > .markdown-view__table[data-v-b6eeece0]:last-child {\n  margin-bottom: 0;\n}\n.markdown-view[data-v-b6eeece0] h1,\n.markdown-view[data-v-b6eeece0] h2,\n.markdown-view[data-v-b6eeece0] h3,\n.markdown-view[data-v-b6eeece0] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-b6eeece0] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-view[data-v-b6eeece0] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-view[data-v-b6eeece0] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-view[data-v-b6eeece0] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-view[data-v-b6eeece0] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-view[data-v-b6eeece0] ul,\n.markdown-view[data-v-b6eeece0] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-view[data-v-b6eeece0] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-view[data-v-b6eeece0] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n\n/* Inline code only — fenced blocks render via <CodeBlock>. Scoped to the html\n   wrapper so it never reaches into the CodeBlock component. */\n.markdown-view__html[data-v-b6eeece0] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n\n/* Fallback for raw <pre> written as literal HTML (not fenced code). */\n.markdown-view__html[data-v-b6eeece0] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.markdown-view__html[data-v-b6eeece0] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-view[data-v-b6eeece0] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-view[data-v-b6eeece0] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-view[data-v-b6eeece0] strong {\n  font-weight: 700;\n}\n.markdown-view[data-v-b6eeece0] img {\n  max-width: 100%;\n  height: auto;\n}\n\n/* A table wider than the column scrolls on its own, the text around it\n   keeps the column width. */\n.markdown-view__table[data-v-b6eeece0] {\n  margin: var(--spacing-md) 0;\n  overflow-x: auto;\n}\n.markdown-view[data-v-b6eeece0] table {\n  border-collapse: collapse;\n}\n.markdown-view[data-v-b6eeece0] th,\n.markdown-view[data-v-b6eeece0] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-view[data-v-b6eeece0] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
-  const MarkdownView = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$B]], ["__scopeId", "data-v-b6eeece0"]]);
-  const _hoisted_1$B = {
+  const _style_0$C = "\n.markdown-view[data-v-b6eeece0] {\n  font-family: var(--font-family);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n  /* Long URLs and identifiers wrap instead of running past a narrow\n     column (phones, chat), where the overflow would just be clipped. */\n  overflow-wrap: break-word;\n}\n\n/* No box: block children flow as direct children of .markdown-view so margin\n   collapsing keeps working across html/code segment boundaries. */\n.markdown-view__html[data-v-b6eeece0] {\n  display: contents;\n}\n\n/* Trim the outer margins of the first/last rendered block (reach through the\n   display:contents wrapper to the real content element). */\n.markdown-view > .markdown-view__html[data-v-b6eeece0]:first-child >  :first-child {\n  margin-top: 0;\n}\n.markdown-view > .markdown-view__html[data-v-b6eeece0]:last-child >  :last-child {\n  margin-bottom: 0;\n}\n.markdown-view > .markdown-view__table[data-v-b6eeece0]:first-child {\n  margin-top: 0;\n}\n.markdown-view > .markdown-view__table[data-v-b6eeece0]:last-child {\n  margin-bottom: 0;\n}\n.markdown-view[data-v-b6eeece0] h1,\n.markdown-view[data-v-b6eeece0] h2,\n.markdown-view[data-v-b6eeece0] h3,\n.markdown-view[data-v-b6eeece0] h4 {\n  margin: var(--spacing-lg) 0 var(--spacing-sm);\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.markdown-view[data-v-b6eeece0] h1 {\n  font-size: var(--font-size-xl);\n}\n.markdown-view[data-v-b6eeece0] h2 {\n  font-size: var(--font-size-lg);\n}\n.markdown-view[data-v-b6eeece0] h3 {\n  font-size: var(--font-size-base);\n}\n.markdown-view[data-v-b6eeece0] h4 {\n  font-size: var(--font-size-sm);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: var(--color-text-secondary);\n}\n.markdown-view[data-v-b6eeece0] p {\n  margin: 0 0 var(--spacing-md);\n}\n.markdown-view[data-v-b6eeece0] ul,\n.markdown-view[data-v-b6eeece0] ol {\n  margin: 0 0 var(--spacing-md);\n  padding-left: var(--spacing-lg);\n}\n.markdown-view[data-v-b6eeece0] li {\n  margin: var(--spacing-xs) 0;\n}\n.markdown-view[data-v-b6eeece0] blockquote {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-left: 3px solid var(--color-border);\n  color: var(--color-text-secondary);\n  font-style: italic;\n}\n\n/* Inline code only — fenced blocks render via <CodeBlock>. Scoped to the html\n   wrapper so it never reaches into the CodeBlock component. */\n.markdown-view__html[data-v-b6eeece0] code {\n  font-family: var(--font-family-mono);\n  font-size: 0.9em;\n  padding: 1px 4px;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-sm);\n}\n\n/* Fallback for raw <pre> written as literal HTML (not fenced code). */\n.markdown-view__html[data-v-b6eeece0] pre {\n  margin: var(--spacing-md) 0;\n  padding: var(--spacing-md);\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md);\n  overflow-x: auto;\n  border: 1px solid var(--color-border);\n}\n.markdown-view__html[data-v-b6eeece0] pre code {\n  padding: 0;\n  background: none;\n}\n.markdown-view[data-v-b6eeece0] a {\n  color: var(--color-primary);\n  text-decoration: underline;\n}\n.markdown-view[data-v-b6eeece0] hr {\n  border: 0;\n  border-top: 1px solid var(--color-border);\n  margin: var(--spacing-lg) 0;\n}\n.markdown-view[data-v-b6eeece0] strong {\n  font-weight: 700;\n}\n.markdown-view[data-v-b6eeece0] img {\n  max-width: 100%;\n  height: auto;\n}\n\n/* A table wider than the column scrolls on its own, the text around it\n   keeps the column width. */\n.markdown-view__table[data-v-b6eeece0] {\n  margin: var(--spacing-md) 0;\n  overflow-x: auto;\n}\n.markdown-view[data-v-b6eeece0] table {\n  border-collapse: collapse;\n}\n.markdown-view[data-v-b6eeece0] th,\n.markdown-view[data-v-b6eeece0] td {\n  border: 1px solid var(--color-border);\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n.markdown-view[data-v-b6eeece0] th {\n  background-color: var(--color-surface);\n  font-weight: 600;\n}\n";
+  const MarkdownView = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["styles", [_style_0$C]], ["__scopeId", "data-v-b6eeece0"]]);
+  const _hoisted_1$D = {
     key: 0,
     class: "transcript-ui-popover-list__items"
   };
-  const _hoisted_2$t = {
+  const _hoisted_2$u = {
     key: 0,
     class: "transcript-ui-popover-list__divider"
   };
-  const _hoisted_3$m = { class: "transcript-ui-popover-list__footer" };
-  const _sfc_main$J = /* @__PURE__ */ defineComponent({
+  const _hoisted_3$n = { class: "transcript-ui-popover-list__footer" };
+  const _sfc_main$L = /* @__PURE__ */ defineComponent({
     __name: "PopoverList",
     props: {
       items: { type: Array },
@@ -22513,7 +22517,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                   "side-offset": __props.sideOffset
                 }, {
                   default: withCtx(() => [
-                    __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$B, [
+                    __props.items.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$D, [
                       (openBlock(true), createElementBlock(Fragment, null, renderList(__props.items, (item, index) => {
                         return openBlock(), createBlock(unref(DropdownMenuItem_default), {
                           key: keyFor(item, index),
@@ -22529,8 +22533,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
                       }), 128))
                     ])) : createCommentVNode("", true),
                     _ctx.$slots.footer ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
-                      __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$t)) : createCommentVNode("", true),
-                      createBaseVNode("div", _hoisted_3$m, [
+                      __props.items.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$u)) : createCommentVNode("", true),
+                      createBaseVNode("div", _hoisted_3$n, [
                         renderSlot(_ctx.$slots, "footer")
                       ])
                     ], 64)) : createCommentVNode("", true)
@@ -22546,11 +22550,11 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$A = { class: "range-slider" };
-  const _hoisted_2$s = { class: "range-slider__label" };
-  const _hoisted_3$l = { class: "range-slider__value" };
-  const _hoisted_4$f = ["min", "max", "step", "value", "disabled"];
-  const _sfc_main$I = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$C = { class: "range-slider" };
+  const _hoisted_2$t = { class: "range-slider__label" };
+  const _hoisted_3$m = { class: "range-slider__value" };
+  const _hoisted_4$g = ["min", "max", "step", "value", "disabled"];
+  const _sfc_main$K = /* @__PURE__ */ defineComponent({
     __name: "RangeSlider",
     props: {
       modelValue: { type: Number },
@@ -22568,10 +22572,10 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         emit2("update:modelValue", Number(event.target.value));
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("label", _hoisted_1$A, [
-          createBaseVNode("span", _hoisted_2$s, [
+        return openBlock(), createElementBlock("label", _hoisted_1$C, [
+          createBaseVNode("span", _hoisted_2$t, [
             createTextVNode(toDisplayString(__props.label) + " ", 1),
-            createBaseVNode("span", _hoisted_3$l, toDisplayString(__props.modelValue) + toDisplayString(__props.unit), 1)
+            createBaseVNode("span", _hoisted_3$m, toDisplayString(__props.modelValue) + toDisplayString(__props.unit), 1)
           ]),
           createBaseVNode("input", {
             type: "range",
@@ -22581,28 +22585,28 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             value: __props.modelValue,
             disabled: __props.disabled,
             onInput
-          }, null, 40, _hoisted_4$f)
+          }, null, 40, _hoisted_4$g)
         ]);
       };
     }
   });
-  const _style_0$A = '\n.range-slider[data-v-a6e9d302] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.range-slider__label[data-v-a6e9d302] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.range-slider__value[data-v-a6e9d302] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.range-slider input[type="range"][data-v-a6e9d302] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.range-slider input[type="range"][data-v-a6e9d302]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n';
-  const RangeSlider = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["styles", [_style_0$A]], ["__scopeId", "data-v-a6e9d302"]]);
-  const _hoisted_1$z = ["disabled", "aria-current"];
-  const _hoisted_2$r = {
+  const _style_0$B = '\n.range-slider[data-v-a6e9d302] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  padding: var(--spacing-sm);\n}\n.range-slider__label[data-v-a6e9d302] {\n  display: flex;\n  justify-content: space-between;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\n.range-slider__value[data-v-a6e9d302] {\n  color: var(--color-text-muted);\n  font-variant-numeric: tabular-nums;\n}\n.range-slider input[type="range"][data-v-a6e9d302] {\n  width: 100%;\n  accent-color: var(--color-primary);\n}\n.range-slider input[type="range"][data-v-a6e9d302]:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n';
+  const RangeSlider = /* @__PURE__ */ _export_sfc(_sfc_main$K, [["styles", [_style_0$B]], ["__scopeId", "data-v-a6e9d302"]]);
+  const _hoisted_1$B = ["disabled", "aria-current"];
+  const _hoisted_2$s = {
     key: 0,
     class: "selectable-list-item__leading"
   };
-  const _hoisted_3$k = { class: "selectable-list-item__label" };
-  const _hoisted_4$e = {
+  const _hoisted_3$l = { class: "selectable-list-item__label" };
+  const _hoisted_4$f = {
     key: 1,
     class: "selectable-list-item__trailing"
   };
-  const _hoisted_5$d = {
+  const _hoisted_5$e = {
     key: 0,
     class: "selectable-list-item__actions"
   };
-  const _sfc_main$H = /* @__PURE__ */ defineComponent({
+  const _sfc_main$J = /* @__PURE__ */ defineComponent({
     __name: "SelectableListItem",
     props: {
       current: { type: Boolean },
@@ -22627,28 +22631,28 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             "aria-current": __props.current ? "true" : void 0,
             onClick: _cache[0] || (_cache[0] = ($event) => emit2("select"))
           }, [
-            _ctx.$slots.leading ? (openBlock(), createElementBlock("span", _hoisted_2$r, [
+            _ctx.$slots.leading ? (openBlock(), createElementBlock("span", _hoisted_2$s, [
               renderSlot(_ctx.$slots, "leading", {}, void 0, true)
             ])) : createCommentVNode("", true),
-            createBaseVNode("span", _hoisted_3$k, [
+            createBaseVNode("span", _hoisted_3$l, [
               renderSlot(_ctx.$slots, "default", {}, () => [
                 createTextVNode(toDisplayString(__props.label), 1)
               ], true)
             ]),
-            _ctx.$slots.trailing ? (openBlock(), createElementBlock("span", _hoisted_4$e, [
+            _ctx.$slots.trailing ? (openBlock(), createElementBlock("span", _hoisted_4$f, [
               renderSlot(_ctx.$slots, "trailing", {}, void 0, true)
             ])) : createCommentVNode("", true)
-          ], 8, _hoisted_1$z),
-          _ctx.$slots.actions ? (openBlock(), createElementBlock("div", _hoisted_5$d, [
+          ], 8, _hoisted_1$B),
+          _ctx.$slots.actions ? (openBlock(), createElementBlock("div", _hoisted_5$e, [
             renderSlot(_ctx.$slots, "actions", {}, void 0, true)
           ])) : createCommentVNode("", true)
         ], 2);
       };
     }
   });
-  const _style_0$z = "\n.selectable-list-item[data-v-46747619] {\n  position: relative;\n  display: flex;\n  border: 1px solid transparent;\n  transition:\n    background-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.selectable-list-item--md[data-v-46747619] {\n  font-size: var(--font-size-sm);\n}\n.selectable-list-item--sm[data-v-46747619] {\n  font-size: var(--font-size-xs);\n}\n.selectable-list-item[data-v-46747619]:hover {\n  background-color: var(--color-surface-hover);\n}\n.selectable-list-item--current[data-v-46747619],\n.selectable-list-item--current[data-v-46747619]:hover {\n  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);\n  box-shadow: inset 2px 0 0 var(--color-primary);\n}\n\n/* ── The selectable button ── */\n.transcript-ui-root .selectable-list-item__main[data-v-46747619] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (background/border/font only) left margin,\n     padding, and appearance to whatever the host page's UA/global styles\n     happened to set. */\n  all: unset;\n  box-sizing: border-box;\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font: inherit;\n  color: var(--color-text-primary);\n  text-align: left;\n  cursor: pointer;\n}\n.transcript-ui-root .selectable-list-item--md .selectable-list-item__main[data-v-46747619] {\n  padding: var(--spacing-sm);\n}\n.transcript-ui-root .selectable-list-item--sm .selectable-list-item__main[data-v-46747619] {\n  padding: var(--spacing-xs) var(--spacing-sm);\n  color: var(--color-text-secondary);\n}\n.transcript-ui-root .selectable-list-item__main[data-v-46747619]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.transcript-ui-root .selectable-list-item__main[data-v-46747619]:disabled {\n  cursor: not-allowed;\n}\n.transcript-ui-root .selectable-list-item--current .selectable-list-item__main[data-v-46747619] {\n  color: var(--color-primary);\n  font-weight: 600;\n}\n.selectable-list-item__label[data-v-46747619] {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.selectable-list-item__leading[data-v-46747619],\n.selectable-list-item__trailing[data-v-46747619] {\n  display: inline-flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n/* Trailing content (hints, dates) stays muted even on the active row. */\n.selectable-list-item__trailing[data-v-46747619] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n\n/* ── Trailing actions (hover / focus reveal, overlaying the row) ── */\n.selectable-list-item__actions[data-v-46747619] {\n  position: absolute;\n  inset-block: 0;\n  inset-inline-end: 0;\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding-inline: var(--spacing-md) var(--spacing-xs);\n  /* Fade the label out behind the actions, matching the row surface. */\n  background: linear-gradient(\n    to right,\n    transparent,\n    var(--color-surface-hover) var(--spacing-md)\n  );\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity var(--transition-duration);\n}\n.selectable-list-item:hover .selectable-list-item__actions[data-v-46747619],\n.selectable-list-item:focus-within .selectable-list-item__actions[data-v-46747619] {\n  opacity: 1;\n  pointer-events: auto;\n}\n\n/* Match the fade to the selected surface on the active row. */\n.selectable-list-item--current .selectable-list-item__actions[data-v-46747619] {\n  background: linear-gradient(\n    to right,\n    transparent,\n    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-hover))\n      var(--spacing-md)\n  );\n}\n@media (prefers-reduced-motion: reduce) {\n.selectable-list-item[data-v-46747619],\n  .selectable-list-item__actions[data-v-46747619] {\n    transition: none;\n}\n}\n";
-  const SelectableListItem = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["styles", [_style_0$z]], ["__scopeId", "data-v-46747619"]]);
-  const _sfc_main$G = /* @__PURE__ */ defineComponent({
+  const _style_0$A = "\n.selectable-list-item[data-v-46747619] {\n  position: relative;\n  display: flex;\n  border: 1px solid transparent;\n  transition:\n    background-color var(--transition-duration),\n    box-shadow var(--transition-duration);\n}\n.selectable-list-item--md[data-v-46747619] {\n  font-size: var(--font-size-sm);\n}\n.selectable-list-item--sm[data-v-46747619] {\n  font-size: var(--font-size-xs);\n}\n.selectable-list-item[data-v-46747619]:hover {\n  background-color: var(--color-surface-hover);\n}\n.selectable-list-item--current[data-v-46747619],\n.selectable-list-item--current[data-v-46747619]:hover {\n  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);\n  box-shadow: inset 2px 0 0 var(--color-primary);\n}\n\n/* ── The selectable button ── */\n.transcript-ui-root .selectable-list-item__main[data-v-46747619] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (background/border/font only) left margin,\n     padding, and appearance to whatever the host page's UA/global styles\n     happened to set. */\n  all: unset;\n  box-sizing: border-box;\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  font: inherit;\n  color: var(--color-text-primary);\n  text-align: left;\n  cursor: pointer;\n}\n.transcript-ui-root .selectable-list-item--md .selectable-list-item__main[data-v-46747619] {\n  padding: var(--spacing-sm);\n}\n.transcript-ui-root .selectable-list-item--sm .selectable-list-item__main[data-v-46747619] {\n  padding: var(--spacing-xs) var(--spacing-sm);\n  color: var(--color-text-secondary);\n}\n.transcript-ui-root .selectable-list-item__main[data-v-46747619]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n}\n.transcript-ui-root .selectable-list-item__main[data-v-46747619]:disabled {\n  cursor: not-allowed;\n}\n.transcript-ui-root .selectable-list-item--current .selectable-list-item__main[data-v-46747619] {\n  color: var(--color-primary);\n  font-weight: 600;\n}\n.selectable-list-item__label[data-v-46747619] {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  font-variant-numeric: tabular-nums;\n}\n.selectable-list-item__leading[data-v-46747619],\n.selectable-list-item__trailing[data-v-46747619] {\n  display: inline-flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n/* Trailing content (hints, dates) stays muted even on the active row. */\n.selectable-list-item__trailing[data-v-46747619] {\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n\n/* ── Trailing actions (hover / focus reveal, overlaying the row) ── */\n.selectable-list-item__actions[data-v-46747619] {\n  position: absolute;\n  inset-block: 0;\n  inset-inline-end: 0;\n  display: flex;\n  align-items: center;\n  gap: 2px;\n  padding-inline: var(--spacing-md) var(--spacing-xs);\n  /* Fade the label out behind the actions, matching the row surface. */\n  background: linear-gradient(\n    to right,\n    transparent,\n    var(--color-surface-hover) var(--spacing-md)\n  );\n  opacity: 0;\n  pointer-events: none;\n  transition: opacity var(--transition-duration);\n}\n.selectable-list-item:hover .selectable-list-item__actions[data-v-46747619],\n.selectable-list-item:focus-within .selectable-list-item__actions[data-v-46747619] {\n  opacity: 1;\n  pointer-events: auto;\n}\n\n/* Match the fade to the selected surface on the active row. */\n.selectable-list-item--current .selectable-list-item__actions[data-v-46747619] {\n  background: linear-gradient(\n    to right,\n    transparent,\n    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface-hover))\n      var(--spacing-md)\n  );\n}\n@media (prefers-reduced-motion: reduce) {\n.selectable-list-item[data-v-46747619],\n  .selectable-list-item__actions[data-v-46747619] {\n    transition: none;\n}\n}\n";
+  const SelectableListItem = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["styles", [_style_0$A]], ["__scopeId", "data-v-46747619"]]);
+  const _sfc_main$I = /* @__PURE__ */ defineComponent({
     __name: "SpeakerIndicator",
     props: {
       color: { type: String }
@@ -22663,12 +22667,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _style_0$y = "\n.speaker-indicator[data-v-324978c0] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
-  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$y]], ["__scopeId", "data-v-324978c0"]]);
-  const _hoisted_1$y = { class: "switch" };
-  const _hoisted_2$q = ["id", "checked", "disabled"];
-  const _hoisted_3$j = ["for"];
-  const _sfc_main$F = /* @__PURE__ */ defineComponent({
+  const _style_0$z = "\n.speaker-indicator[data-v-324978c0] {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n";
+  const SpeakerIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$I, [["styles", [_style_0$z]], ["__scopeId", "data-v-324978c0"]]);
+  const _hoisted_1$A = { class: "switch" };
+  const _hoisted_2$r = ["id", "checked", "disabled"];
+  const _hoisted_3$k = ["for"];
+  const _sfc_main$H = /* @__PURE__ */ defineComponent({
     __name: "SwitchToggle",
     props: {
       modelValue: { type: Boolean },
@@ -22681,30 +22685,30 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       const emit2 = __emit;
       const inputId = props.id ?? useId$1();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$y, [
+        return openBlock(), createElementBlock("div", _hoisted_1$A, [
           createBaseVNode("input", {
             type: "checkbox",
             id: unref(inputId),
             checked: __props.modelValue,
             disabled: __props.disabled,
             onChange: _cache[0] || (_cache[0] = ($event) => emit2("update:modelValue", $event.target.checked))
-          }, null, 40, _hoisted_2$q),
+          }, null, 40, _hoisted_2$r),
           createBaseVNode("label", { for: unref(inputId) }, [..._cache[1] || (_cache[1] = [
             createBaseVNode("div", { class: "switch-slider" }, null, -1)
-          ])], 8, _hoisted_3$j)
+          ])], 8, _hoisted_3$k)
         ]);
       };
     }
   });
-  const _style_0$x = "\n.switch[data-v-7b13995e] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-7b13995e] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n\n/* Track and outline are two roles, hence two tokens: reusing --color-border\n   for both collapsed into a white blob once that token went white for the\n   dark theme. The outline is what makes the knob readable. */\n.switch label[data-v-7b13995e] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-switch-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-switch-track);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-7b13995e] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-switch-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-7b13995e] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-7b13995e] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n.switch input:disabled + label[data-v-7b13995e] {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n";
-  const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$F, [["styles", [_style_0$x]], ["__scopeId", "data-v-7b13995e"]]);
+  const _style_0$y = "\n.switch[data-v-7b13995e] {\n  display: inline-block;\n  flex-shrink: 0;\n}\n.switch input[data-v-7b13995e] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip-path: inset(50%);\n  white-space: nowrap;\n  border: 0;\n}\n\n/* Track and outline are two roles, hence two tokens: reusing --color-border\n   for both collapsed into a white blob once that token went white for the\n   dark theme. The outline is what makes the knob readable. */\n.switch label[data-v-7b13995e] {\n  height: 20px;\n  width: 40px;\n  display: block;\n  border: 1px solid var(--color-switch-border);\n  border-radius: 20px;\n  cursor: pointer;\n  background-color: var(--color-switch-track);\n  transition: background-color var(--transition-duration);\n}\n.switch .switch-slider[data-v-7b13995e] {\n  height: 22px;\n  width: 22px;\n  border: 1px solid var(--color-switch-border);\n  border-radius: 50%;\n  position: relative;\n  top: -2px;\n  left: -2px;\n  background-color: var(--color-white);\n  transition: left var(--transition-duration);\n}\n.switch input:checked + label[data-v-7b13995e] {\n  background-color: var(--color-primary);\n  border-color: var(--color-primary);\n}\n.switch input:checked + label .switch-slider[data-v-7b13995e] {\n  left: 20px;\n  border-color: var(--color-primary);\n}\n.switch input:disabled + label[data-v-7b13995e] {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n";
+  const SwitchToggle = /* @__PURE__ */ _export_sfc(_sfc_main$H, [["styles", [_style_0$y]], ["__scopeId", "data-v-7b13995e"]]);
   function computeInitials(name) {
     const words = name.trim().split(/\s+/).filter(Boolean);
     if (words.length === 0) return "?";
     return words.slice(0, 2).map((w2) => w2[0].toUpperCase()).join("");
   }
-  const _hoisted_1$x = ["title", "aria-label"];
-  const _sfc_main$E = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$z = ["title", "aria-label"];
+  const _sfc_main$G = /* @__PURE__ */ defineComponent({
     __name: "UserAvatar",
     props: {
       name: { type: String },
@@ -22720,21 +22724,21 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           role: "img",
           title: title.value,
           "aria-label": title.value
-        }, toDisplayString(initials.value), 9, _hoisted_1$x);
+        }, toDisplayString(initials.value), 9, _hoisted_1$z);
       };
     }
   });
-  const _style_0$w = "\n.user-avatar[data-v-977a8d17] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  user-select: none;\n  cursor: default;\n}\n";
-  const UserAvatar = /* @__PURE__ */ _export_sfc(_sfc_main$E, [["styles", [_style_0$w]], ["__scopeId", "data-v-977a8d17"]]);
-  const _hoisted_1$w = ["data-status"];
-  const _hoisted_2$p = {
+  const _style_0$x = "\n.user-avatar[data-v-977a8d17] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  background-color: var(--color-primary);\n  color: var(--color-white);\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  user-select: none;\n  cursor: default;\n}\n";
+  const UserAvatar = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["styles", [_style_0$x]], ["__scopeId", "data-v-977a8d17"]]);
+  const _hoisted_1$y = ["data-status"];
+  const _hoisted_2$q = {
     key: 0,
     class: "document-article__toolbar",
     role: "toolbar"
   };
-  const _hoisted_3$i = { class: "document-article__toolbar-left" };
-  const _hoisted_4$d = { class: "document-article__toolbar-center" };
-  const _hoisted_5$c = { class: "document-article__toolbar-right" };
+  const _hoisted_3$j = { class: "document-article__toolbar-left" };
+  const _hoisted_4$e = { class: "document-article__toolbar-center" };
+  const _hoisted_5$d = { class: "document-article__toolbar-right" };
   const _hoisted_6$a = { class: "document-article__body" };
   const _hoisted_7$5 = {
     key: 0,
@@ -22760,7 +22764,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     role: "alert"
   };
   const _hoisted_13$1 = { class: "document-article__error-text" };
-  const _sfc_main$D = /* @__PURE__ */ defineComponent({
+  const _sfc_main$F = /* @__PURE__ */ defineComponent({
     __name: "DocumentArticle",
     props: {
       status: { default: "done", type: String },
@@ -22786,14 +22790,14 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           class: "document-article",
           "data-status": props.status
         }, [
-          _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", _hoisted_2$p, [
-            createBaseVNode("div", _hoisted_3$i, [
+          _ctx.$slots["toolbar-left"] || _ctx.$slots["toolbar-center"] || _ctx.$slots["toolbar-right"] ? (openBlock(), createElementBlock("div", _hoisted_2$q, [
+            createBaseVNode("div", _hoisted_3$j, [
               renderSlot(_ctx.$slots, "toolbar-left", {}, void 0, true)
             ]),
-            createBaseVNode("div", _hoisted_4$d, [
+            createBaseVNode("div", _hoisted_4$e, [
               renderSlot(_ctx.$slots, "toolbar-center", {}, void 0, true)
             ]),
-            createBaseVNode("div", _hoisted_5$c, [
+            createBaseVNode("div", _hoisted_5$d, [
               renderSlot(_ctx.$slots, "toolbar-right", {}, void 0, true)
             ])
           ])) : createCommentVNode("", true),
@@ -22832,13 +22836,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               })) : createCommentVNode("", true)
             ])) : renderSlot(_ctx.$slots, "default", {}, void 0, true, 3)
           ])
-        ], 8, _hoisted_1$w);
+        ], 8, _hoisted_1$y);
       };
     }
   });
-  const _style_0$v = "\n.document-article[data-v-77dc2cd6] {\n  /* One row of buttons plus padding and border. Declared rather than\n     measured: slot content must stay on one line (truncate, don't wrap), and\n     content stuck right under the toolbar (the markdown editor's toolbar)\n     reads this value as its offset. */\n  --document-toolbar-height: 49px;\n\n  width: min(1088px, calc(100% - 16px));\n  max-width: 1088px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-77dc2cd6] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  height: var(--document-toolbar-height);\n  padding: 0 var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-77dc2cd6],\n.document-article__toolbar-right[data-v-77dc2cd6] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-77dc2cd6] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-77dc2cd6] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-77dc2cd6] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__loading-text[data-v-77dc2cd6] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.document-article__center--processing[data-v-77dc2cd6] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-77dc2cd6] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-77dc2cd6] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-77dc2cd6] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n@media (max-width: 767px) {\n.document-article[data-v-77dc2cd6] {\n    margin: var(--spacing-sm) auto;\n}\n}\n.document-article__error-text[data-v-77dc2cd6] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
-  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$v]], ["__scopeId", "data-v-77dc2cd6"]]);
-  const _sfc_main$C = /* @__PURE__ */ defineComponent({
+  const _style_0$w = "\n.document-article[data-v-77dc2cd6] {\n  /* One row of buttons plus padding and border. Declared rather than\n     measured: slot content must stay on one line (truncate, don't wrap), and\n     content stuck right under the toolbar (the markdown editor's toolbar)\n     reads this value as its offset. */\n  --document-toolbar-height: 49px;\n\n  width: min(1088px, calc(100% - 16px));\n  max-width: 1088px;\n  margin: var(--spacing-lg) auto;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  display: flex;\n  flex-direction: column;\n}\n.document-article__toolbar[data-v-77dc2cd6] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  height: var(--document-toolbar-height);\n  padding: 0 var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  position: sticky;\n  top: 0;\n  background-color: var(--color-surface);\n  border-radius: var(--radius-md) var(--radius-md) 0 0;\n  z-index: 1;\n}\n.document-article__toolbar-left[data-v-77dc2cd6],\n.document-article__toolbar-right[data-v-77dc2cd6] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  flex-shrink: 0;\n}\n.document-article__toolbar-center[data-v-77dc2cd6] {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-width: 0;\n}\n.document-article__body[data-v-77dc2cd6] {\n  flex: 1;\n  min-height: 0;\n}\n.document-article__center[data-v-77dc2cd6] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl) var(--spacing-md);\n  text-align: center;\n}\n.document-article__loading-text[data-v-77dc2cd6] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.document-article__center--processing[data-v-77dc2cd6] {\n  color: var(--color-primary);\n}\n.document-article__center--error[data-v-77dc2cd6] {\n  color: var(--color-danger, #d33);\n}\n.document-article__progress[data-v-77dc2cd6] {\n  width: min(280px, 100%);\n  height: 6px;\n}\n.document-article__progress-value[data-v-77dc2cd6] {\n  font-size: var(--font-size-xs);\n  font-variant-numeric: tabular-nums;\n  color: var(--color-text-muted);\n}\n@media (max-width: 767px) {\n.document-article[data-v-77dc2cd6] {\n    margin: var(--spacing-sm) auto;\n}\n}\n.document-article__error-text[data-v-77dc2cd6] {\n  margin: 0;\n  max-width: 480px;\n  font-size: var(--font-size-sm);\n  line-height: var(--line-height);\n  color: var(--color-text-secondary);\n}\n";
+  const DocumentArticle = /* @__PURE__ */ _export_sfc(_sfc_main$F, [["styles", [_style_0$w]], ["__scopeId", "data-v-77dc2cd6"]]);
+  const _sfc_main$E = /* @__PURE__ */ defineComponent({
     __name: "DownloadMenu",
     props: {
       formats: { type: Array },
@@ -22854,7 +22858,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         emit2("select", item.format);
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(_sfc_main$J, {
+        return openBlock(), createBlock(_sfc_main$L, {
           items: props.formats,
           "item-key": (f2) => f2.format,
           align: "end",
@@ -22882,7 +22886,71 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _sfc_main$B = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$x = ["aria-labelledby"];
+  const _hoisted_2$p = {
+    method: "dialog",
+    class: "modal-dialog-header"
+  };
+  const _hoisted_3$i = ["id"];
+  const _hoisted_4$d = ["aria-labelledby"];
+  const _hoisted_5$c = {
+    key: 0,
+    method: "dialog",
+    class: "modal-dialog-actions"
+  };
+  const _sfc_main$D = /* @__PURE__ */ defineComponent({
+    __name: "ModalDialog",
+    props: {
+      title: { type: String }
+    },
+    emits: ["close"],
+    setup(__props, { emit: __emit }) {
+      const emit2 = __emit;
+      const { t: t2 } = useI18n();
+      const titleId = useId$1();
+      const dialogRef = useTemplateRef("dialog");
+      onMounted(() => {
+        dialogRef.value?.showModal();
+      });
+      return (_ctx, _cache) => {
+        return openBlock(), createElementBlock("dialog", {
+          ref: "dialog",
+          class: "modal-dialog",
+          "aria-labelledby": unref(titleId),
+          onKeydown: _cache[0] || (_cache[0] = withKeys(withModifiers(() => {
+          }, ["stop"]), ["esc"])),
+          onClose: _cache[1] || (_cache[1] = ($event) => emit2("close"))
+        }, [
+          createBaseVNode("form", _hoisted_2$p, [
+            createBaseVNode("h2", {
+              id: unref(titleId),
+              class: "modal-dialog-title"
+            }, toDisplayString(__props.title), 9, _hoisted_3$i),
+            createVNode(Button, {
+              type: "submit",
+              variant: "transparent",
+              icon: "x",
+              "aria-label": unref(t2)("modalDialog.close")
+            }, null, 8, ["aria-label"])
+          ]),
+          createBaseVNode("div", {
+            class: "modal-dialog-body",
+            tabindex: "0",
+            role: "region",
+            "aria-labelledby": unref(titleId)
+          }, [
+            renderSlot(_ctx.$slots, "default", {}, void 0, true)
+          ], 8, _hoisted_4$d),
+          _ctx.$slots.actions ? (openBlock(), createElementBlock("form", _hoisted_5$c, [
+            renderSlot(_ctx.$slots, "actions", {}, void 0, true)
+          ])) : createCommentVNode("", true)
+        ], 40, _hoisted_1$x);
+      };
+    }
+  });
+  const _style_0$v = "\n.modal-dialog[data-v-a6f83304] {\n  margin: auto;\n  max-width: 640px;\n  width: 90vw;\n  max-height: 85vh;\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n\n/* Only while open: a closed <dialog> must keep its native display: none. */\n.modal-dialog[open][data-v-a6f83304] {\n  display: flex;\n  flex-direction: column;\n  /*gap: var(--spacing-md);*/\n}\n.modal-dialog[data-v-a6f83304]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.modal-dialog-header[data-v-a6f83304] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n  padding: var(--spacing-md) var(--spacing-lg);\n}\n.modal-dialog-title[data-v-a6f83304] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.modal-dialog-body[data-v-a6f83304] {\n  flex: 1;\n  min-height: 0;\n  overflow: auto;\n  padding: var(--spacing-lg);\n}\n.modal-dialog-body[data-v-a6f83304]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.modal-dialog-actions[data-v-a6f83304] {\n  display: flex;\n  justify-content: flex-end;\n  padding: var(--spacing-md) var(--spacing-lg);\n  border-top: 1px solid var(--color-border);\n  border-top: 1px solid var(--color-border);\n}\n";
+  const ModalDialog = /* @__PURE__ */ _export_sfc(_sfc_main$D, [["styles", [_style_0$v]], ["__scopeId", "data-v-a6f83304"]]);
+  const _sfc_main$C = /* @__PURE__ */ defineComponent({
     __name: "SpeakerMenu",
     emits: ["merge"],
     setup(__props, { emit: __emit }) {
@@ -22895,7 +22963,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         if (action.id === "merge") emit2("merge");
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(_sfc_main$J, {
+        return openBlock(), createBlock(_sfc_main$L, {
           items: items.value,
           "item-key": (a2) => a2.id,
           align: "end",
@@ -22916,13 +22984,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$v = ["aria-label"];
+  const _hoisted_1$w = ["aria-label"];
   const _hoisted_2$o = ["aria-selected", "aria-disabled", "disabled", "onClick"];
   const _hoisted_3$h = { class: "tab__label" };
   const _hoisted_4$c = ["aria-selected", "aria-label"];
   const _hoisted_5$b = { class: "tab__label" };
   const _hoisted_6$9 = { class: "tab__menu-item" };
-  const _sfc_main$A = /* @__PURE__ */ defineComponent({
+  const _sfc_main$B = /* @__PURE__ */ defineComponent({
     __name: "Tabs",
     props: {
       tabs: { type: Array },
@@ -22984,7 +23052,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
               }, 1024)) : createCommentVNode("", true)
             ], 10, _hoisted_2$o);
           }), 128)),
-          collapsedTabs.value.length > 0 ? (openBlock(), createBlock(_sfc_main$J, {
+          collapsedTabs.value.length > 0 ? (openBlock(), createBlock(_sfc_main$L, {
             key: 0,
             items: collapsedTabs.value,
             "item-key": (tab) => tab.value,
@@ -23035,12 +23103,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             ]),
             _: 1
           }, 8, ["items", "item-key", "is-current"])) : createCommentVNode("", true)
-        ], 8, _hoisted_1$v);
+        ], 8, _hoisted_1$w);
       };
     }
   });
   const _style_0$u = '\n.tabs[data-v-30747b8d] {\n  display: flex;\n  align-items: stretch;\n  gap: var(--spacing-xs);\n  padding: 0 var(--spacing-lg);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-x: auto;\n  scrollbar-width: thin;\n}\n.transcript-ui-root .tab[data-v-30747b8d] {\n  all: unset;\n  box-sizing: border-box;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  height: 44px;\n  padding: 0 var(--spacing-sm);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-secondary);\n  cursor: pointer;\n  white-space: nowrap;\n  border-bottom: 2px solid transparent;\n  transition:\n    color var(--transition-duration),\n    border-color var(--transition-duration);\n}\n.transcript-ui-root .tab[data-v-30747b8d]:hover:not([disabled]) {\n  color: var(--color-text-primary);\n}\n.transcript-ui-root .tab[data-v-30747b8d]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: -2px;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .tab--active[data-v-30747b8d] {\n  color: var(--color-text-primary);\n  border-bottom-color: var(--color-primary);\n}\n.transcript-ui-root .tab[disabled][data-v-30747b8d] {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.tab__icon[data-v-30747b8d] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__label[data-v-30747b8d] {\n  text-box: cap alphabetic;\n}\n.tab__badge[data-v-30747b8d] {\n  margin-left: var(--spacing-xs);\n}\n.tab__chevron[data-v-30747b8d] {\n  flex-shrink: 0;\n  color: currentColor;\n}\n.tab__menu-item[data-v-30747b8d] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n\n/* Phone: the inline tabs share the width, labels shrink with an ellipsis,\n   icons go, nothing scrolls sideways (the rest lives in the "More" menu). */\n@media (max-width: 767px) {\n.tabs[data-v-30747b8d] {\n    padding: 0 var(--spacing-sm);\n    overflow-x: hidden;\n}\n.transcript-ui-root .tab[data-v-30747b8d] {\n    flex: 1;\n    min-width: 0;\n    justify-content: center;\n    padding: 0 var(--spacing-xs);\n    font-size: var(--font-size-xs);\n}\n.tab__icon[data-v-30747b8d] {\n    display: none;\n}\n.tab__label[data-v-30747b8d] {\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n}\n';
-  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$u]], ["__scopeId", "data-v-30747b8d"]]);
+  const Tabs = /* @__PURE__ */ _export_sfc(_sfc_main$B, [["styles", [_style_0$u]], ["__scopeId", "data-v-30747b8d"]]);
   const TEXT_NODE$1 = 3;
   function placeCaretAt(element, offset2) {
     element.focus({ preventScroll: true });
@@ -23097,8 +23165,8 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     if (!focus2 || !container.contains(focus2.node)) return null;
     return computeTextOffsetInContainer(container, focus2.node, focus2.offset);
   }
-  const _hoisted_1$u = ["aria-label", "textContent"];
-  const _sfc_main$z = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$v = ["aria-label", "textContent"];
+  const _sfc_main$A = /* @__PURE__ */ defineComponent({
     __name: "TurnTextEditor",
     props: {
       text: { type: String },
@@ -23152,13 +23220,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           onKeydown,
           onBlur,
           textContent: toDisplayString(__props.text)
-        }, null, 40, _hoisted_1$u);
+        }, null, 40, _hoisted_1$v);
       };
     }
   });
   const _style_0$t = "\n.turn-text-editor[data-v-597e2575] {\n  margin: 0;\n  white-space: pre-wrap;\n  overflow-wrap: anywhere;\n  cursor: text;\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n  background-color: var(--color-surface);\n  padding: 0;\n}\n";
-  const TurnTextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$t]], ["__scopeId", "data-v-597e2575"]]);
-  const _hoisted_1$t = { class: "editor-header" };
+  const TurnTextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["styles", [_style_0$t]], ["__scopeId", "data-v-597e2575"]]);
+  const _hoisted_1$u = { class: "editor-header" };
   const _hoisted_2$n = { class: "header-content" };
   const _hoisted_3$g = { class: "header-main" };
   const _hoisted_4$b = { class: "document-title" };
@@ -23168,7 +23236,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
   };
   const _hoisted_6$8 = { class: "header-right" };
   const _hoisted_7$4 = { key: 0 };
-  const _sfc_main$y = /* @__PURE__ */ defineComponent({
+  const _sfc_main$z = /* @__PURE__ */ defineComponent({
     __name: "Header",
     props: {
       title: { type: String },
@@ -23202,7 +23270,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         ].filter(Boolean)
       );
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("header", _hoisted_1$t, [
+        return openBlock(), createElementBlock("header", _hoisted_1$u, [
           renderSlot(_ctx.$slots, "start", {}, void 0, true),
           createBaseVNode("div", _hoisted_2$n, [
             createBaseVNode("div", _hoisted_3$g, [
@@ -23285,13 +23353,13 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
   });
   const _style_0$s = '\n.editor-header[data-v-af95f1f0] {\n  display: flex;\n  min-height: var(--header-height);\n  border-bottom: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.header-content[data-v-af95f1f0] {\n  display: flex;\n  flex: 1;\n  min-width: 0;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--spacing-md);\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.header-main[data-v-af95f1f0] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  min-width: 0;\n  flex: 1;\n}\n.document-title[data-v-af95f1f0] {\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  margin: 0;\n}\n.document-meta[data-v-af95f1f0] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: var(--spacing-xs);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.document-meta__part[data-v-af95f1f0] {\n  text-box: cap alphabetic;\n}\n.document-meta__part + .document-meta__part[data-v-af95f1f0]::before {\n  content: "·";\n  margin-right: var(--spacing-xs);\n}\n.header-right[data-v-af95f1f0] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  flex-shrink: 0;\n}\n@media (max-width: 767px) {\n.header-content[data-v-af95f1f0] {\n    padding: var(--spacing-xs) var(--spacing-md);\n}\n.document-title[data-v-af95f1f0] {\n    font-size: var(--font-size-base);\n}\n}\n';
-  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["styles", [_style_0$s]], ["__scopeId", "data-v-af95f1f0"]]);
+  const Header = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["styles", [_style_0$s]], ["__scopeId", "data-v-af95f1f0"]]);
   const TRANSCRIPTION_TAB = "__transcription__";
   const VERBATIM_TAB = "__verbatim__";
   function useIsMobile() {
     return { isMobile: useCore().isMobile };
   }
-  const _sfc_main$x = /* @__PURE__ */ defineComponent({
+  const _sfc_main$y = /* @__PURE__ */ defineComponent({
     __name: "TabBar",
     props: {
       modelValue: { type: String },
@@ -23711,7 +23779,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     };
   }
   var StickToBottomKey = /* @__PURE__ */ Symbol("StickToBottom");
-  var _hoisted_1$s = { style: {
+  var _hoisted_1$t = { style: {
     "position": "relative",
     "height": "100%",
     "width": "100%",
@@ -23777,7 +23845,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         stopScroll
       }));
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", null, [createBaseVNode("div", _hoisted_1$s, [createBaseVNode("div", {
+        return openBlock(), createElementBlock("div", null, [createBaseVNode("div", _hoisted_1$t, [createBaseVNode("div", {
           ref_key: "scrollRef",
           ref: scrollRef,
           style: normalizeStyle({
@@ -23794,12 +23862,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
       };
     }
   });
-  const _hoisted_1$r = ["datetime"];
+  const _hoisted_1$s = ["datetime"];
   const _hoisted_2$m = {
     key: 3,
     class: "lang"
   };
-  const _sfc_main$w = /* @__PURE__ */ defineComponent({
+  const _sfc_main$x = /* @__PURE__ */ defineComponent({
     __name: "SpeakerLabel",
     props: {
       speaker: { type: Object },
@@ -23856,19 +23924,19 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
             key: 2,
             class: "timestamp",
             datetime: timestamp.value.datetime
-          }, toDisplayString(timestamp.value.text), 9, _hoisted_1$r)) : createCommentVNode("", true),
+          }, toDisplayString(timestamp.value.text), 9, _hoisted_1$s)) : createCommentVNode("", true),
           __props.showLanguage && languageName.value ? (openBlock(), createElementBlock("span", _hoisted_2$m, toDisplayString(languageName.value), 1)) : createCommentVNode("", true)
         ], 2);
       };
     }
   });
   const _style_0$r = "\n.speaker-label[data-v-c4dc411a] {\n  display: flex;\n  border-bottom: 2px solid transparent;\n  align-items: center;\n  gap: var(--spacing-sm);\n}\n.speaker-name[data-v-c4dc411a] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.speaker-name--unknown[data-v-c4dc411a] {\n  font-weight: 400;\n  font-style: italic;\n  color: var(--color-text-muted);\n}\n.speaker-label--interactive:hover .speaker-name[data-v-c4dc411a] {\n  text-decoration: underline;\n}\n.timestamp[data-v-c4dc411a] {\n  font-size: var(--font-size-xs);\n  font-family: var(--font-family-mono);\n  color: var(--color-text-muted);\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n.lang[data-v-c4dc411a] {\n  font-size: var(--font-size-xs);\n  font-weight: 400;\n  /* not supported on firefox yet */\n  text-box: trim-both cap alphabetic;\n}\n";
-  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$r]], ["__scopeId", "data-v-c4dc411a"]]);
-  const _hoisted_1$q = {
+  const SpeakerLabel = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["styles", [_style_0$r]], ["__scopeId", "data-v-c4dc411a"]]);
+  const _hoisted_1$r = {
     key: 0,
     class: "merge-turns"
   };
-  const _sfc_main$v = /* @__PURE__ */ defineComponent({
+  const _sfc_main$w = /* @__PURE__ */ defineComponent({
     __name: "MergeTurnsButton",
     props: {
       firstTurnId: { type: String },
@@ -23888,7 +23956,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         core.transcriptionEditor.mergeTurns(props.firstTurnId, props.secondTurnId);
       }
       return (_ctx, _cache) => {
-        return canShow.value ? (openBlock(), createElementBlock("div", _hoisted_1$q, [
+        return canShow.value ? (openBlock(), createElementBlock("div", _hoisted_1$r, [
           createVNode(unref(Button), {
             size: "sm",
             variant: "inverse",
@@ -23902,7 +23970,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
   });
   const _style_0$q = "\n.merge-turns[data-v-8d977feb] {\n  display: flex;\n  justify-content: center;\n}\n\n/* Compact: the control sits in the gap between turns without inflating it. */\n.merge-turns[data-v-8d977feb] .editor-btn {\n  --btn-height: 22px;\n}\n";
-  const MergeTurnsButton = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$q]], ["__scopeId", "data-v-8d977feb"]]);
+  const MergeTurnsButton = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["styles", [_style_0$q]], ["__scopeId", "data-v-8d977feb"]]);
   function renameSpeaker$1(core, speakerId, newName) {
     const trimmed = newName.trim();
     const existing = core.speakers.all.get(speakerId);
@@ -23970,12 +24038,12 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     switchTurnSpeaker: switchTurnSpeaker$1,
     updateTurnWords
   }, Symbol.toStringTag, { value: "Module" }));
-  const _hoisted_1$p = {
+  const _hoisted_1$q = {
     type: "button",
     class: "speaker-popover-trigger"
   };
   const _hoisted_2$l = { class: "speaker-popover-name" };
-  const _sfc_main$u = /* @__PURE__ */ defineComponent({
+  const _sfc_main$v = /* @__PURE__ */ defineComponent({
     __name: "SpeakerPopover",
     props: {
       turnId: { type: String },
@@ -24041,7 +24109,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
         isCreatingNew.value = false;
       }
       return (_ctx, _cache) => {
-        return openBlock(), createBlock(unref(_sfc_main$J), {
+        return openBlock(), createBlock(unref(_sfc_main$L), {
           open: isOpen.value,
           "onUpdate:open": _cache[1] || (_cache[1] = ($event) => isOpen.value = $event),
           items: unref(speakers),
@@ -24050,7 +24118,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
           onSelect: onPickExisting
         }, {
           trigger: withCtx(() => [
-            createBaseVNode("button", _hoisted_1$p, [
+            createBaseVNode("button", _hoisted_1$q, [
               renderSlot(_ctx.$slots, "default", {}, void 0, true)
             ])
           ]),
@@ -24092,7 +24160,7 @@ Please report this to https://github.com/markedjs/marked.`, e2) {
     }
   });
   const _style_0$p = "\n.transcript-ui-root .speaker-popover-trigger[data-v-fc1a34cf] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-popover-trigger[data-v-fc1a34cf]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.speaker-popover-name[data-v-fc1a34cf] {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n";
-  const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$p]], ["__scopeId", "data-v-fc1a34cf"]]);
+  const SpeakerPopover = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["styles", [_style_0$p]], ["__scopeId", "data-v-fc1a34cf"]]);
   const turnSelectionKey = /* @__PURE__ */ Symbol("turnSelection");
   function getTurnText(turn) {
     if (turn.words.length > 0) {
@@ -24239,14 +24307,14 @@ ${text2}` : text2;
       (w2) => w2.charStart != null && w2.charEnd != null && w2.charStart <= offset2 && offset2 < w2.charEnd
     );
   }
-  const _hoisted_1$o = ["data-turn-active", "aria-selected"];
+  const _hoisted_1$p = ["data-turn-active", "aria-selected"];
   const _hoisted_2$k = {
     key: 4,
     class: "turn-edit-actions"
   };
   const _hoisted_3$f = ["role", "tabindex", "aria-label", "aria-disabled"];
   const _hoisted_4$a = ["data-word-active"];
-  const _sfc_main$t = /* @__PURE__ */ defineComponent({
+  const _sfc_main$u = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionTurn",
     props: {
       turn: { type: Object },
@@ -24498,32 +24566,32 @@ ${text2}` : text2;
               createTextVNode(toDisplayString(__props.turn.text), 1)
             ], 64)) : createCommentVNode("", true)
           ], 42, _hoisted_3$f))
-        ], 14, _hoisted_1$o);
+        ], 14, _hoisted_1$p);
       };
     }
   });
   const _style_0$o = "\n.turn[data-v-e843be73] {\n  padding: var(--spacing-sm) var(--spacing-lg);\n}\n.turn-header[data-v-e843be73] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  cursor: pointer;\n  user-select: none;\n  border-radius: var(--radius-sm);\n  padding: var(--spacing-xxs) 0;\n}\n\n/* Reserve the edit-actions height (Button sm) so entering/leaving edit mode\n   never shifts the layout — but only where those actions can appear at all.\n   Read-only, the row holds a line of metadata and has no reason to be 36px\n   tall. */\n.turn-header--with-actions[data-v-e843be73] {\n  min-height: 36px;\n}\n.turn-edit-actions[data-v-e843be73] {\n  margin-left: auto;\n  display: flex;\n  gap: var(--spacing-xs);\n}\n\n/* Same reset as the popover's own trigger: the label IS the button. */\n.transcript-ui-root .speaker-trigger[data-v-e843be73] {\n  all: unset;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--radius-sm);\n}\n.transcript-ui-root .speaker-trigger[data-v-e843be73]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  outline-offset: 2px;\n}\n.turn[data-v-e843be73]:has(.turn-header:hover) {\n  background-color: var(--color-surface-hover);\n}\n.turn-text[data-v-e843be73] {\n  margin-top: var(--spacing-xs);\n  font-size: var(--transcript-font-size);\n  line-height: var(--line-height);\n  color: var(--color-text-primary);\n}\n.turn-text--editable[data-v-e843be73] {\n  cursor: text;\n}\n.turn-text--editable[data-v-e843be73]:focus-visible {\n  outline: 2px solid var(--color-primary);\n  border-radius: var(--radius-sm);\n}\n.turn--selected[data-v-e843be73] {\n  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);\n  border-left: 3px solid var(--color-primary);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.turn--active[data-v-e843be73]:not(.turn--selected) {\n  border-left: 3px solid var(--speaker-color);\n  background-color: color-mix(in srgb, var(--speaker-color) 8%, transparent);\n  padding-left: calc(var(--spacing-lg) - 3px);\n}\n.word--active[data-v-e843be73] {\n  text-decoration: underline;\n  text-decoration-color: var(--color-primary);\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n  color: var(--color-primary);\n}\n.turn--partial .turn-text[data-v-e843be73] {\n  font-style: italic;\n  color: var(--color-text-muted);\n  animation: partial-fade-in-e843be73 200ms ease;\n}\n@keyframes partial-fade-in-e843be73 {\nfrom {\n    opacity: 0;\n}\nto {\n    opacity: 1;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.turn--partial .turn-text[data-v-e843be73] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.turn[data-v-e843be73] {\n    padding: var(--spacing-sm) var(--spacing-md);\n}\n.turn--selected[data-v-e843be73],\n  .turn--active[data-v-e843be73]:not(.turn--selected) {\n    padding-left: calc(var(--spacing-md) - 3px);\n}\n}\n";
-  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["styles", [_style_0$o]], ["__scopeId", "data-v-e843be73"]]);
-  const _sfc_main$s = {};
-  const _hoisted_1$n = {
+  const TranscriptionTurn = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["styles", [_style_0$o]], ["__scopeId", "data-v-e843be73"]]);
+  const _sfc_main$t = {};
+  const _hoisted_1$o = {
     viewBox: "0 0 938 604",
     fill: "none",
     xmlns: "http://www.w3.org/2000/svg"
   };
   function _sfc_render(_ctx, _cache) {
-    return openBlock(), createElementBlock("svg", _hoisted_1$n, [..._cache[0] || (_cache[0] = [
+    return openBlock(), createElementBlock("svg", _hoisted_1$o, [..._cache[0] || (_cache[0] = [
       createStaticVNode('<polygon points="331.5,533.5 331.5,520.5 702.5,428.5 705.5,443.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><polygon points="564.5,469.5 555.5,452.5 544.5,455.5 542.5,472.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-452.14416,-495.30213)"></polygon><path d="m 317.61655,19.99224 c 0,0 79.97514,-5.452851 101.78654,56.34612 21.81141,61.79897 72.70468,172.67359 92.69846,189.03214 19.99379,16.35855 41.80519,59.98136 38.16995,74.52229" stroke="currentColor" stroke-miterlimit="10" stroke-width="9.08808"></path><path d="m 329.43106,19.083431 c 0,8.532657 -9.0733,15.449743 -23.62902,15.449743 -14.55571,0 -21.8114,-6.917086 -21.8114,-15.449743 0,-8.532657 7.25569,-15.4497427 21.8114,-15.4497427 14.55572,0 23.62902,6.9170857 23.62902,15.4497427 z" fill="currentColor" style="fill:currentColor;opacity:0.6;"></path><polygon points="691.5,439.5 364.5,521.5 377.5,602.5 666.5,602.5" fill="currentColor" transform="matrix(1.8176168,0,0,1.8176168,-456.32371,-492.51252)"></polygon>', 5)
     ])]);
   }
-  const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render]]);
-  const _hoisted_1$m = { class: "transcription-empty" };
+  const MicrophoneIllustration = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render]]);
+  const _hoisted_1$n = { class: "transcription-empty" };
   const _hoisted_2$j = { class: "message" };
-  const _sfc_main$r = /* @__PURE__ */ defineComponent({
+  const _sfc_main$s = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionEmpty",
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$m, [
+        return openBlock(), createElementBlock("div", _hoisted_1$n, [
           createVNode(MicrophoneIllustration, {
             class: "illustration",
             "aria-hidden": "true"
@@ -24534,9 +24602,9 @@ ${text2}` : text2;
     }
   });
   const _style_0$n = "\n.transcription-empty[data-v-585c4f2b] {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-xl);\n}\n.illustration[data-v-585c4f2b] {\n  width: 180px;\n  height: auto;\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.message[data-v-585c4f2b] {\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n  text-align: center;\n  margin: 0;\n}\n";
-  const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$n]], ["__scopeId", "data-v-585c4f2b"]]);
-  const _hoisted_1$l = ["aria-label"];
-  const _sfc_main$q = /* @__PURE__ */ defineComponent({
+  const TranscriptionEmpty = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["styles", [_style_0$n]], ["__scopeId", "data-v-585c4f2b"]]);
+  const _hoisted_1$m = ["aria-label"];
+  const _sfc_main$r = /* @__PURE__ */ defineComponent({
     __name: "SpeechActivityIndicator",
     props: {
       active: { type: Boolean }
@@ -24552,12 +24620,12 @@ ${text2}` : text2;
           createBaseVNode("span", { class: "speech-activity-dot" }, null, -1),
           createBaseVNode("span", { class: "speech-activity-dot" }, null, -1),
           createBaseVNode("span", { class: "speech-activity-dot" }, null, -1)
-        ])], 10, _hoisted_1$l);
+        ])], 10, _hoisted_1$m);
       };
     }
   });
   const _style_0$m = "\n/* Typing bubble, as in messaging apps. The box never changes size, only the\n   dots move inside it, so the transcript above stays still. */\n.speech-activity[data-v-c0396c58] {\n  display: flex;\n  align-items: center;\n  gap: 5px;\n  width: fit-content;\n  margin: var(--spacing-sm) var(--spacing-lg);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg)\n    var(--radius-sm);\n  background-color: var(--color-surface-hover);\n  transition:\n    opacity 0.4s ease,\n    visibility 0.4s;\n}\n.speech-activity-dot[data-v-c0396c58] {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  background-color: var(--color-text-muted);\n  animation: speech-activity-hop-c0396c58 1.2s infinite ease-in-out;\n}\n.speech-activity-dot[data-v-c0396c58]:nth-child(2) {\n  animation-delay: 0.15s;\n}\n.speech-activity-dot[data-v-c0396c58]:nth-child(3) {\n  animation-delay: 0.3s;\n}\n@keyframes speech-activity-hop-c0396c58 {\n0%,\n  60%,\n  100% {\n    transform: translateY(0);\n    opacity: 0.55;\n}\n30% {\n    transform: translateY(-5px);\n    opacity: 1;\n}\n}\n.speech-activity--idle[data-v-c0396c58] {\n  opacity: 0;\n  visibility: hidden;\n}\n@media (prefers-reduced-motion: reduce) {\n.speech-activity-dot[data-v-c0396c58] {\n    animation: none;\n    opacity: 0.8;\n}\n}\n@media (max-width: 767px) {\n.speech-activity[data-v-c0396c58] {\n    margin-inline: var(--spacing-md);\n}\n}\n";
-  const SpeechActivityIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$m]], ["__scopeId", "data-v-c0396c58"]]);
+  const SpeechActivityIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["styles", [_style_0$m]], ["__scopeId", "data-v-c0396c58"]]);
   function activeWordRange(root2, core, wordId2) {
     const parsed = parseWordId(wordId2);
     if (!parsed) return null;
@@ -24693,7 +24761,7 @@ ${text2}` : text2;
     }
     return { isFollowing, resumeFollow };
   }
-  const _hoisted_1$k = {
+  const _hoisted_1$l = {
     ref: "scrollContainer",
     class: "scroll-container"
   };
@@ -24711,7 +24779,7 @@ ${text2}` : text2;
     key: 0,
     class: "resume-scroll-anchor"
   };
-  const _sfc_main$p = /* @__PURE__ */ defineComponent({
+  const _sfc_main$q = /* @__PURE__ */ defineComponent({
     __name: "TranscriptionPanel",
     props: {
       turns: { type: Array },
@@ -24817,7 +24885,7 @@ ${text2}` : text2;
           class: "transcription-panel",
           style: normalizeStyle({ "--transcript-font-size": transcriptFontSize.value })
         }, [
-          createBaseVNode("div", _hoisted_1$k, [
+          createBaseVNode("div", _hoisted_1$l, [
             createBaseVNode("div", _hoisted_2$i, [
               isLoadingHistory.value ? (openBlock(), createElementBlock("div", _hoisted_3$e, [..._cache[2] || (_cache[2] = [
                 createBaseVNode("progress", null, null, -1)
@@ -24881,8 +24949,8 @@ ${text2}` : text2;
     }
   });
   const _style_0$l = "\n.transcription-panel[data-v-2325c72c] {\n  min-height: 0;\n  overflow: hidden;\n  background-color: var(--color-surface);\n}\n.scroll-container[data-v-2325c72c] {\n  height: 100%;\n  overflow: auto;\n  position: relative;\n}\n.turns-container[data-v-2325c72c] {\n  max-width: 80ch;\n  margin-inline: auto;\n  padding: var(--spacing-lg);\n}\n.turns-container[data-v-2325c72c]:has(.transcription-empty) {\n  display: flex;\n  flex-direction: column;\n  min-height: 100%;\n}\n.history-loading[data-v-2325c72c] {\n  text-align: center;\n  padding: var(--spacing-md);\n}\n.history-loading progress[data-v-2325c72c] {\n  width: 120px;\n}\n.history-start[data-v-2325c72c] {\n  text-align: center;\n  padding: var(--spacing-md);\n  color: var(--color-text-muted);\n  font-size: var(--font-size-sm);\n}\n\n/* Resume scroll button — placement lives on this wrapper, never on the\n   button itself: Button.vue's `.editor-btn` base rule resets `position` via\n   `all: unset` (and, in the webcomponent build, gets re-injected a second\n   time after everything else to reach teleported popovers/dialogs — see\n   packages/webcomponent/src/index.ts), so any positioning put directly on\n   the button is one rebuild away from being silently overridden again. */\n.resume-scroll-anchor[data-v-2325c72c] {\n  position: sticky;\n  bottom: var(--spacing-lg);\n  z-index: var(--z-sticky);\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.transcript-ui-root .resume-scroll-btn[data-v-2325c72c] {\n  /* No backdrop-filter: this button is sticky inside the tall scroll\n     container, where a backdrop-filter makes WebRender allocate a render\n     target spanning the whole scroll height — multi-GB on a long transcript. */\n  background: var(--color-surface) !important;\n  border: 1px solid var(--color-border);\n  box-shadow: var(--shadow-sm);\n}\n\n/* Transition */\n.fade-slide-enter-active[data-v-2325c72c],\n.fade-slide-leave-active[data-v-2325c72c] {\n  transition:\n    opacity 200ms ease,\n    translate 200ms ease;\n}\n.fade-slide-enter-from[data-v-2325c72c],\n.fade-slide-leave-to[data-v-2325c72c] {\n  opacity: 0;\n  translate: 0 8px;\n}\n@media (prefers-reduced-motion: reduce) {\n.fade-slide-enter-active[data-v-2325c72c],\n  .fade-slide-leave-active[data-v-2325c72c] {\n    transition: none;\n}\n}\n@media (max-width: 767px) {\n.turns-container[data-v-2325c72c] {\n    padding: var(--spacing-md);\n}\n}\n";
-  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$l]], ["__scopeId", "data-v-2325c72c"]]);
-  const _hoisted_1$j = { class: "verbatim-panel" };
+  const TranscriptionPanel = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["styles", [_style_0$l]], ["__scopeId", "data-v-2325c72c"]]);
+  const _hoisted_1$k = { class: "verbatim-panel" };
   const _hoisted_2$h = { class: "verbatim-panel__content" };
   const _hoisted_3$d = { class: "verbatim-panel__header" };
   const _hoisted_4$8 = { class: "verbatim-panel__doc-title" };
@@ -24898,7 +24966,7 @@ ${text2}` : text2;
     class: "verbatim-panel__meta"
   };
   const _hoisted_10$1 = { class: "verbatim-panel__text" };
-  const _sfc_main$o = /* @__PURE__ */ defineComponent({
+  const _sfc_main$p = /* @__PURE__ */ defineComponent({
     __name: "VerbatimPanel",
     setup(__props) {
       const core = useCore();
@@ -24945,10 +25013,10 @@ ${text2}` : text2;
         core.emit("verbatim:export", { format: format2 });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("section", _hoisted_1$j, [
+        return openBlock(), createElementBlock("section", _hoisted_1$k, [
           createVNode(unref(DocumentArticle), null, {
             "toolbar-right": withCtx(() => [
-              createVNode(unref(_sfc_main$C), {
+              createVNode(unref(_sfc_main$E), {
                 formats: unref(core).verbatimFormats.value,
                 onSelect: onExport
               }, null, 8, ["formats"])
@@ -24994,8 +25062,8 @@ ${text2}` : text2;
     }
   });
   const _style_0$k = "\n.verbatim-panel[data-v-fd715e06] {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n.verbatim-panel__content[data-v-fd715e06] {\n  padding: 4rem clamp(1.5rem, 6rem, 8%);\n}\n.verbatim-panel__header[data-v-fd715e06] {\n  margin-bottom: var(--spacing-lg);\n  padding-bottom: var(--spacing-md);\n  border-bottom: 1px solid var(--color-border);\n}\n.verbatim-panel__doc-title[data-v-fd715e06] {\n  font-size: var(--font-size-xl);\n  font-weight: 700;\n  margin: 0;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__turns[data-v-fd715e06] {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n}\n.verbatim-panel__turn[data-v-fd715e06] {\n  display: block;\n}\n.verbatim-panel__turn-header[data-v-fd715e06] {\n  margin: 0 0 var(--spacing-xs);\n  font-size: var(--font-size-base);\n  line-height: 1.4;\n}\n.verbatim-panel__speaker-name[data-v-fd715e06] {\n  font-weight: 700;\n  color: var(--color-text-primary);\n}\n.verbatim-panel__meta[data-v-fd715e06] {\n  color: var(--color-text-muted);\n  font-weight: 400;\n}\n.verbatim-panel__sep[data-v-fd715e06] {\n  margin: 0 0.35em;\n}\n.verbatim-panel__text[data-v-fd715e06] {\n  margin: 0;\n  font-size: var(--font-size-base);\n  line-height: 1.6;\n  color: var(--color-text-primary);\n}\n\n";
-  const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["styles", [_style_0$k]], ["__scopeId", "data-v-fd715e06"]]);
-  const _sfc_main$n = /* @__PURE__ */ defineComponent({
+  const VerbatimPanel = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["styles", [_style_0$k]], ["__scopeId", "data-v-fd715e06"]]);
+  const _sfc_main$o = /* @__PURE__ */ defineComponent({
     __name: "ChannelSelector",
     props: {
       channels: { type: Array },
@@ -25021,7 +25089,7 @@ ${text2}` : text2;
       };
     }
   });
-  const _sfc_main$m = /* @__PURE__ */ defineComponent({
+  const _sfc_main$n = /* @__PURE__ */ defineComponent({
     __name: "TranslationSelector",
     props: {
       translations: { type: Array },
@@ -25053,10 +25121,10 @@ ${text2}` : text2;
       };
     }
   });
-  const _hoisted_1$i = { class: "merge-dialog-title" };
+  const _hoisted_1$j = { class: "merge-dialog-title" };
   const _hoisted_2$g = { class: "merge-dialog-description" };
   const _hoisted_3$c = { class: "merge-dialog-actions" };
-  const _sfc_main$l = /* @__PURE__ */ defineComponent({
+  const _sfc_main$m = /* @__PURE__ */ defineComponent({
     __name: "MergeDialog",
     props: {
       open: { type: Boolean },
@@ -25127,7 +25195,7 @@ ${text2}` : text2;
             class: "merge-dialog-form",
             onSubmit: withModifiers(onConfirm, ["prevent"])
           }, [
-            createBaseVNode("h2", _hoisted_1$i, toDisplayString(unref(t2)("mergeDialog.title")), 1),
+            createBaseVNode("h2", _hoisted_1$j, toDisplayString(unref(t2)("mergeDialog.title")), 1),
             createBaseVNode("p", _hoisted_2$g, [
               createBaseVNode("strong", null, toDisplayString(unref(computeSpeakerDisplayName)(fromSpeaker.value, unref(t2))), 1),
               createTextVNode(" · " + toDisplayString(affectedCount.value) + " " + toDisplayString(unref(t2)("mergeDialog.turnsAffected")), 1)
@@ -25167,8 +25235,8 @@ ${text2}` : text2;
     }
   });
   const _style_0$j = "\n.merge-dialog[data-v-6dca25b7] {\n  margin: auto;\n  max-width: 420px;\n  width: 90vw;\n  padding: var(--spacing-lg);\n  background-color: var(--color-surface);\n  border: 1px solid var(--color-border);\n  border-radius: var(--radius-md);\n  color: var(--color-text-primary);\n  box-shadow: 0 16px 48px color-mix(in srgb, var(--color-text-primary) 20%, transparent);\n}\n.merge-dialog[data-v-6dca25b7]::backdrop {\n  /* No backdrop-filter: a full-viewport backdrop blur is a large WebRender\n     render target; the dim background alone is enough. */\n  background-color: color-mix(in srgb, var(--color-text-primary) 35%, transparent);\n}\n.merge-dialog-form[data-v-6dca25b7] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-md);\n}\n.merge-dialog-title[data-v-6dca25b7] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n}\n.merge-dialog-description[data-v-6dca25b7] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-secondary);\n}\n.merge-dialog-actions[data-v-6dca25b7] {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--spacing-sm);\n}\n";
-  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$j]], ["__scopeId", "data-v-6dca25b7"]]);
-  const _hoisted_1$h = { class: "speaker-sidebar" };
+  const MergeDialog = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["styles", [_style_0$j]], ["__scopeId", "data-v-6dca25b7"]]);
+  const _hoisted_1$i = { class: "speaker-sidebar" };
   const _hoisted_2$f = {
     key: 0,
     class: "sidebar-section sidebar-section--selector"
@@ -25231,7 +25299,7 @@ ${text2}` : text2;
   const _hoisted_31 = { class: "sidebar-title" };
   const _hoisted_32 = { class: "subtitle-toggle" };
   const _hoisted_33 = ["for"];
-  const _sfc_main$k = /* @__PURE__ */ defineComponent({
+  const _sfc_main$l = /* @__PURE__ */ defineComponent({
     __name: "SpeakerSidebar",
     props: {
       speakers: { type: Array },
@@ -25328,10 +25396,10 @@ ${text2}` : text2;
         core.emit("llmService:selectVersion", { id: service.id, versionNumber });
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("aside", _hoisted_1$h, [
+        return openBlock(), createElementBlock("aside", _hoisted_1$i, [
           __props.channels.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_2$f, [
             createBaseVNode("h2", _hoisted_3$b, toDisplayString(unref(t2)("sidebar.channel")), 1),
-            createVNode(_sfc_main$n, {
+            createVNode(_sfc_main$o, {
               channels: __props.channels,
               "selected-channel-id": __props.selectedChannelId,
               "onUpdate:selectedChannelId": _cache[0] || (_cache[0] = ($event) => _ctx.$emit("update:selectedChannelId", $event))
@@ -25339,7 +25407,7 @@ ${text2}` : text2;
           ])) : createCommentVNode("", true),
           __props.translations.length > 1 ? (openBlock(), createElementBlock("section", _hoisted_4$7, [
             createBaseVNode("h2", _hoisted_5$7, toDisplayString(unref(t2)("sidebar.translation")), 1),
-            createVNode(_sfc_main$m, {
+            createVNode(_sfc_main$n, {
               translations: __props.translations,
               "selected-translation-id": __props.selectedTranslationId,
               "onUpdate:selectedTranslationId": _cache[1] || (_cache[1] = ($event) => _ctx.$emit("update:selectedTranslationId", $event))
@@ -25499,7 +25567,7 @@ ${text2}` : text2;
                     "aria-label": unref(t2)("sidebar.renameSpeaker"),
                     onCommit: ($event) => onRename(speaker.id, $event)
                   }, null, 8, ["model-value", "placeholder", "disabled", "aria-label", "onCommit"]),
-                  canEditSpeakers.value && __props.speakers.length > 1 ? (openBlock(), createBlock(unref(_sfc_main$B), {
+                  canEditSpeakers.value && __props.speakers.length > 1 ? (openBlock(), createBlock(unref(_sfc_main$C), {
                     key: 0,
                     "speaker-name": speaker.name,
                     onMerge: ($event) => onOpenMerge(speaker.id)
@@ -25533,8 +25601,8 @@ ${text2}` : text2;
     }
   });
   const _style_0$i = "\n.speaker-sidebar[data-v-3ef7ee26] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-lg);\n  padding: var(--spacing-lg);\n  border-left: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  overflow-y: auto;\n}\n.sidebar-section[data-v-3ef7ee26] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-sm);\n}\n.sidebar-title[data-v-3ef7ee26] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-text-muted);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.speaker-list[data-v-3ef7ee26] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n}\n.speaker-item[data-v-3ef7ee26] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n  transition: background-color var(--transition-duration);\n}\n.speaker-item[data-v-3ef7ee26]:hover {\n  background-color: var(--color-surface-hover);\n}\n.speaker-name[data-v-3ef7ee26] {\n  flex: 1;\n  font-size: var(--font-size-sm);\n  font-weight: 500;\n  color: var(--color-text-primary);\n}\n.subtitle-toggle[data-v-3ef7ee26] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-sm);\n  border-radius: var(--radius-md);\n}\n.subtitle-toggle-label[data-v-3ef7ee26] {\n  font-size: var(--font-size-sm);\n  color: var(--color-text-primary);\n}\nlabel.subtitle-toggle-label[data-v-3ef7ee26] {\n  cursor: pointer;\n}\n.voice-playback-hint[data-v-3ef7ee26] {\n  padding: 0 var(--spacing-sm);\n  font-size: var(--font-size-xs);\n  color: var(--color-text-muted);\n}\n.voice-playback-hint--warning[data-v-3ef7ee26] {\n  color: var(--color-danger);\n}\n\n/* ── History (LLM generations + versions) ──────────────────────────── */\n.sidebar-section--busy[data-v-3ef7ee26] {\n  opacity: 0.6;\n  pointer-events: none;\n}\n.history-list[data-v-3ef7ee26] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--spacing-xs);\n  margin: 0;\n  padding: 0;\n}\n.history-generation[data-v-3ef7ee26] {\n  display: flex;\n  flex-direction: column;\n}\n.history-generation__status--completed[data-v-3ef7ee26] {\n  color: var(--color-success);\n}\n.history-generation__status--error[data-v-3ef7ee26] {\n  color: var(--color-danger, #d33);\n}\n.history-generation__status--processing[data-v-3ef7ee26],\n.history-generation__status--queued[data-v-3ef7ee26] {\n  color: var(--color-primary);\n}\n.history-version-list[data-v-3ef7ee26] {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  margin: var(--spacing-xs) 0 0 var(--spacing-md);\n  padding: 0;\n  border-left: 1px solid var(--color-border);\n}\n\n/* Nudge nested version rows off the connecting border line. */\n.history-version-list[data-v-3ef7ee26] .selectable-list-item {\n  margin-left: var(--spacing-xs);\n}\n@media (max-width: 767px) {\n.speaker-sidebar[data-v-3ef7ee26] {\n    border-left: none;\n}\n.sidebar-section--selector[data-v-3ef7ee26] {\n    display: none;\n}\n}\n";
-  const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["styles", [_style_0$i]], ["__scopeId", "data-v-3ef7ee26"]]);
-  const _sfc_main$j = /* @__PURE__ */ defineComponent({
+  const SpeakerSidebar = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["styles", [_style_0$i]], ["__scopeId", "data-v-3ef7ee26"]]);
+  const _sfc_main$k = /* @__PURE__ */ defineComponent({
     __name: "SidebarDrawer",
     props: {
       "open": { type: Boolean, ...{ required: true } },
@@ -25583,10 +25651,10 @@ ${text2}` : text2;
       };
     }
   });
-  const _hoisted_1$g = ["aria-label"];
+  const _hoisted_1$h = ["aria-label"];
   const _hoisted_2$e = { class: "selection-count" };
   const _hoisted_3$a = { class: "selection-actions" };
-  const _sfc_main$i = /* @__PURE__ */ defineComponent({
+  const _sfc_main$j = /* @__PURE__ */ defineComponent({
     __name: "SelectionActionBar",
     setup(__props) {
       const selection = useTurnSelection();
@@ -25630,18 +25698,18 @@ ${text2}` : text2;
               _: 1
             })
           ])
-        ], 8, _hoisted_1$g)) : createCommentVNode("", true);
+        ], 8, _hoisted_1$h)) : createCommentVNode("", true);
       };
     }
   });
   const _style_0$h = "\n.selection-bar[data-v-9bad1410] {\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--spacing-xs) var(--spacing-lg);\n  /* No backdrop-filter: it forces a WebRender backdrop render target sized to\n     the content behind, a heavy GPU-memory cost on long transcripts. The\n     semi-opaque glass background stays legible without the blur. */\n  background: var(--glass-background);\n  border-bottom: 1px solid var(--color-border);\n  animation: bar-slide-down-9bad1410 var(--transition-duration) ease;\n}\n.selection-count[data-v-9bad1410] {\n  font-size: var(--font-size-sm);\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.selection-actions[data-v-9bad1410] {\n  display: flex;\n  gap: var(--spacing-xs);\n}\n@keyframes bar-slide-down-9bad1410 {\nfrom {\n    opacity: 0;\n    translate: 0 -4px;\n}\nto {\n    opacity: 1;\n    translate: 0 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.selection-bar[data-v-9bad1410] {\n    animation: none;\n}\n}\n@media (max-width: 767px) {\n.selection-bar[data-v-9bad1410] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    flex-wrap: wrap;\n    gap: var(--spacing-xs);\n}\n}\n";
-  const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["styles", [_style_0$h]], ["__scopeId", "data-v-9bad1410"]]);
-  const _hoisted_1$f = { class: "editor-layout" };
+  const SelectionActionBar = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["styles", [_style_0$h]], ["__scopeId", "data-v-9bad1410"]]);
+  const _hoisted_1$g = { class: "editor-layout" };
   const _hoisted_2$d = {
-    key: 6,
+    key: 7,
     class: "mobile-selectors"
   };
-  const _sfc_main$h = /* @__PURE__ */ defineComponent({
+  const _sfc_main$i = /* @__PURE__ */ defineComponent({
     __name: "Layout",
     props: {
       showHeader: { type: Boolean, default: true },
@@ -25736,7 +25804,7 @@ ${text2}` : text2;
         core.activeChannel.value?.setActiveTranslation(translationId);
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$f, [
+        return openBlock(), createElementBlock("div", _hoisted_1$g, [
           props.showHeader ? (openBlock(), createBlock(Header, {
             key: 0,
             title: unref(core).title.value,
@@ -25757,7 +25825,7 @@ ${text2}` : text2;
             ]),
             _: 3
           }, 8, ["title", "date", "duration", "speaker-count", "is-mobile", "can-ask", "can-undo", "can-redo"])) : createCommentVNode("", true),
-          createVNode(_sfc_main$x, {
+          createVNode(_sfc_main$y, {
             "model-value": activeTab.value,
             "show-verbatim": props.showVerbatim,
             "onUpdate:modelValue": _cache[4] || (_cache[4] = (tab) => shownPanels.value = [tab])
@@ -25798,7 +25866,7 @@ ${text2}` : text2;
               "onUpdate:selectedChannelId": onChannelChange,
               "onUpdate:selectedTranslationId": onTranslationChange
             }, null, 8, ["speakers", "channels", "selected-channel-id", "translations", "selected-translation-id", "show-speakers", "show-theme-toggle"])) : createCommentVNode("", true),
-            unref(isMobile) && panels.value.length === 1 ? (openBlock(), createBlock(_sfc_main$j, {
+            unref(isMobile) && panels.value.length === 1 ? (openBlock(), createBlock(_sfc_main$k, {
               key: 1,
               open: unref(core).sidebarOpen.value,
               "onUpdate:open": _cache[6] || (_cache[6] = ($event) => unref(core).setSidebarOpen($event))
@@ -25827,15 +25895,16 @@ ${text2}` : text2;
           ]) : createCommentVNode("", true),
           unref(core).subtitle?.isVisible.value && !unref(isMobile) && !unref(core).subtitle.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleBanner), { key: 3 })) : createCommentVNode("", true),
           unref(core).subtitle?.isFullscreen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.subtitleFullscreen), { key: 4 })) : createCommentVNode("", true),
-          chatOffered.value && !!unref(core).chat ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.chatDrawer), { key: 5 })) : createCommentVNode("", true),
+          unref(core).components.noticeDialog && unref(core).notice?.isOpen.value ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.noticeDialog), { key: 5 })) : createCommentVNode("", true),
+          chatOffered.value && !!unref(core).chat ? (openBlock(), createBlock(resolveDynamicComponent(unref(core).components.chatDrawer), { key: 6 })) : createCommentVNode("", true),
           unref(isMobile) && (channels.value.length > 1 || translations.value.length > 1) ? (openBlock(), createElementBlock("div", _hoisted_2$d, [
-            channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$n, {
+            channels.value.length > 1 ? (openBlock(), createBlock(_sfc_main$o, {
               key: 0,
               channels: channels.value,
               "selected-channel-id": unref(core).activeChannelId.value,
               "onUpdate:selectedChannelId": onChannelChange
             }, null, 8, ["channels", "selected-channel-id"])) : createCommentVNode("", true),
-            translations.value.length > 1 ? (openBlock(), createBlock(_sfc_main$m, {
+            translations.value.length > 1 ? (openBlock(), createBlock(_sfc_main$n, {
               key: 1,
               translations: translations.value,
               "selected-translation-id": activeTranslationId.value,
@@ -25846,20 +25915,20 @@ ${text2}` : text2;
       };
     }
   });
-  const _style_0$g = "\n.editor-layout[data-v-4a024201] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-4a024201] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-4a024201] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-4a024201] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-4a024201] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-4a024201] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-4a024201] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-4a024201] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-4a024201] {\n    grid-template-columns: 1fr;\n}\n}\n";
-  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$g]], ["__scopeId", "data-v-4a024201"]]);
-  const _hoisted_1$e = {
+  const _style_0$g = "\n.editor-layout[data-v-a6a650b1] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: hidden;\n  background-color: var(--color-background);\n}\n.editor-body[data-v-a6a650b1] {\n  display: grid;\n  grid-template-columns: 1fr var(--sidebar-width);\n  flex: 1;\n  min-height: 0;\n}\n\n/* Split mode: two panels already share the body between them, no room (or\n   need) for the speaker sidebar too — see Layout's panels/isSplit state. */\n.editor-body--no-sidebar[data-v-a6a650b1] {\n  grid-template-columns: 1fr;\n}\n.editor-body__panels[data-v-a6a650b1] {\n  display: flex;\n  min-width: 0;\n  min-height: 0;\n}\n.editor-body__panels[data-v-a6a650b1] > * {\n  flex: 1;\n  min-width: 0;\n}\n.editor-body__panels--split[data-v-a6a650b1] > * + * {\n  border-left: 1px solid var(--color-border);\n}\n.mobile-selectors[data-v-a6a650b1] {\n  display: flex;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n  box-shadow: var(--shadow-md);\n  align-items: end;\n}\n.mobile-selectors[data-v-a6a650b1] > * {\n  flex: 1;\n  min-width: 0;\n}\n@media (max-width: 767px) {\n.editor-body[data-v-a6a650b1] {\n    grid-template-columns: 1fr;\n}\n}\n";
+  const Layout = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["styles", [_style_0$g]], ["__scopeId", "data-v-a6a650b1"]]);
+  const _hoisted_1$f = {
     class: "editor-loading",
     role: "status",
     "aria-live": "polite"
   };
   const _hoisted_2$c = { class: "editor-loading__label" };
-  const _sfc_main$g = /* @__PURE__ */ defineComponent({
+  const _sfc_main$h = /* @__PURE__ */ defineComponent({
     __name: "EditorLoadingOverlay",
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$e, [
+        return openBlock(), createElementBlock("div", _hoisted_1$f, [
           _cache[0] || (_cache[0] = createBaseVNode("span", {
             class: "editor-loading__spinner",
             "aria-hidden": "true"
@@ -25870,8 +25939,8 @@ ${text2}` : text2;
     }
   });
   const _style_0$f = "\n.editor-loading[data-v-f56c39db] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-md);\n  /* Opaque so the half-built layout never flashes behind while collab syncs.\n     No backdrop-filter: it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  color: var(--color-text-secondary);\n  font-family: var(--font-family);\n  font-size: var(--font-size-sm);\n}\n.editor-loading__spinner[data-v-f56c39db] {\n  width: 32px;\n  height: 32px;\n  border: 3px solid var(--color-border);\n  border-top-color: var(--color-primary);\n  border-radius: 50%;\n  animation: editor-loading-spin-f56c39db 0.8s linear infinite;\n}\n@keyframes editor-loading-spin-f56c39db {\nto {\n    transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.editor-loading__spinner[data-v-f56c39db] {\n    animation: none;\n}\n}\n";
-  const EditorLoadingOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["styles", [_style_0$f]], ["__scopeId", "data-v-f56c39db"]]);
-  const _hoisted_1$d = {
+  const EditorLoadingOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["styles", [_style_0$f]], ["__scopeId", "data-v-f56c39db"]]);
+  const _hoisted_1$e = {
     class: "editor-error",
     role: "alert"
   };
@@ -25880,7 +25949,7 @@ ${text2}` : text2;
     key: 0,
     class: "editor-error__detail"
   };
-  const _sfc_main$f = /* @__PURE__ */ defineComponent({
+  const _sfc_main$g = /* @__PURE__ */ defineComponent({
     __name: "EditorErrorOverlay",
     props: {
       message: { type: [String, null] }
@@ -25888,7 +25957,7 @@ ${text2}` : text2;
     setup(__props) {
       const { t: t2 } = useI18n();
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$d, [
+        return openBlock(), createElementBlock("div", _hoisted_1$e, [
           createVNode(unref(EditorIcon), {
             name: "warning",
             size: 40,
@@ -25901,7 +25970,7 @@ ${text2}` : text2;
     }
   });
   const _style_0$e = "\n.editor-error[data-v-eefc2d23] {\n  position: absolute;\n  inset: 0;\n  z-index: 20;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: var(--spacing-sm);\n  padding: var(--spacing-xl);\n  text-align: center;\n  /* Opaque so the half-built layout never shows behind. No backdrop-filter:\n     it is banned in this package (WebRender GTT freeze). */\n  background-color: var(--color-background);\n  font-family: var(--font-family);\n}\n.editor-error__icon[data-v-eefc2d23] {\n  color: var(--color-danger);\n}\n.editor-error__title[data-v-eefc2d23] {\n  margin: 0;\n  font-size: var(--font-size-lg);\n  font-weight: 600;\n  color: var(--color-text-primary);\n}\n.editor-error__detail[data-v-eefc2d23] {\n  margin: 0;\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n}\n";
-  const EditorErrorOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$e]], ["__scopeId", "data-v-eefc2d23"]]);
+  const EditorErrorOverlay = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["styles", [_style_0$e]], ["__scopeId", "data-v-eefc2d23"]]);
   const READY_TIMEOUT_MS = 2e4;
   function useEditorReady(core) {
     const isLoading = /* @__PURE__ */ ref(true);
@@ -25935,8 +26004,8 @@ ${text2}` : text2;
     });
     return { isLoading, error };
   }
-  const _hoisted_1$c = ["data-theme"];
-  const _sfc_main$e = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$d = ["data-theme"];
+  const _sfc_main$f = /* @__PURE__ */ defineComponent({
     __name: "TranscriptUI",
     props: {
       locale: { default: "fr", type: String },
@@ -25986,7 +26055,7 @@ ${text2}` : text2;
             key: 1,
             message: unref(error)
           }, null, 8, ["message"])) : unref(isLoading) ? (openBlock(), createBlock(EditorLoadingOverlay, { key: 2 })) : createCommentVNode("", true)
-        ], 12, _hoisted_1$c);
+        ], 12, _hoisted_1$d);
       };
     }
   });
@@ -26382,7 +26451,7 @@ section.turn:has([data-state="open"]) {
   height: 100%;
 }
 `;
-  const TranscriptUI = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$d]]]);
+  const TranscriptUI = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["styles", [_style_0$d]]]);
   function mapApiTurns(apiTurns) {
     return apiTurns.map((t2) => {
       const words = wordsFromApi$2(t2.turn_id, t2.words);
@@ -26530,7 +26599,7 @@ section.turn:has([data-state="open"]) {
       name: "live",
       install(core) {
         const partial = /* @__PURE__ */ shallowRef(null);
-        const partialsVisible = /* @__PURE__ */ ref(true);
+        const partialsVisible = /* @__PURE__ */ ref(options.partialsVisible ?? true);
         const isSpeechActive = /* @__PURE__ */ ref(false);
         const silenceDelay = /* @__PURE__ */ ref(options.silenceDelay ?? DEFAULT_SILENCE_DELAY);
         let silenceTimeout = null;
@@ -26569,10 +26638,12 @@ section.turn:has([data-state="open"]) {
         }
         function showPartials() {
           partialsVisible.value = true;
+          core.emit("partials:visible", { visible: true });
         }
         function hidePartials() {
           partialsVisible.value = false;
           immediateClearPartial();
+          core.emit("partials:visible", { visible: false });
         }
         function isTranslationTrackFor(active, language) {
           if (active.isSource) return false;
@@ -26798,14 +26869,14 @@ section.turn:has([data-state="open"]) {
       }
     };
   }
-  const _hoisted_1$b = { class: "player-controls" };
+  const _hoisted_1$c = { class: "player-controls" };
   const _hoisted_2$a = { class: "controls-left" };
   const _hoisted_3$8 = { class: "controls-time" };
   const _hoisted_4$6 = { class: "time-display" };
   const _hoisted_5$6 = { class: "time-display" };
   const _hoisted_6$5 = { class: "controls-right" };
   const _hoisted_7$1 = ["value", "aria-label", "disabled"];
-  const _sfc_main$d = /* @__PURE__ */ defineComponent({
+  const _sfc_main$e = /* @__PURE__ */ defineComponent({
     __name: "AudioPlayerControls",
     props: {
       isPlaying: { type: Boolean },
@@ -26826,7 +26897,7 @@ section.turn:has([data-state="open"]) {
         emit2("update:volume", parseFloat(target.value));
       }
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$b, [
+        return openBlock(), createElementBlock("div", _hoisted_1$c, [
           createBaseVNode("div", _hoisted_2$a, [
             createVNode(unref(Button), {
               variant: "transparent",
@@ -26936,7 +27007,7 @@ section.turn:has([data-state="open"]) {
     }
   });
   const _style_0$c = "\n.player-controls[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-md);\n  padding: var(--spacing-xs) var(--spacing-lg);\n  height: 44px;\n}\n.controls-left[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.controls-time[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xxs);\n  font-family: var(--font-family-mono);\n  font-size: var(--font-size-sm);\n  color: var(--color-text-muted);\n  user-select: none;\n}\n.time-separator[data-v-fb293305] {\n  color: var(--color-text-muted);\n  opacity: 0.5;\n}\n.controls-right[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n  margin-left: auto;\n}\n.volume-group[data-v-fb293305] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-xs);\n}\n.volume-slider[data-v-fb293305] {\n  width: 80px;\n  height: 4px;\n  accent-color: var(--color-primary);\n  cursor: pointer;\n}\n.volume-slider[data-v-fb293305]:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n.play-button[data-v-fb293305] {\n  width: 40px;\n  height: 40px;\n}\n.speed-button[data-v-fb293305] {\n  font-size: var(--font-size-sm);\n  font-family: var(--font-family-mono);\n}\n@media (max-width: 767px) {\n.skip-button[data-v-fb293305] {\n    display: none;\n}\n.volume-slider[data-v-fb293305] {\n    display: none;\n}\n.player-controls[data-v-fb293305] {\n    padding: var(--spacing-xs) var(--spacing-md);\n    gap: var(--spacing-sm);\n}\n}\n";
-  const AudioPlayerControls = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$c]], ["__scopeId", "data-v-fb293305"]]);
+  const AudioPlayerControls = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["styles", [_style_0$c]], ["__scopeId", "data-v-fb293305"]]);
   function t$1(t2, e2, i2, n2) {
     return new (i2 || (i2 = Promise))((function(s2, r2) {
       function o2(t3) {
@@ -28872,8 +28943,8 @@ section.turn:has([data-state="open"]) {
       toggleMute
     };
   }
-  const _hoisted_1$a = { class: "audio-player" };
-  const _sfc_main$c = /* @__PURE__ */ defineComponent({
+  const _hoisted_1$b = { class: "audio-player" };
+  const _sfc_main$d = /* @__PURE__ */ defineComponent({
     __name: "AudioPlayer",
     props: {
       audioSrc: { type: String }
@@ -28903,7 +28974,7 @@ section.turn:has([data-state="open"]) {
       });
       __expose({ seekTo, pause });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("footer", _hoisted_1$a, [
+        return openBlock(), createElementBlock("footer", _hoisted_1$b, [
           createBaseVNode("div", {
             ref_key: "waveformRef",
             ref: waveformRef,
@@ -28929,7 +29000,7 @@ section.turn:has([data-state="open"]) {
     }
   });
   const _style_0$b = "\n.audio-player[data-v-580c393d] {\n  border-top: 1px solid var(--color-border);\n  background-color: var(--color-surface);\n  flex-shrink: 0;\n}\n.transcript-ui-waveform-container[data-v-580c393d] {\n  min-height: 32px;\n}\n.transcript-ui-waveform-container--loading[data-v-580c393d] {\n  background: linear-gradient(\n    90deg,\n    var(--color-border-light, var(--color-border)) 25%,\n    var(--color-border) 50%,\n    var(--color-border-light, var(--color-border)) 75%\n  );\n  background-size: 200% 100%;\n  animation: shimmer-580c393d 1.5s ease-in-out infinite;\n  border-radius: var(--radius-sm);\n}\n@keyframes shimmer-580c393d {\n0% {\n    background-position: 200% 0;\n}\n100% {\n    background-position: -200% 0;\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.transcript-ui-waveform-container--loading[data-v-580c393d] {\n    animation: none;\n}\n}\n";
-  const AudioPlayer = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$b]], ["__scopeId", "data-v-580c393d"]]);
+  const AudioPlayer = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["styles", [_style_0$b]], ["__scopeId", "data-v-580c393d"]]);
   const { findActiveWord, firstWordStart, lastWordEnd } = utils;
   const WORD_TRACK_INTERVAL = 0.05;
   function createAudioPlugin(options = {}) {
@@ -29680,14 +29751,14 @@ section.turn:has([data-state="open"]) {
     }
     return parts;
   }
-  const _hoisted_1$9 = {
+  const _hoisted_1$a = {
     key: 0,
     class: "watermark",
     "aria-hidden": "true"
   };
   const _hoisted_2$9 = ["src", "alt"];
   const _hoisted_3$7 = { key: 1 };
-  const _sfc_main$b = /* @__PURE__ */ defineComponent({
+  const _sfc_main$c = /* @__PURE__ */ defineComponent({
     __name: "SubtitleWatermark",
     props: {
       visible: { type: Boolean }
@@ -29702,7 +29773,7 @@ section.turn:has([data-state="open"]) {
       return (_ctx, _cache) => {
         return openBlock(), createBlock(Transition, { name: "watermark" }, {
           default: withCtx(() => [
-            __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$9, [
+            __props.visible && unref(watermark) ? (openBlock(), createElementBlock("div", _hoisted_1$a, [
               (openBlock(true), createElementBlock(Fragment, null, renderList(parts.value, (part, i2) => {
                 return openBlock(), createElementBlock(Fragment, { key: i2 }, [
                   part.type === "token" ? (openBlock(), createElementBlock("img", {
@@ -29721,8 +29792,8 @@ section.turn:has([data-state="open"]) {
     }
   });
   const _style_0$a = "\n.watermark[data-v-eb604a8e] {\n  position: absolute;\n  right: var(--spacing-md, 16px);\n  bottom: 4px;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25em;\n  font-size: 1.2rem;\n  color: var(--color-white, #fff);\n  pointer-events: none;\n  line-height: 1;\n}\n.watermark__img[data-v-eb604a8e] {\n  height: 1em;\n  vertical-align: middle;\n}\n.watermark-enter-active[data-v-eb604a8e],\n.watermark-leave-active[data-v-eb604a8e] {\n  transition:\n    opacity 0.4s ease,\n    transform 0.4s ease;\n}\n.watermark-enter-from[data-v-eb604a8e],\n.watermark-leave-to[data-v-eb604a8e] {\n  opacity: 0;\n  transform: translate(6px, 6px);\n}\n@media (prefers-reduced-motion: reduce) {\n.watermark-enter-active[data-v-eb604a8e],\n  .watermark-leave-active[data-v-eb604a8e] {\n    transition: opacity 0.01s;\n    transform: none;\n}\n}\n";
-  const SubtitleWatermark = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$a]], ["__scopeId", "data-v-eb604a8e"]]);
-  const _sfc_main$a = /* @__PURE__ */ defineComponent({
+  const SubtitleWatermark = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["styles", [_style_0$a]], ["__scopeId", "data-v-eb604a8e"]]);
+  const _sfc_main$b = /* @__PURE__ */ defineComponent({
     __name: "SubtitleBanner",
     setup(__props) {
       const core = useCore();
@@ -29762,13 +29833,13 @@ section.turn:has([data-state="open"]) {
     }
   });
   const _style_0$9 = "\n.subtitle-banner[data-v-af110bff] {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  flex-shrink: 0;\n  background-color: var(--color-black);\n  overflow: hidden;\n  z-index: 1001;\n}\n.subtitle-canvas[data-v-af110bff] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: top center;\n}\n.subtitle-canvas--shrunk[data-v-af110bff] {\n  transform: scale(0.8) translateY(-8%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-canvas[data-v-af110bff] {\n    transition: none;\n}\n}\n";
-  const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$9]], ["__scopeId", "data-v-af110bff"]]);
-  const _hoisted_1$8 = {
+  const SubtitleBanner = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["styles", [_style_0$9]], ["__scopeId", "data-v-af110bff"]]);
+  const _hoisted_1$9 = {
     ref: "container",
     class: "subtitle-fullscreen"
   };
   const _hoisted_2$8 = ["aria-label"];
-  const _sfc_main$9 = /* @__PURE__ */ defineComponent({
+  const _sfc_main$a = /* @__PURE__ */ defineComponent({
     __name: "SubtitleFullscreen",
     setup(__props) {
       const core = useCore();
@@ -29826,7 +29897,7 @@ section.turn:has([data-state="open"]) {
         }
       });
       return (_ctx, _cache) => {
-        return openBlock(), createElementBlock("div", _hoisted_1$8, [
+        return openBlock(), createElementBlock("div", _hoisted_1$9, [
           createBaseVNode("button", {
             class: "subtitle-fullscreen__close",
             "aria-label": unref(t2)("subtitle.exitFullscreen"),
@@ -29844,7 +29915,7 @@ section.turn:has([data-state="open"]) {
     }
   });
   const _style_0$8 = "\n/* Fixed to the viewport on its own: when requestFullscreen() is refused\n   (iPhone Safari, WebViews), the view must still cover the editor instead of\n   sitting as one more flex child of the layout. */\n.subtitle-fullscreen[data-v-85e1f633] {\n  position: fixed;\n  inset: 0;\n  z-index: var(--z-fullscreen);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background-color: var(--color-black);\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-85e1f633] {\n  /* Full reset (same convention as Button, EditableText, Tabs…): the\n     previous partial reset (border/background only) left margin, padding,\n     and appearance to whatever the host page's UA/global styles set. */\n  all: unset;\n  box-sizing: border-box;\n  position: absolute;\n  top: var(--spacing-md, 16px);\n  right: var(--spacing-md, 16px);\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  background: rgba(255, 255, 255, 0.1);\n  color: var(--color-white);\n  border-radius: var(--radius-md, 8px);\n  cursor: pointer;\n  transition: background-color var(--transition-duration) ease;\n}\n.transcript-ui-root .subtitle-fullscreen__close[data-v-85e1f633]:hover,\n.transcript-ui-root .subtitle-fullscreen__close[data-v-85e1f633]:focus-visible {\n  background: rgba(255, 255, 255, 0.25);\n  outline: 2px solid rgba(255, 255, 255, 0.5);\n  outline-offset: 2px;\n}\n.subtitle-fullscreen__canvas[data-v-85e1f633] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  transition: transform 0.4s ease;\n  transform-origin: center;\n}\n.subtitle-fullscreen__canvas--shrunk[data-v-85e1f633] {\n  transform: scale(0.85) translateY(-4%);\n}\n@media (prefers-reduced-motion: reduce) {\n.subtitle-fullscreen__close[data-v-85e1f633],\n  .subtitle-fullscreen__canvas[data-v-85e1f633] {\n    transition: none;\n}\n}\n";
-  const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["styles", [_style_0$8]], ["__scopeId", "data-v-85e1f633"]]);
+  const SubtitleFullscreen = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["styles", [_style_0$8]], ["__scopeId", "data-v-85e1f633"]]);
   function createSubtitlePlugin(options = {}) {
     return {
       name: "subtitle",
@@ -29895,6 +29966,77 @@ section.turn:has([data-state="open"]) {
           isFullscreen.value = false;
           unwatchers.forEach((stop) => stop());
           core.subtitle = void 0;
+        };
+      }
+    };
+  }
+  const _hoisted_1$8 = { ref: "content" };
+  const _sfc_main$9 = /* @__PURE__ */ defineComponent({
+    __name: "NoticeDialog",
+    setup(__props) {
+      const core = useCore();
+      const { t: t2 } = useI18n();
+      const contentRef = useTemplateRef("content");
+      onMounted(openLinksInNewTab);
+      onUpdated(openLinksInNewTab);
+      function openLinksInNewTab() {
+        contentRef.value?.querySelectorAll("a[href]").forEach((link) => {
+          link.setAttribute("target", "_blank");
+          link.setAttribute("rel", "noopener noreferrer");
+        });
+      }
+      function onClose() {
+        core.notice?.close();
+      }
+      return (_ctx, _cache) => {
+        return openBlock(), createBlock(unref(ModalDialog), {
+          title: unref(t2)("notice.title"),
+          onClose
+        }, {
+          actions: withCtx(() => [
+            createVNode(unref(Button), {
+              variant: "primary",
+              type: "submit"
+            }, {
+              default: withCtx(() => [
+                createTextVNode(toDisplayString(unref(t2)("modalDialog.close")), 1)
+              ]),
+              _: 1
+            })
+          ]),
+          default: withCtx(() => [
+            createBaseVNode("div", _hoisted_1$8, [
+              createVNode(unref(MarkdownView), {
+                source: unref(core).notice?.content.value ?? ""
+              }, null, 8, ["source"])
+            ], 512)
+          ]),
+          _: 1
+        }, 8, ["title"]);
+      };
+    }
+  });
+  function createNoticePlugin(options) {
+    return {
+      name: "notice",
+      components: { noticeDialog: _sfc_main$9 },
+      install(core) {
+        const content = /* @__PURE__ */ ref(options.content);
+        const isOpen = /* @__PURE__ */ ref(false);
+        const api = {
+          content,
+          isOpen,
+          open() {
+            isOpen.value = true;
+          },
+          close() {
+            isOpen.value = false;
+          }
+        };
+        core.notice = api;
+        return () => {
+          isOpen.value = false;
+          core.notice = void 0;
         };
       }
     };
@@ -34908,6 +35050,7 @@ section.turn:has([data-state="open"]) {
   exports.createChatPlugin = createChatPlugin;
   exports.createLLMServicesPlugin = createLLMServicesPlugin;
   exports.createLivePlugin = createLivePlugin;
+  exports.createNoticePlugin = createNoticePlugin;
   exports.createSubtitlePlugin = createSubtitlePlugin;
   exports.createTranscriptionEditorPlugin = createTranscriptionEditorPlugin;
   exports.mapApiDocument = mapApiDocument;

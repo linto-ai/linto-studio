@@ -40,6 +40,7 @@ export type {
   SubtitlePluginApi,
   WatermarkPluginApi,
   WatermarkToken,
+  NoticePluginApi,
   LLMService,
   LLMServiceInit,
   LLMServiceStatus,
