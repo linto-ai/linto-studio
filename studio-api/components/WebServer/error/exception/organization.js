@@ -19,6 +19,13 @@ module.exports = {
     404,
     "Organization not found",
   ),
+  OrganizationSessionNoticeInvalid: createException(
+    "OrganizationSessionNoticeInvalid",
+    "organization",
+    400,
+    "Invalid session notice",
+    "ORGANIZATION_SESSION_NOTICE_INVALID",
+  ),
   OrganizationConflict: createException(
     "OrganizationConflict",
     "organization",

@@ -99,6 +99,14 @@
                 </a>
               </li>
               <li
+                :class="{ active: selectedTab === 'sessionNotice' }"
+                v-if="canManageSessionNotice">
+                <a href="#" @click="selectTab('sessionNotice')">
+                  <ph-icon name="shield-warning" weight="bold"></ph-icon>
+                  <span>{{ $t("app_settings_modal.session_notice") }}</span>
+                </a>
+              </li>
+              <li
                 :class="{ active: selectedTab === 'apiTokens' }"
                 v-if="isAdmin">
                 <a href="#" @click="selectTab('apiTokens')">
@@ -165,6 +173,12 @@
             :organizationId="organizationId"
             @quit="leaveSpeakerIdentification" />
         </div>
+        <div
+          v-if="selectedTab === 'sessionNotice' && canManageSessionNotice"
+          class="app-settings__section">
+          <UpdateOrganizationSessionNotice
+            :currentOrganization="currentOrganization" />
+        </div>
       </template>
       <div v-if="selectedTab === 'apiTokens'" class="app-settings__section">
         <ApiTokenSettings v-if="isAdmin" :organizationId="organizationId" />
@@ -183,6 +197,7 @@ import { apiSendVerificationLink } from "@/api/user.js"
 import { getEnv } from "@/tools/getEnv"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
+import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
 import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
@@ -195,6 +210,7 @@ import TagManagement from "@/components/TagManagement.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import UpdateOrganizationDeletion from "@/components/UpdateOrganizationDeletion.vue"
+import UpdateOrganizationSessionNotice from "@/components/UpdateOrganizationSessionNotice.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import SpeakerIdentificationSettings from "@/components/SpeakerIdentificationSettings.vue"
@@ -202,7 +218,7 @@ import UserSettingsVoiceOptIn from "@/components/UserSettingsVoiceOptIn.vue"
 
 export default {
   name: "AppSettingsModal",
-  mixins: [orgaRoleMixin, platformRoleMixin],
+  mixins: [orgaRoleMixin, platformRoleMixin, organizationPermissionsMixin],
   components: {
     UserProfilePicture,
     UserSettingsPersonal,
@@ -215,6 +231,7 @@ export default {
     UpdateOrganizationForm,
     UpdateOrganizationUsers,
     UpdateOrganizationDeletion,
+    UpdateOrganizationSessionNotice,
     Modal,
     ApiTokenSettings,
     SpeakerIdentificationSettings,
@@ -248,6 +265,15 @@ export default {
     }),
     ...mapGetters("system", ["isMobile"]),
     ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
+    // Same rule as the API: an admin of an organization with the session
+    // permission. Not gated by the SaaS plan: a compliance text, not a feature.
+    canManageSessionNotice() {
+      return (
+        this.isAdmin &&
+        getEnv("VUE_APP_ENABLE_SESSION") === "true" &&
+        this.hasSessionPermission(this.organizationPermissions)
+      )
+    },
     speakerIdentificationEnabled() {
       return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"
     },

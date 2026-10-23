@@ -339,6 +339,28 @@ function cleanPublicChannelContent(jsonString) {
   throw new UnauthorizedProxy()
 }
 
+// Proxy after-result for a session payload: every viewer of the session gets
+// its organization's notice (disclaimer, data protection). An empty string
+// when there is none, so a client merging sessions drops a removed notice.
+// Best effort: a failed lookup never fails the session.
+async function attachOrganizationNotice(jsonString) {
+  try {
+    const session = JSON.parse(jsonString)
+    if (!session?.organizationId) return jsonString
+
+    const notice = await model.organizations.getSessionNotice(
+      session.organizationId,
+    )
+    if (notice === null) return jsonString
+
+    session.organizationNotice = notice
+    return JSON.stringify(session)
+  } catch (err) {
+    logger.warn("Failed to attach the organization notice to a session:", err)
+    return jsonString
+  }
+}
+
 module.exports = {
   forceQueryParams,
   createQuickMeeting,
@@ -355,4 +377,5 @@ module.exports = {
   chainBeforeResult,
   cleanPublicSessionContent,
   cleanPublicChannelContent,
+  attachOrganizationNotice,
 }

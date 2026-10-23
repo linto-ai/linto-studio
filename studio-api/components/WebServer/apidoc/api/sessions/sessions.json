@@ -385,7 +385,7 @@
       ],
       "responses": {
         "200": {
-          "description": "The session",
+          "description": "The session, with organizationNotice: its organization's session notice (Markdown), empty string when it has none",
           "content": {
             "application/json": {
               "schema": {
@@ -732,7 +732,7 @@
       ],
       "responses": {
         "200": {
-          "description": "The public session",
+          "description": "The public session, with organizationNotice: its organization's session notice (Markdown), empty string when it has none",
           "content": {
             "application/json": {
               "schema": {
