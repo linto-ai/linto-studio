@@ -1,7 +1,9 @@
 <template>
   <section class="organization-users">
     <div class="flex row gap-medium align-center">
-      <h2 style="width: auto">{{ $t("organisation.organization_users") }}</h2>
+      <h2 class="organization-users__title">
+        {{ $t("organisation.organization_users") }}
+      </h2>
       <!-- Inviting a member is a team-plan capability in cloud mode. Locked:
            the button stays visible and opens the upgrade flow. -->
       <HasEntitlement v-if="canInvite" capability="collaboration">
@@ -32,18 +34,23 @@
         @manage="displayManageModal = true" />
     </IsCloud>
 
-    <Tabs v-model="activeTab" variant="secondary" :tabs="tabs" />
+    <Tabs
+      :value="activeTab"
+      variant="secondary"
+      :tabs="tabs"
+      @input="setActiveTab" />
 
     <form class="organization-users__search" role="search" @submit.prevent>
       <SearchInput
-        v-model="search"
         v-if="rows.length > 0 || search"
+        :value="search"
         :label="$t('seats.search_label')"
-        :placeholder="$t('seats.search_placeholder')" />
+        :placeholder="$t('seats.search_placeholder')"
+        @input="setSearch" />
     </form>
 
     <SeatSelectionBar
-      v-if="isMembersTab && selectedIds.length"
+      v-if="isSelectable && selectedIds.length"
       :count="selectedIds.length"
       :caption="selectionCaption"
       @clear="clearSelection"
@@ -56,7 +63,7 @@
       :content="visibleRows"
       :sortListKey="sort.key"
       :sortListDirection="sort.direction"
-      :selectable="isMembersTab"
+      :selectable="isSelectable"
       :selectedRows="selectedIds"
       :selectableRowIds="grantableIds"
       :rowClass="getUserRowClass"
@@ -68,7 +75,7 @@
 
       <template #cell-role="{ element }">
         <OrgaRoleSelector
-          :value="displayedRole(element)"
+          :value="element.role"
           :readonly="!rightsOf(element).canChangeRole"
           @input="changeRole(element, $event)" />
       </template>
@@ -90,7 +97,7 @@
       <template #cell-actions="{ element }">
         <div class="flex row gap-tiny justify-end" @click.stop>
           <Button
-            v-if="rightsOf(element).canGrantSeat"
+            v-if="canGrantSeatTo(element)"
             size="sm"
             variant="secondary"
             icon="identification-badge"
@@ -143,7 +150,7 @@
     <ModalLeaveOrganization
       v-model="displayLeaveModal"
       :currentOrganization="currentOrganization"
-      :currentOrganizationScope="currentOrganizationScope"
+      :currentOrganizationScope="organizationId"
       @on-confirm="closeLeaveModal"
       @on-cancel="closeLeaveModal" />
 
@@ -168,7 +175,7 @@ import { computeMemberRights } from "@/tools/members/computeMemberRights.js"
 import { computeMemberUsageRows } from "@/tools/members/computeMemberUsageRows.js"
 import { computeInviteRoleOptions } from "@/tools/seats/computeInviteRoleOptions.js"
 import { computeSeatRoleOptions } from "@/tools/seats/computeSeatRoleOptions.js"
-import { computeSeatPrice } from "@/tools/seats/computeSeatPrice"
+import { computeSeatPrice } from "@/tools/seats/computeSeatPrice.js"
 import { computeSeatSummary } from "@/tools/seats/computeSeatSummary.js"
 import { computeSeatsNeeded } from "@/tools/seats/computeSeatsNeeded.js"
 import { isCollaboratorRole } from "@/tools/seats/isCollaboratorRole.js"
@@ -176,9 +183,12 @@ import { computeUsageColumns } from "@/tools/members/computeUsageColumns.js"
 import { filterMembersByText } from "@/tools/members/filterMembersByText.js"
 import { formatUsageAmount } from "@/tools/members/formatUsageAmount.js"
 import { partitionMembersBySeat } from "@/tools/seats/partitionMembersBySeat.js"
+import { computeNextSort } from "@/tools/computeNextSort.js"
 import { sortArray } from "@/tools/sortList.js"
 import { userName } from "@/tools/user/userName.js"
+import { getEnv } from "@/tools/getEnv.js"
 
+import { apiGetOrganizationById } from "@/api/organisation.js"
 import {
   apiAddUserToOrganisation,
   apiUpdateUserRoleInOrganisation,
@@ -198,6 +208,7 @@ import IsCloud from "@/components/atoms/IsCloud.vue"
 import SeatsPanel from "@/components-cloud/SeatsPanel.vue"
 import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
 
+const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 const SEATS_TAB = "seats"
 const MEMBERS_TAB = "members"
 
@@ -251,14 +262,6 @@ export default {
       },
       immediate: true,
     },
-    // Acting on a member that scrolled out of view is the classic mistake:
-    // narrowing the list or changing tab drops the selection.
-    activeTab() {
-      this.clearSelection()
-    },
-    search() {
-      this.clearSelection()
-    },
   },
   computed: {
     ...mapGetters("billing", [
@@ -274,9 +277,6 @@ export default {
       currentOrganizationScopeId: "getCurrentOrganizationScope",
     }),
     organizationId() {
-      return this.currentOrganization._id
-    },
-    currentOrganizationScope() {
       return this.currentOrganization._id
     },
     // The billing store holds the viewer's own organization: reading it for
@@ -320,8 +320,17 @@ export default {
         this.hasSeatCapacity ? this.seats : null,
       )
     },
+    // Seats are a cloud billing notion. Elsewhere the two tabs only tell the
+    // privileged roles apart, and a member is promoted from the role column.
+    hasSeats() {
+      return IS_MODE_CLOUD
+    },
     isMembersTab() {
       return this.activeTab === MEMBERS_TAB
+    },
+    // Selecting members only serves granting them seats in bulk.
+    isSelectable() {
+      return this.hasSeats && this.isMembersTab
     },
     tabs() {
       return [
@@ -363,10 +372,9 @@ export default {
     visibleIds() {
       return this.visibleRows.map((row) => row._id)
     },
-    // Only a free member can be given a seat, and only by someone allowed to.
     grantableIds() {
       return this.visibleRows
-        .filter((row) => this.rightsOf(row).canGrantSeat)
+        .filter((row) => this.canGrantSeatTo(row))
         .map((row) => row._id)
     },
     columns() {
@@ -377,7 +385,7 @@ export default {
           width: "minmax(12rem, 1.5fr)",
         },
       ]
-      if (this.isMembersTab) {
+      if (this.isMembersTab && this.hasSeats) {
         columns.push({
           key: "hint",
           label: "",
@@ -416,13 +424,13 @@ export default {
       )
     },
     selectionCaption() {
+      if (this.seatSummary.capacity === null) return ""
       const needed = computeSeatsNeeded(
         this.selectedMembers.map((member) => ({
           role: this.defaultSeatRole,
           currentRole: member.role,
         })),
       )
-      if (this.seatSummary.capacity === null) return ""
       return this.$t("seats.bar.caption_capacity", {
         needed,
         available: this.seatSummary.available,
@@ -489,6 +497,16 @@ export default {
       this.search = ""
       this.grantTargets = []
     },
+    // Acting on a member that scrolled out of view is the classic mistake:
+    // narrowing the list or changing tab drops the selection.
+    setActiveTab(tab) {
+      this.activeTab = tab
+      this.clearSelection()
+    },
+    setSearch(search) {
+      this.search = search
+      this.clearSelection()
+    },
     loadUsage() {
       if (!this.isOwnOrganization) return
       this.$store.dispatch("billing/fetchUsageByMember", this.organizationId)
@@ -501,9 +519,9 @@ export default {
     rightsOf(member) {
       return computeMemberRights(member, this.viewer)
     },
-    displayedRole(member) {
-      const pending = this.pendingRoleByUserId[member._id]
-      return pending === undefined ? member.role : pending
+    // Only a free member can be given a seat, and only by someone allowed to.
+    canGrantSeatTo(member) {
+      return this.hasSeats && this.rightsOf(member).canGrantSeat
     },
     removeLabel(member) {
       return `${this.$t("organisation.user.remove_button")} — ${userName(member)}`
@@ -515,14 +533,7 @@ export default {
       return this.userInfo._id === user._id ? "currentuser" : ""
     },
     sortBy(key) {
-      const current = this.sortByTab[this.activeTab]
-      const direction =
-        key === current.key
-          ? current.direction === "desc"
-            ? "asc"
-            : "desc"
-          : "desc"
-      this.$set(this.sortByTab, this.activeTab, { key, direction })
+      this.$set(this.sortByTab, this.activeTab, computeNextSort(this.sort, key))
     },
     setSelection(ids) {
       // The header checkbox selects every row at once: keep only the rows that
@@ -544,9 +555,10 @@ export default {
       )
     },
     // The seat cap is enforced by the API: a 402 opens the upgrade flow from
-    // sendRequest, whoever the caller is.
+    // sendRequest, whoever the caller is. `member` is a displayed row, so its
+    // role already includes a change in flight.
     async changeRole(member, role) {
-      if (role === this.displayedRole(member)) return
+      if (role === member.role) return
       this.startRoleChange(member, role)
       const req = await apiUpdateUserRoleInOrganisation(
         this.organizationId,
@@ -606,14 +618,22 @@ export default {
           redirect: false,
         },
       )
-      if (req.status === "success") {
-        this.members = [...this.members, user]
+      if (req?.status === "success") {
+        // The API does not return the new member: reload the list so the row
+        // carries its id. The email stays pending until then.
+        await this.reloadMembers()
         // Show the tab the new member landed in.
-        this.activeTab = isCollaboratorRole(user.role) ? SEATS_TAB : MEMBERS_TAB
+        this.setActiveTab(
+          isCollaboratorRole(user.role) ? SEATS_TAB : MEMBERS_TAB,
+        )
       }
       this.usersEmailPending = this.usersEmailPending.filter(
         (email) => email !== user.email,
       )
+    },
+    async reloadMembers() {
+      const organization = await apiGetOrganizationById(this.organizationId)
+      if (organization) this.setMembers(organization.users)
     },
     removeFromMembers(user) {
       this.userToRemove = user
@@ -626,9 +646,7 @@ export default {
           this.members = this.members.filter((member) => member._id !== userId)
           this.selectedIds = this.selectedIds.filter((id) => id !== userId)
         } else {
-          this.notifyError(
-            this.$i18n.t("organisation.remove_user_error_message"),
-          )
+          this.notifyError(this.$t("organisation.remove_user_error_message"))
         }
       }
 
@@ -691,6 +709,10 @@ export default {
 .organization-users :deep(td),
 .organization-users :deep(th) {
   min-width: 0;
+}
+
+.organization-users__title {
+  width: auto;
 }
 
 .organization-users__search {
