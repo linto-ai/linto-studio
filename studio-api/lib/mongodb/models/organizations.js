@@ -17,7 +17,8 @@ const tagsModel = require(`./tags`)
 
 const moment = require("moment")
 
-const public_projection = { token: 0 }
+// sessionNotice is served by its own sub-resource and on the session answers.
+const public_projection = { token: 0, sessionNotice: 0 }
 
 class OrganizationModel extends MongoModel {
   constructor() {
@@ -274,6 +275,34 @@ class OrganizationModel extends MongoModel {
       console.error(error)
       return error
     }
+  }
+
+  // The session notice (Markdown) alone: it reaches every viewer of a session,
+  // public ones included, so no other organization field may come along.
+  // Empty string when the organization has none, null when it does not exist.
+  // Re-throws on DB error.
+  async getSessionNotice(id) {
+    const rows = await this.mongoRequest(
+      { _id: this.getObjectId(id) },
+      { projection: { _id: 0, sessionNotice: 1 } },
+    )
+    if (rows.length === 0) return null
+    return rows[0].sessionNotice ?? ""
+  }
+
+  // matchedCount 0 when the organization does not exist. Re-throws on DB error.
+  async updateSessionNotice(id, sessionNotice) {
+    return await this.mongoUpdateOne({ _id: this.getObjectId(id) }, "$set", {
+      sessionNotice,
+      last_update: moment().format(),
+    })
+  }
+
+  // matchedCount 0 when the organization does not exist. Re-throws on DB error.
+  async deleteSessionNotice(id) {
+    return await this.mongoUpdateOne({ _id: this.getObjectId(id) }, "$unset", {
+      sessionNotice: "",
+    })
   }
 
   async delete(id) {

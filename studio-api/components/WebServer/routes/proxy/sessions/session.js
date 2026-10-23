@@ -27,6 +27,7 @@ const {
   checkChannelsSecurityLevel,
   checkSessionMembersRight,
   chainBeforeResult,
+  attachOrganizationNotice,
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
@@ -127,6 +128,7 @@ module.exports = (webServer) => {
               (jsonString, req) => {
                 return generatPublicToken(jsonString, req)
               },
+              attachOrganizationNotice,
             ],
           },
           {
@@ -151,7 +153,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["get"],
             executeBeforeResult: forwardSessionAlias,
-            executeAfterResult: [afterProxyAccess],
+            executeAfterResult: [afterProxyAccess, attachOrganizationNotice],
             forwardParams: proxyForwardParams,
           },
           {

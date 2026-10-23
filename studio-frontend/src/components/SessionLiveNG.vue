@@ -27,6 +27,7 @@ import {
 import {
   createLivePlugin,
   createSubtitlePlugin,
+  createNoticePlugin,
 } from "@linto-ai/transcript-ui-webcomponent"
 import computeSessionTurnUniqueId from "@/const/computeSessionTurnUniqueId"
 import classifySessionTurn from "@/tools/classifySessionTurn"
@@ -43,6 +44,7 @@ import { computeLanguageCode } from "@/tools/computeLanguageCode.js"
 const PAGE_SIZE = 50
 const TRANSCRIPT_FONT_SIZE_KEY = "editor.transcriptFontSize"
 const THEME_KEY = "editor.theme"
+const PARTIALS_VISIBLE_KEY = "editor.partialsVisible"
 
 // Same data-theme convention the app's own stylesheets already use.
 function applyTheme(theme) {
@@ -108,6 +110,25 @@ function storeTranscriptFontSize(fontSize) {
   }
 }
 
+// The user's own choice wins; the deployment only sets the default.
+function readInitialPartialsVisible() {
+  try {
+    const stored = localStorage.getItem(PARTIALS_VISIBLE_KEY)
+    if (stored === "true" || stored === "false") return stored === "true"
+  } catch {
+    // ignored on purpose, see above
+  }
+  return getEnv("VUE_APP_SHOW_PARTIALS") === "true"
+}
+
+function storePartialsVisible(visible) {
+  try {
+    localStorage.setItem(PARTIALS_VISIBLE_KEY, String(visible))
+  } catch {
+    // ignored on purpose, see above
+  }
+}
+
 export default {
   mixins: [sessionModelMixin],
   components: { SessionStatusBanner },
@@ -132,6 +153,7 @@ export default {
       offViewportChange: null,
       offSidebarOpen: null,
       offTranscriptFontSize: null,
+      offPartialsVisible: null,
       offTheme: null,
       unwatchWatermarkHost: [],
       activeChannelIndex: null,
@@ -161,6 +183,11 @@ export default {
     },
   },
   watch: {
+    // A refetch of the session (start, clear, password) may bring a newer
+    // organization notice.
+    "session.organizationNotice"(content) {
+      if (this.core?.notice) this.core.notice.content.value = content ?? ""
+    },
     // Covers both the first connect (socket not ready at mount) and every
     // reconnect (isConnected goes false on disconnect); isConnected is kept
     // in sync with state.status by the ApiEventWebSocket state machine.
@@ -197,6 +224,7 @@ export default {
     this.offViewportChange?.()
     this.offSidebarOpen?.()
     this.offTranscriptFontSize?.()
+    this.offPartialsVisible?.()
     this.offTheme?.()
     // The header outlives this component (the session may end while it is
     // open): tell it the editor's sidebar is gone rather than leaving it
@@ -292,8 +320,12 @@ export default {
 
       this.livePlugin = createLivePlugin({
         tts: getEnv("VUE_APP_ENABLE_TTS") === "true",
+        partialsVisible: readInitialPartialsVisible(),
       })
       core.use(this.livePlugin)
+      this.offPartialsVisible = core.on("partials:visible", ({ visible }) =>
+        storePartialsVisible(visible),
+      )
 
       core.use(
         createSubtitlePlugin({
@@ -311,6 +343,9 @@ export default {
             readonly: this.isFromPublicLink,
           },
         }),
+      )
+      core.use(
+        createNoticePlugin({ content: this.session.organizationNotice ?? "" }),
       )
       if (!this.isFromPublicLink) {
         this.bindWatermarkSync()
@@ -523,6 +558,10 @@ export default {
 
     toggleSidebar() {
       this.core.setSidebarOpen(!this.core.sidebarOpen.value)
+    },
+
+    showNotice() {
+      this.core.notice.open()
     },
 
     async patchWatermark(settings) {

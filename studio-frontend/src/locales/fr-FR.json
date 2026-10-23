@@ -145,6 +145,7 @@
     "email_not_verified": "Votre adresse e-mail n'est pas vérifiée. Veuillez la vérifier pour accéder à l'ensemble des fonctionnalités.",
     "pending_email": "Une confirmation a été envoyée à {email}. Cette adresse remplacera l'actuelle une fois validée.",
     "speaker_identification": "Identification des locuteurs",
+    "session_notice": "Informations des sessions",
     "speaker_recognition": "Ma signature vocale"
   },
   "backoffice": {
@@ -1066,6 +1067,14 @@
       "update_button": "Mettre à jour les critères d'appartenance",
       "apply_button": "Inviter les utilisateurs correspondant aux critères"
     },
+    "session_notice": {
+      "title": "Informations des sessions",
+      "description": "Ce texte est affiché à tous les spectateurs des sessions en direct de l'organisation, derrière le bouton « Informations ». Le Markdown est pris en charge. Un texte vide masque le bouton.",
+      "content_label": "Texte d'information (Markdown)",
+      "save_button": "Enregistrer les informations",
+      "save_success": "Le texte d'information des sessions a été enregistré",
+      "load_error": "Impossible de charger les informations des sessions"
+    },
     "transcriber_profiles": {
       "title": "Profils de transcription",
       "no_profiles": "Aucun profil de transcription lié à cette organisation"
@@ -1375,6 +1384,7 @@
       "session_not_started_title": "La session n'a pas encore commencé",
       "settings_button": "Paramètres",
       "editor_sidebar_button": "Afficher les réglages de la transcription",
+      "notice_button": "Informations",
       "delete_session_button": "Supprimer la session",
       "stop_button": "Arrêter et enregistrer",
       "stop_force_button": "Forcer l'arrêt",

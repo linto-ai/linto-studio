@@ -25,6 +25,10 @@ const { updateOrganization, deleteOrganization } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/admin.js`,
 )
 
+const { getSessionNotice, updateSessionNotice } = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/sessionNotice.js`,
+)
+
 const {
   createApiKey,
   listApiKeyFromOrga,
@@ -150,6 +154,28 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationMaintainerAccess: true,
       controller: updateConversationOwner,
+    },
+
+    /* Maintainer right: notice shown to the viewers of the organization's
+       sessions. Gated by the SESSION permission only, not by the SaaS
+       live.sessions entitlement: it is a compliance text, not a paid feature,
+       and it only reaches viewers through sessions, whose creation is already
+       gated. */
+    {
+      path: "/:organizationId/session-notice",
+      method: "get",
+      requireAuth: true,
+      requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SESSION,
+      controller: getSessionNotice,
+    },
+    {
+      path: "/:organizationId/session-notice",
+      method: "put",
+      requireAuth: true,
+      requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SESSION,
+      controller: updateSessionNotice,
     },
 
     /* Admin right*/
