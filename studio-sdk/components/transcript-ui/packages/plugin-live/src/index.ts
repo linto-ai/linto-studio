@@ -65,6 +65,10 @@ export interface LivePluginOptions {
    *  LivePluginApi.silenceDelay — ASRs differ in how often they emit, so
    *  hosts tune it per backend. Defaults to 6s. */
   silenceDelay?: number
+  /** Whether partials are shown when the editor opens. The user can still
+   *  toggle them; a host that wants that choice to survive a reload follows
+   *  "partials:visible" and passes it back here. Defaults to true. */
+  partialsVisible?: boolean
 }
 
 export function createLivePlugin(
@@ -78,7 +82,7 @@ export function createLivePlugin(
 
     install(core: Core) {
       const partial = shallowRef<string | null>(null)
-      const partialsVisible = ref(true)
+      const partialsVisible = ref(options.partialsVisible ?? true)
       const isSpeechActive = ref(false)
       const silenceDelay = ref(options.silenceDelay ?? DEFAULT_SILENCE_DELAY)
       let silenceTimeout: ReturnType<typeof setTimeout> | null = null
@@ -136,6 +140,7 @@ export function createLivePlugin(
 
       function showPartials(): void {
         partialsVisible.value = true
+        core.emit("partials:visible", { visible: true })
       }
 
       function hidePartials(): void {
@@ -143,6 +148,7 @@ export function createLivePlugin(
         // Drop what is already on screen now, rather than leaving the last
         // provisional line up until a final turn happens to replace it.
         immediateClearPartial()
+        core.emit("partials:visible", { visible: false })
       }
 
       function isTranslationTrackFor(

@@ -10812,7 +10812,7 @@ const _sfc_main$R = /* @__PURE__ */ defineComponent({
           highlighted.value = null;
           return;
         }
-        const { highlightCode } = await import("./highlight-WY8J0iVD.js");
+        const { highlightCode } = await import("./highlight-Bq6R-Rtx.js");
         if (run === seq) highlighted.value = highlightCode(code, lang ?? "");
       },
       { immediate: true }
@@ -26597,7 +26597,7 @@ function createLivePlugin(options = {}) {
     name: "live",
     install(core) {
       const partial = /* @__PURE__ */ shallowRef(null);
-      const partialsVisible = /* @__PURE__ */ ref(true);
+      const partialsVisible = /* @__PURE__ */ ref(options.partialsVisible ?? true);
       const isSpeechActive = /* @__PURE__ */ ref(false);
       const silenceDelay = /* @__PURE__ */ ref(options.silenceDelay ?? DEFAULT_SILENCE_DELAY);
       let silenceTimeout = null;
@@ -26636,10 +26636,12 @@ function createLivePlugin(options = {}) {
       }
       function showPartials() {
         partialsVisible.value = true;
+        core.emit("partials:visible", { visible: true });
       }
       function hidePartials() {
         partialsVisible.value = false;
         immediateClearPartial();
+        core.emit("partials:visible", { visible: false });
       }
       function isTranslationTrackFor(active, language) {
         if (active.isSource) return false;
@@ -31985,4 +31987,4 @@ export {
   purify_default as p,
   register as r
 };
-//# sourceMappingURL=index-Bd0AGDpY.js.map
+//# sourceMappingURL=index-DfiwBtpx.js.map

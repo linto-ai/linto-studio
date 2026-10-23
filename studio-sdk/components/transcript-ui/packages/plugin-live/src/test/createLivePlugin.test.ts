@@ -2,11 +2,12 @@ import { describe, expect, it } from "bun:test"
 import { createCore } from "@linto-ai/transcript-ui-core"
 import type { Core } from "@linto-ai/transcript-ui-core"
 import { createLivePlugin } from "../index"
+import type { LivePluginOptions } from "../index"
 
 /** One channel, a French source and an English translation track — enough
  *  for both partial paths (source, and translated/cross). Tracks are keyed
  *  by language, as live hosts do: final translations look them up that way. */
-function makeLiveCore(silenceDelay?: number): Core {
+function makeLiveCore(options: LivePluginOptions = {}): Core {
   const core = createCore()
   core.setDocument({
     title: "live",
@@ -23,7 +24,7 @@ function makeLiveCore(silenceDelay?: number): Core {
       },
     ],
   })
-  core.use(createLivePlugin(silenceDelay ? { silenceDelay } : {}))
+  core.use(createLivePlugin(options))
   return core
 }
 
@@ -56,6 +57,26 @@ describe("createLivePlugin — partials visibility", () => {
 
     sendPartial(core, "bonjour le")
     expect(core.live!.partial.value).toBe("bonjour le")
+  })
+
+  it("starts hidden when the host asks for it", () => {
+    const core = makeLiveCore({ partialsVisible: false })
+
+    expect(core.live!.partialsVisible.value).toBe(false)
+
+    sendPartial(core, "bonjour le")
+    expect(core.live!.partial.value).toBeNull()
+  })
+
+  it("announces every toggle so the host can remember it", () => {
+    const core = makeLiveCore()
+    const seen: boolean[] = []
+    core.on("partials:visible", ({ visible }) => seen.push(visible))
+
+    core.live!.hidePartials()
+    core.live!.showPartials()
+
+    expect(seen).toEqual([false, true])
   })
 
   it("drops what is on screen and swallows the next ones once hidden", () => {
@@ -121,7 +142,7 @@ describe("createLivePlugin — partials visibility", () => {
 
 describe("createLivePlugin — speech activity", () => {
   it("lights up on a partial and goes out after the silence delay", async () => {
-    const core = makeLiveCore(30)
+    const core = makeLiveCore({ silenceDelay: 30 })
 
     expect(core.live!.isSpeechActive.value).toBe(false)
 
@@ -139,7 +160,7 @@ describe("createLivePlugin — speech activity", () => {
   })
 
   it("tracks speech even while the partial text is hidden", async () => {
-    const core = makeLiveCore(30)
+    const core = makeLiveCore({ silenceDelay: 30 })
     core.live!.hidePartials()
 
     sendPartial(core, "bonjour")
@@ -151,7 +172,7 @@ describe("createLivePlugin — speech activity", () => {
   })
 
   it("counts translated partials as speech too", () => {
-    const core = makeLiveCore(30)
+    const core = makeLiveCore({ silenceDelay: 30 })
     core.activeChannel.value!.setActiveTranslation("en")
 
     sendTranslatedPartial(core, "hello")
@@ -160,7 +181,7 @@ describe("createLivePlugin — speech activity", () => {
 
   it("defaults to a two-second delay, host-tunable at runtime", () => {
     expect(makeLiveCore().live!.silenceDelay.value).toBe(6000)
-    expect(makeLiveCore(500).live!.silenceDelay.value).toBe(500)
+    expect(makeLiveCore({ silenceDelay: 500 }).live!.silenceDelay.value).toBe(500)
   })
 })
 

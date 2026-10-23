@@ -26599,7 +26599,7 @@ section.turn:has([data-state="open"]) {
       name: "live",
       install(core) {
         const partial = /* @__PURE__ */ shallowRef(null);
-        const partialsVisible = /* @__PURE__ */ ref(true);
+        const partialsVisible = /* @__PURE__ */ ref(options.partialsVisible ?? true);
         const isSpeechActive = /* @__PURE__ */ ref(false);
         const silenceDelay = /* @__PURE__ */ ref(options.silenceDelay ?? DEFAULT_SILENCE_DELAY);
         let silenceTimeout = null;
@@ -26638,10 +26638,12 @@ section.turn:has([data-state="open"]) {
         }
         function showPartials() {
           partialsVisible.value = true;
+          core.emit("partials:visible", { visible: true });
         }
         function hidePartials() {
           partialsVisible.value = false;
           immediateClearPartial();
+          core.emit("partials:visible", { visible: false });
         }
         function isTranslationTrackFor(active, language) {
           if (active.isSource) return false;

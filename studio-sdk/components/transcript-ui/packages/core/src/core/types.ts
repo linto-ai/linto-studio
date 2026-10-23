@@ -66,6 +66,10 @@ export interface CoreEventMap {
   "watermark:display": { display: boolean }
   "watermark:pin": { pinned: boolean }
   "subtitle:visible": { visible: boolean; height: number }
+  /** The user showed or hid the partials. The editor does not remember it —
+   *  a host that wants the choice to survive a reload listens here and
+   *  passes it back as the live plugin's partialsVisible option. */
+  "partials:visible": { visible: boolean }
   /** The reading size of the transcript changed. The editor does not
    *  remember it — a host that wants the preference to survive a reload
    *  listens here and restores it into core.transcriptFontSize. */
