@@ -1,7 +1,7 @@
 {
   "/api/organizations/{organizationId}/session-notice": {
     "get": {
-      "tags": ["organizations admin"],
+      "tags": ["organizations maintainers"],
       "summary": "Get the notice (disclaimer, data protection) shown to the viewers of the organization's sessions",
       "parameters": [
         {
@@ -29,7 +29,7 @@
           "$ref": "#/components/responses/Unauthorized"
         },
         "403": {
-          "description": "Not an admin of the organization, or the organization lacks the session permission"
+          "description": "Not a maintainer or an admin of the organization, or the organization lacks the session permission"
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
@@ -37,7 +37,7 @@
       }
     },
     "put": {
-      "tags": ["organizations admin"],
+      "tags": ["organizations maintainers"],
       "summary": "Replace the notice shown to the viewers of the organization's sessions",
       "description": "Available to the organizations allowed to create sessions. The notice is returned as organizationNotice on the session answers, public ones included. An empty content removes it.",
       "parameters": [
@@ -88,7 +88,7 @@
           "$ref": "#/components/responses/Unauthorized"
         },
         "403": {
-          "description": "Not an admin of the organization, or the organization lacks the session permission"
+          "description": "Not a maintainer or an admin of the organization, or the organization lacks the session permission"
         },
         "404": {
           "$ref": "#/components/responses/NotFound"
