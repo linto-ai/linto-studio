@@ -15,13 +15,18 @@
               "type": "object",
               "properties": {
                 "email": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Email of the user to add, an unknown address gets an invitation"
+                },
+                "userId": {
+                  "type": "string",
+                  "description": "Id of an existing public user, used instead of email"
                 },
                 "role": {
                   "type": "integer"
                 }
               },
-              "required": ["email", "role"]
+              "required": ["role"]
             }
           }
         }

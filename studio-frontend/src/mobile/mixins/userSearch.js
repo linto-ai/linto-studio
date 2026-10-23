@@ -1,4 +1,5 @@
 import { searchUsers } from "@/mobile/services/share/conversationShare.js"
+import { USER_SEARCH_MIN_LENGTH } from "@/const/userSearch.js"
 
 const SEARCH_DELAY_MS = 300
 
@@ -21,7 +22,7 @@ export const userSearchMixin = {
       this.searchText = text
       clearTimeout(this.searchTimer)
       this.searchController?.abort()
-      if (!text.trim()) {
+      if (text.trim().length < USER_SEARCH_MIN_LENGTH) {
         this.results = []
         this.searching = false
         return

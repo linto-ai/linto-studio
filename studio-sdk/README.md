@@ -514,7 +514,7 @@ await linTO.share_conversation(conversation_id, email, **options)
 
 #### searchUsers
 
-Search users by email or display name. Mostly useful as a building block for higher-level helpers like `setConversationOwner`.
+Search users by email or display name. Results carry no `email`, except the user whose address is exactly the search string. Mostly useful as a building block for higher-level helpers like `setConversationOwner`.
 
 ```javascript
 // Javascript

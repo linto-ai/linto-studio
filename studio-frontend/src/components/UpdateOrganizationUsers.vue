@@ -12,7 +12,7 @@
           @removeUser="removeFromMembers"
           :currentUsers="members"
           :roleOptions="inviteRoleOptions"
-          :usersEmailPending="usersEmailPending"
+          :usersPending="usersPending"
           :includeSelf="isBackofficePage"></UserInvite>
         <template #locked>
           <Button
@@ -239,7 +239,7 @@ export default {
         [SEATS_TAB]: { key: "user", direction: "asc" },
         [MEMBERS_TAB]: { key: "user", direction: "asc" },
       },
-      usersEmailPending: [],
+      usersPending: [],
       displayLeaveModal: false,
       displayRemoveUserModal: false,
       displayGrantModal: false,
@@ -608,10 +608,11 @@ export default {
       )
     },
     async addToMembers(user) {
-      this.usersEmailPending.push(user.email)
+      const pendingKey = user._id ?? user.email
+      this.usersPending.push(pendingKey)
       const req = await apiAddUserToOrganisation(
         this.organizationId,
-        user.email,
+        { userId: user._id, email: user.email },
         user.role,
         {
           timeout: 3000,
@@ -620,16 +621,14 @@ export default {
       )
       if (req?.status === "success") {
         // The API does not return the new member: reload the list so the row
-        // carries its id. The email stays pending until then.
+        // carries its id. The user stays pending until then.
         await this.reloadMembers()
         // Show the tab the new member landed in.
         this.setActiveTab(
           isCollaboratorRole(user.role) ? SEATS_TAB : MEMBERS_TAB,
         )
       }
-      this.usersEmailPending = this.usersEmailPending.filter(
-        (email) => email !== user.email,
-      )
+      this.usersPending = this.usersPending.filter((key) => key !== pendingKey)
     },
     async reloadMembers() {
       const organization = await apiGetOrganizationById(this.organizationId)

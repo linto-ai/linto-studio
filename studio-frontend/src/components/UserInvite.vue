@@ -110,7 +110,7 @@ export default {
       type: Array,
       default: () => [],
     },
-    usersEmailPending: {
+    usersPending: {
       type: Array,
       default: () => [],
     },
@@ -186,10 +186,13 @@ export default {
       this.showList = false
     },
     isPending(user) {
-      return this.usersEmailPending.includes(user.email)
+      return (
+        this.usersPending.includes(user._id) ||
+        this.usersPending.includes(user.email)
+      )
     },
     isAlreadyInvited(user) {
-      return this.currentUsers.find((u) => u.email === user.email)
+      return this.currentUsers.find((u) => u._id === user._id)
     },
   },
   components: { Fragment, SearchUsersListComponent, CustomSelect },

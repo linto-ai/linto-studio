@@ -13,7 +13,9 @@
         >
         <span class="user-info-inline__external" v-if="external">External</span>
       </div>
-      <div class="user-info-inline__email text-cut">({{ userData.email }})</div>
+      <div v-if="userData.email" class="user-info-inline__email text-cut">
+        ({{ userData.email }})
+      </div>
       <div v-if="roleLabel" class="user-info-inline__role">
         {{ roleLabel }}
       </div>

@@ -124,34 +124,34 @@ async function createUser(req, res, next) {
   }
 }
 
-async function listUser(req, res, next) {
-  try {
-    const publicUsers = await model.users.listPublicUsers()
-    res.status(200).send(publicUsers)
-  } catch (err) {
-    next(err)
-  }
-}
+// Shorter searches would list the platform from a lone "@" or two letters
+const SEARCH_MIN_LENGTH = 3
 
 async function searchUser(req, res, next) {
   try {
-    requireParam(req.query.search, UserUnsupportedMediaType)
+    const search = (req.query.search ?? "").trim().toLowerCase()
+    if (search.length < SEARCH_MIN_LENGTH)
+      throw new UserUnsupportedMediaType(
+        `Search requires at least ${SEARCH_MIN_LENGTH} characters`,
+      )
 
-    const userList = (await model.users.listPublicUsers()).filter((user) => {
-      const userField = [
-        user.firstname,
-        user.lastname,
-        user.email,
-        user.firstname + " " + user.lastname,
-        user.lastname + " " + user.firstname,
-      ]
+    const userList = (await model.users.listPublicUsers())
+      .filter((user) => {
+        const userField = [
+          user.firstname,
+          user.lastname,
+          user.email,
+          user.firstname + " " + user.lastname,
+          user.lastname + " " + user.firstname,
+        ]
 
-      const find = userField
-        .map((field) => field?.toLowerCase() ?? "")
-        .filter((field) => field.indexOf(req.query.search.toLowerCase()) >= 0)
-
-      return find.length > 0
-    })
+        return userField.some((field) => field?.toLowerCase().includes(search))
+      })
+      // The address is only echoed back to a caller who typed it in full
+      .map(({ email, ...user }) => {
+        if (email?.toLowerCase() !== search) return user
+        return { ...user, email }
+      })
 
     if (userList.length === 0) res.status(204).send()
     else res.status(200).send(userList)
@@ -501,7 +501,6 @@ async function impersonateUser(req, res, next) {
 }
 
 module.exports = {
-  listUser,
   searchUser,
   getUserById,
   getPersonalInfo,

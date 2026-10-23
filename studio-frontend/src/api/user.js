@@ -6,12 +6,6 @@ import { getEnv } from "@/tools/getEnv"
 const BASE_API = getEnv("VUE_APP_CONVO_API")
 const BASE_AUTH = getEnv("VUE_APP_CONVO_AUTH")
 
-export async function apiGetUsers() {
-  const res = await sendRequest(`${BASE_API}/users`, { method: "get" })
-
-  return res?.data || []
-}
-
 export async function apiGetPersonalUserInfo() {
   const getUserInfos = await sendRequest(`${BASE_API}/users/self`, {
     method: "get",
@@ -122,9 +116,10 @@ export async function apiLoginUserMagicLink(magicId) {
   )
 }
 
+// A user picked from the search comes with an id, a typed address only has email
 export async function apiAddUserToOrganisation(
   organizationId,
-  email,
+  { userId, email },
   role = 1,
   notif,
 ) {
@@ -132,6 +127,7 @@ export async function apiAddUserToOrganisation(
     `${BASE_API}/organizations/${organizationId}/users`,
     { method: "post" },
     {
+      userId,
       email,
       role,
     },

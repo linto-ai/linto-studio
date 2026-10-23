@@ -68,6 +68,7 @@ import Button from "@/components/atoms/Button.vue"
 import RightSelect from "./RightSelect.vue"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
 import { isValidEmail } from "@/tools/isValidEmail.js"
+import { USER_SEARCH_MIN_LENGTH } from "@/const/userSearch.js"
 
 const FULL_RIGHTS = 31
 const ADMIN_RIGHT = 31
@@ -180,7 +181,7 @@ export default {
       immediate: true,
       async handler(value) {
         const trimmed = value?.trim() ?? ""
-        if (trimmed.length === 0) {
+        if (trimmed.length < USER_SEARCH_MIN_LENGTH) {
           this.results = []
           return
         }
