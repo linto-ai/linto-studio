@@ -156,6 +156,28 @@ module.exports = (webserver) => {
       controller: updateConversationOwner,
     },
 
+    /* Maintainer right: notice shown to the viewers of the organization's
+       sessions. Gated by the SESSION permission only, not by the SaaS
+       live.sessions entitlement: it is a compliance text, not a paid feature,
+       and it only reaches viewers through sessions, whose creation is already
+       gated. */
+    {
+      path: "/:organizationId/session-notice",
+      method: "get",
+      requireAuth: true,
+      requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SESSION,
+      controller: getSessionNotice,
+    },
+    {
+      path: "/:organizationId/session-notice",
+      method: "put",
+      requireAuth: true,
+      requireOrganizationMaintainerAccess: true,
+      orgaPermissionAccess: PERMISSIONS.SESSION,
+      controller: updateSessionNotice,
+    },
+
     /* Admin right*/
     {
       path: "/:organizationId",
@@ -170,27 +192,6 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationAdminAccess: true,
       controller: deleteOrganization,
-    },
-
-    /* Admin right: notice shown to the viewers of the organization's sessions.
-       Gated by the SESSION permission only, not by the SaaS live.sessions
-       entitlement: it is a compliance text, not a paid feature, and it only
-       reaches viewers through sessions, whose creation is already gated. */
-    {
-      path: "/:organizationId/session-notice",
-      method: "get",
-      requireAuth: true,
-      requireOrganizationAdminAccess: true,
-      orgaPermissionAccess: PERMISSIONS.SESSION,
-      controller: getSessionNotice,
-    },
-    {
-      path: "/:organizationId/session-notice",
-      method: "put",
-      requireAuth: true,
-      requireOrganizationAdminAccess: true,
-      orgaPermissionAccess: PERMISSIONS.SESSION,
-      controller: updateSessionNotice,
     },
 
     /* Admin right M2M function*/
