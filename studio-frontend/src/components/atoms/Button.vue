@@ -40,6 +40,21 @@
   </component>
 </template>
 <script>
+// The component holds the markup and the behaviour; each app brings its own
+// stylesheet for it (classic app: style/components/buttons.scss, mobile app:
+// mobile/style/buttons.css). What a stylesheet styles is this contract:
+// - root: .btn, on a <button>, an <a> or a router-link
+// - .btn--{variant}: primary, secondary, tertiary (default), text,
+//   transparent, link
+// - .btn--{intent}: default, destructive
+// - .btn--{size}: xs, sm, md (default), lg, xl
+// - .btn--block (full width), .btn--hovered (hover forced by the parent)
+// - states: [disabled] / [aria-disabled], [multiline] (label on lines)
+// - inside: .icon (icon, or the spinner while loading), .label (text); an
+//   icon-only button has no .label child
+// - knobs a parent may set: --btn-bg, --btn-text, --btn-border-color,
+//   --btn-hover-bg, --btn-hover-text, --btn-padding, --btn-font-size,
+//   --btn-height, --btn-border-radius
 export default {
   name: "Button",
   inheritAttrs: false,
@@ -96,21 +111,6 @@ export default {
       default: "md",
       validator: (value) => ["xs", "sm", "md", "lg", "xl"].includes(value),
     },
-    shape: {
-      type: String,
-      required: false,
-      default: "default",
-      validator: (value) => ["default", "circle"].includes(value),
-    },
-    // variant: {
-    //   type: String,
-    //   required: false,
-    //   default: "solid",
-    //   validator: (value) =>
-    //     ["solid", "outline", "transparent", "text", "link", "flat"].includes(
-    //       value,
-    //     ),
-    // },
     borderColor: {
       type: String,
       required: false,
@@ -151,13 +151,7 @@ export default {
       default: "button", // button or submit
     },
   },
-  data() {
-    return {}
-  },
   computed: {
-    isIconOnly() {
-      return this.iconOnly || (this.icon && !this.label && !this.$slots.default)
-    },
     isDisabled() {
       return this.disabled || this.loading
     },
@@ -190,9 +184,6 @@ export default {
       }
     },
   },
-  mounted() {},
-  methods: {},
-  components: {},
 }
 </script>
 <style scoped>

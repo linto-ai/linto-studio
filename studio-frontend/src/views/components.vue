@@ -1,27 +1,103 @@
 <template>
   <div class="main-container flex col gap-small">
     <h1>Linto components</h1>
-    <div class="flex gap-medium">
-      <Button variant="primary" label="primary button" icon="users" />
-      <Button variant="primary" size="sm" label="small" icon="users" />
+
+    <h3>Button - variants</h3>
+    <div class="flex wrap gap-small">
+      <Button
+        v-for="variant in buttonVariants"
+        :key="variant"
+        :variant="variant"
+        icon="users"
+        :label="variant" />
     </div>
-    <div>
-      <Button variant="secondary" label="secondary button" icon="users" />
+
+    <h3>Button - destructive intent</h3>
+    <div class="flex wrap gap-small">
+      <Button
+        v-for="variant in buttonVariants"
+        :key="variant"
+        :variant="variant"
+        intent="destructive"
+        icon="trash"
+        :label="variant" />
     </div>
-    <div>
+
+    <h3>Button - sizes</h3>
+    <div class="flex wrap align-center gap-small">
+      <Button
+        v-for="size in buttonSizes"
+        :key="size"
+        variant="primary"
+        :size="size"
+        icon="microphone"
+        :label="size" />
+    </div>
+
+    <h3>Button - icon only</h3>
+    <div class="flex wrap align-center gap-small">
+      <Button
+        v-for="variant in buttonVariants"
+        :key="variant"
+        :variant="variant"
+        icon="gear"
+        :aria-label="variant" />
+      <Button
+        v-for="size in buttonSizes"
+        :key="size"
+        variant="secondary"
+        :size="size"
+        icon="plus"
+        :aria-label="size" />
+    </div>
+
+    <h3>Button - states</h3>
+    <div class="flex wrap gap-small">
+      <Button variant="primary" icon-right="caret-right" label="Icon right" />
+      <Button variant="primary" loading label="Loading" />
+      <Button variant="secondary" loading label="Loading" />
+      <Button variant="primary" disabled label="Disabled" />
+      <Button variant="secondary" disabled label="Disabled" />
+      <Button disabled label="Disabled" />
+      <Button variant="primary" hovered label="Hovered" />
+      <Button hovered label="Hovered" />
+    </div>
+
+    <h3>Button - block and multiline</h3>
+    <div class="flex col gap-small">
       <Button
         variant="primary"
-        intent="destructive"
-        label="destructive primary button" />
+        size="lg"
+        block
+        icon="broadcast"
+        label="Block, lg" />
+      <Button variant="secondary" size="lg" block label="Block secondary" />
+      <div class="components-narrow">
+        <Button
+          variant="secondary"
+          multiline
+          label="A multiline label long enough to wrap on two lines" />
+      </div>
+      <div class="components-narrow">
+        <Button
+          variant="secondary"
+          label="A single line label too long for its button" />
+      </div>
     </div>
-    <div>
+
+    <h3>Button - as a link</h3>
+    <div class="flex wrap gap-small">
       <Button
         variant="secondary"
-        intent="destructive"
-        label="destructive secondary button" />
-    </div>
-    <div>
-      <Button label="Download" icon="download" />
+        href="#"
+        icon="arrow-square-out"
+        label="href" />
+      <Button variant="secondary" :to="{ name: 'components' }" label="to" />
+      <Button
+        variant="secondary"
+        :to="{ name: 'components' }"
+        disabled
+        label="to, disabled" />
     </div>
 
     <h3>Headings - h1 to h5</h3>
@@ -252,10 +328,24 @@ const DEMO_LOTS = [
   created: "2026-03-12T12:00:00Z",
   expiresAt: "2099-03-12T12:00:00Z",
 }))
+// Every look of the Button contract (see Button.vue), the mobile app has the
+// same matrix at /m/components
+const BUTTON_VARIANTS = [
+  "primary",
+  "secondary",
+  "tertiary",
+  "text",
+  "transparent",
+  "link",
+]
+const BUTTON_SIZES = ["xs", "sm", "md", "lg", "xl"]
+
 export default {
   props: {},
   data() {
     return {
+      buttonVariants: BUTTON_VARIANTS,
+      buttonSizes: BUTTON_SIZES,
       demoPackOffers: computePackGroups(DEMO_PACKS).flatMap(
         (group) => group.packs,
       ),
@@ -404,6 +494,10 @@ export default {
   margin: 0;
   padding: var(--tiny-gap);
   border: none;
+}
+
+.components-narrow {
+  width: 220px;
 }
 
 .components-hint {

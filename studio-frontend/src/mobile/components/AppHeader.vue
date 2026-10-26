@@ -5,21 +5,21 @@
       :role-label="roleLabel"
       :initials="initials"
       @click="$emit('open-organizations')" />
-    <IconButton
+    <Button
+      variant="transparent"
       icon="gear"
-      :label="$t('mobile.account.title')"
+      :aria-label="$t('mobile.account.title')"
       @click="$emit('open-account')" />
   </header>
 </template>
 
 <script>
 import OrgSwitcherButton from "@/mobile/components/OrgSwitcherButton.vue"
-import IconButton from "@/mobile/components/IconButton.vue"
 
 // Home header: current organization on the left, account on the right.
 export default {
   name: "AppHeader",
-  components: { OrgSwitcherButton, IconButton },
+  components: { OrgSwitcherButton },
   props: {
     organizationName: { type: String, required: true },
     roleLabel: { type: String, default: "" },

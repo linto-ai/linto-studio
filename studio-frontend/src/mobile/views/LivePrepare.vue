@@ -72,13 +72,15 @@
           {{ $t("mobile.live.start_failed") }}
         </p>
 
-        <button
+        <Button
           type="submit"
-          class="m-live__start"
-          :disabled="starting || !online">
-          <PhIcon name="broadcast" size="sm" />
-          {{ starting ? $t("mobile.common.loading") : $t("mobile.live.start") }}
-        </button>
+          variant="primary"
+          size="lg"
+          block
+          icon="broadcast"
+          :label="$t('mobile.live.start')"
+          :loading="starting"
+          :disabled="!online" />
         <p class="m-muted m-live__note">{{ $t("mobile.live.screen_note") }}</p>
       </form>
     </main>
@@ -95,7 +97,6 @@
 </template>
 
 <script>
-import PhIcon from "@/components/atoms/PhIcon.vue"
 import PageHeader from "@/mobile/components/PageHeader.vue"
 import InfoBanner from "@/mobile/components/InfoBanner.vue"
 import ToggleRow from "@/mobile/components/ToggleRow.vue"
@@ -112,7 +113,6 @@ import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 export default {
   name: "MobileLivePrepare",
   components: {
-    PhIcon,
     PageHeader,
     InfoBanner,
     ToggleRow,
@@ -181,22 +181,5 @@ export default {
 
 .m-live__note {
   text-align: center;
-}
-
-.m-live__start {
-  min-height: 52px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--m-space-2);
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-primary);
-  color: var(--m-on-primary);
-  font-weight: 600;
-}
-
-.m-live__start:disabled {
-  opacity: 0.6;
 }
 </style>

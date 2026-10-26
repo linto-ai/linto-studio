@@ -23,10 +23,11 @@
             size="md"
             weight="bold" />
         </button>
-        <IconButton
+        <Button
+          variant="transparent"
           icon="star"
-          :weight="org._id === favoriteId ? 'fill' : 'regular'"
-          :label="
+          :icon-weight="org._id === favoriteId ? 'fill' : 'regular'"
+          :aria-label="
             $t(
               org._id === favoriteId
                 ? 'mobile.organization.unset_favorite'
@@ -47,12 +48,11 @@
 <script>
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
-import IconButton from "@/mobile/components/IconButton.vue"
 import { getOrganizationRoleKey } from "@/mobile/tools/getOrganizationRoleKey.js"
 
 export default {
   name: "OrgPickerSheet",
-  components: { BottomSheet, PhIcon, IconButton },
+  components: { BottomSheet, PhIcon },
   props: {
     value: { type: Boolean, default: false },
     organizations: { type: Array, required: true },

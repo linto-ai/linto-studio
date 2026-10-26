@@ -45,7 +45,6 @@
           icon="check"
           size="sm"
           variant="primary"
-          shape="circle"
           :title="$t('validate')" />
       </div>
     </div>

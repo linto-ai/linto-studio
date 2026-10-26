@@ -14,9 +14,12 @@
           required
           maxlength="200"
           :aria-label="$t('mobile.record.name')" />
-        <button type="submit" class="m-recording__confirm">
-          {{ $t("mobile.common.confirm") }}
-        </button>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          block
+          :label="$t('mobile.common.confirm')" />
       </form>
       <template v-else>
         <p class="m-muted">{{ statusLine }}</p>
@@ -127,15 +130,6 @@ export default {
   border: 1px solid var(--m-border);
   border-radius: var(--m-radius-sm);
   background: var(--m-surface);
-}
-
-.m-recording__confirm {
-  min-height: 48px;
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-primary);
-  color: var(--m-on-primary);
-  font-weight: 600;
 }
 
 .m-recording__actions {

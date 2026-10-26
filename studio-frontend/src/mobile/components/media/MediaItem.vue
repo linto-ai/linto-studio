@@ -13,16 +13,16 @@
       </span>
       <MediaStatusChip :media="media" />
     </button>
-    <IconButton
+    <Button
+      variant="transparent"
       icon="dots-three-vertical"
-      :label="$t('mobile.queue.actions')"
+      :aria-label="$t('mobile.queue.actions')"
       @click="$emit('open-actions', media)" />
   </li>
 </template>
 
 <script>
 import PhIcon from "@/components/atoms/PhIcon.vue"
-import IconButton from "@/mobile/components/IconButton.vue"
 import MediaStatusChip from "@/mobile/components/media/MediaStatusChip.vue"
 import { formatDurationShort } from "@/mobile/tools/formatDurationShort.js"
 import { formatMediaDate } from "@/mobile/tools/formatMediaDate.js"
@@ -30,7 +30,7 @@ import { describeMediaKind } from "@/mobile/tools/describeMediaKind.js"
 
 export default {
   name: "MediaItem",
-  components: { PhIcon, IconButton, MediaStatusChip },
+  components: { PhIcon, MediaStatusChip },
   props: {
     media: { type: Object, required: true },
   },

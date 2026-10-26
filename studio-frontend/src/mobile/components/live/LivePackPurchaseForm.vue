@@ -1,12 +1,15 @@
 <template>
   <form class="m-pack-purchase" @submit.prevent="submit">
     <LivePackChoice v-model="selectedPackKey" :packs="packs" />
-    <button
+    <Button
       type="submit"
+      variant="primary"
+      size="lg"
+      block
       class="m-pack-purchase__buy"
-      :disabled="!selectedPack || buying">
-      {{ buying ? $t("mobile.common.loading") : buyLabel }}
-    </button>
+      :label="buyLabel"
+      :loading="buying"
+      :disabled="!selectedPack" />
   </form>
 </template>
 
@@ -84,17 +87,6 @@ export default {
   position: sticky;
   bottom: calc(var(--m-space-4) + var(--m-safe-bottom));
   margin-top: auto;
-  min-height: 52px;
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-primary);
-  color: var(--m-on-primary);
-  font: inherit;
-  font-weight: 600;
   box-shadow: var(--m-shadow-3);
-}
-
-.m-pack-purchase__buy:disabled {
-  opacity: 0.6;
 }
 </style>

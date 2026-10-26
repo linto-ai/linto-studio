@@ -2,13 +2,12 @@
   <InfoBanner :tone="tone">
     <span class="m-credit-banner">
       <span>{{ message }}</span>
-      <button
+      <Button
         v-if="canRecharge"
-        type="button"
+        variant="text"
         class="m-credit-banner__recharge"
-        @click="$emit('recharge')">
-        {{ $t("mobile.live.recharge") }}
-      </button>
+        :label="$t('mobile.live.recharge')"
+        @click="$emit('recharge')" />
     </span>
   </InfoBanner>
 </template>
@@ -57,13 +56,9 @@ export default {
 }
 
 .m-credit-banner__recharge {
-  min-height: var(--m-tap);
-  padding: 0;
-  border: none;
-  background: none;
-  color: inherit;
-  font: inherit;
+  /* A link in the banner's own color */
+  --btn-text: currentColor;
+  --btn-padding: 0;
   font-weight: 700;
-  text-decoration: underline;
 }
 </style>

@@ -7,14 +7,13 @@
           <span class="m-voices__name">{{ label }}</span>
         </span>
       </label>
-      <button
-        type="button"
+      <Button
+        variant="transparent"
         class="m-voices__expand"
+        :icon="expanded ? 'caret-up' : 'caret-down'"
         :aria-expanded="expanded ? 'true' : 'false'"
         :aria-label="$t('mobile.settings.voices_list')"
-        @click="toggleExpanded">
-        <PhIcon :name="expanded ? 'caret-up' : 'caret-down'" size="sm" />
-      </button>
+        @click="toggleExpanded" />
     </div>
     <div v-if="expanded" class="m-voices__details">
       <p v-if="!loaded" class="m-muted">{{ $t("mobile.common.loading") }}</p>
@@ -29,14 +28,12 @@
 </template>
 
 <script>
-import PhIcon from "@/components/atoms/PhIcon.vue"
 import { COLLECTION_TYPE } from "@/tools/voiceprint/voiceprintConstants.js"
 
 // One voice collection: a checkbox to use it, and a caret that unfolds the
 // enrolled voices (fetched by the parent through `load-voices`).
 export default {
   name: "VoiceCollectionRow",
-  components: { PhIcon },
   props: {
     collection: { type: Object, required: true },
     selected: { type: Boolean, default: false },
@@ -110,14 +107,7 @@ export default {
 }
 
 .m-voices__expand {
-  width: var(--m-tap);
-  height: var(--m-tap);
-  border: none;
-  background: transparent;
-  color: var(--m-text-muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  --btn-text: var(--m-text-muted);
 }
 
 .m-voices__details {

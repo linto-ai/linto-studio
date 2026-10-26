@@ -1,0 +1,188 @@
+/* The mobile look of the shared Button component (components/atoms/Button.vue
+   documents the class contract). Class selectors only: the app's own native
+   <button>s keep the styles of their components. Not in a layer, so that
+   base.css's bare `button` rule never wins over a .btn rule.
+
+   Each variant sets --btn-* knobs, the base rule reads them with the
+   tertiary look as fallback: a parent can tune a button through the same
+   knobs. */
+
+.btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+  gap: 0.5em;
+  max-width: 100%;
+  min-height: var(--btn-height, var(--m-tap));
+  margin: 0;
+  padding: var(--btn-padding, 0 var(--m-space-4));
+  border: 1px solid var(--btn-border-color, var(--m-border));
+  border-radius: var(--btn-border-radius, var(--m-radius-sm));
+  background-color: var(--btn-bg, var(--m-surface));
+  color: var(--btn-text, var(--m-text));
+  font: inherit;
+  font-size: var(--btn-font-size, var(--m-font-size));
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--m-primary);
+  outline-offset: 2px;
+}
+
+.btn--hovered {
+  background-color: var(--btn-hover-bg, var(--m-surface-muted));
+  color: var(--btn-hover-text, var(--btn-text, var(--m-text)));
+}
+
+/* A touch screen keeps :hover after a tap: only a real pointer gets it */
+@media (hover: hover) {
+  .btn:hover:not([disabled]):not([aria-disabled="true"]) {
+    background-color: var(--btn-hover-bg, var(--m-surface-muted));
+    color: var(--btn-hover-text, var(--btn-text, var(--m-text)));
+  }
+}
+
+.btn:active:not([disabled]):not([aria-disabled="true"]) {
+  opacity: 0.85;
+}
+
+.btn[disabled],
+.btn[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn .icon {
+  flex-shrink: 0;
+}
+
+.btn .label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn[multiline] {
+  padding-block: 0.35em;
+}
+
+.btn[multiline] .label {
+  white-space: normal;
+  text-align: left;
+}
+
+/* Icon-only: square, both sides read the height of its size */
+.btn:not(:has(> .label)):not(.btn--block) {
+  width: var(--btn-height, var(--m-tap));
+  padding: 0;
+}
+
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+
+/* The icon stays next to its label, both centred, instead of the label
+   filling the width (it still shrinks to an ellipsis) */
+.btn--block .label {
+  flex: 0 1 auto;
+}
+
+/* Sizes: md is the tap target, lg the main action of a screen */
+.btn--xs {
+  --btn-height: 28px;
+  --btn-padding: 0 var(--m-space-2);
+  --btn-font-size: var(--m-font-size-sm);
+}
+
+.btn--sm {
+  --btn-height: 36px;
+  --btn-padding: 0 var(--m-space-3);
+  --btn-font-size: var(--m-font-size-sm);
+}
+
+.btn--md {
+  --btn-height: var(--m-tap);
+  --btn-padding: 0 var(--m-space-4);
+  --btn-font-size: var(--m-font-size);
+}
+
+.btn--lg {
+  --btn-height: 52px;
+  --btn-padding: 0 var(--m-space-5);
+  --btn-font-size: var(--m-font-size);
+}
+
+.btn--xl {
+  --btn-height: 60px;
+  --btn-padding: 0 var(--m-space-6);
+  --btn-font-size: var(--m-font-size-lg);
+}
+
+/* Variants */
+.btn--default.btn--primary {
+  --btn-bg: var(--m-primary);
+  --btn-text: var(--m-on-primary);
+  --btn-border-color: var(--m-primary);
+  --btn-hover-bg: var(--m-primary-soft);
+  --btn-hover-text: var(--m-primary);
+}
+
+.btn--default.btn--secondary {
+  --btn-bg: var(--m-surface);
+  --btn-text: var(--m-primary);
+  --btn-border-color: var(--m-primary);
+  --btn-hover-bg: var(--m-primary-soft);
+  --btn-hover-text: var(--m-primary);
+}
+
+.btn--destructive.btn--primary {
+  --btn-bg: var(--m-danger);
+  --btn-text: var(--m-on-primary);
+  --btn-border-color: var(--m-danger);
+  --btn-hover-bg: var(--m-danger-soft);
+  --btn-hover-text: var(--m-danger);
+}
+
+.btn--destructive.btn--secondary {
+  --btn-bg: var(--m-surface);
+  --btn-text: var(--m-danger);
+  --btn-border-color: var(--m-danger);
+  --btn-hover-bg: var(--m-danger-soft);
+  --btn-hover-text: var(--m-danger);
+}
+
+.btn--transparent {
+  --btn-bg: transparent;
+  --btn-border-color: transparent;
+  --btn-hover-bg: var(--m-surface-muted);
+}
+
+.btn--text {
+  --btn-bg: transparent;
+  --btn-border-color: transparent;
+  --btn-hover-bg: transparent;
+  text-decoration: underline;
+}
+
+.btn--link {
+  --btn-bg: transparent;
+  --btn-border-color: transparent;
+  --btn-hover-bg: transparent;
+  --btn-padding: 0;
+  --btn-text: var(--m-info);
+}
+
+.btn--destructive.btn--text,
+.btn--destructive.btn--link,
+.btn--destructive.btn--transparent {
+  --btn-text: var(--m-danger);
+}

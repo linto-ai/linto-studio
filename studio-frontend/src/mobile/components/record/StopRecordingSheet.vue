@@ -23,10 +23,13 @@
         <span>{{ $t("mobile.record.name") }}</span>
         <input v-model="name" type="text" required maxlength="200" />
       </label>
-      <button type="submit" class="m-stop__finish">
-        <PhIcon name="upload-simple" size="sm" />
-        {{ $t("mobile.record.finish") }}
-      </button>
+      <Button
+        type="submit"
+        variant="primary"
+        size="lg"
+        block
+        icon="upload-simple"
+        :label="$t('mobile.record.finish')" />
       <ToggleRow
         v-model="keepAudio"
         :label="$t('mobile.library.keep_audio')"
@@ -39,7 +42,6 @@
 </template>
 
 <script>
-import PhIcon from "@/components/atoms/PhIcon.vue"
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
 import InfoBanner from "@/mobile/components/InfoBanner.vue"
 import ToggleRow from "@/mobile/components/ToggleRow.vue"
@@ -47,7 +49,7 @@ import RecordingPlayer from "@/mobile/components/record/RecordingPlayer.vue"
 
 export default {
   name: "StopRecordingSheet",
-  components: { BottomSheet, InfoBanner, PhIcon, ToggleRow, RecordingPlayer },
+  components: { BottomSheet, InfoBanner, ToggleRow, RecordingPlayer },
   props: {
     value: { type: Boolean, default: false },
     defaultName: { type: String, required: true },
@@ -102,19 +104,6 @@ export default {
   border: 1px solid var(--m-border);
   border-radius: var(--m-radius-sm);
   background: var(--m-surface);
-}
-
-.m-stop__finish {
-  min-height: 52px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--m-space-2);
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-primary);
-  color: var(--m-on-primary);
-  font-weight: 600;
 }
 
 .m-stop__sharing {

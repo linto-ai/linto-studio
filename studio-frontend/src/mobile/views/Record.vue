@@ -15,21 +15,17 @@
           v-if="recorder.state === 'recording'"
           :level="recorder.level" />
         <RecordButton :state="recorder.state" @click="onMainButton" />
-        <button
+        <Button
           v-if="isRecording"
-          type="button"
           class="m-record-page__pause"
-          @click="togglePause">
-          <PhIcon
-            :name="recorder.state === 'paused' ? 'play' : 'pause'"
-            size="sm"
-            weight="fill" />
-          {{
-            recorder.state === "paused"
-              ? $t("mobile.record.resume")
-              : $t("mobile.record.pause")
-          }}
-        </button>
+          :icon="recorder.state === 'paused' ? 'play' : 'pause'"
+          icon-weight="fill"
+          :label="
+            recorder.state === 'paused'
+              ? $t('mobile.record.resume')
+              : $t('mobile.record.pause')
+          "
+          @click="togglePause" />
         <p class="m-muted m-record-page__hint">
           {{ $t("mobile.record.local_only") }}
         </p>
@@ -93,7 +89,6 @@
 
 <script>
 import { mapGetters } from "vuex"
-import PhIcon from "@/components/atoms/PhIcon.vue"
 import PageHeader from "@/mobile/components/PageHeader.vue"
 import InfoBanner from "@/mobile/components/InfoBanner.vue"
 import ListRow from "@/mobile/components/ListRow.vue"
@@ -116,7 +111,6 @@ import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 export default {
   name: "MobileRecord",
   components: {
-    PhIcon,
     PageHeader,
     InfoBanner,
     ListRow,
@@ -185,15 +179,6 @@ export default {
 
 .m-record-page__pause {
   min-width: 160px;
-  min-height: var(--m-tap);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--m-space-2);
-  border: 1px solid var(--m-border);
-  border-radius: var(--m-radius-sm);
-  background: var(--m-surface);
-  font-weight: 600;
 }
 
 .m-record-page__hint {

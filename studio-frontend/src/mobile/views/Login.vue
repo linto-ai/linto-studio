@@ -33,11 +33,13 @@
           <PhIcon name="warning-circle" size="sm" />
           {{ $t("mobile.login.error") }}
         </p>
-        <button type="submit" class="m-login__submit" :disabled="pending">
-          {{
-            pending ? $t("mobile.common.loading") : $t("mobile.login.submit")
-          }}
-        </button>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          block
+          :label="$t('mobile.login.submit')"
+          :loading="pending" />
         <a href="/reset-password" class="m-login__link">{{
           $t("login.recover_password")
         }}</a>
@@ -164,19 +166,6 @@ export default {
   gap: var(--m-space-2);
   margin: 0;
   color: var(--m-danger);
-}
-
-.m-login__submit {
-  min-height: 52px;
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-primary);
-  color: var(--m-on-primary);
-  font-weight: 600;
-}
-
-.m-login__submit:disabled {
-  opacity: 0.6;
 }
 
 .m-login__sso {
