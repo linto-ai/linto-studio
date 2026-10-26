@@ -8,10 +8,10 @@ import { computePackGroups } from "@/tools/billing/pack/computePackGroups"
 import { getEnv } from "@/tools/getEnv"
 import { leavePageFor } from "@/tools/leavePageFor"
 
-// The organization's prepaid live minutes on the live preparation page: the
-// balance, the live packs an admin may buy (Stripe Checkout, back on this
-// page), and the wait for the credit once paid. Expects liveOrganizationId
-// from the host.
+// The organization's prepaid live minutes on the live pages (preparation,
+// running live): the balance, the live packs an admin may buy (Stripe
+// Checkout, back on the same page), and the wait for the credit once paid.
+// Expects liveOrganizationId from the host.
 export const liveCreditMixin = {
   data() {
     return {

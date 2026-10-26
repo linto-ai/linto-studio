@@ -156,6 +156,16 @@
           A message without action, aligned at the start.
         </NotificationBanner>
       </section>
+
+      <section class="flex col gap-small">
+        <h2 class="m-section-title">SessionStatusBanner - live credit</h2>
+        <SessionStatusBanner
+          v-for="banner in liveCreditBanners"
+          :key="banner.name"
+          websocket-status="connected"
+          :live-credit="banner.liveCredit"
+          :can-buy-live-pack="banner.canBuyLivePack" />
+      </section>
     </main>
   </div>
 </template>
@@ -163,6 +173,7 @@
 <script>
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import PageHeader from "@/mobile/components/PageHeader.vue"
+import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
 
 const VARIANTS = [
   "primary",
@@ -173,6 +184,15 @@ const VARIANTS = [
   "link",
 ]
 const SIZES = ["xs", "sm", "md", "lg", "xl"]
+// live block of GET /cloud/usage/:orgId, as the live page polls it
+const LOW_LIVE_CREDIT = { balance: 7, lowBalance: true, unmetered: false }
+const NO_LIVE_CREDIT = { balance: 0, lowBalance: true, unmetered: false }
+const LIVE_CREDIT_BANNERS = [
+  { name: "low-admin", liveCredit: LOW_LIVE_CREDIT, canBuyLivePack: true },
+  { name: "low-member", liveCredit: LOW_LIVE_CREDIT, canBuyLivePack: false },
+  { name: "none-admin", liveCredit: NO_LIVE_CREDIT, canBuyLivePack: true },
+  { name: "none-member", liveCredit: NO_LIVE_CREDIT, canBuyLivePack: false },
+]
 const NOTIFICATION_BANNERS = [
   { variant: "info", icon: "info" },
   { variant: "warning", icon: "warning" },
@@ -185,12 +205,13 @@ const NOTIFICATION_BANNERS = [
 // eye (the classic app has the same page at /components).
 export default {
   name: "MobileComponents",
-  components: { NotificationBanner, PageHeader },
+  components: { NotificationBanner, PageHeader, SessionStatusBanner },
   data() {
     return {
       variants: VARIANTS,
       sizes: SIZES,
       notificationBanners: NOTIFICATION_BANNERS,
+      liveCreditBanners: LIVE_CREDIT_BANNERS,
     }
   },
 }

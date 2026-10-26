@@ -46,9 +46,11 @@
         :session="session"
         :currentOrganizationScope="currentOrganizationScope"
         :websocketInstance="$apiEventWS"
+        @buy-live-pack="isLivePackPurchaseOpen = true"
         @viewport-change="editorIsMobile = $event"
         @sidebar-open="editorSidebarOpen = $event" />
       <VisioPlaceholder v-else />
+      <PackPurchaseModal v-model="isLivePackPurchaseOpen" kind="live" />
     </div>
   </V2Layout>
 </template>
@@ -57,6 +59,7 @@ import SessionLiveNG from "@/components/SessionLiveNG.vue"
 import SessionLiveActions from "@/components/SessionLiveActions.vue"
 import VisioPlaceholder from "@/components/molecules/VisioPlaceholder.vue"
 import SessionEnded from "@/components/SessionEnded.vue"
+import PackPurchaseModal from "@/components-cloud/PackPurchaseModal.vue"
 import V2Layout from "@/layouts/v2-layout.vue"
 
 export default {
@@ -80,6 +83,7 @@ export default {
       // getter switches at 1100px, the editor's sidebar at 767px.
       editorIsMobile: false,
       editorSidebarOpen: false,
+      isLivePackPurchaseOpen: false,
     }
   },
   computed: {
@@ -109,6 +113,7 @@ export default {
     V2Layout,
     VisioPlaceholder,
     SessionEnded,
+    PackPurchaseModal,
   },
 }
 </script>

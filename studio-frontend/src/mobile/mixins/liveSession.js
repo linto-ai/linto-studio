@@ -1,5 +1,6 @@
 import { mapGetters } from "vuex"
 import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
+import { quickSessionPauseMixin } from "@/mixins/quickSessionPause.js"
 import {
   connectRealtime,
   realtimeSocket,
@@ -13,7 +14,7 @@ const DEVICE_STORAGE_KEY = "mobile.record.deviceId"
 // Lifecycle of the live page: load the running quick session, stream the
 // microphone to its first channel, end it into a conversation.
 export const liveSessionMixin = {
-  mixins: [sessionMicrophoneMixin],
+  mixins: [sessionMicrophoneMixin, quickSessionPauseMixin],
   data() {
     return {
       socket: realtimeSocket,

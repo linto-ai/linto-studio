@@ -44,6 +44,32 @@
   gap: var(--m-space-2);
 }
 
+/* A phone is too narrow for the text beside its actions: the text gets the
+   whole width, the actions go under it, aligned with the text. The icon sits
+   on the first line of the text. */
+.notification-banner:has(> .notification-banner__actions) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--m-space-2);
+}
+
+.notification-banner:has(> .notification-banner__icon):has(
+    > .notification-banner__actions
+  ) {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.notification-banner:has(> .notification-banner__icon)
+  > .notification-banner__actions {
+  grid-column: 2;
+}
+
+.notification-banner:has(> .notification-banner__actions)
+  > .notification-banner__actions {
+  justify-self: start;
+}
+
 .notification-banner.info {
   background: var(--m-info-soft);
   color: var(--m-info);

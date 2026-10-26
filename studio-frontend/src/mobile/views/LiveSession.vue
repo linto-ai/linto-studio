@@ -52,9 +52,20 @@
         :microphone-status="microphoneStatus"
         @retry-microphone="retryAudioConnection"
         @reconfigure-microphone="restartMicrophone"
+        @buy-live-pack="openLivePackPurchase"
         @viewport-change="editorIsMobile = $event"
         @sidebar-open="editorSidebarOpen = $event" />
     </div>
+
+    <BottomSheet
+      :value="packSheetOpen"
+      :title="$t('mobile.live.recharge_title')"
+      @input="onPackSheetInput">
+      <LivePackPurchaseForm
+        :packs="livePacks"
+        :buying="buyingPack"
+        @buy="buyLivePack" />
+    </BottomSheet>
 
     <EndLiveSheet
       v-model="endSheetOpen"
@@ -68,15 +79,24 @@
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import SessionLiveNG from "@/components/SessionLiveNG.vue"
 import EndLiveSheet from "@/mobile/components/live/EndLiveSheet.vue"
+import BottomSheet from "@/mobile/components/BottomSheet.vue"
+import LivePackPurchaseForm from "@/mobile/components/live/LivePackPurchaseForm.vue"
 import { liveSessionMixin } from "@/mobile/mixins/liveSession.js"
+import { liveCreditMixin } from "@/mobile/mixins/liveCredit.js"
 
 // The live session inside the app: the same live editor component as the
 // classic quick meeting (captions, translations, wake lock), the shared
 // microphone streaming mixin, and a mobile bar with mute and end.
 export default {
   name: "MobileLiveSession",
-  components: { PhIcon, SessionLiveNG, EndLiveSheet },
-  mixins: [liveSessionMixin],
+  components: {
+    PhIcon,
+    SessionLiveNG,
+    EndLiveSheet,
+    BottomSheet,
+    LivePackPurchaseForm,
+  },
+  mixins: [liveSessionMixin, liveCreditMixin],
   data() {
     return {
       // Both pushed by the editor. <linto-transcript-ui> is mounted with no-header
@@ -89,9 +109,26 @@ export default {
       editorSidebarOpen: false,
     }
   },
+  computed: {
+    // The organization liveCreditMixin buys live minutes for
+    liveOrganizationId() {
+      return this.organizationId
+    },
+  },
   methods: {
     toggleEditorSidebar() {
       this.$refs.sessionLiveNG.toggleSidebar()
+    },
+    // The payment page is left with the live paused (quickSessionPauseMixin):
+    // back from it, the page reloads and the microphone restarts
+    openLivePackPurchase() {
+      this.pauseForPackPurchase()
+      this.packSheetOpen = true
+    },
+    // Closed without leaving for the payment page: the live goes on
+    onPackSheetInput(isOpen) {
+      this.packSheetOpen = isOpen
+      if (!isOpen && !this.buyingPack) this.undoPackPurchasePause()
     },
   },
 }

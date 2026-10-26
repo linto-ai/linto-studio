@@ -37,6 +37,15 @@ export async function apiGetUsage(organizationId, notif = null) {
     {},
     notif,
   )
+  // TEMP (do not commit): fake low live credit to show the live credit banner
+  if (res?.data?.live) {
+    res.data.live = {
+      ...res.data.live,
+      balance: 7,
+      lowBalance: true,
+      unmetered: false,
+    }
+  }
   return res?.data
 }
 
