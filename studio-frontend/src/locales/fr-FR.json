@@ -957,6 +957,7 @@
     }
   },
   "createaccount": {
+    "discoverability_notice": "Vous pouvez rendre votre profil privé à tout moment dans vos paramètres.",
     "email_label": "Adresse e-mail",
     "email_verification_text": "Un e-mail de validation vient de vous être envoyé. Cliquez sur le lien de vérification pour commencer à utiliser LinTO Studio.",
     "email_verification_title": "Votre compte LinTO Studio a été créé avec succès.",
@@ -2248,6 +2249,8 @@
     "personal_information": "Informations personnelles",
     "picture_label": "Image de profil",
     "profil_visibility": {
+      "description": "Un profil privé n'apparaît dans aucune recherche et sa fiche n'est pas consultable par les autres utilisateurs.",
+      "discoverability": "Votre nom et votre photo sont visibles par les membres de vos organisations, par les personnes qui ont partagé un média avec vous et par toute personne saisissant votre adresse e-mail exacte.",
       "label_private": "Profil privé",
       "title": "Visibilité du profil"
     },

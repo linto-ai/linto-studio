@@ -48,6 +48,12 @@ const { populateUserToOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const platformAccess = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/platform`,
+)
+const { reachableUserIds } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/discoverability`,
+)
 
 const triggers = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
@@ -135,23 +141,41 @@ async function searchUser(req, res, next) {
         `Search requires at least ${SEARCH_MIN_LENGTH} characters`,
       )
 
-    const userList = (await model.users.listPublicUsers())
-      .filter((user) => {
-        const userField = [
-          user.firstname,
-          user.lastname,
-          user.email,
-          user.firstname + " " + user.lastname,
-          user.lastname + " " + user.firstname,
-        ]
+    const exactAddress = (user) => user.email?.toLowerCase() === search
 
-        return userField.some((field) => field?.toLowerCase().includes(search))
-      })
-      // The address is only echoed back to a caller who typed it in full
-      .map(({ email, ...user }) => {
-        if (email?.toLowerCase() !== search) return user
-        return { ...user, email }
-      })
+    // The platform-wide search is tied to the backoffice scope on purpose
+    const [publicUsers, superAdmin] = await Promise.all([
+      model.users.listPublicUsers(),
+      platformAccess.isSuperAdmin(req),
+    ])
+
+    let userList = publicUsers.filter((user) => {
+      const userField = [
+        user.firstname,
+        user.lastname,
+        user.email,
+        user.firstname + " " + user.lastname,
+        user.lastname + " " + user.firstname,
+      ]
+
+      return userField.some((field) => field?.toLowerCase().includes(search))
+    })
+
+    // Outside a common organization or a received share, only the full
+    // address finds someone
+    if (userList.length > 0 && !superAdmin) {
+      const reachable = await reachableUserIds(req.payload.data.userId)
+      userList = userList.filter(
+        (user) => exactAddress(user) || reachable.has(user._id.toString()),
+      )
+    }
+
+    // The address is only echoed back to a caller who typed it in full
+    userList = userList.map((user) => {
+      if (exactAddress(user)) return user
+      const { email, ...rest } = user
+      return rest
+    })
 
     if (userList.length === 0) res.status(204).send()
     else res.status(200).send(userList)

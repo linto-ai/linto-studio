@@ -1,6 +1,10 @@
 <template>
   <section>
     <h2>{{ $t("user_settings.profil_visibility.title") }}</h2>
+    <p class="profile-visibility__hint">
+      {{ $t("user_settings.profil_visibility.discoverability") }}
+      {{ $t("user_settings.profil_visibility.description") }}
+    </p>
     <FormCheckbox
       :field="profilePrivate"
       @input="updateVisibility"
@@ -59,3 +63,11 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.profile-visibility__hint {
+  margin: 0 0 0.5rem;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+</style>

@@ -291,6 +291,28 @@ class ConvoModel extends MongoModel {
     }
   }
 
+  // Shares received by a user (same rule as getByShare), for the search gate
+  async listSharedWithUser(idUser) {
+    try {
+      const query = {
+        "type.mode": TYPE.CANONICAL,
+        sharedWithUsers: {
+          $elemMatch: {
+            userId: idUser.toString(),
+            right: { $bitsAnySet: RIGHTS.READ },
+          },
+        },
+      }
+      return await this.mongoRequest(query, {
+        owner: 1,
+        "sharedWithUsers.$": 1,
+      })
+    } catch (err) {
+      console.error(err)
+      return err
+    }
+  }
+
   async getSharedConvFromOrga(idOrga, idUser) {
     try {
       const query = {

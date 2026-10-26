@@ -67,6 +67,10 @@
         @change="testPasswordConfirm(passwordConfirm, password)"
         inputFullWidth />
 
+      <p class="create-account__discoverability">
+        {{ $t("user_settings.profil_visibility.discoverability") }}
+        {{ $t("createaccount.discoverability_notice") }}
+      </p>
       <div class="form-field flex row">
         <Button
           type="submit"
@@ -290,5 +294,11 @@ export default {
 <style lang="css" scoped>
 input[type="file"] {
   display: none;
+}
+
+.create-account__discoverability {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 </style>

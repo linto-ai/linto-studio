@@ -135,9 +135,18 @@ async function inviteMemberByEmail({
   return invited.id
 }
 
-// Deletion order matters: media, taxonomy, organization-scoped speaker
-// identification, then the organization record
+// Deletion order matters: billing, media, taxonomy, organization-scoped
+// speaker identification, then the organization record
 async function deleteOrganizationCascade(organizationId) {
+  // A subscription that cannot be canceled keeps the organization untouched
+  try {
+    await saas.cancelSubscriptions(organizationId)
+  } catch (e) {
+    throw new OrganizationError(
+      `Subscription could not be canceled, organization kept: ${e && e.message}`,
+    )
+  }
+
   const conversations = throwIfError(
     await model.conversations.getByOrga(organizationId),
   )
@@ -191,8 +200,8 @@ async function deleteOrganizationCascade(organizationId) {
   // already committed, a billing/log purge failure must not turn it into a 500.
   // NO-OP in the OSS build.
   const purge = await saas.purgeOrganization(organizationId)
-  // A non-clean purge can leave a still-billable Stripe subscription attached to
-  // a now-deleted org, so surface it above debug for manual reconciliation.
+  // Subscriptions were canceled first; a non-clean purge means local billing
+  // rows survived the org, surfaced above debug for manual reconciliation.
   if (purge && Array.isArray(purge.errors) && purge.errors.length) {
     logger.error(
       `[saas] org ${organizationId} purge had errors (manual reconciliation may be needed): ${JSON.stringify(purge.errors)}`,

@@ -514,7 +514,7 @@ await linTO.share_conversation(conversation_id, email, **options)
 
 #### searchUsers
 
-Search users by email or display name. Results carry no `email`, except the user whose address is exactly the search string. Mostly useful as a building block for higher-level helpers like `setConversationOwner`.
+Search users by email or display name (3 characters minimum). Name matches are limited to the members of a common organization and the people who shared a conversation with the caller; the exact email address finds anyone. Results carry no `email`, except the user whose address is exactly the search string. Mostly useful as a building block for higher-level helpers like `setConversationOwner`.
 
 ```javascript
 // Javascript

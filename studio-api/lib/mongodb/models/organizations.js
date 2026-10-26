@@ -24,6 +24,11 @@ const public_projection = { token: 0, sso: 0, sessionNotice: 0 }
 // Orgs bought with a plan stay hidden until paid (see createPending)
 const VISIBLE = { pendingCheckout: { $exists: false } }
 
+const memberOf = (userId) => ({
+  ...VISIBLE,
+  users: { $elemMatch: { userId: userId.toString() } },
+})
+
 const SORTABLE_COMPUTED_FIELDS = {
   userNumber: { $size: { $ifNull: ["$users", []] } },
 }
@@ -321,17 +326,22 @@ class OrganizationModel extends MongoModel {
     return rows[0]
   }
 
+  // Member ids only, for the user search gate
+  async listByMember(userId) {
+    try {
+      return await this.mongoRequest(memberOf(userId), { "users.userId": 1 })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async listSelf(userId) {
     try {
-      const query = {
-        ...VISIBLE,
-        users: {
-          $elemMatch: {
-            userId: userId.toString(),
-          },
-        },
-      }
-      const organizations = await this.mongoRequest(query, public_projection)
+      const organizations = await this.mongoRequest(
+        memberOf(userId),
+        public_projection,
+      )
 
       if (organizations.length === 0) return organizations
 

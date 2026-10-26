@@ -293,7 +293,7 @@
   "/api/users/search/": {
     "get": {
       "tags": ["users"],
-      "summary": "Search users by first name, last name or email",
+      "summary": "Search users by first name, last name or email. Name matches are limited to the members of a common organization and the people who shared a conversation with the caller, the exact email address finds anyone. A super administrator searching with userScope=backoffice sees the whole platform",
       "parameters": [
         {
           "name": "search",

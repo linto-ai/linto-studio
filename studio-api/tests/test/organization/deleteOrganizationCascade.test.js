@@ -1,6 +1,12 @@
 jest.mock("debug", () => () => () => {})
 jest.mock(`${process.cwd()}/lib/mailer/mailing`, () => ({}))
 
+const mockSaas = {
+  cancelSubscriptions: jest.fn(async () => 0),
+  purgeOrganization: jest.fn(async () => ({ errors: [] })),
+}
+jest.mock(`${process.cwd()}/lib/saas`, () => mockSaas)
+
 const mockModel = {
   conversations: { getByOrga: jest.fn(), delete: jest.fn() },
   conversationSubtitles: {
@@ -91,6 +97,30 @@ describe("deleteOrganizationCascade", () => {
       deletedCount: 0,
     })
     mockModel.organizations.delete.mockResolvedValue({ deletedCount: 1 })
+    mockSaas.cancelSubscriptions.mockResolvedValue(0)
+  })
+
+  test("cancels the billing before touching anything else", async () => {
+    mockModel.conversations.getByOrga.mockResolvedValue([{ _id: "conv1" }])
+
+    await deleteOrganizationCascade(ORG_ID)
+
+    expect(mockSaas.cancelSubscriptions).toHaveBeenCalledWith(ORG_ID)
+    expect(lastCallOrder(mockSaas.cancelSubscriptions)).toBeLessThan(
+      lastCallOrder(mockModel.conversations.delete),
+    )
+    expect(mockSaas.purgeOrganization).toHaveBeenCalledWith(ORG_ID)
+  })
+
+  test("keeps the organization and its data when the subscription cannot be canceled", async () => {
+    mockSaas.cancelSubscriptions.mockRejectedValue(new Error("stripe down"))
+
+    await expect(deleteOrganizationCascade(ORG_ID)).rejects.toThrow(
+      "organization kept: stripe down",
+    )
+    expect(mockModel.conversations.getByOrga).not.toHaveBeenCalled()
+    expect(mockModel.organizations.delete).not.toHaveBeenCalled()
+    expect(mockSaas.purgeOrganization).not.toHaveBeenCalled()
   })
 
   test("deletes media, taxonomy, then speaker identification, then the organization", async () => {

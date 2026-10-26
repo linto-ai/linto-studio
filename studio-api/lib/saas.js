@@ -127,6 +127,14 @@ async function enforceSeats(organization, { fromRole = null, toRole }) {
   return v
 }
 
+// Stops billing before an organization is deleted. Not fail-soft on purpose:
+// a Stripe failure must keep the organization and its subscription row.
+async function cancelSubscriptions(orgId) {
+  const pp = plugin()
+  if (!pp) return 0
+  return await pp.cancelSubscriptions(orgId)
+}
+
 // RGPD: erase an org's billing footprint (Stripe subscription canceled, local
 // rows dropped). The Stripe customer is kept for the legal retention of invoices.
 async function purgeOrganization(orgId) {
@@ -163,6 +171,7 @@ module.exports = {
   countCollaborators,
   requiredSeats,
   enforceSeats,
+  cancelSubscriptions,
   purgeOrganization,
   purgeUser,
 }

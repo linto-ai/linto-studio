@@ -3,6 +3,16 @@ const mockModel = {
 }
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => mockModel)
 jest.mock(`${process.cwd()}/lib/mailer/mailing`, () => ({}))
+const mockAccess = { isSuperAdmin: jest.fn() }
+jest.mock(
+  `${process.cwd()}/components/WebServer/middlewares/access/platform`,
+  () => mockAccess,
+)
+const mockDiscoverability = { reachableUserIds: jest.fn() }
+jest.mock(
+  `${process.cwd()}/components/WebServer/controllers/user/discoverability`,
+  () => mockDiscoverability,
+)
 for (const dep of [
   "controllers/files/store",
   "controllers/organization/utility",
@@ -40,7 +50,7 @@ const USERS = [
 ]
 
 async function call(search) {
-  const req = { query: { search } }
+  const req = { query: { search }, payload: { data: { userId: "me" } } }
   const res = { status: jest.fn().mockReturnThis(), send: jest.fn() }
   const next = jest.fn()
   await searchUser(req, res, next)
@@ -51,6 +61,10 @@ describe("searchUser", () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockModel.users.listPublicUsers.mockResolvedValue(USERS)
+    mockAccess.isSuperAdmin.mockResolvedValue(false)
+    mockDiscoverability.reachableUserIds.mockResolvedValue(
+      new Set(["me", "u-alice", "u-alicia"]),
+    )
   })
 
   it("matches on the email but never returns it", async () => {
@@ -91,6 +105,34 @@ describe("searchUser", () => {
 
     expect(res.status).toHaveBeenCalledWith(204)
     expect(res.send).toHaveBeenCalledWith()
+  })
+
+  it("hides by name the people the caller has nothing in common with", async () => {
+    mockDiscoverability.reachableUserIds.mockResolvedValue(new Set(["me"]))
+
+    const { res } = await call("ali")
+
+    expect(res.status).toHaveBeenCalledWith(204)
+    expect(mockDiscoverability.reachableUserIds).toHaveBeenCalledWith("me")
+  })
+
+  it("finds anyone by the exact address", async () => {
+    mockDiscoverability.reachableUserIds.mockResolvedValue(new Set(["me"]))
+
+    const { res } = await call("alicia@example.com")
+
+    const [list] = res.send.mock.calls[0]
+    expect(list.map((u) => u._id)).toEqual(["u-alicia"])
+  })
+
+  it("lets a super admin search the whole platform", async () => {
+    mockAccess.isSuperAdmin.mockResolvedValue(true)
+
+    const { res } = await call("ali")
+
+    const [list] = res.send.mock.calls[0]
+    expect(list.map((u) => u._id)).toEqual(["u-alice", "u-alicia"])
+    expect(mockDiscoverability.reachableUserIds).not.toHaveBeenCalled()
   })
 
   it("refuses a search under three characters", async () => {
