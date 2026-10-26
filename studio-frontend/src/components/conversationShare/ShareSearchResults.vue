@@ -47,6 +47,10 @@
       </template>
     </GenericTable>
 
+    <p v-else-if="searchTooShort" class="share-search__empty">
+      {{ $t("share_menu.search_min_length") }}
+    </p>
+
     <p
       v-else-if="!showInviteRow && trimmedSearch.length > 0"
       class="share-search__empty">
@@ -104,6 +108,10 @@ export default {
     }),
     trimmedSearch() {
       return this.searchValue.trim()
+    },
+    searchTooShort() {
+      const length = this.trimmedSearch.length
+      return length > 0 && length < USER_SEARCH_MIN_LENGTH
     },
     isEmail() {
       return isValidEmail(this.trimmedSearch)

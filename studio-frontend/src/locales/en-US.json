@@ -1477,7 +1477,7 @@
     }
   },
   "organisation": {
-    "add_member_description": "Use the search form to find users by their firstname, lastname or email address",
+    "add_member_description": "Search by first or last name among the members of your organizations and the people who shared a media with you, or anyone by their full email address",
     "add_member_label": "Add a member",
     "create": {
       "error_already_exists": "An organisation with this name already exists",
@@ -2209,6 +2209,7 @@
     "badge_default": "Default",
     "reset_to_default": "Reset to default right",
     "no_search_results": "No user found",
+    "search_min_length": "Type at least 3 characters",
     "column_user": "User",
     "column_status": "Status",
     "column_right": "Right",

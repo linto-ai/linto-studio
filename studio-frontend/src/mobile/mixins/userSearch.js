@@ -3,8 +3,8 @@ import { USER_SEARCH_MIN_LENGTH } from "@/const/userSearch.js"
 
 const SEARCH_DELAY_MS = 300
 
-// Debounced platform-wide user search of the share sheet. Only the results
-// of the latest text are kept; an older request in flight is aborted.
+// Debounced user search of the share sheet. Only the results of the latest
+// text are kept; an older request in flight is aborted.
 export const userSearchMixin = {
   data() {
     return { searchText: "", results: [], searching: false }
@@ -12,6 +12,10 @@ export const userSearchMixin = {
   computed: {
     isSearching() {
       return this.searchText.trim().length > 0
+    },
+    searchTooShort() {
+      const length = this.searchText.trim().length
+      return length > 0 && length < USER_SEARCH_MIN_LENGTH
     },
   },
   beforeDestroy() {

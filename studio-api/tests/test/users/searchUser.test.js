@@ -3,7 +3,7 @@ const mockModel = {
 }
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => mockModel)
 jest.mock(`${process.cwd()}/lib/mailer/mailing`, () => ({}))
-const mockAccess = { isSuperAdmin: jest.fn() }
+const mockAccess = { isSystemAdministrator: jest.fn(), isSuperAdmin: jest.fn() }
 jest.mock(
   `${process.cwd()}/components/WebServer/middlewares/access/platform`,
   () => mockAccess,
@@ -61,6 +61,7 @@ describe("searchUser", () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockModel.users.listPublicUsers.mockResolvedValue(USERS)
+    mockAccess.isSystemAdministrator.mockResolvedValue(false)
     mockAccess.isSuperAdmin.mockResolvedValue(false)
     mockDiscoverability.reachableUserIds.mockResolvedValue(
       new Set(["me", "u-alice", "u-alicia"]),
@@ -125,7 +126,17 @@ describe("searchUser", () => {
     expect(list.map((u) => u._id)).toEqual(["u-alicia"])
   })
 
-  it("lets a super admin search the whole platform", async () => {
+  it("lets a system administrator search the whole platform", async () => {
+    mockAccess.isSystemAdministrator.mockResolvedValue(true)
+
+    const { res } = await call("ali")
+
+    const [list] = res.send.mock.calls[0]
+    expect(list.map((u) => u._id)).toEqual(["u-alice", "u-alicia"])
+    expect(mockDiscoverability.reachableUserIds).not.toHaveBeenCalled()
+  })
+
+  it("lets a super administrator search the whole platform", async () => {
     mockAccess.isSuperAdmin.mockResolvedValue(true)
 
     const { res } = await call("ali")

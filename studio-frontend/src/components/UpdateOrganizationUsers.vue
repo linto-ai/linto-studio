@@ -635,7 +635,9 @@ export default {
       if (organization) this.setMembers(organization.users)
     },
     removeFromMembers(user) {
-      this.userToRemove = user
+      // A search result carries no email, the member row does
+      this.userToRemove =
+        this.members.find((member) => member._id === user._id) ?? user
       this.displayRemoveUserModal = true
     },
     closeRemoveFromMembersModal(apiRes) {

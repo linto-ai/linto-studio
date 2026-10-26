@@ -135,7 +135,8 @@ const SEARCH_MIN_LENGTH = 3
 
 async function searchUser(req, res, next) {
   try {
-    const search = (req.query.search ?? "").trim().toLowerCase()
+    const raw = req.query.search
+    const search = (typeof raw === "string" ? raw : "").trim().toLowerCase()
     if (search.length < SEARCH_MIN_LENGTH)
       throw new UserUnsupportedMediaType(
         `Search requires at least ${SEARCH_MIN_LENGTH} characters`,
@@ -143,11 +144,14 @@ async function searchUser(req, res, next) {
 
     const exactAddress = (user) => user.email?.toLowerCase() === search
 
-    // The platform-wide search is tied to the backoffice scope on purpose
-    const [publicUsers, superAdmin] = await Promise.all([
+    // The platform-wide search is tied to the backoffice scope on purpose.
+    // Super administrators are not always flagged system administrators
+    const [publicUsers, systemAdmin, superAdmin] = await Promise.all([
       model.users.listPublicUsers(),
+      platformAccess.isSystemAdministrator(req),
       platformAccess.isSuperAdmin(req),
     ])
+    const backofficeAdmin = systemAdmin || superAdmin
 
     let userList = publicUsers.filter((user) => {
       const userField = [
@@ -163,7 +167,7 @@ async function searchUser(req, res, next) {
 
     // Outside a common organization or a received share, only the full
     // address finds someone
-    if (userList.length > 0 && !superAdmin) {
+    if (userList.length > 0 && !backofficeAdmin) {
       const reachable = await reachableUserIds(req.payload.data.userId)
       userList = userList.filter(
         (user) => exactAddress(user) || reachable.has(user._id.toString()),

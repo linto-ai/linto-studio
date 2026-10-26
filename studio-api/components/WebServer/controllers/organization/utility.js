@@ -135,10 +135,8 @@ async function inviteMemberByEmail({
   return invited.id
 }
 
-// Deletion order matters: billing, media, taxonomy, organization-scoped
-// speaker identification, then the organization record
-async function deleteOrganizationCascade(organizationId) {
-  // A subscription that cannot be canceled keeps the organization untouched
+// A subscription that cannot be canceled keeps the organization untouched
+async function cancelBilling(organizationId) {
   try {
     await saas.cancelSubscriptions(organizationId)
   } catch (e) {
@@ -146,6 +144,12 @@ async function deleteOrganizationCascade(organizationId) {
       `Subscription could not be canceled, organization kept: ${e && e.message}`,
     )
   }
+}
+
+// Deletion order matters: billing, media, taxonomy, organization-scoped
+// speaker identification, then the organization record
+async function deleteOrganizationCascade(organizationId) {
+  await cancelBilling(organizationId)
 
   const conversations = throwIfError(
     await model.conversations.getByOrga(organizationId),
@@ -195,13 +199,10 @@ async function deleteOrganizationCascade(organizationId) {
   if (resultOrga.deletedCount !== 1)
     throw new OrganizationError("Error when deleting organization")
 
-  // RGPD cascade into the SaaS plugin. Every org-deletion path goes through this
-  // helper, so this is the single purge point. Fail-soft: the org delete has
-  // already committed, a billing/log purge failure must not turn it into a 500.
-  // NO-OP in the OSS build.
+  // Single purge point of the plugin rows, every org deletion ends here.
+  // Fail-soft: the org delete has already committed. No-op in OSS
   const purge = await saas.purgeOrganization(organizationId)
-  // Subscriptions were canceled first; a non-clean purge means local billing
-  // rows survived the org, surfaced above debug for manual reconciliation.
+  // Subscriptions were canceled first, leftovers are local billing rows only
   if (purge && Array.isArray(purge.errors) && purge.errors.length) {
     logger.error(
       `[saas] org ${organizationId} purge had errors (manual reconciliation may be needed): ${JSON.stringify(purge.errors)}`,
@@ -310,6 +311,7 @@ async function addM2mUserToOrganization(orgaId, m2m_id, role = ROLES.MEMBER) {
 module.exports = {
   getOrgaIdFromReq,
   countAdmin,
+  cancelBilling,
   deleteCategoriesFromScope,
   deleteConversationCascade,
   deleteOrganizationCascade,

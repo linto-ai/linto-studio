@@ -132,6 +132,8 @@ async function enforceSeats(organization, { fromRole = null, toRole }) {
 async function cancelSubscriptions(orgId) {
   const pp = plugin()
   if (!pp) return 0
+  if (typeof pp.cancelSubscriptions !== "function")
+    throw new Error("cloud service plugin too old to cancel subscriptions")
   return await pp.cancelSubscriptions(orgId)
 }
 

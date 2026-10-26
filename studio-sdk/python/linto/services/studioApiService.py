@@ -2,6 +2,7 @@
 import aiohttp
 import json
 import logging
+from urllib.parse import quote
 from datetime import datetime
 from ..models.media import Media
 from ..tools.generate_service_config import generate_service_config
@@ -359,7 +360,7 @@ class StudioApiService:
     @with_token
     async def search_users(self, search, **kwargs):
         """Search users by email or name."""
-        url = f"{self.base_api_url}/users/search?search={search}"
+        url = f"{self.base_api_url}/users/search?search={quote(search, safe='')}"
         return await self._send_request("GET", url, **kwargs)
 
     # --- Conversation management methods ---
