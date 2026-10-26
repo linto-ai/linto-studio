@@ -54,10 +54,6 @@
             icon="trash"
             :label="$t('organisation.delete_organization')"
             intent="destructive" />
-          <!-- <button @click="openDeleteModal" class="btn tertiary outline">
-        <ph-icon name="trash"></ph-icon>
-        <span class="label">{{ $t("organisation.delete_organization") }}</span>
-      </button> -->
         </section>
       </div>
       <!-- <div style="width: 450px">

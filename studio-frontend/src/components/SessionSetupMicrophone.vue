@@ -83,12 +83,11 @@
         icon="arrow-left"
         :label="$t('quick_session.setup_microphone.back')" />
       <div class="flex1"></div>
-      <button
+      <Button
         v-if="!noCancel"
-        class="btn secondary setup-microphone-cancel"
-        @click="trashSession">
-        <span class="label">{{ $t("modal.cancel") }}</span>
-      </button>
+        class="setup-microphone-cancel"
+        :label="$t('modal.cancel')"
+        @click="trashSession" />
 
       <Button
         variant="primary"

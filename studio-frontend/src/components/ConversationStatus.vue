@@ -36,12 +36,12 @@
         {{ $t("conversation.status_page.generic_description_line_2") }}
       </div>
       <div>
-        <router-link :to="conversationListRoute" class="btn">
-          <span class="icon back"></span>
-          <span class="label">{{
-            $t("conversation.status_page.return_to_medias_list_button")
-          }}</span>
-        </router-link>
+        <Button
+          :to="conversationListRoute"
+          icon="arrow-left"
+          :label="
+            $t('conversation.status_page.return_to_medias_list_button')
+          " />
       </div>
     </div>
   </V2Layout>

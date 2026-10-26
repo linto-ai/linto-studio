@@ -4,19 +4,6 @@
       <h2>
         {{ $t("user_settings.change_password_label") }}
       </h2>
-      <!-- <div class="flex row" v-if="notificationShouldUpdatePassword">
-        <div class="user-settings-notification">
-          <span class="content">
-            {{ $t("user_settings.update_pswd_notif") }}
-          </span>
-          <button class="btn black" @click="dismissForgottenPswdNotif">
-            <span class="icon close"></span>
-            <span class="label">{{
-              $t("user_settings.update_pswd_notif_dismiss_btn")
-            }}</span>
-          </button>
-        </div>
-      </div> -->
 
       <div class="form-field flex col">
         <label class="form-label" for="password">

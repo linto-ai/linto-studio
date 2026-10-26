@@ -46,20 +46,6 @@
         :title="$t('conversation.subtitles.delete_label')"
         @click="openDeleteModal"
         icon="trash" />
-      <!-- <button
-        class="btn transparent"
-        v-if="canEdit"
-        :title="$t('conversation.subtitles.copy_label')"
-        @click="openCopyModal">
-        <span class="icon copy subtitle-action"></span>
-      </button>
-      <button
-        class="btn transparent"
-        v-if="canEdit"
-        :title="$t('conversation.subtitles.delete_label')"
-        @click="openDeleteModal">
-        <span class="icon trash subtitle-action"></span>
-      </button> -->
     </div>
 
     <ModalCopySubtitles

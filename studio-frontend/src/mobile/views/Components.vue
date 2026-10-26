@@ -113,6 +113,21 @@
             disabled
             label="to, disabled" />
         </div>
+
+        <h2 class="m-section-title">Button - as a label (htmlFor)</h2>
+        <div class="flex wrap gap-small">
+          <input id="m-components-file" type="file" class="hidden" />
+          <Button
+            variant="secondary"
+            html-for="m-components-file"
+            icon="upload-simple"
+            label="Choose a file" />
+          <Button
+            variant="secondary"
+            html-for="m-components-file"
+            disabled
+            label="Disabled" />
+        </div>
       </section>
     </main>
   </div>

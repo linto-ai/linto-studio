@@ -100,6 +100,21 @@
         label="to, disabled" />
     </div>
 
+    <h3>Button - as a label (htmlFor)</h3>
+    <div class="flex wrap gap-small">
+      <input id="components-file" type="file" class="hidden" />
+      <Button
+        variant="secondary"
+        html-for="components-file"
+        icon="upload-simple"
+        label="Choose a file" />
+      <Button
+        variant="secondary"
+        html-for="components-file"
+        disabled
+        label="Disabled" />
+    </div>
+
     <h3>Headings - h1 to h5</h3>
     <div class="flex col gap-tiny">
       <h1>Heading 1</h1>

@@ -4,15 +4,11 @@
     <p v-if="!isFromPublicLink">
       {{ $t("session.detail_page.session_ended_subtitle") }}
     </p>
-    <router-link
+    <Button
       v-if="!isFromPublicLink"
       :to="{ name: 'inbox', query: { organizationId: sessionOrganizationId } }"
-      class="btn">
-      <span class="icon settings"></span>
-      <span class="label">{{
-        $t("session.detail_page.session_ended_link_to_inbox")
-      }}</span>
-    </router-link>
+      icon="gear"
+      :label="$t('session.detail_page.session_ended_link_to_inbox')" />
   </div>
 </template>
 <script>

@@ -8,9 +8,13 @@
     :disabled="isDisabled"
     :aria-disabled="isDisabled"
     :type="componentType === 'button' ? type : null"
+    :for="isLabel ? htmlFor : null"
+    :tabindex="isLabel ? 0 : null"
+    :role="isLabel ? 'button' : null"
     :multiline="multiline"
     v-bind="$attrs"
-    v-on="isDisabled ? null : $listeners">
+    v-on="isDisabled ? null : $listeners"
+    @keydown="activateLabelFromKeyboard">
     <ph-icon
       v-if="loading"
       name="circle-notch"
@@ -43,7 +47,7 @@
 // The component holds the markup and the behaviour; each app brings its own
 // stylesheet for it (classic app: style/components/buttons.scss, mobile app:
 // mobile/style/buttons.css). What a stylesheet styles is this contract:
-// - root: .btn, on a <button>, an <a> or a router-link
+// - root: .btn, on a <button>, an <a>, a router-link or a <label> (htmlFor)
 // - .btn--{variant}: primary, secondary, tertiary (default), text,
 //   transparent, link
 // - .btn--{intent}: default, destructive
@@ -128,6 +132,12 @@ export default {
       type: String,
       required: false,
     },
+    // id of the input the button stands for (e.g. a hidden file input): the
+    // button is then its <label>, a click on it opens the input
+    htmlFor: {
+      type: String,
+      required: false,
+    },
     // fullwidth button
     block: {
       type: Boolean,
@@ -162,7 +172,14 @@ export default {
       if (this.to) {
         return !this.isDisabled ? "router-link" : "div"
       }
+      // A disabled <label> would still open its input: a plain div instead
+      if (this.htmlFor) {
+        return !this.isDisabled ? "label" : "div"
+      }
       return "button"
+    },
+    isLabel() {
+      return this.componentType === "label"
     },
     classes() {
       const classes = []
@@ -182,6 +199,16 @@ export default {
       return {
         borderColor: this.borderColor,
       }
+    },
+  },
+  methods: {
+    // A <label> gets neither the focus nor the keys of a button: it is made
+    // focusable above, and Enter or Space click it, which opens its input
+    activateLabelFromKeyboard(event) {
+      if (!this.isLabel) return
+      if (event.key !== "Enter" && event.key !== " ") return
+      event.preventDefault()
+      this.$el.click()
     },
   },
 }
