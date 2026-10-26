@@ -173,7 +173,7 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/sessions",
             method: ["get"],
-            forwardParams: proxyForwardParams,
+            forwardParams: proxyListForwardParams,
             executeAfterResult: [filterPrivateSessions],
           },
         ],
