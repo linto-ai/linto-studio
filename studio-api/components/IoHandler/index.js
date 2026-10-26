@@ -10,7 +10,7 @@ const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
 
-const { diffSessions, groupSessionsByOrg } = require(
+const { diffSessions, groupSessionsByOrg, stripStreamSecrets } = require(
   `${process.cwd()}/components/IoHandler/controllers/SessionHandling`,
 )
 const { watchConversation } = require(
@@ -515,7 +515,8 @@ class IoHandler extends Component {
     this.io.local.to(roomId).emit(action, message)
   }
 
-  async notify_sessions(roomId, action, sessions) {
+  async notify_sessions(roomId, action, mqttSessions) {
+    const sessions = stripStreamSecrets(mqttSessions)
     const differences = diffSessions(this.sessionsCache, sessions)
     const merged = await groupSessionsByOrg(differences, this.memorySessions)
     Object.keys(merged).forEach((orgaId) => {
