@@ -42,32 +42,23 @@
   display: flex;
   flex-shrink: 0;
   gap: var(--m-space-2);
+  margin-left: auto;
 }
 
-/* A phone is too narrow for the text beside its actions: the text gets the
-   whole width, the actions go under it, aligned with the text. The icon sits
-   on the first line of the text. */
+/* With actions: they stay beside the icon and the text while these fit on
+   one line, and go under them as soon as the text would wrap. __main (icon
+   + text) is never split: the text wraps beside the icon, never under it. */
 .notification-banner:has(> .notification-banner__actions) {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  align-items: start;
+  flex-wrap: wrap;
+  row-gap: var(--m-space-2);
+}
+
+.notification-banner__main {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: flex-start;
   gap: var(--m-space-2);
-}
-
-.notification-banner:has(> .notification-banner__icon):has(
-    > .notification-banner__actions
-  ) {
-  grid-template-columns: auto minmax(0, 1fr);
-}
-
-.notification-banner:has(> .notification-banner__icon)
-  > .notification-banner__actions {
-  grid-column: 2;
-}
-
-.notification-banner:has(> .notification-banner__actions)
-  > .notification-banner__actions {
-  justify-self: start;
+  min-width: 0;
 }
 
 .notification-banner.info {

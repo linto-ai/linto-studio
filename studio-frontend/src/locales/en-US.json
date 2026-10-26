@@ -1821,7 +1821,7 @@
   },
   "session": {
     "live_credit_banner": {
-      "low": "Live credit running low: {minutes} min left. The live will stop automatically once it runs out.",
+      "low": "Credit running low: the live will stop in {duration}.",
       "exhausted": "Live credit used up: the live will stop automatically within a few minutes."
     },
     "sessions_status": {

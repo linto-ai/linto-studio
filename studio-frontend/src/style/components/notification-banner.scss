@@ -30,6 +30,16 @@
   flex-shrink: 0;
 }
 
+/* With actions: the icon and the text, laid out as when they were direct
+   children of the banner */
+.notification-banner__main {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--small-gap);
+  min-width: 0;
+}
+
 /* The text takes the room left and wraps inside it */
 .notification-banner__content {
   flex: 1 1 auto;

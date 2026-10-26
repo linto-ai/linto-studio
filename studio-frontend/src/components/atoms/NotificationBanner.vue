@@ -1,20 +1,30 @@
 <template>
   <div class="notification-banner" :class="[variant, `align-${align}`]">
-    <PhIcon
-      v-if="icon"
-      :name="icon"
-      class="notification-banner__icon"
-      size="sm" />
-    <!-- With actions, the text gets its own box that wraps, and the buttons
-         stay whole at the end, centered on however many lines it takes.
-         Without, the content stays as is (direct children of the flex). -->
+    <!-- With actions, the icon and the text are one box (__main) that a
+         narrow banner never splits: the actions wrap under it, the text
+         never goes under the icon. Without, the content stays as is
+         (direct children of the flex). -->
     <template v-if="$slots.actions">
-      <div class="notification-banner__content"><slot></slot></div>
+      <div class="notification-banner__main">
+        <PhIcon
+          v-if="icon"
+          :name="icon"
+          class="notification-banner__icon"
+          size="sm" />
+        <div class="notification-banner__content"><slot></slot></div>
+      </div>
       <div class="notification-banner__actions">
         <slot name="actions"></slot>
       </div>
     </template>
-    <slot v-else></slot>
+    <template v-else>
+      <PhIcon
+        v-if="icon"
+        :name="icon"
+        class="notification-banner__icon"
+        size="sm" />
+      <slot></slot>
+    </template>
   </div>
 </template>
 
@@ -27,8 +37,9 @@ import PhIcon from "@/components/atoms/PhIcon.vue"
 // contract:
 // - root: .notification-banner, with the variant as a class (info, warning,
 //   success, error, neutral) and align-center or align-start
-// - inside: .notification-banner__icon, and with actions
-//   .notification-banner__content (the text) + .notification-banner__actions
+// - inside: .notification-banner__icon; with actions, the icon and
+//   .notification-banner__content (the text) are wrapped in
+//   .notification-banner__main, followed by .notification-banner__actions
 export default {
   name: "NotificationBanner",
   components: { PhIcon },

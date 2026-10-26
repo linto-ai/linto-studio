@@ -140,6 +140,16 @@
       </NotificationBanner>
     </div>
 
+    <h3>SessionStatusBanner - live credit</h3>
+    <div class="flex col">
+      <SessionStatusBanner
+        v-for="banner in liveCreditBanners"
+        :key="banner.name"
+        websocket-status="connected"
+        :live-credit="banner.liveCredit"
+        :can-buy-live-pack="banner.canBuyLivePack" />
+    </div>
+
     <h3>Headings - h1 to h5</h3>
     <div class="flex col gap-tiny">
       <h1>Heading 1</h1>
@@ -326,6 +336,7 @@ import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
 import PackLot from "@/components-cloud/PackLot.vue"
 import PackOffer from "@/components-cloud/PackOffer.vue"
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
+import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
 import { computePackGroups } from "@/tools/billing/pack/computePackGroups"
 import { computePackLots } from "@/tools/billing/pack/computePackLots"
 
@@ -380,6 +391,15 @@ const BUTTON_VARIANTS = [
   "link",
 ]
 const BUTTON_SIZES = ["xs", "sm", "md", "lg", "xl"]
+// live block of GET /cloud/usage/:orgId, as the live page polls it
+const LOW_LIVE_CREDIT = { balance: 7, lowBalance: true, unmetered: false }
+const NO_LIVE_CREDIT = { balance: 0, lowBalance: true, unmetered: false }
+const LIVE_CREDIT_BANNERS = [
+  { name: "low-admin", liveCredit: LOW_LIVE_CREDIT, canBuyLivePack: true },
+  { name: "low-member", liveCredit: LOW_LIVE_CREDIT, canBuyLivePack: false },
+  { name: "none-admin", liveCredit: NO_LIVE_CREDIT, canBuyLivePack: true },
+  { name: "none-member", liveCredit: NO_LIVE_CREDIT, canBuyLivePack: false },
+]
 const NOTIFICATION_BANNERS = [
   { variant: "info", icon: "info" },
   { variant: "warning", icon: "warning" },
@@ -395,6 +415,7 @@ export default {
       buttonVariants: BUTTON_VARIANTS,
       buttonSizes: BUTTON_SIZES,
       notificationBanners: NOTIFICATION_BANNERS,
+      liveCreditBanners: LIVE_CREDIT_BANNERS,
       demoPackOffers: computePackGroups(DEMO_PACKS).flatMap(
         (group) => group.packs,
       ),
@@ -524,6 +545,7 @@ export default {
     PackLot,
     PackOffer,
     NotificationBanner,
+    SessionStatusBanner,
   },
 }
 </script>
