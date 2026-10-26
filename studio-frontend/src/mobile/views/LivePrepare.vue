@@ -22,7 +22,14 @@
           :packs="livePacks"
           :buying="buyingPack"
           @buy="buyLivePack" />
-        <InfoBanner v-else>{{ $t("mobile.live.ask_admin") }}</InfoBanner>
+        <NotificationBanner
+          v-else
+          variant="info"
+          icon="info"
+          align="start"
+          role="status"
+          >{{ $t("mobile.live.ask_admin") }}</NotificationBanner
+        >
       </LiveCreditExhausted>
 
       <form v-else class="m-live__form" @submit.prevent="start">
@@ -65,9 +72,14 @@
           :live="meteredLive"
           :can-recharge="canBuyLivePack"
           @recharge="packSheetOpen = true" />
-        <InfoBanner v-if="!online" tone="warning">{{
-          $t("mobile.live.offline")
-        }}</InfoBanner>
+        <NotificationBanner
+          v-if="!online"
+          variant="warning"
+          icon="warning"
+          align="start"
+          role="status"
+          >{{ $t("mobile.live.offline") }}</NotificationBanner
+        >
         <p v-if="failed" class="m-live__error" role="alert">
           {{ $t("mobile.live.start_failed") }}
         </p>
@@ -98,7 +110,7 @@
 
 <script>
 import PageHeader from "@/mobile/components/PageHeader.vue"
-import InfoBanner from "@/mobile/components/InfoBanner.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import ToggleRow from "@/mobile/components/ToggleRow.vue"
 import TranslationPicker from "@/mobile/components/live/TranslationPicker.vue"
 import LiveRunningCard from "@/mobile/components/live/LiveRunningCard.vue"
@@ -114,7 +126,7 @@ export default {
   name: "MobileLivePrepare",
   components: {
     PageHeader,
-    InfoBanner,
+    NotificationBanner,
     ToggleRow,
     TranslationPicker,
     LiveRunningCard,

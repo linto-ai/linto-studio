@@ -129,11 +129,39 @@
             label="Disabled" />
         </div>
       </section>
+
+      <section class="flex col gap-small">
+        <h2 class="m-section-title">NotificationBanner - variants</h2>
+        <NotificationBanner
+          v-for="banner in notificationBanners"
+          :key="banner.variant"
+          :variant="banner.variant"
+          :icon="banner.icon">
+          {{ banner.variant }}: a message for the user
+        </NotificationBanner>
+      </section>
+
+      <section class="flex col gap-small">
+        <h2 class="m-section-title">
+          NotificationBanner - align start, actions
+        </h2>
+        <NotificationBanner variant="warning" icon="warning" align="start">
+          A longer message, aligned at the start, that wraps on several lines
+          next to its action.
+          <template #actions>
+            <Button variant="secondary" size="sm" icon="plus" label="Action" />
+          </template>
+        </NotificationBanner>
+        <NotificationBanner variant="error" icon="warning-circle" align="start">
+          A message without action, aligned at the start.
+        </NotificationBanner>
+      </section>
     </main>
   </div>
 </template>
 
 <script>
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import PageHeader from "@/mobile/components/PageHeader.vue"
 
 const VARIANTS = [
@@ -145,14 +173,25 @@ const VARIANTS = [
   "link",
 ]
 const SIZES = ["xs", "sm", "md", "lg", "xl"]
+const NOTIFICATION_BANNERS = [
+  { variant: "info", icon: "info" },
+  { variant: "warning", icon: "warning" },
+  { variant: "success", icon: "check-circle" },
+  { variant: "error", icon: "warning-circle" },
+  { variant: "neutral", icon: "lightbulb" },
+]
 
 // Catalogue of the shared components in their mobile look, to check them by
 // eye (the classic app has the same page at /components).
 export default {
   name: "MobileComponents",
-  components: { PageHeader },
+  components: { NotificationBanner, PageHeader },
   data() {
-    return { variants: VARIANTS, sizes: SIZES }
+    return {
+      variants: VARIANTS,
+      sizes: SIZES,
+      notificationBanners: NOTIFICATION_BANNERS,
+    }
   },
 }
 </script>

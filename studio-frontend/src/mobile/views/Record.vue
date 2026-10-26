@@ -2,9 +2,14 @@
   <div class="m-page">
     <PageHeader :title="$t('mobile.home.record_title')" />
     <main class="m-page__content m-record-page">
-      <InfoBanner v-if="isRecording && !recorder.wakeLockOk" tone="warning">
+      <NotificationBanner
+        v-if="isRecording && !recorder.wakeLockOk"
+        variant="warning"
+        icon="warning"
+        align="start"
+        role="status">
         {{ $t("mobile.record.keep_screen_on") }}
-      </InfoBanner>
+      </NotificationBanner>
 
       <section class="m-record-page__stage">
         <RecordTimer
@@ -90,7 +95,7 @@
 <script>
 import { mapGetters } from "vuex"
 import PageHeader from "@/mobile/components/PageHeader.vue"
-import InfoBanner from "@/mobile/components/InfoBanner.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import ListRow from "@/mobile/components/ListRow.vue"
 import RecordButton from "@/mobile/components/record/RecordButton.vue"
 import RecordTimer from "@/mobile/components/record/RecordTimer.vue"
@@ -112,7 +117,7 @@ export default {
   name: "MobileRecord",
   components: {
     PageHeader,
-    InfoBanner,
+    NotificationBanner,
     ListRow,
     RecordButton,
     RecordTimer,

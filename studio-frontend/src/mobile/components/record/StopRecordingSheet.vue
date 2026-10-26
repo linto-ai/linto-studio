@@ -8,12 +8,22 @@
       v-if="value && recordingId"
       :recording-id="recordingId"
       :mime-type="mimeType" />
-    <InfoBanner v-if="quiet" tone="warning">
+    <NotificationBanner
+      v-if="quiet"
+      variant="warning"
+      icon="warning"
+      align="start"
+      role="status">
       {{ $t("mobile.record.quiet_warning") }}
-    </InfoBanner>
-    <InfoBanner v-if="!online" tone="warning">
+    </NotificationBanner>
+    <NotificationBanner
+      v-if="!online"
+      variant="warning"
+      icon="warning"
+      align="start"
+      role="status">
       {{ $t("mobile.record.offline_send") }}
-    </InfoBanner>
+    </NotificationBanner>
     <!-- The recording is sent by itself once the sheet closes: here the
          user names it and says whether the audio stays on the phone. The
          button sits right under the name because the keyboard covers the
@@ -43,13 +53,13 @@
 
 <script>
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
-import InfoBanner from "@/mobile/components/InfoBanner.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import ToggleRow from "@/mobile/components/ToggleRow.vue"
 import RecordingPlayer from "@/mobile/components/record/RecordingPlayer.vue"
 
 export default {
   name: "StopRecordingSheet",
-  components: { BottomSheet, InfoBanner, ToggleRow, RecordingPlayer },
+  components: { BottomSheet, NotificationBanner, ToggleRow, RecordingPlayer },
   props: {
     value: { type: Boolean, default: false },
     defaultName: { type: String, required: true },

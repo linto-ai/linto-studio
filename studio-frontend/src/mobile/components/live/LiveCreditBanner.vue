@@ -1,19 +1,22 @@
 <template>
-  <InfoBanner :tone="tone">
-    <span class="m-credit-banner">
-      <span>{{ message }}</span>
+  <NotificationBanner
+    :variant="variant"
+    :icon="icon"
+    align="start"
+    role="status">
+    {{ message }}
+    <template v-if="canRecharge" #actions>
       <Button
-        v-if="canRecharge"
         variant="text"
         class="m-credit-banner__recharge"
         :label="$t('mobile.live.recharge')"
         @click="$emit('recharge')" />
-    </span>
-  </InfoBanner>
+    </template>
+  </NotificationBanner>
 </template>
 
 <script>
-import InfoBanner from "@/mobile/components/InfoBanner.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import { computeLiveCreditLevel } from "@/tools/billing/computeLiveCreditLevel"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
 
@@ -21,7 +24,7 @@ import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
 // started, with a way to buy more for whoever may.
 export default {
   name: "LiveCreditBanner",
-  components: { InfoBanner },
+  components: { NotificationBanner },
   props: {
     // live block of GET /cloud/usage/:orgId, metered, not exhausted
     live: { type: Object, required: true },
@@ -31,7 +34,10 @@ export default {
     isLow() {
       return computeLiveCreditLevel(this.live) === "low"
     },
-    tone() {
+    variant() {
+      return this.isLow ? "warning" : "info"
+    },
+    icon() {
       return this.isLow ? "warning" : "info"
     },
     message() {
@@ -47,14 +53,6 @@ export default {
 </script>
 
 <style scoped>
-.m-credit-banner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--m-space-1) var(--m-space-3);
-}
-
 .m-credit-banner__recharge {
   /* A link in the banner's own color */
   --btn-text: currentColor;

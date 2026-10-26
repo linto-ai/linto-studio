@@ -21,6 +21,7 @@ import "@/mobile/style/tokens.css"
 import "@/mobile/style/base.css"
 import "@/style/_utilities.scss"
 import "@/mobile/style/buttons.css"
+import "@/mobile/style/notification-banner.css"
 
 // Global atoms (Button, PhIcon…) are what the shared live component expects.
 Vue.use(Atoms)

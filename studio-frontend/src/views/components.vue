@@ -115,6 +115,31 @@
         label="Disabled" />
     </div>
 
+    <h3>NotificationBanner - variants</h3>
+    <div class="flex col gap-small">
+      <NotificationBanner
+        v-for="banner in notificationBanners"
+        :key="banner.variant"
+        :variant="banner.variant"
+        :icon="banner.icon">
+        {{ banner.variant }}: a message for the user
+      </NotificationBanner>
+    </div>
+
+    <h3>NotificationBanner - align start, actions</h3>
+    <div class="flex col gap-small">
+      <NotificationBanner variant="warning" icon="warning" align="start">
+        A longer message, aligned at the start, that wraps on several lines next
+        to its action.
+        <template #actions>
+          <Button variant="secondary" size="sm" icon="plus" label="Action" />
+        </template>
+      </NotificationBanner>
+      <NotificationBanner variant="error" icon="warning-circle" align="start">
+        A message without action, aligned at the start.
+      </NotificationBanner>
+    </div>
+
     <h3>Headings - h1 to h5</h3>
     <div class="flex col gap-tiny">
       <h1>Heading 1</h1>
@@ -300,6 +325,7 @@ import GenericTable from "@/components/molecules/GenericTable.vue"
 import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
 import PackLot from "@/components-cloud/PackLot.vue"
 import PackOffer from "@/components-cloud/PackOffer.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import { computePackGroups } from "@/tools/billing/pack/computePackGroups"
 import { computePackLots } from "@/tools/billing/pack/computePackLots"
 
@@ -354,6 +380,13 @@ const BUTTON_VARIANTS = [
   "link",
 ]
 const BUTTON_SIZES = ["xs", "sm", "md", "lg", "xl"]
+const NOTIFICATION_BANNERS = [
+  { variant: "info", icon: "info" },
+  { variant: "warning", icon: "warning" },
+  { variant: "success", icon: "check-circle" },
+  { variant: "error", icon: "warning-circle" },
+  { variant: "neutral", icon: "lightbulb" },
+]
 
 export default {
   props: {},
@@ -361,6 +394,7 @@ export default {
     return {
       buttonVariants: BUTTON_VARIANTS,
       buttonSizes: BUTTON_SIZES,
+      notificationBanners: NOTIFICATION_BANNERS,
       demoPackOffers: computePackGroups(DEMO_PACKS).flatMap(
         (group) => group.packs,
       ),
@@ -489,6 +523,7 @@ export default {
     SegmentedControl,
     PackLot,
     PackOffer,
+    NotificationBanner,
   },
 }
 </script>
