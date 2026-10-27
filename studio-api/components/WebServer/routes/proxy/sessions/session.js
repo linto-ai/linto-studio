@@ -249,12 +249,12 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/bots",
             method: ["get", "post"],
-            forwardParams: proxyForwardParams,
+            forwardParams: proxyListForwardParams,
           },
           {
             path: "/organizations/:organizationId/bots/:id",
             method: ["get", "delete"],
-            forwardParams: proxyForwardParams,
+            forwardParams: proxyListForwardParams,
           },
         ],
         requireAuth: true,
