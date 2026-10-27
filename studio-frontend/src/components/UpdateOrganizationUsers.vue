@@ -623,6 +623,7 @@ export default {
         // The API does not return the new member: reload the list so the row
         // carries its id. The user stays pending until then.
         await this.reloadMembers()
+        this.dispatchOrganization()
         // Show the tab the new member landed in.
         this.setActiveTab(
           isCollaboratorRole(user.role) ? SEATS_TAB : MEMBERS_TAB,
@@ -646,6 +647,7 @@ export default {
           const userId = this.userToRemove._id
           this.members = this.members.filter((member) => member._id !== userId)
           this.selectedIds = this.selectedIds.filter((id) => id !== userId)
+          this.dispatchOrganization()
         } else {
           this.notifyError(this.$t("organisation.remove_user_error_message"))
         }
@@ -674,6 +676,8 @@ export default {
     },
     dispatchOrganization() {
       bus.$emit("user_orga_update")
+      if (this.isOwnOrganization)
+        this.$store.dispatch("organizations/refreshCurrentOrganization")
     },
     // Same gating detail sendRequest dispatches on a 403 SAAS_FEATURE_LOCKED:
     // opens the onboarding/upgrade wizard (OnboardingWizard.vue, App.vue).
