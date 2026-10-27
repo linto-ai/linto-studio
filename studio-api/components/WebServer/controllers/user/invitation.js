@@ -2,16 +2,19 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const VALIDITY_DATE = require(
   `${process.cwd()}/lib/dao/validityDate/validityDate.js`,
 )
-const { UserError } = require(
+const { UserError, UserUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
+const { isEmail } = require(`${process.cwd()}/lib/utility/emailDomain`)
 
 // Creates an invited account with its magic link and personal organization.
 // Returns { id, magicId }, magicId null when the account needs no link.
 async function inviteNewUser(email) {
   if (process.env.DISABLE_USER_INVITATION === "true")
     throw new UserError("User invitation is disabled")
+  if (!isEmail(email))
+    throw new UserUnsupportedMediaType("Invalid email address")
   // Invitation emails announce a 48h link
   const createdUser = await model.users.createExternal(
     { email },

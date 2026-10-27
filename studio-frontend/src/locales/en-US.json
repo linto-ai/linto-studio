@@ -2256,8 +2256,8 @@
     "personal_information": "Personal information",
     "picture_label": "Picture",
     "profil_visibility": {
-      "description": "A private profile does not appear in any search and its details cannot be viewed by other users.",
-      "discoverability": "Your name and picture are visible to the members of your organizations, to the people who shared a media with you and to anyone typing your exact email address.",
+      "description": "A private profile only appears in the searches of the members of your organizations, of the people you shared a media with and of anyone typing your exact email address.",
+      "discoverability": "Your name and picture can be found by every user. Your email address is never displayed, except to someone who types it in full.",
       "label_private": "Private profile",
       "title": "Profile visibility"
     },

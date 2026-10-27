@@ -32,6 +32,8 @@ const { addUserInOrganization } = require(
 
 const ORGANIZATION = { _id: "org-1", name: "Org", users: [] }
 const ADMIN = { _id: "u-admin", email: "admin@example.com" }
+const PUBLIC_ID = "0123456789abcdef01234567"
+const PRIVATE_ID = "0123456789abcdef01234568"
 
 async function call(body) {
   const req = {
@@ -52,8 +54,8 @@ describe("addUserInOrganization", () => {
     mockModel.organizations.getById.mockResolvedValue([ORGANIZATION])
     mockModel.users.getById.mockImplementation(async (id) => {
       if (id === ADMIN._id) return [ADMIN]
-      if (id === "u-public") return [{ _id: id, email: "bob@example.com" }]
-      if (id === "u-private")
+      if (id === PUBLIC_ID) return [{ _id: id, email: "bob@example.com" }]
+      if (id === PRIVATE_ID)
         return [{ _id: id, email: "eve@example.com", private: true }]
       return []
     })
@@ -72,9 +74,9 @@ describe("addUserInOrganization", () => {
   })
 
   it("resolves a public user picked by id without echoing the address", async () => {
-    const { res } = await call({ userId: "u-public" })
+    const { res } = await call({ userId: PUBLIC_ID })
 
-    expect(mockModel.users.getById).toHaveBeenCalledWith("u-public")
+    expect(mockModel.users.getById).toHaveBeenCalledWith(PUBLIC_ID)
     expect(mockUtility.inviteMemberByEmail).toHaveBeenCalledWith(
       expect.objectContaining({ email: "bob@example.com" }),
     )
@@ -84,7 +86,7 @@ describe("addUserInOrganization", () => {
   })
 
   it("adds a private user picked by id", async () => {
-    const { res } = await call({ userId: "u-private" })
+    const { res } = await call({ userId: PRIVATE_ID })
 
     expect(mockUtility.inviteMemberByEmail).toHaveBeenCalledWith(
       expect.objectContaining({ email: "eve@example.com" }),
@@ -92,8 +94,15 @@ describe("addUserInOrganization", () => {
     expect(res.status).toHaveBeenCalledWith(201)
   })
 
+  it("refuses a malformed id without querying", async () => {
+    const { next } = await call({ userId: "<userId_to_add>" })
+
+    expect(next).toHaveBeenCalledWith(expect.any(UserNotFound))
+    expect(mockModel.users.getById).not.toHaveBeenCalled()
+  })
+
   it("refuses an unknown id", async () => {
-    const { next } = await call({ userId: "u-ghost" })
+    const { next } = await call({ userId: "0123456789abcdef0123456b" })
 
     expect(next).toHaveBeenCalledWith(expect.any(UserNotFound))
     expect(mockUtility.inviteMemberByEmail).not.toHaveBeenCalled()

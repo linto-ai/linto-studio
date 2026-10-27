@@ -34,6 +34,7 @@ const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const saas = require(`${process.cwd()}/lib/saas`)
 
+const { ObjectId } = require("mongodb")
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 
@@ -43,6 +44,7 @@ async function inviteeEmail(body) {
     requireParam(body.email, OrganizationUnsupportedMediaType)
     return body.email
   }
+  if (!ObjectId.isValid(body.userId)) throw new UserNotFound()
   const user = throwIfError(await model.users.getById(body.userId))
   if (user.length !== 1 || !user[0].email) throw new UserNotFound()
   return user[0].email
