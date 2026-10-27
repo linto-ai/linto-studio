@@ -26,7 +26,7 @@ const { ConversationError, ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
-const { UserForbidden, UserNotFound } = require(
+const { UserNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 
@@ -37,8 +37,7 @@ const saas = require(`${process.cwd()}/lib/saas`)
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 
-// The user search returns no address: a member picked there comes by id.
-// A private user is not reachable this way.
+// The user search returns no address: a member picked there comes by id
 async function inviteeEmail(body) {
   if (!body.userId) {
     requireParam(body.email, OrganizationUnsupportedMediaType)
@@ -46,7 +45,6 @@ async function inviteeEmail(body) {
   }
   const user = throwIfError(await model.users.getById(body.userId))
   if (user.length !== 1 || !user[0].email) throw new UserNotFound()
-  if (user[0].private) throw new UserForbidden()
   return user[0].email
 }
 

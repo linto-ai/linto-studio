@@ -240,13 +240,12 @@ class UsersModel extends MongoModel {
     }
   }
 
-  async listPublicUsers() {
+  async listSearchableUsers() {
     try {
-      const query = {
-        private: false,
-        emailIsVerified: true,
-      }
-      return await this.mongoRequest(query, public_projection)
+      return await this.mongoRequest(
+        { emailIsVerified: true },
+        public_projection,
+      )
     } catch (error) {
       console.error(error)
       return error

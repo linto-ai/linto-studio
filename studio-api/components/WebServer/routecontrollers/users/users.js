@@ -144,16 +144,15 @@ async function searchUser(req, res, next) {
 
     const exactAddress = (user) => user.email?.toLowerCase() === search
 
-    // The platform-wide search is tied to the backoffice scope on purpose.
     // Super administrators are not always flagged system administrators
-    const [publicUsers, systemAdmin, superAdmin] = await Promise.all([
-      model.users.listPublicUsers(),
+    const [users, systemAdmin, superAdmin] = await Promise.all([
+      model.users.listSearchableUsers(),
       platformAccess.isSystemAdministrator(req),
       platformAccess.isSuperAdmin(req),
     ])
     const backofficeAdmin = systemAdmin || superAdmin
 
-    let userList = publicUsers.filter((user) => {
+    let userList = users.filter((user) => {
       const userField = [
         user.firstname,
         user.lastname,
@@ -165,21 +164,25 @@ async function searchUser(req, res, next) {
       return userField.some((field) => field?.toLowerCase().includes(search))
     })
 
-    // Outside a common organization or a received share, only the full
-    // address finds someone
-    if (userList.length > 0 && !backofficeAdmin) {
+    // A private profile is listed only to a co-member or someone it shared
+    // a conversation with, to whoever typed its full address, or in the
+    // backoffice
+    const hidden = (user) => user.private && !exactAddress(user)
+    if (!backofficeAdmin && userList.some(hidden)) {
       const reachable = await reachableUserIds(req.payload.data.userId)
       userList = userList.filter(
-        (user) => exactAddress(user) || reachable.has(user._id.toString()),
+        (user) => !hidden(user) || reachable.has(user._id.toString()),
       )
     }
 
-    // The address is only echoed back to a caller who typed it in full
-    userList = userList.map((user) => {
-      if (exactAddress(user)) return user
-      const { email, ...rest } = user
-      return rest
-    })
+    // The address is only echoed back to a caller who typed it in full,
+    // the backoffice already lists every address
+    if (!backofficeAdmin)
+      userList = userList.map((user) => {
+        if (exactAddress(user)) return user
+        const { email, ...rest } = user
+        return rest
+      })
 
     if (userList.length === 0) res.status(204).send()
     else res.status(200).send(userList)

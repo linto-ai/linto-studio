@@ -1,5 +1,5 @@
 const mockModel = {
-  users: { listPublicUsers: jest.fn() },
+  users: { listSearchableUsers: jest.fn() },
 }
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => mockModel)
 jest.mock(`${process.cwd()}/lib/mailer/mailing`, () => ({}))
@@ -47,6 +47,14 @@ const USERS = [
     img: "b.jpg",
     private: false,
   },
+  {
+    _id: "u-alix",
+    email: "alix@example.com",
+    firstname: "Alix",
+    lastname: "Petit",
+    img: "c.jpg",
+    private: true,
+  },
 ]
 
 async function call(search) {
@@ -60,11 +68,11 @@ async function call(search) {
 describe("searchUser", () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockModel.users.listPublicUsers.mockResolvedValue(USERS)
+    mockModel.users.listSearchableUsers.mockResolvedValue(USERS)
     mockAccess.isSystemAdministrator.mockResolvedValue(false)
     mockAccess.isSuperAdmin.mockResolvedValue(false)
     mockDiscoverability.reachableUserIds.mockResolvedValue(
-      new Set(["me", "u-alice", "u-alicia"]),
+      new Set(["me", "u-alix"]),
     )
   })
 
@@ -73,7 +81,7 @@ describe("searchUser", () => {
 
     expect(res.status).toHaveBeenCalledWith(200)
     const [list] = res.send.mock.calls[0]
-    expect(list.map((u) => u._id)).toEqual(["u-alice", "u-alicia"])
+    expect(list.map((u) => u._id)).toEqual(["u-alice", "u-alicia", "u-alix"])
     expect(list.some((u) => "email" in u)).toBe(false)
   })
 
@@ -108,41 +116,54 @@ describe("searchUser", () => {
     expect(res.send).toHaveBeenCalledWith()
   })
 
-  it("hides by name the people the caller has nothing in common with", async () => {
-    mockDiscoverability.reachableUserIds.mockResolvedValue(new Set(["me"]))
-
-    const { res } = await call("ali")
-
-    expect(res.status).toHaveBeenCalledWith(204)
-    expect(mockDiscoverability.reachableUserIds).toHaveBeenCalledWith("me")
-  })
-
-  it("finds anyone by the exact address", async () => {
-    mockDiscoverability.reachableUserIds.mockResolvedValue(new Set(["me"]))
-
-    const { res } = await call("alicia@example.com")
+  it("skips the reachability lookup when no private profile matches", async () => {
+    const { res } = await call("alicia")
 
     const [list] = res.send.mock.calls[0]
     expect(list.map((u) => u._id)).toEqual(["u-alicia"])
-  })
-
-  it("lets a system administrator search the whole platform", async () => {
-    mockAccess.isSystemAdministrator.mockResolvedValue(true)
-
-    const { res } = await call("ali")
-
-    const [list] = res.send.mock.calls[0]
-    expect(list.map((u) => u._id)).toEqual(["u-alice", "u-alicia"])
     expect(mockDiscoverability.reachableUserIds).not.toHaveBeenCalled()
   })
 
-  it("lets a super administrator search the whole platform", async () => {
-    mockAccess.isSuperAdmin.mockResolvedValue(true)
+  it("hides by name a private profile the caller has no link with", async () => {
+    mockDiscoverability.reachableUserIds.mockResolvedValue(new Set(["me"]))
 
     const { res } = await call("ali")
 
     const [list] = res.send.mock.calls[0]
     expect(list.map((u) => u._id)).toEqual(["u-alice", "u-alicia"])
+    expect(mockDiscoverability.reachableUserIds).toHaveBeenCalledWith("me")
+  })
+
+  it("lists by name a private profile linked to the caller", async () => {
+    const { res } = await call("petit")
+
+    const [list] = res.send.mock.calls[0]
+    expect(list.map((u) => u._id)).toEqual(["u-alix"])
+    expect("email" in list[0]).toBe(false)
+  })
+
+  it("finds a private profile by its exact address", async () => {
+    mockDiscoverability.reachableUserIds.mockResolvedValue(new Set(["me"]))
+
+    const { res } = await call("alix@example.com")
+
+    const [list] = res.send.mock.calls[0]
+    expect(list).toEqual([
+      expect.objectContaining({ _id: "u-alix", email: "alix@example.com" }),
+    ])
+  })
+
+  it.each([
+    ["system administrator", mockAccess.isSystemAdministrator],
+    ["super administrator", mockAccess.isSuperAdmin],
+  ])("lets a %s list every private profile", async (_, isAdmin) => {
+    isAdmin.mockResolvedValue(true)
+
+    const { res } = await call("ali")
+
+    const [list] = res.send.mock.calls[0]
+    expect(list.map((u) => u._id)).toEqual(["u-alice", "u-alicia", "u-alix"])
+    expect(list.every((u) => "email" in u)).toBe(true)
     expect(mockDiscoverability.reachableUserIds).not.toHaveBeenCalled()
   })
 
@@ -151,6 +172,6 @@ describe("searchUser", () => {
       const { next } = await call(search)
       expect(next).toHaveBeenCalledWith(expect.any(UserUnsupportedMediaType))
     }
-    expect(mockModel.users.listPublicUsers).not.toHaveBeenCalled()
+    expect(mockModel.users.listSearchableUsers).not.toHaveBeenCalled()
   })
 })

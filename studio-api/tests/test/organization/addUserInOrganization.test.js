@@ -23,7 +23,7 @@ const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const { OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
-const { UserForbidden, UserNotFound } = require(
+const { UserNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 const { addUserInOrganization } = require(
@@ -52,8 +52,7 @@ describe("addUserInOrganization", () => {
     mockModel.organizations.getById.mockResolvedValue([ORGANIZATION])
     mockModel.users.getById.mockImplementation(async (id) => {
       if (id === ADMIN._id) return [ADMIN]
-      if (id === "u-public")
-        return [{ _id: id, email: "bob@example.com", private: false }]
+      if (id === "u-public") return [{ _id: id, email: "bob@example.com" }]
       if (id === "u-private")
         return [{ _id: id, email: "eve@example.com", private: true }]
       return []
@@ -84,11 +83,13 @@ describe("addUserInOrganization", () => {
     })
   })
 
-  it("refuses a private user by id", async () => {
-    const { next } = await call({ userId: "u-private" })
+  it("adds a private user picked by id", async () => {
+    const { res } = await call({ userId: "u-private" })
 
-    expect(next).toHaveBeenCalledWith(expect.any(UserForbidden))
-    expect(mockUtility.inviteMemberByEmail).not.toHaveBeenCalled()
+    expect(mockUtility.inviteMemberByEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ email: "eve@example.com" }),
+    )
+    expect(res.status).toHaveBeenCalledWith(201)
   })
 
   it("refuses an unknown id", async () => {
