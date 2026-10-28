@@ -528,21 +528,21 @@ users = await linTO.search_users(search)
 
 #### updateConversation
 
-Patch arbitrary conversation fields (e.g. `owner`, `sharedWithUsers`, `tags`). Mostly useful as a building block — prefer the specialized helpers when one exists.
+Patch arbitrary conversation fields (e.g. `name`, `tags`). Access fields (`owner`, `sharedWithUsers`, `organization`) are ignored; use the dedicated helpers.
 
 ```javascript
 // Javascript
-await linTO.updateConversation(conversationId, { owner: userId, tags: [tagId] })
+await linTO.updateConversation(conversationId, { name: "Renamed", tags: [tagId] })
 ```
 
 ```python
 # Python
-await linTO.update_conversation(conversation_id, {"owner": user_id, "tags": [tag_id]})
+await linTO.update_conversation(conversation_id, {"name": "Renamed", "tags": [tag_id]})
 ```
 
 #### setConversationOwner
 
-Transfer conversation ownership to the user matching `email`. Resolves the user via `searchUsers`, then sets `owner` and clears `sharedWithUsers`. Returns the resolved user id, or `null` if the email cannot be matched.
+Transfer conversation ownership to the user matching `email`. Resolves the user via `searchUsers`, then changes the owner through the conversation's organization: the caller needs the maintainer role there and the new owner must be a member. Existing shares are kept. Returns the resolved user id, or `null` if the email cannot be matched.
 
 ```javascript
 // Javascript

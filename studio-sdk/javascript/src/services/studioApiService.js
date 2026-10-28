@@ -161,8 +161,12 @@ export class StudioApiService {
     )({ folderId, conversationId })
   }
 
-  async getConversation({ conversationId } = {}) {
-    return await this.#withToken(this.#getConversation)({ conversationId })
+  async getConversation(args = {}) {
+    return await this.#withToken(this.#getConversation)(args)
+  }
+
+  async updateConversationOwner(args = {}) {
+    return await this.#withToken(this.#updateConversationOwner)(args)
   }
 
   async searchUsers({ search } = {}) {
@@ -653,11 +657,25 @@ export class StudioApiService {
     return await sendRequest(req)
   }
 
-  async #getConversation({ token, conversationId }) {
+  // `key` restricts the answer to that field plus the access ones, no transcript
+  async #getConversation({ token, conversationId, key }) {
+    const query = key ? `?key=${encodeURIComponent(key)}` : ""
     const req = prepareRequest(
-      `${this.baseApiUrl}/conversations/${conversationId}`,
+      `${this.baseApiUrl}/conversations/${conversationId}${query}`,
       "GET",
       { token }
+    )
+    return await sendRequest(req)
+  }
+
+  async #updateConversationOwner({ token, organizationId, conversationId, userId }) {
+    if (!organizationId || !conversationId || !userId) {
+      throw new Error("organizationId, conversationId and userId are required")
+    }
+    const req = prepareRequest(
+      `${this.baseApiUrl}/organizations/${organizationId}/conversations/${conversationId}/owner`,
+      "PATCH",
+      { token, userId }
     )
     return await sendRequest(req)
   }

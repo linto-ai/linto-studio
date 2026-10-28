@@ -421,7 +421,9 @@ class LinTO {
    * Patch arbitrary conversation fields.
    *
    * @param {string} conversationId
-   * @param {Object} data - Fields to update (e.g. `owner`, `sharedWithUsers`, `tags`).
+   * @param {Object} data - Fields to update (e.g. `name`, `tags`). Access
+   *   fields (`owner`, `sharedWithUsers`, `organization`) are ignored; use the
+   *   dedicated helpers.
    * @returns {Promise<*>}
    */
   async updateConversation(conversationId, data) {
@@ -431,9 +433,10 @@ class LinTO {
   /**
    * Transfer conversation ownership to the user matching `email`.
    *
-   * Resolves the user via {@link LinTO#searchUsers}, then sets `owner` and
-   * clears `sharedWithUsers`. Returns the resolved user id, or `null` if the
-   * email cannot be matched.
+   * Resolves the user via {@link LinTO#searchUsers}, then changes the owner
+   * through the conversation's organization: the caller needs the maintainer
+   * role there and the new owner must be a member. Existing shares are kept.
+   * Returns the resolved user id, or `null` if the email cannot be matched.
    *
    * @param {string} conversationId
    * @param {string} email
@@ -450,9 +453,14 @@ class LinTO {
     const userId = getId(user)
     if (!userId) return null
 
-    await this.updateConversation(conversationId, {
-      owner: userId,
-      sharedWithUsers: [],
+    const conversation = await this.apiService.getConversation({
+      conversationId,
+      key: "organization",
+    })
+    await this.apiService.updateConversationOwner({
+      organizationId: conversation?.organization?.organizationId,
+      conversationId,
+      userId,
     })
     return userId
   }
