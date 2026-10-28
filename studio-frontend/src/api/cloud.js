@@ -37,6 +37,15 @@ export async function apiGetUsage(organizationId, notif = null) {
     {},
     notif,
   )
+
+  // if (res?.data?.live) {
+  //     res.data.live = {
+  //       ...res.data.live,
+  //       balance: 7,
+  //       lowBalance: true,
+  //       unmetered: false,
+  //     }
+  //   }
   return res?.data
 }
 

@@ -7,6 +7,8 @@
 export const quickSessionPauseMixin = {
   data() {
     return {
+      // The host's purchase UI (a modal, a bottom sheet) is open
+      isLivePackPurchaseOpen: false,
       // What pauseForPackPurchase changed, undone if the purchase is dropped
       // (closed without leaving for the payment page).
       packPurchasePause: null,
@@ -27,6 +29,17 @@ export const quickSessionPauseMixin = {
     },
   },
   methods: {
+    // The host shows its purchase UI on isLivePackPurchaseOpen. The live is
+    // paused as soon as it opens: the payment page is one tap away.
+    openLivePackPurchase() {
+      this.pauseForPackPurchase()
+      this.isLivePackPurchaseOpen = true
+    },
+    // Dropped without leaving for the payment page: the live goes on
+    cancelLivePackPurchase() {
+      this.isLivePackPurchaseOpen = false
+      this.undoPackPurchasePause()
+    },
     // Leaving for the payment page: stop sending audio and stop the live
     // server-side (and its credit count).
     async pauseForPackPurchase() {

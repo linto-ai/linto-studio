@@ -1,7 +1,7 @@
 <template>
   <NotificationBanner
     :variant="variant"
-    :icon="icon"
+    :icon="variant"
     align="start"
     role="status">
     {{ message }}
@@ -34,10 +34,8 @@ export default {
     isLow() {
       return computeLiveCreditLevel(this.live) === "low"
     },
+    // Also the icon's name: the variants and their icons share their names
     variant() {
-      return this.isLow ? "warning" : "info"
-    },
-    icon() {
       return this.isLow ? "warning" : "info"
     },
     message() {

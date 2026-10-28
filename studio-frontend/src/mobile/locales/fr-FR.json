@@ -208,7 +208,8 @@
     "buy_failed": "Impossible d'ouvrir le paiement. Réessayez.",
     "ask_admin": "Demandez à un administrateur de l'organisation de recharger le crédit de direct.",
     "recharge": "Recharger",
-    "recharge_title": "Recharger le crédit de direct"
+    "recharge_title": "Recharger le crédit de direct",
+    "no_pack_available": "Aucun pack de direct n'est disponible pour cette organisation."
   },
   "conversation": {
     "load_failed": "Impossible d'ouvrir cette conversation."

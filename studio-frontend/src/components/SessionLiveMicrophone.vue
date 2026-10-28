@@ -88,7 +88,7 @@
       <PackPurchaseModal
         v-model="isLivePackPurchaseOpen"
         kind="live"
-        @cancel="undoPackPurchasePause" />
+        @cancel="cancelLivePackPurchase" />
       <Modal
         v-if="!isSessionTerminated"
         :withActions="false"
@@ -146,7 +146,6 @@ export default {
       // Another tab of this browser already records this session: this one
       // only displays it. No takeover, no wait: reloading the page re-checks.
       isRecordedInOtherTab: false,
-      isLivePackPurchaseOpen: false,
       // Pushed by the editor, at ITS breakpoint — the app's own isMobile
       // getter switches at 1100px, the editor's sidebar at 767px.
       editorIsMobile: false,
@@ -200,10 +199,6 @@ export default {
       } else {
         this.startMicrophone()
       }
-    },
-    openLivePackPurchase() {
-      this.pauseForPackPurchase()
-      this.isLivePackPurchaseOpen = true
     },
     startRecordFromMicrophone({ deviceId }) {
       this.showMicrophoneSetup = false

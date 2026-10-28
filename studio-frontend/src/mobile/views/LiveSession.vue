@@ -52,19 +52,19 @@
         :microphone-status="microphoneStatus"
         @retry-microphone="retryAudioConnection"
         @reconfigure-microphone="restartMicrophone"
-        @buy-live-pack="openLivePackPurchase"
+        @buy-live-pack="offerLivePackPurchase"
         @viewport-change="editorIsMobile = $event"
         @sidebar-open="editorSidebarOpen = $event" />
     </div>
 
     <BottomSheet
-      :value="packSheetOpen"
+      :value="isLivePackPurchaseOpen"
       :title="$t('mobile.live.recharge_title')"
       @input="onPackSheetInput">
       <LivePackPurchaseForm
         :packs="livePacks"
         :buying="buyingPack"
-        @buy="buyLivePack" />
+        @buy="buyLivePackDuringLive" />
     </BottomSheet>
 
     <EndLiveSheet
@@ -82,7 +82,6 @@ import EndLiveSheet from "@/mobile/components/live/EndLiveSheet.vue"
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
 import LivePackPurchaseForm from "@/mobile/components/live/LivePackPurchaseForm.vue"
 import { liveSessionMixin } from "@/mobile/mixins/liveSession.js"
-import { liveCreditMixin } from "@/mobile/mixins/liveCredit.js"
 
 // The live session inside the app: the same live editor component as the
 // classic quick meeting (captions, translations, wake lock), the shared
@@ -96,7 +95,7 @@ export default {
     BottomSheet,
     LivePackPurchaseForm,
   },
-  mixins: [liveSessionMixin, liveCreditMixin],
+  mixins: [liveSessionMixin],
   data() {
     return {
       // Both pushed by the editor. <linto-transcript-ui> is mounted with no-header
@@ -109,26 +108,38 @@ export default {
       editorSidebarOpen: false,
     }
   },
-  computed: {
-    // The organization liveCreditMixin buys live minutes for
-    liveOrganizationId() {
-      return this.organizationId
-    },
-  },
   methods: {
     toggleEditorSidebar() {
       this.$refs.sessionLiveNG.toggleSidebar()
     },
-    // The payment page is left with the live paused (quickSessionPauseMixin):
-    // back from it, the page reloads and the microphone restarts
-    openLivePackPurchase() {
-      this.pauseForPackPurchase()
-      this.packSheetOpen = true
+    // The catalog is loaded when asked for, and the live only paused
+    // (quickSessionPauseMixin) when there is a pack to show: an admin of an
+    // organization without live packs is told so, the live goes on.
+    async offerLivePackPurchase() {
+      await this.loadLivePacks()
+      if (!this.canBuyLivePack) {
+        this.$store.dispatch(
+          "system/showError",
+          this.$t("mobile.live.no_pack_available"),
+        )
+        return
+      }
+      this.openLivePackPurchase()
     },
-    // Closed without leaving for the payment page: the live goes on
+    // Closed on the way to the payment page: the purchase decides (see
+    // buyLivePackDuringLive)
     onPackSheetInput(isOpen) {
-      this.packSheetOpen = isOpen
-      if (!isOpen && !this.buyingPack) this.undoPackPurchasePause()
+      if (isOpen) return
+      if (this.buyingPack) this.isLivePackPurchaseOpen = false
+      else this.cancelLivePackPurchase()
+    },
+    // The payment page is left with the live paused: back from it, the page
+    // reloads and the microphone restarts once the pack is credited. Still
+    // here after the call (no payment page, or back from it through the
+    // browser history) with the sheet closed: the purchase was dropped.
+    async buyLivePackDuringLive(packKey) {
+      await this.buyLivePack(packKey)
+      if (!this.isLivePackPurchaseOpen) this.cancelLivePackPurchase()
     },
   },
 }

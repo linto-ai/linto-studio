@@ -136,6 +136,15 @@ export default {
     BottomSheet,
   },
   mixins: [livePrepareMixin, liveCreditMixin],
+  async created() {
+    await this.loadLiveCredit()
+    this.liveCreditLoading = false
+    // Back from a pack payment: the balance shown grows once credited
+    const previousBalance = this.meteredLive?.balance ?? 0
+    this.consumeCreditsCheckoutReturn(
+      (live) => (live?.balance ?? 0) > previousBalance,
+    )
+  },
   computed: {
     online() {
       return onlineStatus.online

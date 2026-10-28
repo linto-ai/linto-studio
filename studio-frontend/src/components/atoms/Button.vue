@@ -14,7 +14,8 @@
     :multiline="multiline"
     v-bind="$attrs"
     v-on="isDisabled ? null : $listeners"
-    @keydown="activateLabelFromKeyboard">
+    @keydown="onLabelKeydown"
+    @keyup="onLabelKeyup">
     <ph-icon
       v-if="loading"
       name="circle-notch"
@@ -203,10 +204,21 @@ export default {
   },
   methods: {
     // A <label> gets neither the focus nor the keys of a button: it is made
-    // focusable above, and Enter or Space click it, which opens its input
-    activateLabelFromKeyboard(event) {
+    // focusable above, and keys click it (which opens its input) as they do
+    // a native button: Enter on press, once even when held, Space on release.
+    onLabelKeydown(event) {
       if (!this.isLabel) return
-      if (event.key !== "Enter" && event.key !== " ") return
+      if (event.key === " ") {
+        // Space would scroll the page
+        event.preventDefault()
+        return
+      }
+      if (event.key !== "Enter") return
+      event.preventDefault()
+      if (!event.repeat) this.$el.click()
+    },
+    onLabelKeyup(event) {
+      if (!this.isLabel || event.key !== " ") return
       event.preventDefault()
       this.$el.click()
     },

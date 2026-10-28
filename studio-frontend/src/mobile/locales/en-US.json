@@ -208,7 +208,8 @@
     "buy_failed": "Could not open the payment page. Try again.",
     "ask_admin": "Ask an administrator of the organization to top up the live credit.",
     "recharge": "Top up",
-    "recharge_title": "Top up live credit"
+    "recharge_title": "Top up live credit",
+    "no_pack_available": "No live pack is available for this organization."
   },
   "conversation": {
     "load_failed": "Cannot open this conversation."

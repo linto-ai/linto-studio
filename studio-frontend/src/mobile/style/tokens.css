@@ -55,6 +55,10 @@
   --md-gap: var(--m-space-4);
   --lg-gap: calc(2 * var(--m-space-4));
   --xl-gap: calc(4 * var(--m-space-4));
+  /* Colours and borders the shared utility classes read */
+  --text-primary: var(--m-text);
+  --divider: 1px solid var(--m-divider);
+  --border-block: 1px solid var(--m-border);
 
   --m-tap: 44px;
   --m-header-height: 60px;
