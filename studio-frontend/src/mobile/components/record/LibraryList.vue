@@ -19,6 +19,8 @@
         :key="recording.id"
         :recording="recording"
         :online="online"
+        :credit-minutes="creditMinutes"
+        :credit-reset-at="creditResetAt"
         @open="$emit('open', $event)" />
     </ul>
   </section>
@@ -37,6 +39,8 @@ export default {
     recordings: { type: Array, required: true },
     localBytes: { type: Number, default: 0 },
     online: { type: Boolean, default: true },
+    creditMinutes: { type: Number, default: null },
+    creditResetAt: { type: String, default: null },
   },
   computed: {
     storage() {

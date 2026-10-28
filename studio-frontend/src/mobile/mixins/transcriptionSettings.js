@@ -4,6 +4,7 @@ import {
   saveTranscriptionPreferences,
 } from "@/mobile/services/transcription/transcriptionPreferences.js"
 import { pickRecommendedService } from "@/mobile/tools/pickRecommendedService.js"
+import { computeTranscriptionChoices } from "@/mobile/tools/computeTranscriptionChoices.js"
 import { buildTranscriptionSettings } from "@/mobile/tools/buildTranscriptionSettings.js"
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 import { isSpeakerIdentificationCapable } from "@/mobile/tools/isSpeakerIdentificationCapable.js"
@@ -79,6 +80,7 @@ export const transcriptionSettingsMixin = {
       })
     },
     transcriptionSummary() {
+      if (!this.servicesLoaded) return this.$t("mobile.common.loading")
       if (!this.currentService) {
         return this.$t("mobile.settings.no_service")
       }
@@ -109,22 +111,11 @@ export const transcriptionSettingsMixin = {
   },
   methods: {
     applyPreferences(saved) {
-      const service = pickRecommendedService(this.services, saved?.serviceName)
-      const languages = (service?.language || "*").split(",")
-      const appLanguage = languages.find((code) =>
-        code.startsWith(this.$i18n.locale.slice(0, 2)),
+      this.choices = computeTranscriptionChoices(
+        this.services,
+        saved,
+        this.$i18n.locale,
       )
-      this.choices = {
-        serviceName: service?.serviceName ?? null,
-        language: languages.includes(saved?.language)
-          ? saved.language
-          : (appLanguage ?? languages[0]),
-        diarization: saved?.diarization ?? true,
-        // Not restored from storage: a deleted collection would be sent.
-        voiceCollections: [],
-        membersRight: saved?.membersRight ?? DEFAULT_MEMBERS_RIGHT,
-        folderId: saved?.folderId ?? null,
-      }
     },
     updateChoices(choices) {
       const serviceChanged = choices.serviceName !== this.choices.serviceName

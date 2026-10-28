@@ -6,8 +6,9 @@ export async function sendMultipartFormData(
   data,
   notif,
   onUploadProgress = null,
+  signal = null,
 ) {
-  return sendRequest(url, { method, onUploadProgress }, data, notif, {
+  return sendRequest(url, { method, onUploadProgress, signal }, data, notif, {
     charset: "utf-8",
     "Content-Type": "multipart/form-data",
   })

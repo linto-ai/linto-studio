@@ -16,6 +16,10 @@ const state = () => ({
   uploadingId: null,
 })
 
+// Aborts the upload in progress (the one of state.uploadingId). Not in the
+// state: Vuex would observe it. Set and cleared by `upload` only.
+let uploadAbortController = null
+
 const PENDING_STATUSES = [
   RECORDING_STATUS.QUEUED,
   RECORDING_STATUS.ERROR,
@@ -54,12 +58,20 @@ const mutations = {
   setUploadingId(state, id) {
     state.uploadingId = id
   },
+  // Progress is not persisted; an entry removed meanwhile stays removed.
+  setProgress(state, { id, progress }) {
+    const index = state.items.findIndex((item) => item.id === id)
+    if (index !== -1) {
+      state.items.splice(index, 1, { ...state.items[index], progress })
+    }
+  },
 }
 
 const actions = {
-  async load({ commit }) {
+  async load({ state, commit }) {
     const { keep, remove } = normalizeLoadedRecordings(
       await queue.listRecordings(),
+      state.uploadingId,
     )
     await Promise.all(remove.map((id) => queue.deleteRecording(id)))
     await Promise.all(
@@ -76,7 +88,10 @@ const actions = {
     const updated = await queue.updateRecording(id, patch)
     if (updated) commit("upsert", updated)
   },
-  async remove({ commit }, id) {
+  // Removing the recording being sent cancels the request too, so the
+  // server does not create its media.
+  async remove({ state, commit }, id) {
+    if (state.uploadingId === id) uploadAbortController?.abort()
     await queue.deleteRecording(id)
     commit("remove", id)
   },
@@ -94,18 +109,20 @@ const actions = {
       progress: 0,
       error: null,
     })
-    const result = await uploadRecording(id, (progress) =>
-      commit("upsert", {
-        ...state.items.find((item) => item.id === id),
-        progress,
-      }),
+    uploadAbortController = new AbortController()
+    const result = await uploadRecording(
+      id,
+      (progress) => commit("setProgress", { id, progress }),
+      uploadAbortController.signal,
     )
+    uploadAbortController = null
+    // A canceled upload was removed by the user: nothing left to update.
     if (result.ok) {
       await dispatch("finishUpload", {
         id,
         conversationId: result.conversationId,
       })
-    } else {
+    } else if (!result.canceled) {
       await dispatch("patch", {
         id,
         status: RECORDING_STATUS.ERROR,

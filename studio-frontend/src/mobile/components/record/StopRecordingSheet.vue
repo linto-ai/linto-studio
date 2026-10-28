@@ -24,22 +24,20 @@
       role="status">
       {{ $t("mobile.record.offline_send") }}
     </NotificationBanner>
-    <!-- The recording is sent by itself once the sheet closes: here the
-         user names it and says whether the audio stays on the phone. The
-         button sits right under the name because the keyboard covers the
-         bottom of the sheet while the name is edited. -->
+    <!-- The recording is sent by itself once the sheet closes, unless it is
+         deleted: here the user names it and says whether the audio stays
+         on the phone. Enter in the name field sends too, so the keyboard
+         covering the button does not block anything. -->
     <form class="m-stop" @submit.prevent="finish">
       <label class="m-stop__field">
         <span>{{ $t("mobile.record.name") }}</span>
-        <input v-model="name" type="text" required maxlength="200" />
+        <input
+          v-model="name"
+          type="text"
+          required
+          maxlength="200"
+          enterkeyhint="send" />
       </label>
-      <Button
-        type="submit"
-        variant="primary"
-        size="lg"
-        block
-        icon="upload-simple"
-        :label="$t('mobile.record.finish')" />
       <ToggleRow
         v-model="keepAudio"
         :label="$t('mobile.library.keep_audio')"
@@ -47,7 +45,35 @@
       <p v-if="sharingSummary" class="m-muted m-stop__sharing">
         {{ sharingSummary }}
       </p>
+      <Button
+        type="submit"
+        variant="primary"
+        size="lg"
+        block
+        icon="upload-simple"
+        :label="$t('mobile.record.finish')" />
     </form>
+    <div v-if="confirmingDiscard" class="m-stop__discard">
+      <Button
+        ref="confirmDiscard"
+        variant="primary"
+        intent="destructive"
+        icon="trash"
+        :label="$t('mobile.record.discard_confirm')"
+        @click="$emit('discard')" />
+      <Button
+        variant="transparent"
+        :label="$t('mobile.common.cancel')"
+        @click="confirmingDiscard = false" />
+    </div>
+    <div v-else class="m-stop__discard">
+      <Button
+        variant="transparent"
+        intent="destructive"
+        icon="trash"
+        :label="$t('mobile.record.discard')"
+        @click="askDiscard" />
+    </div>
   </BottomSheet>
 </template>
 
@@ -72,9 +98,16 @@ export default {
     sharingSummary: { type: String, default: "" },
   },
   data() {
-    return { name: this.defaultName, keepAudio: this.defaultKeepAudio }
+    return {
+      name: this.defaultName,
+      keepAudio: this.defaultKeepAudio,
+      confirmingDiscard: false,
+    }
   },
   watch: {
+    value(open) {
+      if (open) this.confirmingDiscard = false
+    },
     defaultName(value) {
       this.name = value
     },
@@ -85,6 +118,11 @@ export default {
   methods: {
     finish() {
       this.$emit("finish", { name: this.name, keepAudio: this.keepAudio })
+    },
+    async askDiscard() {
+      this.confirmingDiscard = true
+      await this.$nextTick()
+      this.$refs.confirmDiscard.$el.focus()
     },
   },
 }
@@ -119,5 +157,12 @@ export default {
 .m-stop__sharing {
   margin: 0;
   font-size: var(--m-font-size-sm);
+}
+
+.m-stop__discard {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--m-space-2);
 }
 </style>

@@ -2,7 +2,7 @@
   <button type="button" class="m-settings-row" @click="$emit('click')">
     <PhIcon name="sparkle" size="md" class="m-settings-row__icon" />
     <span class="m-settings-row__body">
-      <span class="m-muted">{{ $t("mobile.settings.title") }}</span>
+      <span class="m-muted">{{ title || $t("mobile.settings.title") }}</span>
       <span class="m-settings-row__summary">{{ summary }}</span>
     </span>
     <PhIcon name="caret-right" size="sm" class="m-settings-row__chevron" />
@@ -17,6 +17,7 @@ export default {
   components: { PhIcon },
   props: {
     summary: { type: String, required: true },
+    title: { type: String, default: "" },
   },
 }
 </script>

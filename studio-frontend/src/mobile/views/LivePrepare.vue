@@ -189,6 +189,7 @@ export default {
 }
 
 .m-live__options {
+  padding-inline: var(--m-space-4);
   border-radius: var(--m-radius);
   background: var(--m-surface);
   box-shadow: var(--m-shadow-1);

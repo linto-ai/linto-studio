@@ -7,7 +7,10 @@
       <span class="m-library-item__body">
         <span class="m-library-item__name">{{ recording.name }}</span>
         <span class="m-muted">{{ details }}</span>
-        <span v-if="errorMessage" class="m-library-item__error">
+        <span
+          v-if="errorMessage"
+          class="m-library-item__note"
+          :class="`m-library-item__note--${status.tone}`">
           {{ errorMessage }}
         </span>
       </span>
@@ -40,6 +43,10 @@ export default {
   props: {
     recording: { type: Object, required: true },
     online: { type: Boolean, default: true },
+    // Transcription minutes available and when the quota renews, for a
+    // recording waiting for them
+    creditMinutes: { type: Number, default: null },
+    creditResetAt: { type: String, default: null },
   },
   computed: {
     details() {
@@ -52,7 +59,11 @@ export default {
       return `${date} · ${duration} · ${size}`
     },
     status() {
-      return describeRecordingStatus(this.recording, this.online)
+      return describeRecordingStatus(
+        this.recording,
+        this.online,
+        this.creditMinutes,
+      )
     },
     statusLabel() {
       return this.$t(this.status.label, {
@@ -62,6 +73,14 @@ export default {
     errorMessage() {
       const error = this.recording.error
       if (this.recording.status !== "error" || !error) return ""
+      if (this.status.key === "ready_to_transcribe") {
+        return this.$t("mobile.queue.ready_to_transcribe_hint")
+      }
+      if (this.status.key === "waiting_credit" && this.creditResetAt) {
+        return this.$t("mobile.queue.waiting_credit_until", {
+          date: formatMediaDate(this.creditResetAt, this.$i18n.locale),
+        })
+      }
       return this.$t(`mobile.queue.error_${error.code}`, {
         maxSize: error.maxSize,
       })
@@ -106,8 +125,16 @@ export default {
   white-space: nowrap;
 }
 
-.m-library-item__error {
+.m-library-item__note--danger {
   color: var(--m-danger);
+}
+
+.m-library-item__note--warning {
+  color: var(--m-warning-text);
+}
+
+.m-library-item__note--info {
+  color: var(--m-info);
 }
 
 .m-library-item__status {

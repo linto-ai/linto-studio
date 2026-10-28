@@ -2,6 +2,9 @@
   <div class="m-page">
     <PageHeader :title="$t('mobile.home.record_title')" />
     <main class="m-page__content m-record-page">
+      <TranscriptionCreditBanner
+        v-if="transcriptionCreditExhausted"
+        :reset-at="transcriptionCredit.resetAt" />
       <NotificationBanner
         v-if="isRecording && !recorder.wakeLockOk"
         variant="warning"
@@ -34,10 +37,18 @@
         <p class="m-muted m-record-page__hint">
           {{ $t("mobile.record.local_only") }}
         </p>
+        <TranscriptionCreditPill
+          v-if="
+            !isRecording && transcriptionCredit && !transcriptionCreditExhausted
+          "
+          :minutes="transcriptionCredit.minutes"
+          :synced-at="transcriptionCredit.syncedAt"
+          :cached="transcriptionCredit.cached" />
       </section>
 
       <template v-if="!isRecording">
         <TranscriptionSettingsRow
+          :title="transcriptionRowTitle"
           :summary="transcriptionSummary"
           @click="settingsOpen = true" />
         <ListRow
@@ -52,6 +63,8 @@
         :recordings="library"
         :local-bytes="localBytes"
         :online="online"
+        :credit-minutes="transcriptionCreditMinutes"
+        :credit-reset-at="transcriptionCredit && transcriptionCredit.resetAt"
         @open="openRecording" />
     </main>
 
@@ -73,7 +86,8 @@
       :mime-type="stoppedRecording ? stoppedRecording.mimeType : ''"
       :quiet="stoppedQuiet"
       :sharing-summary="sharingSummary"
-      @finish="finishStopped" />
+      @finish="finishStopped"
+      @discard="discardStopped" />
     <MicrophoneSheet
       v-model="microphoneSheetOpen"
       :microphones="microphones"
@@ -84,6 +98,7 @@
       v-model="recordingSheetOpen"
       :recording="selected"
       :online="online"
+      :credit-minutes="transcriptionCreditMinutes"
       @retry="retryUpload"
       @rename="renameRecording"
       @share-audio="shareAudio"
@@ -106,11 +121,14 @@ import StopRecordingSheet from "@/mobile/components/record/StopRecordingSheet.vu
 import LibraryList from "@/mobile/components/record/LibraryList.vue"
 import RecordingSheet from "@/mobile/components/record/RecordingSheet.vue"
 import MicrophoneSheet from "@/mobile/components/record/MicrophoneSheet.vue"
+import TranscriptionCreditPill from "@/mobile/components/record/TranscriptionCreditPill.vue"
+import TranscriptionCreditBanner from "@/mobile/components/record/TranscriptionCreditBanner.vue"
 import { recordingControllerMixin } from "@/mobile/mixins/recordingController.js"
 import { transcriptionSettingsMixin } from "@/mobile/mixins/transcriptionSettings.js"
 import { libraryActionsMixin } from "@/mobile/mixins/libraryActions.js"
 import { documentShareMixin } from "@/mobile/mixins/documentShare.js"
 import { microphoneChoiceMixin } from "@/mobile/mixins/microphoneChoice.js"
+import { transcriptionCreditMixin } from "@/mobile/mixins/transcriptionCredit.js"
 import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 
 export default {
@@ -128,6 +146,8 @@ export default {
     LibraryList,
     RecordingSheet,
     MicrophoneSheet,
+    TranscriptionCreditPill,
+    TranscriptionCreditBanner,
   },
   mixins: [
     recordingControllerMixin,
@@ -135,6 +155,7 @@ export default {
     libraryActionsMixin,
     documentShareMixin,
     microphoneChoiceMixin,
+    transcriptionCreditMixin,
   ],
   data() {
     return { settingsOpen: false }
@@ -157,12 +178,8 @@ export default {
     onMainButton() {
       if (this.isRecording) {
         this.stopRecording()
-      } else if (this.recorder.state === "idle" && this.transcriptionSettings) {
-        this.startRecording(
-          this.transcriptionSettings,
-          this.microphoneId,
-          this.sharingSettings,
-        )
+      } else if (this.recorder.state === "idle") {
+        this.startRecording(this.microphoneId)
       }
     },
   },
