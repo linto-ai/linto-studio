@@ -68,9 +68,12 @@
         :members-right="choices.membersRight"
         :folder-id="choices.folderId"
         @change="updateMany" />
-      <button type="submit" class="m-settings__done">
-        {{ $t("mobile.common.confirm") }}
-      </button>
+      <Button
+        type="submit"
+        variant="primary"
+        size="lg"
+        block
+        :label="$t('mobile.common.confirm')" />
     </form>
   </BottomSheet>
 </template>
@@ -203,14 +206,5 @@ export default {
   border-radius: var(--m-radius);
   overflow: hidden;
   background: var(--m-surface-muted);
-}
-
-.m-settings__done {
-  min-height: 48px;
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-primary);
-  color: var(--m-on-primary);
-  font-weight: 600;
 }
 </style>

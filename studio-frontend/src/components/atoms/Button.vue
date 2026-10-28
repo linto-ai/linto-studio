@@ -8,9 +8,14 @@
     :disabled="isDisabled"
     :aria-disabled="isDisabled"
     :type="componentType === 'button' ? type : null"
+    :for="isLabel ? htmlFor : null"
+    :tabindex="isLabel ? 0 : null"
+    :role="isLabel ? 'button' : null"
     :multiline="multiline"
     v-bind="$attrs"
-    v-on="isDisabled ? null : $listeners">
+    v-on="isDisabled ? null : $listeners"
+    @keydown="onLabelKeydown"
+    @keyup="onLabelKeyup">
     <ph-icon
       v-if="loading"
       name="circle-notch"
@@ -40,6 +45,21 @@
   </component>
 </template>
 <script>
+// The component holds the markup and the behaviour; each app brings its own
+// stylesheet for it (classic app: style/components/buttons.scss, mobile app:
+// mobile/style/buttons.css). What a stylesheet styles is this contract:
+// - root: .btn, on a <button>, an <a>, a router-link or a <label> (htmlFor)
+// - .btn--{variant}: primary, secondary, tertiary (default), text,
+//   transparent, link
+// - .btn--{intent}: default, destructive
+// - .btn--{size}: xs, sm, md (default), lg, xl
+// - .btn--block (full width), .btn--hovered (hover forced by the parent)
+// - states: [disabled] / [aria-disabled], [multiline] (label on lines)
+// - inside: .icon (icon, or the spinner while loading), .label (text); an
+//   icon-only button has no .label child
+// - knobs a parent may set: --btn-bg, --btn-text, --btn-border-color,
+//   --btn-hover-bg, --btn-hover-text, --btn-padding, --btn-font-size,
+//   --btn-height, --btn-border-radius
 export default {
   name: "Button",
   inheritAttrs: false,
@@ -96,21 +116,6 @@ export default {
       default: "md",
       validator: (value) => ["xs", "sm", "md", "lg", "xl"].includes(value),
     },
-    shape: {
-      type: String,
-      required: false,
-      default: "default",
-      validator: (value) => ["default", "circle"].includes(value),
-    },
-    // variant: {
-    //   type: String,
-    //   required: false,
-    //   default: "solid",
-    //   validator: (value) =>
-    //     ["solid", "outline", "transparent", "text", "link", "flat"].includes(
-    //       value,
-    //     ),
-    // },
     borderColor: {
       type: String,
       required: false,
@@ -125,6 +130,12 @@ export default {
       required: false,
     },
     href: {
+      type: String,
+      required: false,
+    },
+    // id of the input the button stands for (e.g. a hidden file input): the
+    // button is then its <label>, a click on it opens the input
+    htmlFor: {
       type: String,
       required: false,
     },
@@ -151,13 +162,7 @@ export default {
       default: "button", // button or submit
     },
   },
-  data() {
-    return {}
-  },
   computed: {
-    isIconOnly() {
-      return this.iconOnly || (this.icon && !this.label && !this.$slots.default)
-    },
     isDisabled() {
       return this.disabled || this.loading
     },
@@ -168,7 +173,14 @@ export default {
       if (this.to) {
         return !this.isDisabled ? "router-link" : "div"
       }
+      // A disabled <label> would still open its input: a plain div instead
+      if (this.htmlFor) {
+        return !this.isDisabled ? "label" : "div"
+      }
       return "button"
+    },
+    isLabel() {
+      return this.componentType === "label"
     },
     classes() {
       const classes = []
@@ -190,9 +202,27 @@ export default {
       }
     },
   },
-  mounted() {},
-  methods: {},
-  components: {},
+  methods: {
+    // A <label> gets neither the focus nor the keys of a button: it is made
+    // focusable above, and keys click it (which opens its input) as they do
+    // a native button: Enter on press, once even when held, Space on release.
+    onLabelKeydown(event) {
+      if (!this.isLabel) return
+      if (event.key === " ") {
+        // Space would scroll the page
+        event.preventDefault()
+        return
+      }
+      if (event.key !== "Enter") return
+      event.preventDefault()
+      if (!event.repeat) this.$el.click()
+    },
+    onLabelKeyup(event) {
+      if (!this.isLabel || event.key !== " ") return
+      event.preventDefault()
+      this.$el.click()
+    },
+  },
 }
 </script>
 <style scoped>

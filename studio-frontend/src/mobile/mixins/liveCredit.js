@@ -8,10 +8,10 @@ import { computePackGroups } from "@/tools/billing/pack/computePackGroups"
 import { getEnv } from "@/tools/getEnv"
 import { leavePageFor } from "@/tools/leavePageFor"
 
-// The organization's prepaid live minutes on the live preparation page: the
-// balance, the live packs an admin may buy (Stripe Checkout, back on this
-// page), and the wait for the credit once paid. Expects liveOrganizationId
-// from the host.
+// The organization's prepaid live minutes on the live pages (preparation,
+// running live): the balance and the live packs an admin may buy (Stripe
+// Checkout, back on the same page: see consumeCreditsCheckoutReturn).
+// Expects liveOrganizationId from the host, which loads what it shows.
 export const liveCreditMixin = {
   data() {
     return {
@@ -49,20 +49,19 @@ export const liveCreditMixin = {
       return this.isOrganizationAdmin && this.livePacks.length > 0
     },
   },
-  async created() {
-    await this.loadLiveCredit()
-    this.liveCreditLoading = false
-    this.consumeCheckoutReturn()
-  },
   methods: {
+    // The balance and the pack catalog. The catalog is loaded whatever the
+    // role: who may buy is decided when it is shown, not now.
     loadLiveCredit() {
       if (getEnv("VUE_APP_MODE") !== "cloud") return null
       return Promise.all([
         refreshLiveCredit(this.$store, this.liveOrganizationId),
-        this.isOrganizationAdmin
-          ? this.$store.dispatch("billing/loadPackCatalog")
-          : null,
+        this.loadLivePacks(),
       ])
+    },
+    loadLivePacks() {
+      if (getEnv("VUE_APP_MODE") !== "cloud") return null
+      return this.$store.dispatch("billing/loadPackCatalog")
     },
     async buyLivePack(packKey) {
       this.buyingPack = true
@@ -84,9 +83,12 @@ export const liveCreditMixin = {
       }
       this.buyingPack = false
     },
-    // Back from Stripe (?type=credits&status=…): told once, then the balance
-    // is reloaded until the webhook credits the pack
-    async consumeCheckoutReturn() {
+    // Back from a pack Stripe Checkout (?type=credits&status=…): tells the
+    // outcome once, drops the status from the URL so a reload does not
+    // repeat it, and after a payment waits until the live block passes
+    // `isCredited` (see waitForLiveCredit). Resolves at once when the page
+    // is not such a return.
+    async consumeCreditsCheckoutReturn(isCredited) {
       const checkoutReturn = computeCheckoutReturn(this.$route.query)
       if (checkoutReturn?.type !== "credits") return
       this.$router.replace({ query: checkoutReturn.query }).catch(() => {})
@@ -102,7 +104,7 @@ export const liveCreditMixin = {
         this.$t("billing.settings.pack_bought"),
       )
       await waitForLiveCredit(this.$store, this.liveOrganizationId, {
-        previousBalance: this.meteredLive?.balance ?? 0,
+        isCredited,
         isCancelled: () => this._isDestroyed,
       })
     },

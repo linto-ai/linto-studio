@@ -6,9 +6,10 @@
       "
       :back-to="parentRoute">
       <template #actions>
-        <IconButton
+        <Button
+          variant="transparent"
           icon="folder-open"
-          :label="$t('mobile.media.folders')"
+          :aria-label="$t('mobile.media.folders')"
           @click="folderSheetOpen = true" />
       </template>
     </PageHeader>
@@ -39,18 +40,12 @@
           @open-actions="openActions" />
       </ul>
 
-      <button
+      <Button
         v-if="hasMore && !loading"
-        type="button"
-        class="m-media-page__more"
-        :disabled="loadingMore"
-        @click="loadMore">
-        {{
-          loadingMore
-            ? $t("mobile.common.loading")
-            : $t("mobile.media.load_more")
-        }}
-      </button>
+        block
+        :label="$t('mobile.media.load_more')"
+        :loading="loadingMore"
+        @click="loadMore" />
     </main>
 
     <FolderSheet
@@ -80,7 +75,6 @@ import MediaFilters from "@/mobile/components/media/MediaFilters.vue"
 import MediaItem from "@/mobile/components/media/MediaItem.vue"
 import MediaActionsSheet from "@/mobile/components/media/MediaActionsSheet.vue"
 import ShareSheet from "@/mobile/components/media/ShareSheet.vue"
-import IconButton from "@/mobile/components/IconButton.vue"
 import FolderSheet from "@/mobile/components/media/FolderSheet.vue"
 import FolderBreadcrumb from "@/mobile/components/media/FolderBreadcrumb.vue"
 import { mediaListMixin } from "@/mobile/mixins/mediaList.js"
@@ -98,7 +92,6 @@ export default {
     MediaItem,
     MediaActionsSheet,
     ShareSheet,
-    IconButton,
     FolderSheet,
     FolderBreadcrumb,
   },
@@ -189,13 +182,5 @@ export default {
   background: var(--m-surface);
   box-shadow: var(--m-shadow-1);
   overflow: hidden;
-}
-
-.m-media-page__more {
-  min-height: var(--m-tap);
-  border: 1px solid var(--m-border);
-  border-radius: var(--m-radius-sm);
-  background: var(--m-surface);
-  font-weight: 600;
 }
 </style>

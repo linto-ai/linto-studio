@@ -9,15 +9,20 @@
         <span>{{ $t("mobile.record.name") }}</span>
         <input v-model="name" type="text" required maxlength="200" />
       </label>
-      <button type="submit" class="m-end-live__confirm" :disabled="busy">
-        {{ busy ? $t("mobile.common.loading") : $t("mobile.live.stop") }}
-      </button>
-      <button
-        type="button"
+      <Button
+        type="submit"
+        variant="primary"
+        intent="destructive"
+        size="lg"
+        block
+        :label="$t('mobile.live.stop')"
+        :loading="busy" />
+      <Button
+        variant="transparent"
+        block
         class="m-end-live__cancel"
-        @click="$emit('input', false)">
-        {{ $t("mobile.live.keep_going") }}
-      </button>
+        :label="$t('mobile.live.keep_going')"
+        @click="$emit('input', false)" />
     </form>
   </BottomSheet>
 </template>
@@ -70,20 +75,7 @@ export default {
   background: var(--m-surface);
 }
 
-.m-end-live__confirm {
-  min-height: 52px;
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-danger);
-  color: var(--m-on-primary);
-  font-weight: 600;
-}
-
 .m-end-live__cancel {
-  min-height: var(--m-tap);
-  border: none;
-  background: transparent;
-  color: var(--m-primary);
-  font-weight: 600;
+  --btn-text: var(--m-primary);
 }
 </style>

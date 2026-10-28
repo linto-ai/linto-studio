@@ -6,15 +6,6 @@
       variant="secondary"
       @click="openGenerateModal"
       v-if="canEdit"></Button>
-    <!-- <button
-      class="btn primary"
-      @click="openGenerateModal"
-      v-if="canEdit">
-      <span class="icon new"></span>
-      <span class="label">{{
-        $t("conversation.subtitles.generate_subs")
-      }}</span>
-    </button> -->
     <ModalGenerateSubtitle
       v-if="generate"
       :conversationId="conversationId"

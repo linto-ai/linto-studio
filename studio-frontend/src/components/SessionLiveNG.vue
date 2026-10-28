@@ -1,18 +1,16 @@
 <template>
   <div class="session-live-ng flex col flex1">
+    <!-- Buying live minutes is the host's own UI (buy-live-pack): a modal on
+         the classic app, a bottom sheet on the mobile app -->
     <SessionStatusBanner
       :websocketStatus="websocketInstance.state.status"
       :microphoneStatus="microphoneStatus"
       :liveCredit="liveCredit"
       :canBuyLivePack="canBuyLivePack"
-      @buy-live-pack="onBuyLivePack"
+      @buy-live-pack="$emit('buy-live-pack')"
       @retry-websocket="websocketInstance.retry()"
       @retry-microphone="$emit('retry-microphone')"
       @reconfigure-microphone="$emit('reconfigure-microphone')" />
-    <PackPurchaseModal
-      v-model="isLivePackPurchaseOpen"
-      kind="live"
-      @cancel="$emit('live-pack-purchase-cancel')" />
     <linto-transcript-ui
       ref="editor"
       :locale="editorLocale"
@@ -48,7 +46,6 @@ import { getEnv } from "@/tools/getEnv"
 import { readBrandColor } from "@/tools/readBrandColor"
 import { bus } from "@/tools/eventBus.js"
 import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
-import PackPurchaseModal from "@/components-cloud/PackPurchaseModal.vue"
 import { customDebug } from "@/tools/customDebug"
 import { computeLanguageCode } from "@/tools/computeLanguageCode.js"
 
@@ -132,7 +129,7 @@ function storePartialsVisible(visible) {
 
 export default {
   mixins: [sessionModelMixin, liveCreditPollingMixin, livePackPurchaseMixin],
-  components: { SessionStatusBanner, PackPurchaseModal },
+  components: { SessionStatusBanner },
   props: {
     session: { type: Object, required: true },
     initialChannelId: { type: [String, Number], default: null },
@@ -145,7 +142,6 @@ export default {
   },
   data() {
     return {
-      isLivePackPurchaseOpen: false,
       livePlugin: null,
       core: null,
       offChannelChange: null,
@@ -242,12 +238,6 @@ export default {
     )
   },
   methods: {
-    // The host reacts to the purchase (e.g. pauses its microphone) through
-    // buy-live-pack, and to its drop through live-pack-purchase-cancel.
-    onBuyLivePack() {
-      this.$emit("buy-live-pack")
-      this.isLivePackPurchaseOpen = true
-    },
     clear(sessionId) {
       if (sessionId != this.session.id) {
         return

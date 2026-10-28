@@ -1,26 +1,45 @@
 <template>
   <div class="notification-banner" :class="[variant, `align-${align}`]">
-    <PhIcon
-      v-if="icon"
-      :name="icon"
-      class="notification-banner__icon"
-      size="sm" />
-    <!-- With actions, the text gets its own box that wraps, and the buttons
-         stay whole at the end, centered on however many lines it takes.
-         Without, the content stays as is (direct children of the flex). -->
+    <!-- With actions, the icon and the text are one box (__main) that a
+         narrow banner never splits: the actions wrap under it, the text
+         never goes under the icon. Without, the content stays as is
+         (direct children of the flex). -->
     <template v-if="$slots.actions">
-      <div class="notification-banner__content"><slot></slot></div>
+      <div class="notification-banner__main">
+        <PhIcon
+          v-if="icon"
+          :name="icon"
+          class="notification-banner__icon"
+          size="sm" />
+        <div class="notification-banner__content"><slot></slot></div>
+      </div>
       <div class="notification-banner__actions">
         <slot name="actions"></slot>
       </div>
     </template>
-    <slot v-else></slot>
+    <template v-else>
+      <PhIcon
+        v-if="icon"
+        :name="icon"
+        class="notification-banner__icon"
+        size="sm" />
+      <slot></slot>
+    </template>
   </div>
 </template>
 
 <script>
 import PhIcon from "@/components/atoms/PhIcon.vue"
 
+// The component holds the markup; each app brings its own stylesheet for it
+// (classic app: style/components/notification-banner.scss, mobile app:
+// mobile/style/notification-banner.css). What a stylesheet styles is this
+// contract:
+// - root: .notification-banner, with the variant as a class (info, warning,
+//   success, error, neutral) and align-center or align-start
+// - inside: .notification-banner__icon; with actions, the icon and
+//   .notification-banner__content (the text) are wrapped in
+//   .notification-banner__main, followed by .notification-banner__actions
 export default {
   name: "NotificationBanner",
   components: { PhIcon },
@@ -43,79 +62,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.notification-banner {
-  background: var(--background-primary);
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--small-gap);
-  box-sizing: border-box;
-  color: var(--text-primary);
-  padding: var(--small-gap) var(--medium-gap);
-  border: 1px solid var(--neutral-40);
-  border-radius: 4px;
-  font-size: var(--text-sm);
-  line-height: 1.5;
-}
-
-.notification-banner.align-center {
-  justify-content: center;
-  text-align: center;
-}
-
-.notification-banner.align-start {
-  justify-content: flex-start;
-  text-align: left;
-}
-
-.notification-banner__icon {
-  flex-shrink: 0;
-}
-
-/* The text takes the room left and wraps inside it */
-.notification-banner__content {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.notification-banner__actions {
-  display: flex;
-  flex-shrink: 0;
-  gap: var(--small-gap);
-  margin-left: var(--small-gap);
-}
-
-.notification-banner.neutral {
-  border-color: var(--neutral-30);
-  color: var(--text-secondary);
-  background: var(--neutral-5);
-  border-style: dashed;
-}
-
-.notification-banner.success {
-  border-color: var(--success-color);
-  color: var(--success-color);
-  background: var(--success-soft);
-}
-
-.notification-banner.warning {
-  border-color: var(--warning-color);
-  color: var(--warning-text);
-  background: var(--warning-soft);
-}
-
-.notification-banner.error {
-  border-color: var(--danger-color);
-  color: var(--danger-color);
-  background: var(--danger-soft);
-}
-
-.notification-banner.info {
-  border-color: var(--linkHard);
-  color: var(--linkHard);
-  background: var(--linkSoft);
-}
-</style>

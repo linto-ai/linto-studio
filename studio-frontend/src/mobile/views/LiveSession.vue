@@ -18,25 +18,26 @@
            values, so opening the editor's sidebar would offer a high-contrast
            switch that darkens the transcript inside a light bar. The wiring
            below stays in place — uncomment when the shell follows.
-      <IconButton
+      <Button
+        variant="transparent"
         v-if="editorIsMobile"
         icon="sidebar-simple"
-        :label="$t('mobile.live.settings')"
+        :aria-label="$t('mobile.live.settings')"
         :aria-expanded="String(editorSidebarOpen)"
         @click="toggleEditorSidebar" />
       -->
-      <IconButton
+      <Button
+        variant="transparent"
         :icon="wantsRecording ? 'microphone' : 'microphone-slash'"
-        :label="
+        :aria-label="
           wantsRecording ? $t('mobile.live.mute') : $t('mobile.live.unmute')
         "
         @click="toggleMute" />
-      <button
-        type="button"
-        class="m-live-session__end"
-        @click="endSheetOpen = true">
-        {{ $t("mobile.live.end") }}
-      </button>
+      <Button
+        variant="primary"
+        intent="destructive"
+        :label="$t('mobile.live.end')"
+        @click="endSheetOpen = true" />
     </header>
 
     <p v-if="!session || !editorReady" class="m-muted m-live-session__state">
@@ -51,9 +52,20 @@
         :microphone-status="microphoneStatus"
         @retry-microphone="retryAudioConnection"
         @reconfigure-microphone="restartMicrophone"
+        @buy-live-pack="offerLivePackPurchase"
         @viewport-change="editorIsMobile = $event"
         @sidebar-open="editorSidebarOpen = $event" />
     </div>
+
+    <BottomSheet
+      :value="isLivePackPurchaseOpen"
+      :title="$t('mobile.live.recharge_title')"
+      @input="onPackSheetInput">
+      <LivePackPurchaseForm
+        :packs="livePacks"
+        :buying="buyingPack"
+        @buy="buyLivePackDuringLive" />
+    </BottomSheet>
 
     <EndLiveSheet
       v-model="endSheetOpen"
@@ -66,8 +78,9 @@
 <script>
 import PhIcon from "@/components/atoms/PhIcon.vue"
 import SessionLiveNG from "@/components/SessionLiveNG.vue"
-import IconButton from "@/mobile/components/IconButton.vue"
 import EndLiveSheet from "@/mobile/components/live/EndLiveSheet.vue"
+import BottomSheet from "@/mobile/components/BottomSheet.vue"
+import LivePackPurchaseForm from "@/mobile/components/live/LivePackPurchaseForm.vue"
 import { liveSessionMixin } from "@/mobile/mixins/liveSession.js"
 
 // The live session inside the app: the same live editor component as the
@@ -75,7 +88,13 @@ import { liveSessionMixin } from "@/mobile/mixins/liveSession.js"
 // microphone streaming mixin, and a mobile bar with mute and end.
 export default {
   name: "MobileLiveSession",
-  components: { PhIcon, SessionLiveNG, IconButton, EndLiveSheet },
+  components: {
+    PhIcon,
+    SessionLiveNG,
+    EndLiveSheet,
+    BottomSheet,
+    LivePackPurchaseForm,
+  },
   mixins: [liveSessionMixin],
   data() {
     return {
@@ -92,6 +111,35 @@ export default {
   methods: {
     toggleEditorSidebar() {
       this.$refs.sessionLiveNG.toggleSidebar()
+    },
+    // The catalog is loaded when asked for, and the live only paused
+    // (quickSessionPauseMixin) when there is a pack to show: an admin of an
+    // organization without live packs is told so, the live goes on.
+    async offerLivePackPurchase() {
+      await this.loadLivePacks()
+      if (!this.canBuyLivePack) {
+        this.$store.dispatch(
+          "system/showError",
+          this.$t("mobile.live.no_pack_available"),
+        )
+        return
+      }
+      this.openLivePackPurchase()
+    },
+    // Closed on the way to the payment page: the purchase decides (see
+    // buyLivePackDuringLive)
+    onPackSheetInput(isOpen) {
+      if (isOpen) return
+      if (this.buyingPack) this.isLivePackPurchaseOpen = false
+      else this.cancelLivePackPurchase()
+    },
+    // The payment page is left with the live paused: back from it, the page
+    // reloads and the microphone restarts once the pack is credited. Still
+    // here after the call (no payment page, or back from it through the
+    // browser history) with the sheet closed: the purchase was dropped.
+    async buyLivePackDuringLive(packKey) {
+      await this.buyLivePack(packKey)
+      if (!this.isLivePackPurchaseOpen) this.cancelLivePackPurchase()
     },
   },
 }
@@ -173,16 +221,6 @@ export default {
     width: 10px;
     height: 10px;
   }
-}
-
-.m-live-session__end {
-  min-height: 40px;
-  padding: 0 var(--m-space-3);
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-danger);
-  color: var(--m-on-primary);
-  font-weight: 600;
 }
 
 .m-live-session__body {

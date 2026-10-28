@@ -52,8 +52,7 @@
               icon="trash"
               size="sm"
               :title="$t('manage_tags.delete_tag')"
-              :aria-label="$t('manage_tags.delete_tag')"
-              iconOnly />
+              :aria-label="$t('manage_tags.delete_tag')" />
           </Alert>
         </li>
         <li>

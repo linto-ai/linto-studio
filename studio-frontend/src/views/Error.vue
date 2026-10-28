@@ -1,8 +1,9 @@
 <template>
   <ErrorPage>
-    <RouterLink :to="{ name: 'explore' }" class="btn primary">
-      {{ $t("global_error.back_to_home") }}
-    </RouterLink>
+    <Button
+      variant="primary"
+      :to="{ name: 'explore' }"
+      :label="$t('global_error.back_to_home')" />
   </ErrorPage>
 </template>
 <script>

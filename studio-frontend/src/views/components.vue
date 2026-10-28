@@ -1,27 +1,153 @@
 <template>
   <div class="main-container flex col gap-small">
     <h1>Linto components</h1>
-    <div class="flex gap-medium">
-      <Button variant="primary" label="primary button" icon="users" />
-      <Button variant="primary" size="sm" label="small" icon="users" />
+
+    <h3>Button - variants</h3>
+    <div class="flex wrap gap-small">
+      <Button
+        v-for="variant in buttonVariants"
+        :key="variant"
+        :variant="variant"
+        icon="users"
+        :label="variant" />
     </div>
-    <div>
-      <Button variant="secondary" label="secondary button" icon="users" />
+
+    <h3>Button - destructive intent</h3>
+    <div class="flex wrap gap-small">
+      <Button
+        v-for="variant in buttonVariants"
+        :key="variant"
+        :variant="variant"
+        intent="destructive"
+        icon="trash"
+        :label="variant" />
     </div>
-    <div>
+
+    <h3>Button - sizes</h3>
+    <div class="flex wrap align-center gap-small">
+      <Button
+        v-for="size in buttonSizes"
+        :key="size"
+        variant="primary"
+        :size="size"
+        icon="microphone"
+        :label="size" />
+    </div>
+
+    <h3>Button - icon only</h3>
+    <div class="flex wrap align-center gap-small">
+      <Button
+        v-for="variant in buttonVariants"
+        :key="variant"
+        :variant="variant"
+        icon="gear"
+        :aria-label="variant" />
+      <Button
+        v-for="size in buttonSizes"
+        :key="size"
+        variant="secondary"
+        :size="size"
+        icon="plus"
+        :aria-label="size" />
+    </div>
+
+    <h3>Button - states</h3>
+    <div class="flex wrap gap-small">
+      <Button variant="primary" icon-right="caret-right" label="Icon right" />
+      <Button variant="primary" loading label="Loading" />
+      <Button variant="secondary" loading label="Loading" />
+      <Button variant="primary" disabled label="Disabled" />
+      <Button variant="secondary" disabled label="Disabled" />
+      <Button disabled label="Disabled" />
+      <Button variant="primary" hovered label="Hovered" />
+      <Button hovered label="Hovered" />
+    </div>
+
+    <h3>Button - block and multiline</h3>
+    <div class="flex col gap-small">
       <Button
         variant="primary"
-        intent="destructive"
-        label="destructive primary button" />
+        size="lg"
+        block
+        icon="broadcast"
+        label="Block, lg" />
+      <Button variant="secondary" size="lg" block label="Block secondary" />
+      <div class="components-narrow">
+        <Button
+          variant="secondary"
+          multiline
+          label="A multiline label long enough to wrap on two lines" />
+      </div>
+      <div class="components-narrow">
+        <Button
+          variant="secondary"
+          label="A single line label too long for its button" />
+      </div>
     </div>
-    <div>
+
+    <h3>Button - as a link</h3>
+    <div class="flex wrap gap-small">
       <Button
         variant="secondary"
-        intent="destructive"
-        label="destructive secondary button" />
+        href="#"
+        icon="arrow-square-out"
+        label="href" />
+      <Button variant="secondary" :to="{ name: 'components' }" label="to" />
+      <Button
+        variant="secondary"
+        :to="{ name: 'components' }"
+        disabled
+        label="to, disabled" />
     </div>
-    <div>
-      <Button label="Download" icon="download" />
+
+    <h3>Button - as a label (htmlFor)</h3>
+    <div class="flex wrap gap-small">
+      <input id="components-file" type="file" class="hidden" />
+      <Button
+        variant="secondary"
+        html-for="components-file"
+        icon="upload-simple"
+        label="Choose a file" />
+      <Button
+        variant="secondary"
+        html-for="components-file"
+        disabled
+        label="Disabled" />
+    </div>
+
+    <h3>NotificationBanner - variants</h3>
+    <div class="flex col gap-small">
+      <NotificationBanner
+        v-for="banner in notificationBanners"
+        :key="banner.variant"
+        :variant="banner.variant"
+        :icon="banner.icon">
+        {{ banner.variant }}: a message for the user
+      </NotificationBanner>
+    </div>
+
+    <h3>NotificationBanner - align start, actions</h3>
+    <div class="flex col gap-small">
+      <NotificationBanner variant="warning" icon="warning" align="start">
+        A longer message, aligned at the start, that wraps on several lines next
+        to its action.
+        <template #actions>
+          <Button variant="secondary" size="sm" icon="plus" label="Action" />
+        </template>
+      </NotificationBanner>
+      <NotificationBanner variant="error" icon="warning-circle" align="start">
+        A message without action, aligned at the start.
+      </NotificationBanner>
+    </div>
+
+    <h3>SessionStatusBanner - live credit</h3>
+    <div class="flex col">
+      <SessionStatusBanner
+        v-for="banner in liveCreditBanners"
+        :key="banner.name"
+        websocket-status="connected"
+        :live-credit="banner.liveCredit"
+        :can-buy-live-pack="banner.canBuyLivePack" />
     </div>
 
     <h3>Headings - h1 to h5</h3>
@@ -209,6 +335,8 @@ import GenericTable from "@/components/molecules/GenericTable.vue"
 import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
 import PackLot from "@/components-cloud/PackLot.vue"
 import PackOffer from "@/components-cloud/PackOffer.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
+import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
 import { computePackGroups } from "@/tools/billing/pack/computePackGroups"
 import { computePackLots } from "@/tools/billing/pack/computePackLots"
 
@@ -252,10 +380,42 @@ const DEMO_LOTS = [
   created: "2026-03-12T12:00:00Z",
   expiresAt: "2099-03-12T12:00:00Z",
 }))
+// Every look of the Button contract (see Button.vue), the mobile app has the
+// same matrix at /m/components
+const BUTTON_VARIANTS = [
+  "primary",
+  "secondary",
+  "tertiary",
+  "text",
+  "transparent",
+  "link",
+]
+const BUTTON_SIZES = ["xs", "sm", "md", "lg", "xl"]
+// live block of GET /cloud/usage/:orgId, as the live page polls it
+const LOW_LIVE_CREDIT = { balance: 7, lowBalance: true, unmetered: false }
+const NO_LIVE_CREDIT = { balance: 0, lowBalance: true, unmetered: false }
+const LIVE_CREDIT_BANNERS = [
+  { name: "low-admin", liveCredit: LOW_LIVE_CREDIT, canBuyLivePack: true },
+  { name: "low-member", liveCredit: LOW_LIVE_CREDIT, canBuyLivePack: false },
+  { name: "none-admin", liveCredit: NO_LIVE_CREDIT, canBuyLivePack: true },
+  { name: "none-member", liveCredit: NO_LIVE_CREDIT, canBuyLivePack: false },
+]
+const NOTIFICATION_BANNERS = [
+  { variant: "info", icon: "info" },
+  { variant: "warning", icon: "warning" },
+  { variant: "success", icon: "check-circle" },
+  { variant: "error", icon: "warning-circle" },
+  { variant: "neutral", icon: "lightbulb" },
+]
+
 export default {
   props: {},
   data() {
     return {
+      buttonVariants: BUTTON_VARIANTS,
+      buttonSizes: BUTTON_SIZES,
+      notificationBanners: NOTIFICATION_BANNERS,
+      liveCreditBanners: LIVE_CREDIT_BANNERS,
       demoPackOffers: computePackGroups(DEMO_PACKS).flatMap(
         (group) => group.packs,
       ),
@@ -384,6 +544,8 @@ export default {
     SegmentedControl,
     PackLot,
     PackOffer,
+    NotificationBanner,
+    SessionStatusBanner,
   },
 }
 </script>
@@ -404,6 +566,10 @@ export default {
   margin: 0;
   padding: var(--tiny-gap);
   border: none;
+}
+
+.components-narrow {
+  width: 220px;
 }
 
 .components-hint {

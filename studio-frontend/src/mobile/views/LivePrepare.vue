@@ -22,7 +22,14 @@
           :packs="livePacks"
           :buying="buyingPack"
           @buy="buyLivePack" />
-        <InfoBanner v-else>{{ $t("mobile.live.ask_admin") }}</InfoBanner>
+        <NotificationBanner
+          v-else
+          variant="info"
+          icon="info"
+          align="start"
+          role="status"
+          >{{ $t("mobile.live.ask_admin") }}</NotificationBanner
+        >
       </LiveCreditExhausted>
 
       <form v-else class="m-live__form" @submit.prevent="start">
@@ -65,20 +72,27 @@
           :live="meteredLive"
           :can-recharge="canBuyLivePack"
           @recharge="packSheetOpen = true" />
-        <InfoBanner v-if="!online" tone="warning">{{
-          $t("mobile.live.offline")
-        }}</InfoBanner>
+        <NotificationBanner
+          v-if="!online"
+          variant="warning"
+          icon="warning"
+          align="start"
+          role="status"
+          >{{ $t("mobile.live.offline") }}</NotificationBanner
+        >
         <p v-if="failed" class="m-live__error" role="alert">
           {{ $t("mobile.live.start_failed") }}
         </p>
 
-        <button
+        <Button
           type="submit"
-          class="m-live__start"
-          :disabled="starting || !online">
-          <PhIcon name="broadcast" size="sm" />
-          {{ starting ? $t("mobile.common.loading") : $t("mobile.live.start") }}
-        </button>
+          variant="primary"
+          size="lg"
+          block
+          icon="broadcast"
+          :label="$t('mobile.live.start')"
+          :loading="starting"
+          :disabled="!online" />
         <p class="m-muted m-live__note">{{ $t("mobile.live.screen_note") }}</p>
       </form>
     </main>
@@ -95,9 +109,8 @@
 </template>
 
 <script>
-import PhIcon from "@/components/atoms/PhIcon.vue"
 import PageHeader from "@/mobile/components/PageHeader.vue"
-import InfoBanner from "@/mobile/components/InfoBanner.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import ToggleRow from "@/mobile/components/ToggleRow.vue"
 import TranslationPicker from "@/mobile/components/live/TranslationPicker.vue"
 import LiveRunningCard from "@/mobile/components/live/LiveRunningCard.vue"
@@ -112,9 +125,8 @@ import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 export default {
   name: "MobileLivePrepare",
   components: {
-    PhIcon,
     PageHeader,
-    InfoBanner,
+    NotificationBanner,
     ToggleRow,
     TranslationPicker,
     LiveRunningCard,
@@ -124,6 +136,15 @@ export default {
     BottomSheet,
   },
   mixins: [livePrepareMixin, liveCreditMixin],
+  async created() {
+    await this.loadLiveCredit()
+    this.liveCreditLoading = false
+    // Back from a pack payment: the balance shown grows once credited
+    const previousBalance = this.meteredLive?.balance ?? 0
+    this.consumeCreditsCheckoutReturn(
+      (live) => (live?.balance ?? 0) > previousBalance,
+    )
+  },
   computed: {
     online() {
       return onlineStatus.online
@@ -181,22 +202,5 @@ export default {
 
 .m-live__note {
   text-align: center;
-}
-
-.m-live__start {
-  min-height: 52px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--m-space-2);
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-primary);
-  color: var(--m-on-primary);
-  font-weight: 600;
-}
-
-.m-live__start:disabled {
-  opacity: 0.6;
 }
 </style>

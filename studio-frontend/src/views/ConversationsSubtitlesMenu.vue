@@ -20,13 +20,6 @@
           variant="secondary"
           v-if="canEdit && selectedVersions.length > 0"
           @click="() => (deleteModal = true)"></Button>
-        <!-- <button
-          class="btn tertiary outline"
-          v-if="canEdit"
-          @click="() => (deleteModal = true)">
-          <span class="icon trash"></span
-          ><span class="label">Delete versions</span>
-        </button> -->
       </div>
     </ActionBar>
     <SubtitleMenu

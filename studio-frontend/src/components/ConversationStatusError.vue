@@ -1,27 +1,5 @@
 <template>
   <V2Layout>
-    <!-- <template v-slot:breadcrumb-actions>
-      <router-link :to="conversationListRoute" class="btn">
-        <span class="icon back"></span>
-        <span class="label">{{
-          $t("conversation.status_page.return_to_medias_list_button")
-        }}</span>
-      </router-link>
-      <h1
-        class="flex1 center-text text-cut"
-        style="padding-left: 1rem; padding-right: 1rem">
-        {{ conversation.name }}
-      </h1>
-      <router-link
-        :to="conversationListRoute"
-        class="btn"
-        style="visibility: hidden">
-        <span class="icon back"></span>
-        <span class="label">{{
-          $t("conversation.status_page.return_to_medias_list_button")
-        }}</span>
-      </router-link>
-    </template> -->
     <div
       class="flex col flex1 gap-medium align-center conversation-status-error">
       <h2 class="center-text">
@@ -32,12 +10,12 @@
         {{ errorLog }}
       </pre>
       <div>
-        <router-link :to="conversationListRoute" class="btn">
-          <span class="icon back"></span>
-          <span class="label">{{
-            $t("conversation.status_page.return_to_medias_list_button")
-          }}</span>
-        </router-link>
+        <Button
+          :to="conversationListRoute"
+          icon="arrow-left"
+          :label="
+            $t('conversation.status_page.return_to_medias_list_button')
+          " />
       </div>
     </div>
   </V2Layout>

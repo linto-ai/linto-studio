@@ -29,11 +29,11 @@
               :src="avatarPreview"
               :text="avatarPreview ? '' : '?'" />
             <div class="avatar-upload__actions">
-              <label
-                :for="slotProps.id"
-                class="btn btn--secondary btn--sm">
-                <span class="label">{{ avatarUploadLabel }}</span>
-              </label>
+              <Button
+                :html-for="slotProps.id"
+                variant="secondary"
+                size="sm"
+                :label="avatarUploadLabel" />
               <Button
                 v-if="avatar.value"
                 type="button"

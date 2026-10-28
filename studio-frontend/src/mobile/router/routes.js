@@ -43,6 +43,12 @@ export const MOBILE_ROUTES = [
     component: () => import("@/mobile/views/LiveSession.vue"),
   },
   {
+    path: "/components",
+    name: "components",
+    meta: { public: true },
+    component: () => import("@/mobile/views/Components.vue"),
+  },
+  {
     path: "*",
     name: "not-found",
     meta: { public: true },

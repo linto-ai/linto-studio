@@ -90,8 +90,11 @@
         :microphoneStatus="microphoneStatus"
         @retry-microphone="retryAudioConnection"
         @reconfigure-microphone="showMicrophoneSetup = true"
+        @buy-live-pack="isLivePackPurchaseOpen = true"
         @viewport-change="editorIsMobile = $event"
         @sidebar-open="editorSidebarOpen = $event" />
+
+      <PackPurchaseModal v-model="isLivePackPurchaseOpen" kind="live" />
 
       <Modal
         v-if="!isTerminated"
@@ -140,6 +143,7 @@ import SessionDropdownChannelSelector from "@/components-mobile/SessionDropdownC
 import IsMobile from "@/components/atoms/IsMobile.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import SessionLiveNG from "@/components/SessionLiveNG.vue"
+import PackPurchaseModal from "@/components-cloud/PackPurchaseModal.vue"
 
 export default {
   mixins: [sessionMixin, orgaRoleMixin, sessionMicrophoneMixin],
@@ -153,6 +157,7 @@ export default {
     } = this.$route.query
 
     return {
+      isLivePackPurchaseOpen: false,
       selectedChannel: null,
       selectedTranslation: null,
       fontSize: "40",
@@ -266,6 +271,7 @@ export default {
     SessionHeader,
     FormInput,
     SessionLiveNG,
+    PackPurchaseModal,
   },
 }
 </script>
