@@ -1,4 +1,4 @@
-FROM node:22.22.0-alpine
+FROM node:24.22.1-alpine
 
 # Install dependencies
 RUN apk upgrade --no-cache && apk add --no-cache \
@@ -35,8 +35,7 @@ RUN pip3 install --break-system-packages --upgrade yt-dlp && \
   ln -sf /usr/bin/yt-dlp /usr/local/bin/yt-dlp || \
   cp config/bin/yt-dlp_linux /usr/local/bin/yt-dlp 2>/dev/null || true
 
-RUN npm install -g npm@11.6.2 && \
-  npm ci --omit=dev && \
+RUN npm ci --omit=dev && \
   rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
          /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 
