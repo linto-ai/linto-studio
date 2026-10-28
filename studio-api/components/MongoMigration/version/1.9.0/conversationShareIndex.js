@@ -1,5 +1,5 @@
 const debug = require("debug")(
-  `linto:components:MongoMigration:version:1.9.1:conversationShareIndex`,
+  `linto:components:MongoMigration:version:1.9.0:conversationShareIndex`,
 )
 
 const logger = require(`${process.cwd()}/lib/logger/logger`)
