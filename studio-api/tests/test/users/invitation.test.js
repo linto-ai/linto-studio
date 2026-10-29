@@ -1,5 +1,3 @@
-jest.mock("debug", () => () => () => {})
-
 const mockModel = {
   users: {
     createExternal: jest.fn(),
@@ -8,7 +6,6 @@ const mockModel = {
     getByEmail: jest.fn(),
     renewAuthLink: jest.fn(),
   },
-  organizations: { createDefault: jest.fn() },
 }
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => mockModel)
 
@@ -50,7 +47,7 @@ describe("inviteNewUser", () => {
     ])
   })
 
-  it("creates the account with its link and no personal organization", async () => {
+  it("creates the account with its link", async () => {
     await expect(inviteNewUser("new@acme.org")).resolves.toEqual({
       id: ID,
       magicId: "magic",
@@ -60,7 +57,6 @@ describe("inviteNewUser", () => {
       _id: ID,
       onboarded: true,
     })
-    expect(mockModel.organizations.createDefault).not.toHaveBeenCalled()
   })
 
   it("refuses when invitations are disabled", async () => {

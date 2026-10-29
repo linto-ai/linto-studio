@@ -276,7 +276,7 @@ async function getOrgaIdFromReq(req) {
 // Adds the user to every organization whose matchingMail claims their email
 // domain. Idempotent and never throws: a failure is logged, not surfaced.
 async function populateUserToOrganization(user, role = ROLES.MEMBER) {
-  const domain = emailDomain(user?.email)
+  const domain = emailDomain(user.email)
   if (!domain) return
 
   try {
@@ -295,11 +295,13 @@ async function populateUserToOrganization(user, role = ROLES.MEMBER) {
   }
 }
 
-// An account gets its workspace once: at its first login when invited, at
-// creation when it comes from an SSO. Idempotent
-async function setupUserWorkspace(user) {
-  await populateUserToOrganization(user)
-  await ensurePersonalOrganization(user)
+// The domain rule applies once, at the first login of an invited account or
+// at SSO creation. The personal organization is ensured at every login
+async function setupUserWorkspace(user, { firstLogin }) {
+  await Promise.all([
+    firstLogin ? populateUserToOrganization(user) : null,
+    ensurePersonalOrganization(user),
+  ])
 }
 
 async function addM2mUserToOrganization(orgaId, m2m_id, role = ROLES.MEMBER) {

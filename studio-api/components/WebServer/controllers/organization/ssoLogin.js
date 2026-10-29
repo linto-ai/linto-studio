@@ -8,9 +8,6 @@ const { decrypt } = require(
   `${process.cwd()}/components/WebServer/config/passport/token/encryption`,
 )
 const { emailDomain } = require(`${process.cwd()}/lib/utility/emailDomain`)
-const { ensurePersonalOrganization } = require(
-  `${process.cwd()}/components/WebServer/controllers/user/personalOrganization`,
-)
 
 const CALLBACK_PATH = "/auth/oidc/organization/cb"
 const DISCOVERY_TTL_MS = 10 * 60 * 1000
@@ -163,8 +160,8 @@ async function ensureMembership(organizationId, userId) {
 }
 
 // The SSO organization is the user's workspace: member, default organization
-// when they have none, and no onboarding wizard (the personal organization is
-// created here instead of by the wizard).
+// when they have none, and no onboarding wizard. The personal organization
+// comes from the login itself (generateUserToken)
 async function attachUserToOrganization(userId, organizationId) {
   const [, rows] = await Promise.all([
     ensureMembership(organizationId, userId),
@@ -178,12 +175,8 @@ async function attachUserToOrganization(userId, organizationId) {
     updates.defaultOrganization = organizationId.toString()
   if (user.onboarded === false) updates.onboarded = true
 
-  await Promise.all([
-    ensurePersonalOrganization(user),
-    Object.keys(updates).length > 0
-      ? model.users.update({ _id: userId, ...updates }).then(throwIfError)
-      : null,
-  ])
+  if (Object.keys(updates).length > 0)
+    throwIfError(await model.users.update({ _id: userId, ...updates }))
 }
 
 module.exports = {

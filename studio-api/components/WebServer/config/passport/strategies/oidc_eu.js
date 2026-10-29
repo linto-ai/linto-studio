@@ -50,12 +50,10 @@ async function initStrategy() {
         try {
           let userData = tokenset.claims()
           let user
-          let firstLogin = true
           let users = await model.users.getTokenByEmail(userData.email)
-          if (users.length === 1) {
-            user = users[0]
-            firstLogin = isPendingAccount(user)
-          } else if (users?.length > 1) throw new MultipleUserFound()
+          const firstLogin = !users[0] || isPendingAccount(users[0])
+          if (users.length === 1) user = users[0]
+          else if (users?.length > 1) throw new MultipleUserFound()
           else if (user?.suspend) throw new DisabledUser()
           else {
             const createdUser = await model.users.createExternal(
@@ -127,4 +125,4 @@ passport.deserializeUser((user, done) => {
   done(null, user)
 })
 
-return initStrategy()
+module.exports = initStrategy()

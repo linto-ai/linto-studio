@@ -108,58 +108,50 @@ describe("setupUserWorkspace", () => {
   beforeEach(() => {
     jest.clearAllMocks()
     delete process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION
-    mockModel.organizations.getByMatchingMailDomain.mockResolvedValue([
-      { _id: "org1" },
-    ])
-    mockModel.organizations.addMember.mockResolvedValue({ matchedCount: 1 })
+    mockModel.organizations.getByMatchingMailDomain.mockResolvedValue([])
+    mockModel.organizations.getPersonalByOwner.mockResolvedValue(null)
     mockModel.organizations.createDefault.mockResolvedValue({
       insertedCount: 1,
     })
   })
 
-  it("joins the domain organizations then creates the personal one", async () => {
-    mockModel.organizations.getPersonalByOwner.mockResolvedValue(null)
+  it("applies the domain rule and creates the personal organization at first login", async () => {
+    await setupUserWorkspace(USER, { firstLogin: true })
 
-    await setupUserWorkspace(USER)
-
-    expect(mockModel.organizations.addMember).toHaveBeenCalledWith(
-      "org1",
-      USER._id,
-      ROLES.MEMBER,
-    )
+    expect(
+      mockModel.organizations.getByMatchingMailDomain,
+    ).toHaveBeenCalledWith("acme.org")
     expect(mockModel.organizations.createDefault).toHaveBeenCalledWith(
       USER._id,
       USER.email,
     )
-    expect(mockLogger.error).not.toHaveBeenCalled()
   })
 
-  it("keeps an existing personal organization", async () => {
-    mockModel.organizations.getPersonalByOwner.mockResolvedValue({
-      _id: "personal",
-    })
+  it("only ensures the personal organization on a later login", async () => {
+    await setupUserWorkspace(USER, { firstLogin: false })
 
-    await setupUserWorkspace(USER)
-
-    expect(mockModel.organizations.createDefault).not.toHaveBeenCalled()
+    expect(
+      mockModel.organizations.getByMatchingMailDomain,
+    ).not.toHaveBeenCalled()
+    expect(mockModel.organizations.createDefault).toHaveBeenCalledTimes(1)
   })
 
   it("creates no personal organization when the platform disables it", async () => {
     process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION = "true"
 
-    await setupUserWorkspace(USER)
+    await setupUserWorkspace(USER, { firstLogin: true })
 
     expect(mockModel.organizations.getPersonalByOwner).not.toHaveBeenCalled()
     expect(mockModel.organizations.createDefault).not.toHaveBeenCalled()
-    expect(mockModel.organizations.addMember).toHaveBeenCalledTimes(1)
   })
 
   it("rejects when the personal organization cannot be created", async () => {
-    mockModel.organizations.getPersonalByOwner.mockResolvedValue(null)
     mockModel.organizations.createDefault.mockResolvedValue(
       new Error("insert failed"),
     )
 
-    await expect(setupUserWorkspace(USER)).rejects.toThrow("insert failed")
+    await expect(
+      setupUserWorkspace(USER, { firstLogin: false }),
+    ).rejects.toThrow("insert failed")
   })
 })

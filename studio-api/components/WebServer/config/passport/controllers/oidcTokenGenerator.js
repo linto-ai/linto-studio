@@ -15,13 +15,12 @@ const { MultipleUserFound, DisabledUser } = require(
 async function generateUserToken(email, lastname = "", firstname = "") {
   try {
     let user
-    let firstLogin = true
     let users = await model.users.getTokenByEmail(email)
+    const firstLogin = !users[0] || isPendingAccount(users[0])
 
     if (users.length === 1) {
       user = users[0]
       if (user?.suspend) throw new DisabledUser()
-      firstLogin = isPendingAccount(user)
     } else if (users?.length > 1) throw new MultipleUserFound()
     else {
       const createdUser = await model.users.createExternal(
@@ -36,7 +35,7 @@ async function generateUserToken(email, lastname = "", firstname = "") {
       users = await model.users.getTokenByEmail(email)
       user = users[0]
     }
-    if (firstLogin) await setupUserWorkspace(user)
+    await setupUserWorkspace(user, { firstLogin })
 
     if (!user.fromSSO && !user.emailIsVerified) {
       let emailList = user.verifiedEmail
