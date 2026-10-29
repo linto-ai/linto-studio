@@ -1,10 +1,15 @@
 jest.mock("debug", () => () => () => {})
+jest.mock(`${process.cwd()}/lib/mailer/mailing`, () => ({}))
 
 const mockLogger = { info: jest.fn(), error: jest.fn() }
 jest.mock(`${process.cwd()}/lib/logger/logger`, () => mockLogger)
 
 const mockModel = {
-  organizations: { getByMatchingMailDomain: jest.fn(), addMember: jest.fn() },
+  organizations: {
+    getByMatchingMailDomain: jest.fn(),
+    addMember: jest.fn(),
+    getAnyByMember: jest.fn(),
+  },
 }
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => mockModel)
 
@@ -18,7 +23,7 @@ jest.mock(
 )
 
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
-const { populateUserToOrganization } = require(
+const { populateUserToOrganization, populateUserWithoutOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
@@ -94,6 +99,52 @@ describe("populateUserToOrganization", () => {
 
     expect(mockLogger.error).toHaveBeenCalledWith(
       expect.stringContaining("write failed"),
+    )
+  })
+})
+
+describe("populateUserWithoutOrganization", () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  it("leaves an account that already has an organization alone", async () => {
+    mockModel.organizations.getAnyByMember.mockResolvedValue({ _id: "own" })
+
+    await populateUserWithoutOrganization(USER)
+
+    expect(mockModel.organizations.getAnyByMember).toHaveBeenCalledWith(
+      USER._id,
+    )
+    expect(
+      mockModel.organizations.getByMatchingMailDomain,
+    ).not.toHaveBeenCalled()
+    expect(mockModel.organizations.addMember).not.toHaveBeenCalled()
+  })
+
+  it("applies the domain rule to an account without any organization", async () => {
+    mockModel.organizations.getAnyByMember.mockResolvedValue(null)
+    mockModel.organizations.getByMatchingMailDomain.mockResolvedValue([
+      { _id: "org1" },
+    ])
+    mockModel.organizations.addMember.mockResolvedValue({ matchedCount: 1 })
+
+    await populateUserWithoutOrganization(USER)
+
+    expect(mockModel.organizations.addMember).toHaveBeenCalledTimes(1)
+    expect(mockLogger.error).not.toHaveBeenCalled()
+  })
+
+  it("logs and resolves when the membership lookup fails", async () => {
+    mockModel.organizations.getAnyByMember.mockResolvedValue(
+      new Error("db down"),
+    )
+
+    await expect(populateUserWithoutOrganization(USER)).resolves.toBeUndefined()
+
+    expect(
+      mockModel.organizations.getByMatchingMailDomain,
+    ).not.toHaveBeenCalled()
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      expect.stringContaining("db down"),
     )
   })
 })

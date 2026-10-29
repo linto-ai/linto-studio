@@ -1,4 +1,4 @@
-const { populateUserToOrganization } = require(
+const { populateUserToOrganization, populateUserWithoutOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -17,6 +17,7 @@ async function generateUserToken(email, lastname = "", firstname = "") {
     if (users.length === 1) {
       user = users[0]
       if (user?.suspend) throw new DisabledUser()
+      await populateUserWithoutOrganization(user)
     } else if (users?.length > 1) throw new MultipleUserFound()
     else {
       const createdUser = await model.users.createExternal(
@@ -30,7 +31,7 @@ async function generateUserToken(email, lastname = "", firstname = "") {
       if (createdUser.insertedCount !== 1) throw new UserError()
       users = await model.users.getTokenByEmail(email)
       user = users[0]
-      populateUserToOrganization(user) // Only on user creation
+      await populateUserToOrganization(user)
 
       if (process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION !== "true") {
         await model.organizations.createDefault(user._id.toString(), user.email)

@@ -12,7 +12,7 @@ const { MultipleUserFound, DisabledUser } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
 
-const { populateUserToOrganization } = require(
+const { populateUserWithoutOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
@@ -63,9 +63,9 @@ async function initStrategy() {
             if (createdUser.insertedCount !== 1) throw new UserError()
             users = await model.users.getTokenByEmail(userData?.email)
             user = users[0]
-
-            populateUserToOrganization(user) // Only on user creation
           }
+
+          await populateUserWithoutOrganization(user)
 
           if (!user.fromSSO && !user.emailIsVerified) {
             let emailList = user.verifiedEmail

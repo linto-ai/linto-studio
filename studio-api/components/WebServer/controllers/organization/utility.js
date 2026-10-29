@@ -31,6 +31,7 @@ const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
 const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
+const { emailDomain } = require(`${process.cwd()}/lib/utility/emailDomain`)
 
 function countAdmin(organization, userId) {
   let adminCount = 0
@@ -269,23 +270,41 @@ async function getOrgaIdFromReq(req) {
   return organizationId
 }
 
-// Add user to all organization with the same email domain
+// Adds the user to every organization whose matchingMail claims their email
+// domain. Idempotent and never throws: a failure is logged, not surfaced.
 async function populateUserToOrganization(user, role = ROLES.MEMBER) {
-  const matchingMail = "@" + user.email.split("@")[1]
+  const domain = emailDomain(user?.email)
+  if (!domain) return
 
-  const organizations = await model.organizations.getAll({
-    matchingMail: matchingMail,
-  })
-  organizations.list.forEach(async (organization) => {
-    if (
-      organization.users.filter((u) => u.userId === user._id.toString())
-        .length === 0
-    ) {
-      let orgaCopy = JSON.parse(JSON.stringify(organization))
-      orgaCopy.users.push({ userId: user._id.toString(), role: role })
-      await model.organizations.update(orgaCopy)
+  try {
+    const organizations = throwIfError(
+      await model.organizations.getByMatchingMailDomain(domain),
+    )
+    for (const organization of organizations) {
+      throwIfError(
+        await model.organizations.addMember(organization._id, user._id, role),
+      )
     }
-  })
+  } catch (error) {
+    logger.error(
+      `matchingMail: cannot attach user ${user._id} (@${domain}): ${error.message}`,
+    )
+  }
+}
+
+// At SSO login, an account without any organization is attached by domain
+// again (a removed member keeps a personal org, so is left alone). Never throws.
+async function populateUserWithoutOrganization(user) {
+  try {
+    const membership = throwIfError(
+      await model.organizations.getAnyByMember(user._id),
+    )
+    if (!membership) await populateUserToOrganization(user)
+  } catch (error) {
+    logger.error(
+      `matchingMail: cannot list organizations of user ${user._id}: ${error.message}`,
+    )
+  }
 }
 
 async function addM2mUserToOrganization(orgaId, m2m_id, role = ROLES.MEMBER) {
@@ -307,5 +326,6 @@ module.exports = {
   inviteMemberByEmail,
   getUserConversationFromOrganization,
   populateUserToOrganization,
+  populateUserWithoutOrganization,
   addM2mUserToOrganization,
 }

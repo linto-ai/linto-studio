@@ -5,7 +5,9 @@ const SECURITY_LEVELS = require(
 )
 const TYPE = require(`${process.cwd()}/lib/dao/organization/categoryType`)
 const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
-const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
+const { regexContains, escapeRegex } = require(
+  `${process.cwd()}/lib/utility/escapeRegex`,
+)
 
 const DEFAULT_PERMISSION = require(
   `${process.cwd()}/lib/dao/organization/permissions`,
@@ -388,6 +390,37 @@ class OrganizationModel extends MongoModel {
       { projection: { name: 1, sso: 1 }, sort: { created: 1 }, limit: 1 },
     )
     return rows[0] ?? null
+  }
+
+  // Domain rule: matchingMail is "@domain" or an address at that domain,
+  // compared case-insensitively. Ids only, not paginated.
+  async getByMatchingMailDomain(domain) {
+    try {
+      const query = {
+        matchingMail: {
+          $regex: `^[^@]*@${escapeRegex(domain)}$`,
+          $options: "i",
+        },
+      }
+      return await this.mongoRequest(query, { projection: { _id: 1 } })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // One visible organization the user is a member of, null when none
+  async getAnyByMember(userId) {
+    try {
+      const rows = await this.mongoRequest(
+        { ...VISIBLE, "users.userId": userId.toString() },
+        { projection: { _id: 1 }, limit: 1 },
+      )
+      return rows[0] ?? null
+    } catch (error) {
+      console.error(error)
+      return error
+    }
   }
 
   // Idempotent: matchedCount 0 when the user is already a member (or the
