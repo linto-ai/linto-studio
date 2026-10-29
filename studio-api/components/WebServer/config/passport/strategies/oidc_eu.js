@@ -12,8 +12,11 @@ const { MultipleUserFound, DisabledUser } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
 
-const { populateUserWithoutOrganization } = require(
+const { populateUserToOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+const { isPendingAccount } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
 
 let { Strategy, Issuer } = require("openid-client")
@@ -47,9 +50,12 @@ async function initStrategy() {
         try {
           let userData = tokenset.claims()
           let user
+          let firstLogin = true
           let users = await model.users.getTokenByEmail(userData.email)
-          if (users.length === 1) user = users[0]
-          else if (users?.length > 1) throw new MultipleUserFound()
+          if (users.length === 1) {
+            user = users[0]
+            firstLogin = isPendingAccount(user)
+          } else if (users?.length > 1) throw new MultipleUserFound()
           else if (user?.suspend) throw new DisabledUser()
           else {
             const createdUser = await model.users.createExternal(
@@ -64,8 +70,8 @@ async function initStrategy() {
             users = await model.users.getTokenByEmail(userData?.email)
             user = users[0]
           }
-
-          await populateUserWithoutOrganization(user)
+          // No personal organization on this flow, the domain rule only
+          if (firstLogin) await populateUserToOrganization(user)
 
           if (!user.fromSSO && !user.emailIsVerified) {
             let emailList = user.verifiedEmail

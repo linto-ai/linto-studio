@@ -7,8 +7,8 @@ const { UserError } = require(
 )
 const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 
-// Creates an invited account with its magic link and personal organization.
-// Returns { id, magicId }, magicId null when the account needs no link.
+// Creates an invited account with its magic link. The personal organization
+// comes at the first login (see setupUserWorkspace).
 async function inviteNewUser(email) {
   if (process.env.DISABLE_USER_INVITATION === "true")
     throw new UserError("User invitation is disabled")
@@ -24,22 +24,10 @@ async function inviteNewUser(email) {
   throwIfError(await model.users.update({ _id: id, onboarded: true }))
 
   const invitedUser = await model.users.getById(id, true)
-  const magicId = invitedUser[0].authLink.magicId || null
-  if (magicId) {
-    const createOrganization = await model.organizations.createDefault(
-      id,
-      email,
-      {},
-    )
-    if (createOrganization.insertedCount !== 1) {
-      await model.users.delete(id)
-      throw new UserError()
-    }
-  }
-  return { id, magicId }
+  return { id, magicId: invitedUser[0].authLink.magicId }
 }
 
-// Needs the private fields, fetch the user with serverAccess
+// Invited and never logged in. Needs the private fields (serverAccess)
 function isPendingAccount(user) {
   return !user.passwordHash && !user.fromSso && !user.emailIsVerified
 }
@@ -69,4 +57,4 @@ async function resolveInvitee(email) {
   return { id, magicId: null, private: user.private }
 }
 
-module.exports = { inviteNewUser, resolveInvitee }
+module.exports = { inviteNewUser, resolveInvitee, isPendingAccount }

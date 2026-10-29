@@ -409,20 +409,6 @@ class OrganizationModel extends MongoModel {
     }
   }
 
-  // One visible organization the user is a member of, null when none
-  async getAnyByMember(userId) {
-    try {
-      const rows = await this.mongoRequest(
-        { ...VISIBLE, "users.userId": userId.toString() },
-        { projection: { _id: 1 }, limit: 1 },
-      )
-      return rows[0] ?? null
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
   // Idempotent: matchedCount 0 when the user is already a member (or the
   // organization does not exist).
   async addMember(id, userId, role) {

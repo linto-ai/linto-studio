@@ -8,6 +8,9 @@ const { decrypt } = require(
   `${process.cwd()}/components/WebServer/config/passport/token/encryption`,
 )
 const { emailDomain } = require(`${process.cwd()}/lib/utility/emailDomain`)
+const { ensurePersonalOrganization } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/personalOrganization`,
+)
 
 const CALLBACK_PATH = "/auth/oidc/organization/cb"
 const DISCOVERY_TTL_MS = 10 * 60 * 1000
@@ -156,16 +159,6 @@ function assertEmailAllowed(claims, sso) {
 async function ensureMembership(organizationId, userId) {
   throwIfError(
     await model.organizations.addMember(organizationId, userId, ROLES.MEMBER),
-  )
-}
-
-// Same personal organization as a regular signup, for users who predate it.
-async function ensurePersonalOrganization(user) {
-  if (process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION === "true") return
-  const personal = await model.organizations.getPersonalByOwner(user._id)
-  if (personal) return
-  throwIfError(
-    await model.organizations.createDefault(user._id.toString(), user.email),
   )
 }
 

@@ -1,5 +1,8 @@
-const { populateUserToOrganization, populateUserWithoutOrganization } = require(
+const { setupUserWorkspace } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+const { isPendingAccount } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const randomstring = require("randomstring")
@@ -12,12 +15,13 @@ const { MultipleUserFound, DisabledUser } = require(
 async function generateUserToken(email, lastname = "", firstname = "") {
   try {
     let user
+    let firstLogin = true
     let users = await model.users.getTokenByEmail(email)
 
     if (users.length === 1) {
       user = users[0]
       if (user?.suspend) throw new DisabledUser()
-      await populateUserWithoutOrganization(user)
+      firstLogin = isPendingAccount(user)
     } else if (users?.length > 1) throw new MultipleUserFound()
     else {
       const createdUser = await model.users.createExternal(
@@ -31,12 +35,8 @@ async function generateUserToken(email, lastname = "", firstname = "") {
       if (createdUser.insertedCount !== 1) throw new UserError()
       users = await model.users.getTokenByEmail(email)
       user = users[0]
-      await populateUserToOrganization(user)
-
-      if (process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION !== "true") {
-        await model.organizations.createDefault(user._id.toString(), user.email)
-      }
     }
+    if (firstLogin) await setupUserWorkspace(user)
 
     if (!user.fromSSO && !user.emailIsVerified) {
       let emailList = user.verifiedEmail

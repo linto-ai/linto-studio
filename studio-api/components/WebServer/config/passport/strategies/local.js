@@ -26,6 +26,12 @@ const moment = require("moment")
 const { verifiedFieldsFromLink } = require(
   `${process.cwd()}/components/WebServer/controllers/user/emailVerification`,
 )
+const { setupUserWorkspace } = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+const { isPendingAccount } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/invitation`,
+)
 
 const STRATEGY = new LocalStrategy(
   {
@@ -94,8 +100,10 @@ async function generateResetUserToken(magicId, psw, done) {
     else if (!moment().isBefore(user.authLink.validityDate))
       return done(new ExpiredLink())
 
+    const firstLogin = isPendingAccount(user)
     const verified = verifiedFieldsFromLink(user)
     await model.users.update({ _id: user._id, ...verified })
+    if (firstLogin) await setupUserWorkspace(user)
 
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user._id, token_salt)

@@ -11,6 +11,9 @@ const { OrganizationError, OrganizationConflict } = require(
 const { adoptDefaultOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/user/defaultOrganization`,
 )
+const { ensurePersonalOrganization } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/personalOrganization`,
+)
 const { resolveInvitee } = require(
   `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
@@ -292,19 +295,11 @@ async function populateUserToOrganization(user, role = ROLES.MEMBER) {
   }
 }
 
-// At SSO login, an account without any organization is attached by domain
-// again (a removed member keeps a personal org, so is left alone). Never throws.
-async function populateUserWithoutOrganization(user) {
-  try {
-    const membership = throwIfError(
-      await model.organizations.getAnyByMember(user._id),
-    )
-    if (!membership) await populateUserToOrganization(user)
-  } catch (error) {
-    logger.error(
-      `matchingMail: cannot list organizations of user ${user._id}: ${error.message}`,
-    )
-  }
+// An account gets its workspace once: at its first login when invited, at
+// creation when it comes from an SSO. Idempotent
+async function setupUserWorkspace(user) {
+  await populateUserToOrganization(user)
+  await ensurePersonalOrganization(user)
 }
 
 async function addM2mUserToOrganization(orgaId, m2m_id, role = ROLES.MEMBER) {
@@ -326,6 +321,6 @@ module.exports = {
   inviteMemberByEmail,
   getUserConversationFromOrganization,
   populateUserToOrganization,
-  populateUserWithoutOrganization,
+  setupUserWorkspace,
   addM2mUserToOrganization,
 }
