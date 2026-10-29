@@ -1113,6 +1113,7 @@
     "folder": "Dossier",
     "move_to_folder": "Déplacer vers un dossier",
     "manage_access": "Gérer l'accès",
+    "visibility_label": "Visibilité",
     "visibility_public": "Public",
     "visibility_private": "Privé",
     "visibility_update_success": "Accès du dossier mis à jour",
@@ -2368,6 +2369,12 @@
   "user_selector": {
     "search_placeholder": "Rechercher un utilisateur",
     "select_user": "Sélectionner un utilisateur"
+  },
+  "user_id_tag": {
+    "label": "Identifiant : {code}"
+  },
+  "user_info_inline": {
+    "no_name": "Nom non renseigné"
   },
   "popover_list": {
     "search": "Rechercher",

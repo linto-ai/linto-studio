@@ -25,11 +25,7 @@
 
       <!-- Owner avatar -->
       <Tooltip :text="convOwner.fullName" position="bottom">
-        <Avatar
-          tone="neutral"
-          :text="convOwner.fullName.substring(0, 1)"
-          :src="convOwner.img"
-          size="sm" />
+        <UserAvatar :user="convOwner" size="sm" />
       </Tooltip>
 
       <!-- Title & meta -->
@@ -76,16 +72,14 @@
 <script>
 import { mapMutations, mapGetters } from "vuex"
 import { mediaScopeMixin } from "@/mixins/mediaScope"
-import { getEnv } from "@/tools/getEnv"
 
 import MediaExplorerItemTags from "@/components/MediaExplorerItemTags.vue"
 import TimeDuration from "@/components/atoms/TimeDuration.vue"
 import Tooltip from "@/components/atoms/Tooltip.vue"
 import Button from "@/components/atoms/Button.vue"
-import Avatar from "@/components/atoms/Avatar.vue"
+import UserAvatar from "@/components/atoms/UserAvatar.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
 import { userName } from "@/tools/user/userName"
-import userAvatar from "@/tools/user/userAvatar"
 
 import ModalDeleteConversations from "@/components/ModalDeleteConversations.vue"
 
@@ -93,7 +87,7 @@ export default {
   mixins: [mediaScopeMixin],
   name: "MediaExplorerItemMobile",
   components: {
-    Avatar,
+    UserAvatar,
     Tooltip,
     Button,
     PopoverList,
@@ -134,9 +128,7 @@ export default {
       if (this.media.sharedBy) {
         return {
           ...this.media.sharedBy,
-          img: this.media.sharedBy.img
-            ? getEnv("VUE_APP_PUBLIC_MEDIA") + "/" + this.media.sharedBy.img
-            : null,
+          img: this.media.sharedBy.img,
           fullName: `${this.media.sharedBy.firstname} ${this.media.sharedBy.lastname}`,
         }
       }
@@ -151,12 +143,12 @@ export default {
       if (owner) {
         return {
           fullName: userName(owner),
-          img: owner.img ? userAvatar(owner.img) : null,
+          img: owner.img,
         }
       }
       return {
         fullName: "Private user",
-        img: userAvatar("/pictures/default.jpg"),
+        img: null,
       }
     },
     createdAt() {

@@ -23,7 +23,7 @@
           </h4>
           <!-- <div class="app-settings__user-info flex align-center gap-small">
           <div class="flex flex1 align-center gap-small">
-            <UserProfilePicture :hover="false" :user="user" />
+            <UserAvatar :user="user" />
             <span class="user-account-selector__name">{{ userName }}</span>
           </div>
         </div> -->
@@ -226,7 +226,6 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
-import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
 import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
 import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
 import UserSettingsNotifications from "@/components/UserSettingsNotifications.vue"
@@ -251,7 +250,6 @@ export default {
   name: "AppSettingsModal",
   mixins: [orgaRoleMixin, platformRoleMixin, organizationPermissionsMixin],
   components: {
-    UserProfilePicture,
     UserSettingsPersonal,
     UserSettingsPassword,
     UserSettingsNotifications,

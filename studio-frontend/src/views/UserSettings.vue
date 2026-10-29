@@ -19,7 +19,7 @@
     <section class="">
       <h2>{{ $t("user_settings.picture_label") }}</h2>
       <div>
-        <img :src="imgUrl" class="user-settings-img" />
+        <UserAvatar :user="userInfo" :size="120" />
       </div>
       <div style="position: relative">
         <input
@@ -78,6 +78,7 @@ import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
 
 import Loading from "@/components/atoms/Loading.vue"
+import UserAvatar from "@/components/atoms/UserAvatar.vue"
 import MainContent from "@/components/MainContent.vue"
 import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
 import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
@@ -113,9 +114,6 @@ export default {
       return !!this.userInfo
     },
 
-    imgUrl() {
-      return `${getEnv("VUE_APP_PUBLIC_MEDIA")}/${this.userInfo.img}`
-    },
     isInviteAccount() {
       return this.userInfo?.accountNotifications?.inviteAccount ?? false
     },
@@ -201,6 +199,7 @@ export default {
   },
   components: {
     Loading,
+    UserAvatar,
     ErrorView,
     MainContent,
     UserSettingsPersonal,

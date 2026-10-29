@@ -618,11 +618,6 @@
       "count": 1
     }
   },
-  "src/components/UserSettingsAvatar.vue": {
-    "vue/no-unused-components": {
-      "count": 1
-    }
-  },
   "src/components/UserSettingsNotifications.vue": {
     "no-undef": {
       "count": 1
@@ -1151,11 +1146,6 @@
       "count": 1
     }
   },
-  "src/tools/transcription/divideTurn.js": {
-    "no-useless-assignment": {
-      "count": 2
-    }
-  },
   "src/tools/formatCollaborativeText.js": {
     "no-case-declarations": {
       "count": 1
@@ -1173,6 +1163,11 @@
   },
   "src/tools/session/test/mergeSession.js": {
     "no-dupe-keys": {
+      "count": 2
+    }
+  },
+  "src/tools/transcription/divideTurn.js": {
+    "no-useless-assignment": {
       "count": 2
     }
   },

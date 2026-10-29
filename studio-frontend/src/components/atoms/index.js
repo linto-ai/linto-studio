@@ -3,7 +3,6 @@ import AppName from "./AppName.vue"
 import PhIcon from "./PhIcon.vue"
 import TimeDuration from "./TimeDuration.vue"
 import SwitchInput from "./SwitchInput.vue"
-import UserProfilePicture from "./UserProfilePicture.vue"
 import Checkbox from "./Checkbox.vue"
 import Chip from "./Chip.vue"
 import ContextMenu from "./ContextMenu.vue"
@@ -42,7 +41,6 @@ const components = [
   PhIcon,
   TimeDuration,
   SwitchInput,
-  UserProfilePicture,
   Checkbox,
   Chip,
   ContextMenu,

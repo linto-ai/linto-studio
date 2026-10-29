@@ -1,15 +1,7 @@
 <template>
   <section class="user-settings-avatar">
     <div class="flex gap-medium">
-      <img
-        v-if="userAvatar && !picture.preview"
-        :src="userAvatar"
-        class="user-profile-picture" />
-
-      <img
-        v-if="picture.preview"
-        :src="picture.preview"
-        class="user-profile-picture" />
+      <UserAvatar :user="displayedUser" :size="100" />
       <!-- <button class="btn primary">
         <span class="label">{{ pictureUploadLabel }}</span>
       </button> -->
@@ -45,8 +37,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import UserProfilePicture from "@/components/atoms/UserProfilePicture.vue"
-import userAvatar from "@/tools/user/userAvatar"
+import UserAvatar from "@/components/atoms/UserAvatar.vue"
 import { mapActions } from "vuex"
 
 export default {
@@ -133,22 +124,15 @@ export default {
     },
   },
   computed: {
-    userAvatar() {
-      return userAvatar(this.userInfo)
+    // The picked file (a blob: URL) shows in place of the saved picture
+    // until it is uploaded.
+    displayedUser() {
+      if (!this.picture.preview) return this.userInfo
+      return { ...this.userInfo, img: this.picture.preview }
     },
   },
   components: {
-    UserProfilePicture,
+    UserAvatar,
   },
 }
 </script>
-
-<style lang="scss" scoped>
-.user-settings-avatar {
-  .user-profile-picture {
-    width: 100px;
-    height: 100px;
-    border-radius: 4px;
-  }
-}
-</style>

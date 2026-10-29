@@ -1119,6 +1119,7 @@
     "folder": "Folder",
     "move_to_folder": "Move to folder",
     "manage_access": "Manage access",
+    "visibility_label": "Visibility",
     "visibility_public": "Public",
     "visibility_private": "Private",
     "visibility_update_success": "Folder access updated",
@@ -2374,6 +2375,12 @@
   "user_selector": {
     "search_placeholder": "Search for a user...",
     "select_user": "Select a user"
+  },
+  "user_id_tag": {
+    "label": "Identifier: {code}"
+  },
+  "user_info_inline": {
+    "no_name": "No name provided"
   },
   "popover_list": {
     "search": "Search",
