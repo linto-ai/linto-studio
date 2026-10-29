@@ -4,12 +4,6 @@
       <h2>
         {{ $t("user_settings.personal_information") }}
       </h2>
-      <!-- <div class="user-identity">
-        <UserInfoInline
-            :user="userInfo"
-            :user-id="userInfo._id"
-            :show-email="false" />
-      </div> -->
       <FormInput :field="firstName" v-model="firstName.value" />
 
       <FormInput :field="lastName" v-model="lastName.value" />
@@ -42,7 +36,6 @@ import { testName } from "@/tools/fields/testName"
 import { testEmail } from "@/tools/fields/testEmail"
 
 import FormInput from "@/components/molecules/FormInput.vue"
-import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 
 export default {
   mixins: [formsMixin],
@@ -127,19 +120,6 @@ export default {
       return false
     },
   },
-  components: { FormInput, UserInfoInline },
+  components: { FormInput },
 }
 </script>
-
-<style lang="scss" scoped>
-.user-identity {
-    display: flex;
-    width: fit-content;
-    padding: 0.25rem;
-    margin-bottom: 0.5rem;
-    border: var(--border-block);
-    border-radius: 4px;
-    background-color: var(--neutral-10);
-}
-
-</style>

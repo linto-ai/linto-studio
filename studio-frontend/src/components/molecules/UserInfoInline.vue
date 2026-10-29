@@ -9,7 +9,6 @@
         <span v-else class="user-info-inline__name--missing text-cut">{{
           $t("user_info_inline.no_name")
         }}</span>
-        <!-- <UserIdTag :user-id="userData._id || userId" /> -->
         <span class="user-info-inline__external" v-if="external">External</span>
       </div>
       <div
@@ -37,9 +36,8 @@ import { getUserInfo } from "@/tools/auth/getUserInfo.js"
 import { computeUserFullName } from "@/tools/user/computeUserFullName.js"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
 import UserAvatar from "@/components/atoms/UserAvatar.vue"
-import UserIdTag from "@/components/atoms/UserIdTag.vue"
 export default {
-  components: { UserAvatar, UserIdTag },
+  components: { UserAvatar },
   props: {
     userId: { required: true },
     user: { required: false },

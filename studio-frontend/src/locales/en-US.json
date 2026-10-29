@@ -2376,9 +2376,6 @@
     "search_placeholder": "Search for a user...",
     "select_user": "Select a user"
   },
-  "user_id_tag": {
-    "label": "Identifier: {code}"
-  },
   "user_info_inline": {
     "no_name": "No name provided"
   },
