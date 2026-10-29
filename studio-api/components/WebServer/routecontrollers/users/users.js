@@ -205,6 +205,10 @@ async function getUserById(req, res, next) {
       user = [{ ...cleanedUser, pendingEmail: activePendingEmail(user[0]) }]
     } else {
       user = await model.users.getById(req.params.userId)
+      if (user.length === 1 && !(await canSeeUserAddress(req))) {
+        const { email, ...rest } = user[0]
+        user = [rest]
+      }
     }
 
     if (user && user.length !== 1) throw new UserNotFound()
@@ -214,6 +218,17 @@ async function getUserById(req, res, next) {
   } catch (err) {
     next(err)
   }
+}
+
+// Same rule as the search: the address goes only to its owner and to the
+// backoffice, so knowing a user id is no way around the search
+async function canSeeUserAddress(req) {
+  if (req.params.userId === req.payload.data.userId) return true
+  const [systemAdmin, superAdmin] = await Promise.all([
+    platformAccess.isSystemAdministrator(req),
+    platformAccess.isSuperAdmin(req),
+  ])
+  return systemAdmin || superAdmin
 }
 
 async function getPersonalInfo(req, res, next) {
