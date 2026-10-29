@@ -1,5 +1,5 @@
 # Stage 1: Install dependencies
-FROM node:24.22.1-alpine AS deps
+FROM node:26.13.0-alpine AS deps
 WORKDIR /app
 COPY studio-frontend/package*.json studio-frontend/
 # The editor comes from the monorepo, not npm ("file:" dependency): npm ci
@@ -10,7 +10,7 @@ WORKDIR /app/studio-frontend
 RUN npm ci
 
 # Stage 2: Build the Vue.js application
-FROM node:24.22.1-alpine AS builder
+FROM node:26.13.0-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app /app
 # Committed dist: the whole package, nothing to build.
