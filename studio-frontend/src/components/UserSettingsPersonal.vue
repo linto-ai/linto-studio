@@ -4,12 +4,12 @@
       <h2>
         {{ $t("user_settings.personal_information") }}
       </h2>
-      <div class="user-identity">
+      <!-- <div class="user-identity">
         <UserInfoInline
             :user="userInfo"
             :user-id="userInfo._id"
             :show-email="false" />
-      </div>
+      </div> -->
       <FormInput :field="firstName" v-model="firstName.value" />
 
       <FormInput :field="lastName" v-model="lastName.value" />

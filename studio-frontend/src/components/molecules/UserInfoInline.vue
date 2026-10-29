@@ -9,7 +9,7 @@
         <span v-else class="user-info-inline__name--missing text-cut">{{
           $t("user_info_inline.no_name")
         }}</span>
-        <UserIdTag :user-id="userData._id || userId" />
+        <!-- <UserIdTag :user-id="userData._id || userId" /> -->
         <span class="user-info-inline__external" v-if="external">External</span>
       </div>
       <div
