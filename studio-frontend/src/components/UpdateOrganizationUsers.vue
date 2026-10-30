@@ -337,10 +337,18 @@ export default {
     seatSummary() {
       return computeSeatSummary(this.partition.seated.length, this.seatCapacity)
     },
+    // A comp or managed organization is not billed per seat. In the backoffice
+    // the mode is the displayed organization's own.
+    isUnmeteredOrganization() {
+      if (this.isBackofficePage) {
+        return (this.orgUsage?.mode ?? "normal") !== "normal"
+      }
+      return this.isUnmetered
+    },
     // Seats are a cloud billing notion. Elsewhere the two tabs only tell the
     // privileged roles apart, and a member is promoted from the role column.
     hasSeats() {
-      return IS_MODE_CLOUD
+      return IS_MODE_CLOUD && !this.isUnmeteredOrganization
     },
     isMembersTab() {
       return this.activeTab === MEMBERS_TAB
