@@ -2,9 +2,17 @@
   <div class="m-page">
     <PageHeader :title="$t('mobile.home.record_title')" />
     <main class="m-page__content m-record-page">
-      <InfoBanner v-if="isRecording && !recorder.wakeLockOk" tone="warning">
+      <TranscriptionCreditBanner
+        v-if="transcriptionCreditExhausted"
+        :reset-at="transcriptionCredit.resetAt" />
+      <NotificationBanner
+        v-if="isRecording && !recorder.wakeLockOk"
+        variant="warning"
+        icon="warning"
+        align="start"
+        role="status">
         {{ $t("mobile.record.keep_screen_on") }}
-      </InfoBanner>
+      </NotificationBanner>
 
       <section class="m-record-page__stage">
         <RecordTimer
@@ -15,28 +23,32 @@
           v-if="recorder.state === 'recording'"
           :level="recorder.level" />
         <RecordButton :state="recorder.state" @click="onMainButton" />
-        <button
+        <Button
           v-if="isRecording"
-          type="button"
           class="m-record-page__pause"
-          @click="togglePause">
-          <PhIcon
-            :name="recorder.state === 'paused' ? 'play' : 'pause'"
-            size="sm"
-            weight="fill" />
-          {{
-            recorder.state === "paused"
-              ? $t("mobile.record.resume")
-              : $t("mobile.record.pause")
-          }}
-        </button>
+          :icon="recorder.state === 'paused' ? 'play' : 'pause'"
+          icon-weight="fill"
+          :label="
+            recorder.state === 'paused'
+              ? $t('mobile.record.resume')
+              : $t('mobile.record.pause')
+          "
+          @click="togglePause" />
         <p class="m-muted m-record-page__hint">
           {{ $t("mobile.record.local_only") }}
         </p>
+        <TranscriptionCreditPill
+          v-if="
+            !isRecording && transcriptionCredit && !transcriptionCreditExhausted
+          "
+          :minutes="transcriptionCredit.minutes"
+          :synced-at="transcriptionCredit.syncedAt"
+          :cached="transcriptionCredit.cached" />
       </section>
 
       <template v-if="!isRecording">
         <TranscriptionSettingsRow
+          :title="transcriptionRowTitle"
           :summary="transcriptionSummary"
           @click="settingsOpen = true" />
         <ListRow
@@ -51,6 +63,8 @@
         :recordings="library"
         :local-bytes="localBytes"
         :online="online"
+        :credit-minutes="transcriptionCreditMinutes"
+        :credit-reset-at="transcriptionCredit && transcriptionCredit.resetAt"
         @open="openRecording" />
     </main>
 
@@ -72,7 +86,8 @@
       :mime-type="stoppedRecording ? stoppedRecording.mimeType : ''"
       :quiet="stoppedQuiet"
       :sharing-summary="sharingSummary"
-      @finish="finishStopped" />
+      @finish="finishStopped"
+      @discard="discardStopped" />
     <MicrophoneSheet
       v-model="microphoneSheetOpen"
       :microphones="microphones"
@@ -83,6 +98,7 @@
       v-model="recordingSheetOpen"
       :recording="selected"
       :online="online"
+      :credit-minutes="transcriptionCreditMinutes"
       @retry="retryUpload"
       @rename="renameRecording"
       @share-audio="shareAudio"
@@ -93,9 +109,8 @@
 
 <script>
 import { mapGetters } from "vuex"
-import PhIcon from "@/components/atoms/PhIcon.vue"
 import PageHeader from "@/mobile/components/PageHeader.vue"
-import InfoBanner from "@/mobile/components/InfoBanner.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import ListRow from "@/mobile/components/ListRow.vue"
 import RecordButton from "@/mobile/components/record/RecordButton.vue"
 import RecordTimer from "@/mobile/components/record/RecordTimer.vue"
@@ -106,19 +121,21 @@ import StopRecordingSheet from "@/mobile/components/record/StopRecordingSheet.vu
 import LibraryList from "@/mobile/components/record/LibraryList.vue"
 import RecordingSheet from "@/mobile/components/record/RecordingSheet.vue"
 import MicrophoneSheet from "@/mobile/components/record/MicrophoneSheet.vue"
+import TranscriptionCreditPill from "@/mobile/components/record/TranscriptionCreditPill.vue"
+import TranscriptionCreditBanner from "@/mobile/components/record/TranscriptionCreditBanner.vue"
 import { recordingControllerMixin } from "@/mobile/mixins/recordingController.js"
 import { transcriptionSettingsMixin } from "@/mobile/mixins/transcriptionSettings.js"
 import { libraryActionsMixin } from "@/mobile/mixins/libraryActions.js"
 import { documentShareMixin } from "@/mobile/mixins/documentShare.js"
 import { microphoneChoiceMixin } from "@/mobile/mixins/microphoneChoice.js"
+import { transcriptionCreditMixin } from "@/mobile/mixins/transcriptionCredit.js"
 import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 
 export default {
   name: "MobileRecord",
   components: {
-    PhIcon,
     PageHeader,
-    InfoBanner,
+    NotificationBanner,
     ListRow,
     RecordButton,
     RecordTimer,
@@ -129,6 +146,8 @@ export default {
     LibraryList,
     RecordingSheet,
     MicrophoneSheet,
+    TranscriptionCreditPill,
+    TranscriptionCreditBanner,
   },
   mixins: [
     recordingControllerMixin,
@@ -136,6 +155,7 @@ export default {
     libraryActionsMixin,
     documentShareMixin,
     microphoneChoiceMixin,
+    transcriptionCreditMixin,
   ],
   data() {
     return { settingsOpen: false }
@@ -158,12 +178,8 @@ export default {
     onMainButton() {
       if (this.isRecording) {
         this.stopRecording()
-      } else if (this.recorder.state === "idle" && this.transcriptionSettings) {
-        this.startRecording(
-          this.transcriptionSettings,
-          this.microphoneId,
-          this.sharingSettings,
-        )
+      } else if (this.recorder.state === "idle") {
+        this.startRecording(this.microphoneId)
       }
     },
   },
@@ -185,15 +201,6 @@ export default {
 
 .m-record-page__pause {
   min-width: 160px;
-  min-height: var(--m-tap);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--m-space-2);
-  border: 1px solid var(--m-border);
-  border-radius: var(--m-radius-sm);
-  background: var(--m-surface);
-  font-weight: 600;
 }
 
 .m-record-page__hint {

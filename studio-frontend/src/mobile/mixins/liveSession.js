@@ -1,5 +1,6 @@
 import { mapGetters } from "vuex"
 import { sessionMicrophoneMixin } from "@/mixins/sessionMicrophone.js"
+import { quickSessionPauseMixin } from "@/mixins/quickSessionPause.js"
 import {
   connectRealtime,
   realtimeSocket,
@@ -7,13 +8,15 @@ import {
 import { stopLiveSession } from "@/mobile/services/live/liveSession.js"
 import { loadEditor } from "@/mobile/services/editor/loadEditor.js"
 import { buildRecordingName } from "@/mobile/tools/buildRecordingName.js"
+import { liveCreditMixin } from "@/mobile/mixins/liveCredit.js"
+import { isLiveCreditBelowAdmission } from "@/tools/billing/isLiveCreditBelowAdmission"
 
 const DEVICE_STORAGE_KEY = "mobile.record.deviceId"
 
 // Lifecycle of the live page: load the running quick session, stream the
 // microphone to its first channel, end it into a conversation.
 export const liveSessionMixin = {
-  mixins: [sessionMicrophoneMixin],
+  mixins: [sessionMicrophoneMixin, quickSessionPauseMixin, liveCreditMixin],
   data() {
     return {
       socket: realtimeSocket,
@@ -27,6 +30,10 @@ export const liveSessionMixin = {
     ...mapGetters("quickSession", { session: "quickSession" }),
     organizationId() {
       return this.$store.getters["organizations/getCurrentOrganizationScope"]
+    },
+    // The organization liveCreditMixin buys live minutes for
+    liveOrganizationId() {
+      return this.organizationId
     },
     channel() {
       return this.session?.channels?.[0] ?? null
@@ -50,6 +57,13 @@ export const liveSessionMixin = {
       return
     }
     this.socket.subscribeSessionsUpdate(this.organizationId)
+    // Back from a pack payment, the live is paused (quickSessionPauseMixin)
+    // and the server refuses to resume it until the webhook credits the
+    // pack: the microphone, which resumes it, waits for the credit.
+    await this.consumeCreditsCheckoutReturn(
+      (live) => !isLiveCreditBelowAdmission(live),
+    )
+    if (this._isDestroyed) return
     this.startMicrophoneStream()
   },
   beforeDestroy() {

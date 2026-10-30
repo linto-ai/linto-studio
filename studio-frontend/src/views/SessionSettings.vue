@@ -73,12 +73,6 @@
                   size="sm"
                   icon="pencil"
                   :label="$t('session.settings_page.edit_alias_button')" />
-                <!-- <button class="btn" @click="openModalEditSessionAlias">
-                  <ph-icon name="pencil"></ph-icon>
-                  <span class="label">{{
-                    $t("session.settings_page.edit_alias_button")
-                  }}</span>
-                </button> -->
               </template>
             </FormInput>
 

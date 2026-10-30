@@ -80,7 +80,7 @@
     <span class="session-status-banner__message">
       {{
         $t("session.live_credit_banner.low", {
-          minutes: liveCredit.balance,
+          duration: liveCreditDuration,
         })
       }}
       <template v-if="!canBuyLivePack">
@@ -104,6 +104,7 @@ import MicrophoneStatusBanner from "@/components/molecules/MicrophoneStatusBanne
 import { resolveSessionBanner } from "@/tools/session/resolveSessionBanner.js"
 import { computeLiveCreditLevel } from "@/tools/billing/computeLiveCreditLevel.js"
 import { createRestoredFlashMixin } from "@/mixins/restoredFlash.js"
+import { formatMinutesDuration } from "@/tools/formatMinutesDuration.js"
 
 // Single banner slot for a live session view: websocket outage first,
 // microphone trouble second, live credit last (see resolveSessionBanner for
@@ -125,6 +126,10 @@ export default {
     canBuyLivePack: { type: Boolean, default: false },
   },
   computed: {
+    // "1 h 35 min" rather than "95 min"
+    liveCreditDuration() {
+      return formatMinutesDuration(this.liveCredit?.balance)
+    },
     banner() {
       const banner = resolveSessionBanner(
         this.websocketStatus,

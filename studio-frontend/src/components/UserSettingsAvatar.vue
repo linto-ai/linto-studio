@@ -2,9 +2,6 @@
   <section class="user-settings-avatar">
     <div class="flex gap-medium">
       <UserAvatar :user="displayedUser" :size="100" />
-      <!-- <button class="btn primary">
-        <span class="label">{{ pictureUploadLabel }}</span>
-      </button> -->
       <input
         type="file"
         class="hidden"
@@ -12,11 +9,11 @@
         ref="file"
         accept="image/png, image/jpeg, image/webp"
         v-on:change="handleFileUpload()" />
-      <label for="file" class="btn btn--secondary btn--sm">
-        <span class="label">{{
-          $t("user_settings.profile_avatar.profile_image_button")
-        }}</span>
-      </label>
+      <Button
+        html-for="file"
+        variant="secondary"
+        size="sm"
+        :label="$t('user_settings.profile_avatar.profile_image_button')" />
       <Button
         variant="primary"
         size="sm"
@@ -24,14 +21,6 @@
         @click="updateProfilPicture"
         :disabled="!picture.valid">
       </Button>
-      <!-- <button
-        class="btn primary"
-        :disabled="!picture.valid"
-        @click="updateProfilPicture">
-        <span class="label">{{
-          $t("user_settings.profile_avatar.update_picture_button")
-        }}</span>
-      </button> -->
     </div>
   </section>
 </template>

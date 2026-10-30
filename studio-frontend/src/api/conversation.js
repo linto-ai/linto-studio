@@ -280,6 +280,7 @@ export async function apiCreateConversation(
   },
   notif,
   onUploadProgress = null,
+  signal = null,
 ) {
   try {
     let formData = new FormData()
@@ -324,8 +325,13 @@ export async function apiCreateConversation(
       formData,
       notif,
       onUploadProgress,
+      signal,
     )
 
+    // sendRequest gives nothing back for a request aborted through `signal`
+    if (!req) {
+      return { success: false, canceled: true }
+    }
     if (req.status === "success") {
       return { success: true, conversationId: req.data?.conversationId }
     }
@@ -333,6 +339,7 @@ export async function apiCreateConversation(
       success: false,
       errorCode: req.error?.response?.data?.code,
       errorData: req.error?.response?.data,
+      httpStatus: req.error?.response?.status,
     }
   } catch (e) {
     console.error(e)

@@ -7,14 +7,13 @@
       :class="`m-notification--${notification.type}`">
       <PhIcon :name="iconFor(notification.type)" size="sm" />
       <span class="m-notification__message">{{ notification.message }}</span>
-      <button
+      <Button
         v-if="notification.closable"
-        type="button"
+        variant="transparent"
+        icon="x"
         class="m-notification__close"
         :aria-label="$t('mobile.common.close')"
-        @click="removeNotification(notification)">
-        <PhIcon name="x" size="sm" />
-      </button>
+        @click="removeNotification(notification)" />
     </div>
   </div>
 </template>
@@ -103,12 +102,6 @@ export default {
 }
 
 .m-notification__close {
-  border: none;
-  background: transparent;
-  min-width: var(--m-tap);
-  min-height: var(--m-tap);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  --btn-text: currentColor;
 }
 </style>

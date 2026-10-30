@@ -304,11 +304,12 @@ export default {
     canSeeBilling() {
       return this.isAdmin && !this.isImpersonatingCurrentOrganization
     },
-    // Same rule as the API: an admin of an organization with the session
-    // permission. Not gated by the SaaS plan: a compliance text, not a feature.
+    // Same rule as the API: a maintainer or an admin of an organization with
+    // the session permission. Not gated by the SaaS plan: a compliance text,
+    // not a feature.
     canManageSessionNotice() {
       return (
-        this.isAdmin &&
+        (this.isAdmin || this.isMaintainer) &&
         getEnv("VUE_APP_ENABLE_SESSION") === "true" &&
         this.hasSessionPermission(this.organizationPermissions)
       )

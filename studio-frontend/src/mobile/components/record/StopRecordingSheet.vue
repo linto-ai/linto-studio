@@ -8,25 +8,36 @@
       v-if="value && recordingId"
       :recording-id="recordingId"
       :mime-type="mimeType" />
-    <InfoBanner v-if="quiet" tone="warning">
+    <NotificationBanner
+      v-if="quiet"
+      variant="warning"
+      icon="warning"
+      align="start"
+      role="status">
       {{ $t("mobile.record.quiet_warning") }}
-    </InfoBanner>
-    <InfoBanner v-if="!online" tone="warning">
+    </NotificationBanner>
+    <NotificationBanner
+      v-if="!online"
+      variant="warning"
+      icon="warning"
+      align="start"
+      role="status">
       {{ $t("mobile.record.offline_send") }}
-    </InfoBanner>
-    <!-- The recording is sent by itself once the sheet closes: here the
-         user names it and says whether the audio stays on the phone. The
-         button sits right under the name because the keyboard covers the
-         bottom of the sheet while the name is edited. -->
+    </NotificationBanner>
+    <!-- The recording is sent by itself once the sheet closes, unless it is
+         deleted: here the user names it and says whether the audio stays
+         on the phone. Enter in the name field sends too, so the keyboard
+         covering the button does not block anything. -->
     <form class="m-stop" @submit.prevent="finish">
       <label class="m-stop__field">
         <span>{{ $t("mobile.record.name") }}</span>
-        <input v-model="name" type="text" required maxlength="200" />
+        <input
+          v-model="name"
+          type="text"
+          required
+          maxlength="200"
+          enterkeyhint="send" />
       </label>
-      <button type="submit" class="m-stop__finish">
-        <PhIcon name="upload-simple" size="sm" />
-        {{ $t("mobile.record.finish") }}
-      </button>
       <ToggleRow
         v-model="keepAudio"
         :label="$t('mobile.library.keep_audio')"
@@ -34,20 +45,47 @@
       <p v-if="sharingSummary" class="m-muted m-stop__sharing">
         {{ sharingSummary }}
       </p>
+      <Button
+        type="submit"
+        variant="primary"
+        size="lg"
+        block
+        icon="upload-simple"
+        :label="$t('mobile.record.finish')" />
     </form>
+    <div v-if="confirmingDiscard" class="m-stop__discard">
+      <Button
+        ref="confirmDiscard"
+        variant="primary"
+        intent="destructive"
+        icon="trash"
+        :label="$t('mobile.record.discard_confirm')"
+        @click="$emit('discard')" />
+      <Button
+        variant="transparent"
+        :label="$t('mobile.common.cancel')"
+        @click="confirmingDiscard = false" />
+    </div>
+    <div v-else class="m-stop__discard">
+      <Button
+        variant="transparent"
+        intent="destructive"
+        icon="trash"
+        :label="$t('mobile.record.discard')"
+        @click="askDiscard" />
+    </div>
   </BottomSheet>
 </template>
 
 <script>
-import PhIcon from "@/components/atoms/PhIcon.vue"
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
-import InfoBanner from "@/mobile/components/InfoBanner.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import ToggleRow from "@/mobile/components/ToggleRow.vue"
 import RecordingPlayer from "@/mobile/components/record/RecordingPlayer.vue"
 
 export default {
   name: "StopRecordingSheet",
-  components: { BottomSheet, InfoBanner, PhIcon, ToggleRow, RecordingPlayer },
+  components: { BottomSheet, NotificationBanner, ToggleRow, RecordingPlayer },
   props: {
     value: { type: Boolean, default: false },
     defaultName: { type: String, required: true },
@@ -60,9 +98,16 @@ export default {
     sharingSummary: { type: String, default: "" },
   },
   data() {
-    return { name: this.defaultName, keepAudio: this.defaultKeepAudio }
+    return {
+      name: this.defaultName,
+      keepAudio: this.defaultKeepAudio,
+      confirmingDiscard: false,
+    }
   },
   watch: {
+    value(open) {
+      if (open) this.confirmingDiscard = false
+    },
     defaultName(value) {
       this.name = value
     },
@@ -73,6 +118,11 @@ export default {
   methods: {
     finish() {
       this.$emit("finish", { name: this.name, keepAudio: this.keepAudio })
+    },
+    async askDiscard() {
+      this.confirmingDiscard = true
+      await this.$nextTick()
+      this.$refs.confirmDiscard.$el.focus()
     },
   },
 }
@@ -104,21 +154,15 @@ export default {
   background: var(--m-surface);
 }
 
-.m-stop__finish {
-  min-height: 52px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--m-space-2);
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-primary);
-  color: var(--m-on-primary);
-  font-weight: 600;
-}
-
 .m-stop__sharing {
   margin: 0;
   font-size: var(--m-font-size-sm);
+}
+
+.m-stop__discard {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--m-space-2);
 }
 </style>

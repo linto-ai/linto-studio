@@ -15,7 +15,8 @@
 </template>
 
 <script>
-// A settings row with a native switch. v-model on a boolean.
+// A settings row with a native switch. v-model on a boolean. The parent
+// sets the side spacing; consecutive rows are separated by a divider.
 export default {
   name: "ToggleRow",
   props: {
@@ -33,12 +34,11 @@ export default {
   align-items: center;
   gap: var(--m-space-3);
   min-height: 56px;
-  padding: var(--m-space-2) var(--m-space-4);
-  border-bottom: 1px solid var(--m-divider);
+  padding-block: var(--m-space-2);
 }
 
-.m-toggle:last-child {
-  border-bottom: none;
+.m-toggle + .m-toggle {
+  border-top: 1px solid var(--m-divider);
 }
 
 .m-toggle__text {

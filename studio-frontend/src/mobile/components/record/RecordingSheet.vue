@@ -14,9 +14,12 @@
           required
           maxlength="200"
           :aria-label="$t('mobile.record.name')" />
-        <button type="submit" class="m-recording__confirm">
-          {{ $t("mobile.common.confirm") }}
-        </button>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          block
+          :label="$t('mobile.common.confirm')" />
       </form>
       <template v-else>
         <p class="m-muted">{{ statusLine }}</p>
@@ -30,9 +33,9 @@
           @share-document="$emit('share-document', $event)" />
         <div class="m-recording__actions">
           <ListRow
-            v-if="recording.status === 'error'"
-            icon="arrow-clockwise"
-            :label="$t('mobile.library.retry')"
+            v-if="retryLabel"
+            :icon="retryIcon"
+            :label="retryLabel"
             :chevron="false"
             @click="$emit('retry', recording)" />
           <ListRow
@@ -80,6 +83,8 @@ export default {
     value: { type: Boolean, default: false },
     recording: { type: Object, default: null },
     online: { type: Boolean, default: true },
+    // Transcription minutes available, null when not counted or unknown
+    creditMinutes: { type: Number, default: null },
   },
   data() {
     return { renaming: false, newName: "" }
@@ -88,9 +93,34 @@ export default {
     pending() {
       return this.recording.status !== "uploaded"
     },
+    status() {
+      return describeRecordingStatus(
+        this.recording,
+        this.online,
+        this.creditMinutes,
+      )
+    },
+    // A quota refusal is sent again only once the minutes cover it, and on
+    // the user's word: it consumes the organization's minutes.
+    retryLabel() {
+      switch (this.status.key) {
+        case "error":
+          return this.$t("mobile.library.retry")
+        case "ready_to_transcribe":
+          return this.$t("mobile.library.transcribe_now")
+        default:
+          return ""
+      }
+    },
+    retryIcon() {
+      return this.status.key === "ready_to_transcribe"
+        ? "sparkle"
+        : "arrow-clockwise"
+    },
     statusLine() {
-      const status = describeRecordingStatus(this.recording, this.online)
-      return this.$t(status.label, { progress: this.recording.progress || 0 })
+      return this.$t(this.status.label, {
+        progress: this.recording.progress || 0,
+      })
     },
   },
   watch: {
@@ -127,15 +157,6 @@ export default {
   border: 1px solid var(--m-border);
   border-radius: var(--m-radius-sm);
   background: var(--m-surface);
-}
-
-.m-recording__confirm {
-  min-height: 48px;
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-primary);
-  color: var(--m-on-primary);
-  font-weight: 600;
 }
 
 .m-recording__actions {

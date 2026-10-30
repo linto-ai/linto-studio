@@ -1,0 +1,89 @@
+/* The mobile look of the shared NotificationBanner component
+   (components/atoms/NotificationBanner.vue documents the class contract):
+   a soft tinted block, the text in the tone's colour. Class selectors only. */
+
+.notification-banner {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--m-space-2);
+  width: 100%;
+  padding: var(--m-space-2) var(--m-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--m-radius-sm);
+  font-size: var(--m-font-size-sm);
+  line-height: 1.35;
+  background: var(--m-info-soft);
+  color: var(--m-info);
+}
+
+.notification-banner.align-center {
+  justify-content: center;
+  text-align: center;
+}
+
+.notification-banner.align-start {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.notification-banner__icon {
+  flex-shrink: 0;
+}
+
+/* The text takes the room left and wraps inside it */
+.notification-banner__content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.notification-banner__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--m-space-2);
+  margin-left: auto;
+}
+
+/* With actions: they stay beside the icon and the text while these fit on
+   one line, and go under them as soon as the text would wrap. __main (icon
+   + text) is never split: the text wraps beside the icon, never under it. */
+.notification-banner:has(> .notification-banner__actions) {
+  flex-wrap: wrap;
+  row-gap: var(--m-space-2);
+}
+
+.notification-banner__main {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: flex-start;
+  gap: var(--m-space-2);
+  min-width: 0;
+}
+
+.notification-banner.info {
+  background: var(--m-info-soft);
+  color: var(--m-info);
+}
+
+.notification-banner.warning {
+  background: var(--m-warning-soft);
+  color: var(--m-warning-text);
+}
+
+.notification-banner.success {
+  background: var(--m-primary-soft);
+  color: var(--m-primary);
+}
+
+.notification-banner.error {
+  background: var(--m-danger-soft);
+  color: var(--m-danger);
+}
+
+.notification-banner.neutral {
+  border-color: var(--m-border);
+  border-style: dashed;
+  background: var(--m-surface-muted);
+  color: var(--m-text-muted);
+}

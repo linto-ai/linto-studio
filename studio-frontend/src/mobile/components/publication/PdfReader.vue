@@ -5,9 +5,10 @@
     :aria-label="title"
     @close="onNativeClose">
     <header class="m-pdf-reader__header">
-      <IconButton
+      <Button
+        variant="transparent"
         icon="x"
-        :label="$t('mobile.publication.close')"
+        :aria-label="$t('mobile.publication.close')"
         @click="close" />
       <h2 class="m-pdf-reader__title">{{ title }}</h2>
     </header>
@@ -22,17 +23,18 @@
       <div ref="pages" class="m-pdf-reader__pages"></div>
     </div>
     <footer class="m-pdf-reader__footer">
-      <button type="button" class="m-pdf-reader__share" @click="$emit('share')">
-        <PhIcon name="export" size="md" />
-        {{ $t("mobile.publication.share") }}
-      </button>
+      <Button
+        variant="primary"
+        size="lg"
+        block
+        icon="export"
+        :label="$t('mobile.publication.share')"
+        @click="$emit('share')" />
     </footer>
   </dialog>
 </template>
 
 <script>
-import PhIcon from "@/components/atoms/PhIcon.vue"
-import IconButton from "@/mobile/components/IconButton.vue"
 import { PdfPagesRenderer } from "@/mobile/services/pdf/PdfPagesRenderer.js"
 
 // Full screen reader of a PDF file, pages drawn with pdf.js (phones cannot
@@ -41,7 +43,6 @@ import { PdfPagesRenderer } from "@/mobile/services/pdf/PdfPagesRenderer.js"
 // phone (share sheet, save to files, download).
 export default {
   name: "PdfReader",
-  components: { IconButton, PhIcon },
   props: {
     value: { type: Boolean, default: false },
     file: { type: [File, Blob], default: null },
@@ -166,20 +167,5 @@ export default {
     calc(var(--m-space-3) + var(--m-safe-bottom));
   background: var(--m-surface);
   border-top: 1px solid var(--m-border);
-}
-
-.m-pdf-reader__share {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--m-space-2);
-  width: 100%;
-  min-height: 48px;
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-primary);
-  color: var(--m-on-primary);
-  font: inherit;
-  font-weight: 600;
 }
 </style>

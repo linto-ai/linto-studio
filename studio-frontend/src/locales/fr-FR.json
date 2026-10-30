@@ -1817,7 +1817,7 @@
   },
   "session": {
     "live_credit_banner": {
-      "low": "Crédit live bientôt épuisé : il reste {minutes} min. Le direct s'arrêtera automatiquement une fois le crédit épuisé.",
+      "low": "Crédit bientôt épuisé : le direct s'arrêtera dans {duration}.",
       "exhausted": "Crédit live épuisé : le direct va s'arrêter automatiquement dans quelques minutes."
     },
     "sessions_status": {

@@ -41,7 +41,7 @@ export const recordingControllerMixin = {
     this.releaseRecorder()
   },
   methods: {
-    async startRecording(transcription, deviceId = null, sharing = null) {
+    async startRecording(deviceId = null) {
       this.recorder.state = "starting"
       const id = crypto.randomUUID()
       this.localRecorder = new LocalRecorder({
@@ -51,7 +51,7 @@ export const recordingControllerMixin = {
       })
       try {
         const mimeType = await this.localRecorder.start(deviceId)
-        await this.createQueueEntry(id, mimeType, transcription, sharing)
+        await this.createQueueEntry(id, mimeType)
       } catch (error) {
         console.error("cannot start recording", error)
         this.releaseRecorder()
@@ -108,7 +108,9 @@ export const recordingControllerMixin = {
       this.recorder.sizeBytes += blob.size
       await appendChunk(id, index, blob)
     },
-    createQueueEntry(id, mimeType, transcription, sharing) {
+    // Transcription and sharing are set when the stop sheet closes: the
+    // recording never waits for the services list.
+    createQueueEntry(id, mimeType) {
       return this.$store.dispatch("mobileRecordings/create", {
         id,
         organizationId:
@@ -119,8 +121,8 @@ export const recordingControllerMixin = {
           this.$t("mobile.record.default_name"),
         ),
         mimeType,
-        transcription,
-        sharing,
+        transcription: null,
+        sharing: null,
         keepAudio: readKeepAudioPreference(),
         conversationId: null,
         createdAt: Date.now(),

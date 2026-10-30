@@ -45,6 +45,21 @@
   --m-space-5: 20px;
   --m-space-6: 24px;
 
+  /* Spacing scale of the shared utility classes (style/_utilities.scss) */
+  --tiny-gap: var(--m-space-1);
+  --small-gap: var(--m-space-2);
+  --medium-gap: var(--m-space-4);
+  --large-gap: calc(2 * var(--m-space-4));
+  --xs-gap: var(--m-space-1);
+  --sm-gap: var(--m-space-2);
+  --md-gap: var(--m-space-4);
+  --lg-gap: calc(2 * var(--m-space-4));
+  --xl-gap: calc(4 * var(--m-space-4));
+  /* Colours and borders the shared utility classes read */
+  --text-primary: var(--m-text);
+  --divider: 1px solid var(--m-divider);
+  --border-block: 1px solid var(--m-border);
+
   --m-tap: 44px;
   --m-header-height: 60px;
   --m-safe-top: env(safe-area-inset-top, 0px);

@@ -5,16 +5,16 @@
       <span class="m-install__title">{{ $t("mobile.install.title") }}</span>
       <span class="m-muted">{{ $t("mobile.install.subtitle") }}</span>
     </div>
-    <button type="button" class="m-install__button" @click="$emit('install')">
-      {{ $t("mobile.install.button") }}
-    </button>
-    <button
-      type="button"
+    <Button
+      variant="primary"
+      :label="$t('mobile.install.button')"
+      @click="$emit('install')" />
+    <Button
+      variant="transparent"
+      icon="x"
       class="m-install__dismiss"
       :aria-label="$t('mobile.install.dismiss')"
-      @click="$emit('dismiss')">
-      <PhIcon name="x" size="sm" />
-    </button>
+      @click="$emit('dismiss')" />
   </div>
 </template>
 
@@ -55,24 +55,7 @@ export default {
   color: var(--m-primary);
 }
 
-.m-install__button {
-  min-height: var(--m-tap);
-  padding: 0 var(--m-space-3);
-  border: none;
-  border-radius: var(--m-radius-sm);
-  background: var(--m-primary);
-  color: var(--m-on-primary);
-  font-weight: 600;
-}
-
 .m-install__dismiss {
-  width: var(--m-tap);
-  height: var(--m-tap);
-  border: none;
-  background: transparent;
-  color: var(--m-text-muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  --btn-text: var(--m-text-muted);
 }
 </style>

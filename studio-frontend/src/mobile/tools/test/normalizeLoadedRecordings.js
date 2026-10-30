@@ -21,3 +21,20 @@ test("normalizeLoadedRecordings() queues legacy kept items and stale recordings"
   t.true(keep[1].interruptedAt > 0)
   t.deepEqual(remove, ["c"])
 })
+
+test("normalizeLoadedRecordings() queues interrupted uploads but not the one in progress", (t) => {
+  const { keep } = normalizeLoadedRecordings(
+    [
+      { id: "a", status: "uploading", progress: 40 },
+      { id: "b", status: "uploading", progress: 70 },
+    ],
+    "b",
+  )
+  t.deepEqual(
+    keep.map((r) => [r.id, r.status, r.progress]),
+    [
+      ["a", "queued", 0],
+      ["b", "uploading", 70],
+    ],
+  )
+})

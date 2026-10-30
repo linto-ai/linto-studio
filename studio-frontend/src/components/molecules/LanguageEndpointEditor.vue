@@ -35,7 +35,6 @@
 
       <Button
         icon="trash"
-        iconOnly
         variant="transparent"
         intent="destructive"
         size="sm"

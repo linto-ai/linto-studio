@@ -7,7 +7,8 @@ import { shareFile } from "@/mobile/services/export/shareFile.js"
 
 // What the Record page does with its recordings: the stop sheet after a
 // recording (name, keep the audio, then it is sent by itself) and the
-// detail sheet of a library entry.
+// detail sheet of a library entry. Freezes the page's transcription and
+// sharing choices (transcriptionSettingsMixin) on the recording.
 export const libraryActionsMixin = {
   data() {
     return {
@@ -53,12 +54,24 @@ export const libraryActionsMixin = {
         id,
         name,
         keepAudio,
+        // Null while the services are not loaded: resolved when sending.
+        transcription: this.transcriptionSettings,
+        sharing: this.sharingSettings,
         status: "queued",
       })
       this.stopSheetOpen = false
       this.$store.dispatch("mobileRecordings/upload", id)
     },
-    // The sheet dismissed without "Done": sent all the same, as it stands.
+    // Removed before the sheet closes, so onStopSheetClosed finds nothing
+    // left to send.
+    async discardStopped() {
+      await this.$store.dispatch(
+        "mobileRecordings/remove",
+        this.stoppedRecording.id,
+      )
+      this.stopSheetOpen = false
+    },
+    // The sheet dismissed without "Send": sent all the same, as it stands.
     onStopSheetClosed() {
       const current = this.$store.getters["mobileRecordings/byId"](
         this.stoppedRecording?.id,

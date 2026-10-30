@@ -18,7 +18,6 @@
     <Button
       class="horizontal-scroller__arrow horizontal-scroller__arrow--prev"
       variant="secondary"
-      shape="circle"
       size="sm"
       icon="caret-left"
       :disabled="!canScrollPrev"
@@ -27,7 +26,6 @@
     <Button
       class="horizontal-scroller__arrow horizontal-scroller__arrow--next"
       variant="secondary"
-      shape="circle"
       size="sm"
       icon="caret-right"
       :disabled="!canScrollNext"

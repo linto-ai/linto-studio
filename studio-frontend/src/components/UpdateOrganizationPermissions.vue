@@ -34,16 +34,6 @@
         icon="check"
         :label="$t('organisation.organization_permissions.update_button')" />
     </div>
-    <!-- <button
-      type="submit"
-      class="btn primary"
-      @click="updateOrganization"
-      v-if="isAdmin || isSystemAdministrator">
-      <ph-icon name="check" size="md" class="icon" />
-      <span class="label">{{
-        $t("organisation.organization_permissions.update_button")
-      }}</span>
-    </button> -->
   </section>
 </template>
 <script>
@@ -95,9 +85,7 @@ export default {
       fieldBotPermission: {
         ...EMPTY_FIELD,
         value: this.hasBotPermission(this.currentOrganization.permissions),
-        label: this.$t(
-          "organisation.organization_permissions.bot_permission",
-        ),
+        label: this.$t("organisation.organization_permissions.bot_permission"),
       },
       fieldSessionPermission: {
         ...EMPTY_FIELD,
@@ -134,7 +122,8 @@ export default {
           microphone: this.fieldMicrophonePermission.value,
           bot: this.fieldBotPermission.value,
           session: this.fieldSessionPermission.value,
-          speakerIdentification: this.fieldSpeakerIdentificationPermission.value,
+          speakerIdentification:
+            this.fieldSpeakerIdentificationPermission.value,
         }),
       }
 

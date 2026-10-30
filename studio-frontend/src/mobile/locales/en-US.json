@@ -92,7 +92,15 @@
     "microphone_permission": "Allow the microphone to list the inputs.",
     "quiet_warning": "The microphone barely picked up anything. Check the selected input before sending: an empty transcription fails.",
     "sharing_line": "{right} for the organization · {folder}",
-    "finish": "Done"
+    "finish": "Send",
+    "discard": "Delete without sending",
+    "discard_confirm": "Delete for good",
+    "credit_remaining": "{minutes} of transcription left",
+    "credit_synced": "Last sync: {date} · may have changed",
+    "credit_exhausted_title": "Your transcription time is used up",
+    "credit_exhausted_until": "You can keep recording. Your recordings stay on this phone and can be transcribed from {date}.",
+    "credit_exhausted": "You can keep recording. Your recordings stay on this phone and will be transcribed as soon as time is available.",
+    "credit_exhausted_upgrade": "To increase your plan, sign in to LinTO Studio on a computer."
   },
   "queue": {
     "rename": "Rename",
@@ -103,12 +111,18 @@
     "status_recording": "Recording",
     "error_file_too_large": "File too large (maximum {maxSize}).",
     "error_rejected": "The server refused the upload.",
+    "error_quota": "Transcription quota used up.",
     "error_offline": "Offline, will retry when the network is back.",
     "error_network": "The server did not answer, automatic retry.",
+    "error_no_service": "No transcription service available, automatic retry.",
     "error_missing": "Recording not found on this phone.",
     "status_queued": "Sending automatically",
     "play_failed": "Audio not found on this phone.",
-    "actions": "Actions"
+    "actions": "Actions",
+    "status_waiting_credit": "Waiting",
+    "waiting_credit_until": "Transcription possible from {date}.",
+    "status_ready_to_transcribe": "To transcribe",
+    "ready_to_transcribe_hint": "Open to start the transcription."
   },
   "settings": {
     "title": "Transcription",
@@ -129,7 +143,8 @@
     "sharing_title": "Sharing and filing",
     "members_right": "Organization members' right",
     "folder": "Folder",
-    "sharing_help": "Applies to the next recordings. Sharing of a media is changed later from the media list."
+    "sharing_help": "Applies to the next recordings. Sharing of a media is changed later from the media list.",
+    "title_credit_exhausted": "Transcription · 0 min left"
   },
   "media": {
     "search": "Search media",
@@ -208,7 +223,8 @@
     "buy_failed": "Could not open the payment page. Try again.",
     "ask_admin": "Ask an administrator of the organization to top up the live credit.",
     "recharge": "Top up",
-    "recharge_title": "Top up live credit"
+    "recharge_title": "Top up live credit",
+    "no_pack_available": "No live pack is available for this organization."
   },
   "conversation": {
     "load_failed": "Cannot open this conversation."
@@ -237,7 +253,8 @@
     "discard_audio": "Delete the audio from this phone",
     "discard_hint": "The media and its transcript stay in My media.",
     "cancel_upload": "Cancel sending and delete",
-    "share_audio_failed": "The audio could not be shared."
+    "share_audio_failed": "The audio could not be shared.",
+    "transcribe_now": "Transcribe now"
   },
   "publication": {
     "title": "Export as PDF",

@@ -80,7 +80,6 @@
           @click="cancel"
           :title="$t ? $t('cancel') : 'Cancel'"
           icon="x"
-          iconOnly
           variant="secondary"
           size="sm"
           class="form-field__cancel-btn" />
@@ -89,7 +88,6 @@
           @click="apply"
           :title="$t ? $t('apply') : 'Apply'"
           icon="check"
-          iconOnly
           variant="primary"
           size="sm"
           class="form-field__apply-btn" />

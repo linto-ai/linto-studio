@@ -100,7 +100,10 @@ onMounted(() => {
 }
 
 .modal-dialog-body {
-  flex: 1;
+  /* Basis auto, not 0%: the dialog has no definite height, and some WebKit
+     versions (iOS) resolve a 0% basis to 0 and collapse the body to its
+     padding. min-height: 0 lets it shrink and scroll once max-height is hit. */
+  flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
   padding: var(--spacing-lg);

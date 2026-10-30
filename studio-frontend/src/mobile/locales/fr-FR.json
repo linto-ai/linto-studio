@@ -92,7 +92,15 @@
     "microphone_permission": "Autorisez le micro pour voir la liste des entrées.",
     "quiet_warning": "Le micro n'a presque rien capté. Vérifiez l'entrée choisie avant d'envoyer : une transcription vide tombe en erreur.",
     "sharing_line": "{right} pour l'organisation · {folder}",
-    "finish": "Terminer"
+    "finish": "Envoyer",
+    "discard": "Supprimer sans envoyer",
+    "discard_confirm": "Supprimer définitivement",
+    "credit_remaining": "{minutes} de transcription restantes",
+    "credit_synced": "Dernière synchro : {date} · peut avoir changé",
+    "credit_exhausted_title": "Votre temps de transcription est épuisé",
+    "credit_exhausted_until": "Vous pouvez continuer à enregistrer. Vos enregistrements restent sur ce téléphone et pourront être transcrits dès le {date}.",
+    "credit_exhausted": "Vous pouvez continuer à enregistrer. Vos enregistrements restent sur ce téléphone et seront transcrits dès que du temps sera disponible.",
+    "credit_exhausted_upgrade": "Pour augmenter votre forfait, connectez-vous à LinTO Studio sur ordinateur."
   },
   "queue": {
     "rename": "Renommer",
@@ -103,12 +111,18 @@
     "status_recording": "En cours",
     "error_file_too_large": "Fichier trop volumineux (maximum {maxSize}).",
     "error_rejected": "Le serveur a refusé l'envoi.",
+    "error_quota": "Quota de transcription épuisé.",
     "error_offline": "Hors connexion, nouvel essai au retour du réseau.",
     "error_network": "Le serveur n'a pas répondu, nouvel essai automatique.",
+    "error_no_service": "Aucun service de transcription disponible, nouvel essai automatique.",
     "error_missing": "Enregistrement introuvable sur ce téléphone.",
     "status_queued": "Envoi automatique",
     "play_failed": "Audio introuvable sur ce téléphone.",
-    "actions": "Actions"
+    "actions": "Actions",
+    "status_waiting_credit": "En attente",
+    "waiting_credit_until": "Transcription possible dès le {date}.",
+    "status_ready_to_transcribe": "À transcrire",
+    "ready_to_transcribe_hint": "Ouvrez pour lancer la transcription."
   },
   "settings": {
     "title": "Transcription",
@@ -129,7 +143,8 @@
     "sharing_title": "Partage et rangement",
     "members_right": "Droits des membres de l'organisation",
     "folder": "Dossier",
-    "sharing_help": "S'applique aux prochains enregistrements. Le partage d'un média se modifie ensuite depuis la liste des médias."
+    "sharing_help": "S'applique aux prochains enregistrements. Le partage d'un média se modifie ensuite depuis la liste des médias.",
+    "title_credit_exhausted": "Transcription · 0 min restante"
   },
   "media": {
     "search": "Rechercher un média",
@@ -208,7 +223,8 @@
     "buy_failed": "Impossible d'ouvrir le paiement. Réessayez.",
     "ask_admin": "Demandez à un administrateur de l'organisation de recharger le crédit de direct.",
     "recharge": "Recharger",
-    "recharge_title": "Recharger le crédit de direct"
+    "recharge_title": "Recharger le crédit de direct",
+    "no_pack_available": "Aucun pack de direct n'est disponible pour cette organisation."
   },
   "conversation": {
     "load_failed": "Impossible d'ouvrir cette conversation."
@@ -237,7 +253,8 @@
     "discard_audio": "Supprimer l'audio de ce téléphone",
     "discard_hint": "Le média et sa transcription restent dans Mes médias.",
     "cancel_upload": "Annuler l'envoi et supprimer",
-    "share_audio_failed": "Impossible de partager l'audio."
+    "share_audio_failed": "Impossible de partager l'audio.",
+    "transcribe_now": "Transcrire maintenant"
   },
   "publication": {
     "title": "Exporter en PDF",

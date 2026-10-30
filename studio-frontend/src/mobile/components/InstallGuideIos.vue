@@ -17,12 +17,10 @@
       </li>
     </ol>
     <p class="m-muted">{{ $t("mobile.install.ios_outro") }}</p>
-    <button
-      type="button"
-      class="m-ios-steps__done"
-      @click="$emit('input', false)">
-      {{ $t("mobile.install.understood") }}
-    </button>
+    <Button
+      block
+      :label="$t('mobile.install.understood')"
+      @click="$emit('input', false)" />
   </BottomSheet>
 </template>
 
@@ -87,13 +85,5 @@ export default {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-
-.m-ios-steps__done {
-  min-height: var(--m-tap);
-  border: 1px solid var(--m-border);
-  border-radius: var(--m-radius-sm);
-  background: var(--m-surface);
-  font-weight: 600;
 }
 </style>
