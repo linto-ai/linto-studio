@@ -94,3 +94,17 @@ test("a non-admin on the backoffice administers nobody", (t) => {
   }
   t.false(computeMemberRights({ _id: "other", role: 1 }, viewer).canChangeRole)
 })
+
+test("frozen roles keep removal only", (t) => {
+  const viewer = {
+    id: "me",
+    role: 1,
+    isSystemAdministrator: true,
+    isBackoffice: true,
+    rolesFrozen: true,
+  }
+  const rights = computeMemberRights({ _id: "other", role: 1 }, viewer)
+  t.false(rights.canChangeRole)
+  t.false(rights.canGrantSeat)
+  t.true(rights.canRemove)
+})
