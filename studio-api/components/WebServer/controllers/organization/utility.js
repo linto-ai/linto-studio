@@ -11,6 +11,9 @@ const { OrganizationError, OrganizationConflict } = require(
 const { adoptDefaultOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/user/defaultOrganization`,
 )
+const { ensurePersonalOrganization } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/personalOrganization`,
+)
 const { resolveInvitee } = require(
   `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
@@ -31,6 +34,7 @@ const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
 const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
+const { emailDomain } = require(`${process.cwd()}/lib/utility/emailDomain`)
 
 function countAdmin(organization, userId) {
   let adminCount = 0
@@ -279,23 +283,35 @@ async function getOrgaIdFromReq(req) {
   return organizationId
 }
 
-// Add user to all organization with the same email domain
+// Adds the user to every organization whose matchingMail claims their email
+// domain. Idempotent and never throws: a failure is logged, not surfaced.
 async function populateUserToOrganization(user, role = ROLES.MEMBER) {
-  const matchingMail = "@" + user.email.split("@")[1]
+  const domain = emailDomain(user.email)
+  if (!domain) return
 
-  const organizations = await model.organizations.getAll({
-    matchingMail: matchingMail,
-  })
-  organizations.list.forEach(async (organization) => {
-    if (
-      organization.users.filter((u) => u.userId === user._id.toString())
-        .length === 0
-    ) {
-      let orgaCopy = JSON.parse(JSON.stringify(organization))
-      orgaCopy.users.push({ userId: user._id.toString(), role: role })
-      await model.organizations.update(orgaCopy)
+  try {
+    const organizations = throwIfError(
+      await model.organizations.getByMatchingMailDomain(domain),
+    )
+    for (const organization of organizations) {
+      throwIfError(
+        await model.organizations.addMember(organization._id, user._id, role),
+      )
     }
-  })
+  } catch (error) {
+    logger.error(
+      `matchingMail: cannot attach user ${user._id} (@${domain}): ${error.message}`,
+    )
+  }
+}
+
+// The domain rule applies once, at the first login of an invited account or
+// at SSO creation. The personal organization is ensured at every login
+async function setupUserWorkspace(user, { firstLogin }) {
+  await Promise.all([
+    firstLogin ? populateUserToOrganization(user) : null,
+    ensurePersonalOrganization(user),
+  ])
 }
 
 async function addM2mUserToOrganization(orgaId, m2m_id, role = ROLES.MEMBER) {
@@ -318,5 +334,6 @@ module.exports = {
   inviteMemberByEmail,
   getUserConversationFromOrganization,
   populateUserToOrganization,
+  setupUserWorkspace,
   addM2mUserToOrganization,
 }

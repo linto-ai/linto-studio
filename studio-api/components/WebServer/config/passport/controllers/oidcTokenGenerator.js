@@ -1,5 +1,8 @@
-const { populateUserToOrganization } = require(
+const { setupUserWorkspace } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+const { isPendingAccount } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const randomstring = require("randomstring")
@@ -13,6 +16,7 @@ async function generateUserToken(email, lastname = "", firstname = "") {
   try {
     let user
     let users = await model.users.getTokenByEmail(email)
+    const firstLogin = !users[0] || isPendingAccount(users[0])
 
     if (users.length === 1) {
       user = users[0]
@@ -30,12 +34,8 @@ async function generateUserToken(email, lastname = "", firstname = "") {
       if (createdUser.insertedCount !== 1) throw new UserError()
       users = await model.users.getTokenByEmail(email)
       user = users[0]
-      populateUserToOrganization(user) // Only on user creation
-
-      if (process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION !== "true") {
-        await model.organizations.createDefault(user._id.toString(), user.email)
-      }
     }
+    await setupUserWorkspace(user, { firstLogin })
 
     if (!user.fromSSO && !user.emailIsVerified) {
       let emailList = user.verifiedEmail

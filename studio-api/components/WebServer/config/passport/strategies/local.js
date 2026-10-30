@@ -26,6 +26,12 @@ const moment = require("moment")
 const { verifiedFieldsFromLink } = require(
   `${process.cwd()}/components/WebServer/controllers/user/emailVerification`,
 )
+const { setupUserWorkspace } = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+const { isPendingAccount } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/invitation`,
+)
 
 const STRATEGY = new LocalStrategy(
   {
@@ -96,6 +102,7 @@ async function generateResetUserToken(magicId, psw, done) {
 
     const verified = verifiedFieldsFromLink(user)
     await model.users.update({ _id: user._id, ...verified })
+    await setupUserWorkspace(user, { firstLogin: isPendingAccount(user) })
 
     const token_salt = randomstring.generate(12)
     let token = await model.tokens.insert(user._id, token_salt)

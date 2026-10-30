@@ -180,18 +180,11 @@ describe("helpers", () => {
       },
     ])
     mockModel.users.update.mockResolvedValue({ matchedCount: 1 })
-    mockModel.organizations.getPersonalByOwner.mockResolvedValue(null)
-    mockModel.organizations.createDefault.mockResolvedValue({
-      insertedCount: 1,
-    })
 
     await ssoLogin.attachUserToOrganization("u2", ORG_ID)
 
     expect(mockModel.users.getById).toHaveBeenCalledWith("u2", true)
-    expect(mockModel.organizations.createDefault).toHaveBeenCalledWith(
-      "u2",
-      "u2@acme.test",
-    )
+    expect(mockModel.organizations.createDefault).not.toHaveBeenCalled()
     expect(mockModel.users.update).toHaveBeenCalledWith({
       _id: "u2",
       defaultOrganization: ORG_ID,
@@ -203,7 +196,6 @@ describe("helpers", () => {
     mockModel.users.getById.mockResolvedValue([
       { _id: "u1", defaultOrganization: "otherOrg", onboarded: true },
     ])
-    mockModel.organizations.getPersonalByOwner.mockResolvedValue({ _id: "p1" })
 
     await ssoLogin.attachUserToOrganization("u1", ORG_ID)
 

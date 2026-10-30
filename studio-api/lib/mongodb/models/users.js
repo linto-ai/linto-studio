@@ -118,9 +118,9 @@ class UsersModel extends MongoModel {
       if (payload.email) payload.email = normalizeEmail(payload.email)
       if (!payload.fromSso) payload.fromSso = false
       const userPayload = {
+        ...defaultUserPayload,
         ...payload,
         authLink: generateAuthLink(payload.email, linkValidity),
-        ...defaultUserPayload,
         role: ROLE.defaultUserRole(),
         created: dateTime,
         last_update: dateTime,

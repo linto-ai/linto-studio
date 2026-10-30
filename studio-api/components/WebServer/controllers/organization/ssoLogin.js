@@ -159,19 +159,9 @@ async function ensureMembership(organizationId, userId) {
   )
 }
 
-// Same personal organization as a regular signup, for users who predate it.
-async function ensurePersonalOrganization(user) {
-  if (process.env.DISABLE_DEFAULT_ORGANIZATION_CREATION === "true") return
-  const personal = await model.organizations.getPersonalByOwner(user._id)
-  if (personal) return
-  throwIfError(
-    await model.organizations.createDefault(user._id.toString(), user.email),
-  )
-}
-
 // The SSO organization is the user's workspace: member, default organization
-// when they have none, and no onboarding wizard (the personal organization is
-// created here instead of by the wizard).
+// when they have none, and no onboarding wizard. The personal organization
+// comes from the login itself (generateUserToken)
 async function attachUserToOrganization(userId, organizationId) {
   const [, rows] = await Promise.all([
     ensureMembership(organizationId, userId),
@@ -185,12 +175,8 @@ async function attachUserToOrganization(userId, organizationId) {
     updates.defaultOrganization = organizationId.toString()
   if (user.onboarded === false) updates.onboarded = true
 
-  await Promise.all([
-    ensurePersonalOrganization(user),
-    Object.keys(updates).length > 0
-      ? model.users.update({ _id: userId, ...updates }).then(throwIfError)
-      : null,
-  ])
+  if (Object.keys(updates).length > 0)
+    throwIfError(await model.users.update({ _id: userId, ...updates }))
 }
 
 module.exports = {
