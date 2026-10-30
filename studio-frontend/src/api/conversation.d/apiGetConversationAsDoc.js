@@ -77,6 +77,7 @@ export async function apiGetConversationAsDoc(convId) {
     "type.mode",
     "locale",
     "metadata.transcription",
+    "metadata.audio",
     "jobs.transcription.state",
   ])
 
