@@ -173,7 +173,6 @@ import { bus } from "@/main.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
-import { getEnv } from "@/tools/getEnv"
 
 import { computeBillingInterval } from "@/tools/billing/computeBillingInterval.js"
 import { computeMemberRights } from "@/tools/members/computeMemberRights.js"
