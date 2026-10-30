@@ -2,6 +2,7 @@
 import aiohttp
 import json
 import logging
+from urllib.parse import quote
 from datetime import datetime
 from ..models.media import Media
 from ..tools.generate_service_config import generate_service_config
@@ -349,9 +350,15 @@ class StudioApiService:
         return await self._send_request("POST", url, **kwargs)
 
     @with_token
-    async def get_conversation(self, conversationId, **kwargs):
-        """Fetch a conversation by id (raw response)."""
+    async def get_conversation(self, conversationId, key=None, **kwargs):
+        """Fetch a conversation by id (raw response).
+
+        `key` restricts the answer to that field plus the access ones, no
+        transcript.
+        """
         url = f"{self.base_api_url}/conversations/{conversationId}"
+        if key:
+            url += f"?key={quote(key, safe='')}"
         return await self._send_request("GET", url, **kwargs)
 
     # --- User methods ---
@@ -359,16 +366,28 @@ class StudioApiService:
     @with_token
     async def search_users(self, search, **kwargs):
         """Search users by email or name."""
-        url = f"{self.base_api_url}/users/search?search={search}"
+        url = f"{self.base_api_url}/users/search?search={quote(search, safe='')}"
         return await self._send_request("GET", url, **kwargs)
 
     # --- Conversation management methods ---
 
     @with_token
     async def update_conversation(self, conversationId, data, **kwargs):
-        """Update conversation fields (owner, sharedWithUsers, etc.)."""
+        """Update conversation fields (name, tags, etc.).
+
+        Access fields (owner, sharedWithUsers, organization) are ignored; use
+        the dedicated helpers.
+        """
         url = f"{self.base_api_url}/conversations/{conversationId}"
         return await self._send_request("PATCH", url, json=data, **kwargs)
+
+    @with_token
+    async def update_conversation_owner(self, organizationId, conversationId, userId, **kwargs):
+        """Change the owner of a conversation (maintainer of the organization)."""
+        if not organizationId or not conversationId or not userId:
+            raise ValueError("organizationId, conversationId and userId are required")
+        url = f"{self.base_api_url}/organizations/{organizationId}/conversations/{conversationId}/owner"
+        return await self._send_request("PATCH", url, json={"userId": userId}, **kwargs)
 
     # --- Download methods ---
 

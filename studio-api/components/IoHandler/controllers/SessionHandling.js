@@ -41,6 +41,17 @@ function diffSessions(oldSessions, newSessions) {
   return { added, removed, updated }
 }
 
+// Kept on MQTT for the transcribers, never sent to browsers: privateId and the
+// stream URLs allow injecting audio, the profile config holds provider keys
+function stripStreamSecrets(sessions) {
+  return sessions.map(({ privateId, ...session }) => ({
+    ...session,
+    channels: session.channels?.map(
+      ({ streamEndpoints, transcriberProfile, ...channel }) => channel,
+    ),
+  }))
+}
+
 async function groupSessionsByOrg(differences, sessionIdToOrg) {
   const groupedByOrg = {}
 
@@ -92,4 +103,4 @@ async function groupSessionsByOrg(differences, sessionIdToOrg) {
   return groupedByOrg
 }
 
-module.exports = { diffSessions, groupSessionsByOrg }
+module.exports = { diffSessions, groupSessionsByOrg, stripStreamSecrets }

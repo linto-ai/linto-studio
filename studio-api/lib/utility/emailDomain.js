@@ -20,4 +20,12 @@ function isEmailDomain(value) {
   return DOMAIN_PATTERN.test(value)
 }
 
-module.exports = { emailDomain, normalizeEmailDomain, isEmailDomain }
+// A non-empty local part without spaces, then a valid domain
+function isEmail(value) {
+  if (typeof value !== "string") return false
+  const at = value.lastIndexOf("@")
+  if (at < 1 || /\s/.test(value)) return false
+  return isEmailDomain(normalizeEmailDomain(value.slice(at)))
+}
+
+module.exports = { emailDomain, normalizeEmailDomain, isEmailDomain, isEmail }

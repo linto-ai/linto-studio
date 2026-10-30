@@ -123,16 +123,21 @@ class LinTO:
         return await self.api_service.search_users(search=search)
 
     async def update_conversation(self, conversation_id, data):
-        """Update conversation fields (owner, sharedWithUsers, etc.)."""
+        """Update conversation fields (name, tags, etc.).
+
+        Access fields (owner, sharedWithUsers, organization) are ignored; use
+        the dedicated helpers.
+        """
         return await self.api_service.update_conversation(
             conversationId=conversation_id, data=data
         )
 
     async def set_conversation_owner(self, conversation_id, email):
-        """Set conversation owner by email. Removes all other access rights.
+        """Set conversation owner by email.
 
-        Searches for the user by email, then updates the conversation
-        owner and clears sharedWithUsers and customRights.
+        Searches for the user by email, then changes the owner through the
+        conversation's organization: the caller needs the maintainer role
+        there and the new owner must be a member. Existing shares are kept.
         Returns the userId if successful, None otherwise.
         """
         users = await self.search_users(email)
@@ -148,10 +153,15 @@ class LinTO:
         if not user_id:
             return None
 
-        await self.update_conversation(conversation_id, {
-            "owner": user_id,
-            "sharedWithUsers": [],
-        })
+        conversation = await self.api_service.get_conversation(
+            conversationId=conversation_id, key="organization"
+        )
+        organization_id = (conversation or {}).get("organization", {}).get("organizationId")
+        await self.api_service.update_conversation_owner(
+            organizationId=organization_id,
+            conversationId=conversation_id,
+            userId=user_id,
+        )
         return user_id
 
     async def download_conversation(self, conversation_id, format="docx"):

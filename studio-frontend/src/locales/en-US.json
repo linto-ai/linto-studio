@@ -956,6 +956,7 @@
     }
   },
   "createaccount": {
+    "discoverability_notice": "You can make your profile private at any time in your settings.",
     "email_label": "Email",
     "email_verification_text": "You have just received an email to validate your account. Click on the verification link to start using Linto Studio.",
     "email_verification_title": "Congratulations, a Linto Studio account has been associated with your email address !",
@@ -1118,6 +1119,7 @@
     "folder": "Folder",
     "move_to_folder": "Move to folder",
     "manage_access": "Manage access",
+    "visibility_label": "Visibility",
     "visibility_public": "Public",
     "visibility_private": "Private",
     "visibility_update_success": "Folder access updated",
@@ -1476,7 +1478,7 @@
     }
   },
   "organisation": {
-    "add_member_description": "Use the search form to find users by their firstname, lastname or email address",
+    "add_member_description": "Search by first or last name among the members of your organizations and the people who shared a media with you, or anyone by their full email address",
     "add_member_label": "Add a member",
     "create": {
       "error_already_exists": "An organisation with this name already exists",
@@ -2208,6 +2210,7 @@
     "badge_default": "Default",
     "reset_to_default": "Reset to default right",
     "no_search_results": "No user found",
+    "search_min_length": "Type at least 3 characters",
     "column_user": "User",
     "column_status": "Status",
     "column_right": "Right",
@@ -2254,6 +2257,8 @@
     "personal_information": "Personal information",
     "picture_label": "Picture",
     "profil_visibility": {
+      "description": "A private profile only appears in the searches of the members of your organizations, of the people you shared a media with and of anyone typing your exact email address.",
+      "discoverability": "Your name and picture can be found by every user. Your email address is never displayed, except to someone who types it in full.",
       "label_private": "Private profile",
       "title": "Profile visibility"
     },
@@ -2370,6 +2375,9 @@
   "user_selector": {
     "search_placeholder": "Search for a user...",
     "select_user": "Select a user"
+  },
+  "user_info_inline": {
+    "no_name": "No name provided"
   },
   "popover_list": {
     "search": "Search",

@@ -71,29 +71,6 @@
           "$ref": "#/components/responses/Conflict"
         }
       }
-    },
-    "get": {
-      "tags": ["users"],
-      "summary": "List all users",
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        }
-      }
     }
   },
   "/api/users/self/": {
@@ -316,19 +293,19 @@
   "/api/users/search/": {
     "get": {
       "tags": ["users"],
-      "summary": "Search users by first name, last name or email",
+      "summary": "Search users by first name, last name or email. Public profiles match by name for everyone; a private profile matches by name only for the members of a common organization and the people it shared a conversation with. The exact email address finds anyone, private or not. A system administrator searching with userScope=backoffice sees every private profile, with the addresses",
       "parameters": [
         {
           "name": "search",
           "in": "query",
-          "description": "Search string",
+          "description": "Search string, at least 3 characters",
           "required": true,
           "type": "string"
         }
       ],
       "responses": {
         "200": {
-          "description": "OK",
+          "description": "OK. Results carry no email, except the user whose address is exactly the search string",
           "content": {
             "application/json": {
               "schema": {

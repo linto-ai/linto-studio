@@ -9,6 +9,9 @@ const mockModel = {
 }
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => mockModel)
 
+const { UserUnsupportedMediaType } = require(
+  `${process.cwd()}/components/WebServer/error/exception/users`,
+)
 const { inviteNewUser, resolveInvitee, isPendingAccount } = require(
   `${process.cwd()}/components/WebServer/controllers/user/invitation`,
 )
@@ -57,6 +60,13 @@ describe("inviteNewUser", () => {
       _id: ID,
       onboarded: true,
     })
+  })
+
+  it("refuses a malformed address before creating anything", async () => {
+    await expect(inviteNewUser("<unknown_email>")).rejects.toThrow(
+      UserUnsupportedMediaType,
+    )
+    expect(mockModel.users.createExternal).not.toHaveBeenCalled()
   })
 
   it("refuses when invitations are disabled", async () => {

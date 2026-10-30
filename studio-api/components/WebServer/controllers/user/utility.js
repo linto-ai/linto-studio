@@ -113,6 +113,16 @@ async function getUsersListByConversation(userId, conversation, organiaztion) {
 }
 
 async function removeUserFromPlatform(userId) {
+  const organizations = throwIfError(await model.organizations.listSelf(userId))
+  const lastAdminOf = organizations.filter((organization) => {
+    const data = orgaUtility.countAdmin(organization, userId)
+    return data.adminCount === 1 && data.isAdmin
+  })
+  // Billing first: a subscription that cannot be canceled keeps the account whole
+  for (const organization of lastAdminOf) {
+    await orgaUtility.cancelBilling(organization._id.toString())
+  }
+
   const conversations = throwIfError(
     await model.conversations.getByShare(userId),
   )
@@ -130,14 +140,11 @@ async function removeUserFromPlatform(userId) {
     }),
   )
 
-  const organizations = throwIfError(await model.organizations.listSelf(userId))
-
   await Promise.all(
     organizations.map(async (organization) => {
-      const data = orgaUtility.countAdmin(organization, userId)
-      if (data.adminCount === 1 && data.isAdmin) {
+      if (lastAdminOf.includes(organization)) {
         await orgaUtility.deleteOrganizationCascade(organization._id.toString())
-      } else if (data.adminCount > 1 || !data.isAdmin) {
+      } else {
         organization.users = organization.users.filter(
           (user) => user.userId !== userId,
         )
@@ -167,19 +174,16 @@ async function removeUserFromPlatform(userId) {
   // Fire-and-forget, queued on failure
   triggers.removeUserEverywhere(userId, optIns)
 
-  // RGPD erasure of the departing user's personal data. Each step is
-  // independently fail-soft: a failure here must not leave the caller thinking
-  // the account survived, and the steps above have already committed. NO-OP in
-  // the OSS build (saas.purgeUser returns null when the plugin is absent).
+  // Fail-soft erasure: the steps above have already committed, the caller
+  // must not think the account survived. No-op in OSS
   try {
     await saas.purgeUser(userId)
   } catch (e) {
     logger.error(`saas.purgeUser failed for ${userId}: ${e && e.message}`)
   }
   try {
-    // Anonymize rather than hard-delete: activity rows carry org-level KPIs
-    // (transcription/session counts) that must survive a member's departure. We
-    // strip only the personal dimension (user.id + user.info).
+    // Anonymize rather than delete: activity rows carry org-level KPIs that
+    // must survive a member's departure, only user.id and user.info go
     await model.activityLog.anonymizeByUser(userId)
   } catch (e) {
     logger.error(

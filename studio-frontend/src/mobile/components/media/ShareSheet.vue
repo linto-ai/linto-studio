@@ -39,6 +39,9 @@
       <p v-else-if="searching" class="m-muted">
         {{ $t("mobile.common.loading") }}
       </p>
+      <p v-else-if="searchTooShort" class="m-muted">
+        {{ $t("share_menu.search_min_length") }}
+      </p>
       <p v-else-if="searchResults.length === 0" class="m-muted">
         {{ $t("share_menu.no_search_results") }}
       </p>

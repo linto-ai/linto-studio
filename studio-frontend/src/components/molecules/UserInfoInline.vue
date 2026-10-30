@@ -1,19 +1,21 @@
 <template>
   <div class="flex align-center user-info-inline gap-small flex1">
-    <img
-      v-if="showImage"
-      :src="imgFullPath(user.img)"
-      class="user-info-inline__avatar" />
+    <UserAvatar v-if="showImage && userData" :user="userData" size="xl" />
     <div v-if="user" class="flex col align-top flex1 text-cut">
-      <div class="user-info-inline__name flex align-top fullwidth gap-tiny">
-        <span
-          class="flex1 text-cut"
-          :title="userData.firstname + ' ' + userData.lastname"
-          >{{ userData.firstname }} {{ userData.lastname }}</span
-        >
+      <div class="user-info-inline__name flex align-baseline fullwidth gap-tiny">
+        <span v-if="fullName" class="text-cut" :title="fullName">{{
+          fullName
+        }}</span>
+        <span v-else class="user-info-inline__name--missing text-cut">{{
+          $t("user_info_inline.no_name")
+        }}</span>
         <span class="user-info-inline__external" v-if="external">External</span>
       </div>
-      <div class="user-info-inline__email text-cut">({{ userData.email }})</div>
+      <div
+        v-if="showEmail && userData.email"
+        class="user-info-inline__email text-cut">
+        ({{ userData.email }})
+      </div>
       <div v-if="roleLabel" class="user-info-inline__role">
         {{ roleLabel }}
       </div>
@@ -31,9 +33,11 @@
 </template>
 <script>
 import { getUserInfo } from "@/tools/auth/getUserInfo.js"
-import { getEnv } from "@/tools/getEnv"
+import { computeUserFullName } from "@/tools/user/computeUserFullName.js"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
+import UserAvatar from "@/components/atoms/UserAvatar.vue"
 export default {
+  components: { UserAvatar },
   props: {
     userId: { required: true },
     user: { required: false },
@@ -43,8 +47,12 @@ export default {
     showImage: {
       default: true,
     },
+    showEmail: { type: Boolean, default: true },
   },
   computed: {
+    fullName() {
+      return computeUserFullName(this.userData)
+    },
     impersonatorLabel() {
       if (!this.impersonatedBy) return ""
       const info = this.impersonatedBy.info
@@ -86,15 +94,6 @@ export default {
         }
       },
       immediate: true,
-    },
-  },
-  methods: {
-    imgFullPath(imgPath) {
-      return (
-        getEnv("VUE_APP_PUBLIC_MEDIA") +
-        "/" +
-        (imgPath || "pictures/default.jpg")
-      )
     },
   },
 }

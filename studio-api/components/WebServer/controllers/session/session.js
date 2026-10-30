@@ -216,6 +216,28 @@ async function filterPrivateSessions(jsonString, req) {
   }
 }
 
+// Stream URLs embed the privateId, the only secret guarding ingestion
+async function hideStreamEndpoints(jsonString, req) {
+  if (ROLES.hasRoleAccess(req.userRole, ROLES.MEETING_MANAGER))
+    return jsonString
+
+  const userId = req.payload.data.userId
+  const body = JSON.parse(jsonString)
+  const strip = (channels) =>
+    channels?.forEach((channel) => delete channel.streamEndpoints)
+
+  if (Array.isArray(body.sessions)) {
+    body.sessions
+      .filter((session) => session.owner !== userId)
+      .forEach((session) => strip(session.channels))
+  } else if (Array.isArray(body.channels)) {
+    if (body.owner !== userId) strip(body.channels)
+  } else {
+    delete body.streamEndpoints
+  }
+  return JSON.stringify(body)
+}
+
 async function checkChannelsSecurityLevel(req, next) {
   try {
     const channels = req.body?.channels
@@ -413,6 +435,7 @@ module.exports = {
   afterProxyAccess,
   generatPublicToken,
   filterPrivateSessions,
+  hideStreamEndpoints,
   checkSessionMatchingOrganization,
   checkTemplateMatchingOrganization,
   checkChannelsSecurityLevel,

@@ -26,6 +26,7 @@
 
 <script>
 import { apiSearchUser } from "@/api/user.js"
+import { USER_SEARCH_MIN_LENGTH } from "@/const/userSearch.js"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 
 export default {
@@ -56,6 +57,7 @@ export default {
   },
   methods: {
     async searchUsers(query) {
+      if (query.trim().length < USER_SEARCH_MIN_LENGTH) return []
       const response = await apiSearchUser(query)
       const users = response.data ?? []
       // Format for PopoverList: each item needs id/value for selection

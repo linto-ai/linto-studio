@@ -2,7 +2,6 @@ const debug = require("debug")(
   "linto:components:WebServer:routes:api:users:users",
 )
 const {
-  listUser,
   searchUser,
   createUser,
   getUserById,
@@ -24,12 +23,6 @@ module.exports = (webserver) => {
       method: "post",
       requireAuth: false,
       controller: createUser,
-    },
-    {
-      path: "/",
-      method: "get",
-      requireAuth: true,
-      controller: listUser,
     },
     {
       path: "/self",

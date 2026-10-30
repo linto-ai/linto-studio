@@ -26,21 +26,40 @@ const { ConversationError, ConversationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
+const { UserNotFound } = require(
+  `${process.cwd()}/components/WebServer/error/exception/users`,
+)
+
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const saas = require(`${process.cwd()}/lib/saas`)
 
+const { ObjectId } = require("mongodb")
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
+
+// The user search returns no address: a member picked there comes by id
+async function inviteeEmail(body) {
+  if (!body.userId) {
+    requireParam(body.email, OrganizationUnsupportedMediaType)
+    return body.email
+  }
+  if (!ObjectId.isValid(body.userId)) throw new UserNotFound()
+  const user = throwIfError(await model.users.getById(body.userId))
+  if (user.length !== 1 || !user[0].email) throw new UserNotFound()
+  return user[0].email
+}
 
 async function addUserInOrganization(req, res, next) {
   try {
-    requireParam(req.body.email, OrganizationUnsupportedMediaType)
     requireParam(req.body.role, OrganizationUnsupportedMediaType)
 
     if (isNaN(req.body.role) && ROLES.checkValue(req.body.role))
       throw new OrganizationUnsupportedMediaType("Role value is not valid")
     if (ROLES.canGiveAccess(req.body.role, req.userRole))
       throw new OrganizationForbidden()
+
+    const email = await inviteeEmail(req.body)
 
     let organization = await model.organizations.getById(
       req.params.organizationId,
@@ -53,7 +72,7 @@ async function addUserInOrganization(req, res, next) {
     const sharedUser = await model.users.getById(req.payload.data.userId)
     const userId = await orgaUtility.inviteMemberByEmail({
       organization,
-      email: req.body.email,
+      email,
       role: req.body.role,
       inviterEmail: sharedUser[0].email,
       origin: req,
@@ -71,7 +90,8 @@ async function addUserInOrganization(req, res, next) {
     })
 
     res.status(201).send({
-      message: req.body.email + " has been added to the organization",
+      message:
+        (req.body.email || "User") + " has been added to the organization",
     })
   } catch (err) {
     next(err)

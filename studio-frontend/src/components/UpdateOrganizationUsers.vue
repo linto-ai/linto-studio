@@ -5,32 +5,36 @@
         {{ $t("organisation.organization_users") }}
       </h2>
       <!-- Inviting a member is a team-plan capability in cloud mode. Locked:
-           the button stays visible and opens the upgrade flow. -->
-      <HasEntitlement v-if="canInvite" capability="collaboration">
+           the button stays visible and opens the upgrade flow, or is greyed
+           out in the backoffice (the plan is the org's, not the viewer's). -->
+      <template v-if="canInvite">
         <UserInvite
+          v-if="collaborationAllowed"
           @inviteUser="addToMembers"
           @removeUser="removeFromMembers"
           :currentUsers="members"
           :roleOptions="inviteRoleOptions"
-          :usersEmailPending="usersEmailPending"
+          :usersPending="usersPending"
           :includeSelf="isBackofficePage"></UserInvite>
-        <template #locked>
-          <Button
-            :label="$t('invite_user.button')"
-            icon="lock"
-            variant="secondary"
-            size="sm"
-            :title="$t('billing.feature_locked')"
-            @click="lockedInvite" />
-        </template>
-      </HasEntitlement>
+        <Button
+          v-else
+          :label="$t('invite_user.button')"
+          icon="lock"
+          variant="secondary"
+          size="sm"
+          :title="$t('billing.feature_locked')"
+          :disabled="isBackofficePage"
+          @click="lockedInvite" />
+      </template>
     </div>
 
     <IsCloud>
+      <!-- Managing seats opens the purchase flow of the viewer's own org. -->
       <SeatsPanel
-        v-if="hasSeatCapacity"
+        v-if="seatCapacity !== null"
         :used="seatSummary.used"
         :capacity="seatSummary.capacity"
+        :manageable="hasSeatCapacity"
         @manage="displayManageModal = true" />
     </IsCloud>
 
@@ -169,6 +173,7 @@ import { bus } from "@/main.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles.js"
+import { getEnv } from "@/tools/getEnv"
 
 import { computeBillingInterval } from "@/tools/billing/computeBillingInterval.js"
 import { computeMemberRights } from "@/tools/members/computeMemberRights.js"
@@ -193,6 +198,7 @@ import {
   apiAddUserToOrganisation,
   apiUpdateUserRoleInOrganisation,
 } from "@/api/user.js"
+import { apiGetUsage } from "@/api/cloud.js"
 
 import UserInvite from "@/components/UserInvite.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
@@ -206,7 +212,6 @@ import SeatSelectionBar from "@/components/molecules/SeatSelectionBar.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 import IsCloud from "@/components/atoms/IsCloud.vue"
 import SeatsPanel from "@/components-cloud/SeatsPanel.vue"
-import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
 
 const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 const SEATS_TAB = "seats"
@@ -239,13 +244,15 @@ export default {
         [SEATS_TAB]: { key: "user", direction: "asc" },
         [MEMBERS_TAB]: { key: "user", direction: "asc" },
       },
-      usersEmailPending: [],
+      usersPending: [],
       displayLeaveModal: false,
       displayRemoveUserModal: false,
       displayGrantModal: false,
       displayManageModal: false,
       grantTargets: [],
       userToRemove: null,
+      // Usage summary of the displayed organization, backoffice only.
+      orgUsage: null,
     }
   },
   watch: {
@@ -265,6 +272,7 @@ export default {
   },
   computed: {
     ...mapGetters("billing", [
+      "can",
       "isPerSeat",
       "isUnmetered",
       "seats",
@@ -289,12 +297,25 @@ export default {
     hasSeatCapacity() {
       return this.isOwnOrganization && this.isPerSeat && !this.isUnmetered
     },
+    // In the backoffice the figures are the displayed organization's own.
+    collaborationAllowed() {
+      if (!IS_MODE_CLOUD) return true
+      if (this.isBackofficePage) {
+        return this.orgUsage?.capabilities?.collaboration?.enabled === true
+      }
+      return this.can("collaboration")
+    },
+    seatCapacity() {
+      if (this.isBackofficePage) return this.orgUsage?.seatCap ?? null
+      return this.hasSeatCapacity ? this.seats : null
+    },
     viewer() {
       return {
         id: this.userInfo._id,
         role: this.userRole,
         isSystemAdministrator: this.isSystemAdministrator,
         isBackoffice: this.isBackofficePage,
+        rolesFrozen: this.isBackofficePage && !this.collaborationAllowed,
       }
     },
     canInvite() {
@@ -315,10 +336,7 @@ export default {
       return partitionMembersBySeat(this.displayedMembers)
     },
     seatSummary() {
-      return computeSeatSummary(
-        this.partition.seated.length,
-        this.hasSeatCapacity ? this.seats : null,
-      )
+      return computeSeatSummary(this.partition.seated.length, this.seatCapacity)
     },
     // Seats are a cloud billing notion. Elsewhere the two tabs only tell the
     // privileged roles apart, and a member is promoted from the role column.
@@ -508,6 +526,7 @@ export default {
       this.clearSelection()
     },
     loadUsage() {
+      if (IS_MODE_CLOUD && this.isBackofficePage) this.loadOrgUsage()
       if (!this.isOwnOrganization) return
       this.$store.dispatch("billing/fetchUsageByMember", this.organizationId)
       // Admin-only route: it carries the billing period the seat price is
@@ -515,6 +534,9 @@ export default {
       if (this.isAdmin && !this.isBackofficePage) {
         this.$store.dispatch("billing/fetchSubscriptions", this.organizationId)
       }
+    },
+    async loadOrgUsage() {
+      this.orgUsage = (await apiGetUsage(this.organizationId)) || null
     },
     rightsOf(member) {
       return computeMemberRights(member, this.viewer)
@@ -608,10 +630,11 @@ export default {
       )
     },
     async addToMembers(user) {
-      this.usersEmailPending.push(user.email)
+      const pendingKey = user._id ?? user.email
+      this.usersPending.push(pendingKey)
       const req = await apiAddUserToOrganisation(
         this.organizationId,
-        user.email,
+        { userId: user._id, email: user.email },
         user.role,
         {
           timeout: 3000,
@@ -620,23 +643,24 @@ export default {
       )
       if (req?.status === "success") {
         // The API does not return the new member: reload the list so the row
-        // carries its id. The email stays pending until then.
+        // carries its id. The user stays pending until then.
         await this.reloadMembers()
+        this.dispatchOrganization()
         // Show the tab the new member landed in.
         this.setActiveTab(
           isCollaboratorRole(user.role) ? SEATS_TAB : MEMBERS_TAB,
         )
       }
-      this.usersEmailPending = this.usersEmailPending.filter(
-        (email) => email !== user.email,
-      )
+      this.usersPending = this.usersPending.filter((key) => key !== pendingKey)
     },
     async reloadMembers() {
       const organization = await apiGetOrganizationById(this.organizationId)
       if (organization) this.setMembers(organization.users)
     },
     removeFromMembers(user) {
-      this.userToRemove = user
+      // A search result carries no email, the member row does
+      this.userToRemove =
+        this.members.find((member) => member._id === user._id) ?? user
       this.displayRemoveUserModal = true
     },
     closeRemoveFromMembersModal(apiRes) {
@@ -645,6 +669,7 @@ export default {
           const userId = this.userToRemove._id
           this.members = this.members.filter((member) => member._id !== userId)
           this.selectedIds = this.selectedIds.filter((id) => id !== userId)
+          this.dispatchOrganization()
         } else {
           this.notifyError(this.$t("organisation.remove_user_error_message"))
         }
@@ -673,6 +698,8 @@ export default {
     },
     dispatchOrganization() {
       bus.$emit("user_orga_update")
+      if (this.isOwnOrganization)
+        this.$store.dispatch("organizations/refreshCurrentOrganization")
     },
     // Same gating detail sendRequest dispatches on a 403 SAAS_FEATURE_LOCKED:
     // opens the onboarding/upgrade wizard (OnboardingWizard.vue, App.vue).
@@ -697,7 +724,6 @@ export default {
     SeatsPanel,
     Tabs,
     IsCloud,
-    HasEntitlement,
   },
 }
 </script>

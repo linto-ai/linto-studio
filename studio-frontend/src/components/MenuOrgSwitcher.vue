@@ -5,7 +5,7 @@
       class="menu-org-switcher__trigger flex1 flex row align-center gap-small custom"
       :aria-label="$t('modal_switch_org.title')"
       @click="modalOrgSelector = true">
-      <Avatar :src="userAvatar" :text="userInitials" size="lg" circle />
+      <UserAvatar :user="userInfo" size="lg" />
       <span class="menu-org-switcher__info flex col flex1">
         <span
           class="menu-org-switcher__org-line flex row align-center gap-small">
@@ -38,10 +38,7 @@
 import { mapGetters, mapActions } from "vuex"
 import { getEnv } from "@/tools/getEnv"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
-import { computeUserInitials } from "@/tools/user/computeUserInitials"
-import userAvatar from "@/tools/user/userAvatar"
-import { userName } from "@/tools/user/userName"
-import Avatar from "@/components/atoms/Avatar.vue"
+import UserAvatar from "@/components/atoms/UserAvatar.vue"
 import Chip from "@/components/atoms/Chip.vue"
 import IsCloud from "@/components/atoms/IsCloud.vue"
 import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
@@ -53,7 +50,7 @@ const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 
 export default {
   name: "MenuOrgSwitcher",
-  components: { Avatar, Chip, IsCloud, ModalSwitchOrg },
+  components: { UserAvatar, Chip, IsCloud, ModalSwitchOrg },
   mixins: [orgaRoleMixin],
   data() {
     return {
@@ -69,12 +66,6 @@ export default {
     }),
     // A locked org has no plan to show: it reads as Free but is not
     ...mapGetters("billing", ["planLabel", "isFree", "isUnmetered", "locked"]),
-    userAvatar() {
-      return userAvatar(this.userInfo)
-    },
-    userInitials() {
-      return computeUserInitials(userName(this.userInfo))
-    },
     isCloudMode() {
       return IS_MODE_CLOUD
     },

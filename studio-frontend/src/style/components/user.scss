@@ -1,12 +1,12 @@
 @layer base {
-  .user-info-inline__avatar {
-    width: 2rem;
-    height: 2rem;
-    object-fit: contain;
-  }
-
   .user-info-inline__name {
     font-weight: 500;
+  }
+
+  .user-info-inline__name--missing {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--text-secondary);
   }
 
   .user-info-inline__external {

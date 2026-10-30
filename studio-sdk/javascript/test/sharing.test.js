@@ -45,6 +45,10 @@ describe("LinTO Sharing — high-level wrappers (mocked apiService)", () => {
 
   beforeEach(() => {
     linto = new LinTO({ authToken: "tok-1" })
+    linto.apiService.getConversation = jest.fn(async () => ({
+      organization: { organizationId: "org-1" },
+    }))
+    linto.apiService.updateConversationOwner = jest.fn(async () => ({ ok: true }))
   })
 
   afterEach(() => {
@@ -96,46 +100,43 @@ describe("LinTO Sharing — high-level wrappers (mocked apiService)", () => {
     })
   })
 
-  test("setConversationOwner() happy path: finds user, updates owner, clears sharedWithUsers", async () => {
+  test("setConversationOwner() happy path: finds user, changes the owner through the conversation's organization", async () => {
     linto.apiService.searchUsers = jest.fn(async () => [
       { _id: "u-1", email: "alice@example.com" },
     ])
-    linto.apiService.updateConversation = jest.fn(async () => ({ ok: true }))
     const res = await linto.setConversationOwner("conv-1", "alice@example.com")
     expect(res).toBe("u-1")
-    expect(linto.apiService.updateConversation).toHaveBeenCalledWith({
+    expect(linto.apiService.getConversation).toHaveBeenCalledWith({
       conversationId: "conv-1",
-      data: { owner: "u-1", sharedWithUsers: [] },
+      key: "organization",
+    })
+    expect(linto.apiService.updateConversationOwner).toHaveBeenCalledWith({
+      organizationId: "org-1",
+      conversationId: "conv-1",
+      userId: "u-1",
     })
   })
 
   test("setConversationOwner() returns null when search returns no users", async () => {
     linto.apiService.searchUsers = jest.fn(async () => [])
-    linto.apiService.updateConversation = jest.fn()
     const res = await linto.setConversationOwner("conv-1", "ghost@example.com")
     expect(res).toBeNull()
-    expect(linto.apiService.updateConversation).not.toHaveBeenCalled()
+    expect(linto.apiService.updateConversationOwner).not.toHaveBeenCalled()
   })
 
   test("setConversationOwner() returns null when search returns null/undefined", async () => {
     linto.apiService.searchUsers = jest.fn(async () => null)
-    linto.apiService.updateConversation = jest.fn()
     const res = await linto.setConversationOwner("conv-1", "ghost@example.com")
     expect(res).toBeNull()
-    expect(linto.apiService.updateConversation).not.toHaveBeenCalled()
+    expect(linto.apiService.updateConversationOwner).not.toHaveBeenCalled()
   })
 
   test("setConversationOwner() matches email case-insensitively", async () => {
     linto.apiService.searchUsers = jest.fn(async () => [
       { _id: "u-x", email: "Alice@Example.COM" },
     ])
-    linto.apiService.updateConversation = jest.fn(async () => ({ ok: true }))
     const res = await linto.setConversationOwner("conv-1", "alice@example.com")
     expect(res).toBe("u-x")
-    expect(linto.apiService.updateConversation).toHaveBeenCalledWith({
-      conversationId: "conv-1",
-      data: { owner: "u-x", sharedWithUsers: [] },
-    })
   })
 
   test("setConversationOwner() returns null when no result matches exactly", async () => {
@@ -143,10 +144,9 @@ describe("LinTO Sharing — high-level wrappers (mocked apiService)", () => {
       { _id: "u-1", email: "bob@example.com" },
       { _id: "u-2", email: "charlie@example.com" },
     ])
-    linto.apiService.updateConversation = jest.fn()
     const res = await linto.setConversationOwner("conv-1", "alice@example.com")
     expect(res).toBeNull()
-    expect(linto.apiService.updateConversation).not.toHaveBeenCalled()
+    expect(linto.apiService.updateConversationOwner).not.toHaveBeenCalled()
   })
 
   test("setConversationOwner() picks the matching user among many", async () => {
@@ -155,7 +155,6 @@ describe("LinTO Sharing — high-level wrappers (mocked apiService)", () => {
       { _id: "u-2", email: "alice@example.com" },
       { _id: "u-3", email: "alfred@example.com" },
     ])
-    linto.apiService.updateConversation = jest.fn(async () => ({ ok: true }))
     const res = await linto.setConversationOwner("conv-1", "alice@example.com")
     expect(res).toBe("u-2")
   })
@@ -279,7 +278,7 @@ describe("StudioApiService Sharing — URL/payload via mocked fetch", () => {
     expect(call.url).toMatch(/\/api\/users\/search\?search=alice%40example\.com/)
   })
 
-  test("updateConversation PATCHes /conversations/{id} with arbitrary data (owner + sharedWithUsers)", async () => {
+  test("updateConversation PATCHes /conversations/{id} with arbitrary data", async () => {
     const { mock, captured } = makeFetchMock([
       {
         match: (req) =>
@@ -290,23 +289,17 @@ describe("StudioApiService Sharing — URL/payload via mocked fetch", () => {
     ])
     global.fetch = mock
     const linto = makeLinto()
-    await linto.updateConversation("conv-5", {
-      owner: "u-1",
-      sharedWithUsers: [],
-    })
+    await linto.updateConversation("conv-5", { name: "Renamed", tags: ["t-1"] })
     const call = captured.find(
       (c) =>
         c.method === "PATCH" && /\/api\/conversations\/conv-5/.test(c.url)
     )
     expect(call).toBeDefined()
     expect(call.auth).toBe("Bearer tok-1")
-    expect(JSON.parse(call.body)).toEqual({
-      owner: "u-1",
-      sharedWithUsers: [],
-    })
+    expect(JSON.parse(call.body)).toEqual({ name: "Renamed", tags: ["t-1"] })
   })
 
-  test("setConversationOwner end-to-end via fetch mock (search GET + PATCH)", async () => {
+  test("setConversationOwner end-to-end via fetch mock (search GET + conversation GET + owner PATCH)", async () => {
     const { mock, captured } = makeFetchMock([
       {
         match: (req) =>
@@ -315,9 +308,15 @@ describe("StudioApiService Sharing — URL/payload via mocked fetch", () => {
       },
       {
         match: (req) =>
+          req.method === "GET" &&
+          /\/api\/conversations\/conv-2\?key=organization$/.test(req.url),
+        payload: { _id: "conv-2", organization: { organizationId: "org-9" } },
+      },
+      {
+        match: (req) =>
           req.method === "PATCH" &&
-          /\/api\/conversations\/conv-2/.test(req.url),
-        payload: { ok: true },
+          /\/api\/organizations\/org-9\/conversations\/conv-2\/owner$/.test(req.url),
+        payload: { message: "Conversation owner updated" },
       },
     ])
     global.fetch = mock
@@ -327,14 +326,7 @@ describe("StudioApiService Sharing — URL/payload via mocked fetch", () => {
       "alice@example.com"
     )
     expect(userId).toBe("u-7")
-    const patchCall = captured.find(
-      (c) =>
-        c.method === "PATCH" && /\/api\/conversations\/conv-2/.test(c.url)
-    )
-    expect(patchCall).toBeDefined()
-    expect(JSON.parse(patchCall.body)).toEqual({
-      owner: "u-7",
-      sharedWithUsers: [],
-    })
+    const patchCall = captured.find((c) => c.method === "PATCH")
+    expect(JSON.parse(patchCall.body)).toEqual({ userId: "u-7" })
   })
 })
