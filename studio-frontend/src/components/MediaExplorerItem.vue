@@ -66,10 +66,8 @@
 
         <!-- Owner avatar -->
         <Tooltip :text="convOwner.fullName" position="bottom">
-          <Avatar
-            tone="neutral"
-            :text="convOwner.fullName.substring(0, 1)"
-            :src="convOwnerAvatar"
+          <UserAvatar
+            :user="convOwner"
             size="sm"
             class="media-explorer-item__owner" />
         </Tooltip>
@@ -178,7 +176,7 @@ import FavoriteStar from "@/components/atoms/FavoriteStar.vue"
 
 import { getEnv } from "@/tools/getEnv"
 import { userName } from "@/tools/user/userName"
-import userAvatar from "@/tools/user/userAvatar"
+import UserAvatar from "@/components/atoms/UserAvatar.vue"
 
 import MediaExplorerChipStatus from "./MediaExplorerChipStatus.vue"
 import SecurityLevelIndicator from "@/components/SecurityLevelIndicator.vue"
@@ -195,6 +193,7 @@ export default {
     SecurityLevelIndicator,
     Checkbox,
     FavoriteStar,
+    UserAvatar,
   },
   props: {
     media: {
@@ -368,9 +367,6 @@ export default {
           img: "/pictures/default.jpg",
         }
       }
-    },
-    convOwnerAvatar() {
-      return userAvatar(this.convOwner)
     },
     createdAt() {
       const options = {

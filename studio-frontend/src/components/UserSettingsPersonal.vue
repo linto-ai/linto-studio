@@ -4,7 +4,6 @@
       <h2>
         {{ $t("user_settings.personal_information") }}
       </h2>
-
       <FormInput :field="firstName" v-model="firstName.value" />
 
       <FormInput :field="lastName" v-model="lastName.value" />

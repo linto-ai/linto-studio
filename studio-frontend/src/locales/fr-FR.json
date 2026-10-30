@@ -957,6 +957,7 @@
     }
   },
   "createaccount": {
+    "discoverability_notice": "Vous pouvez rendre votre profil privé à tout moment dans vos paramètres.",
     "email_label": "Adresse e-mail",
     "email_verification_text": "Un e-mail de validation vient de vous être envoyé. Cliquez sur le lien de vérification pour commencer à utiliser LinTO Studio.",
     "email_verification_title": "Votre compte LinTO Studio a été créé avec succès.",
@@ -1112,6 +1113,7 @@
     "folder": "Dossier",
     "move_to_folder": "Déplacer vers un dossier",
     "manage_access": "Gérer l'accès",
+    "visibility_label": "Visibilité",
     "visibility_public": "Public",
     "visibility_private": "Privé",
     "visibility_update_success": "Accès du dossier mis à jour",
@@ -1470,7 +1472,7 @@
     }
   },
   "organisation": {
-    "add_member_description": "Recherchez des utilisateurs par prénom, nom ou adresse électronique",
+    "add_member_description": "Recherchez par prénom ou nom les membres de vos organisations et les personnes qui ont partagé un média avec vous, ou n'importe qui par son adresse e-mail complète",
     "add_member_label": "Ajouter un utilisateur",
     "danger_zone": "Zone de danger",
     "create": {
@@ -2202,6 +2204,7 @@
     "badge_default": "Défaut",
     "reset_to_default": "Réinitialiser au droit par défaut",
     "no_search_results": "Aucun utilisateur trouvé",
+    "search_min_length": "Saisissez au moins 3 caractères",
     "column_user": "Utilisateur",
     "column_status": "Statut",
     "column_right": "Droit",
@@ -2248,6 +2251,8 @@
     "personal_information": "Informations personnelles",
     "picture_label": "Image de profil",
     "profil_visibility": {
+      "description": "Un profil privé n'apparaît dans les recherches que pour les membres de vos organisations, les personnes avec qui vous avez partagé un média et toute personne saisissant votre adresse e-mail exacte.",
+      "discoverability": "Votre nom et votre photo peuvent être trouvés par tous les utilisateurs. Votre adresse e-mail n'est jamais affichée, sauf à une personne qui la saisit en entier.",
       "label_private": "Profil privé",
       "title": "Visibilité du profil"
     },
@@ -2364,6 +2369,9 @@
   "user_selector": {
     "search_placeholder": "Rechercher un utilisateur",
     "select_user": "Sélectionner un utilisateur"
+  },
+  "user_info_inline": {
+    "no_name": "Nom non renseigné"
   },
   "popover_list": {
     "search": "Rechercher",

@@ -48,6 +48,12 @@ const { populateUserToOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const platformAccess = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/platform`,
+)
+const { reachableUserIds } = require(
+  `${process.cwd()}/components/WebServer/controllers/user/discoverability`,
+)
 
 const triggers = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/triggers`,
@@ -124,20 +130,29 @@ async function createUser(req, res, next) {
   }
 }
 
-async function listUser(req, res, next) {
-  try {
-    const publicUsers = await model.users.listPublicUsers()
-    res.status(200).send(publicUsers)
-  } catch (err) {
-    next(err)
-  }
-}
+// Shorter searches would list the platform from a lone "@" or two letters
+const SEARCH_MIN_LENGTH = 3
 
 async function searchUser(req, res, next) {
   try {
-    requireParam(req.query.search, UserUnsupportedMediaType)
+    const raw = req.query.search
+    const search = (typeof raw === "string" ? raw : "").trim().toLowerCase()
+    if (search.length < SEARCH_MIN_LENGTH)
+      throw new UserUnsupportedMediaType(
+        `Search requires at least ${SEARCH_MIN_LENGTH} characters`,
+      )
 
-    const userList = (await model.users.listPublicUsers()).filter((user) => {
+    const exactAddress = (user) => user.email?.toLowerCase() === search
+
+    // Super administrators are not always flagged system administrators
+    const [users, systemAdmin, superAdmin] = await Promise.all([
+      model.users.listSearchableUsers(),
+      platformAccess.isSystemAdministrator(req),
+      platformAccess.isSuperAdmin(req),
+    ])
+    const backofficeAdmin = systemAdmin || superAdmin
+
+    let userList = users.filter((user) => {
       const userField = [
         user.firstname,
         user.lastname,
@@ -146,12 +161,28 @@ async function searchUser(req, res, next) {
         user.lastname + " " + user.firstname,
       ]
 
-      const find = userField
-        .map((field) => field?.toLowerCase() ?? "")
-        .filter((field) => field.indexOf(req.query.search.toLowerCase()) >= 0)
-
-      return find.length > 0
+      return userField.some((field) => field?.toLowerCase().includes(search))
     })
+
+    // A private profile is listed only to a co-member or someone it shared
+    // a conversation with, to whoever typed its full address, or in the
+    // backoffice
+    const hidden = (user) => user.private && !exactAddress(user)
+    if (!backofficeAdmin && userList.some(hidden)) {
+      const reachable = await reachableUserIds(req.payload.data.userId)
+      userList = userList.filter(
+        (user) => !hidden(user) || reachable.has(user._id.toString()),
+      )
+    }
+
+    // The address is only echoed back to a caller who typed it in full,
+    // the backoffice already lists every address
+    if (!backofficeAdmin)
+      userList = userList.map((user) => {
+        if (exactAddress(user)) return user
+        const { email, ...rest } = user
+        return rest
+      })
 
     if (userList.length === 0) res.status(204).send()
     else res.status(200).send(userList)
@@ -174,6 +205,10 @@ async function getUserById(req, res, next) {
       user = [{ ...cleanedUser, pendingEmail: activePendingEmail(user[0]) }]
     } else {
       user = await model.users.getById(req.params.userId)
+      if (user.length === 1 && !(await canSeeUserAddress(req))) {
+        const { email, ...rest } = user[0]
+        user = [rest]
+      }
     }
 
     if (user && user.length !== 1) throw new UserNotFound()
@@ -183,6 +218,17 @@ async function getUserById(req, res, next) {
   } catch (err) {
     next(err)
   }
+}
+
+// Same rule as the search: the address goes only to its owner and to the
+// backoffice, so knowing a user id is no way around the search
+async function canSeeUserAddress(req) {
+  if (req.params.userId === req.payload.data.userId) return true
+  const [systemAdmin, superAdmin] = await Promise.all([
+    platformAccess.isSystemAdministrator(req),
+    platformAccess.isSuperAdmin(req),
+  ])
+  return systemAdmin || superAdmin
 }
 
 async function getPersonalInfo(req, res, next) {
@@ -501,7 +547,6 @@ async function impersonateUser(req, res, next) {
 }
 
 module.exports = {
-  listUser,
   searchUser,
   getUserById,
   getPersonalInfo,

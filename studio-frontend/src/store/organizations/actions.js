@@ -30,6 +30,15 @@ const actions = {
     }
     return getOrganizations
   },
+  // The settings modal reads currentOrganization.users: reload it after a
+  // member change so the list survives a tab switch
+  async refreshCurrentOrganization({ commit, state }) {
+    if (!state.currentOrganizationScope) return
+    const organization = await apiGetOrganizationById(
+      state.currentOrganizationScope,
+    )
+    if (organization) commit("setCurrentOrganization", organization)
+  },
   async createOrganization({ commit }, payload) {},
   async updateOrganization({ commit }, id, payload) {},
   async deleteOrganization({ commit }, id) {

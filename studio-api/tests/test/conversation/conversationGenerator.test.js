@@ -1,3 +1,6 @@
+// music-metadata is ESM-only, not loadable by Jest
+jest.mock("music-metadata", () => ({ parseStream: jest.fn() }), { virtual: true })
+
 const { transcriptionToConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 const { initConversation } = require(`${process.cwd()}/components/WebServer/controllers/conversation/generator`)
 

@@ -1,5 +1,6 @@
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
   organizations: { getById: jest.fn() },
+  conversations: { listConvFromOwner: jest.fn() },
 }))
 
 jest.mock(
@@ -36,6 +37,8 @@ let next
 beforeEach(() => {
   next = jest.fn()
   model.organizations.getById.mockReset()
+  model.conversations.listConvFromOwner.mockReset()
+  model.conversations.listConvFromOwner.mockResolvedValue([])
   model.organizations.getById.mockResolvedValue([
     {
       _id: ORG_ID,
@@ -48,20 +51,10 @@ beforeEach(() => {
 })
 
 describe("organization access middleware", () => {
-  test("a non-member is refused even when owning conversations", async () => {
-    const req = buildReq({
-      userId: "outsider",
-      body: { conversationsId: "conv-owned-by-outsider" },
-    })
-
-    await access.asAdminAccess(req, {}, next)
-
-    expect(next).toHaveBeenCalledTimes(1)
-    expect(next.mock.calls[0][0]).toBeInstanceOf(OrganizationForbidden)
-    expect(req.userRole).toBeUndefined()
-  })
-
-  test("a member below the required role is refused even with conversationsId", async () => {
+  test("the owner of the conversations passes without the required role", async () => {
+    model.conversations.listConvFromOwner.mockResolvedValue([
+      { _id: "conv-owned-by-member" },
+    ])
     const req = buildReq({
       userId: "member",
       body: { conversationsId: "conv-owned-by-member" },
@@ -69,8 +62,24 @@ describe("organization access middleware", () => {
 
     await access.asMaintainerAccess(req, {}, next)
 
+    expect(model.conversations.listConvFromOwner).toHaveBeenCalledWith(
+      "conv-owned-by-member",
+      "member",
+    )
+    expect(next).toHaveBeenCalledWith()
+  })
+
+  test("a user owning none of the conversations is refused", async () => {
+    const req = buildReq({
+      userId: "outsider",
+      body: { conversationsId: "conv-owned-by-someone-else" },
+    })
+
+    await access.asAdminAccess(req, {}, next)
+
     expect(next).toHaveBeenCalledTimes(1)
     expect(next.mock.calls[0][0]).toBeInstanceOf(OrganizationForbidden)
+    expect(req.userRole).toBeUndefined()
   })
 
   test("a member with the required role passes and gets its role", async () => {

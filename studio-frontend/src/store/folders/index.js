@@ -239,6 +239,7 @@ export default {
           },
           { root: true },
         )
+        return true
       } catch (error) {
         console.error("Error updating folder visibility:", error)
         commit(
@@ -249,7 +250,7 @@ export default {
           },
           { root: true },
         )
-        throw error
+        return false
       }
     },
     async uncategorizeConversations(

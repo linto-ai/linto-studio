@@ -4,48 +4,54 @@
     @on-cancel="$emit('on-cancel')"
     @on-confirm="handleSave"
     :title="$t('folders.manage_access')"
+    :loading="saving"
+    :close-on-apply="false"
+    :disabled-action-apply="saveBlocked"
     size="md">
     <div class="folder-access-modal">
-      <div class="folder-access-modal__toggle">
-        <label class="folder-access-modal__label">
-          {{ $t("folders.visibility_public") }}
-        </label>
-        <label class="folder-access-modal__switch">
-          <input
-            type="checkbox"
-            :checked="isPrivate"
-            @change="onVisibilityChange($event.target.checked)" />
-          <span class="folder-access-modal__slider"></span>
-        </label>
-        <label class="folder-access-modal__label">
-          {{ $t("folders.visibility_private") }}
-        </label>
+      <div class="folder-access-modal__visibility">
+        <h4 class="section-caption">{{ $t("folders.visibility_label") }}</h4>
+        <SegmentedControl
+          :value="visibility"
+          :options="visibilityOptions"
+          :aria-label="$t('folders.visibility_label')"
+          @input="setVisibility" />
       </div>
 
-      <div
+      <NotificationBanner
         v-if="showForceOption"
-        class="folder-access-modal__warning folder-access-modal__warning--blocked">
-        <p class="folder-access-modal__force-text">
-          {{ $t("folders.visibility_parent_private_force") }}
-        </p>
-        <label class="folder-access-modal__force-check">
-          <input
-            type="checkbox"
-            :checked="forcePublic"
-            @change="forcePublic = $event.target.checked" />
-          <span>{{ $t("folders.force_public_parents") }}</span>
-        </label>
-      </div>
+        variant="warning"
+        icon="warning"
+        align="start">
+        <div class="flex col gap-small">
+          <p class="folder-access-modal__force-text">
+            {{ $t("folders.visibility_parent_private_force") }}
+          </p>
+          <label class="folder-access-modal__force-check">
+            <input
+              type="checkbox"
+              :checked="forcePublic"
+              @change="forcePublic = $event.target.checked" />
+            <span>{{ $t("folders.force_public_parents") }}</span>
+          </label>
+        </div>
+      </NotificationBanner>
 
-      <p v-else-if="isPrivate" class="folder-access-modal__warning">
+      <NotificationBanner
+        v-else-if="isPrivate"
+        variant="neutral"
+        icon="info"
+        align="start">
         {{ $t("folders.visibility_warning") }}
-      </p>
+      </NotificationBanner>
 
-      <p
+      <NotificationBanner
         v-if="isPrivate && hasPrivateAncestor"
-        class="folder-access-modal__warning folder-access-modal__warning--info">
+        variant="info"
+        icon="info"
+        align="start">
         {{ $t("folders.members_propagate_to_parents") }}
-      </p>
+      </NotificationBanner>
 
       <div v-if="isPrivate" class="folder-access-modal__members">
         <h4 class="section-caption">{{ $t("folders.members_label") }}</h4>
@@ -78,11 +84,20 @@ import Modal from "@/components/molecules/Modal.vue"
 import GenericTable from "@/components/molecules/GenericTable.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 import FolderRightSelector from "@/components/molecules/FolderRightSelector.vue"
+import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
+import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
 import { mapGetters } from "vuex"
 
 export default {
   name: "FolderAccessModal",
-  components: { Modal, GenericTable, UserInfoInline, FolderRightSelector },
+  components: {
+    Modal,
+    GenericTable,
+    UserInfoInline,
+    FolderRightSelector,
+    NotificationBanner,
+    SegmentedControl,
+  },
   props: {
     folder: { type: Object, required: true },
     value: { type: Boolean, required: true },
@@ -91,6 +106,7 @@ export default {
     return {
       isPrivate: this.folder.visibility === "private",
       forcePublic: false,
+      saving: false,
       selectedMembers: this.folder.members
         ? this.folder.members.map((m) => ({ ...m }))
         : [],
@@ -117,8 +133,22 @@ export default {
       }
       return false
     },
+    visibility() {
+      return this.isPrivate ? "private" : "public"
+    },
+    visibilityOptions() {
+      return [
+        { name: "public", label: this.$t("folders.visibility_public") },
+        { name: "private", label: this.$t("folders.visibility_private") },
+      ]
+    },
     showForceOption() {
       return this.parentIsPrivate && !this.isPrivate
+    },
+    // Making the folder public under a private parent needs the explicit
+    // "force" opt-in, which also makes the parents public
+    saveBlocked() {
+      return this.showForceOption && !this.forcePublic
     },
     columns() {
       return [
@@ -154,29 +184,27 @@ export default {
         }
       }
     },
-    onVisibilityChange(checked) {
-      this.isPrivate = checked
-      if (checked) {
+    setVisibility(visibility) {
+      this.isPrivate = visibility === "private"
+      if (this.isPrivate) {
         this.forcePublic = false
       }
     },
     async handleSave() {
-      // Block save if switching to public with private parent and force not checked
-      if (this.showForceOption && !this.forcePublic) return
-
-      const visibility = this.isPrivate ? "private" : "public"
+      const visibility = this.visibility
       const members = this.isPrivate
         ? this.selectedMembers.filter((m) => m.userId)
         : []
       const force = this.showForceOption && this.forcePublic
 
-      await this.$store.dispatch("folders/updateFolderVisibility", {
-        folderId: this.folder._id,
-        visibility,
-        members,
-        force,
-      })
-      this.$emit("input", false)
+      this.saving = true
+      const saved = await this.$store.dispatch(
+        "folders/updateFolderVisibility",
+        { folderId: this.folder._id, visibility, members, force },
+      )
+      this.saving = false
+      // On failure the store notifies and the modal stays open with the edits
+      if (saved) this.$emit("input", false)
     },
   },
 }
@@ -188,87 +216,8 @@ export default {
   flex-direction: column;
   gap: 1em;
 
-  &__toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.75em;
-  }
-
-  &__label {
-    font-size: 0.9em;
-    color: var(--text-primary);
-  }
-
-  &__switch {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 22px;
-    flex-shrink: 0;
-
-    input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-  }
-
-  &__slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--neutral-30);
-    border-radius: 22px;
-    transition: 0.2s;
-
-    &::before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      border-radius: 50%;
-      transition: 0.2s;
-    }
-
-    input:checked + & {
-      background-color: var(--primary-color);
-    }
-
-    input:checked + &::before {
-      transform: translateX(18px);
-    }
-  }
-
-  &__warning {
-    font-size: 0.85em;
-    color: var(--text-secondary);
-    padding: 0.6em 0.8em;
-    background-color: var(--neutral-10);
-    border-left: 3px solid var(--neutral-40);
-    border-radius: 2px;
-    margin: 0;
-
-    &--blocked {
-      color: var(--warning-color);
-      background-color: var(--warning-soft);
-      border-left-color: var(--warning-color);
-    }
-
-    &--info {
-      color: var(--info-color, #1d4ed8);
-      background-color: var(--info-soft, #dbeafe);
-      border-left-color: var(--info-color, #1d4ed8);
-    }
-  }
-
   &__force-text {
-    margin: 0 0 0.5em 0;
+    margin: 0;
   }
 
   &__force-check {
@@ -283,6 +232,7 @@ export default {
     }
   }
 
+  &__visibility,
   &__members {
     display: flex;
     flex-direction: column;
