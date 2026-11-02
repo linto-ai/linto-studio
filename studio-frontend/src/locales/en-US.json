@@ -886,6 +886,98 @@
     "websocket_error_content": "Document update failed, save your change and reload the page.",
     "websocket_error_title": "Synchronization error."
   },
+  "transcription_create": {
+    "title": "New transcription",
+    "loading": "Loading transcription engines...",
+    "close": "Close",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "apply": "Apply",
+    "source": {
+      "question": "What do you want to transcribe?",
+      "file": "File",
+      "microphone": "Microphone",
+      "visio": "Videoconference",
+      "session": "Session",
+      "session_next_step": "The session will be created in the next step.",
+      "session_create": "Create a session"
+    },
+    "timing": {
+      "label": "Transcribe",
+      "live": "Live",
+      "offline": "At the end",
+      "both": "Both",
+      "live_summary": "live",
+      "offline_summary": "at the end",
+      "both_summary": "live then at the end"
+    },
+    "summary": {
+      "language": "Language",
+      "translation": "Translation",
+      "live_engine": "Live engine",
+      "offline_engine": "End engine",
+      "engine": "Engine",
+      "speakers": "Speakers",
+      "sharing": "Sharing",
+      "folder": "Folder",
+      "visio_subtitles": "Subtitles in the videoconference",
+      "none": "None",
+      "no_engine": "No compatible engine",
+      "edit": "Edit",
+      "edit_row": "Edit: {label}"
+    },
+    "language": {
+      "detection": "Automatic detection",
+      "search": "Search...",
+      "group_suggested": "Suggestions",
+      "group_all": "All languages",
+      "changes_engine": "Changes the engine",
+      "changes_engine_note": "\"Changes the engine\": the current engine doesn't offer it, another compatible engine will be picked."
+    },
+    "warnings": {
+      "live_detects_only": "Live, only detects: {languages}",
+      "offline_detects_any": "At the end, the language is detected automatically, without being limited to this choice."
+    },
+    "notices": {
+      "languages_changed": "Language replaced, no engine available for: {languages}",
+      "translations_removed": "Translation removed, unavailable with these languages: {languages}",
+      "profile_changed": "The chosen live engine is no longer compatible: another one was selected.",
+      "service_changed": "The chosen engine is no longer compatible: another one was selected.",
+      "speakers_changed": "The speakers choice is no longer available: it was replaced."
+    },
+    "engine": {
+      "description": "Engines compatible with the chosen language, translations and security level.",
+      "languages": "Languages: {languages}"
+    },
+    "speakers": {
+      "title": "Should speakers be separated?",
+      "collection_label": "Speaker list",
+      "none": {
+        "label": "Don't separate",
+        "description": "A single block of text"
+      },
+      "distinguish": {
+        "label": "Distinguish",
+        "description": "Speaker 1, Speaker 2..."
+      },
+      "recognize": {
+        "label": "Recognize",
+        "description": "Speakers are named from a list"
+      },
+      "notices": {
+        "after_recording_only": "Only after the recording.",
+        "during_recording_only": "Only during the recording.",
+        "named_after_recording": "Live, speakers are told apart; they will be named in the end version.",
+        "engine_unsupported": "Not available with this engine."
+      }
+    },
+    "submit": {
+      "file": "Start transcription",
+      "microphone": "Start recording",
+      "visio": "Join the videoconference"
+    }
+  },
   "conversation_creation": {
     "tabs": {
       "microphone": "Microphone",

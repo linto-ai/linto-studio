@@ -10,9 +10,7 @@
       ref="modalContent"
       tabindex="-1"
       @click.stop>
-      <v-node-renderer
-        v-if="renderedDefaultSlots.length"
-        :nodes="renderedDefaultSlots" />
+      <v-node-renderer :nodes="computeDefaultSlots()" />
     </div>
   </div>
 </template>
@@ -43,20 +41,6 @@ export default {
     overlayClose: { type: Boolean, default: false },
     cancelOnEscape: { type: Boolean, default: false },
   },
-  computed: {
-    renderedDefaultSlots() {
-      // Force reactivity by accessing the controller's reactive properties
-      // This creates a dependency on the parent component's data
-      if (this.controller && this.controller.$parent) {
-        // Access all reactive data to establish dependencies
-        this.controller.$parent.$data
-        this.controller.$parent.$props
-      }
-      return typeof this.slots.default === "function"
-        ? this.slots.default()
-        : this.slots.default || []
-    },
-  },
   mounted() {
     // Store reference to previously focused element for restoration on close
     this.previouslyFocused = document.activeElement
@@ -79,6 +63,20 @@ export default {
     }
   },
   methods: {
+    // Called at each render, not cached in a computed: an async component of
+    // the slot resolves by re-rendering, and needs its slot evaluated again.
+    computeDefaultSlots() {
+      // Force reactivity by accessing the controller's reactive properties
+      // This creates a dependency on the parent component's data
+      if (this.controller && this.controller.$parent) {
+        // Access all reactive data to establish dependencies
+        this.controller.$parent.$data
+        this.controller.$parent.$props
+      }
+      return typeof this.slots.default === "function"
+        ? this.slots.default()
+        : this.slots.default || []
+    },
     getFocusableElements(root) {
       const selector =
         'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'

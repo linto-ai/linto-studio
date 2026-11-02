@@ -887,6 +887,98 @@
     "websocket_error_content": "La mise à jour du document a échoué. Veuillez enregistrer vos modifications et actualiser la page.",
     "websocket_error_title": "Erreur de synchronisation"
   },
+  "transcription_create": {
+    "title": "Nouvelle transcription",
+    "loading": "Chargement des moteurs de transcription...",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "back": "Retour",
+    "next": "Suivant",
+    "apply": "Appliquer",
+    "source": {
+      "question": "Que voulez-vous transcrire ?",
+      "file": "Fichier",
+      "microphone": "Microphone",
+      "visio": "Visioconférence",
+      "session": "Session",
+      "session_next_step": "La création se fera à l'étape suivante.",
+      "session_create": "Créer une session"
+    },
+    "timing": {
+      "label": "Transcrire",
+      "live": "En direct",
+      "offline": "À la fin",
+      "both": "Les deux",
+      "live_summary": "en direct",
+      "offline_summary": "à la fin",
+      "both_summary": "en direct puis à la fin"
+    },
+    "summary": {
+      "language": "Langue",
+      "translation": "Traduction",
+      "live_engine": "Moteur en direct",
+      "offline_engine": "Moteur à la fin",
+      "engine": "Moteur",
+      "speakers": "Locuteurs",
+      "sharing": "Partage",
+      "folder": "Dossier",
+      "visio_subtitles": "Sous-titres dans la visio",
+      "none": "Aucune",
+      "no_engine": "Aucun moteur compatible",
+      "edit": "Modifier",
+      "edit_row": "Modifier : {label}"
+    },
+    "language": {
+      "detection": "Détection automatique",
+      "search": "Rechercher...",
+      "group_suggested": "Suggestions",
+      "group_all": "Toutes les langues",
+      "changes_engine": "Change le moteur",
+      "changes_engine_note": "« Change le moteur » : le moteur actuel ne le propose pas, un autre moteur compatible sera choisi."
+    },
+    "warnings": {
+      "live_detects_only": "En direct, détecte seulement : {languages}",
+      "offline_detects_any": "À la fin, la langue est détectée automatiquement, sans se limiter à ce choix."
+    },
+    "notices": {
+      "languages_changed": "Langue remplacée, aucun moteur disponible pour : {languages}",
+      "translations_removed": "Traduction retirée, indisponible avec ces langues : {languages}",
+      "profile_changed": "Le moteur en direct choisi n'est plus compatible : un autre a été sélectionné.",
+      "service_changed": "Le moteur choisi n'est plus compatible : un autre a été sélectionné.",
+      "speakers_changed": "Le choix pour les locuteurs n'est plus disponible : il a été remplacé."
+    },
+    "engine": {
+      "description": "Moteurs compatibles avec la langue, les traductions et le niveau de sécurité choisis.",
+      "languages": "Langues : {languages}"
+    },
+    "speakers": {
+      "title": "Faut-il séparer les locuteurs ?",
+      "collection_label": "Liste de locuteurs",
+      "none": {
+        "label": "Ne pas séparer",
+        "description": "Un seul bloc de texte"
+      },
+      "distinguish": {
+        "label": "Distinguer",
+        "description": "Locuteur 1, Locuteur 2..."
+      },
+      "recognize": {
+        "label": "Reconnaître",
+        "description": "Les locuteurs sont nommés à partir d'une liste"
+      },
+      "notices": {
+        "after_recording_only": "Seulement après l'enregistrement.",
+        "during_recording_only": "Seulement pendant l'enregistrement.",
+        "named_after_recording": "En direct, les locuteurs sont distingués ; ils seront nommés dans la version de fin.",
+        "engine_unsupported": "Non disponible avec ce moteur."
+      }
+    },
+    "submit": {
+      "file": "Lancer la transcription",
+      "microphone": "Commencer l'enregistrement",
+      "visio": "Rejoindre la visioconférence"
+    }
+  },
   "conversation_creation": {
     "tabs": {
       "microphone": "Microphone",

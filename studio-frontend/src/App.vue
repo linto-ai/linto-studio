@@ -20,6 +20,7 @@
       </div>
       <AppSettingsModal />
       <OnboardingWizard />
+      <TranscriptionCreateModal />
       <PopupHost />
       <AppNotifications />
       <WebsocketStatusDot
@@ -40,6 +41,7 @@ import { getEnv } from "@/tools/getEnv"
 
 import AppSettingsModal from "@/components/AppSettingsModal.vue"
 import OnboardingWizard from "@/components/OnboardingWizard.vue"
+import TranscriptionCreateModal from "@/components/transcriptionCreate/TranscriptionCreateModal.vue"
 import PopupHost from "@/components/PopupHost.vue"
 import AppNotifications from "@/components/AppNotifications.vue"
 import WebsocketStatusDot from "@/components/atoms/WebsocketStatusDot.vue"
@@ -152,6 +154,7 @@ export default {
   components: {
     AppSettingsModal,
     OnboardingWizard,
+    TranscriptionCreateModal,
     PopupHost,
     AppNotifications,
     WebsocketStatusDot,

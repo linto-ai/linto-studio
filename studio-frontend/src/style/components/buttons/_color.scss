@@ -8,6 +8,11 @@
       --btn-hover-text: var(--primary-color);
     }
 
+    &.btn--link {
+      --btn-text: var(--linkHard);
+      --btn-hover-text: var(--linkHard);
+    }
+
     &.btn--secondary {
       --btn-border-color: var(--primary-color);
       --btn-bg: var(--background-primary);
