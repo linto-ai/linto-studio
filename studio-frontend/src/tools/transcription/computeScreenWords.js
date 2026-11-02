@@ -1,4 +1,4 @@
-import uuidv4 from "uuid/v4.js"
+import { v4 as uuidv4 } from "uuid"
 
 // Rebuild a screen's words from its text lines, spreading word timings
 // linearly over the screen time window (same approach as the API's

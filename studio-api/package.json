@@ -82,9 +82,22 @@
     "prettier": "^3.3.3"
   },
   "overrides": {
-    "minimatch": "^10.2.1",
+    "minimatch": "^11.0.1",
     "undici": "^6.27.0",
-    "uuid": "^11.1.1"
+    "uuid": "^11.1.1",
+    "qs": "^6.17.1",
+    "@jest/reporters": {
+      "glob": "^14.0.2"
+    },
+    "jest-config": {
+      "glob": "^14.0.2"
+    },
+    "jest-runtime": {
+      "glob": "^14.0.2"
+    },
+    "mjml-cli": {
+      "glob": "^14.0.2"
+    }
   },
   "nodemonConfig": {
     "watch": [
