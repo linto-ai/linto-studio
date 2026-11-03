@@ -78,10 +78,7 @@ export default {
       })
     },
     startConversation() {
-      this.$router.push({
-        name: "conversations create",
-        params: { organizationId: this.currentOrganizationScope },
-      })
+      this.$store.dispatch("transcriptionCreate/setModalOpen", true)
     },
   },
   computed: {

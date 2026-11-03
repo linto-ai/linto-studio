@@ -17,7 +17,7 @@
         "member_consumption_link": "Voir la consommation par membre"
       },
       "meter": {
-        "import": "Transcription de fichiers",
+        "import": "Transcription après l'enregistrement",
         "ai": "Crédits IA",
         "live": "Transcription en direct"
       },
@@ -37,13 +37,13 @@
         "saving": "−{percent} %",
         "group": {
           "live": "Transcription en direct",
-          "transcription": "Transcription de fichiers"
+          "transcription": "Transcription après l'enregistrement"
         },
         "kind": {
           "live": "Transcription en direct",
-          "transcription": "Transcription de fichiers"
+          "transcription": "Transcription après l'enregistrement"
         },
-        "kind_with_ai": "Fichiers + IA",
+        "kind_with_ai": "Après l'enregistrement + IA",
         "selection": "{kind}, {duration}",
         "selection_with_ai": "{kind}, {duration} et {credits} crédits IA",
         "hourly_rate": "{price} de l'heure",
@@ -148,7 +148,7 @@
         "source": {
           "plan": "Offre {plan}",
           "packs": "{count} pack | {count} packs",
-          "ai_packs": "Offerts avec le pack Fichiers | Offerts avec les packs Fichiers",
+          "ai_packs": "Offerts avec le pack Transcription après l'enregistrement | Offerts avec les packs Transcription après l'enregistrement",
           "offered_minutes": "Minutes offertes",
           "offered_credits": "Crédits offerts"
         },
@@ -200,7 +200,7 @@
       "managed": "Hébergement managé"
     },
     "meter": {
-      "import": "Imports",
+      "import": "Transcription après l'enregistrement",
       "ai": "Crédits IA",
       "api": "Appels API"
     },
@@ -248,7 +248,7 @@
     },
     "refusal": {
       "live_credit": "Crédit « Microphone et visioconférence » insuffisant pour démarrer.",
-      "import_exhausted": "Quota de transcription de fichiers épuisé.",
+      "import_exhausted": "Plus de minutes de transcription.",
       "import_too_long": "Ce fichier dépasse le temps de transcription restant ({remaining}).",
       "import_file_too_long": "« {name} » dépasse le temps de transcription restant ({remaining}).",
       "import_reset": "Le quota sera remis à zéro le {date}.",
@@ -886,6 +886,107 @@
     "turn_sync_error_title": "Le tour de parole n'est pas synchronisé correctement",
     "websocket_error_content": "La mise à jour du document a échoué. Veuillez enregistrer vos modifications et actualiser la page.",
     "websocket_error_title": "Erreur de synchronisation"
+  },
+  "transcription_create": {
+    "title": "Nouvelle transcription",
+    "loading": "Chargement des moteurs de transcription...",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "back": "Retour",
+    "next": "Suivant",
+    "apply": "Appliquer",
+    "source": {
+      "question": "Que voulez-vous transcrire ?",
+      "file": "Fichier",
+      "microphone": "Microphone",
+      "visio": "Visioconférence",
+      "session": "Session",
+      "session_next_step": "La création se fera à l'étape suivante.",
+      "session_create": "Créer une session"
+    },
+    "timing": {
+      "label": "Transcrire",
+      "live": "En direct",
+      "offline": "Après l'enregistrement",
+      "both": "Les deux",
+      "live_summary": "en direct",
+      "offline_summary": "après l'enregistrement",
+      "both_summary": "en direct puis après l'enregistrement"
+    },
+    "summary": {
+      "language": "Langue",
+      "translation": "Traduction",
+      "live_engine": "Moteur en direct",
+      "offline_engine": "Moteur après l'enregistrement",
+      "engine": "Moteur",
+      "speakers": "Locuteurs",
+      "sharing": "Partage",
+      "folder": "Dossier",
+      "visio_subtitles": "Sous-titres dans la visio",
+      "none": "Aucune",
+      "no_engine": "Aucun moteur compatible",
+      "edit": "Modifier",
+      "edit_row": "Modifier : {label}"
+    },
+    "language": {
+      "detection": "Détection automatique",
+      "search": "Rechercher...",
+      "group_suggested": "Suggestions",
+      "group_all": "Toutes les langues",
+      "changes_engine": "Change le moteur",
+      "changes_engine_note": "« Change le moteur » : le moteur actuel ne le propose pas, un autre moteur compatible sera choisi."
+    },
+    "credit": {
+      "file_over_credit": "Ce fichier dure {duration}, il reste {remaining} de transcription.",
+      "files_over_credit": "Ces {count} fichiers durent {duration}, il reste {remaining} de transcription.",
+      "files_over_credit_partial": "Ces {count} fichiers durent au moins {duration}, il reste {remaining} de transcription.",
+      "post_recording_exhausted": "Plus de minutes de transcription après l'enregistrement : seule la transcription en direct est disponible.",
+      "live_exhausted": "Plus de minutes de transcription en direct : seule la transcription après l'enregistrement est disponible.",
+      "both_exhausted": "Plus de minutes de transcription, ni en direct ni après l'enregistrement.",
+      "live_unavailable": "Seule la transcription après l'enregistrement est disponible dans votre organisation."
+    },
+    "warnings": {
+      "live_detects_only": "En direct, détecte seulement : {languages}",
+      "offline_detects_any": "Après l'enregistrement, la langue est détectée automatiquement, sans se limiter à ce choix."
+    },
+    "notices": {
+      "languages_changed": "Langue remplacée, aucun moteur disponible pour : {languages}",
+      "translations_removed": "Traduction retirée, indisponible avec ces langues : {languages}",
+      "profile_changed": "Le moteur en direct choisi n'est plus compatible : un autre a été sélectionné.",
+      "service_changed": "Le moteur choisi n'est plus compatible : un autre a été sélectionné.",
+      "speakers_changed": "Le choix pour les locuteurs n'est plus disponible : il a été remplacé."
+    },
+    "engine": {
+      "description": "Moteurs compatibles avec la langue, les traductions et le niveau de sécurité choisis.",
+      "languages": "Langues : {languages}"
+    },
+    "speakers": {
+      "title": "Faut-il séparer les locuteurs ?",
+      "collection_label": "Liste de locuteurs",
+      "none": {
+        "label": "Ne pas séparer",
+        "description": "Un seul locuteur"
+      },
+      "distinguish": {
+        "label": "Distinguer",
+        "description": "Locuteur 1, Locuteur 2..."
+      },
+      "recognize": {
+        "label": "Reconnaître",
+        "description": "Les locuteurs sont nommés à partir d'une liste"
+      },
+      "notices": {
+        "after_recording_only": "Seulement après l'enregistrement.",
+        "during_recording_only": "Seulement pendant l'enregistrement.",
+        "named_after_recording": "En direct, les locuteurs sont distingués ; ils seront nommés après l'enregistrement.",
+        "engine_unsupported": "Non disponible avec ce moteur."
+      }
+    },
+    "submit": {
+      "file": "Lancer la transcription",
+      "microphone": "Commencer l'enregistrement",
+      "visio": "Rejoindre la visioconférence"
+    }
   },
   "conversation_creation": {
     "tabs": {

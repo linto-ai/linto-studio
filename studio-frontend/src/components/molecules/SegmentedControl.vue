@@ -1,7 +1,11 @@
 <template>
   <!-- Single-choice segmented toggle (a radio group, not tabs): no panel,
        mutually exclusive options, sized to its content. -->
-  <div class="segmented" role="radiogroup" :aria-label="ariaLabel">
+  <div
+    class="segmented"
+    :class="{ 'segmented--block': block }"
+    role="radiogroup"
+    :aria-label="ariaLabel">
     <button
       v-for="opt in options"
       :key="opt.name"
@@ -10,7 +14,7 @@
       class="segmented__option"
       :class="{ 'segmented__option--active': opt.name === value }"
       :aria-checked="opt.name === value"
-      :disabled="disabled"
+      :disabled="disabled || opt.disabled"
       @click.stop="$emit('input', opt.name)">
       {{ opt.label }}
     </button>
@@ -22,10 +26,12 @@ export default {
   props: {
     // Currently selected option name (v-model).
     value: { default: null },
-    // [{ name, label }]
+    // [{ name, label, disabled? }]
     options: { type: Array, required: true },
     disabled: { type: Boolean, default: false },
     ariaLabel: { type: String, default: undefined },
+    // Takes the whole width, its options sharing it evenly.
+    block: { type: Boolean, default: false },
   },
 }
 </script>
@@ -43,6 +49,16 @@ export default {
   border: 1px solid var(--neutral-30);
   border-radius: 4px;
   box-sizing: border-box;
+
+  &--block {
+    display: flex;
+    width: 100%;
+
+    .segmented__option {
+      flex: 1;
+      justify-content: center;
+    }
+  }
 
   &__option {
     appearance: none;

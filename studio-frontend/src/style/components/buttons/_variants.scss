@@ -5,6 +5,8 @@
 
   &:hover:not([disabled]):not(.disabled) {
     background-color: var(--btn-hover-bg);
+    transform: none;
+    box-shadow: none;
   }
 
   &[disabled] {
@@ -39,6 +41,13 @@
   justify-content: center;
 }
 
+.btn--link,
+.btn--text {
+  --btn-disabled-bg: transparent;
+  --btn-disabled-border-color: transparent;
+  --btn-disabled-text: var(--neutral-50);
+}
+
 .btn--link {
   --btn-bg: transparent;
   --btn-hover-bg: transparent;
@@ -47,7 +56,7 @@
   text-decoration: none;
   --btn-animate: 0;
 
-  &:hover {
+  &:hover:not([disabled]):not(.disabled) {
     transform: none;
     box-shadow: none;
     text-decoration: underline;

@@ -171,7 +171,7 @@ export default {
 }
 
 .popover-content:has(> div) {
-  background: var(--neutral-10);
+  background: var(--background-primary);
   border: 1px solid var(--primary-color);
   border-radius: 4px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);

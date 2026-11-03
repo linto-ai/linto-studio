@@ -40,11 +40,11 @@
         v-if="asyncSearch || (items && items.length)">
         <!-- Header: select all + search -->
         <div
-          v-if="hasSearch || (selection && multiple)"
+          v-if="hasSearch || showSelectAll"
           class="popover-list__header"
           @click.stop>
           <Checkbox
-            v-if="selection && multiple"
+            v-if="showSelectAll"
             :value="allFilteredSelected"
             :indeterminate="someFilteredSelected && !allFilteredSelected"
             @input="toggleSelectAll"
@@ -118,38 +118,46 @@
 
           <!-- Selection mode: checkbox items -->
           <template v-else-if="selection">
-            <div
-              v-for="(item, index) in filteredItems"
-              :key="item.id ?? item.value ?? index"
-              :id="getItemId(index)"
-              class="popover-list__item popover-list__item--selection"
-              :class="{
-                'popover-list__item--highlighted': highlightedIndex === index,
-              }"
-              role="option"
-              :aria-selected="isSelected(item)"
-              @mouseenter="highlightedIndex = index"
-              @click.stop="onSelectionItemClick(item, $event)">
-              <Checkbox
-                :id="getCheckboxId(index)"
-                :value="isSelected(item)"
-                @input="toggleSelection(item)"
-                class="popover-list__checkbox" />
-              <label
-                :for="getCheckboxId(index)"
-                class="popover-list__checkbox-label">
-                <slot name="item" :item="item">
-                  <span class="popover-list__item__name">{{
-                    item.name || item.text
-                  }}</span>
-                  <span
-                    v-if="item.description"
-                    class="popover-list__item__description">
-                    {{ item.description }}
-                  </span>
-                </slot>
-              </label>
-            </div>
+            <template v-for="(item, index) in filteredItems">
+              <div
+                v-if="startsGroup(index)"
+                :key="`group-${item.group}`"
+                class="popover-list__group"
+                role="presentation">
+                {{ item.group }}
+              </div>
+              <div
+                :key="item.id ?? item.value ?? index"
+                :id="getItemId(index)"
+                class="popover-list__item popover-list__item--selection"
+                :class="{
+                  'popover-list__item--highlighted': highlightedIndex === index,
+                }"
+                role="option"
+                :aria-selected="isSelected(item)"
+                @mouseenter="highlightedIndex = index"
+                @click.stop="onSelectionItemClick(item, $event)">
+                <Checkbox
+                  :id="getCheckboxId(index)"
+                  :value="isSelected(item)"
+                  @input="toggleSelection(item)"
+                  class="popover-list__checkbox" />
+                <label
+                  :for="getCheckboxId(index)"
+                  class="popover-list__checkbox-label">
+                  <slot name="item" :item="item">
+                    <span class="popover-list__item__name">{{
+                      item.name || item.text
+                    }}</span>
+                    <span
+                      v-if="item.description"
+                      class="popover-list__item__description">
+                      {{ item.description }}
+                    </span>
+                  </slot>
+                </label>
+              </div>
+            </template>
           </template>
 
           <!-- Normal mode: button items -->
@@ -189,6 +197,7 @@
             </div>
           </template>
         </div>
+        <slot name="footer"></slot>
       </div>
     </template>
   </Popover>
@@ -201,6 +210,7 @@ import Loading from "./Loading.vue"
 import Checkbox from "./Checkbox.vue"
 import { debounceMixin } from "@/mixins/debounce"
 import { generateId } from "@/tools/generateId.js"
+import { normalizeSearchText } from "@/tools/normalizeSearchText.js"
 
 export default {
   name: "PopoverList",
@@ -223,6 +233,7 @@ export default {
      * @property {string} iconWeight? - The weight of the icon (optional, default: "regular")
      * @property {string} color? - The color of the item (optional, default: "primary")
      * @property {string} iconRight? - The right icon of the item (optional)
+     * @property {string} group? - Heading of the item's group, in selection mode (optional)
      */
     items: {
       type: Array,
@@ -270,6 +281,13 @@ export default {
       // Array for multi-select, otherwise single id/object or null
       type: [Array, String, Object, Number, null],
       default: () => [],
+    },
+    /**
+     * Offers the "select all" checkbox of the multi-selection mode.
+     */
+    selectAll: {
+      type: Boolean,
+      default: true,
     },
     /**
      * When true, the component will emit the full item object instead of its id in the v-model.
@@ -374,6 +392,15 @@ export default {
      */
     close() {
       this.$refs.popover?.close()
+    },
+    // A search result mixes the groups: no heading there.
+    startsGroup(index) {
+      const { group } = this.filteredItems[index]
+      return (
+        Boolean(group) &&
+        !this.searchQuery.trim() &&
+        group !== this.filteredItems[index - 1]?.group
+      )
     },
     isSame(value, item) {
       if (typeof value === "object" && value !== null) {
@@ -697,6 +724,9 @@ export default {
       }
       return null
     },
+    showSelectAll() {
+      return this.selection && this.multiple && this.selectAll
+    },
     filteredItems() {
       let base
       // Async search mode: use asyncItems directly
@@ -707,10 +737,10 @@ export default {
         base = this.items
       } else {
         // Static mode with local filtering
-        const query = this.searchQuery.toLowerCase().trim()
+        const query = normalizeSearchText(this.searchQuery.trim())
         base = this.items.filter((item) => {
-          const name = (item.name || item.text || "").toLowerCase()
-          const description = (item.description || "").toLowerCase()
+          const name = normalizeSearchText(item.name || item.text || "")
+          const description = normalizeSearchText(item.description || "")
           return name.includes(query) || description.includes(query)
         })
       }
@@ -773,11 +803,20 @@ export default {
   flex-direction: column;
   gap: 0;
   outline: none;
+  background-color: var(--background-primary);
 
   &:focus-visible {
     outline: 2px solid var(--primary-color);
     outline-offset: -2px;
   }
+}
+
+.popover-list__group {
+  padding: 0.5rem 0.5rem 0.25rem;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .popover-list__header {
@@ -876,6 +915,7 @@ export default {
 }
 
 .popover-list__checkbox-label {
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   gap: 0.125rem;

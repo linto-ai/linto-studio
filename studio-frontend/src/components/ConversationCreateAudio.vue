@@ -34,10 +34,10 @@
           :disabled="disabled"
           @input="addUrl" />
       </div>
-      <TabsVertical
+      <!-- <TabsVertical
         :tabs="uploadTabs"
         v-model="uploadType"
-        class="upload-tabs" />
+        class="upload-tabs" /> -->
     </div>
   </div>
 </template>

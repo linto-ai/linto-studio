@@ -16,7 +16,7 @@ export const saasRefusalFormMixin = {
   },
   computed: {
     saasRefusalView() {
-      return computeSaasRefusal(this.saasRefusal, {
+      return computeSaasRefusal(this.saasRefusalToShow, {
         isAdmin: this.isAdmin,
         // Premium, the one self-serve upgrade, is sold to personal orgs only
         canBuyPlan:
@@ -30,6 +30,10 @@ export const saasRefusalFormMixin = {
     hasSaasRefusalPurchase() {
       const action = this.saasRefusalView?.action
       return action === "buy_pack" || action === "plans"
+    },
+    // A form that can foresee a refusal overrides it.
+    saasRefusalToShow() {
+      return this.saasRefusal
     },
     // The refused file, worth naming only among several: a form uploading
     // files overrides it.

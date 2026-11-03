@@ -59,7 +59,8 @@
 //   icon-only button has no .label child
 // - knobs a parent may set: --btn-bg, --btn-text, --btn-border-color,
 //   --btn-hover-bg, --btn-hover-text, --btn-padding, --btn-font-size,
-//   --btn-height, --btn-border-radius
+//   --btn-height, --btn-border-radius, --btn-disabled-bg,
+//   --btn-disabled-border-color, --btn-disabled-text
 export default {
   name: "Button",
   inheritAttrs: false,
