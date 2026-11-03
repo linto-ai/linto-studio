@@ -32,18 +32,6 @@ services:
     networks:
       - internal
 
-  studio-websocket:
-    container_name: studio-websocket
-    image: linto-studio/studio-websocket
-    build:
-      context: ./studio-websocket
-      dockerfile: Dockerfile
-    env_file: ./studio-websocket/.dockerenv
-    ports:
-      - "8002:80"
-    networks:
-      - internal
-
   studio-frontend:
     container_name: studio-frontend
     image: linto-studio/studio-frontend

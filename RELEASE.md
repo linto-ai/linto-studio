@@ -15,6 +15,8 @@ _2026_10_05_
 - Transcriber profiles: updating a profile no longer overwrites its stored secret
 - Remove the organization-level session purge route
 - JavaScript SDK: live meeting flow (quick meeting, sessions, bots)
+- Remove the `studio-websocket` package: real-time events are served by studio-api (Socket.io), the `lintoai/studio-websocket` image is no longer built and can be dropped from deployments
+- Remove the `release.sh` script
 
 # 1.8.8
 

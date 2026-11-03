@@ -27,9 +27,8 @@ LinTO Studio is the web application of the LinTO platform. Upload or record medi
 
 | Directory | What it is |
 |---|---|
-| `studio-api/` | REST API (Express, MongoDB), authentication, organizations, media, transcription jobs |
+| `studio-api/` | REST API (Express, MongoDB) and Socket.io server, authentication, organizations, media, transcription jobs |
 | `studio-frontend/` | Web application (Vue) |
-| `studio-websocket/` | Real-time collaboration server (Socket.io, Yjs) |
 | `studio-sdk/` | JavaScript and Python client libraries, and the transcript editor as a standalone component |
 | `doc/` | Screenshots and API documentation |
 
@@ -47,7 +46,7 @@ To run only the web application and its API locally, for development:
 docker compose up -d
 ```
 
-Then open http://localhost:8003. The API listens on port 8001 and the websocket server on 8002. Transcription, summarization and live features need the corresponding services to be configured (see below).
+Then open http://localhost:8003. The API listens on port 8001. Transcription, summarization and live features need the corresponding services to be configured (see below).
 
 Each package also has its own README for native development with `npm run dev`.
 

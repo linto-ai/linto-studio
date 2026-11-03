@@ -45,8 +45,8 @@ Repeated automated submissions get the account blocked from the organization.
 ## Code style
 
 - Run the tests and the formatter check of the package you touch before
-  submitting: `npm test` everywhere, `npm run lint` in `studio-frontend` and
-  `studio-websocket`, `npm run test:format` in `studio-api`.
+  submitting: `npm test` everywhere, `npm run lint` in `studio-frontend`,
+  `npm run test:format` in `studio-api`.
 - Commit messages: short imperative subject line, details in the body if
   needed.
 
