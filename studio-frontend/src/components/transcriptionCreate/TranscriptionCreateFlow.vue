@@ -8,6 +8,8 @@
     :sources="sources"
     :timingOptions="timingOptions"
     :minSecurityLevel="organizationSecurityLevel"
+    :notice="sourceNotice"
+    :refusal="saasRefusalToShow"
     :isQuickSessionRunning="Boolean(runningQuickSession)"
     :enableFileRecording="!isSourceAvailable('microphone')"
     :organizationId="organizationId"
@@ -30,9 +32,6 @@
     :sending="sending"
     :uploadProgress="uploadProgress"
     :error="error"
-    :saasRefusal="saasRefusal"
-    :saasRefusalView="saasRefusalView"
-    :hasSaasRefusalPurchase="hasSaasRefusalPurchase"
     @change="updateDraft"
     @change-languages="changeLanguages"
     @edit="view = $event"
@@ -88,6 +87,7 @@ import { bus } from "@/tools/eventBus.js"
 
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import { AUTO_LANGUAGE } from "@/const/transcriptionCreate.js"
+import { livePackPurchaseMixin } from "@/mixins/livePackPurchase.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import { saasRefusalFormMixin } from "@/mixins/saasRefusalForm.js"
@@ -102,15 +102,19 @@ import { getEnv } from "@/tools/getEnv"
 import { buildBotRequest } from "@/tools/transcriptionCreate/buildBotRequest.js"
 import { buildConversationRequest } from "@/tools/transcriptionCreate/buildConversationRequest.js"
 import { buildQuickSessionRequest } from "@/tools/transcriptionCreate/buildQuickSessionRequest.js"
+import { readMediaDuration } from "@/tools/audio/readMediaDuration.js"
 import { computeCompatibleProfiles } from "@/tools/transcriptionCreate/computeCompatibleProfiles.js"
 import { computeCompatibleServices } from "@/tools/transcriptionCreate/computeCompatibleServices.js"
 import { computeDraftEngines } from "@/tools/transcriptionCreate/computeDraftEngines.js"
+import { computeFilesMinutes } from "@/tools/transcriptionCreate/computeFilesMinutes.js"
 import { computeLanguageSelection } from "@/tools/transcriptionCreate/computeLanguageSelection.js"
 import { computeProfileLanguages } from "@/tools/transcriptionCreate/computeProfileLanguages.js"
 import { computeServiceLanguages } from "@/tools/transcriptionCreate/computeServiceLanguages.js"
 import { computeServiceName } from "@/tools/transcriptionCreate/computeServiceName.js"
+import { computeSourceNotice } from "@/tools/transcriptionCreate/computeSourceNotice.js"
 import { computeSpeakerOptions } from "@/tools/transcriptionCreate/computeSpeakerOptions.js"
 import { computeTimingOptions } from "@/tools/transcriptionCreate/computeTimingOptions.js"
+import { computeTranscriptionRefusal } from "@/tools/transcriptionCreate/computeTranscriptionRefusal.js"
 import { createDraft } from "@/tools/transcriptionCreate/createDraft.js"
 import { formatLanguageList } from "@/tools/transcriptionCreate/formatLanguageList.js"
 import { mergeNotices } from "@/tools/transcriptionCreate/mergeNotices.js"
@@ -144,7 +148,12 @@ export default {
     SummaryStep,
     VisioSubtitlesEditor,
   },
-  mixins: [orgaRoleMixin, organizationPermissionsMixin, saasRefusalFormMixin],
+  mixins: [
+    livePackPurchaseMixin,
+    orgaRoleMixin,
+    organizationPermissionsMixin,
+    saasRefusalFormMixin,
+  ],
   data() {
     return {
       loading: true,
@@ -155,6 +164,8 @@ export default {
       // See reconcileDraft: what the last change did to the user's choices
       notices: [],
       files: [],
+      // Seconds by file id, null while unknown
+      fileDurations: {},
       loadedProfiles: [],
       loadedServices: [],
       hasAnyProfile: false,
@@ -180,7 +191,8 @@ export default {
       return {
         // Without live minutes left, no profile: nothing can go live.
         profiles: this.isLiveCreditExhausted ? [] : this.loadedProfiles,
-        services: this.loadedServices,
+        // Likewise for the minutes transcribed once the audio is complete.
+        services: this.isTranscriptionExhausted ? [] : this.loadedServices,
         collections: this.voiceprintCollections,
         speakerIdentificationEnabled:
           getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true",
@@ -259,6 +271,56 @@ export default {
         ? this.$t("transcription_create.summary.engine")
         : this.$t("transcription_create.summary.offline_engine")
     },
+    transcriptionRefusal() {
+      return computeTranscriptionRefusal({
+        usage: this.$store.getters["billing/usage"],
+        lots: this.$store.state.billing.creditLots,
+      })
+    },
+    isTranscriptionExhausted() {
+      return Boolean(this.transcriptionRefusal)
+    },
+    filesMinutes() {
+      return computeFilesMinutes(
+        this.files.map((file) => this.fileDurations[file.id] ?? null),
+      )
+    },
+    uploadRefusal() {
+      return computeTranscriptionRefusal({
+        usage: this.$store.getters["billing/usage"],
+        lots: this.$store.state.billing.creditLots,
+        requiredMinutes: this.filesMinutes.minutes,
+      })
+    },
+    // What the server refused, otherwise what it would refuse.
+    saasRefusalToShow() {
+      return (
+        this.saasRefusal ??
+        (this.draft.source === "file"
+          ? this.uploadRefusal
+          : this.transcriptionRefusal)
+      )
+    },
+    filesOverCredit() {
+      if (!this.uploadRefusal?.remaining) return null
+      return {
+        ...this.filesMinutes,
+        count: this.files.length,
+        remaining: this.uploadRefusal.remaining,
+      }
+    },
+    sourceNotice() {
+      return computeSourceNotice({
+        source: this.draft.source,
+        timingOptions: this.timingOptions,
+        refusal: this.saasRefusalView,
+        refusedCapability: this.saasRefusalToShow?.capability,
+        isServerRefusal: Boolean(this.saasRefusal),
+        isLiveCreditExhausted: this.isLiveCreditExhausted,
+        canBuyLivePack: this.canBuyLivePack,
+        filesOverCredit: this.filesOverCredit,
+      })
+    },
     // An upload stops at the first refused file, which stays first in line; its
     // name only helps among several (saasRefusalFormMixin).
     saasRefusalFileName() {
@@ -278,13 +340,17 @@ export default {
     },
     // Live minutes bought from the modal, or a list of speakers loaded late.
     isLiveCreditExhausted: "reconcileWithCatalog",
+    isTranscriptionExhausted: "reconcileWithCatalog",
     voiceprintCollections: "reconcileWithCatalog",
   },
   async created() {
     this.$store.dispatch("folders/fetchFolders")
     // The session source depends on the org's plan and live on its balance.
     if (getEnv("VUE_APP_MODE") === "cloud") {
-      await this.$store.dispatch("billing/fetchUsage", this.organizationId)
+      await Promise.all([
+        this.$store.dispatch("billing/fetchUsage", this.organizationId),
+        this.$store.dispatch("billing/fetchCreditLots", this.organizationId),
+      ])
     }
     const { profiles, services, hasAnyProfile } = await loadCatalog(
       this.organizationId,
@@ -340,8 +406,26 @@ export default {
     updateFiles(files) {
       this.files = files
       this.clearFeedback()
+      files.filter(this.isDurationUnread).forEach(this.readFileDuration)
+    },
+    isDurationUnread(file) {
+      return !(file.id in this.fileDurations)
+    },
+    async readFileDuration(file) {
+      this.$set(this.fileDurations, file.id, null)
+      if (file.uploadType === "url") return
+      this.$set(this.fileDurations, file.id, await readMediaDuration(file.file))
+    },
+    // A refusal is solved from the first step: other files, another source.
+    showRefusal(errorData) {
+      this.saasRefusal = errorData
+      this.backToSourceWithoutFeedback()
     },
     backToSource() {
+      this.clearFeedback()
+      this.backToSourceWithoutFeedback()
+    },
+    backToSourceWithoutFeedback() {
       this.notices = []
       this.view = "source"
     },
@@ -443,7 +527,7 @@ export default {
     },
     showUploadFailure({ sent, total, errorCode, errorData }) {
       if (isSaasRefusal(errorData)) {
-        this.saasRefusal = errorData
+        this.showRefusal(errorData)
         if (sent > 0) {
           bus.$emit("app_notif", {
             status: "info",
@@ -489,7 +573,7 @@ export default {
           params: { organizationId: this.organizationId },
         })
       } else if (isSaasRefusal(errorData)) {
-        this.saasRefusal = errorData
+        this.showRefusal(errorData)
       } else {
         this.error = botFailed
           ? this.$t("quick_session.setup_visio.bot_error")

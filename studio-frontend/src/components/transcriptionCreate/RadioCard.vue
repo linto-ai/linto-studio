@@ -49,7 +49,7 @@ export default {
   // The selected border stays the same width: nothing moves.
   &:has(:checked) {
     border-color: var(--primary-color);
-    box-shadow: inset 0 0 0 1px var(--primary-color);
+    //box-shadow: inset 0 0 0 1px var(--primary-color);
     background: var(--primary-soft);
   }
 

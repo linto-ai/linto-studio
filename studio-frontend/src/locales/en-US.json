@@ -17,7 +17,7 @@
         "member_consumption_link": "View usage per member"
       },
       "meter": {
-        "import": "File transcription",
+        "import": "Transcription after recording",
         "ai": "AI credits",
         "live": "Live transcription"
       },
@@ -37,13 +37,13 @@
         "saving": "−{percent}%",
         "group": {
           "live": "Live transcription",
-          "transcription": "File transcription"
+          "transcription": "Transcription after recording"
         },
         "kind": {
           "live": "Live transcription",
-          "transcription": "File transcription"
+          "transcription": "Transcription after recording"
         },
-        "kind_with_ai": "Files + AI",
+        "kind_with_ai": "After recording + AI",
         "selection": "{kind}, {duration}",
         "selection_with_ai": "{kind}, {duration} and {credits} AI credits",
         "hourly_rate": "{price} per hour",
@@ -148,7 +148,7 @@
         "source": {
           "plan": "{plan} plan",
           "packs": "{count} pack | {count} packs",
-          "ai_packs": "Included with the Files pack | Included with the Files packs",
+          "ai_packs": "Included with the Transcription after recording pack | Included with the Transcription after recording packs",
           "offered_minutes": "Free minutes",
           "offered_credits": "Free credits"
         },
@@ -200,7 +200,7 @@
       "managed": "Managed hosting"
     },
     "meter": {
-      "import": "Imports",
+      "import": "Transcription after recording",
       "ai": "AI credits",
       "api": "API calls"
     },
@@ -248,7 +248,7 @@
     },
     "refusal": {
       "live_credit": "Not enough “Microphone and video conferencing” credit to start.",
-      "import_exhausted": "File transcription quota used up.",
+      "import_exhausted": "No transcription minutes left.",
       "import_too_long": "This file is longer than the transcription time left ({remaining}).",
       "import_file_too_long": "“{name}” is longer than the transcription time left ({remaining}).",
       "import_reset": "The quota resets on {date}.",
@@ -906,17 +906,17 @@
     "timing": {
       "label": "Transcribe",
       "live": "Live",
-      "offline": "At the end",
+      "offline": "After recording",
       "both": "Both",
       "live_summary": "live",
-      "offline_summary": "at the end",
-      "both_summary": "live then at the end"
+      "offline_summary": "after recording",
+      "both_summary": "live then after recording"
     },
     "summary": {
       "language": "Language",
       "translation": "Translation",
       "live_engine": "Live engine",
-      "offline_engine": "End engine",
+      "offline_engine": "Engine after recording",
       "engine": "Engine",
       "speakers": "Speakers",
       "sharing": "Sharing",
@@ -935,9 +935,18 @@
       "changes_engine": "Changes the engine",
       "changes_engine_note": "\"Changes the engine\": the current engine doesn't offer it, another compatible engine will be picked."
     },
+    "credit": {
+      "file_over_credit": "This file lasts {duration}, {remaining} of transcription left.",
+      "files_over_credit": "These {count} files last {duration}, {remaining} of transcription left.",
+      "files_over_credit_partial": "These {count} files last at least {duration}, {remaining} of transcription left.",
+      "post_recording_exhausted": "No transcription minutes left after recording: only live transcription is available.",
+      "live_exhausted": "No live transcription minutes left: only transcription after recording is available.",
+      "both_exhausted": "No transcription minutes left, neither live nor after recording.",
+      "live_unavailable": "Only transcription after recording is available in your organization."
+    },
     "warnings": {
       "live_detects_only": "Live, only detects: {languages}",
-      "offline_detects_any": "At the end, the language is detected automatically, without being limited to this choice."
+      "offline_detects_any": "After the recording, the language is detected automatically, without being limited to this choice."
     },
     "notices": {
       "languages_changed": "Language replaced, no engine available for: {languages}",
@@ -968,7 +977,7 @@
       "notices": {
         "after_recording_only": "Only after the recording.",
         "during_recording_only": "Only during the recording.",
-        "named_after_recording": "Live, speakers are told apart; they will be named in the end version.",
+        "named_after_recording": "Live, speakers are told apart; they will be named after the recording.",
         "engine_unsupported": "Not available with this engine."
       }
     },

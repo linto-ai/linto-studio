@@ -146,7 +146,6 @@
     </div>
 
     <template #footer-message>
-      <SaasRefusalMessage v-if="saasRefusalView" :refusal="saasRefusalView" />
       <p v-if="error" class="error-field" role="alert">{{ error }}</p>
     </template>
 
@@ -170,16 +169,12 @@
       </Button>
       <Button
         type="submit"
-        :variant="hasSaasRefusalPurchase ? 'secondary' : 'primary'"
+        variant="primary"
         :icon="sourceIcon"
         :loading="sending"
         :disabled="sending || !isComplete">
         {{ $t(`transcription_create.submit.${draft.source}`) }}
       </Button>
-      <SaasRefusalAction
-        v-if="saasRefusalView"
-        :refusal="saasRefusalView"
-        :error-data="saasRefusal" />
     </template>
   </TranscriptionCreateFrame>
 </template>
@@ -201,8 +196,6 @@ import { isOfflineRequested } from "@/tools/transcriptionCreate/isOfflineRequest
 import FolderSelector from "@/components/FolderSelector.vue"
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import Chip from "@/components/atoms/Chip.vue"
-import SaasRefusalMessage from "@/components-cloud/SaasRefusalMessage.vue"
-import SaasRefusalAction from "@/components-cloud/SaasRefusalAction.vue"
 import LanguagePicker from "./LanguagePicker.vue"
 import SummaryRow from "./SummaryRow.vue"
 import TranscriptionCreateFrame from "./TranscriptionCreateFrame.vue"
@@ -213,8 +206,6 @@ export default {
     FolderSelector,
     NotificationBanner,
     Chip,
-    SaasRefusalMessage,
-    SaasRefusalAction,
     LanguagePicker,
     SummaryRow,
     TranscriptionCreateFrame,
@@ -237,10 +228,6 @@ export default {
     // { index, total, percent } while files are being sent
     uploadProgress: { type: Object, default: null },
     error: { type: String, default: null },
-    // See saasRefusalFormMixin
-    saasRefusal: { type: Object, default: null },
-    saasRefusalView: { type: Object, default: null },
-    hasSaasRefusalPurchase: { type: Boolean, default: false },
   },
   computed: {
     isLive() {

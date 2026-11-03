@@ -14,6 +14,7 @@ import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
 import { isAtLeastSystemAdministrator } from "@/tools/rights/platformRoles.js"
 import { computeSettingsTabRequest } from "@/tools/computeSettingsTabRequest.js"
+import { computeTranscriptionCreateRequest } from "@/tools/transcriptionCreate/computeTranscriptionCreateRequest.js"
 import { computeCheckoutReturn } from "@/tools/billing/computeCheckoutReturn.js"
 import i18n from "@/i18n"
 
@@ -835,6 +836,7 @@ let router = new Router({
 })
 
 router.afterEach((to, from) => {
+  store.dispatch("transcriptionCreate/openRequestedModal")
   if (!to?.meta?.mainListingPage) {
     // for media listing, loader is stopped by the page when all requests are done
     store.dispatch("system/setIsLoading", false)
@@ -919,6 +921,21 @@ router.beforeEach(async (to, from, next) => {
         return next(false)
       }
       return next({ ...cleanRoute, replace: true })
+    }
+
+    // ?new_transcription reopens the modal after a pack purchase. Asked for
+    // here, opened once the navigation is over: the modal closes on a route
+    // change.
+    const transcriptionCreateRequest = computeTranscriptionCreateRequest(
+      to.query,
+    )
+    if (transcriptionCreateRequest) {
+      store.dispatch("transcriptionCreate/requestModal")
+      return next({
+        ...to,
+        query: transcriptionCreateRequest.query,
+        replace: true,
+      })
     }
 
     // Back from a pack Checkout (?type=credits&status=success|cancel),

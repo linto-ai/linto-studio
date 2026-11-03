@@ -21,13 +21,10 @@
       </div>
     </fieldset>
 
-    <NotificationBanner
-      v-if="hasNoEngine"
-      variant="warning"
-      icon="lock-simple"
-      align="start">
-      {{ $t("conversation.transcription.no_model_for_level") }}
-    </NotificationBanner>
+    <SourceNoticeBanner
+      v-if="visibleNotice"
+      :notice="visibleNotice"
+      :refusal="refusal" />
 
     <ConversationCreateAudio
       v-if="draft.source === 'file'"
@@ -51,8 +48,6 @@
         :value="draft.visio"
         :urlError="visioUrlError"
         @input="$emit('change', { visio: $event })" />
-
-      <LiveUnavailableBanner v-if="isLiveUnavailable && !hasNoEngine" />
 
       <div class="form-field flex col gap-small">
         <span class="form-label">
@@ -109,8 +104,8 @@ import SecurityLevelSelector from "@/components/SecurityLevelSelector.vue"
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import SegmentedControl from "@/components/molecules/SegmentedControl.vue"
-import LiveUnavailableBanner from "./LiveUnavailableBanner.vue"
 import RadioCard from "./RadioCard.vue"
+import SourceNoticeBanner from "./SourceNoticeBanner.vue"
 import TranscriptionCreateFrame from "./TranscriptionCreateFrame.vue"
 import VisioFields from "./VisioFields.vue"
 
@@ -123,8 +118,8 @@ export default {
     NotificationBanner,
     FormCheckbox,
     SegmentedControl,
-    LiveUnavailableBanner,
     RadioCard,
+    SourceNoticeBanner,
     TranscriptionCreateFrame,
     VisioFields,
   },
@@ -136,6 +131,10 @@ export default {
     // See computeTimingOptions
     timingOptions: { type: Array, required: true },
     minSecurityLevel: { type: Number, required: true },
+    // See computeSourceNotice
+    notice: { type: Object, default: null },
+    // Response body of the refusal behind the notice
+    refusal: { type: Object, default: null },
     isQuickSessionRunning: { type: Boolean, default: false },
     // Without the microphone source, a file can still be recorded here.
     enableFileRecording: { type: Boolean, default: false },
@@ -156,23 +155,12 @@ export default {
         label: this.$t(`transcription_create.timing.${option.name}`),
       }))
     },
-    // Nothing can transcribe this source at the chosen security level.
-    hasNoEngine() {
-      if (this.draft.source === "session") return false
-      const usableTimings = this.timingOptions.filter(
-        (option) => !option.disabled,
-      )
-      return this.draft.source === "file"
-        ? !usableTimings.some((option) => option.name === "offline")
-        : usableTimings.length === 0
-    },
-    isLiveUnavailable() {
-      return this.timingOptions.some(
-        (option) => option.name === "live" && option.disabled,
-      )
-    },
     isRecording() {
       return ["microphone", "visio"].includes(this.draft.source)
+    },
+    // A running recording has its own screen, which says everything.
+    visibleNotice() {
+      return this.isRecording && this.isQuickSessionRunning ? null : this.notice
     },
     showSecurityLevel() {
       return (
@@ -184,7 +172,7 @@ export default {
     canContinue() {
       return (
         !(this.isRecording && this.isQuickSessionRunning) &&
-        !this.hasNoEngine &&
+        !this.visibleNotice?.blocksContinue &&
         !this.visioUrlError &&
         isSourceStepComplete(this.draft, this.files)
       )

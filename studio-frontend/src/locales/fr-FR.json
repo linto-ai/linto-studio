@@ -17,7 +17,7 @@
         "member_consumption_link": "Voir la consommation par membre"
       },
       "meter": {
-        "import": "Transcription de fichiers",
+        "import": "Transcription après l'enregistrement",
         "ai": "Crédits IA",
         "live": "Transcription en direct"
       },
@@ -37,13 +37,13 @@
         "saving": "−{percent} %",
         "group": {
           "live": "Transcription en direct",
-          "transcription": "Transcription de fichiers"
+          "transcription": "Transcription après l'enregistrement"
         },
         "kind": {
           "live": "Transcription en direct",
-          "transcription": "Transcription de fichiers"
+          "transcription": "Transcription après l'enregistrement"
         },
-        "kind_with_ai": "Fichiers + IA",
+        "kind_with_ai": "Après l'enregistrement + IA",
         "selection": "{kind}, {duration}",
         "selection_with_ai": "{kind}, {duration} et {credits} crédits IA",
         "hourly_rate": "{price} de l'heure",
@@ -148,7 +148,7 @@
         "source": {
           "plan": "Offre {plan}",
           "packs": "{count} pack | {count} packs",
-          "ai_packs": "Offerts avec le pack Fichiers | Offerts avec les packs Fichiers",
+          "ai_packs": "Offerts avec le pack Transcription après l'enregistrement | Offerts avec les packs Transcription après l'enregistrement",
           "offered_minutes": "Minutes offertes",
           "offered_credits": "Crédits offerts"
         },
@@ -200,7 +200,7 @@
       "managed": "Hébergement managé"
     },
     "meter": {
-      "import": "Imports",
+      "import": "Transcription après l'enregistrement",
       "ai": "Crédits IA",
       "api": "Appels API"
     },
@@ -248,7 +248,7 @@
     },
     "refusal": {
       "live_credit": "Crédit « Microphone et visioconférence » insuffisant pour démarrer.",
-      "import_exhausted": "Quota de transcription de fichiers épuisé.",
+      "import_exhausted": "Plus de minutes de transcription.",
       "import_too_long": "Ce fichier dépasse le temps de transcription restant ({remaining}).",
       "import_file_too_long": "« {name} » dépasse le temps de transcription restant ({remaining}).",
       "import_reset": "Le quota sera remis à zéro le {date}.",
@@ -907,17 +907,17 @@
     "timing": {
       "label": "Transcrire",
       "live": "En direct",
-      "offline": "À la fin",
+      "offline": "Après l'enregistrement",
       "both": "Les deux",
       "live_summary": "en direct",
-      "offline_summary": "à la fin",
-      "both_summary": "en direct puis à la fin"
+      "offline_summary": "après l'enregistrement",
+      "both_summary": "en direct puis après l'enregistrement"
     },
     "summary": {
       "language": "Langue",
       "translation": "Traduction",
       "live_engine": "Moteur en direct",
-      "offline_engine": "Moteur à la fin",
+      "offline_engine": "Moteur après l'enregistrement",
       "engine": "Moteur",
       "speakers": "Locuteurs",
       "sharing": "Partage",
@@ -936,9 +936,18 @@
       "changes_engine": "Change le moteur",
       "changes_engine_note": "« Change le moteur » : le moteur actuel ne le propose pas, un autre moteur compatible sera choisi."
     },
+    "credit": {
+      "file_over_credit": "Ce fichier dure {duration}, il reste {remaining} de transcription.",
+      "files_over_credit": "Ces {count} fichiers durent {duration}, il reste {remaining} de transcription.",
+      "files_over_credit_partial": "Ces {count} fichiers durent au moins {duration}, il reste {remaining} de transcription.",
+      "post_recording_exhausted": "Plus de minutes de transcription après l'enregistrement : seule la transcription en direct est disponible.",
+      "live_exhausted": "Plus de minutes de transcription en direct : seule la transcription après l'enregistrement est disponible.",
+      "both_exhausted": "Plus de minutes de transcription, ni en direct ni après l'enregistrement.",
+      "live_unavailable": "Seule la transcription après l'enregistrement est disponible dans votre organisation."
+    },
     "warnings": {
       "live_detects_only": "En direct, détecte seulement : {languages}",
-      "offline_detects_any": "À la fin, la langue est détectée automatiquement, sans se limiter à ce choix."
+      "offline_detects_any": "Après l'enregistrement, la langue est détectée automatiquement, sans se limiter à ce choix."
     },
     "notices": {
       "languages_changed": "Langue remplacée, aucun moteur disponible pour : {languages}",
@@ -969,7 +978,7 @@
       "notices": {
         "after_recording_only": "Seulement après l'enregistrement.",
         "during_recording_only": "Seulement pendant l'enregistrement.",
-        "named_after_recording": "En direct, les locuteurs sont distingués ; ils seront nommés dans la version de fin.",
+        "named_after_recording": "En direct, les locuteurs sont distingués ; ils seront nommés après l'enregistrement.",
         "engine_unsupported": "Non disponible avec ce moteur."
       }
     },

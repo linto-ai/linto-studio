@@ -88,7 +88,7 @@ export default {
         this.packs.find((pack) => pack.packKey === this.selectedPackKey) || null
       )
     },
-    // "File transcription, 5 h and 50 AI credits"
+    // "Transcription after recording, 5 h and 50 AI credits"
     selectionLabel() {
       if (!this.selectedPack) return null
       const values = {

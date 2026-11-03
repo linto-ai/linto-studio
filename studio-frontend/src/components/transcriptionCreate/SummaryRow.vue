@@ -34,8 +34,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .summary-row:nth-child(1) {
-    border-top: 0px solid;
-
+  border-top: 0px solid;
 }
 
 .summary-row {
