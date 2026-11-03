@@ -19,6 +19,7 @@
   <SummaryStep
     v-else-if="view === 'summary'"
     :draft="draft"
+    :fileCount="files.length"
     :catalog="catalog"
     :engines="engines"
     :notices="notices"

@@ -955,7 +955,7 @@
       "collection_label": "Speaker list",
       "none": {
         "label": "Don't separate",
-        "description": "A single block of text"
+        "description": "A single speaker"
       },
       "distinguish": {
         "label": "Distinguish",

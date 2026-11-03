@@ -55,7 +55,7 @@ export default {
     label: { type: String, required: true },
     // Chosen codes
     value: { type: Array, required: true },
-    // [{ code, changesEngine }], see computeLanguageOptions
+    // [{ code, changesEngine? }]: the flag adds a badge to the option
     options: { type: Array, required: true },
     disabled: { type: Boolean, default: false },
   },

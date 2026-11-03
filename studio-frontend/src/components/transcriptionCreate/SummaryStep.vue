@@ -7,7 +7,7 @@
     <template #context>
       <p class="summary-step__context flex align-center gap-small">
         <ph-icon :name="sourceIcon" size="sm" />
-        <strong>{{ $t(`transcription_create.source.${draft.source}`) }}</strong>
+        <strong>{{ sourceLabel }}</strong>
         <span v-if="contextDetails">· {{ contextDetails }}</span>
       </p>
     </template>
@@ -189,7 +189,7 @@ import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
 import { AUTO_LANGUAGE } from "@/const/transcriptionCreate.js"
 import formatLanguage from "@/tools/formatLanguage"
 import { getEnv } from "@/tools/getEnv"
-import { computeLanguageOptions } from "@/tools/transcriptionCreate/computeLanguageOptions.js"
+import { computeOfferedLanguageCodes } from "@/tools/transcriptionCreate/computeOfferedLanguageCodes.js"
 import { computeLanguageWarnings } from "@/tools/transcriptionCreate/computeLanguageWarnings.js"
 import { computeServiceName } from "@/tools/transcriptionCreate/computeServiceName.js"
 import { computeTranslationOptions } from "@/tools/transcriptionCreate/computeTranslationOptions.js"
@@ -221,6 +221,8 @@ export default {
   },
   props: {
     draft: { type: Object, required: true },
+    // Files still to send, for the "file" source
+    fileCount: { type: Number, required: true },
     catalog: { type: Object, required: true },
     // { profile, service }, see computeDraftEngines
     engines: { type: Object, required: true },
@@ -250,6 +252,13 @@ export default {
     isComplete() {
       return isDraftComplete(this.draft, this.engines)
     },
+    sourceLabel() {
+      return this.draft.source === "file"
+        ? this.$tc("conversation.transcription.file_count", this.fileCount, {
+            count: this.fileCount,
+          })
+        : this.$t(`transcription_create.source.${this.draft.source}`)
+    },
     contextDetails() {
       const parts = []
       if (this.draft.source !== "file") {
@@ -268,7 +277,9 @@ export default {
       )?.txt
     },
     languageOptions() {
-      return computeLanguageOptions(this.draft, this.catalog)
+      return computeOfferedLanguageCodes(this.draft, this.catalog).map(
+        (code) => ({ code }),
+      )
     },
     translationOptions() {
       return computeTranslationOptions(this.draft, this.catalog)

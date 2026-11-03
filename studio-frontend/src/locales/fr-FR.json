@@ -956,7 +956,7 @@
       "collection_label": "Liste de locuteurs",
       "none": {
         "label": "Ne pas séparer",
-        "description": "Un seul bloc de texte"
+        "description": "Un seul locuteur"
       },
       "distinguish": {
         "label": "Distinguer",

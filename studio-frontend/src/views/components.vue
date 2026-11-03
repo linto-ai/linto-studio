@@ -59,6 +59,8 @@
       <Button variant="primary" disabled label="Disabled" />
       <Button variant="secondary" disabled label="Disabled" />
       <Button disabled label="Disabled" />
+      <Button variant="link" disabled label="Link disabled" />
+      <Button variant="text" disabled label="Text disabled" />
       <Button variant="primary" hovered label="Hovered" />
       <Button hovered label="Hovered" />
     </div>

@@ -803,6 +803,7 @@ export default {
   flex-direction: column;
   gap: 0;
   outline: none;
+  background-color: var(--background-primary);
 
   &:focus-visible {
     outline: 2px solid var(--primary-color);
@@ -914,6 +915,7 @@ export default {
 }
 
 .popover-list__checkbox-label {
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
