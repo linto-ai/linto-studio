@@ -14,16 +14,6 @@
       <slot name="sidebar"></slot>
     </template>
     <slot></slot>
-
-    <Alert
-      type="warning"
-      visible
-      :showCancel="false"
-      :title="$t('conversation.websocket_error_title')"
-      :message="$t('conversation.websocket_error_content')"
-      :iconActionApply="null"
-      v-if="websocketError"
-      :closable="false"></Alert>
   </V2Layout>
   <div
     v-else-if="dataLoaded && status != 'done' && status != 'error'"
@@ -43,7 +33,6 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import { bus } from "@/main.js"
 
 import ConversationStatus from "@/components/ConversationStatus.vue"
 import ConversationStatusError from "@/components/ConversationStatusError.vue"
@@ -93,16 +82,6 @@ export default {
       type: Boolean,
       default: false,
     },
-  },
-  data() {
-    return {
-      websocketError: false,
-    }
-  },
-  mounted() {
-    bus.$on("conversation_disconnected", () => {
-      this.websocketError = true
-    })
   },
   methods: {},
   components: {

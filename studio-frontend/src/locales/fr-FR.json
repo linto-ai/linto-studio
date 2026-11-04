@@ -883,9 +883,7 @@
     "transcription_service_list_empty": "Aucun service de transcription disponible",
     "transcription_service_title": "Sélection de l'IA de transcription",
     "turn_cant_merge": "Le nombre de caractères est trop élevé pour fusionner les tours de parole",
-    "turn_sync_error_title": "Le tour de parole n'est pas synchronisé correctement",
-    "websocket_error_content": "La mise à jour du document a échoué. Veuillez enregistrer vos modifications et actualiser la page.",
-    "websocket_error_title": "Erreur de synchronisation"
+    "turn_sync_error_title": "Le tour de parole n'est pas synchronisé correctement"
   },
   "transcription_create": {
     "title": "Nouvelle transcription",

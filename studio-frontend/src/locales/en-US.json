@@ -882,9 +882,7 @@
     "transcription_service_list_empty": "No transcription service available",
     "transcription_service_title": "Transcription AI selection",
     "turn_cant_merge": "There are too many characters in the turn to merge it",
-    "turn_sync_error_title": "The turn is not well synchronized",
-    "websocket_error_content": "Document update failed, save your change and reload the page.",
-    "websocket_error_title": "Synchronization error."
+    "turn_sync_error_title": "The turn is not well synchronized"
   },
   "transcription_create": {
     "title": "New transcription",

@@ -509,7 +509,7 @@ class OrganizationWebSocketManager {
    * @param {string|null} serviceFormat - Service format/route (for frontend matching)
    */
   async _broadcastToWebsocket(organizationId, message, conversationId = null, serviceName = null, serviceFormat = null) {
-    // Use IoHandler directly if available (same process)
+    // Broadcast through the IoHandler when the component is loaded
     if (this._app && this._app.components && this._app.components["IoHandler"]) {
       const ioHandler = this._app.components["IoHandler"]
       ioHandler.notifyLlmJobUpdate({

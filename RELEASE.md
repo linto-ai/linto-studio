@@ -6,15 +6,42 @@ _2026_10_05_
   - Plans, usage quotas and prepaid live minutes per organization, with Stripe checkout and a billing view in the backoffice
   - Personal organizations keep their owner only: on the first start in SaaS mode, their other members are removed and keep a read-only share on the media they could read; the API keys of these organizations are deleted
   - Member roles are frozen in an organization without a Business plan, until it is back on one
+  - Live minute packs: bought from the billing page, the live creation page, the recording screen and the mobile live page when the credit runs low; the billing page shows the used amounts and the packs
+  - AI generations and chat share one AI credits gauge
+  - Sessions are offered to managed organizations with the `live.sessions` entitlement only; the live credit is not polled in Sessions mode
+  - Members are invited with a role; seat roles are disabled when the plan is full, and the seat UI is hidden for comp and managed organizations
+  - Checkout takes a billing contact; billing is cancelled before an organization is deleted
+  - Low credit banners on the session and recording screens, the plan chip only shows on the Free plan
+- Sessions
+  - Organization session notice: a text shown to participants before they join, edited from the organization settings (`GET` and `PUT /organizations/:organizationId/session-notice`)
+  - The session list and the bot routes are scoped to the organization in the path; stream endpoints are hidden from members and socket broadcasts
+  - Microphone lock on quick sessions; session lists and views are synced through the sessions store
+  - The audio of session channels loads on the transcription page
 - Sharing
   - An owner sees their own media when the members right is set to none
   - The share panel no longer refuses owners nor hangs while the users load, and takes the media owner into account
   - API keys are hidden from the users list of a media
+- Accounts and organizations
+  - User search no longer exposes emails: 3 characters minimum, results limited to co-members, sharers and the exact address; private profiles are found by co-members only; `GET /users` and the email in `GET /users/:id` are removed
+  - Members are added by user id or validated address; the current organization is refreshed after a member is added or removed; the member search stays visible when nothing matches
+  - Invitation emails for pending accounts are fixed, with a 48h link validity; invited accounts skip the onboarding wizard
+  - SSO login attaches accounts without organization by email domain; the personal organization is created at first login instead of invitation, and ensured at every login
+  - The SSO switch stays off until a configuration is saved; the team organization becomes the favorite when none is set
+  - My space is shown for the personal organization in the settings and the voice opt-in
+- Backoffice: organizations sorted by their real user count, reloaded in place instead of remounting the page; member locks follow the displayed organization's plan
 - Transcription import no longer loses words or punctuation
-- Transcription editor: interacting with the player scrolls back to the current position
-- Transcriber profiles: updating a profile no longer overwrites its stored secret
-- Remove the organization-level session purge route
-- JavaScript SDK: live meeting flow (quick meeting, sessions, bots)
+- Transcription editor (transcript-ui SDK 0.9.24)
+  - Interacting with the player scrolls back to the current position
+  - Placeholder speaker names are localized, a `defined` flag tells them from real names; speakers of other tracks no longer show after switching channel
+  - Burger button on the editor view; the subtitle export button is renamed to download subtitles
+- Voice signature: guidelines, samples of at least 20 seconds (`SPEAKER_ID_MIN_SAMPLE_DURATION`) and a voiceprint check at upload
+- JavaScript SDK: live meeting flow (quick meeting, sessions, bots); `setConversationOwner` fixed, the conversation PATCH ignored the owner field
+- Remove the unmaintained Flutter mobile app (`studio-app`); the mobile web pages take over
+- Infrastructure
+  - MongoDB 9.0 (compose image `mongo:9.0`) and Node driver 7.7: upgrade an existing 7.0 database one major version at a time, or dump and restore
+  - Docker images on node 26.13.0 alpine, dependency vulnerabilities fixed in studio-api and studio-frontend
+  - Database migration `1.9.0` (`DB_MIGRATION_TARGET=1.9.0`): personal organizations owner only on SaaS, conversation share index
+  - Remove the `studio-websocket` package: real-time events are served by studio-api (Socket.io), the `lintoai/studio-websocket` image is no longer built and can be dropped from deployments
 
 # 1.8.8
 

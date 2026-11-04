@@ -502,54 +502,6 @@ async function getJobMarkdownContent(jobId) {
   }
 }
 
-/**
- * Broadcast LLM job update to WebSocket clients
- * Used by studio-websocket to forward updates to frontend clients
- * @param {string} conversationId - The conversation ID
- * @param {object} update - The job update data
- * @returns {object} Formatted update for WebSocket broadcast
- */
-function formatJobUpdateForBroadcast(conversationId, update) {
-  return {
-    conversationId: conversationId,
-    jobId: update.job_id,
-    status: update.status,
-    progress: update.progress || null,
-    result: update.result || null,
-    error: update.error || null,
-    timestamp: update.timestamp || new Date().toISOString(),
-  }
-}
-
-/**
- * Register callback for broadcasting job updates to a specific conversation room
- * @param {string} organizationId - Organization ID
- * @param {string} conversationId - Conversation ID
- * @param {string} jobId - Job ID
- * @param {Function} broadcastFn - Function to call with formatted updates
- */
-async function registerBroadcastCallback(organizationId, conversationId, jobId, broadcastFn) {
-  if (!organizationId || !jobId) {
-    appLogger.warn(`[LLM V2] Cannot register broadcast callback: missing organizationId or jobId`)
-    return
-  }
-
-  const baseUrl = process.env.LLM_GATEWAY_SERVICES
-  try {
-    await organizationWsManager.ensureConnection(organizationId, baseUrl)
-    organizationWsManager.registerJobCallback(organizationId, jobId, async (update) => {
-      // Handle the update internally
-      await handleJobUpdate(jobId, update)
-
-      // Broadcast to WebSocket clients
-      const formattedUpdate = formatJobUpdateForBroadcast(conversationId, update)
-      broadcastFn(formattedUpdate)
-    })
-  } catch (err) {
-    appLogger.error(`[LLM V2] Failed to register broadcast callback: ${err.message}`)
-  }
-}
-
 module.exports = {
   generateText,
   request,
@@ -563,6 +515,4 @@ module.exports = {
   cancelJob,
   completedJob,
   getJobMarkdownContent,
-  formatJobUpdateForBroadcast,
-  registerBroadcastCallback,
 }
