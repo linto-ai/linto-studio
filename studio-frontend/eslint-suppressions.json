@@ -74,25 +74,6 @@
       "count": 1
     }
   },
-  "src/components/ConversationCreateAudio.vue": {
-    "no-unused-vars": {
-      "count": 4
-    },
-    "vue/no-mutating-props": {
-      "count": 1
-    }
-  },
-  "src/components/ConversationCreateFileLine.vue": {
-    "no-unused-vars": {
-      "count": 1
-    },
-    "vue/no-mutating-props": {
-      "count": 1
-    },
-    "vue/no-unused-components": {
-      "count": 1
-    }
-  },
   "src/components/ConversationShareMultiple.vue": {
     "vue/no-reserved-component-names": {
       "count": 1
@@ -343,11 +324,6 @@
       "count": 1
     }
   },
-  "src/components/QuickSessionSettings.vue": {
-    "no-unused-vars": {
-      "count": 1
-    }
-  },
   "src/components/ScreenEditorBox.vue": {
     "vue/no-textarea-mustache": {
       "count": 1
@@ -557,11 +533,6 @@
       "count": 5
     }
   },
-  "src/components/TabsVertical.vue": {
-    "vue/require-v-for-key": {
-      "count": 1
-    }
-  },
   "src/components/TagManagement.vue": {
     "no-unused-vars": {
       "count": 2
@@ -676,11 +647,6 @@
       "count": 3
     },
     "vue/no-reserved-component-names": {
-      "count": 1
-    }
-  },
-  "src/components/VisioCreateContent.vue": {
-    "no-unused-vars": {
       "count": 1
     }
   },
@@ -953,14 +919,6 @@
       "count": 1
     }
   },
-  "src/components/serviceSelector/ServiceEditor.vue": {
-    "no-unused-vars": {
-      "count": 1
-    },
-    "vue/require-v-for-key": {
-      "count": 1
-    }
-  },
   "src/i18n.js": {
     "no-useless-assignment": {
       "count": 1
@@ -984,11 +942,6 @@
   "src/lib/syllabic/syllabicFR.js": {
     "no-unused-vars": {
       "count": 1
-    }
-  },
-  "src/mixins/conversationCreate.js": {
-    "no-unused-vars": {
-      "count": 3
     }
   },
   "src/mixins/genericConversation.js": {
@@ -1181,14 +1134,6 @@
       "count": 1
     }
   },
-  "src/views/ConversationsCreate.vue": {
-    "no-fallthrough": {
-      "count": 1
-    },
-    "no-unused-vars": {
-      "count": 2
-    }
-  },
   "src/views/ConversationsSubtitle.vue": {
     "no-unused-vars": {
       "count": 1
@@ -1203,9 +1148,6 @@
     }
   },
   "src/views/CreateAccount.vue": {
-    "no-empty": {
-      "count": 1
-    },
     "vue/no-unused-components": {
       "count": 1
     }

@@ -122,7 +122,7 @@
                 newTemplateFile.name
               }}</span>
               <span class="selected-file__size">
-                {{ formatFileSize(newTemplateFile.size) }}
+                {{ formatFileSize(newTemplateFile.size, $i18n.locale) }}
               </span>
               <Button
                 variant="transparent"

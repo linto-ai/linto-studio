@@ -21,8 +21,7 @@
         v-if="
           !backoffice &&
           isAtLeastUploader &&
-          canStartConversationInCurrentOrganization &&
-          $route.name !== 'conversations create'
+          canStartConversationInCurrentOrganization
         "
         size="lg"
         @click="startConversation"

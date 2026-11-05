@@ -5,13 +5,13 @@
     v-else-if="view === 'source'"
     :draft="draft"
     :files="files"
+    :fileDurations="fileDurations"
     :sources="sources"
     :timingOptions="timingOptions"
     :minSecurityLevel="organizationSecurityLevel"
     :notice="sourceNotice"
     :refusal="saasRefusalToShow"
     :isQuickSessionRunning="Boolean(runningQuickSession)"
-    :enableFileRecording="!isSourceAvailable('microphone')"
     :organizationId="organizationId"
     @change="updateDraft"
     @update-files="updateFiles"
@@ -21,7 +21,8 @@
   <SummaryStep
     v-else-if="view === 'summary'"
     :draft="draft"
-    :fileCount="files.length"
+    :files="files"
+    :fileDurations="fileDurations"
     :catalog="catalog"
     :engines="engines"
     :notices="notices"
@@ -378,9 +379,6 @@ export default {
       this.sending = sending
       this.$emit("sending-change", sending)
     },
-    isSourceAvailable(name) {
-      return this.sources.some((source) => source.name === name)
-    },
     // On the first step, notices wait for the summary to show them.
     reconcile(change) {
       const { draft, notices } = reconcileDraft(
@@ -413,7 +411,6 @@ export default {
     },
     async readFileDuration(file) {
       this.$set(this.fileDurations, file.id, null)
-      if (file.uploadType === "url") return
       this.$set(this.fileDurations, file.id, await readMediaDuration(file.file))
     },
     // A refusal is solved from the first step: other files, another source.

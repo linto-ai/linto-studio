@@ -650,7 +650,6 @@
   "breadcrumb": {
     "activities": "Journal d'activité",
     "backoffice": "Administration",
-    "createConversation": "Importer un média",
     "createOrganization": "Créer une organisation",
     "createSession": "Créer une session",
     "explore": "Médias",
@@ -691,7 +690,6 @@
     },
     "conversation_creation_error_multiple_unknown": "Une erreur est survenue lors de l'envoi de {total} fichiers audio. {count} fichier(s) transféré(s). Veuillez réessayer ultérieurement.",
     "conversation_creation_partially_sent": "{count} fichier sur {total} a déjà été envoyé. | {count} fichiers sur {total} ont déjà été envoyés.",
-    "conversation_creation_loading_multiple": "Envoi du fichier {count} sur {total}. Cette opération peut prendre plusieurs minutes.",
     "folder_selection_title": "Dossier",
     "folder_selection_label": "Importer dans le dossier",
     "rights_info_tooltip": "Si le dossier sélectionné est privé, le média héritera automatiquement des permissions du dossier.",
@@ -893,6 +891,13 @@
     "back": "Retour",
     "next": "Suivant",
     "apply": "Appliquer",
+    "file": {
+      "name": "Nom du fichier",
+      "rename": "Renommer {name}",
+      "play": "Écouter {name}",
+      "pause": "Mettre en pause {name}",
+      "delete": "Supprimer {name}"
+    },
     "source": {
       "question": "Que voulez-vous transcrire ?",
       "file": "Fichier",
@@ -912,6 +917,10 @@
       "both_summary": "en direct puis après l'enregistrement"
     },
     "summary": {
+      "files": "Fichiers à transcrire",
+      "files_total_partial": "au moins {duration}",
+      "sending": "Envoi du fichier {index} sur {total}",
+      "sending_file": "Envoi de {name}",
       "language": "Langue",
       "translation": "Traduction",
       "live_engine": "Moteur en direct",
@@ -981,7 +990,7 @@
       }
     },
     "submit": {
-      "file": "Lancer la transcription",
+      "file": "Lancer la transcription | Lancer {count} transcriptions",
       "microphone": "Commencer l'enregistrement",
       "visio": "Rejoindre la visioconférence"
     }

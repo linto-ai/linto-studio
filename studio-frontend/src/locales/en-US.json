@@ -649,7 +649,6 @@
   "breadcrumb": {
     "activities": "Activity log",
     "backoffice": "Backoffice",
-    "createConversation": "Create a conversation",
     "createorganization": "Create an organisation",
     "createOrganization": "Create an organisation",
     "createSession": "Create a session",
@@ -690,7 +689,6 @@
     },
     "conversation_creation_error_multiple_unknown": "An error occurred while uploading {total} audio files. {count} have already been uploaded. Try again later.",
     "conversation_creation_partially_sent": "{count} file out of {total} was already sent. | {count} files out of {total} were already sent.",
-    "conversation_creation_loading_multiple": "Uploading audio {count} of {total}. This can take several minutes.",
     "folder_selection_title": "Folder",
     "folder_selection_label": "Upload to folder",
     "rights_info_tooltip": "If the selected folder is private, the media will automatically inherit the folder's permissions.",
@@ -892,6 +890,13 @@
     "back": "Back",
     "next": "Next",
     "apply": "Apply",
+    "file": {
+      "name": "File name",
+      "rename": "Rename {name}",
+      "play": "Play {name}",
+      "pause": "Pause {name}",
+      "delete": "Delete {name}"
+    },
     "source": {
       "question": "What do you want to transcribe?",
       "file": "File",
@@ -911,6 +916,10 @@
       "both_summary": "live then after recording"
     },
     "summary": {
+      "files": "Files to transcribe",
+      "files_total_partial": "at least {duration}",
+      "sending": "Sending file {index} of {total}",
+      "sending_file": "Sending {name}",
       "language": "Language",
       "translation": "Translation",
       "live_engine": "Live engine",
@@ -980,7 +989,7 @@
       }
     },
     "submit": {
-      "file": "Start transcription",
+      "file": "Start transcription | Start {count} transcriptions",
       "microphone": "Start recording",
       "visio": "Join the videoconference"
     }

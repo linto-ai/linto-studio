@@ -1,15 +1,14 @@
 import { buildServiceConfig } from "./buildServiceConfig.js"
 
 /**
- * What apiCreateConversation expects for one file or URL of the draft.
+ * What apiCreateConversation expects for one file of the draft.
  * @param {object} draft
  * @param {object} service - one entry of GET /services
- * @param {{ value: string, file: File|string, uploadType: string }} fileField
+ * @param {{ value: string, file: File }} fileField
  * @returns {object}
  */
 export function buildConversationRequest(draft, service, fileField) {
   const config = buildServiceConfig(draft, service)
-  const isUrl = fileField.uploadType === "url"
   return {
     name: fileField.value,
     description: "",
@@ -20,8 +19,7 @@ export function buildConversationRequest(draft, service, fileField) {
     speakerIdentificationCollections: config.speakerIdentificationCollections,
     lang: config.lang,
     endpoint: config.endpoint,
-    tracks: isUrl ? null : [fileField.file],
-    url: isUrl ? fileField.file : null,
+    tracks: [fileField.file],
     folderId: draft.folderId,
   }
 }

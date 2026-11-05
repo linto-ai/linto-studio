@@ -3,7 +3,7 @@ import { isValidUrl } from "../isValidUrl.js"
 /**
  * Whether the first step holds what its source needs to go further.
  * @param {object} draft
- * @param {object[]} files - the files and URLs picked for the "file" source
+ * @param {object[]} files - the files picked for the "file" source
  * @returns {boolean}
  */
 export function isSourceStepComplete(draft, files) {

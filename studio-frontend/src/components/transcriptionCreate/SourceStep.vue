@@ -29,7 +29,7 @@
     <ConversationCreateAudio
       v-if="draft.source === 'file'"
       :value="files"
-      :enableMicrophone="enableFileRecording"
+      :durations="fileDurations"
       @input="$emit('update-files', $event)" />
 
     <NotificationBanner
@@ -126,6 +126,8 @@ export default {
   props: {
     draft: { type: Object, required: true },
     files: { type: Array, required: true },
+    // Seconds by file id. null when unknown or not read yet.
+    fileDurations: { type: Object, required: true },
     // [{ name, icon, disabled }]
     sources: { type: Array, required: true },
     // See computeTimingOptions
@@ -136,8 +138,6 @@ export default {
     // Response body of the refusal behind the notice
     refusal: { type: Object, default: null },
     isQuickSessionRunning: { type: Boolean, default: false },
-    // Without the microphone source, a file can still be recorded here.
-    enableFileRecording: { type: Boolean, default: false },
     organizationId: { type: String, required: true },
   },
   data() {

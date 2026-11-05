@@ -56,7 +56,7 @@ test("speakers modes reach the diarization config", (t) => {
 })
 
 test("conversation request: a file goes as a track", (t) => {
-  const file = { value: "meeting", file: "binary", uploadType: "file" }
+  const file = { value: "meeting", file: "binary" }
   const request = buildConversationRequest(
     microphoneDraft({ folderId: "folder" }),
     whisperService,
@@ -69,18 +69,7 @@ test("conversation request: a file goes as a track", (t) => {
   t.is(request.serviceName, "whisper")
   t.is(request.endpoint, "whisper/transcribe")
   t.deepEqual(request.tracks, ["binary"])
-  t.is(request.url, null)
   t.is(JSON.parse(request.transcriptionConfig).language, "*")
-})
-
-test("conversation request: a URL goes as a URL", (t) => {
-  const request = buildConversationRequest(microphoneDraft(), whisperService, {
-    value: "talk",
-    file: "https://a.b/c",
-    uploadType: "url",
-  })
-  t.is(request.tracks, null)
-  t.is(request.url, "https://a.b/c")
 })
 
 test("quick session, both: live profile, chosen translations, end service", (t) => {

@@ -5,7 +5,16 @@
     @close="$emit('close')"
     @submit="$emit('submit')">
     <template #context>
-      <p class="summary-step__context flex align-center gap-small">
+      <SummaryFiles
+        v-if="draft.source === 'file'"
+        class="summary-step__context"
+        :files="files"
+        :durations="fileDurations"
+        :details="contextDetails"
+        :uploadProgress="uploadProgress" />
+      <p
+        v-else
+        class="summary-step__context summary-step__source flex align-center gap-small">
         <ph-icon :name="sourceIcon" size="sm" />
         <strong>{{ sourceLabel }}</strong>
         <span v-if="contextDetails">· {{ contextDetails }}</span>
@@ -129,22 +138,6 @@
         @edit="$emit('edit', 'visioSubtitles')" />
     </dl>
 
-    <div v-if="uploadProgress" class="flex col gap-tiny">
-      <label for="transcription-upload-progress">
-        {{
-          $t("conversation.conversation_creation_loading_multiple", {
-            count: uploadProgress.index,
-            total: uploadProgress.total,
-          })
-        }}
-      </label>
-      <progress
-        id="transcription-upload-progress"
-        class="summary-step__progress"
-        max="100"
-        :value="uploadProgress.percent"></progress>
-    </div>
-
     <template #footer-message>
       <p v-if="error" class="error-field" role="alert">{{ error }}</p>
     </template>
@@ -173,7 +166,7 @@
         :icon="sourceIcon"
         :loading="sending"
         :disabled="sending || !isComplete">
-        {{ $t(`transcription_create.submit.${draft.source}`) }}
+        {{ submitLabel }}
       </Button>
     </template>
   </TranscriptionCreateFrame>
@@ -197,6 +190,7 @@ import FolderSelector from "@/components/FolderSelector.vue"
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import Chip from "@/components/atoms/Chip.vue"
 import LanguagePicker from "./LanguagePicker.vue"
+import SummaryFiles from "./SummaryFiles.vue"
 import SummaryRow from "./SummaryRow.vue"
 import TranscriptionCreateFrame from "./TranscriptionCreateFrame.vue"
 
@@ -207,13 +201,16 @@ export default {
     NotificationBanner,
     Chip,
     LanguagePicker,
+    SummaryFiles,
     SummaryRow,
     TranscriptionCreateFrame,
   },
   props: {
     draft: { type: Object, required: true },
     // Files still to send, for the "file" source
-    fileCount: { type: Number, required: true },
+    files: { type: Array, required: true },
+    // Seconds by file id. null when unknown or not read yet.
+    fileDurations: { type: Object, required: true },
     catalog: { type: Object, required: true },
     // { profile, service }, see computeDraftEngines
     engines: { type: Object, required: true },
@@ -240,11 +237,18 @@ export default {
       return isDraftComplete(this.draft, this.engines)
     },
     sourceLabel() {
-      return this.draft.source === "file"
-        ? this.$tc("conversation.transcription.file_count", this.fileCount, {
-            count: this.fileCount,
-          })
-        : this.$t(`transcription_create.source.${this.draft.source}`)
+      return this.$t(`transcription_create.source.${this.draft.source}`)
+    },
+    // Keeps the count of the start while the sent files leave the list.
+    submitLabel() {
+      const count = this.uploadProgress?.total ?? this.files.length
+      return this.$tc(
+        `transcription_create.submit.${this.draft.source}`,
+        count,
+        {
+          count,
+        },
+      )
     },
     contextDetails() {
       const parts = []
@@ -327,10 +331,14 @@ export default {
 <style lang="scss" scoped>
 .summary-step__context {
   margin: 0;
-  padding: var(--small-gap) var(--large-gap);
+  padding: var(--small-gap) 0;
   font-size: var(--text-sm);
   background: var(--neutral-10);
   border-bottom: var(--border-block);
+}
+
+.summary-step__source {
+  padding-inline: var(--large-gap);
 }
 
 .summary-step__rows {
@@ -345,10 +353,5 @@ export default {
 .summary-step__warning {
   font-weight: normal;
   color: var(--warning-text);
-}
-
-.summary-step__progress {
-  width: 100%;
-  accent-color: var(--primary-color);
 }
 </style>
