@@ -179,7 +179,8 @@ export default {
         ...buildPlanFilterQuery(this.planFilter),
       }
     },
-    // Every plan of the catalog, and the expired variant of the paid ones
+    // Every plan of the catalog, and the expired variant of the team plans,
+    // the only ones whose end locks the organization
     planFilterItems() {
       const items = [
         {
@@ -191,7 +192,7 @@ export default {
         items.push({ value: plan.planKey, text: plan.displayName })
       }
       for (const plan of this.plans) {
-        if (plan.pricing?.model === "free") continue
+        if (!plan.entitlements?.collaboration?.value) continue
         items.push({
           value: `${plan.planKey}:expired`,
           text: this.$t("backoffice.organisation_list.plan_filter.expired", {
