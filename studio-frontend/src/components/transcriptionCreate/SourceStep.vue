@@ -50,7 +50,7 @@
         @input="$emit('change', { visio: $event })" />
 
       <div class="form-field flex col gap-small">
-        <span class="form-label">
+        <span class="field-label">
           {{ $t("transcription_create.timing.label") }}
         </span>
         <SegmentedControl

@@ -174,12 +174,15 @@
 
       <SummaryRow
         v-if="draft.source === 'visio' && isLive"
-        withEdit
         icon="subtitles"
-        :label="$t('transcription_create.summary.visio_subtitles')"
-        :value="visioSubtitlesLabel"
-        :disabled="sending"
-        @edit="$emit('edit', 'visioSubtitles')" />
+        :label="$t('transcription_create.summary.visio_subtitles')">
+        <SummarySelect
+          :label="$t('transcription_create.summary.visio_subtitles')"
+          :items="subtitleItems"
+          :value="subtitleChoice"
+          :disabled="sending"
+          @input="changeSubtitles" />
+      </SummaryRow>
     </dl>
 
     <template #footer-message>
@@ -238,6 +241,9 @@ import SummaryFiles from "./SummaryFiles.vue"
 import SummaryRow from "./SummaryRow.vue"
 import SummarySelect from "./SummarySelect.vue"
 import TranscriptionCreateFrame from "./TranscriptionCreateFrame.vue"
+
+// Choice of the subtitles list, next to "original" and the translations.
+const NO_SUBTITLES = "none"
 
 export default {
   name: "SummaryStep",
@@ -350,12 +356,27 @@ export default {
         name: txt,
       }))
     },
-    visioSubtitlesLabel() {
+    subtitleChoice() {
       const { showSubtitles, subtitleSource } = this.draft.visio
-      if (!showSubtitles) return this.$t("transcription_create.summary.none")
-      return subtitleSource === "original"
-        ? this.$t("session.live_page.translation_selector.original_language")
-        : this.formatLanguage(subtitleSource)
+      return showSubtitles ? subtitleSource : NO_SUBTITLES
+    },
+    subtitleItems() {
+      return [
+        {
+          id: NO_SUBTITLES,
+          name: this.$t("transcription_create.summary.no_subtitles"),
+        },
+        {
+          id: "original",
+          name: this.$t(
+            "session.live_page.translation_selector.original_language",
+          ),
+        },
+        ...this.draft.translations.map((code) => ({
+          id: code,
+          name: this.formatLanguage(code),
+        })),
+      ]
     },
   },
   methods: {
@@ -363,6 +384,16 @@ export default {
       this.$emit("change", {
         speakers: { ...this.draft.speakers, ...change },
         speakersChosenByUser: true,
+      })
+    },
+    // The source is kept for when subtitles return.
+    changeSubtitles(choice) {
+      const { visio } = this.draft
+      this.$emit("change", {
+        visio:
+          choice === NO_SUBTITLES
+            ? { ...visio, showSubtitles: false }
+            : { ...visio, showSubtitles: true, subtitleSource: choice },
       })
     },
     formatLanguage(code) {

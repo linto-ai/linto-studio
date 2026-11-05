@@ -931,10 +931,9 @@
       "sharing": "Sharing",
       "folder": "Folder",
       "visio_subtitles": "Subtitles in the videoconference",
+      "no_subtitles": "No subtitles",
       "none": "None",
-      "no_engine": "No compatible engine",
-      "edit": "Edit",
-      "edit_row": "Edit: {label}"
+      "no_engine": "No compatible engine"
     },
     "language": {
       "detection": "Automatic detection",

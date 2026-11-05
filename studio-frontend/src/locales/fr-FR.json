@@ -932,10 +932,9 @@
       "sharing": "Partage",
       "folder": "Dossier",
       "visio_subtitles": "Sous-titres dans la visio",
+      "no_subtitles": "Pas de sous-titres",
       "none": "Aucune",
-      "no_engine": "Aucun moteur compatible",
-      "edit": "Modifier",
-      "edit_row": "Modifier : {label}"
+      "no_engine": "Aucun moteur compatible"
     },
     "language": {
       "detection": "Détection automatique",

@@ -37,17 +37,8 @@
     :error="error"
     @change="updateDraft"
     @change-languages="changeLanguages"
-    @edit="view = $event"
     @back="backToSource"
     @submit="submit"
-    @close="close" />
-
-  <VisioSubtitlesEditor
-    v-else-if="view === 'visioSubtitles'"
-    :value="draft.visio"
-    :translations="draft.translations"
-    @apply="applySummaryChange({ visio: { ...draft.visio, ...$event } })"
-    @cancel="view = 'summary'"
     @close="close" />
 </template>
 <script>
@@ -92,7 +83,6 @@ import { reconcileDraft } from "@/tools/transcriptionCreate/reconcileDraft.js"
 import LoadingStep from "./LoadingStep.vue"
 import SourceStep from "./SourceStep.vue"
 import SummaryStep from "./SummaryStep.vue"
-import VisioSubtitlesEditor from "./VisioSubtitlesEditor.vue"
 
 const SOURCE_ICONS = {
   file: "file-audio",
@@ -109,7 +99,6 @@ export default {
     LoadingStep,
     SourceStep,
     SummaryStep,
-    VisioSubtitlesEditor,
   },
   mixins: [
     livePackPurchaseMixin,
@@ -120,7 +109,7 @@ export default {
   data() {
     return {
       loading: true,
-      // "source" | "summary" | "visioSubtitles"
+      // "source" | "summary"
       view: "source",
       draft: null,
       // See reconcileDraft: what the last change did to the user's choices
@@ -391,10 +380,6 @@ export default {
       this.updateDraft({
         languages: computeLanguageSelection(this.draft.languages, next),
       })
-    },
-    applySummaryChange(change) {
-      this.updateDraft(change)
-      this.view = "summary"
     },
     formatServiceLanguages(service) {
       const codes = computeServiceLanguages(service)

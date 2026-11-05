@@ -7,21 +7,8 @@
       {{ label }}
     </dt>
     <dd class="summary-row__value flex col flex1">
-      <slot>{{ value }}</slot>
+      <slot></slot>
     </dd>
-    <slot name="action">
-      <Button
-        v-if="withEdit"
-        class="summary-row__edit"
-        type="button"
-        variant="link"
-        size="sm"
-        :disabled="disabled"
-        :aria-label="$t('transcription_create.summary.edit_row', { label })"
-        @click="$emit('edit')">
-        {{ $t("transcription_create.summary.edit") }}
-      </Button>
-    </slot>
   </div>
 </template>
 <script>
@@ -32,11 +19,6 @@ export default {
     // Without one, the label stays aligned with those of the other rows: the
     // row then reads as a detail of the one above.
     icon: { type: String, default: null },
-    // A plain value: the default slot takes over for anything richer
-    value: { type: String, default: "" },
-    // Offers the button emitting "edit"
-    withEdit: { type: Boolean, default: false },
-    disabled: { type: Boolean, default: false },
   },
 }
 </script>
