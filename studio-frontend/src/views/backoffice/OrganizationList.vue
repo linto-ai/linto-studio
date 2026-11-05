@@ -87,14 +87,8 @@
           <div v-if="value" class="flex col">
             <span class="flex gap-small align-center">
               {{ planLabel(value) }}
-              <Tag v-if="value.state === 'expired'" size="sm">
-                {{ $t("orga_table.plan.expired") }}
-              </Tag>
-              <Tag v-else-if="value.mode !== 'normal'" size="sm">
-                {{ $t("billing.mode." + value.mode) }}
-              </Tag>
-              <Tag v-else-if="value.source === 'manual'" size="sm">
-                {{ $t("orga_table.plan.manual") }}
+              <Tag v-if="planTagKey(value)" size="sm">
+                {{ $t(planTagKey(value)) }}
               </Tag>
             </span>
             <span v-if="planDateText(value)" class="small-text">
@@ -148,6 +142,11 @@ import { impersonationMixin } from "@/mixins/impersonation.js"
 import { apiGetAllOrganizations } from "@/api/admin.js"
 import { getEnv } from "@/tools/getEnv"
 import { buildPlanFilterQuery } from "@/tools/backoffice/buildPlanFilterQuery.js"
+import { buildPlanFilterItems } from "@/tools/backoffice/buildPlanFilterItems.js"
+import { getPlanDisplayName } from "@/tools/backoffice/getPlanDisplayName.js"
+import { computePlanTag } from "@/tools/backoffice/computePlanTag.js"
+import { computePlanDate } from "@/tools/backoffice/computePlanDate.js"
+import { PLAN_FILTER_ALL } from "@/const/organizationPlan.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
@@ -167,7 +166,7 @@ export default {
       modalDeleteMultipleOrganizationsIsVisible: false,
       search: "",
       showPersonalOrganizations: false,
-      planFilter: "all",
+      planFilter: PLAN_FILTER_ALL,
     }
   },
   mounted() {
@@ -184,27 +183,8 @@ export default {
         ...buildPlanFilterQuery(this.planFilter),
       }
     },
-    // The expired variant exists for team plans only (collaboration)
     planFilterItems() {
-      const items = [
-        {
-          value: "all",
-          text: this.$t("backoffice.organisation_list.plan_filter.all"),
-        },
-      ]
-      for (const plan of this.plans) {
-        items.push({ value: plan.planKey, text: plan.displayName })
-      }
-      for (const plan of this.plans) {
-        if (!plan.entitlements?.collaboration?.value) continue
-        items.push({
-          value: `${plan.planKey}:expired`,
-          text: this.$t("backoffice.organisation_list.plan_filter.expired", {
-            plan: plan.displayName,
-          }),
-        })
-      }
-      return items
+      return buildPlanFilterItems(this.$t.bind(this), this.plans)
     },
     columns() {
       const columns = [
@@ -247,20 +227,13 @@ export default {
       return value ? new Date(value).toLocaleDateString() : "-"
     },
     planLabel(plan) {
-      const known = this.plans.find((p) => p.planKey === plan.planKey)
-      return known ? known.displayName : plan.planKey
+      return getPlanDisplayName(this.plans, plan.planKey)
     },
+    planTagKey: computePlanTag,
     planDateText(plan) {
-      if (plan.renewsAt) {
-        return this.$t("orga_table.plan.renews_on", {
-          date: this.formatDate(plan.renewsAt),
-        })
-      }
-      if (!plan.endsAt) return ""
-      const key = plan.state === "expired" ? "ended_on" : "ends_on"
-      return this.$t(`orga_table.plan.${key}`, {
-        date: this.formatDate(plan.endsAt),
-      })
+      const planDate = computePlanDate(plan)
+      if (!planDate) return ""
+      return this.$t(planDate.key, { date: this.formatDate(planDate.date) })
     },
     orgDetailRoute(organizationId) {
       return {
