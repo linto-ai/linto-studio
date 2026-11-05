@@ -921,11 +921,13 @@
       "sending": "Sending file {index} of {total}",
       "sending_file": "Sending {name}",
       "language": "Language",
-      "translation": "Translation",
+      "translation": "Live translation",
       "live_engine": "Live engine",
       "offline_engine": "Engine after recording",
       "engine": "Engine",
-      "speakers": "Speakers",
+      "speaker_separation": "Speaker separation",
+      "speaker_count": "Number of speakers",
+      "speaker_identification": "Speaker identification",
       "sharing": "Sharing",
       "folder": "Folder",
       "visio_subtitles": "Subtitles in the videoconference",
@@ -938,9 +940,7 @@
       "detection": "Automatic detection",
       "search": "Search...",
       "group_suggested": "Suggestions",
-      "group_all": "All languages",
-      "changes_engine": "Changes the engine",
-      "changes_engine_note": "\"Changes the engine\": the current engine doesn't offer it, another compatible engine will be picked."
+      "group_all": "All languages"
     },
     "credit": {
       "file_over_credit": "This file lasts {duration}, {remaining} of transcription left.",
@@ -963,24 +963,14 @@
       "speakers_changed": "The speakers choice is no longer available: it was replaced."
     },
     "engine": {
-      "description": "Engines compatible with the chosen language, translations and security level.",
       "languages": "Languages: {languages}"
     },
     "speakers": {
-      "title": "Should speakers be separated?",
-      "collection_label": "Speaker list",
-      "none": {
-        "label": "Don't separate",
-        "description": "A single speaker"
-      },
-      "distinguish": {
-        "label": "Distinguish",
-        "description": "Speaker 1, Speaker 2..."
-      },
-      "recognize": {
-        "label": "Recognize",
-        "description": "Speakers are named from a list"
-      },
+      "enabled": "On",
+      "disabled": "Off",
+      "count_auto": "Auto",
+      "count_fixed": "Fixed",
+      "no_identification": "No identification",
       "notices": {
         "after_recording_only": "Only after the recording.",
         "during_recording_only": "Only during the recording.",
@@ -2488,6 +2478,7 @@
     "no_name": "No name provided"
   },
   "popover_list": {
+    "remove_item": "Remove {name}",
     "search": "Search",
     "search_placeholder": "Search...",
     "no_results": "No results",

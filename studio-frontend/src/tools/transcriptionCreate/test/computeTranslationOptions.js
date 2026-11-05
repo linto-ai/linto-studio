@@ -13,18 +13,18 @@ const baseDraft = {
 
 test("offers the translations of every compatible profile", (t) => {
   t.deepEqual(computeTranslationOptions(baseDraft, catalog), [
-    { code: "en", changesEngine: false },
-    { code: "es", changesEngine: true },
-    { code: "de", changesEngine: true },
-    { code: "ar", changesEngine: true },
+    { code: "en" },
+    { code: "es" },
+    { code: "de" },
+    { code: "ar" },
   ])
 })
 
 test("only offers what combines with the chosen translations", (t) => {
   const draft = { ...baseDraft, translations: ["en"], profileId: "bilingual" }
   t.deepEqual(computeTranslationOptions(draft, catalog), [
-    { code: "en", changesEngine: false },
-    { code: "es", changesEngine: false },
+    { code: "en" },
+    { code: "es" },
   ])
 })
 
@@ -38,7 +38,5 @@ test("follows the chosen languages", (t) => {
 
 test("a chosen translation stays listed, even out of reach", (t) => {
   const draft = { ...baseDraft, translations: ["pt"] }
-  t.deepEqual(computeTranslationOptions(draft, catalog), [
-    { code: "pt", changesEngine: false },
-  ])
+  t.deepEqual(computeTranslationOptions(draft, catalog), [{ code: "pt" }])
 })

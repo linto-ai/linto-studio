@@ -1,6 +1,7 @@
 import generateServiceConfig from "../generateServiceConfig.js"
 import { computeDiarizationServiceName } from "./computeDiarizationServiceName.js"
 import { computeServiceLanguage } from "./computeServiceLanguage.js"
+import { computeSpeakersMode } from "./computeSpeakersMode.js"
 
 const MODELS_WITH_BUILT_IN_PUNCTUATION = ["whisper", "nemo"]
 
@@ -12,15 +13,16 @@ const MODELS_WITH_BUILT_IN_PUNCTUATION = ["whisper", "nemo"]
  * @returns {object} see generateServiceConfig
  */
 export function buildServiceConfig(draft, service) {
-  const { mode, collectionId } = draft.speakers
+  const { count, collectionIds } = draft.speakers
+  const mode = computeSpeakersMode(draft.speakers)
   const language = computeServiceLanguage(service, draft.languages)
   return generateServiceConfig(service, {
     languageValue: language,
     punctuationValue: computePunctuationServiceName(service),
     diarizationValue:
       computeDiarizationServiceName(service, mode) ?? "disabled",
-    speakerIdentificationCollections:
-      mode === "recognize" && collectionId ? [collectionId] : [],
+    speakersNumberValue: count ?? 0,
+    speakerIdentificationCollections: mode === "recognize" ? collectionIds : [],
   })
 }
 

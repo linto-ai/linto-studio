@@ -922,11 +922,13 @@
       "sending": "Envoi du fichier {index} sur {total}",
       "sending_file": "Envoi de {name}",
       "language": "Langue",
-      "translation": "Traduction",
+      "translation": "Traduction en direct",
       "live_engine": "Moteur en direct",
       "offline_engine": "Moteur après l'enregistrement",
       "engine": "Moteur",
-      "speakers": "Locuteurs",
+      "speaker_separation": "Séparation des locuteurs",
+      "speaker_count": "Nombre de locuteurs",
+      "speaker_identification": "Identification des locuteurs",
       "sharing": "Partage",
       "folder": "Dossier",
       "visio_subtitles": "Sous-titres dans la visio",
@@ -939,9 +941,7 @@
       "detection": "Détection automatique",
       "search": "Rechercher...",
       "group_suggested": "Suggestions",
-      "group_all": "Toutes les langues",
-      "changes_engine": "Change le moteur",
-      "changes_engine_note": "« Change le moteur » : le moteur actuel ne le propose pas, un autre moteur compatible sera choisi."
+      "group_all": "Toutes les langues"
     },
     "credit": {
       "file_over_credit": "Ce fichier dure {duration}, il reste {remaining} de transcription.",
@@ -964,24 +964,14 @@
       "speakers_changed": "Le choix pour les locuteurs n'est plus disponible : il a été remplacé."
     },
     "engine": {
-      "description": "Moteurs compatibles avec la langue, les traductions et le niveau de sécurité choisis.",
       "languages": "Langues : {languages}"
     },
     "speakers": {
-      "title": "Faut-il séparer les locuteurs ?",
-      "collection_label": "Liste de locuteurs",
-      "none": {
-        "label": "Ne pas séparer",
-        "description": "Un seul locuteur"
-      },
-      "distinguish": {
-        "label": "Distinguer",
-        "description": "Locuteur 1, Locuteur 2..."
-      },
-      "recognize": {
-        "label": "Reconnaître",
-        "description": "Les locuteurs sont nommés à partir d'une liste"
-      },
+      "enabled": "Activée",
+      "disabled": "Désactivée",
+      "count_auto": "Auto",
+      "count_fixed": "Fixe",
+      "no_identification": "Aucune identification",
       "notices": {
         "after_recording_only": "Seulement après l'enregistrement.",
         "during_recording_only": "Seulement pendant l'enregistrement.",
@@ -2482,6 +2472,7 @@
     "no_name": "Nom non renseigné"
   },
   "popover_list": {
+    "remove_item": "Retirer {name}",
     "search": "Rechercher",
     "search_placeholder": "Rechercher...",
     "no_results": "Aucun résultat",

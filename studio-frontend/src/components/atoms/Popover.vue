@@ -17,6 +17,11 @@ import POPOVER_MARGIN from "@/const/popoverMargin.js"
 export default {
   name: "Popover",
   props: {
+    // The trigger doesn't open the popover anymore.
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     /**
      * If true, an overlay will be displayed on the page when the popover is open
      */
@@ -169,6 +174,7 @@ export default {
   computed: {
     triggerHandlers() {
       const handlers = {}
+      if (this.disabled) return handlers
       if (this.trigger === "click") {
         handlers.click = (event) => {
           event.stopPropagation()

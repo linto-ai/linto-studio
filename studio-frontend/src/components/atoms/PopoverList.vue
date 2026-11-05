@@ -6,6 +6,7 @@
     :overlay="overlay"
     :full-width="fullWidth"
     :content-class="mergedContentClass"
+    :disabled="disabled"
     v-bind="$attrs"
     ref="popover"
     @input="onPopoverToggle"
@@ -16,15 +17,27 @@
         :open="open"
         :listboxId="listboxId"
         :ariaProps="triggerAriaProps(open)">
+        <PopoverListTriggerMultiple
+          v-if="multiple"
+          :items="currentItems"
+          :placeholder="placeholder"
+          :label="ariaLabel"
+          :open="open"
+          :ariaProps="triggerAriaProps(open)"
+          :disabled="disabled"
+          @remove="toggleSelection"
+          @close="close" />
         <Button
+          v-else
           :iconRight="open ? 'caret-up' : 'caret-down'"
           v-bind="{ ...$attrs, ...triggerAriaProps(open) }"
+          :disabled="disabled"
           :block="fullWidth"
           :avatar="selectedItem?.avatar"
           :icon="triggerIcon"
           :icon-weight="selectedItem?.iconWeight"
           :label="hasSelection ? labelButton : placeholder"
-          class="popover-list__trigger">
+          class="popover-list__trigger custom">
           <template v-if="hasSelection && $scopedSlots['trigger-content']">
             <slot
               name="trigger-content"
@@ -208,6 +221,7 @@ import { mapGetters } from "vuex"
 import Popover from "./Popover.vue"
 import Loading from "./Loading.vue"
 import Checkbox from "./Checkbox.vue"
+import PopoverListTriggerMultiple from "./PopoverListTriggerMultiple.vue"
 import { debounceMixin } from "@/mixins/debounce"
 import { generateId } from "@/tools/generateId.js"
 import { normalizeSearchText } from "@/tools/normalizeSearchText.js"
@@ -219,6 +233,7 @@ export default {
     Popover,
     Loading,
     Checkbox,
+    PopoverListTriggerMultiple,
   },
   props: {
     /**
@@ -234,6 +249,7 @@ export default {
      * @property {string} color? - The color of the item (optional, default: "primary")
      * @property {string} iconRight? - The right icon of the item (optional)
      * @property {string} group? - Heading of the item's group, in selection mode (optional)
+     * @property {boolean} exclusive? - Replaces the other items when selected: the multi-selection trigger shows it as plain text (optional)
      */
     items: {
       type: Array,
@@ -258,6 +274,10 @@ export default {
     size: {
       type: String,
       default: "sm",
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     /**
      * Enables the selection mode where the list behaves like a select component.
@@ -685,6 +705,10 @@ export default {
       }
       return [...this.pinnedItems, ...this.items]
     },
+    // The selected items of the multi-selection mode
+    currentItems() {
+      return this.allAvailableItems.filter(this.isSelected)
+    },
     labelButton() {
       const item = this.allAvailableItems.find((item) =>
         this.isSame(this.value, item),
@@ -954,10 +978,38 @@ export default {
 .popover-list__trigger {
   display: flex;
   justify-content: space-between;
+  padding-block: 0;
+  padding-right: 0;
+  overflow: hidden;
   --btn-font-size: 1em;
 
   .label {
     text-align: left;
+  }
+
+  // Otherwise bounded like the inputs it inherits from.
+  .popover-trigger--full-width > & {
+    min-width: 0;
+    max-width: none;
+  }
+
+  // The caret, in the same zone as PopoverListTriggerMultiple.
+  > .icon-svg:last-child {
+    box-sizing: content-box;
+    flex-shrink: 0;
+    align-self: stretch;
+    width: 1rem;
+    height: auto;
+    margin-left: auto;
+    padding: 0 var(--small-gap);
+    border-left: var(--border-block);
+    background: color-mix(in srgb, var(--text-primary) 5%, transparent);
+    // PhIcon sets its color inline.
+    color: var(--text-secondary) !important;
+  }
+
+  &:hover:not(:disabled) > .icon-svg:last-child {
+    background: color-mix(in srgb, var(--text-primary) 10%, transparent);
   }
 }
 </style>

@@ -27,6 +27,8 @@
     :engines="engines"
     :notices="notices"
     :speakerOptions="speakerOptions"
+    :liveEngines="liveEngines"
+    :offlineEngines="offlineEngines"
     :sourceIcon="sourceIcon"
     :offlineEngineLabel="offlineEngineLabel"
     :isFolderPrivate="isFolderPrivate"
@@ -38,40 +40,6 @@
     @edit="view = $event"
     @back="backToSource"
     @submit="submit"
-    @close="close" />
-
-  <EngineEditor
-    v-else-if="view === 'liveEngine'"
-    :title="$t('transcription_create.summary.live_engine')"
-    :engines="liveEngines"
-    :value="draft.profileId"
-    @apply="applyProfile"
-    @cancel="view = 'summary'"
-    @close="close" />
-
-  <EngineEditor
-    v-else-if="view === 'offlineEngine'"
-    :title="offlineEngineLabel"
-    :engines="offlineEngines"
-    :value="draft.serviceName"
-    @apply="applyService"
-    @cancel="view = 'summary'"
-    @close="close" />
-
-  <SpeakersEditor
-    v-else-if="view === 'speakers'"
-    :value="draft.speakers"
-    :options="speakerOptions"
-    :collections="catalog.collections"
-    @apply="applySpeakers"
-    @cancel="view = 'summary'"
-    @close="close" />
-
-  <SharingEditor
-    v-else-if="view === 'sharing'"
-    :value="draft.membersRight"
-    @apply="applySummaryChange({ membersRight: $event })"
-    @cancel="view = 'summary'"
     @close="close" />
 
   <VisioSubtitlesEditor
@@ -121,11 +89,8 @@ import { formatLanguageList } from "@/tools/transcriptionCreate/formatLanguageLi
 import { mergeNotices } from "@/tools/transcriptionCreate/mergeNotices.js"
 import { reconcileDraft } from "@/tools/transcriptionCreate/reconcileDraft.js"
 
-import EngineEditor from "./EngineEditor.vue"
 import LoadingStep from "./LoadingStep.vue"
-import SharingEditor from "./SharingEditor.vue"
 import SourceStep from "./SourceStep.vue"
-import SpeakersEditor from "./SpeakersEditor.vue"
 import SummaryStep from "./SummaryStep.vue"
 import VisioSubtitlesEditor from "./VisioSubtitlesEditor.vue"
 
@@ -141,11 +106,8 @@ const SOURCE_ICONS = {
 export default {
   name: "TranscriptionCreateFlow",
   components: {
-    EngineEditor,
     LoadingStep,
-    SharingEditor,
     SourceStep,
-    SpeakersEditor,
     SummaryStep,
     VisioSubtitlesEditor,
   },
@@ -158,8 +120,7 @@ export default {
   data() {
     return {
       loading: true,
-      // "source" | "summary" | "liveEngine" | "offlineEngine" | "speakers"
-      // | "sharing" | "visioSubtitles"
+      // "source" | "summary" | "visioSubtitles"
       view: "source",
       draft: null,
       // See reconcileDraft: what the last change did to the user's choices
@@ -252,7 +213,7 @@ export default {
         (profile) => ({
           id: profile.id,
           name: profile.config.name,
-          languages: this.formatEngineLanguages(
+          description: this.formatEngineLanguages(
             computeProfileLanguages(profile),
           ),
         }),
@@ -263,7 +224,7 @@ export default {
         (service) => ({
           id: service.serviceName,
           name: computeServiceName(service, this.$i18n.locale),
-          languages: this.formatServiceLanguages(service),
+          description: this.formatServiceLanguages(service),
         }),
       )
     },
@@ -434,15 +395,6 @@ export default {
     applySummaryChange(change) {
       this.updateDraft(change)
       this.view = "summary"
-    },
-    applyProfile(profileId) {
-      this.applySummaryChange({ profileId, profileChosenByUser: true })
-    },
-    applyService(serviceName) {
-      this.applySummaryChange({ serviceName, serviceChosenByUser: true })
-    },
-    applySpeakers(speakers) {
-      this.applySummaryChange({ speakers, speakersChosenByUser: true })
     },
     formatServiceLanguages(service) {
       const codes = computeServiceLanguages(service)

@@ -1,7 +1,6 @@
 import { AUTO_LANGUAGE } from "../../const/transcriptionCreate.js"
 import { computeCompatibleProfiles } from "./computeCompatibleProfiles.js"
 import { computeCompatibleServices } from "./computeCompatibleServices.js"
-import { computeDefaultCollectionId } from "./computeDefaultCollectionId.js"
 import { computeDefaultProfile } from "./computeDefaultProfile.js"
 import { computeDefaultService } from "./computeDefaultService.js"
 import { computeDraftEngines } from "./computeDraftEngines.js"
@@ -140,37 +139,34 @@ function reconcileService(draft, catalog, notices) {
 }
 
 function reconcileSpeakers(draft, catalog, notices) {
-  const options = computeSpeakerOptions(
+  const { separation, identification } = computeSpeakerOptions(
     draft,
     computeDraftEngines(draft, catalog),
     catalog,
   )
-  const isChoiceKept =
-    draft.speakersChosenByUser && isOptionOffered(options, draft.speakers.mode)
-  if (draft.speakersChosenByUser && !isChoiceKept) {
-    notices.push({ key: "speakers_changed" })
-  }
-  const mode = isChoiceKept
-    ? draft.speakers.mode
-    : isOptionOffered(options, "distinguish")
-      ? "distinguish"
-      : "none"
+  const { isSeparated, collectionIds } = draft.speakers
+  const keptCollectionIds = identification.isAvailable
+    ? collectionIds.filter((id) => isCollectionOffered(catalog, id))
+    : []
+  const isChoiceLost =
+    draft.speakersChosenByUser &&
+    isSeparated &&
+    (!separation.isAvailable || keptCollectionIds.length < collectionIds.length)
+  if (isChoiceLost) notices.push({ key: "speakers_changed" })
+  const isChoiceKept = draft.speakersChosenByUser && !isChoiceLost
   return {
     ...draft,
     speakers: {
-      mode,
-      collectionId: computeCollectionId(draft, mode, catalog.collections),
+      ...draft.speakers,
+      isSeparated: separation.isAvailable && (!isChoiceKept || isSeparated),
+      collectionIds: keptCollectionIds,
     },
     speakersChosenByUser: isChoiceKept,
   }
 }
 
-function computeCollectionId(draft, mode, collections) {
-  if (mode !== "recognize") return null
-  const { collectionId } = draft.speakers
-  return collections.some((collection) => collection._id === collectionId)
-    ? collectionId
-    : computeDefaultCollectionId(collections)
+function isCollectionOffered({ collections }, id) {
+  return collections.some((collection) => collection._id === id)
 }
 
 // The version made at the end needs the audio.

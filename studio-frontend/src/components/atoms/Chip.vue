@@ -1,12 +1,23 @@
 <template>
   <div
     class="chip"
+    :class="{ 'chip--removable': removable }"
     :primary="primary"
+    :soft="soft"
     :red="red"
     :yellow="yellow"
     :style="style">
-    <span>{{ value }}</span>
-    <!-- <span v-if="removable" class="chip__remove" @click="onRemove">x</span> -->
+    <span class="chip__value text-cut">{{ value }}</span>
+    <button
+      v-if="removable"
+      class="chip__remove custom flex align-center"
+      type="button"
+      :aria-label="removeLabel"
+      :title="removeLabel"
+      :disabled="disabled"
+      @click.stop="$emit('remove')">
+      <PhIcon name="x" weight="bold" :size="12" />
+    </button>
   </div>
 </template>
 <script>
@@ -15,8 +26,12 @@ export default {
   name: "Chip",
   props: {
     value: { type: String, default: "" },
+    // Offers a button emitting "remove", named by removeLabel
     removable: { type: Boolean, default: false },
+    removeLabel: { type: String, default: null },
+    disabled: { type: Boolean, default: false },
     primary: { type: Boolean, default: false },
+    soft: { type: Boolean, default: false },
     red: { type: Boolean, default: false },
     yellow: { type: Boolean, default: false },
     color: { type: String, default: null },
@@ -32,11 +47,6 @@ export default {
         res.color = this.color
       }
       return res
-    },
-  },
-  methods: {
-    onRemove(e) {
-      this.$emit("remove", e)
     },
   },
   components: { Fragment },
@@ -60,6 +70,25 @@ export default {
     color: var(--primary-contrast);
   }
 
+  // Mixed with the text color: the primary color alone isn't readable on its
+  // soft background, in light as in dark themes.
+  &[soft] {
+    background-color: var(--primary-soft);
+    border-color: color-mix(
+      in srgb,
+      var(--primary-color) 30%,
+      var(--primary-soft)
+    );
+    color: color-mix(in srgb, var(--primary-color) 50%, var(--text-primary));
+  }
+
+  &--removable {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--tiny-gap);
+    min-width: 0;
+  }
+
   &[red] {
     background-color: var(--danger-soft);
     border-color: var(--danger-color);
@@ -70,6 +99,24 @@ export default {
     background-color: var(--warning-soft);
     border-color: var(--warning-color);
     color: var(--warning-text);
+  }
+}
+
+.chip__value {
+  min-width: 0;
+}
+
+.chip__remove {
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
   }
 }
 </style>
