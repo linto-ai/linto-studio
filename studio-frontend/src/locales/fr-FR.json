@@ -2407,6 +2407,8 @@
     },
     "plan": {
       "expired": "Expiré",
+      "manual": "Sur devis",
+      "renews_on": "Renouvellement le {date}",
       "ends_on": "Jusqu'au {date}",
       "ended_on": "Terminé le {date}"
     },

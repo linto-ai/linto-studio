@@ -160,9 +160,8 @@ async function purgeUser(userId) {
   }
 }
 
-// Backoffice org listing: the plan state of each organization asked, by id
-// ({ planKey, state, mode, endsAt }). Fail-soft: {} when SaaS is off or the
-// plugin fails, the listing then shows no plan.
+// Backoffice org listing: the plan state of each organization asked.
+// Fail-soft: {} when SaaS is off or the plugin fails, the listing shows no plan.
 async function organizationPlans(orgIds) {
   const pp = plugin()
   if (!pp || typeof pp.organizationPlans !== "function") return {}
@@ -173,9 +172,8 @@ async function organizationPlans(orgIds) {
   }
 }
 
-// Backoffice org listing filtered by plan: the organizations to keep or to
-// drop ({ organizationIds, exclude }) as the plugin states them, null for a
-// plan or state it does not know. null when SaaS is off.
+// Backoffice org listing filtered by plan: the organizations to keep or to drop
+// as the plugin states them, null for an unknown plan or state or when SaaS is off.
 async function organizationsOnPlan(filter) {
   const pp = plugin()
   if (!pp) return null

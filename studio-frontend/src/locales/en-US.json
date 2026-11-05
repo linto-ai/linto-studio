@@ -2413,6 +2413,8 @@
     },
     "plan": {
       "expired": "Expired",
+      "manual": "On quote",
+      "renews_on": "Renews on {date}",
       "ends_on": "Until {date}",
       "ended_on": "Ended on {date}"
     },

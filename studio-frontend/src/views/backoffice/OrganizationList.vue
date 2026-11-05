@@ -16,14 +16,15 @@
           $t('backoffice.organisation_list.add_organisation_button')
         ">
         <template v-slot:right-header>
-          <PopoverList
-            v-if="isCloudMode"
-            :items="planFilterItems"
-            v-model="planFilter"
-            color="neutral"
-            :aria-label="
-              $t('backoffice.organisation_list.plan_filter_label')
-            " />
+          <IsCloud>
+            <PopoverList
+              :items="planFilterItems"
+              v-model="planFilter"
+              color="neutral"
+              :aria-label="
+                $t('backoffice.organisation_list.plan_filter_label')
+              " />
+          </IsCloud>
           <Button
             v-if="showPersonalOrganizations"
             @click="changeShowPersonalOrganizations"
@@ -83,7 +84,7 @@
         </template>
 
         <template #cell-plan="{ value }">
-          <Tooltip v-if="value" :text="planEndText(value)" position="bottom">
+          <div v-if="value" class="flex col">
             <span class="flex gap-small align-center">
               {{ planLabel(value) }}
               <Tag v-if="value.state === 'expired'" size="sm">
@@ -92,8 +93,14 @@
               <Tag v-else-if="value.mode !== 'normal'" size="sm">
                 {{ $t("billing.mode." + value.mode) }}
               </Tag>
+              <Tag v-else-if="value.source === 'manual'" size="sm">
+                {{ $t("orga_table.plan.manual") }}
+              </Tag>
             </span>
-          </Tooltip>
+            <span v-if="planDateText(value)" class="small-text">
+              {{ planDateText(value) }}
+            </span>
+          </div>
         </template>
 
         <template #cell-userNumber="{ element }">
@@ -147,6 +154,7 @@ import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
 import ModalDeleteMultipleOrganizations from "@/components/ModalDeleteMultipleOrganizations.vue"
+import IsCloud from "@/components/atoms/IsCloud.vue"
 
 const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 
@@ -169,9 +177,6 @@ export default {
   },
   computed: {
     ...mapGetters("billing", ["plans"]),
-    isCloudMode() {
-      return IS_MODE_CLOUD
-    },
     fetchMethodParams() {
       return {
         search: this.search,
@@ -179,8 +184,7 @@ export default {
         ...buildPlanFilterQuery(this.planFilter),
       }
     },
-    // Every plan of the catalog, and the expired variant of the team plans,
-    // the only ones whose end locks the organization
+    // The expired variant exists for team plans only (collaboration)
     planFilterItems() {
       const items = [
         {
@@ -246,7 +250,12 @@ export default {
       const known = this.plans.find((p) => p.planKey === plan.planKey)
       return known ? known.displayName : plan.planKey
     },
-    planEndText(plan) {
+    planDateText(plan) {
+      if (plan.renewsAt) {
+        return this.$t("orga_table.plan.renews_on", {
+          date: this.formatDate(plan.renewsAt),
+        })
+      }
       if (!plan.endsAt) return ""
       const key = plan.state === "expired" ? "ended_on" : "ends_on"
       return this.$t(`orga_table.plan.${key}`, {
@@ -290,6 +299,7 @@ export default {
     HeaderTable,
     ModalCreateOrganization,
     ModalDeleteMultipleOrganizations,
+    IsCloud,
   },
 }
 </script>
