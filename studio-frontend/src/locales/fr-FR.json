@@ -564,6 +564,11 @@
       "personal_organizations_hidden": "Organisations personnelles cachées",
       "personal_organization": "Organisation personnelle",
       "group_organization": "Organisation de groupe",
+      "plan_filter_label": "Filtrer par plan",
+      "plan_filter": {
+        "all": "Tous les plans",
+        "expired": "{plan} expiré ou non renouvelé"
+      },
       "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
     },
     "token_list": {
@@ -2397,7 +2402,13 @@
     "header": {
       "creation_date": "Date de création",
       "name": "Nom",
-      "userNumber": "Nombre d'utilisateurs"
+      "userNumber": "Nombre d'utilisateurs",
+      "plan": "Plan"
+    },
+    "plan": {
+      "expired": "Expiré",
+      "ends_on": "Jusqu'au {date}",
+      "ended_on": "Terminé le {date}"
     },
     "edit_button_label": "Modifier"
   },

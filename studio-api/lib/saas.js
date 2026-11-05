@@ -160,6 +160,32 @@ async function purgeUser(userId) {
   }
 }
 
+// Backoffice org listing: the plan state of each organization asked, by id
+// ({ planKey, state, mode, endsAt }). Fail-soft: {} when SaaS is off or the
+// plugin fails, the listing then shows no plan.
+async function organizationPlans(orgIds) {
+  const pp = plugin()
+  if (!pp || typeof pp.organizationPlans !== "function") return {}
+  try {
+    return await pp.organizationPlans(orgIds)
+  } catch (e) {
+    return {}
+  }
+}
+
+// Backoffice org listing filtered by plan: the organizations to keep or to
+// drop ({ organizationIds, exclude }) as the plugin states them, null for a
+// plan or state it does not know. null when SaaS is off.
+async function organizationsOnPlan(filter) {
+  const pp = plugin()
+  if (!pp) return null
+  if (typeof pp.organizationsOnPlan !== "function")
+    throw new Error(
+      "cloud service plugin too old to filter organizations by plan",
+    )
+  return await pp.organizationsOnPlan(filter)
+}
+
 module.exports = {
   register,
   plugin,
@@ -176,4 +202,6 @@ module.exports = {
   cancelSubscriptions,
   purgeOrganization,
   purgeUser,
+  organizationPlans,
+  organizationsOnPlan,
 }

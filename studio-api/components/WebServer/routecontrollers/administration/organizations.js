@@ -8,6 +8,7 @@ const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
+const saas = require(`${process.cwd()}/lib/saas`)
 
 const {
   OrganizationError,
@@ -17,12 +18,30 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
+// SaaS mode: rows carry their plan state, ?plan&planState filters on it
 async function listAllOrganization(req, res, next) {
   try {
-    const organizations = await model.organizations.getAll(req.query)
+    const { plan, planState } = req.query
+    const scope = {}
+    if (plan && saas.enabled()) {
+      const onPlan = await saas.organizationsOnPlan({
+        planKey: plan,
+        state: planState,
+      })
+      if (!onPlan) {
+        throw new OrganizationUnsupportedMediaType("Unknown plan or plan state")
+      }
+      if (onPlan.exclude) scope.excludeIds = onPlan.organizationIds
+      else scope.ids = onPlan.organizationIds
+    }
+
+    const organizations = await model.organizations.getAll(req.query, scope)
     const ids = organizations.list.map((org) => org._id.toString())
 
-    const totals = await model.conversations.countMediaFromOrga(ids)
+    const [totals, plans] = await Promise.all([
+      model.conversations.countMediaFromOrga(ids),
+      saas.organizationPlans(ids),
+    ])
     const totalsMap = totals.reduce((acc, item) => {
       acc[item._id] = item.total
       return acc
@@ -31,6 +50,7 @@ async function listAllOrganization(req, res, next) {
     organizations.list = organizations.list.map((org) => ({
       ...org,
       mediaCount: totalsMap[org._id.toString()] || 0,
+      plan: plans[org._id.toString()],
     }))
 
     return res.status(200).send(organizations)

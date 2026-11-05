@@ -224,8 +224,8 @@ class OrganizationModel extends MongoModel {
     }
   }
 
-  // get all organizations
-  async getAll(filter) {
+  // get all organizations. scope.ids / scope.excludeIds restrict the set.
+  async getAll(filter, scope = {}) {
     try {
       let query = {}
       if (filter.name) {
@@ -237,6 +237,12 @@ class OrganizationModel extends MongoModel {
 
       if (filter.hidePersonal === "true") {
         query.personal = false
+      }
+
+      if (scope.ids) {
+        query._id = { $in: scope.ids.map((id) => this.getObjectId(id)) }
+      } else if (scope.excludeIds) {
+        query._id = { $nin: scope.excludeIds.map((id) => this.getObjectId(id)) }
       }
 
       if (!filter) return await this.mongoRequest(query)

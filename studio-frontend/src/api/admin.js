@@ -109,6 +109,8 @@ export async function apiGetAllOrganizations(
     sortField = "last_update",
     sortOrder = -1,
     hidePersonal = false,
+    plan,
+    planState,
   } = {},
   search,
 ) {
@@ -125,6 +127,8 @@ export async function apiGetAllOrganizations(
         sortField,
         sortCriteria: sortOrder,
         hidePersonal,
+        plan,
+        planState,
       },
     )
   } else {
@@ -139,6 +143,8 @@ export async function apiGetAllOrganizations(
         sortField,
         sortCriteria: sortOrder,
         name: search,
+        plan,
+        planState,
       },
     )
   }
