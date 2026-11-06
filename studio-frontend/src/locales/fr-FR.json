@@ -938,6 +938,7 @@
     },
     "language": {
       "detection": "Détection automatique",
+      "selected_count": "Aucune langue sélectionnée | 1 langue sélectionnée | {count} langues sélectionnées",
       "search": "Rechercher...",
       "group_suggested": "Suggestions",
       "group_all": "Toutes les langues"
@@ -2475,7 +2476,9 @@
     "search": "Rechercher",
     "search_placeholder": "Rechercher...",
     "no_results": "Aucun résultat",
-    "select_all": "Tout sélectionner"
+    "select_all": "Tout sélectionner",
+    "selected_count": "Aucun élément sélectionné | 1 élément sélectionné | {count} éléments sélectionnés",
+    "clear_selection": "Tout décocher"
   },
   "duration_input": {
     "s": "Seconde | Secondes",

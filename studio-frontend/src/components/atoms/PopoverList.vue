@@ -7,6 +7,7 @@
     :full-width="fullWidth"
     :content-class="mergedContentClass"
     :disabled="disabled"
+    :max-height="listMaxHeight"
     v-bind="$attrs"
     ref="popover"
     @input="onPopoverToggle"
@@ -63,18 +64,18 @@
             @input="toggleSelectAll"
             class="popover-list__checkbox"
             :aria-label="$t('popover_list.select_all')" />
-          <input
+          <SearchInput
             v-if="hasSearch"
-            type="text"
             v-model="searchQuery"
+            compact
+            fullwidth
             role="combobox"
             :aria-controls="listboxId"
             aria-expanded="true"
             :aria-activedescendant="activeDescendantId"
             aria-autocomplete="list"
             :placeholder="effectiveSearchPlaceholder"
-            class="popover-list__search-input"
-            :aria-label="$t('popover_list.search')"
+            :label="$t('popover_list.search')"
             @keydown.stop="onSearchKeyDown" />
         </div>
 
@@ -210,7 +211,13 @@
             </div>
           </template>
         </div>
-        <slot name="footer"></slot>
+        <slot name="footer">
+          <PopoverListSelectionFooter
+            v-if="selection && multiple"
+            :count="selectionCount"
+            :countKey="selectionCountKey"
+            @clear="clearSelection" />
+        </slot>
       </div>
     </template>
   </Popover>
@@ -221,10 +228,15 @@ import { mapGetters } from "vuex"
 import Popover from "./Popover.vue"
 import Loading from "./Loading.vue"
 import Checkbox from "./Checkbox.vue"
+import PopoverListSelectionFooter from "./PopoverListSelectionFooter.vue"
 import PopoverListTriggerMultiple from "./PopoverListTriggerMultiple.vue"
+import SearchInput from "./SearchInput.vue"
 import { debounceMixin } from "@/mixins/debounce"
 import { generateId } from "@/tools/generateId.js"
 import { normalizeSearchText } from "@/tools/normalizeSearchText.js"
+
+// Beyond this height, in pixels, the list scrolls even with more room.
+const LIST_MAX_HEIGHT = 450
 
 export default {
   name: "PopoverList",
@@ -233,7 +245,9 @@ export default {
     Popover,
     Loading,
     Checkbox,
+    PopoverListSelectionFooter,
     PopoverListTriggerMultiple,
+    SearchInput,
   },
   props: {
     /**
@@ -249,7 +263,7 @@ export default {
      * @property {string} color? - The color of the item (optional, default: "primary")
      * @property {string} iconRight? - The right icon of the item (optional)
      * @property {string} group? - Heading of the item's group, in selection mode (optional)
-     * @property {boolean} exclusive? - Replaces the other items when selected: the multi-selection trigger shows it as plain text (optional)
+     * @property {boolean} exclusive? - Replaces the other items when selected: the multi-selection trigger shows it as plain text and the footer doesn't count it (optional)
      */
     items: {
       type: Array,
@@ -397,6 +411,15 @@ export default {
       default: null,
     },
     /**
+     * Translation key of the footer sentence of the multi-selection mode, with
+     * three forms (none | one | many). The whole sentence rather than the name
+     * of the items: its agreement depends on that name and on the language.
+     */
+    selectionCountKey: {
+      type: String,
+      default: "popover_list.selected_count",
+    },
+    /**
      * Extra class applied to the teleported popover content, letting a parent
      * style the floating list (it lives outside the parent's DOM subtree).
      */
@@ -487,6 +510,11 @@ export default {
       }
 
       this.emitValue(updated)
+    },
+    // The focused button of the footer turns disabled.
+    clearSelection() {
+      this.emitValue([])
+      this.$refs.popover?.focusContent()
     },
     onSelectionItemClick(item, event) {
       if (event.target === event.currentTarget) {
@@ -675,6 +703,9 @@ export default {
     }
   },
   computed: {
+    listMaxHeight() {
+      return LIST_MAX_HEIGHT
+    },
     ...mapGetters("system", ["isMobile"]),
     mergedContentClass() {
       return [this.contentClass, this.isMobile ? "popover-list__mobile" : ""]
@@ -708,6 +739,12 @@ export default {
     // The selected items of the multi-selection mode
     currentItems() {
       return this.allAvailableItems.filter(this.isSelected)
+    },
+    selectionCount() {
+      const selected = Array.isArray(this.value) ? this.value.length : 0
+      return (
+        selected - this.currentItems.filter((item) => item.exclusive).length
+      )
     },
     labelButton() {
       const item = this.allAvailableItems.find((item) =>
@@ -835,6 +872,11 @@ export default {
   }
 }
 
+// Keyboard scrolling keeps the highlighted item out of the sticky footer.
+.popover-list__content:has(.popover-list-selection-footer) .popover-list__item {
+  scroll-margin-bottom: calc(0.5rem + 33px);
+}
+
 .popover-list__group {
   padding: 0.5rem 0.5rem 0.25rem;
   font-size: var(--text-xs);
@@ -853,11 +895,6 @@ export default {
   top: 0;
   background: var(--background-app);
   z-index: 1;
-}
-
-.popover-list__search-input {
-  flex: 1;
-  min-width: 0;
 }
 
 .popover-list__empty {
@@ -880,7 +917,7 @@ export default {
   box-sizing: border-box;
   display: flex;
   scroll-margin-top: calc(
-    1rem + 40.5px
+    1rem + 36px
   ); // Compense le header sticky lors du scroll clavier
 
   .btn {
@@ -891,6 +928,7 @@ export default {
     transform: none;
     box-shadow: none;
     border: none !important;
+    padding: 0.5rem 0.75rem;
     //color: var(--text-primary);
 
     &.tertiary {
@@ -938,8 +976,13 @@ export default {
   cursor: pointer;
 }
 
+.popover-list__item__description {
+  font-weight: 400;
+}
+
 .popover-list__checkbox-label {
   color: var(--text-primary);
+  font-weight: 500;
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
@@ -966,11 +1009,6 @@ export default {
   .popover-list__content {
     //padding: 0.5rem;
     gap: 0.25rem;
-  }
-
-  .popover-list__search-input {
-    width: 100%;
-    max-width: none;
   }
 }
 

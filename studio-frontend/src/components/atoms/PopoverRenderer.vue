@@ -10,7 +10,7 @@
     @keydown="handleKeydown">
     <div
       class="popover-content"
-      :class="[position, contentClass]"
+      :class="[placement.side, contentClass]"
       ref="content"
       :style="computedContentStyle">
       <VNodeRenderer :nodes="renderedSlots" />
@@ -20,7 +20,11 @@
 
 <script>
 import VNodeRenderer from "@/components/atoms/VNodeRenderer.vue"
-import POPOVER_MARGIN from "@/const/popoverMargin.js"
+
+// A null value leaves the style unset.
+function toPixels(value) {
+  return value === null ? null : `${value}px`
+}
 
 export default {
   name: "PopoverRenderer",
@@ -29,16 +33,11 @@ export default {
     controller: { type: Object, required: true },
     slots: { type: Object, required: true },
     zIndex: { type: Number, default: 0 },
-    position: { type: String, default: "bottom" },
-    popoverCoords: { type: Object, required: true },
+    // Computed by the Popover, see computePopoverPlacement.
+    placement: { type: Object, required: true },
     contentClass: { type: String, default: "" },
     width: { type: [String, Number], default: "auto" },
     widthRef: { type: HTMLElement, default: null },
-    /**
-     * Maximum height for the popover content. If set to "auto" the component
-     * will compute the available space based on viewport and popover position.
-     */
-    maxHeight: { type: [String, Number], default: "auto" },
   },
   data() {
     return {
@@ -52,8 +51,11 @@ export default {
     popoverStyle() {
       return {
         position: "fixed",
-        left: `${this.popoverCoords.left}px`,
-        top: `${this.popoverCoords.top}px`,
+        left: `${this.placement.left}px`,
+        // Above the trigger, the bottom edge stays against it whatever the
+        // height of the content.
+        top: toPixels(this.placement.top),
+        bottom: toPixels(this.placement.bottom),
         zIndex: this.zIndex,
         width: this.computedWidth,
       }
@@ -64,36 +66,11 @@ export default {
         ? this.slots.default()
         : this.slots.default || []
     },
-    computedMaxHeight() {
-      // explicit value provided
-      if (this.maxHeight !== "auto") {
-        return typeof this.maxHeight === "number"
-          ? `${this.maxHeight}px`
-          : this.maxHeight
-      }
-
-      const viewportHeight =
-        typeof window !== "undefined" ? window.innerHeight : 800
-      const margin = POPOVER_MARGIN // space from viewport edges
-
-      let available
-      if (this.position === "bottom") {
-        available = viewportHeight - this.popoverCoords.top - margin
-      } else if (this.position === "top") {
-        available = this.popoverCoords.top - margin
-      } else {
-        // left / right / other positions: default to full viewport minus margin
-        available = viewportHeight - margin * 2
-      }
-
-      // guarantee a reasonable minimum height
-      return `${Math.max(120, available)}px`
-    },
     computedContentStyle() {
       return {
         width: this.computedWidth,
         minWidth: this.widthRef.offsetWidth + "px",
-        maxHeight: this.computedMaxHeight,
+        maxHeight: toPixels(this.placement.maxHeight),
         overflowY: "auto",
       }
     },

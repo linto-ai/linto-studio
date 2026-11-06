@@ -267,6 +267,16 @@
       disabled
       :inputFullWidth="true" />
     <DurationInput :field="fieldDuration" v-model="fieldDuration.value" />
+
+    <h3>FormCheckbox - unchecked / checked / disabled</h3>
+    <FormCheckbox
+      :field="fieldCheckbox"
+      @input="fieldCheckbox.value = $event" />
+    <FormCheckbox
+      :field="fieldCheckboxChecked"
+      @input="fieldCheckboxChecked.value = $event" />
+    <FormCheckbox :field="fieldCheckboxDisabled" disabled />
+
     <PopoverList :items="popoverItems" v-model="popoverValue" class="relative">
       <!-- <template #trigger="{ open }">
         <Button variant="tertiary" size="sm"> {{ popoverValue }} </Button>
@@ -298,6 +308,14 @@
         </Button>
       </template>
     </PopoverList>
+    <div class="flex col gap-tiny">
+      <span>LanguagePicker - value: {{ pickerLanguages }}</span>
+      <LanguagePicker
+        label="Langue"
+        :value="pickerLanguages"
+        :options="pickerLanguageOptions"
+        @input="changePickerLanguages" />
+    </div>
     <OrgaRoleSelector v-model="role" />
     <OrgaRoleSelector v-model="role" readonly />
     <div class="flex col gap-tiny">
@@ -328,6 +346,7 @@
 <script>
 import { bus } from "@/main.js"
 import FormInput from "../components/molecules/FormInput.vue"
+import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import formatDateTimeToIso from "@/tools/date/formatDateTimeToIso"
 import DurationInput from "@/components/molecules/DurationInput.vue"
@@ -341,6 +360,17 @@ import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import SessionStatusBanner from "@/components/molecules/SessionStatusBanner.vue"
 import { computePackGroups } from "@/tools/billing/pack/computePackGroups"
 import { computePackLots } from "@/tools/billing/pack/computePackLots"
+import LanguagePicker from "@/components/transcriptionCreate/LanguagePicker.vue"
+import { AUTO_LANGUAGE } from "@/const/transcriptionCreate.js"
+import { MICROSOFT_LANGUAGES } from "@/const/microsoftLanguages.js"
+import { computeLanguageSelection } from "@/tools/transcriptionCreate/computeLanguageSelection.js"
+
+// Every language of the longest provider list, as the summary step gets them:
+// detection first, then bare codes.
+const DEMO_LANGUAGE_CODES = [
+  AUTO_LANGUAGE,
+  ...new Set(MICROSOFT_LANGUAGES.map((code) => code.split("-")[0])),
+]
 
 // Catalog-shaped packs and API-shaped lots, for the pack cards below
 const DEMO_PACKS = [
@@ -454,6 +484,21 @@ export default {
         leadingIcon: "link",
         error: "Lien invalide",
       },
+      fieldCheckbox: {
+        ...EMPTY_FIELD,
+        label: "Conserver l'audio à la fin de la session",
+        value: false,
+      },
+      fieldCheckboxChecked: {
+        ...EMPTY_FIELD,
+        label: "Pour un partage",
+        value: true,
+      },
+      fieldCheckboxDisabled: {
+        ...EMPTY_FIELD,
+        label: "Option indisponible",
+        value: false,
+      },
       fieldInputIconDisabled: {
         ...EMPTY_FIELD,
         label: "Lien de la visioconférence",
@@ -501,6 +546,8 @@ export default {
       popoverValue: "select-value-1",
       popoverMultiValue: ["select-value-1", "select-value-3"],
       popoverSearchValue: null,
+      pickerLanguages: [AUTO_LANGUAGE],
+      pickerLanguageOptions: DEMO_LANGUAGE_CODES.map((code) => ({ code })),
       organizationId: null,
       organizationPinnedItems: [
         {
@@ -536,9 +583,17 @@ export default {
     }
   },
   mounted() {},
-  methods: {},
+  methods: {
+    changePickerLanguages(next) {
+      this.pickerLanguages = computeLanguageSelection(
+        this.pickerLanguages,
+        next,
+      )
+    },
+  },
   components: {
     FormInput,
+    FormCheckbox,
     DurationInput,
     OrgaRoleSelector,
     OrganizationSelector,
@@ -548,6 +603,7 @@ export default {
     PackOffer,
     NotificationBanner,
     SessionStatusBanner,
+    LanguagePicker,
   },
 }
 </script>

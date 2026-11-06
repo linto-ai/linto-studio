@@ -937,6 +937,7 @@
     },
     "language": {
       "detection": "Automatic detection",
+      "selected_count": "No language selected | 1 language selected | {count} languages selected",
       "search": "Search...",
       "group_suggested": "Suggestions",
       "group_all": "All languages"
@@ -2481,7 +2482,9 @@
     "search": "Search",
     "search_placeholder": "Search...",
     "no_results": "No results",
-    "select_all": "Select all"
+    "select_all": "Select all",
+    "selected_count": "No item selected | 1 item selected | {count} items selected",
+    "clear_selection": "Uncheck all"
   },
   "actions": "Actions",
   "chat": {

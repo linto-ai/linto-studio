@@ -14,6 +14,7 @@
     :placeholder="placeholder"
     :disabled="disabled"
     fullWidth
+    selectionCountKey="transcription_create.language.selected_count"
     :searchPlaceholder="$t('transcription_create.language.search')"
     content-class="language-picker__popover"
     @input="emitCodes" />
