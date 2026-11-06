@@ -105,6 +105,12 @@ const popupManager = new Vue({
         return
       }
 
+      // A field with a pending edit takes Escape to cancel it: the popup stays
+      // open (see FormInput).
+      if (event.target.closest?.("[data-handles-escape]")) {
+        return
+      }
+
       // Find the topmost popup first, giving priority to the most recent one
       let targetPopup = null
 

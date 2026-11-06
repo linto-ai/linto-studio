@@ -19,7 +19,7 @@
           size="sm"
           :label="$t('media_explorer.panel.use_template_button')"
           :to="{
-            name: 'conversations create',
+            name: 'sessions create',
             params: { organizationId: templateDisplay.organizationId },
             query: { template: templateDisplay.id },
           }" />

@@ -5,7 +5,16 @@
     @close="$emit('close')"
     @submit="$emit('submit')">
     <template #context>
-      <p class="summary-step__context flex align-center gap-small">
+      <SummaryFiles
+        v-if="draft.source === 'file'"
+        class="summary-step__context"
+        :files="files"
+        :durations="fileDurations"
+        :details="contextDetails"
+        :uploadProgress="uploadProgress" />
+      <p
+        v-else
+        class="summary-step__context summary-step__source flex align-center gap-small">
         <ph-icon :name="sourceIcon" size="sm" />
         <strong>{{ sourceLabel }}</strong>
         <span v-if="contextDetails">· {{ contextDetails }}</span>
@@ -26,124 +35,155 @@
     </NotificationBanner>
 
     <dl class="summary-step__rows flex col">
-      <SummaryRow :label="$t('transcription_create.summary.language')">
-        <span class="flex gap-tiny wrap">
-          <Chip
-            v-for="code in draft.languages"
-            :key="code"
-            primary
-            :value="formatLanguage(code)" />
-        </span>
-        <small
-          v-for="warning in languageWarnings"
-          :key="warning.key"
-          class="summary-step__warning flex gap-tiny">
-          <ph-icon name="warning" size="xs" />
-          {{
-            $t(`transcription_create.warnings.${warning.key}`, {
-              languages: formatLanguages(warning.languages),
-            })
-          }}
-        </small>
-        <template #action>
-          <LanguagePicker
-            :label="$t('transcription_create.summary.language')"
-            :value="draft.languages"
-            :options="languageOptions"
-            :disabled="sending"
-            @input="$emit('change-languages', $event)" />
-        </template>
+      <SummaryRow
+        icon="globe"
+        :label="$t('transcription_create.summary.language')">
+        <LanguagePicker
+          :label="$t('transcription_create.summary.language')"
+          :value="draft.languages"
+          :options="languageOptions"
+          :disabled="sending"
+          @input="$emit('change-languages', $event)" />
       </SummaryRow>
 
       <SummaryRow
         v-if="isLive"
+        icon="translate"
         :label="$t('transcription_create.summary.translation')">
-        <span v-if="draft.translations.length" class="flex gap-tiny wrap">
-          <Chip
-            v-for="code in draft.translations"
-            :key="code"
-            primary
-            :value="formatLanguage(code)" />
-        </span>
+        <LanguagePicker
+          v-if="translationOptions.length > 0"
+          :label="$t('transcription_create.summary.translation')"
+          :value="draft.translations"
+          :options="translationOptions"
+          :placeholder="$t('transcription_create.summary.none')"
+          :disabled="sending"
+          @input="$emit('change', { translations: $event })" />
         <template v-else>{{
           $t("transcription_create.summary.none")
         }}</template>
-        <template #action>
-          <LanguagePicker
-            v-if="translationOptions.length > 0"
-            :label="$t('transcription_create.summary.translation')"
-            :value="draft.translations"
-            :options="translationOptions"
-            :disabled="sending"
-            @input="$emit('change', { translations: $event })" />
-        </template>
+      </SummaryRow>
+
+      <!-- Nothing to choose with a single engine; with none, the row says why
+           the transcription can't start. -->
+      <SummaryRow
+        v-if="isLive && liveEngines.length !== 1"
+        icon="cpu"
+        :label="$t('transcription_create.summary.live_engine')">
+        <SummarySelect
+          v-if="liveEngines.length > 0"
+          :label="$t('transcription_create.summary.live_engine')"
+          :items="liveEngines"
+          :value="draft.profileId"
+          :disabled="sending"
+          @input="
+            $emit('change', { profileId: $event, profileChosenByUser: true })
+          " />
+        <template v-else>{{ noEngineLabel }}</template>
       </SummaryRow>
 
       <SummaryRow
-        v-if="isLive"
-        :label="$t('transcription_create.summary.live_engine')"
-        :value="profileName"
-        :disabled="sending"
-        @edit="$emit('edit', 'liveEngine')" />
-
-      <SummaryRow
-        v-if="isOffline"
-        :label="offlineEngineLabel"
-        :value="serviceName"
-        :disabled="sending"
-        @edit="$emit('edit', 'offlineEngine')" />
-
-      <SummaryRow
-        :label="$t('transcription_create.summary.speakers')"
-        :disabled="sending"
-        @edit="$emit('edit', 'speakers')">
-        {{ speakersLabel }}
-        <small v-if="speakersNotice" class="summary-step__note">
-          {{ $t(`transcription_create.speakers.notices.${speakersNotice}`) }}
-        </small>
+        v-if="isOffline && offlineEngines.length !== 1"
+        icon="cpu"
+        :label="offlineEngineLabel">
+        <SummarySelect
+          v-if="offlineEngines.length > 0"
+          :label="offlineEngineLabel"
+          :items="offlineEngines"
+          :value="draft.serviceName"
+          :disabled="sending"
+          @input="
+            $emit('change', { serviceName: $event, serviceChosenByUser: true })
+          " />
+        <template v-else>{{ noEngineLabel }}</template>
       </SummaryRow>
 
       <SummaryRow
-        :label="$t('transcription_create.summary.sharing')"
-        :value="membersRightLabel"
-        :withEdit="!isFolderPrivate"
-        :disabled="sending"
-        @edit="$emit('edit', 'sharing')" />
+        icon="users"
+        :label="$t('transcription_create.summary.speaker_separation')">
+        <span class="flex align-center gap-small">
+          <SwitchInput
+            id="transcription-speaker-separation"
+            :ariaLabel="$t('transcription_create.summary.speaker_separation')"
+            :value="draft.speakers.isSeparated"
+            :disabled="sending || !speakerOptions.separation.isAvailable"
+            @input="changeSpeakers({ isSeparated: $event })" />
+          <label
+            class="summary-step__switch-state"
+            for="transcription-speaker-separation">
+            {{ separationStateLabel }}
+          </label>
+          <small v-if="separationNotice" class="summary-step__note">
+            {{
+              $t(`transcription_create.speakers.notices.${separationNotice}`)
+            }}
+          </small>
+        </span>
+      </SummaryRow>
+
+      <SummaryRow
+        v-if="draft.speakers.isSeparated && speakerOptions.isCountAvailable"
+        :label="$t('transcription_create.summary.speaker_count')">
+        <SpeakerCountField
+          :label="$t('transcription_create.summary.speaker_count')"
+          :value="draft.speakers.count"
+          :disabled="sending"
+          @input="changeSpeakers({ count: $event })" />
+      </SummaryRow>
+
+      <SummaryRow
+        v-if="
+          draft.speakers.isSeparated &&
+          speakerOptions.identification.isAvailable
+        "
+        :label="$t('transcription_create.summary.speaker_identification')">
+        <PopoverList
+          selection
+          multiple
+          fullWidth
+          :selectAll="false"
+          :closeOnClick="false"
+          :items="collectionItems"
+          :value="draft.speakers.collectionIds"
+          :ariaLabel="$t('transcription_create.summary.speaker_identification')"
+          :placeholder="$t('transcription_create.speakers.no_identification')"
+          :disabled="sending"
+          @input="changeSpeakers({ collectionIds: $event })" />
+      </SummaryRow>
+
+      <SummaryRow
+        icon="share-network"
+        :label="$t('transcription_create.summary.sharing')">
+        <SummarySelect
+          :label="$t('transcription_create.summary.sharing')"
+          :items="rightItems"
+          :value="draft.membersRight"
+          :disabled="sending || isFolderPrivate"
+          @input="$emit('change', { membersRight: $event })" />
+      </SummaryRow>
 
       <SummaryRow
         v-if="draft.source === 'file'"
-        :label="$t('transcription_create.summary.folder')"
-        :withEdit="false">
+        icon="folder"
+        :label="$t('transcription_create.summary.folder')">
         <FolderSelector
+          size="md"
           :value="draft.folderId"
-          :full-width="false"
           :readonly="sending"
           @input="$emit('change', { folderId: $event })" />
       </SummaryRow>
 
       <SummaryRow
         v-if="draft.source === 'visio' && isLive"
-        :label="$t('transcription_create.summary.visio_subtitles')"
-        :value="visioSubtitlesLabel"
-        :disabled="sending"
-        @edit="$emit('edit', 'visioSubtitles')" />
+        icon="subtitles"
+        :label="$t('transcription_create.summary.visio_subtitles')">
+        <SummarySelect
+          :label="$t('transcription_create.summary.visio_subtitles')"
+          :items="subtitleItems"
+          :value="subtitleChoice"
+          :disabled="sending"
+          @input="changeSubtitles" />
+      </SummaryRow>
     </dl>
-
-    <div v-if="uploadProgress" class="flex col gap-tiny">
-      <label for="transcription-upload-progress">
-        {{
-          $t("conversation.conversation_creation_loading_multiple", {
-            count: uploadProgress.index,
-            total: uploadProgress.total,
-          })
-        }}
-      </label>
-      <progress
-        id="transcription-upload-progress"
-        class="summary-step__progress"
-        max="100"
-        :value="uploadProgress.percent"></progress>
-    </div>
 
     <template #footer-message>
       <p v-if="error" class="error-field" role="alert">{{ error }}</p>
@@ -173,7 +213,7 @@
         :icon="sourceIcon"
         :loading="sending"
         :disabled="sending || !isComplete">
-        {{ $t(`transcription_create.submit.${draft.source}`) }}
+        {{ submitLabel }}
       </Button>
     </template>
   </TranscriptionCreateFrame>
@@ -185,8 +225,6 @@ import { AUTO_LANGUAGE } from "@/const/transcriptionCreate.js"
 import formatLanguage from "@/tools/formatLanguage"
 import { getEnv } from "@/tools/getEnv"
 import { computeOfferedLanguageCodes } from "@/tools/transcriptionCreate/computeOfferedLanguageCodes.js"
-import { computeLanguageWarnings } from "@/tools/transcriptionCreate/computeLanguageWarnings.js"
-import { computeServiceName } from "@/tools/transcriptionCreate/computeServiceName.js"
 import { computeTranslationOptions } from "@/tools/transcriptionCreate/computeTranslationOptions.js"
 import { formatLanguageList } from "@/tools/transcriptionCreate/formatLanguageList.js"
 import { isDraftComplete } from "@/tools/transcriptionCreate/isDraftComplete.js"
@@ -195,32 +233,48 @@ import { isOfflineRequested } from "@/tools/transcriptionCreate/isOfflineRequest
 
 import FolderSelector from "@/components/FolderSelector.vue"
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
-import Chip from "@/components/atoms/Chip.vue"
+import PopoverList from "@/components/atoms/PopoverList.vue"
+import SwitchInput from "@/components/atoms/SwitchInput.vue"
 import LanguagePicker from "./LanguagePicker.vue"
+import SpeakerCountField from "./SpeakerCountField.vue"
+import SummaryFiles from "./SummaryFiles.vue"
 import SummaryRow from "./SummaryRow.vue"
+import SummarySelect from "./SummarySelect.vue"
 import TranscriptionCreateFrame from "./TranscriptionCreateFrame.vue"
+
+// Choice of the subtitles list, next to "original" and the translations.
+const NO_SUBTITLES = "none"
 
 export default {
   name: "SummaryStep",
   components: {
     FolderSelector,
     NotificationBanner,
-    Chip,
+    PopoverList,
+    SwitchInput,
     LanguagePicker,
+    SpeakerCountField,
+    SummaryFiles,
     SummaryRow,
+    SummarySelect,
     TranscriptionCreateFrame,
   },
   props: {
     draft: { type: Object, required: true },
     // Files still to send, for the "file" source
-    fileCount: { type: Number, required: true },
+    files: { type: Array, required: true },
+    // Seconds by file id. null when unknown or not read yet.
+    fileDurations: { type: Object, required: true },
     catalog: { type: Object, required: true },
     // { profile, service }, see computeDraftEngines
     engines: { type: Object, required: true },
     // See reconcileDraft
     notices: { type: Array, required: true },
     // See computeSpeakerOptions
-    speakerOptions: { type: Array, required: true },
+    speakerOptions: { type: Object, required: true },
+    // Compatible engines: [{ id, name, description }]
+    liveEngines: { type: Array, required: true },
+    offlineEngines: { type: Array, required: true },
     sourceIcon: { type: String, required: true },
     offlineEngineLabel: { type: String, required: true },
     isFolderPrivate: { type: Boolean, default: false },
@@ -240,11 +294,18 @@ export default {
       return isDraftComplete(this.draft, this.engines)
     },
     sourceLabel() {
-      return this.draft.source === "file"
-        ? this.$tc("conversation.transcription.file_count", this.fileCount, {
-            count: this.fileCount,
-          })
-        : this.$t(`transcription_create.source.${this.draft.source}`)
+      return this.$t(`transcription_create.source.${this.draft.source}`)
+    },
+    // Keeps the count of the start while the sent files leave the list.
+    submitLabel() {
+      const count = this.uploadProgress?.total ?? this.files.length
+      return this.$tc(
+        `transcription_create.submit.${this.draft.source}`,
+        count,
+        {
+          count,
+        },
+      )
     },
     contextDetails() {
       const parts = []
@@ -271,48 +332,70 @@ export default {
     translationOptions() {
       return computeTranslationOptions(this.draft, this.catalog)
     },
-    languageWarnings() {
-      return computeLanguageWarnings(this.draft, this.engines)
-    },
-    profileName() {
-      return this.engines.profile?.config?.name ?? this.noEngineLabel
-    },
-    serviceName() {
-      const { service } = this.engines
-      return service
-        ? computeServiceName(service, this.$i18n.locale)
-        : this.noEngineLabel
-    },
     noEngineLabel() {
       return this.$t("transcription_create.summary.no_engine")
     },
-    speakersLabel() {
-      const { mode, collectionId } = this.draft.speakers
-      const label = this.$t(`transcription_create.speakers.${mode}.label`)
-      const collection = this.catalog.collections.find(
-        ({ _id }) => _id === collectionId,
-      )
-      return collection ? `${label} · ${collection.name}` : label
+    separationStateLabel() {
+      const state = this.draft.speakers.isSeparated ? "enabled" : "disabled"
+      return this.$t(`transcription_create.speakers.${state}`)
     },
-    speakersNotice() {
-      return this.speakerOptions.find(
-        (option) => option.name === this.draft.speakers.mode,
-      )?.notice
+    // Why the switch is locked, or the limits of what it has turned on.
+    separationNotice() {
+      const { isAvailable, notice } = this.speakerOptions.separation
+      return !isAvailable || this.draft.speakers.isSeparated ? notice : null
     },
-    membersRightLabel() {
-      return RIGHTS_LIST(this.$t.bind(this)).find(
-        (right) => right.value === this.draft.membersRight,
-      )?.txt
+    collectionItems() {
+      return this.catalog.collections.map(({ _id, name }) => ({
+        id: _id,
+        name,
+      }))
     },
-    visioSubtitlesLabel() {
+    rightItems() {
+      return RIGHTS_LIST(this.$t.bind(this)).map(({ value, txt }) => ({
+        value,
+        name: txt,
+      }))
+    },
+    subtitleChoice() {
       const { showSubtitles, subtitleSource } = this.draft.visio
-      if (!showSubtitles) return this.$t("transcription_create.summary.none")
-      return subtitleSource === "original"
-        ? this.$t("session.live_page.translation_selector.original_language")
-        : this.formatLanguage(subtitleSource)
+      return showSubtitles ? subtitleSource : NO_SUBTITLES
+    },
+    subtitleItems() {
+      return [
+        {
+          id: NO_SUBTITLES,
+          name: this.$t("transcription_create.summary.no_subtitles"),
+        },
+        {
+          id: "original",
+          name: this.$t(
+            "session.live_page.translation_selector.original_language",
+          ),
+        },
+        ...this.draft.translations.map((code) => ({
+          id: code,
+          name: this.formatLanguage(code),
+        })),
+      ]
     },
   },
   methods: {
+    changeSpeakers(change) {
+      this.$emit("change", {
+        speakers: { ...this.draft.speakers, ...change },
+        speakersChosenByUser: true,
+      })
+    },
+    // The source is kept for when subtitles return.
+    changeSubtitles(choice) {
+      const { visio } = this.draft
+      this.$emit("change", {
+        visio:
+          choice === NO_SUBTITLES
+            ? { ...visio, showSubtitles: false }
+            : { ...visio, showSubtitles: true, subtitleSource: choice },
+      })
+    },
     formatLanguage(code) {
       return code === AUTO_LANGUAGE
         ? this.$t("transcription_create.language.detection")
@@ -327,10 +410,14 @@ export default {
 <style lang="scss" scoped>
 .summary-step__context {
   margin: 0;
-  padding: var(--small-gap) var(--large-gap);
+  padding: var(--small-gap) 0;
   font-size: var(--text-sm);
   background: var(--neutral-10);
   border-bottom: var(--border-block);
+}
+
+.summary-step__source {
+  padding-inline: var(--large-gap);
 }
 
 .summary-step__rows {
@@ -342,13 +429,9 @@ export default {
   color: var(--text-secondary);
 }
 
-.summary-step__warning {
-  font-weight: normal;
-  color: var(--warning-text);
-}
-
-.summary-step__progress {
-  width: 100%;
-  accent-color: var(--primary-color);
+.summary-step__switch-state {
+  margin: 0;
+  font-weight: 600;
+  cursor: pointer;
 }
 </style>

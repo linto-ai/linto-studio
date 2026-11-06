@@ -14,6 +14,7 @@ import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
 import { isAtLeastSystemAdministrator } from "@/tools/rights/platformRoles.js"
 import { computeSettingsTabRequest } from "@/tools/computeSettingsTabRequest.js"
+import { TRANSCRIPTION_CREATE_QUERY_PARAM } from "@/const/transcriptionCreate.js"
 import { computeTranscriptionCreateRequest } from "@/tools/transcriptionCreate/computeTranscriptionCreateRequest.js"
 import { computeCheckoutReturn } from "@/tools/billing/computeCheckoutReturn.js"
 import i18n from "@/i18n"
@@ -642,20 +643,16 @@ let router = new Router({
       },
     },
     {
+      // legacy creation page removed: keep old bookmarks working
       path: "/interface/:organizationId?/conversations/create",
-      name: "conversations create",
-      components: {
-        default: () => import("../views/ConversationsCreate.vue"),
-        ...defaultComponents,
-      },
-      props: defaultProps,
-      meta: {
-        breadcrumb: {
-          label: "breadcrumb.createConversation",
-          parent: "explore",
-          showInBreadcrumb: true,
-        },
-      },
+      redirect: (to) =>
+        to.query.template
+          ? { name: "sessions create", params: to.params, query: to.query }
+          : {
+              name: "explore",
+              params: to.params,
+              query: { [TRANSCRIPTION_CREATE_QUERY_PARAM]: null },
+            },
     },
     {
       // legacy overview page removed: keep old bookmarks working

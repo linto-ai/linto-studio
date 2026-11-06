@@ -22,12 +22,11 @@ Devin, scanners, or similar) working on this repository. They complement
 ## Working in this repository
 
 - Development branch is `next`. `master` is for releases and hotfixes only.
-- Packages: `studio-api` (Express, MongoDB), `studio-frontend` (Vue 2.7),
-  `studio-websocket` (Socket.io), `studio-sdk` (client libraries and the Vue 3
-  editor).
+- Packages: `studio-api` (Express, MongoDB, Socket.io), `studio-frontend`
+  (Vue 2.7), `studio-sdk` (client libraries and the Vue 3 editor).
 - Run the tests of the package you touch (`npm test`) and the formatter or
-  linter (`npm run lint` in `studio-frontend` and `studio-websocket`,
-  `npm run test:format` in `studio-api`) before handing the change back to the
+  linter (`npm run lint` in `studio-frontend`, `npm run test:format` in
+  `studio-api`) before handing the change back to the
   human submitter.
 - Keep diffs minimal. Do not reformat untouched code.
 - Do not edit `RELEASE.md` or bump versions; maintainers do that at release

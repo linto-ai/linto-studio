@@ -13,13 +13,13 @@
     <template #trigger="{ open, ariaProps }">
       <Button
         v-bind="ariaProps"
-        class="popover-list__trigger"
+        class="popover-list__trigger custom"
         :iconRight="open ? 'caret-up' : 'caret-down'"
         :icon="selectedItem._icon"
         :block="fullWidth"
         :disabled="readonly"
         variant="tertiary"
-        size="sm">
+        :size="size">
         <span class="folder-selector__trigger-label">
           <ph-icon
             v-if="selectedItem._private"
@@ -74,6 +74,11 @@ export default {
     fullWidth: {
       type: Boolean,
       default: true,
+    },
+    // Size of the trigger button
+    size: {
+      type: String,
+      default: "sm",
     },
   },
   data() {

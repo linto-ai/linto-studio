@@ -118,62 +118,80 @@ test("the end version needs the audio", (t) => {
   t.true(reconcile({ timing: "offline", keepAudio: false }).draft.keepAudio)
 })
 
-test("recognition falls back to telling apart once out of reach", (t) => {
+test("identification is dropped out loud once out of reach", (t) => {
   const { draft, notices } = reconcile({
     timing: "live",
-    speakers: { mode: "recognize", collectionId: "team" },
+    speakers: { isSeparated: true, count: null, collectionIds: ["team"] },
     speakersChosenByUser: true,
   })
-  t.deepEqual(draft.speakers, { mode: "distinguish", collectionId: null })
+  t.deepEqual(draft.speakers, {
+    isSeparated: true,
+    count: null,
+    collectionIds: [],
+  })
   t.false(draft.speakersChosenByUser)
   t.deepEqual(notices, [{ key: "speakers_changed" }])
 })
 
-test("telling apart comes back with an engine that can", (t) => {
+test("separation comes back with an engine that can", (t) => {
   const french = reconcile({ timing: "live", languages: ["fr"] }).draft
-  t.is(french.speakers.mode, "none")
+  t.false(french.speakers.isSeparated)
   const { draft } = reconcileDraft({ ...french, languages: ["*"] }, catalog)
-  t.is(draft.speakers.mode, "distinguish")
+  t.true(draft.speakers.isSeparated)
 })
 
 test("choosing not to separate sticks", (t) => {
   const { draft, notices } = reconcile({
-    speakers: { mode: "none", collectionId: null },
+    speakers: { isSeparated: false, count: null, collectionIds: [] },
     speakersChosenByUser: true,
   })
-  t.is(draft.speakers.mode, "none")
+  t.false(draft.speakers.isSeparated)
   t.deepEqual(notices, [])
 })
 
-test("telling apart chosen by the user is lost out loud", (t) => {
+test("separation chosen by the user is lost out loud", (t) => {
   const { draft, notices } = reconcile({
     timing: "live",
     languages: ["fr"],
     speakersChosenByUser: true,
   })
-  t.is(draft.speakers.mode, "none")
+  t.false(draft.speakers.isSeparated)
   t.deepEqual(notices, [{ key: "speakers_changed" }])
 })
 
-test("telling apart falls back to nothing without support", (t) => {
+test("separation falls back to nothing without support", (t) => {
   const { draft, notices } = reconcile({
     timing: "live",
     languages: ["fr"],
   })
   t.is(draft.profileId, "french")
-  t.is(draft.speakers.mode, "none")
+  t.false(draft.speakers.isSeparated)
   t.deepEqual(notices, [])
 })
 
-test("recognition starts on the organization list and keeps a chosen one", (t) => {
-  const recognize = (collectionId) =>
-    reconcile({
-      speakers: { mode: "recognize", collectionId },
-      speakersChosenByUser: true,
-    }).draft.speakers.collectionId
-  t.is(recognize(null), "organization")
-  t.is(recognize("team"), "team")
-  t.is(recognize("deleted"), "organization")
+test("identification starts empty", (t) => {
+  t.deepEqual(reconcile({}).draft.speakers.collectionIds, [])
+})
+
+test("identification keeps the lists still offered", (t) => {
+  const { draft, notices } = reconcile({
+    speakers: {
+      isSeparated: true,
+      count: null,
+      collectionIds: ["team", "deleted"],
+    },
+    speakersChosenByUser: true,
+  })
+  t.deepEqual(draft.speakers.collectionIds, ["team"])
+  t.deepEqual(notices, [{ key: "speakers_changed" }])
+})
+
+test("a fixed number of speakers is kept", (t) => {
+  const { draft } = reconcile({
+    speakers: { isSeparated: true, count: 4, collectionIds: [] },
+    speakersChosenByUser: true,
+  })
+  t.is(draft.speakers.count, 4)
 })
 
 test("a removed translation can't stay the visio subtitles", (t) => {

@@ -6,7 +6,7 @@
       inputFullWidth
       @input="updateUrl" />
     <fieldset class="visio-fields__providers flex col gap-small">
-      <legend class="form-label">
+      <legend class="visio-fields__legend field-label">
         {{ $t("quick_session.setup_visio.type_label") }}
       </legend>
       <div class="flex gap-small wrap">
@@ -93,5 +93,10 @@ export default {
   margin: 0;
   padding: 0;
   border: 0;
+}
+
+.visio-fields__legend {
+  padding: 0;
+  margin-bottom: var(--small-gap);
 }
 </style>

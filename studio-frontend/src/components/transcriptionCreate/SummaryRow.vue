@@ -1,22 +1,14 @@
 <template>
   <div class="summary-row flex gap-small">
-    <dt class="summary-row__label">{{ label }}</dt>
+    <dt class="summary-row__label flex align-center gap-small">
+      <span class="summary-row__icon flex">
+        <PhIcon v-if="icon" :name="icon" size="sm" />
+      </span>
+      {{ label }}
+    </dt>
     <dd class="summary-row__value flex col flex1">
-      <slot>{{ value }}</slot>
+      <slot></slot>
     </dd>
-    <slot name="action">
-      <Button
-        v-if="withEdit"
-        class="summary-row__edit"
-        type="button"
-        variant="link"
-        size="sm"
-        :disabled="disabled"
-        :aria-label="$t('transcription_create.summary.edit_row', { label })"
-        @click="$emit('edit')">
-        {{ $t("transcription_create.summary.edit") }}
-      </Button>
-    </slot>
   </div>
 </template>
 <script>
@@ -24,11 +16,9 @@ export default {
   name: "SummaryRow",
   props: {
     label: { type: String, required: true },
-    // A plain value: the default slot takes over for anything richer
-    value: { type: String, default: "" },
-    // Offers the button emitting "edit"
-    withEdit: { type: Boolean, default: true },
-    disabled: { type: Boolean, default: false },
+    // Without one, the label stays aligned with those of the other rows: the
+    // row then reads as a detail of the one above.
+    icon: { type: String, default: null },
   },
 }
 </script>
@@ -38,20 +28,21 @@ export default {
 }
 
 .summary-row {
-  align-items: baseline;
+  box-sizing: border-box;
+  align-items: center;
+  min-height: 60px;
   border-top: var(--border-block);
-  padding: 0.5rem 0rem;
 }
 
 .summary-row__label {
-  flex: 0 0 9rem;
+  flex: 0 0 12rem;
   font-size: var(--text-sm);
   color: var(--text-secondary);
 }
 
-// A button centers itself by default: here, it follows the row's text.
-.summary-row__edit {
-  align-self: baseline;
+// The width of the small icon.
+.summary-row__icon {
+  flex: 0 0 1.25rem;
 }
 
 .summary-row__value {

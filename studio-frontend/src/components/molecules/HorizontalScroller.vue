@@ -85,6 +85,9 @@ export default {
       this.canScrollPrev = canScrollPrev
       this.canScrollNext = canScrollNext
     },
+    scrollToStart() {
+      this.$refs.viewport.scrollLeft = 0
+    },
     // One item further; the snap lands it on the start edge
     scrollByItem(direction) {
       const viewport = this.$refs.viewport
@@ -111,8 +114,10 @@ function prefersReducedMotion() {
 
 <style lang="scss" scoped>
 .horizontal-scroller {
-  // What the fades blend into: the background behind the row
-  --horizontal-scroller-fade: var(--background-primary);
+  // Set by an ancestor: --horizontal-scroller-fade, what the fades blend into
+  // (the background behind the row), and --horizontal-scroller-inset, the space
+  // before the first item and after the last one, for a row reaching the edges
+  // of its block while its items line up with the rest of the block.
   // Room kept under the items for the scrollbar. The fades stop above it
   // and the arrows center on the items, not on the whole row.
   --horizontal-scroller-scrollbar-room: var(--small-gap);
@@ -138,7 +143,7 @@ function prefersReducedMotion() {
     left: 0;
     background: linear-gradient(
       to right,
-      var(--horizontal-scroller-fade),
+      var(--horizontal-scroller-fade, var(--background-primary)),
       transparent
     );
   }
@@ -147,7 +152,7 @@ function prefersReducedMotion() {
     right: 0;
     background: linear-gradient(
       to left,
-      var(--horizontal-scroller-fade),
+      var(--horizontal-scroller-fade, var(--background-primary)),
       transparent
     );
   }
@@ -161,9 +166,11 @@ function prefersReducedMotion() {
     display: flex;
     gap: var(--medium-gap);
     margin: 0;
-    padding: 0 0 var(--horizontal-scroller-scrollbar-room);
+    padding: 0 var(--horizontal-scroller-inset, 0)
+      var(--horizontal-scroller-scrollbar-room);
     overflow-x: auto;
     overscroll-behavior-x: contain;
+    scroll-padding-inline: var(--horizontal-scroller-inset, 0);
     scroll-snap-type: x mandatory;
     scrollbar-width: thin;
     list-style: none;

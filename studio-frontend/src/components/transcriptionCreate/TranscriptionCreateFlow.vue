@@ -5,13 +5,13 @@
     v-else-if="view === 'source'"
     :draft="draft"
     :files="files"
+    :fileDurations="fileDurations"
     :sources="sources"
     :timingOptions="timingOptions"
     :minSecurityLevel="organizationSecurityLevel"
     :notice="sourceNotice"
     :refusal="saasRefusalToShow"
     :isQuickSessionRunning="Boolean(runningQuickSession)"
-    :enableFileRecording="!isSourceAvailable('microphone')"
     :organizationId="organizationId"
     @change="updateDraft"
     @update-files="updateFiles"
@@ -21,11 +21,14 @@
   <SummaryStep
     v-else-if="view === 'summary'"
     :draft="draft"
-    :fileCount="files.length"
+    :files="files"
+    :fileDurations="fileDurations"
     :catalog="catalog"
     :engines="engines"
     :notices="notices"
     :speakerOptions="speakerOptions"
+    :liveEngines="liveEngines"
+    :offlineEngines="offlineEngines"
     :sourceIcon="sourceIcon"
     :offlineEngineLabel="offlineEngineLabel"
     :isFolderPrivate="isFolderPrivate"
@@ -34,51 +37,8 @@
     :error="error"
     @change="updateDraft"
     @change-languages="changeLanguages"
-    @edit="view = $event"
     @back="backToSource"
     @submit="submit"
-    @close="close" />
-
-  <EngineEditor
-    v-else-if="view === 'liveEngine'"
-    :title="$t('transcription_create.summary.live_engine')"
-    :engines="liveEngines"
-    :value="draft.profileId"
-    @apply="applyProfile"
-    @cancel="view = 'summary'"
-    @close="close" />
-
-  <EngineEditor
-    v-else-if="view === 'offlineEngine'"
-    :title="offlineEngineLabel"
-    :engines="offlineEngines"
-    :value="draft.serviceName"
-    @apply="applyService"
-    @cancel="view = 'summary'"
-    @close="close" />
-
-  <SpeakersEditor
-    v-else-if="view === 'speakers'"
-    :value="draft.speakers"
-    :options="speakerOptions"
-    :collections="catalog.collections"
-    @apply="applySpeakers"
-    @cancel="view = 'summary'"
-    @close="close" />
-
-  <SharingEditor
-    v-else-if="view === 'sharing'"
-    :value="draft.membersRight"
-    @apply="applySummaryChange({ membersRight: $event })"
-    @cancel="view = 'summary'"
-    @close="close" />
-
-  <VisioSubtitlesEditor
-    v-else-if="view === 'visioSubtitles'"
-    :value="draft.visio"
-    :translations="draft.translations"
-    @apply="applySummaryChange({ visio: { ...draft.visio, ...$event } })"
-    @cancel="view = 'summary'"
     @close="close" />
 </template>
 <script>
@@ -120,13 +80,9 @@ import { formatLanguageList } from "@/tools/transcriptionCreate/formatLanguageLi
 import { mergeNotices } from "@/tools/transcriptionCreate/mergeNotices.js"
 import { reconcileDraft } from "@/tools/transcriptionCreate/reconcileDraft.js"
 
-import EngineEditor from "./EngineEditor.vue"
 import LoadingStep from "./LoadingStep.vue"
-import SharingEditor from "./SharingEditor.vue"
 import SourceStep from "./SourceStep.vue"
-import SpeakersEditor from "./SpeakersEditor.vue"
 import SummaryStep from "./SummaryStep.vue"
-import VisioSubtitlesEditor from "./VisioSubtitlesEditor.vue"
 
 const SOURCE_ICONS = {
   file: "file-audio",
@@ -140,13 +96,9 @@ const SOURCE_ICONS = {
 export default {
   name: "TranscriptionCreateFlow",
   components: {
-    EngineEditor,
     LoadingStep,
-    SharingEditor,
     SourceStep,
-    SpeakersEditor,
     SummaryStep,
-    VisioSubtitlesEditor,
   },
   mixins: [
     livePackPurchaseMixin,
@@ -157,8 +109,7 @@ export default {
   data() {
     return {
       loading: true,
-      // "source" | "summary" | "liveEngine" | "offlineEngine" | "speakers"
-      // | "sharing" | "visioSubtitles"
+      // "source" | "summary"
       view: "source",
       draft: null,
       // See reconcileDraft: what the last change did to the user's choices
@@ -251,7 +202,7 @@ export default {
         (profile) => ({
           id: profile.id,
           name: profile.config.name,
-          languages: this.formatEngineLanguages(
+          description: this.formatEngineLanguages(
             computeProfileLanguages(profile),
           ),
         }),
@@ -262,7 +213,7 @@ export default {
         (service) => ({
           id: service.serviceName,
           name: computeServiceName(service, this.$i18n.locale),
-          languages: this.formatServiceLanguages(service),
+          description: this.formatServiceLanguages(service),
         }),
       )
     },
@@ -378,9 +329,6 @@ export default {
       this.sending = sending
       this.$emit("sending-change", sending)
     },
-    isSourceAvailable(name) {
-      return this.sources.some((source) => source.name === name)
-    },
     // On the first step, notices wait for the summary to show them.
     reconcile(change) {
       const { draft, notices } = reconcileDraft(
@@ -413,7 +361,6 @@ export default {
     },
     async readFileDuration(file) {
       this.$set(this.fileDurations, file.id, null)
-      if (file.uploadType === "url") return
       this.$set(this.fileDurations, file.id, await readMediaDuration(file.file))
     },
     // A refusal is solved from the first step: other files, another source.
@@ -433,19 +380,6 @@ export default {
       this.updateDraft({
         languages: computeLanguageSelection(this.draft.languages, next),
       })
-    },
-    applySummaryChange(change) {
-      this.updateDraft(change)
-      this.view = "summary"
-    },
-    applyProfile(profileId) {
-      this.applySummaryChange({ profileId, profileChosenByUser: true })
-    },
-    applyService(serviceName) {
-      this.applySummaryChange({ serviceName, serviceChosenByUser: true })
-    },
-    applySpeakers(speakers) {
-      this.applySummaryChange({ speakers, speakersChosenByUser: true })
     },
     formatServiceLanguages(service) {
       const codes = computeServiceLanguages(service)

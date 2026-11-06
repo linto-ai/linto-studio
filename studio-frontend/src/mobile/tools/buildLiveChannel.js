@@ -1,6 +1,6 @@
 /**
  * Channel definition of a quick session started from the phone, in the
- * shape the classic QuickSessionCreateContent sends. The audio, when kept,
+ * shape the classic quick session sends. The audio, when kept,
  * stays compressed and no offline pass follows: one channel, one
  * conversation, like the classic live without "offline transcription".
  * @param {{ profile: object, translations: string[], keepAudio: boolean, diarization: boolean }} choices

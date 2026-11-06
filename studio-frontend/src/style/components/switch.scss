@@ -1,10 +1,21 @@
 @layer base {
   .switch {
+    position: relative;
     display: inline-block;
     vertical-align: middle;
 
+    // Out of sight, not display: none: the keyboard has to reach it.
     input {
-      display: none;
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      opacity: 0;
+    }
+
+    input:focus-visible + label {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
     }
 
     label {

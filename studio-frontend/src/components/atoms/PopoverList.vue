@@ -6,6 +6,8 @@
     :overlay="overlay"
     :full-width="fullWidth"
     :content-class="mergedContentClass"
+    :disabled="disabled"
+    :max-height="maxHeight"
     v-bind="$attrs"
     ref="popover"
     @input="onPopoverToggle"
@@ -16,15 +18,27 @@
         :open="open"
         :listboxId="listboxId"
         :ariaProps="triggerAriaProps(open)">
+        <PopoverListTriggerMultiple
+          v-if="multiple"
+          :items="currentItems"
+          :placeholder="placeholder"
+          :label="ariaLabel"
+          :open="open"
+          :ariaProps="triggerAriaProps(open)"
+          :disabled="disabled"
+          @remove="toggleSelection"
+          @close="close" />
         <Button
+          v-else
           :iconRight="open ? 'caret-up' : 'caret-down'"
           v-bind="{ ...$attrs, ...triggerAriaProps(open) }"
+          :disabled="disabled"
           :block="fullWidth"
           :avatar="selectedItem?.avatar"
           :icon="triggerIcon"
           :icon-weight="selectedItem?.iconWeight"
           :label="hasSelection ? labelButton : placeholder"
-          class="popover-list__trigger">
+          class="popover-list__trigger custom">
           <template v-if="hasSelection && $scopedSlots['trigger-content']">
             <slot
               name="trigger-content"
@@ -50,18 +64,18 @@
             @input="toggleSelectAll"
             class="popover-list__checkbox"
             :aria-label="$t('popover_list.select_all')" />
-          <input
+          <SearchInput
             v-if="hasSearch"
-            type="text"
             v-model="searchQuery"
+            compact
+            fullwidth
             role="combobox"
             :aria-controls="listboxId"
             aria-expanded="true"
             :aria-activedescendant="activeDescendantId"
             aria-autocomplete="list"
             :placeholder="effectiveSearchPlaceholder"
-            class="popover-list__search-input"
-            :aria-label="$t('popover_list.search')"
+            :label="$t('popover_list.search')"
             @keydown.stop="onSearchKeyDown" />
         </div>
 
@@ -197,7 +211,13 @@
             </div>
           </template>
         </div>
-        <slot name="footer"></slot>
+        <slot name="footer">
+          <PopoverListSelectionFooter
+            v-if="selection && multiple"
+            :count="selectionCount"
+            :countKey="selectionCountKey"
+            @clear="clearSelection" />
+        </slot>
       </div>
     </template>
   </Popover>
@@ -208,9 +228,27 @@ import { mapGetters } from "vuex"
 import Popover from "./Popover.vue"
 import Loading from "./Loading.vue"
 import Checkbox from "./Checkbox.vue"
+import PopoverListSelectionFooter from "./PopoverListSelectionFooter.vue"
+import PopoverListTriggerMultiple from "./PopoverListTriggerMultiple.vue"
+import SearchInput from "./SearchInput.vue"
 import { debounceMixin } from "@/mixins/debounce"
 import { generateId } from "@/tools/generateId.js"
 import { normalizeSearchText } from "@/tools/normalizeSearchText.js"
+import { computeScrollTopToReveal } from "@/tools/computeScrollTopToReveal.js"
+import { isSameItemList } from "@/tools/isSameItemList.js"
+
+// The sticky search header and selection footer cover the edges of the
+// scrolling list: they are measured, as their height depends on their content.
+function measureVisibleListRect(container) {
+  const containerRect = container.getBoundingClientRect()
+  const top = containerRect.top + container.clientTop
+  const header = container.querySelector(".popover-list__header")
+  const footer = container.querySelector(".popover-list-selection-footer")
+  return {
+    top: header?.getBoundingClientRect().bottom ?? top,
+    bottom: footer?.getBoundingClientRect().top ?? top + container.clientHeight,
+  }
+}
 
 export default {
   name: "PopoverList",
@@ -219,6 +257,9 @@ export default {
     Popover,
     Loading,
     Checkbox,
+    PopoverListSelectionFooter,
+    PopoverListTriggerMultiple,
+    SearchInput,
   },
   props: {
     /**
@@ -234,6 +275,7 @@ export default {
      * @property {string} color? - The color of the item (optional, default: "primary")
      * @property {string} iconRight? - The right icon of the item (optional)
      * @property {string} group? - Heading of the item's group, in selection mode (optional)
+     * @property {boolean} exclusive? - Replaces the other items when selected: the multi-selection trigger shows it as plain text and the footer doesn't count it (optional)
      */
     items: {
       type: Array,
@@ -258,6 +300,10 @@ export default {
     size: {
       type: String,
       default: "sm",
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     /**
      * Enables the selection mode where the list behaves like a select component.
@@ -377,12 +423,28 @@ export default {
       default: null,
     },
     /**
+     * Translation key of the footer sentence of the multi-selection mode, with
+     * three forms (none | one | many). The whole sentence rather than the name
+     * of the items: its agreement depends on that name and on the language.
+     */
+    selectionCountKey: {
+      type: String,
+      default: "popover_list.selected_count",
+    },
+    /**
      * Extra class applied to the teleported popover content, letting a parent
      * style the floating list (it lives outside the parent's DOM subtree).
      */
     contentClass: {
       type: String,
       default: "",
+    },
+    /**
+     * Height in pixels beyond which the list scrolls, even with more room.
+     */
+    maxHeight: {
+      type: Number,
+      default: 450,
     },
   },
   emits: ["click", "update:value", "input", "toggle"],
@@ -467,6 +529,11 @@ export default {
       }
 
       this.emitValue(updated)
+    },
+    // The focused button of the footer turns disabled.
+    clearSelection() {
+      this.emitValue([])
+      this.$refs.popover?.focusContent()
     },
     onSelectionItemClick(item, event) {
       if (event.target === event.currentTarget) {
@@ -636,11 +703,20 @@ export default {
      */
     scrollHighlightedIntoView() {
       this.$nextTick(() => {
-        const itemId = this.getItemId(this.highlightedIndex)
-        const element = document.getElementById(itemId)
-        if (element) {
-          element.scrollIntoView({ block: "nearest", behavior: "smooth" })
-        }
+        const item = document.getElementById(
+          this.getItemId(this.highlightedIndex),
+        )
+        const container = this.$refs.popover?.findContent()
+        if (!item || !container) return
+
+        container.scrollTo({
+          top: computeScrollTopToReveal({
+            scrollTop: container.scrollTop,
+            itemRect: item.getBoundingClientRect(),
+            visibleRect: measureVisibleListRect(container),
+          }),
+          behavior: "smooth",
+        })
       })
     },
   },
@@ -684,6 +760,16 @@ export default {
         return combined
       }
       return [...this.pinnedItems, ...this.items]
+    },
+    // The selected items of the multi-selection mode
+    currentItems() {
+      return this.allAvailableItems.filter(this.isSelected)
+    },
+    selectionCount() {
+      const selected = Array.isArray(this.value) ? this.value.length : 0
+      return (
+        selected - this.currentItems.filter((item) => item.exclusive).length
+      )
     },
     labelButton() {
       const item = this.allAvailableItems.find((item) =>
@@ -763,7 +849,10 @@ export default {
     },
   },
   watch: {
-    items() {
+    items(items, previousItems) {
+      // Parents rebuild their list on every selection: the highlight, and
+      // the scroll that follows it, stay put while the items are the same.
+      if (isSameItemList(items, previousItems)) return
       // Reset highlight when the list content changes (e.g. drill-down
       // navigation) so keyboard actions never target a stale index.
       this.highlightedIndex = 0
@@ -831,11 +920,6 @@ export default {
   z-index: 1;
 }
 
-.popover-list__search-input {
-  flex: 1;
-  min-width: 0;
-}
-
 .popover-list__empty {
   padding: 1rem;
   text-align: center;
@@ -855,9 +939,6 @@ export default {
   width: 100%;
   box-sizing: border-box;
   display: flex;
-  scroll-margin-top: calc(
-    1rem + 40.5px
-  ); // Compense le header sticky lors du scroll clavier
 
   .btn {
     width: 100%;
@@ -867,6 +948,7 @@ export default {
     transform: none;
     box-shadow: none;
     border: none !important;
+    padding: 0.5rem 0.75rem;
     //color: var(--text-primary);
 
     &.tertiary {
@@ -914,8 +996,13 @@ export default {
   cursor: pointer;
 }
 
+.popover-list__item__description {
+  font-weight: 400;
+}
+
 .popover-list__checkbox-label {
   color: var(--text-primary);
+  font-weight: 500;
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
@@ -943,21 +1030,44 @@ export default {
     //padding: 0.5rem;
     gap: 0.25rem;
   }
-
-  .popover-list__search-input {
-    width: 100%;
-    max-width: none;
-  }
 }
 
 // Default trigger button styling (inherits input styles from forms.scss)
 .popover-list__trigger {
   display: flex;
   justify-content: space-between;
+  padding-block: 0;
+  padding-right: 0;
+  overflow: hidden;
   --btn-font-size: 1em;
 
   .label {
     text-align: left;
+  }
+
+  // Otherwise bounded like the inputs it inherits from.
+  .popover-trigger--full-width > & {
+    min-width: 0;
+    max-width: none;
+  }
+
+  // The caret, in the same zone as PopoverListTriggerMultiple.
+  > .icon-svg:last-child {
+    box-sizing: content-box;
+    flex-shrink: 0;
+    align-self: stretch;
+    width: 1rem;
+    height: auto;
+    margin-left: auto;
+    padding: 0 var(--small-gap);
+    border-left: var(--border-block);
+    background: color-mix(in srgb, var(--text-primary) 5%, transparent);
+    // PhIcon sets its color inline.
+    color: var(--text-secondary) !important;
+  }
+
+  &:hover:not(:disabled) > .icon-svg:last-child {
+    background: color-mix(in srgb, var(--text-primary) 10%, transparent);
   }
 }
 </style>

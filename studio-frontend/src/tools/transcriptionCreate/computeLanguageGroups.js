@@ -4,9 +4,9 @@ import formatLanguage from "../formatLanguage.js"
 /**
  * Language options with their display name, suggested languages first, then
  * the others by name.
- * @param {{ code: string, changesEngine: boolean }[]} options
+ * @param {{ code: string }[]} options
  * @param {string} locale
- * @returns {{ code: string, label: string, changesEngine: boolean, group: string }[]}
+ * @returns {{ code: string, label: string, group: string }[]}
  *   group: "suggested" | "all"
  */
 export function computeLanguageGroups(options, locale) {

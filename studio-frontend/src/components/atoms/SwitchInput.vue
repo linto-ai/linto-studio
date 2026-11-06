@@ -7,6 +7,7 @@
       :name="name"
       :checked="value"
       :value="checkboxValue"
+      :aria-label="ariaLabel"
       v-model="_value" />
     <label :for="id">
       <div class="switch__slider"></div>
@@ -23,6 +24,8 @@ export default {
     name: { type: String, default: "" },
     checkboxValue: { type: String, default: null },
     disabled: { type: Boolean, default: false },
+    // Accessible name when no visible <label> names the switch.
+    ariaLabel: { type: String, default: null },
   },
   data() {
     return {}

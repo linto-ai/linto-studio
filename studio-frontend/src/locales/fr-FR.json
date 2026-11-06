@@ -655,7 +655,6 @@
   "breadcrumb": {
     "activities": "Journal d'activité",
     "backoffice": "Administration",
-    "createConversation": "Importer un média",
     "createOrganization": "Créer une organisation",
     "createSession": "Créer une session",
     "explore": "Médias",
@@ -696,7 +695,6 @@
     },
     "conversation_creation_error_multiple_unknown": "Une erreur est survenue lors de l'envoi de {total} fichiers audio. {count} fichier(s) transféré(s). Veuillez réessayer ultérieurement.",
     "conversation_creation_partially_sent": "{count} fichier sur {total} a déjà été envoyé. | {count} fichiers sur {total} ont déjà été envoyés.",
-    "conversation_creation_loading_multiple": "Envoi du fichier {count} sur {total}. Cette opération peut prendre plusieurs minutes.",
     "folder_selection_title": "Dossier",
     "folder_selection_label": "Importer dans le dossier",
     "rights_info_tooltip": "Si le dossier sélectionné est privé, le média héritera automatiquement des permissions du dossier.",
@@ -888,9 +886,7 @@
     "transcription_service_list_empty": "Aucun service de transcription disponible",
     "transcription_service_title": "Sélection de l'IA de transcription",
     "turn_cant_merge": "Le nombre de caractères est trop élevé pour fusionner les tours de parole",
-    "turn_sync_error_title": "Le tour de parole n'est pas synchronisé correctement",
-    "websocket_error_content": "La mise à jour du document a échoué. Veuillez enregistrer vos modifications et actualiser la page.",
-    "websocket_error_title": "Erreur de synchronisation"
+    "turn_sync_error_title": "Le tour de parole n'est pas synchronisé correctement"
   },
   "transcription_create": {
     "title": "Nouvelle transcription",
@@ -899,7 +895,13 @@
     "cancel": "Annuler",
     "back": "Retour",
     "next": "Suivant",
-    "apply": "Appliquer",
+    "file": {
+      "name": "Nom du fichier",
+      "rename": "Renommer {name}",
+      "play": "Écouter {name}",
+      "pause": "Mettre en pause {name}",
+      "delete": "Supprimer {name}"
+    },
     "source": {
       "question": "Que voulez-vous transcrire ?",
       "file": "Fichier",
@@ -919,27 +921,31 @@
       "both_summary": "en direct puis après l'enregistrement"
     },
     "summary": {
+      "files": "Fichiers à transcrire",
+      "files_total_partial": "au moins {duration}",
+      "sending": "Envoi du fichier {index} sur {total}",
+      "sending_file": "Envoi de {name}",
       "language": "Langue",
-      "translation": "Traduction",
+      "translation": "Traduction en direct",
       "live_engine": "Moteur en direct",
       "offline_engine": "Moteur après l'enregistrement",
       "engine": "Moteur",
-      "speakers": "Locuteurs",
+      "speaker_separation": "Séparation des locuteurs",
+      "speaker_count": "Nombre de locuteurs",
+      "speaker_identification": "Identification des locuteurs",
       "sharing": "Partage",
       "folder": "Dossier",
       "visio_subtitles": "Sous-titres dans la visio",
+      "no_subtitles": "Pas de sous-titres",
       "none": "Aucune",
-      "no_engine": "Aucun moteur compatible",
-      "edit": "Modifier",
-      "edit_row": "Modifier : {label}"
+      "no_engine": "Aucun moteur compatible"
     },
     "language": {
       "detection": "Détection automatique",
+      "selected_count": "Aucune langue sélectionnée | 1 langue sélectionnée | {count} langues sélectionnées",
       "search": "Rechercher...",
       "group_suggested": "Suggestions",
-      "group_all": "Toutes les langues",
-      "changes_engine": "Change le moteur",
-      "changes_engine_note": "« Change le moteur » : le moteur actuel ne le propose pas, un autre moteur compatible sera choisi."
+      "group_all": "Toutes les langues"
     },
     "credit": {
       "file_over_credit": "Ce fichier dure {duration}, il reste {remaining} de transcription.",
@@ -962,24 +968,14 @@
       "speakers_changed": "Le choix pour les locuteurs n'est plus disponible : il a été remplacé."
     },
     "engine": {
-      "description": "Moteurs compatibles avec la langue, les traductions et le niveau de sécurité choisis.",
       "languages": "Langues : {languages}"
     },
     "speakers": {
-      "title": "Faut-il séparer les locuteurs ?",
-      "collection_label": "Liste de locuteurs",
-      "none": {
-        "label": "Ne pas séparer",
-        "description": "Un seul locuteur"
-      },
-      "distinguish": {
-        "label": "Distinguer",
-        "description": "Locuteur 1, Locuteur 2..."
-      },
-      "recognize": {
-        "label": "Reconnaître",
-        "description": "Les locuteurs sont nommés à partir d'une liste"
-      },
+      "enabled": "Activée",
+      "disabled": "Désactivée",
+      "count_auto": "Auto",
+      "count_fixed": "Fixe",
+      "no_identification": "Aucune identification",
       "notices": {
         "after_recording_only": "Seulement après l'enregistrement.",
         "during_recording_only": "Seulement pendant l'enregistrement.",
@@ -988,7 +984,7 @@
       }
     },
     "submit": {
-      "file": "Lancer la transcription",
+      "file": "Lancer la transcription | Lancer {count} transcriptions",
       "microphone": "Commencer l'enregistrement",
       "visio": "Rejoindre la visioconférence"
     }
@@ -2220,9 +2216,7 @@
     "setup_visio": {
       "type_label": "Type de visioconférence",
       "link_label": "URL de la visioconférence",
-      "display_transcription_in_visio_label": "Afficher les sous-titres dans la visioconférence",
       "join_meeting": "Rejoindre la visioconférence",
-      "bot_lang_label": "Langue d'affichage dans la visioconférence",
       "helper": {
         "jitsi": "Le bot rejoint automatiquement, aucune action requise.",
         "bigbluebutton": "Le bot rejoint comme invité ; un modérateur doit l'admettre si la salle exige une approbation.",
@@ -2488,10 +2482,13 @@
     "no_name": "Nom non renseigné"
   },
   "popover_list": {
+    "remove_item": "Retirer {name}",
     "search": "Rechercher",
     "search_placeholder": "Rechercher...",
     "no_results": "Aucun résultat",
-    "select_all": "Tout sélectionner"
+    "select_all": "Tout sélectionner",
+    "selected_count": "Aucun élément sélectionné | 1 élément sélectionné | {count} éléments sélectionnés",
+    "clear_selection": "Tout décocher"
   },
   "duration_input": {
     "s": "Seconde | Secondes",

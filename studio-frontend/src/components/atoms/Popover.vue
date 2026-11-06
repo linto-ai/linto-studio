@@ -13,10 +13,36 @@ import { mapGetters } from "vuex"
 import popupManager from "@/tools/popupManager"
 import PopoverRenderer from "./PopoverRenderer.vue"
 import POPOVER_MARGIN from "@/const/popoverMargin.js"
+import { computePopoverPlacement } from "@/tools/computePopoverPlacement.js"
+import PopoverPlacementTracker from "@/lib/PopoverPlacementTracker.js"
+
+// Space between the trigger and the popover.
+const POPOVER_GAP = 4
+// Room that is enough to stay on the preferred side and scroll the content,
+// rather than moving to the other side of the trigger.
+const POPOVER_COMFORTABLE_HEIGHT = 350
+
+// The content scrolls inside its maximum height: its scroll height is the
+// height it would take without it.
+function measureNaturalSize(content) {
+  return {
+    width: content.getBoundingClientRect().width,
+    height: content.scrollHeight,
+  }
+}
+
+function isSamePlacement(placement, other) {
+  return Object.keys(placement).every((key) => placement[key] === other[key])
+}
 
 export default {
   name: "Popover",
   props: {
+    // The trigger doesn't open the popover anymore.
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     /**
      * If true, an overlay will be displayed on the page when the popover is open
      */
@@ -81,12 +107,32 @@ export default {
       type: Boolean,
       default: false,
     },
+    /**
+     * Height in pixels never exceeded by the popover, even with more room:
+     * its content scrolls. Without it, only the room left beside the trigger
+     * limits the popover.
+     */
+    maxHeight: {
+      type: Number,
+      default: null,
+    },
+  },
+  created() {
+    // Not reactive: see trackPlacement.
+    this.placementTracker = null
   },
   data() {
     return {
       isOpen: false,
       mouseInside: false,
-      popoverCoords: { top: 0, left: 0 },
+      // Measured once the content is rendered, see computePopoverPlacement.
+      placement: {
+        side: null,
+        top: 0,
+        bottom: null,
+        left: 0,
+        maxHeight: null,
+      },
       hoverTimeout: null,
     }
   },
@@ -113,7 +159,7 @@ export default {
             ]
               .filter(Boolean)
               .join(" "),
-            popoverCoords: this.popoverCoords,
+            placement: this.placement,
             widthRef: this.triggerElement || this.$refs.trigger,
           },
           slots: {
@@ -126,31 +172,24 @@ export default {
         })
 
         this.$nextTick(() => {
-          this.updatePopoverPosition()
+          this.trackPlacement()
           // Focus the popover content for keyboard navigation
           this.focusContent()
         })
-
-        window.addEventListener("resize", this.updatePopoverPosition, {
-          passive: true,
-        })
-        window.addEventListener("scroll", this.updatePopoverPosition, true)
       } else {
+        // The next opening chooses its side again.
+        this.placement = { ...this.placement, side: null }
+        this.stopTrackingPlacement()
         popupManager.unregister(this)
-        window.removeEventListener("resize", this.updatePopoverPosition)
-        window.removeEventListener("scroll", this.updatePopoverPosition, true)
       }
     },
-    popoverCoords: {
-      handler() {
-        if (this.isOpen) {
-          const popup = popupManager.stack.find((p) => p.id === this._uid)
-          if (popup) {
-            popup.props.popoverCoords = this.popoverCoords
-          }
+    placement() {
+      if (this.isOpen) {
+        const popup = popupManager.stack.find((p) => p.id === this._uid)
+        if (popup) {
+          popup.props.placement = this.placement
         }
-      },
-      deep: true,
+      }
     },
     isMobile() {
       if (this.isOpen) {
@@ -169,6 +208,7 @@ export default {
   computed: {
     triggerHandlers() {
       const handlers = {}
+      if (this.disabled) return handlers
       if (this.trigger === "click") {
         handlers.click = (event) => {
           event.stopPropagation()
@@ -273,63 +313,60 @@ export default {
         requestAnimationFrame(() => this.focusContent(attempts + 1))
       }
     },
+    // Places the popover now, then again whenever something can move it.
+    trackPlacement(attempts = 0) {
+      if (!this.isOpen || this.placementTracker) return
+      const content = this.findContent()
+      if (!content) {
+        // Renderer not ready yet, retry after a frame
+        if (attempts < 5) {
+          requestAnimationFrame(() => this.trackPlacement(attempts + 1))
+        }
+        return
+      }
+
+      this.updatePopoverPosition()
+      this.placementTracker = new PopoverPlacementTracker(
+        content,
+        this.updatePopoverPosition,
+      )
+    },
+    stopTrackingPlacement() {
+      this.placementTracker?.destroy()
+      this.placementTracker = null
+    },
+    findContent() {
+      const popup = popupManager.stack.find((p) => p.id === this._uid)
+      return popup?.rendererInstance?.$refs.content ?? null
+    },
     updatePopoverPosition() {
       if (!this.isOpen) return
 
       const triggerElement = this.triggerElement || this.$refs.trigger
       if (!triggerElement) return
 
-      const popup = popupManager.stack.find((p) => p.id === this._uid)
-      if (
-        !popup ||
-        !popup.rendererInstance ||
-        !popup.rendererInstance.$refs.content
-      ) {
-        return
-      }
+      const content = this.findContent()
+      if (!content) return
 
-      const popoverRect =
-        popup.rendererInstance.$refs.content.getBoundingClientRect()
-      const rect = triggerElement.getBoundingClientRect()
-      const { innerWidth: viewportWidth, innerHeight: viewportHeight } = window
-      let top = 0,
-        left = 0
+      const placement = computePopoverPlacement({
+        triggerRect: triggerElement.getBoundingClientRect(),
+        contentSize: measureNaturalSize(content),
+        // The viewport of fixed elements, without the scrollbars.
+        viewport: {
+          width: document.documentElement.clientWidth,
+          height: document.documentElement.clientHeight,
+        },
+        // Once open, the popover keeps its side while it has room there:
+        // it doesn't jump from one side to the other on scroll.
+        side: this.placement.side ?? this.position,
+        margin: POPOVER_MARGIN,
+        gap: POPOVER_GAP,
+        comfortableHeight: POPOVER_COMFORTABLE_HEIGHT,
+        maxHeight: this.maxHeight,
+      })
 
-      switch (this.position) {
-        case "top":
-          top = rect.top - popoverRect.height
-          left = rect.left + rect.width / 2 - popoverRect.width / 2
-          break
-        case "bottom":
-          top = rect.bottom
-          left = rect.left + rect.width / 2 - popoverRect.width / 2
-          break
-        case "left":
-          top = rect.top + rect.height / 2 - popoverRect.height / 2
-          left = rect.left - popoverRect.width
-          break
-        case "right":
-          top = rect.top + rect.height / 2 - popoverRect.height / 2
-          left = rect.right
-          break
-      }
-
-      const margin = POPOVER_MARGIN
-      left = Math.max(
-        margin,
-        Math.min(left, viewportWidth - popoverRect.width - margin),
-      )
-      top = Math.max(
-        margin,
-        Math.min(top, viewportHeight - popoverRect.height - margin),
-      )
-
-      const newCoords = { top: Math.round(top), left: Math.round(left) }
-      if (
-        this.popoverCoords.top !== newCoords.top ||
-        this.popoverCoords.left !== newCoords.left
-      ) {
-        this.popoverCoords = newCoords
+      if (!isSamePlacement(placement, this.placement)) {
+        this.placement = placement
       }
     },
   },
@@ -338,9 +375,8 @@ export default {
       clearTimeout(this.hoverTimeout)
       this.hoverTimeout = null
     }
+    this.stopTrackingPlacement()
     popupManager.unregister(this)
-    window.removeEventListener("resize", this.updatePopoverPosition)
-    window.removeEventListener("scroll", this.updatePopoverPosition, true)
     this.toggle(false)
   },
 }

@@ -2,7 +2,7 @@ import test from "ava"
 import { computeLanguageGroups } from "../computeLanguageGroups.js"
 
 function option(code) {
-  return { code, changesEngine: false }
+  return { code }
 }
 
 test("suggested languages come first, then the others by name", (t) => {

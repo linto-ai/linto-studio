@@ -5,6 +5,7 @@
       'input-box--disabled': disabled,
       'input-box--error': error,
       'input-box--fullwidth': fullwidth,
+      'input-box--compact': compact,
     }">
     <label
       v-if="$scopedSlots.prefix || $slots.prefix"
@@ -38,6 +39,7 @@ export default {
     disabled: { type: Boolean, default: false },
     error: { type: Boolean, default: false },
     fullwidth: { type: Boolean, default: false },
+    compact: { type: Boolean, default: false },
   },
 }
 </script>
@@ -73,6 +75,10 @@ export default {
     width: 100%;
     min-width: 0;
     max-width: none;
+  }
+
+  &--compact {
+    height: 36px;
   }
 
   &--disabled {

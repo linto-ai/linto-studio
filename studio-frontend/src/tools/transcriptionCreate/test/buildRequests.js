@@ -39,24 +39,42 @@ test("the service gets its own spelling of the language", (t) => {
   t.is(config.config.language, "fr-FR")
 })
 
-test("speakers modes reach the diarization config", (t) => {
-  const diarization = (speakers) =>
-    buildServiceConfig(microphoneDraft({ speakers }), whisperService)
+test("speakers settings reach the diarization config", (t) => {
+  const configFor = (speakers) =>
+    buildServiceConfig(
+      microphoneDraft({
+        speakers: {
+          isSeparated: true,
+          count: null,
+          collectionIds: [],
+          ...speakers,
+        },
+      }),
+      whisperService,
+    )
 
-  const none = diarization({ mode: "none", collectionId: null })
+  const none = configFor({ isSeparated: false, collectionIds: ["team"] })
   t.false(none.config.diarizationConfig.enableDiarization)
+  t.deepEqual(none.speakerIdentificationCollections, [])
 
-  const distinguish = diarization({ mode: "distinguish", collectionId: null })
+  const distinguish = configFor({})
   t.is(distinguish.config.diarizationConfig.serviceName, "pyannote")
+  t.is(distinguish.config.diarizationConfig.numberOfSpeaker, null)
   t.deepEqual(distinguish.speakerIdentificationCollections, [])
 
-  const recognize = diarization({ mode: "recognize", collectionId: "team" })
+  const fixed = configFor({ count: 4 })
+  t.is(fixed.config.diarizationConfig.numberOfSpeaker, 4)
+
+  const recognize = configFor({ collectionIds: ["team", "organization"] })
   t.is(recognize.config.diarizationConfig.serviceName, "pyannote-id")
-  t.deepEqual(recognize.speakerIdentificationCollections, ["team"])
+  t.deepEqual(recognize.speakerIdentificationCollections, [
+    "team",
+    "organization",
+  ])
 })
 
 test("conversation request: a file goes as a track", (t) => {
-  const file = { value: "meeting", file: "binary", uploadType: "file" }
+  const file = { value: "meeting", file: "binary" }
   const request = buildConversationRequest(
     microphoneDraft({ folderId: "folder" }),
     whisperService,
@@ -69,18 +87,7 @@ test("conversation request: a file goes as a track", (t) => {
   t.is(request.serviceName, "whisper")
   t.is(request.endpoint, "whisper/transcribe")
   t.deepEqual(request.tracks, ["binary"])
-  t.is(request.url, null)
   t.is(JSON.parse(request.transcriptionConfig).language, "*")
-})
-
-test("conversation request: a URL goes as a URL", (t) => {
-  const request = buildConversationRequest(microphoneDraft(), whisperService, {
-    value: "talk",
-    file: "https://a.b/c",
-    uploadType: "url",
-  })
-  t.is(request.tracks, null)
-  t.is(request.url, "https://a.b/c")
 })
 
 test("quick session, both: live profile, chosen translations, end service", (t) => {
@@ -124,12 +131,18 @@ test("quick session: live separates speakers only if the profile can", (t) => {
     }).channels[0].diarization
   t.true(diarization({}))
   t.false(diarization({}, frenchProfile))
-  t.false(diarization({ speakers: { mode: "none", collectionId: null } }))
+  t.false(
+    diarization({
+      speakers: { isSeparated: false, count: null, collectionIds: [] },
+    }),
+  )
 })
 
 test("quick session: recognition stays plain diarization in live", (t) => {
   const { channels } = buildQuickSessionRequest(
-    microphoneDraft({ speakers: { mode: "recognize", collectionId: "team" } }),
+    microphoneDraft({
+      speakers: { isSeparated: true, count: null, collectionIds: ["team"] },
+    }),
     engines,
   )
   t.true(channels[0].diarization)

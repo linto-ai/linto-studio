@@ -1,6 +1,6 @@
 <template>
-  <!-- Searchable multi-selection of languages, opened from a "Modify" button.
-       Shared by the transcription languages and the translations. -->
+  <!-- Searchable multi-selection of languages. Shared by the transcription
+       languages and the translations. -->
   <PopoverList
     selection
     multiple
@@ -11,58 +11,34 @@
     :value="selectedItems"
     :ariaLabel="label"
     :closeOnClick="false"
+    :placeholder="placeholder"
+    :disabled="disabled"
+    fullWidth
+    selectionCountKey="transcription_create.language.selected_count"
     :searchPlaceholder="$t('transcription_create.language.search')"
     content-class="language-picker__popover"
-    @input="emitCodes">
-    <template #trigger="{ ariaProps }">
-      <Button
-        v-bind="ariaProps"
-        type="button"
-        variant="link"
-        size="sm"
-        :disabled="disabled"
-        :aria-label="$t('transcription_create.summary.edit_row', { label })">
-        {{ $t("transcription_create.summary.edit") }}
-      </Button>
-    </template>
-    <template #item="{ item }">
-      <span class="language-picker__item flex align-center gap-small">
-        <span class="flex1">{{ item.name }}</span>
-        <Chip
-          v-if="item.changesEngine"
-          primary
-          :value="$t('transcription_create.language.changes_engine')" />
-      </span>
-    </template>
-    <template #footer>
-      <p v-if="hasEngineChange" class="language-picker__note">
-        {{ $t("transcription_create.language.changes_engine_note") }}
-      </p>
-    </template>
-  </PopoverList>
+    @input="emitCodes" />
 </template>
 <script>
 import { AUTO_LANGUAGE } from "@/const/transcriptionCreate.js"
 import { computeLanguageGroups } from "@/tools/transcriptionCreate/computeLanguageGroups.js"
 import PopoverList from "@/components/atoms/PopoverList.vue"
-import Chip from "@/components/atoms/Chip.vue"
 
 export default {
   name: "LanguagePicker",
-  components: { PopoverList, Chip },
+  components: { PopoverList },
   props: {
     // Accessible name of the list
     label: { type: String, required: true },
     // Chosen codes
     value: { type: Array, required: true },
-    // [{ code, changesEngine? }]: the flag adds a badge to the option
+    // [{ code }]
     options: { type: Array, required: true },
+    // Shown when nothing is chosen
+    placeholder: { type: String, default: null },
     disabled: { type: Boolean, default: false },
   },
   computed: {
-    hasEngineChange() {
-      return this.options.some((option) => option.changesEngine)
-    },
     items() {
       const detection = this.options.find(
         (option) => option.code === AUTO_LANGUAGE,
@@ -82,18 +58,17 @@ export default {
     },
   },
   methods: {
-    computeDetectionItem({ code, changesEngine }) {
+    computeDetectionItem({ code }) {
       return {
         id: code,
-        name: this.$t("lang.automatic"),
-        changesEngine,
+        name: this.$t("transcription_create.language.detection"),
+        exclusive: true,
       }
     },
-    computeLanguageItem({ code, label, changesEngine, group }) {
+    computeLanguageItem({ code, label, group }) {
       return {
         id: code,
         name: label,
-        changesEngine,
         group: this.$t(`transcription_create.language.group_${group}`),
       }
     },
@@ -111,17 +86,5 @@ export default {
 .language-picker__popover {
   width: 24rem;
   max-width: calc(100vw - 2rem);
-}
-
-.language-picker__item {
-  width: 100%;
-}
-
-.language-picker__note {
-  margin: 0;
-  padding: var(--small-gap);
-  border-top: var(--border-block);
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
 }
 </style>

@@ -1,5 +1,8 @@
 <template>
-  <div class="form-field" :class="formFieldClasses">
+  <div
+    class="form-field"
+    :class="formFieldClasses"
+    :data-handles-escape="shouldShowConfirmationButtons || null">
     <div class="form-field__header" v-if="field.label">
       <label class="form-field__label field-label" :for="id">
         {{ field.label }}
@@ -132,6 +135,12 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Confirmation buttons and keys stay active when nothing has changed, for a
+    // field opened on purpose: it always needs a way out.
+    confirmWithoutChange: {
+      type: Boolean,
+      default: false,
+    },
     disabled: {
       type: Boolean,
       default: false,
@@ -196,7 +205,9 @@ export default {
       return this.editValue !== this.originalValue
     },
     shouldShowConfirmationButtons() {
-      return this.withConfirmation && this.hasChanged
+      return (
+        this.withConfirmation && (this.hasChanged || this.confirmWithoutChange)
+      )
     },
     formFieldClasses() {
       return {
@@ -204,6 +215,7 @@ export default {
         "form-field--disabled": this.disabled,
         "form-field--error": this.isInError,
         "form-field--with-confirmation": this.withConfirmation,
+        "form-field--confirm-without-change": this.confirmWithoutChange,
         "form-field--auto-width": this.autoWidth,
       }
     },
@@ -565,6 +577,11 @@ export default {
     &:focus-within .form-field__actions {
       opacity: 1;
     }
+  }
+
+  // Still open after the focus left: the buttons remain the way out.
+  &--confirm-without-change .form-field__actions {
+    opacity: 1;
   }
 
   /* Auto-confirmation mode (when changes are detected) */

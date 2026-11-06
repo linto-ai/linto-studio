@@ -9,7 +9,6 @@
   input[type="time"],
   select,
   textarea,
-  progress.hoverInput,
   form-field[select-like] .form-value,
   .collab-input,
   button.popover-list__trigger {
@@ -195,6 +194,7 @@
 
   .form-field-checkbox .form-label {
     display: inline-block;
+    font-weight: 500;
     margin-bottom: 0;
     position: relative;
   }

@@ -1,7 +1,7 @@
 /**
  * Diarization sub-service of a transcription service for a speakers mode.
  * @param {{ sub_services?: { diarization?: object[] } }} service
- * @param {string} mode - draft.speakers.mode
+ * @param {string} mode - see computeSpeakersMode
  * @returns {string|null} null when the service can't do it
  */
 export function computeDiarizationServiceName(service, mode) {

@@ -9,7 +9,8 @@ import { DEFAULT_MEMBERS_RIGHT } from "../../mobile/const/defaultMembersRight.js
  * @returns {object} the draft
  *   timing: "live" | "offline" | "both"
  *   languages: [AUTO_LANGUAGE] or bare language codes (["fr", "en"])
- *   speakers.mode: "none" | "distinguish" | "recognize"
+ *   speakers.count: fixed number of speakers, null to leave it automatic
+ *   speakers.collectionIds: lists naming the speakers, see computeSpeakersMode
  */
 export function createDraft({ source, securityLevel }) {
   return {
@@ -23,7 +24,7 @@ export function createDraft({ source, securityLevel }) {
     profileChosenByUser: false,
     serviceName: null,
     serviceChosenByUser: false,
-    speakers: { mode: "distinguish", collectionId: null },
+    speakers: { isSeparated: true, count: null, collectionIds: [] },
     speakersChosenByUser: false,
     membersRight: DEFAULT_MEMBERS_RIGHT,
     folderId: null,

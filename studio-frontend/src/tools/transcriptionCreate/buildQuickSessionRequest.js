@@ -19,7 +19,7 @@ export function buildQuickSessionRequest(draft, { profile, service }) {
     keepAudio: draft.keepAudio,
     diarization:
       live &&
-      draft.speakers.mode !== "none" &&
+      draft.speakers.isSeparated &&
       profile?.config?.hasDiarization === true,
     selectedProfile: live
       ? { ...profile, translations: draft.translations }

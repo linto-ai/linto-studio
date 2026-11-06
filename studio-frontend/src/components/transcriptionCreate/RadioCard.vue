@@ -11,7 +11,7 @@
       :checked="value === choiceValue"
       :disabled="disabled"
       @change="$emit('input', choiceValue)" />
-    <ph-icon v-if="icon" :name="icon" size="lg" />
+    <ph-icon v-if="icon" :name="icon" size="lg" class="radio-card__icon"/>
     <span class="flex col">
       <span class="radio-card__label">{{ label }}</span>
       <span v-if="description" class="radio-card__description">
@@ -41,6 +41,8 @@ export default {
   border: var(--border-block);
   border-radius: var(--border-radius-sm);
   cursor: pointer;
+
+
 
   &:hover {
     background: var(--neutral-10);
@@ -85,6 +87,10 @@ export default {
     opacity: 0;
     pointer-events: none;
   }
+}
+
+.radio-card__icon {
+    color: var(--text-primary) !important;
 }
 
 .radio-card__label {

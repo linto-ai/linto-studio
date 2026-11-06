@@ -4,7 +4,7 @@ Main web interface for LinTO Studio.
 
 ## Installation
 
-You need studio-api and studio-websocket running.
+You need studio-api running.
 
 ### Install dependencies
 
