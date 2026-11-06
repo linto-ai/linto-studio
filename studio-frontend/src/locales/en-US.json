@@ -889,7 +889,6 @@
     "cancel": "Cancel",
     "back": "Back",
     "next": "Next",
-    "apply": "Apply",
     "file": {
       "name": "File name",
       "rename": "Rename {name}",
@@ -2218,9 +2217,7 @@
     "setup_visio": {
       "type_label": "Service type",
       "link_label": "URL",
-      "display_transcription_in_visio_label": "Display subtitles in the videoconference",
       "join_meeting": "Join the meeting",
-      "bot_lang_label": "Choose language used for videoconference subtitle",
       "helper": {
         "jitsi": "The bot joins automatically, no action required.",
         "bigbluebutton": "The bot joins as a guest; a moderator must admit it if the room requires approval.",

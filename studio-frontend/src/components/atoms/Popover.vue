@@ -14,6 +14,7 @@ import popupManager from "@/tools/popupManager"
 import PopoverRenderer from "./PopoverRenderer.vue"
 import POPOVER_MARGIN from "@/const/popoverMargin.js"
 import { computePopoverPlacement } from "@/tools/computePopoverPlacement.js"
+import PopoverPlacementTracker from "@/lib/PopoverPlacementTracker.js"
 
 // Space between the trigger and the popover.
 const POPOVER_GAP = 4
@@ -116,6 +117,10 @@ export default {
       default: null,
     },
   },
+  created() {
+    // Not reactive: see trackPlacement.
+    this.placementTracker = null
+  },
   data() {
     return {
       isOpen: false,
@@ -167,21 +172,15 @@ export default {
         })
 
         this.$nextTick(() => {
-          this.updatePopoverPosition()
+          this.trackPlacement()
           // Focus the popover content for keyboard navigation
           this.focusContent()
         })
-
-        window.addEventListener("resize", this.updatePopoverPosition, {
-          passive: true,
-        })
-        window.addEventListener("scroll", this.updatePopoverPosition, true)
       } else {
         // The next opening chooses its side again.
         this.placement = { ...this.placement, side: null }
+        this.stopTrackingPlacement()
         popupManager.unregister(this)
-        window.removeEventListener("resize", this.updatePopoverPosition)
-        window.removeEventListener("scroll", this.updatePopoverPosition, true)
       }
     },
     placement() {
@@ -314,14 +313,39 @@ export default {
         requestAnimationFrame(() => this.focusContent(attempts + 1))
       }
     },
+    // Places the popover now, then again whenever something can move it.
+    trackPlacement(attempts = 0) {
+      if (!this.isOpen || this.placementTracker) return
+      const content = this.findContent()
+      if (!content) {
+        // Renderer not ready yet, retry after a frame
+        if (attempts < 5) {
+          requestAnimationFrame(() => this.trackPlacement(attempts + 1))
+        }
+        return
+      }
+
+      this.updatePopoverPosition()
+      this.placementTracker = new PopoverPlacementTracker(
+        content,
+        this.updatePopoverPosition,
+      )
+    },
+    stopTrackingPlacement() {
+      this.placementTracker?.destroy()
+      this.placementTracker = null
+    },
+    findContent() {
+      const popup = popupManager.stack.find((p) => p.id === this._uid)
+      return popup?.rendererInstance?.$refs.content ?? null
+    },
     updatePopoverPosition() {
       if (!this.isOpen) return
 
       const triggerElement = this.triggerElement || this.$refs.trigger
       if (!triggerElement) return
 
-      const popup = popupManager.stack.find((p) => p.id === this._uid)
-      const content = popup?.rendererInstance?.$refs.content
+      const content = this.findContent()
       if (!content) return
 
       const placement = computePopoverPlacement({
@@ -351,9 +375,8 @@ export default {
       clearTimeout(this.hoverTimeout)
       this.hoverTimeout = null
     }
+    this.stopTrackingPlacement()
     popupManager.unregister(this)
-    window.removeEventListener("resize", this.updatePopoverPosition)
-    window.removeEventListener("scroll", this.updatePopoverPosition, true)
     this.toggle(false)
   },
 }

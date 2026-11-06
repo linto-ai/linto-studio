@@ -7,7 +7,7 @@
     :full-width="fullWidth"
     :content-class="mergedContentClass"
     :disabled="disabled"
-    :max-height="listMaxHeight"
+    :max-height="maxHeight"
     v-bind="$attrs"
     ref="popover"
     @input="onPopoverToggle"
@@ -234,9 +234,20 @@ import SearchInput from "./SearchInput.vue"
 import { debounceMixin } from "@/mixins/debounce"
 import { generateId } from "@/tools/generateId.js"
 import { normalizeSearchText } from "@/tools/normalizeSearchText.js"
+import { computeScrollTopToReveal } from "@/tools/computeScrollTopToReveal.js"
 
-// Beyond this height, in pixels, the list scrolls even with more room.
-const LIST_MAX_HEIGHT = 450
+// The sticky search header and selection footer cover the edges of the
+// scrolling list: they are measured, as their height depends on their content.
+function measureVisibleListRect(container) {
+  const containerRect = container.getBoundingClientRect()
+  const top = containerRect.top + container.clientTop
+  const header = container.querySelector(".popover-list__header")
+  const footer = container.querySelector(".popover-list-selection-footer")
+  return {
+    top: header?.getBoundingClientRect().bottom ?? top,
+    bottom: footer?.getBoundingClientRect().top ?? top + container.clientHeight,
+  }
+}
 
 export default {
   name: "PopoverList",
@@ -426,6 +437,13 @@ export default {
     contentClass: {
       type: String,
       default: "",
+    },
+    /**
+     * Height in pixels beyond which the list scrolls, even with more room.
+     */
+    maxHeight: {
+      type: Number,
+      default: 450,
     },
   },
   emits: ["click", "update:value", "input", "toggle"],
@@ -684,11 +702,20 @@ export default {
      */
     scrollHighlightedIntoView() {
       this.$nextTick(() => {
-        const itemId = this.getItemId(this.highlightedIndex)
-        const element = document.getElementById(itemId)
-        if (element) {
-          element.scrollIntoView({ block: "nearest", behavior: "smooth" })
-        }
+        const item = document.getElementById(
+          this.getItemId(this.highlightedIndex),
+        )
+        const container = this.$refs.popover?.findContent()
+        if (!item || !container) return
+
+        container.scrollTo({
+          top: computeScrollTopToReveal({
+            scrollTop: container.scrollTop,
+            itemRect: item.getBoundingClientRect(),
+            visibleRect: measureVisibleListRect(container),
+          }),
+          behavior: "smooth",
+        })
       })
     },
   },
@@ -703,9 +730,6 @@ export default {
     }
   },
   computed: {
-    listMaxHeight() {
-      return LIST_MAX_HEIGHT
-    },
     ...mapGetters("system", ["isMobile"]),
     mergedContentClass() {
       return [this.contentClass, this.isMobile ? "popover-list__mobile" : ""]
@@ -872,11 +896,6 @@ export default {
   }
 }
 
-// Keyboard scrolling keeps the highlighted item out of the sticky footer.
-.popover-list__content:has(.popover-list-selection-footer) .popover-list__item {
-  scroll-margin-bottom: calc(0.5rem + 33px);
-}
-
 .popover-list__group {
   padding: 0.5rem 0.5rem 0.25rem;
   font-size: var(--text-xs);
@@ -916,9 +935,6 @@ export default {
   width: 100%;
   box-sizing: border-box;
   display: flex;
-  scroll-margin-top: calc(
-    1rem + 36px
-  ); // Compense le header sticky lors du scroll clavier
 
   .btn {
     width: 100%;

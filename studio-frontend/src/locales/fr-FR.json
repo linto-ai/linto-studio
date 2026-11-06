@@ -890,7 +890,6 @@
     "cancel": "Annuler",
     "back": "Retour",
     "next": "Suivant",
-    "apply": "Appliquer",
     "file": {
       "name": "Nom du fichier",
       "rename": "Renommer {name}",
@@ -2212,9 +2211,7 @@
     "setup_visio": {
       "type_label": "Type de visioconférence",
       "link_label": "URL de la visioconférence",
-      "display_transcription_in_visio_label": "Afficher les sous-titres dans la visioconférence",
       "join_meeting": "Rejoindre la visioconférence",
-      "bot_lang_label": "Langue d'affichage dans la visioconférence",
       "helper": {
         "jitsi": "Le bot rejoint automatiquement, aucune action requise.",
         "bigbluebutton": "Le bot rejoint comme invité ; un modérateur doit l'admettre si la salle exige une approbation.",

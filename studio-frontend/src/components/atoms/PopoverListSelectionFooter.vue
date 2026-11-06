@@ -3,9 +3,12 @@
   <div
     class="popover-list-selection-footer flex align-center gap-small"
     @click.stop>
-    <span class="popover-list-selection-footer__count flex1 text-cut">
+    <!-- A live result: screen readers hear the count change. -->
+    <output
+      class="popover-list-selection-footer__count flex1 text-cut"
+      aria-live="polite">
       {{ $tc(countKey, count) }}
-    </span>
+    </output>
     <!-- Enter belongs to the button here, not to the highlighted item. -->
     <Button
       class="popover-list-selection-footer__clear"
