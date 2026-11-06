@@ -235,6 +235,7 @@ import { debounceMixin } from "@/mixins/debounce"
 import { generateId } from "@/tools/generateId.js"
 import { normalizeSearchText } from "@/tools/normalizeSearchText.js"
 import { computeScrollTopToReveal } from "@/tools/computeScrollTopToReveal.js"
+import { isSameItemList } from "@/tools/isSameItemList.js"
 
 // The sticky search header and selection footer cover the edges of the
 // scrolling list: they are measured, as their height depends on their content.
@@ -848,7 +849,10 @@ export default {
     },
   },
   watch: {
-    items() {
+    items(items, previousItems) {
+      // Parents rebuild their list on every selection: the highlight, and
+      // the scroll that follows it, stay put while the items are the same.
+      if (isSameItemList(items, previousItems)) return
       // Reset highlight when the list content changes (e.g. drill-down
       // navigation) so keyboard actions never target a stale index.
       this.highlightedIndex = 0
