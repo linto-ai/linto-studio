@@ -3,6 +3,7 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ms = require("ms")
+const randomstring = require("randomstring")
 const TokenGenerator = require(
   `${process.cwd()}/components/WebServer/config/passport/token/generator`,
 )
@@ -39,7 +40,7 @@ async function generateApiKeyToken(
     expires_in = getExpiresIn(expires_in)
     let token_salt
     if (token === undefined) {
-      token_salt = require("randomstring").generate(12)
+      token_salt = randomstring.generate(12)
       const tokenCreatedAt = new Date()
       const tokenExpiresAt = new Date(Date.now() + expires_in)
       const [insertedToken] = await Promise.all([
