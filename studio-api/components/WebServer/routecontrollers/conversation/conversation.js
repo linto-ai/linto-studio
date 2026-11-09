@@ -9,9 +9,6 @@ const userUtility = require(
   `${process.cwd()}/components/WebServer/controllers/user/utility`,
 )
 
-const { updateChildConversation } = require(
-  `${process.cwd()}/components/WebServer/controllers/conversation/child`,
-)
 const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
@@ -55,8 +52,6 @@ async function deleteConversation(req, res, next) {
       req.params.conversationId,
     )
     if (conversation.length !== 1) throw new ConversationNotFound()
-
-    await updateChildConversation(conversation[0], "DELETE")
 
     await orgaUtility.deleteConversationCascade(conversation[0])
 

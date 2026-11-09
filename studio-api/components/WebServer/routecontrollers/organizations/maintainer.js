@@ -9,10 +9,6 @@ const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
-const { updateChildConversation } = require(
-  `${process.cwd()}/components/WebServer/controllers/conversation/child`,
-)
-
 const {
   OrganizationError,
   OrganizationUnsupportedMediaType,
@@ -213,8 +209,6 @@ async function deleteConversationFromOrganization(req, res, next) {
     )
 
     for (let conv of conversations.list) {
-      await updateChildConversation(conv, "DELETE")
-
       await orgaUtility.deleteConversationCascade(conv)
 
       if (this?.app?.components?.IoHandler) {
