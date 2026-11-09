@@ -83,8 +83,7 @@ function info(req) {
 }
 
 async function search(req, categoryList) {
-  let tags = []
-  tags = await model.search.tags.searchTagByCategory(
+  const tags = await model.search.tags.searchTagByCategory(
     categoryList,
     req.query.name,
   )

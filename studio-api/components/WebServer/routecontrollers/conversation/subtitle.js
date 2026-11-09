@@ -8,7 +8,6 @@ const validator = require(`${process.cwd()}/lib/dao/schema/validator`)
 const PUNCTUATION_REGEX = /[,.!?]/
 const COMPOSE_WORD_REGEX = /['-]/
 
-const { duration } = require("moment")
 const { v4: uuidv4 } = require("uuid")
 
 const {

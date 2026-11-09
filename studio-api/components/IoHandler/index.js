@@ -252,7 +252,7 @@ class IoHandler extends Component {
         if (!organizationId) return
 
         // First, try normal authentication
-        const { authorized, userId } = await checkSocketOrganizationAccess(
+        const { authorized } = await checkSocketOrganizationAccess(
           socket,
           organizationId,
         )
@@ -398,7 +398,7 @@ class IoHandler extends Component {
 
   async addSocketInMedia(orgaId, socket) {
     socket.join(orgaId)
-    if (this.medias.hasOwnProperty(orgaId)) {
+    if (Object.hasOwn(this.medias, orgaId)) {
       this.medias[orgaId].add(socket.id)
     } else {
       this.medias[orgaId] = new Set().add(socket.id)
@@ -423,7 +423,7 @@ class IoHandler extends Component {
 
   removeSocketFromMedia(orgaId, socket) {
     socket.leave(orgaId)
-    if (!this.medias.hasOwnProperty(orgaId)) {
+    if (!Object.hasOwn(this.medias, orgaId)) {
       return
     }
 
@@ -439,7 +439,7 @@ class IoHandler extends Component {
 
   async addSocketInOrga(orgaId, socket) {
     socket.join(orgaId)
-    if (this.orgas.hasOwnProperty(orgaId)) {
+    if (Object.hasOwn(this.orgas, orgaId)) {
       this.orgas[orgaId].add(socket.id)
     } else {
       this.orgas[orgaId] = new Set().add(socket.id)
@@ -460,7 +460,7 @@ class IoHandler extends Component {
 
   removeSocketFromOrga(orgaId, socket) {
     socket.leave(orgaId)
-    if (!this.orgas.hasOwnProperty(orgaId)) {
+    if (!Object.hasOwn(this.orgas, orgaId)) {
       return
     }
 
@@ -472,7 +472,7 @@ class IoHandler extends Component {
 
   addSocketInRoom(roomId, socket) {
     socket.join(roomId)
-    if (this.rooms.hasOwnProperty(roomId)) {
+    if (Object.hasOwn(this.rooms, roomId)) {
       this.rooms[roomId].add(socket.id)
       this.app.components["BrokerClient"].emit("join_room", roomId)
     } else {
@@ -498,7 +498,7 @@ class IoHandler extends Component {
   removeSocketFromRoom(roomId, socket) {
     socket.leave(roomId)
 
-    if (!this.rooms.hasOwnProperty(roomId)) {
+    if (!Object.hasOwn(this.rooms, roomId)) {
       this.app.components["BrokerClient"].emit("leave_room", roomId)
       return
     }

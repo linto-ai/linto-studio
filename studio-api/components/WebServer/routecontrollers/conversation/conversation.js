@@ -110,7 +110,7 @@ async function getConversation(req, res, next) {
 
       let projection = {}
       req.query.key.split(",").map((key) => {
-        if (!projection.hasOwnProperty(key)) {
+        if (!Object.hasOwn(projection, key)) {
           projection[key] = projectionValue
         }
       })

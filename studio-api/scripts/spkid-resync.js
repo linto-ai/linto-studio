@@ -119,7 +119,7 @@ async function main() {
   const args = parseArgs(process.argv)
   await waitForDb()
 
-  let collections = []
+  let collections
   if (args.org) {
     collections = await model.voiceprintCollections.getByOrganizationId(args.org)
   } else {

@@ -263,7 +263,7 @@ async function updateConversationOwner(req, res, next) {
       throw new ConversationError("User is not part of the organization")
     }
 
-    const result = await model.conversations.update({
+    await model.conversations.update({
       _id: req.params.conversationId,
       owner: req.body.userId,
     })

@@ -6,7 +6,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const ORGANIZATION_ROLE = require(`${process.cwd()}/lib/dao/organization/roles`)
 
-const { UserForbidden, UserNotFound } = require(
+const { UserForbidden } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 

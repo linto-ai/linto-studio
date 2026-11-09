@@ -125,7 +125,7 @@ function processTurnTable(paragraphs_content, conversation, data, query) {
       datetime = (Math.trunc(parseFloat(datetime) * 100) / 100).toString() // Trunc time to 2 decimals
     }
 
-    let displayLang = lang
+    let displayLang
     if (text.lang) lang = text.lang
     if (Array.isArray(lang)) {
       displayLang = lang.join(" - ")

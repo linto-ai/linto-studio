@@ -12,7 +12,7 @@ class Component extends EventEmitter {
     this.app = app
     let missingComponents = []
     requiredComponents.every((component) => {
-      if (app.components.hasOwnProperty(component)) {
+      if (Object.hasOwn(app.components, component)) {
         return true
       } else {
         return missingComponents.push(component)

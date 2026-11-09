@@ -24,7 +24,7 @@ const PERMISSIONS = Object.freeze({
 
     envPermissions.forEach((permission) => {
       const upperPermission = permission.toUpperCase().trim() // Normalize permission key
-      if (PERMISSIONS.hasOwnProperty(upperPermission)) {
+      if (Object.hasOwn(PERMISSIONS, upperPermission)) {
         permissionsSum |= PERMISSIONS[upperPermission]
       }
     })

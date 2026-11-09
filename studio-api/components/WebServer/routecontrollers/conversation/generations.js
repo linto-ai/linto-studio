@@ -160,7 +160,7 @@ async function createGeneration(req, res, next) {
       organizationId: organizationId,
     }
 
-    const result = await model.conversationGenerations.create(generationData)
+    await model.conversationGenerations.create(generationData)
 
     // Format response
     const newGeneration = {

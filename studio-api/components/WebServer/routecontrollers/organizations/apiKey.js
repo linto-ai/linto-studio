@@ -1,7 +1,6 @@
 const debug = require("debug")(
   "linto:components:WebServer:routecontrollers:organizations:apiKey",
 )
-const ms = require("ms")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 

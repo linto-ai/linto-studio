@@ -9,17 +9,12 @@ const { updateChildConversation } = require(
 )
 
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
-const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
 const { ConversationMetadataRequire } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
-
-const { OrganizationNotFound } = require(
-  `${process.cwd()}/components/WebServer/error/exception/organization`,
-)
 
 const { resolveInvitee } = require(
   `${process.cwd()}/components/WebServer/controllers/user/invitation`,
@@ -100,7 +95,7 @@ async function batchShareConversation(req, res, next) {
 // Update the conversation with the new rights for the users
 // Rights are already checked in the middleware
 async function updateConv(conversations, method, users_list, auth_user) {
-  let orgaUser = false
+  let orgaUser
 
   for (const conversation of conversations) {
     let organization = await model.organizations.getById(

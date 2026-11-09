@@ -9,7 +9,7 @@ const moment = require("moment")
 module.exports = {
   up: async (db) => {
     const usersCollection = db.collection(collections_name)
-    await db.collection(collections_name).updateMany(
+    await usersCollection.updateMany(
       {}, // Apply to all documents
       {
         $set: {
@@ -43,7 +43,6 @@ module.exports = {
   },
 
   down: async (db) => {
-    const usersCollection = db.collection(collections_name)
     await db.collection(collections_name).updateMany(
       {}, // Apply to all documents
       { $unset: { suspend: "", created: "", last_update: "" } }, // Explicitly unset fields

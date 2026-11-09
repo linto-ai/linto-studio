@@ -19,7 +19,8 @@
     "test": "jest",
     "spkid-resync": "node scripts/spkid-resync.js",
     "format": "prettier components/ lib/ --write",
-    "test:format": "prettier components/ lib/ --list-different"
+    "test:format": "prettier components/ lib/ --list-different",
+    "lint": "eslint components/ lib/ scripts/ tests/ app.js config.js eslint.config.js"
   },
   "license": "GNU GPLv3",
   "dependencies": {
@@ -77,6 +78,10 @@
     "ws": "^8.22.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
     "jest": "^30.2.0",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3"

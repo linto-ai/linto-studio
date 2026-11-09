@@ -1,8 +1,5 @@
 const debug = require("debug")("linto:components:WebServer:routes:auth:local")
 
-const { logout, recoveryAuth } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/users/users.js`,
-)
 const auth_middleware = require(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )

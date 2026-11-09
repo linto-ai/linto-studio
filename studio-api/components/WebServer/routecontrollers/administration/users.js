@@ -1,5 +1,3 @@
-const Mail = require("nodemailer/lib/mailer")
-
 const debug = require("debug")(
   "linto:components:WebServer:routecontrollers:administration:users",
 )
