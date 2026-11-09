@@ -172,8 +172,9 @@ async function organizationPlans(orgIds) {
   }
 }
 
-// Backoffice org listing filtered by plan: the organizations to keep or to drop
-// as the plugin states them, null for an unknown plan or state or when SaaS is off.
+// Backoffice org listing filtered on the plan: the organizations to keep or to
+// drop as the plugin states them, null for an unknown plan, state or mode or
+// when SaaS is off.
 async function organizationsOnPlan(filter) {
   const pp = plugin()
   if (!pp) return null

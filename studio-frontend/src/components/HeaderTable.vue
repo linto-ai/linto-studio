@@ -1,7 +1,8 @@
 <template>
   <div class="flex gap-medium backoffice-listing-header align-center flex1">
     <div
-      class="flex1 flex gap-small backoffice-listing-header__title align-center">
+      class="flex gap-small backoffice-listing-header__title align-center"
+      :class="search === undefined ? 'flex1' : 'no-shrink'">
       <h2>{{ title }}</h2>
       <span
         class="backoffice-listing-header__total"
@@ -10,19 +11,25 @@
       >
       <slot name="right-header"></slot>
     </div>
-    <form class="flex align-center gap-small" v-if="search !== undefined">
-      <input
-        type="text"
-        placeholder="Search"
+    <form
+      v-if="search !== undefined"
+      class="flex1"
+      role="search"
+      @submit.prevent>
+      <SearchInput
+        fullwidth
         :value="search"
-        @input="updateSearch" />
+        :label="$t('backoffice.search')"
+        :placeholder="$t('backoffice.search')"
+        @input="$emit('update:search', $event)" />
     </form>
     <Button
       v-if="add_button_label"
       variant="primary"
       icon="plus"
       @click="$emit('on-create')"
-      :label="add_button_label" />
+      :label="isMobile ? undefined : add_button_label"
+      :aria-label="add_button_label" />
 
     <Button
       v-if="remove_button_label"
@@ -31,10 +38,13 @@
       icon="trash"
       @click="$emit('on-delete')"
       :disabled="disableDelete"
-      :label="remove_button_label" />
+      :label="isMobile ? undefined : remove_button_label"
+      :aria-label="remove_button_label" />
   </div>
 </template>
 <script>
+import { mapGetters } from "vuex"
+
 export default {
   props: {
     title: { type: String, required: true },
@@ -47,12 +57,11 @@ export default {
   data() {
     return {}
   },
-  mounted() {},
-  methods: {
-    updateSearch(e) {
-      this.$emit("update:search", e.target.value)
-    },
+  computed: {
+    ...mapGetters("system", ["isMobile"]),
   },
+  mounted() {},
+  methods: {},
   components: {},
 }
 </script>

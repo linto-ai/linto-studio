@@ -3,7 +3,10 @@
     <template v-slot:header>
       <HeaderTable
         :title="$t('backoffice.organisation_list.title')"
-        v-bind:search.sync="search"
+        :search="search"
+        :count="totalCount"
+        @update:search="updateSearch"
+        :disableDelete="selectedOrganizations.length === 0"
         @on-create="showModalCreateOrganization"
         @on-delete="showModalDeleteMultipleOrganizations"
         :remove_button_label="
@@ -14,38 +17,15 @@
         "
         :add_button_label="
           $t('backoffice.organisation_list.add_organisation_button')
-        ">
-        <template v-slot:right-header>
-          <IsCloud>
-            <PopoverList
-              :items="planFilterItems"
-              v-model="planFilter"
-              color="neutral"
-              :aria-label="
-                $t('backoffice.organisation_list.plan_filter_label')
-              " />
-          </IsCloud>
-          <Button
-            v-if="showPersonalOrganizations"
-            @click="changeShowPersonalOrganizations"
-            iconWeight="regular"
-            icon="user"
-            :label="
-              $t('backoffice.organisation_list.personal_organizations_shown')
-            "></Button>
-          <Button
-            v-else
-            @click="changeShowPersonalOrganizations"
-            iconWeight="regular"
-            icon="users-three"
-            :label="
-              $t('backoffice.organisation_list.personal_organizations_hidden')
-            "></Button>
-        </template>
-      </HeaderTable>
+        "></HeaderTable>
     </template>
 
     <div class="flex1 flex col gap-medium">
+      <Tabs
+        v-if="isCloud"
+        v-model="activeTab"
+        :tabs="tabs"
+        variant="secondary" />
       <GenericTableRequest
         ref="table"
         idKey="_id"
@@ -87,8 +67,8 @@
           <div v-if="value" class="flex col">
             <span class="flex gap-small align-center">
               {{ planLabel(value) }}
-              <Tag v-if="planTagKey(value)" size="sm">
-                {{ $t(planTagKey(value)) }}
+              <Tag v-if="value.source === 'manual'" size="sm">
+                {{ $t("orga_table.plan.manual") }}
               </Tag>
             </span>
             <span v-if="planDateText(value)" class="small-text">
@@ -139,52 +119,58 @@
 import { mapGetters } from "vuex"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { impersonationMixin } from "@/mixins/impersonation.js"
-import { apiGetAllOrganizations } from "@/api/admin.js"
+import { debounceMixin } from "@/mixins/debounce.js"
+import { apiGetAllOrganizations, apiCountOrganizations } from "@/api/admin.js"
 import { getEnv } from "@/tools/getEnv"
-import { buildPlanFilterQuery } from "@/tools/backoffice/buildPlanFilterQuery.js"
-import { buildPlanFilterItems } from "@/tools/backoffice/buildPlanFilterItems.js"
 import { getPlanDisplayName } from "@/tools/backoffice/getPlanDisplayName.js"
-import { computePlanTag } from "@/tools/backoffice/computePlanTag.js"
 import { computePlanDate } from "@/tools/backoffice/computePlanDate.js"
-import { PLAN_FILTER_ALL } from "@/const/organizationPlan.js"
+import { ORGANIZATION_TABS } from "@/const/organizationPlan.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
 import ModalDeleteMultipleOrganizations from "@/components/ModalDeleteMultipleOrganizations.vue"
-import IsCloud from "@/components/atoms/IsCloud.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
 
 const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 
 export default {
-  mixins: [platformRoleMixin, impersonationMixin],
+  mixins: [platformRoleMixin, impersonationMixin, debounceMixin],
   data() {
     return {
       selectedOrganizations: [],
       modalCreateOrganizationIsVisible: false,
       modalDeleteMultipleOrganizationsIsVisible: false,
       search: "",
-      showPersonalOrganizations: false,
-      planFilter: PLAN_FILTER_ALL,
+      isCloud: IS_MODE_CLOUD,
+      activeTab: "free",
+      totalCount: undefined,
+      tabCounts: {},
     }
   },
   mounted() {
     if (!this.isAtLeastSystemAdministrator) {
       this.$router.push({ name: "not_found" })
     }
+    this.refreshCounts()
   },
   computed: {
     ...mapGetters("billing", ["plans"]),
     fetchMethodParams() {
+      if (!this.isCloud) return { search: this.search }
       return {
         search: this.search,
-        hidePersonal: !this.showPersonalOrganizations,
-        ...buildPlanFilterQuery(this.planFilter),
+        ...ORGANIZATION_TABS[this.activeTab].query,
       }
     },
-    planFilterItems() {
-      return buildPlanFilterItems(this.$t.bind(this), this.plans)
+    tabs() {
+      return Object.entries(ORGANIZATION_TABS).map(([name, { icon }]) => ({
+        name,
+        icon,
+        count: this.tabCounts[name],
+        label: this.$t(`backoffice.organisation_list.tab.${name}`),
+      }))
     },
     columns() {
       const columns = [
@@ -200,7 +186,7 @@ export default {
           width: "1fr",
         },
       ]
-      if (IS_MODE_CLOUD) {
+      if (this.isCloud) {
         columns.push({
           key: "plan",
           label: this.$t("orga_table.header.plan"),
@@ -223,13 +209,40 @@ export default {
     fetchOrganizations(page, { search, ...params }) {
       return apiGetAllOrganizations(page, params, search)
     },
+    updateSearch(search) {
+      this.search = search
+      this.refreshCounts()
+    },
+    async refreshCounts() {
+      const counts = await this.debouncedSearch(this.fetchCounts, this.search)
+      if (!counts) return
+      // HeaderTable hides an undefined count, not a null one
+      this.totalCount = counts.total ?? undefined
+      this.tabCounts = counts.tabs
+    },
+    // Resolves to null when a newer search aborted this one
+    async fetchCounts(search, signal) {
+      const [total, tabs] = await Promise.all([
+        apiCountOrganizations({}, search, signal),
+        this.isCloud ? this.fetchTabCounts(search, signal) : {},
+      ])
+      return signal.aborted ? null : { total, tabs }
+    },
+    async fetchTabCounts(search, signal) {
+      const names = Object.keys(ORGANIZATION_TABS)
+      const counts = await Promise.all(
+        names.map((name) =>
+          apiCountOrganizations(ORGANIZATION_TABS[name].query, search, signal),
+        ),
+      )
+      return Object.fromEntries(names.map((name, i) => [name, counts[i]]))
+    },
     formatDate(value) {
       return value ? new Date(value).toLocaleDateString() : "-"
     },
     planLabel(plan) {
       return getPlanDisplayName(this.plans, plan.planKey)
     },
-    planTagKey: computePlanTag,
     planDateText(plan) {
       const planDate = computePlanDate(plan)
       if (!planDate) return ""
@@ -241,9 +254,6 @@ export default {
         params: { organizationId },
       }
     },
-    changeShowPersonalOrganizations() {
-      this.showPersonalOrganizations = !this.showPersonalOrganizations
-    },
     showModalCreateOrganization() {
       this.modalCreateOrganizationIsVisible = true
     },
@@ -253,6 +263,7 @@ export default {
     newOrganization() {
       this.hideModalCreateOrganization()
       this.$refs.table.reset()
+      this.refreshCounts()
     },
     showModalDeleteMultipleOrganizations() {
       this.modalDeleteMultipleOrganizationsIsVisible = true
@@ -264,6 +275,7 @@ export default {
       this.hideModalDeleteMultipleOrganizations()
       this.selectedOrganizations = []
       this.$refs.table.reset()
+      this.refreshCounts()
     },
   },
   components: {
@@ -272,7 +284,7 @@ export default {
     HeaderTable,
     ModalCreateOrganization,
     ModalDeleteMultipleOrganizations,
-    IsCloud,
+    Tabs,
   },
 }
 </script>

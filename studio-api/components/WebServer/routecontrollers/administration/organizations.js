@@ -18,18 +18,22 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
-// SaaS mode: rows carry their plan state, ?plan&planState filters on it
+// SaaS mode: rows carry their plan, ?plan, ?state and ?mode filter on it (the
+// state and the mode are the plan's, as in the rows)
 async function listAllOrganization(req, res, next) {
   try {
-    const { plan, planState } = req.query
+    const { plan, state, mode } = req.query
     const scope = {}
-    if (plan && saas.enabled()) {
+    if ((plan || state || mode) && saas.enabled()) {
       const onPlan = await saas.organizationsOnPlan({
         planKey: plan,
-        state: planState,
+        state,
+        mode,
       })
       if (!onPlan) {
-        throw new OrganizationUnsupportedMediaType("Unknown plan or plan state")
+        throw new OrganizationUnsupportedMediaType(
+          "Unknown plan, state or mode",
+        )
       }
       if (onPlan.exclude) scope.excludeIds = onPlan.organizationIds
       else scope.ids = onPlan.organizationIds

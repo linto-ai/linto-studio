@@ -47,7 +47,7 @@ beforeEach(() => {
 
 describe("listAllOrganization: plan state", () => {
   test("without SaaS the plan filter is ignored and rows carry no plan", async () => {
-    const { sent, next } = await call({ plan: "business", planState: "active" })
+    const { sent, next } = await call({ plan: "business", state: "active" })
     expect(next).not.toHaveBeenCalled()
     expect(mockSaas.organizationsOnPlan).not.toHaveBeenCalled()
     expect(mockModel.organizations.getAll).toHaveBeenCalledWith(
@@ -66,20 +66,17 @@ describe("listAllOrganization: plan state", () => {
       [ORG_B]: FREE,
     })
 
-    const { sent, next } = await call({
-      plan: "business",
-      planState: "active",
-      hidePersonal: "true",
-    })
+    const query = { plan: "business", state: "active", mode: "normal" }
+    const { sent, next } = await call(query)
     expect(next).not.toHaveBeenCalled()
     expect(mockSaas.organizationsOnPlan).toHaveBeenCalledWith({
       planKey: "business",
       state: "active",
+      mode: "normal",
     })
-    expect(mockModel.organizations.getAll).toHaveBeenCalledWith(
-      { plan: "business", planState: "active", hidePersonal: "true" },
-      { ids: [ORG_A] },
-    )
+    expect(mockModel.organizations.getAll).toHaveBeenCalledWith(query, {
+      ids: [ORG_A],
+    })
     expect(mockSaas.organizationPlans).toHaveBeenCalledWith([ORG_A, ORG_B])
     expect(sent.list).toEqual([
       expect.objectContaining({ _id: ORG_A, plan: BUSINESS, mediaCount: 0 }),
@@ -87,7 +84,27 @@ describe("listAllOrganization: plan state", () => {
     ])
   })
 
-  test("the default plan filter drops the organizations on another plan", async () => {
+  test("a state or a mode alone filters without a plan", async () => {
+    mockSaas.enabled.mockReturnValue(true)
+    mockSaas.organizationsOnPlan.mockResolvedValue({
+      organizationIds: [ORG_A],
+      exclude: false,
+    })
+    await call({ state: "expired" })
+    expect(mockSaas.organizationsOnPlan).toHaveBeenLastCalledWith({
+      planKey: undefined,
+      state: "expired",
+      mode: undefined,
+    })
+    await call({ mode: "managed" })
+    expect(mockSaas.organizationsOnPlan).toHaveBeenLastCalledWith({
+      planKey: undefined,
+      state: undefined,
+      mode: "managed",
+    })
+  })
+
+  test("a filter matching the default plan drops the organizations it does not keep", async () => {
     mockSaas.enabled.mockReturnValue(true)
     mockSaas.organizationsOnPlan.mockResolvedValue({
       organizationIds: [ORG_B],
@@ -101,7 +118,7 @@ describe("listAllOrganization: plan state", () => {
     )
   })
 
-  test("in SaaS mode an unknown plan or state is refused", async () => {
+  test("in SaaS mode an unknown plan, state or mode is refused", async () => {
     mockSaas.enabled.mockReturnValue(true)
     mockSaas.organizationsOnPlan.mockResolvedValue(null)
     const { next } = await call({ plan: "platinum" })
