@@ -135,7 +135,7 @@ async function updateUserFromOrganization(req, res, next) {
     if (result.matchedCount === 0)
       throw new OrganizationError("Error while updating user in organization")
 
-    user = await model.users.getById(req.body.userId, true)
+    const user = await model.users.getById(req.body.userId, true)
     await Mailing.organizationRightUpdate(user[0], req, organization.name)
 
     res.status(200).send({

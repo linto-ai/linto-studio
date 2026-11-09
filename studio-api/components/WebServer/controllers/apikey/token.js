@@ -37,6 +37,7 @@ async function generateApiKeyToken(
 ) {
   try {
     expires_in = getExpiresIn(expires_in)
+    let token_salt
     if (token === undefined) {
       token_salt = require("randomstring").generate(12)
       const tokenCreatedAt = new Date()

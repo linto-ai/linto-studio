@@ -1,9 +1,6 @@
-const debug = require("debug")(
-  "linto:components:WebServer:controllers:conversation:child",
-)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-async function updateChildConversation(conversation, action = update) {
+async function updateChildConversation(conversation, action) {
   try {
     for (const conversationId of conversation.type.child_conversations) {
       if (action === "RIGHTS") {

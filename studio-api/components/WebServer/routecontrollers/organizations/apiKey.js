@@ -5,7 +5,7 @@ const ms = require("ms")
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const { OrganizationUnsupportedMediaType } = require(
+const { OrganizationError, OrganizationUnsupportedMediaType } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 

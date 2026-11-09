@@ -266,10 +266,6 @@ class ConvoModel extends MongoModel {
   }
 
   // list conversation from an organization id
-  async getConvoByOrga(idOrga) {
-    getByOrga(idOrga)
-  }
-
   async getByOrga(idOrga, projection) {
     try {
       const query = {

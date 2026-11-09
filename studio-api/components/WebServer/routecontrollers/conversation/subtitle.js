@@ -67,7 +67,7 @@ function splitSubtitles(conv, query) {
   const segmentMaxSize = screenCharSize + 20
   let subtitle = []
   let words = []
-  let stime, etime
+  let stime, etime, segmentDuration
 
   let segment = ""
 
@@ -192,9 +192,7 @@ function generateScreen(text, stime, etime, id, words) {
     screen_id: uuidv4(),
   }
 
-  if (Array.isArray(text)) {
-    screen.text = segment.trim()
-  } else screen.text = [text.trim()]
+  screen.text = [text.trim()]
 
   if (screen.text[0] === " " || screen.text[0] === "") return undefined
 

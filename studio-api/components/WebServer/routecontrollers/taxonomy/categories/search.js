@@ -37,7 +37,7 @@ async function searchCategory(req, res, next) {
         )
 
       if (req.query.tags === undefined) {
-        category = await model.categories.getByScope(scopeId)
+        const category = await model.categories.getByScope(scopeId)
         //We want all category ID in an array
         let categoryId = category.map((cat) => cat._id.toString())
         categoryList = await search(req, categoryId)

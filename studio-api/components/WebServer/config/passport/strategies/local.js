@@ -47,6 +47,7 @@ async function generateUserToken(email, password, done) {
     if (typeof email !== "string" || typeof password !== "string")
       return done(new InvalidCredential())
 
+    let user
     let users = await model.users.getTokenByEmail(email)
     if (users.length === 1) user = users[0]
     else if (users.length > 1) throw new MultipleUserFound()
@@ -91,6 +92,7 @@ async function generateResetUserToken(magicId, psw, done) {
   try {
     if (typeof magicId !== "string") return done(new InvalidCredential())
 
+    let user
     let users = await model.users.getByMagicId(magicId, true)
     if (users.length === 1) user = users[0]
     else if (users.length > 1) throw new MultipleUserFound()
