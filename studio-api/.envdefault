@@ -52,6 +52,8 @@ LLM_GATEWAY_SERVICES=
 LLM_GATEWAY_SCOPE=
 # Chat service ID from LLM Gateway (required for chat feature)
 LLM_CHAT_SERVICE_ID=
+# Gateway service used by the live catch-up summary
+LLM_CATCHUP_SERVICE=visio-catchup
 # WebSocket URL is automatically derived from LLM_GATEWAY_SERVICES
 # (http://localhost:8010 -> ws://localhost:8010)
 # V2 WebSocket endpoints:
