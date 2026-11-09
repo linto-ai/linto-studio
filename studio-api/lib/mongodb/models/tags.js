@@ -8,7 +8,6 @@ const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 const moment = require("moment")
 
-
 class TagModel extends MongoModel {
   constructor() {
     super("tags") // define name of 'users' collection elsewhere?

@@ -43,7 +43,8 @@ module.exports = {
   },
 
   down: async (db) => {
-    await db.collection(collections_name).updateMany(
+    const usersCollection = db.collection(collections_name)
+    await usersCollection.updateMany(
       {}, // Apply to all documents
       { $unset: { suspend: "", created: "", last_update: "" } }, // Explicitly unset fields
     )

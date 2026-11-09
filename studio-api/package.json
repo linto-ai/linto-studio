@@ -20,7 +20,7 @@
     "spkid-resync": "node scripts/spkid-resync.js",
     "format": "prettier components/ lib/ --write",
     "test:format": "prettier components/ lib/ --list-different",
-    "lint": "eslint components/ lib/ scripts/ tests/ app.js config.js eslint.config.js"
+    "lint": "eslint ."
   },
   "license": "GNU GPLv3",
   "dependencies": {

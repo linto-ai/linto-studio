@@ -109,11 +109,9 @@ async function getConversation(req, res, next) {
       let filter = ["name", "owner", "organization", "sharedWithUsers", "jobs"]
 
       let projection = {}
-      req.query.key.split(",").map((key) => {
-        if (!Object.hasOwn(projection, key)) {
-          projection[key] = projectionValue
-        }
-      })
+      for (const key of req.query.key.split(",")) {
+        projection[key] = projectionValue
+      }
 
       filter.forEach((field) => {
         if (projectionValue === 1) projection[field] = 1

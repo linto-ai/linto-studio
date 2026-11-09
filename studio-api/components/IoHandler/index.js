@@ -474,11 +474,10 @@ class IoHandler extends Component {
     socket.join(roomId)
     if (Object.hasOwn(this.rooms, roomId)) {
       this.rooms[roomId].add(socket.id)
-      this.app.components["BrokerClient"].emit("join_room", roomId)
     } else {
       this.rooms[roomId] = new Set().add(socket.id)
-      this.app.components["BrokerClient"].emit("join_room", roomId)
     }
+    this.app.components["BrokerClient"].emit("join_room", roomId)
   }
 
   searchAndRemoveSocketFromRooms(socket) {

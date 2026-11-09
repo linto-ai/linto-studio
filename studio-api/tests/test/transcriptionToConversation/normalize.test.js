@@ -1,6 +1,5 @@
 const debug = require('debug')('linto:tests:test:transcriptionToConversation:normalize.test')
 
-structuredClone
 const { segmentNormalizeText } = require(`${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`)
 
 describe('normalize conversation segment from a reduced linstt transcription', () => {

@@ -4,6 +4,7 @@ const eslintConfigPrettier = require("eslint-config-prettier")
 const globals = require("globals")
 
 module.exports = defineConfig([
+  { ignores: ["config/seeds/"] },
   js.configs.recommended,
   eslintConfigPrettier,
   {
@@ -33,7 +34,7 @@ module.exports = defineConfig([
   {
     files: ["tests/**"],
     languageOptions: {
-      globals: { ...globals.node, ...globals.jest },
+      globals: globals.jest,
     },
   },
 ])

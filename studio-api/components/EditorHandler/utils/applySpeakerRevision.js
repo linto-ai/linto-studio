@@ -136,7 +136,7 @@ const APPLY_FORWARD = {
 /** A revision type this module knows how to undo/redo (future turn-edit
  *  revisions won't, until that scope grows — see onUndo.js/onRedo.js). */
 function isUndoable(type) {
-  return Object.prototype.hasOwnProperty.call(APPLY_BACKWARD, type)
+  return Object.hasOwn(APPLY_BACKWARD, type)
 }
 
 /**

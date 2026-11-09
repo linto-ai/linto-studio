@@ -95,22 +95,15 @@ async function batchShareConversation(req, res, next) {
 // Update the conversation with the new rights for the users
 // Rights are already checked in the middleware
 async function updateConv(conversations, method, users_list, auth_user) {
-  let orgaUser
-
   for (const conversation of conversations) {
     let organization = await model.organizations.getById(
       conversation.organization.organizationId,
     )
 
     for (const user of users_list.users) {
-      orgaUser = false
-
-      const userInOrga = organization[0].users.filter(
+      const orgaUser = organization[0].users.some(
         (usr) => usr.userId === user.id,
       )
-      if (userInOrga.length > 0) {
-        orgaUser = true
-      }
 
       if (method === method_delete || user.right === undefined) user.right = 0
 
