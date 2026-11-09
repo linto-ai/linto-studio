@@ -789,6 +789,118 @@
       }
     }
   },
+  "/api/sessions/public/{id}/catchup": {
+    "post": {
+      "tags": ["sessions"],
+      "summary": "Stream a summary of what was said in a running session before the caller joined",
+      "description": "For a participant who joins a live session late. The captions of one channel spoken before `before` are summarized by the LLM gateway service named by LLM_CATCHUP_SERVICE (LLM_CHAT_SERVICE_ID as a fallback). The answer is streamed as Server-Sent Events (text/event-stream): token events ({ content }), then one done event ({ cached }, true when the summary is replayed from the 60 s cache shared by the joiners of the session), or an error event ({ message }). Accepts the publicSessionToken returned by GET /api/sessions/public/{id} (public sessions only) or the JWT of a member of the session organization. One call per caller every 20 seconds.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID (an alias is not accepted)",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "before": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Join time of the caller: only the captions started before it are summarized. Default: the whole transcript so far"
+                },
+                "channelIndex": {
+                  "type": "integer",
+                  "description": "Position of the channel in the session channels sorted by ascending id. Default: 0"
+                },
+                "maxChars": {
+                  "type": "integer",
+                  "description": "Maximum length of the transcript sent to the LLM, the oldest lines are dropped first. Default: 12000"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Server-Sent Events stream",
+          "content": {
+            "text/event-stream": {}
+          }
+        },
+        "204": {
+          "description": "Nothing to summarize yet: unknown channel, or less than 200 characters said before the caller joined"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "Public token minted for another session, public token on a session that is not public, or user who is not a member of the session organization"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "429": {
+          "description": "Called again by the same caller within 20 seconds"
+        },
+        "503": {
+          "description": "No LLM gateway or catch-up service available"
+        }
+      }
+    }
+  },
+  "/api/sessions/public/{id}/catchup/status": {
+    "get": {
+      "tags": ["sessions"],
+      "summary": "Tell whether a catch-up summary can be produced for a running session",
+      "description": "Accepts the publicSessionToken returned by GET /api/sessions/public/{id} (public sessions only) or the JWT of a member of the session organization. enabled is false when no LLM gateway or catch-up service is configured.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Session ID (an alias is not accepted)",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Catch-up availability",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "Public token minted for another session, public token on a session that is not public, or user who is not a member of the session organization"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
   "/api/users/self/quickMeeting/": {
     "get": {
       "tags": ["sessions"],
