@@ -401,6 +401,11 @@
     },
     "remove_session_button": "Supprimer la session | Supprimer {count} sessions"
   },
+  "modal_delete_transcriber_profiles": {
+    "title": "Supprimer le profil | Supprimer {count} profils",
+    "content": "Êtes-vous sûr de vouloir supprimer ce profil ? | Êtes-vous sûr de vouloir supprimer ces {count} profils ?",
+    "action_btn": "Supprimer | Supprimer {count}"
+  },
   "modal_delete_sessions": {
     "title": "Supprimer la session | Supprimer {count} sessions",
     "content": "Êtes-vous sûr de vouloir supprimer cette session ? | Êtes-vous sûr de vouloir supprimer ces {count} sessions ?",
@@ -508,6 +513,7 @@
     "speaker_recognition": "Ma signature vocale"
   },
   "backoffice": {
+    "search": "Rechercher",
     "navigation": {
       "activities": "Journal d'activité",
       "home": "Accueil",
@@ -560,10 +566,16 @@
     "organisation_list": {
       "title": "Organisations",
       "add_organisation_button": "Ajouter une organisation",
-      "personal_organizations_shown": "Organisations personnelles affichées",
-      "personal_organizations_hidden": "Organisations personnelles cachées",
       "personal_organization": "Organisation personnelle",
       "group_organization": "Organisation de groupe",
+      "tab": {
+        "free": "Free",
+        "premium": "Premium",
+        "business": "Business",
+        "expired": "Abonnement expiré",
+        "comp": "Offert",
+        "managed": "Managé"
+      },
       "remove_organisation_button": "Supprimer l'organisation | Supprimer les {count} organisations"
     },
     "token_list": {
@@ -2391,7 +2403,14 @@
     "header": {
       "creation_date": "Date de création",
       "name": "Nom",
-      "userNumber": "Nombre d'utilisateurs"
+      "userNumber": "Nombre d'utilisateurs",
+      "plan": "Plan"
+    },
+    "plan": {
+      "manual": "Sur devis",
+      "renews_on": "Renouvellement le {date}",
+      "ends_on": "Jusqu'au {date}",
+      "ended_on": "Terminé le {date}"
     },
     "edit_button_label": "Modifier"
   },

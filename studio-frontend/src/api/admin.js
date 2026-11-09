@@ -109,6 +109,9 @@ export async function apiGetAllOrganizations(
     sortField = "last_update",
     sortOrder = -1,
     hidePersonal = false,
+    plan,
+    state,
+    mode,
   } = {},
   search,
 ) {
@@ -125,6 +128,9 @@ export async function apiGetAllOrganizations(
         sortField,
         sortCriteria: sortOrder,
         hidePersonal,
+        plan,
+        state,
+        mode,
       },
     )
   } else {
@@ -139,10 +145,27 @@ export async function apiGetAllOrganizations(
         sortField,
         sortCriteria: sortOrder,
         name: search,
+        plan,
+        state,
+        mode,
       },
     )
   }
   return res?.data || { count: 0, list: [] }
+}
+
+// Organizations matching a plan filter and a name search, null when unknown
+export async function apiCountOrganizations(
+  { plan, state, mode },
+  search,
+  signal,
+) {
+  const res = await sendRequest(
+    `${BASE_API}/administration/organizations`,
+    { method: "get", signal },
+    { page: 0, size: 1, name: search || undefined, plan, state, mode },
+  )
+  return res?.data?.count ?? null
 }
 
 export async function apiGetAllUsers(

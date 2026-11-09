@@ -4,9 +4,9 @@
     @on-cancel="() => this.$emit('on-close')"
     @on-delete="deleteSessions"
     :title="title"
-    :actionBtnLabel="actionBtnLabel"
     withActionDelete
     :withActionApply="false"
+    :textActionDelete="actionBtnLabel"
     size="sm">
     {{ $tc("modal_delete_sessions.content", selectedSessions.length) }}
   </Modal>

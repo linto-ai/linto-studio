@@ -2,10 +2,11 @@
   <Modal
     value
     @on-cancel="() => this.$emit('on-close')"
-    @on-confirm="deleteUsers"
+    @on-delete="deleteUsers"
     :title="title"
-    :actionBtnLabel="actionBtnLabel"
-    :customClassButton="{ red: true }"
+    withActionDelete
+    :withActionApply="false"
+    :textActionDelete="actionBtnLabel"
     size="sm">
     {{ $tc("modal_delete_users.content", selectedUsers.length) }}
   </Modal>
