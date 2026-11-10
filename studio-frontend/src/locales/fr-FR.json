@@ -1149,6 +1149,7 @@
     },
     "email_label": "Adresse e-mail : ",
     "error": "Les identifiants sont incorrects",
+    "too_many_attempts": "Trop de tentatives, réessayez dans quelques minutes",
     "login_button": "Se connecter",
     "password_label": "Mot de passe : ",
     "recover_password": "Mot de passe oublié ?",

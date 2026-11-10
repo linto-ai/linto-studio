@@ -3,7 +3,7 @@ const debug = require("debug")(
 )
 
 const docx = require("docx")
-const { AlignmentType, SectionType } = docx
+const { AlignmentType } = docx
 
 const { processTurn } = require("./text.js")
 

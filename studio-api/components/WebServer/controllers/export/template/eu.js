@@ -6,10 +6,12 @@ const docx = require("docx")
 const { PatchType, patchDocument, TextRun } = docx
 const fs = require("fs")
 const path = require("path")
-const { DateTime } = require("luxon")
+const moment = require("moment")
+const { timezoneOffsetMinutes } = require(
+  `${process.cwd()}/lib/utility/timezoneOffset`,
+)
 
-const systemTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-const DATE_FORMAT = "dd MMMM yyyy HH:mm"
+const DATE_FORMAT = "DD MMMM YYYY HH:mm"
 
 const content = require("../content/document.js")
 const { processTurnTable } = require("../content/text.js")
@@ -28,23 +30,23 @@ const generate = async (data, query) => {
     "eu-template-session-transcription.docx",
   )
   return new Promise((resolve, _) => {
-    // we need to use DateTime.now to take into account summer/winter time
-    const TZ = query.timezone || systemTimezone
-    const offsetMinutes = DateTime.now().setZone(TZ).offset
+    // Offset at export time, not at the conversation time, as before
+    const offsetMinutes = timezoneOffsetMinutes(query.timezone)
 
     let startTime = data.conversation.created
     if (data.conversation?.metadata?.channel?.channel_start_time) {
       startTime = data.conversation.metadata.channel.channel_start_time
     }
 
-    // Parse data.created or create a new date if it's invalid or undefined
-    let dateToFormat = DateTime.fromISO(startTime || "", { zone: "local" })
-    if (!dateToFormat.isValid) {
-      dateToFormat = DateTime.now()
+    // Falls back to now when the start date is missing or invalid
+    let dateToFormat = moment(startTime, moment.ISO_8601)
+    if (!dateToFormat.isValid()) {
+      dateToFormat = moment()
     }
     // Adjust the date by the timezone offset
-    const adjustedDate = dateToFormat.plus({ minutes: offsetMinutes })
-    const formattedDate = adjustedDate.toFormat(DATE_FORMAT)
+    const formattedDate = dateToFormat
+      .add(offsetMinutes, "minutes")
+      .format(DATE_FORMAT)
 
     if (Array.isArray(docContent.locale)) {
       docContent.locale = docContent.locale.join()

@@ -21,6 +21,14 @@ class MongoModel {
     return new MongoDriver.constructor.mongoDb.ObjectId()
   }
 
+  // A malformed id is left out, so it ends up as an unknown document
+  getObjectIds(ids) {
+    const { ObjectId } = MongoDriver.constructor.mongoDb
+    return ids
+      .filter((id) => ObjectId.isValid(id))
+      .map((id) => this.getObjectId(id))
+  }
+
   // Request function for Mongodb. Makes a request on the collection, filtered by the query.
   async mongoRequest(query, options = {}) {
     try {

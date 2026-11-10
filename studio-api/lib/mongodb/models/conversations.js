@@ -159,13 +159,9 @@ class ConvoModel extends MongoModel {
 
   async getConvsListByIds(convIds, filter) {
     try {
-      convIds = convIds.map((id) => {
-        if (typeof id === "string") return this.getObjectId(id)
-        else return id
-      })
       const query = {
         _id: {
-          $in: convIds,
+          $in: this.getObjectIds(convIds),
         },
       }
       return await this.mongoRequest(query, filter)
@@ -266,10 +262,6 @@ class ConvoModel extends MongoModel {
   }
 
   // list conversation from an organization id
-  async getConvoByOrga(idOrga) {
-    getByOrga(idOrga)
-  }
-
   async getByOrga(idOrga, projection) {
     try {
       const query = {

@@ -1,7 +1,4 @@
 const debug = require("debug")("linto:components:WebServer:routes:root:index")
-const middlewares = require(
-  `${process.cwd()}/components/WebServer/middlewares/index.js`,
-)
 
 module.exports = (webServer) => {
   return [

@@ -205,23 +205,11 @@ function computeIntervalsForRange(start, end, granularity) {
  * @returns {Date} Default start date
  */
 function getDefaultStartDate(granularity, referenceDate = new Date()) {
-  const ref = new Date(referenceDate)
-  switch (granularity) {
-    case "daily":
-      const dailyStart = new Date(ref)
-      dailyStart.setDate(dailyStart.getDate() - 6)
-      return dailyStart
-    case "monthly":
-      const monthlyStart = new Date(ref)
-      monthlyStart.setMonth(monthlyStart.getMonth() - 11)
-      return monthlyStart
-    case "yearly":
-      const yearlyStart = new Date(ref)
-      yearlyStart.setFullYear(yearlyStart.getFullYear() - 4)
-      return yearlyStart
-    default:
-      return ref
-  }
+  const start = new Date(referenceDate)
+  if (granularity === "daily") start.setDate(start.getDate() - 6)
+  else if (granularity === "monthly") start.setMonth(start.getMonth() - 11)
+  else if (granularity === "yearly") start.setFullYear(start.getFullYear() - 4)
+  return start
 }
 
 /**

@@ -20,7 +20,6 @@ const connector = require(
 const {
   resolveStoragePath,
   cascadeDeleteSampleFiles,
-  COLLECTION_TYPE,
   STORAGE_MODE,
   SYNC_STATE,
 } = require(`${process.cwd()}/components/WebServer/controllers/files/store`)

@@ -50,8 +50,7 @@ function getForm(form, base) {
 function replaceOn(on, base, replace, by) {
   const re = new RegExp(replace, "g")
   const tab = on.split("")
-  let m
-  while ((m = re.exec(base)) !== null) {
+  while (re.exec(base) !== null) {
     tab.splice(re.lastIndex, by.length, ...by.split(""))
   }
   return tab.join("")

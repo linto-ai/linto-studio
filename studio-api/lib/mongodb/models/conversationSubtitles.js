@@ -132,18 +132,6 @@ class SubtitleModel extends MongoModel {
     }
   }
 
-  async delete(id) {
-    try {
-      const query = {
-        _id: this.getObjectId(id),
-      }
-      return await this.mongoDelete(query)
-    } catch (error) {
-      console.error(error)
-      return error
-    }
-  }
-
   async deleteScreen(id, screenId) {
     const operator = "$pull"
     const query = {

@@ -1155,6 +1155,7 @@
     },
     "email_label": "Email :",
     "error": "Error while logging in",
+    "too_many_attempts": "Too many attempts, please try again in a few minutes",
     "login_button": "Login",
     "password_label": "Password :",
     "recover_password": "Forgot your password?",

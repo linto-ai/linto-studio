@@ -58,7 +58,7 @@ async function resolveUpsertData(op) {
     return null
   }
 
-  let name = null
+  let name
   if (ref.type === SPEAKER_TYPE.LABEL) {
     const labels = await model.speakerLabels.getById(ref.id)
     if (!labels || labels.length === 0) return null

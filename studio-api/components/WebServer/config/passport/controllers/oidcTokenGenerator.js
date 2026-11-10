@@ -11,6 +11,9 @@ const TokenGenerator = require("../token/generator")
 const { MultipleUserFound, DisabledUser } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
+const { UserError } = require(
+  `${process.cwd()}/components/WebServer/error/exception/users`,
+)
 
 async function generateUserToken(email, lastname = "", firstname = "") {
   try {

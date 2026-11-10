@@ -10,14 +10,9 @@ class Component extends EventEmitter {
     super()
     this.state = "uninitialized"
     this.app = app
-    let missingComponents = []
-    requiredComponents.every((component) => {
-      if (app.components.hasOwnProperty(component)) {
-        return true
-      } else {
-        return missingComponents.push(component)
-      }
-    })
+    const missingComponents = requiredComponents.filter(
+      (component) => !Object.hasOwn(app.components, component),
+    )
     if (missingComponents.length > 0) {
       throw new componentMissingError(missingComponents)
     }

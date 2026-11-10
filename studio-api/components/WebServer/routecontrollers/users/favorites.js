@@ -1,5 +1,3 @@
-const Mail = require("nodemailer/lib/mailer")
-
 const debug = require("debug")(
   "linto:components:WebServer:routecontrollers:users:favorites",
 )
@@ -7,10 +5,6 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const ORGANIZATION_ROLES = require(
   `${process.cwd()}/lib/dao/organization/roles`,
-)
-
-const { UserError } = require(
-  `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 
 const conversationUtility = require(

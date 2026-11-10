@@ -102,8 +102,6 @@ function isUnidentifiedTag(name) {
 
 function transcriptionToConversation(transcript, conversation) {
   try {
-    jsonTranscript = transcript
-
     if (
       transcript === undefined ||
       transcript.transcription_result.length === 0

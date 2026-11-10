@@ -63,9 +63,6 @@ async function createMetadata(req, res, next) {
       await model.conversations.updateTag(req.params.conversationId, tagsList)
     }
 
-    const metadata_created = await model.tags.getById(
-      result.insertedId.toString(),
-    )
     req.body._id = result.insertedId.toString()
 
     return res.status(201).send(req.body)

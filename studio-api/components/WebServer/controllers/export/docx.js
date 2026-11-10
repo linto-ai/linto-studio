@@ -196,21 +196,6 @@ async function writeBuffer(buffer, name) {
   }
 }
 
-async function writeBlobToFile(blob, name) {
-  const arrayBuffer = await blob.arrayBuffer()
-  const buffer = Buffer.from(arrayBuffer)
-
-  // Create output file path and sanitize the file name
-  const outputFilePath = `/tmp/${name.replace(/[^a-zA-Z0-9 ]/g, "")}.docx`
-
-  // Write the Buffer to a file
-  fs.writeFileSync(outputFilePath, buffer)
-
-  return {
-    path: outputFilePath,
-    name: name + ".docx",
-  }
-}
 async function convertToPDF(file) {
   const enterData = fs.readFileSync(file.path)
 

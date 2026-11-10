@@ -9,7 +9,7 @@ const moment = require("moment")
 module.exports = {
   up: async (db) => {
     const usersCollection = db.collection(collections_name)
-    await db.collection(collections_name).updateMany(
+    await usersCollection.updateMany(
       {}, // Apply to all documents
       {
         $set: {
@@ -31,7 +31,8 @@ module.exports = {
       if (ROLE.hasPlatformRoleAccess(user.role, ROLE.SUPER_ADMINISTRATOR)) {
         continue //Should not happend in migration, but just in case user have already the desired platform role
       }
-      updatedRole = ROLE.shiftBitsUp(user.role) + ROLE.ORGANIZATION_INITIATOR
+      const updatedRole =
+        ROLE.shiftBitsUp(user.role) + ROLE.ORGANIZATION_INITIATOR
 
       // Update the role in the database
       await usersCollection.updateOne(
@@ -43,7 +44,7 @@ module.exports = {
 
   down: async (db) => {
     const usersCollection = db.collection(collections_name)
-    await db.collection(collections_name).updateMany(
+    await usersCollection.updateMany(
       {}, // Apply to all documents
       { $unset: { suspend: "", created: "", last_update: "" } }, // Explicitly unset fields
     )
