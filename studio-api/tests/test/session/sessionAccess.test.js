@@ -80,8 +80,8 @@ describe("catch-up routes", () => {
 
   test("organization routes only, behind the standard auth and member middlewares, then the session check", () => {
     expect(routes.map((r) => [r.method, r.path])).toEqual([
-      ["post", "/:id/catchup"],
-      ["get", "/:id/catchup/status"],
+      ["post", "/"],
+      ["get", "/status"],
     ])
     for (const route of routes) {
       expect(route.requireAuth).toBe(true)
