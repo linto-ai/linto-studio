@@ -93,8 +93,6 @@ const loadMiddlewares = (route) => {
     // SaaS slot right after authentication (API call metering). No-op in OSS.
     middlewares.push(saas.afterAuth())
   }
-  if (route.requirePublicSessionToken)
-    middlewares.push(session_middlewares.asPublicSessionToken)
   if (route.requireRefresh) middlewares.push(auth_middlewares.refresh_token)
 
   if (route.requireSuperAdmin)

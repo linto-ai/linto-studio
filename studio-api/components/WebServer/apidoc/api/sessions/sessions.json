@@ -793,7 +793,7 @@
     "post": {
       "tags": ["sessions"],
       "summary": "Stream a summary of what was said in a running session before the caller joined",
-      "description": "For a member of the organization who joins a live session of that organization late. The captions of one channel spoken before `before` are summarized by the LLM gateway service named by LLM_CATCHUP_SERVICE (LLM_CHAT_SERVICE_ID as a fallback), on the last LLM_CATCHUP_MAX_CHARS characters of transcript (12000 by default, oldest lines dropped first). The answer is streamed as Server-Sent Events (text/event-stream): token events ({ content }), then one done event ({ cached }, true when the summary is replayed from the 60 s cache shared by the joiners of the session), or an error event ({ message }), which ends the stream. The gateway call is cut after 60 s without data (error \"LLM stream timed out\") and when the caller disconnects. A generated summary counts as one ai.chat use of the session organization (SaaS); a replay from the cache does not. One call per caller every 20 seconds.",
+      "description": "For a member of the organization who joins a live session of that organization late. The captions of one channel spoken before `before` are summarized by the LLM gateway service named by LLM_CATCHUP_SERVICE (LLM_CHAT_SERVICE_ID as a fallback), on the last LLM_CATCHUP_MAX_CHARS characters of transcript (12000 by default, oldest lines dropped first). The answer is streamed as Server-Sent Events (text/event-stream): token events ({ content }), then one done event ({ cached }, true when the summary is replayed from the 60 s cache shared by the joiners of the session), or an error event ({ message }), which ends the stream. The gateway call is cut after 60 s without data (error \"LLM stream timed out\") and when the caller disconnects. A generated summary counts as one ai.chat use of the session organization (SaaS); a replay from the cache does not.",
       "parameters": [
         {
           "name": "organizationId",
@@ -856,9 +856,6 @@
         "404": {
           "$ref": "#/components/responses/NotFound"
         },
-        "429": {
-          "description": "Called again by the same caller within 20 seconds"
-        },
         "503": {
           "description": "No LLM gateway or catch-up service available"
         }
@@ -911,117 +908,6 @@
         },
         "403": {
           "description": "Session of another organization"
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        }
-      }
-    }
-  },
-  "/api/sessions/public/{id}/catchup": {
-    "post": {
-      "tags": ["sessions"],
-      "summary": "Stream a summary of what was said in a public running session before the caller joined",
-      "description": "For a meeting guest who joins a public live session late. Accepts only the publicSessionToken returned by GET /api/sessions/public/{id}, as a Bearer token; members of the organization use /api/organizations/{organizationId}/sessions/{id}/catchup. The captions of one channel spoken before `before` are summarized by the LLM gateway service named by LLM_CATCHUP_SERVICE (LLM_CHAT_SERVICE_ID as a fallback), on the last LLM_CATCHUP_MAX_CHARS characters of transcript (12000 by default, oldest lines dropped first). The answer is streamed as Server-Sent Events (text/event-stream): token events ({ content }), then one done event ({ cached }, true when the summary is replayed from the 60 s cache shared by the joiners of the session), or an error event ({ message }), which ends the stream. The gateway call is cut after 60 s without data (error \"LLM stream timed out\") and when the caller disconnects. A generated summary counts as one ai.chat use of the session organization (SaaS); a replay from the cache does not. One call per caller every 20 seconds.",
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "description": "Session ID (an alias is not accepted)",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "before": {
-                  "type": "string",
-                  "format": "date-time",
-                  "description": "Join time of the caller: only the captions started before it are summarized. Default: the whole transcript so far"
-                },
-                "channelIndex": {
-                  "type": "integer",
-                  "description": "Position of the channel in the session channels sorted by ascending id. Default: 0"
-                }
-              }
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "Server-Sent Events stream",
-          "content": {
-            "text/event-stream": {}
-          }
-        },
-        "204": {
-          "description": "Nothing to summarize yet: unknown channel, or less than 200 characters said before the caller joined"
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "402": {
-          "description": "SaaS: ai.chat quota of the session organization exhausted"
-        },
-        "403": {
-          "description": "Public token minted for another session, or session that is not public, or ai.chat not in the SaaS plan of the session organization"
-        },
-        "404": {
-          "$ref": "#/components/responses/NotFound"
-        },
-        "429": {
-          "description": "Called again by the same caller within 20 seconds"
-        },
-        "503": {
-          "description": "No LLM gateway or catch-up service available"
-        }
-      }
-    }
-  },
-  "/api/sessions/public/{id}/catchup/status": {
-    "get": {
-      "tags": ["sessions"],
-      "summary": "Tell whether a catch-up summary can be produced for a running session",
-      "description": "Accepts only the publicSessionToken returned by GET /api/sessions/public/{id}, as a Bearer token. enabled is false when no LLM gateway or catch-up service is configured, or when the SaaS plan of the session organization refuses ai.chat.",
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "description": "Session ID (an alias is not accepted)",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Catch-up availability",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "enabled": {
-                    "type": "boolean"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
-        },
-        "403": {
-          "description": "Public token minted for another session, or session that is not public"
         },
         "404": {
           "$ref": "#/components/responses/NotFound"

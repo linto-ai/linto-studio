@@ -22,7 +22,6 @@ const DEFAULT_CHANNEL_INDEX = 0
 const DEFAULT_MAX_CHARS = 12000
 const MIN_TRANSCRIPT_CHARS = 200
 const CACHE_TTL_MS = 60 * 1000
-const RATE_LIMIT_WINDOW_MS = 20 * 1000
 const BEFORE_BUCKET_MS = 30 * 1000
 const MAX_TOKENS = 400
 const STREAM_IDLE_TIMEOUT_MS = 60 * 1000
@@ -32,20 +31,15 @@ const DEFAULT_CATCHUP_SERVICE = "visio-catchup"
 const USER_PROMPT = "Résume-moi ce qui a été dit avant mon arrivée."
 
 const summaryCache = new Map()
-const rateLimiter = new Map()
 
 function pruneExpired(now = Date.now()) {
   for (const [key, entry] of summaryCache) {
     if (entry.expiresAt <= now) summaryCache.delete(key)
   }
-  for (const [key, ts] of rateLimiter) {
-    if (now - ts > RATE_LIMIT_WINDOW_MS) rateLimiter.delete(key)
-  }
 }
 
 function resetCatchupState() {
   summaryCache.clear()
-  rateLimiter.clear()
 }
 
 function catchupMaxChars() {
@@ -200,13 +194,6 @@ async function catchUp(req, res, next) {
 
     pruneExpired()
 
-    const rateKey = `${sessionId}:${req.liveSessionCaller}`
-    const last = rateLimiter.get(rateKey)
-    const now = Date.now()
-    if (last && now - last < RATE_LIMIT_WINDOW_MS)
-      return res.status(429).json({ code: "catchup_rate_limited" })
-    rateLimiter.set(rateKey, now)
-
     const channel = pickChannel(session, channelIndex)
     if (!channel) return res.status(204).end()
 
@@ -233,7 +220,7 @@ async function catchUp(req, res, next) {
     const cacheKey = `${sessionId}:${channelIndex}:${lastSegmentId}:${beforeBucket}`
 
     const cached = summaryCache.get(cacheKey)
-    if (cached && cached.expiresAt > now) {
+    if (cached && cached.expiresAt > Date.now()) {
       openSSE(res)
       writeEvent(res, "token", { content: cached.text })
       writeEvent(res, "done", { cached: true })

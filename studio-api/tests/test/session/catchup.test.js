@@ -102,17 +102,18 @@ function lightSession(overrides = {}) {
   }
 }
 
-// A meeting guest (public token) by default, a member with `userId`.
-function makeReq({ body = {}, session = lightSession(), caller, userId } = {}) {
+// As the auth, member and session middlewares leave it.
+function makeReq({
+  body = {},
+  session = lightSession(),
+  userId = USER_ID,
+} = {}) {
   return {
-    params: { id: session.id },
+    params: { organizationId: session.organizationId, id: session.id },
     body,
     headers: {},
     liveSession: session,
-    liveSessionCaller: caller || (userId ? `user:${userId}` : "public:guest-1"),
-    payload: userId
-      ? { data: { userId } }
-      : { fromPublic: true, data: { fromSession: session.id } },
+    payload: { data: { userId } },
   }
 }
 
@@ -358,7 +359,7 @@ describe("session catch-up", () => {
   })
 
   describe("summary", () => {
-    test("a meeting guest gets the summary streamed", async () => {
+    test("a member gets the summary streamed", async () => {
       wireAxios()
       const res = makeRes()
       await catchUp(makeReq(), res, jest.fn())
@@ -367,18 +368,6 @@ describe("session catch-up", () => {
       expect(events.map((e) => e.event)).toEqual(["token", "token", "done"])
       expect(events[2].data).toEqual({ cached: false })
       expect(res.headers["Content-Type"]).toBe("text/event-stream")
-    })
-
-    test("a member gets the summary streamed", async () => {
-      wireAxios()
-      const res = makeRes()
-      await catchUp(makeReq({ userId: USER_ID }), res, jest.fn())
-
-      expect(parseSSE(res).map((e) => e.event)).toEqual([
-        "token",
-        "token",
-        "done",
-      ])
     })
   })
 
@@ -539,7 +528,7 @@ describe("session catch-up", () => {
       expect(fetchMock).toHaveBeenCalledTimes(1)
 
       const second = makeRes()
-      await catchUp(makeReq({ userId: USER_ID }), second, jest.fn())
+      await catchUp(makeReq(), second, jest.fn())
 
       const events = parseSSE(second)
       expect(events.map((e) => e.event)).toEqual(["token", "done"])
@@ -548,15 +537,18 @@ describe("session catch-up", () => {
       expect(fetchMock).toHaveBeenCalledTimes(1)
     })
 
-    test("the same caller twice within 20 s -> 429", async () => {
+    test("no rate limit per caller: one key relays every participant of a meeting", async () => {
       wireAxios()
-      const first = makeRes()
-      await catchUp(makeReq(), first, jest.fn())
+      await catchUp(makeReq(), makeRes(), jest.fn())
 
       const second = makeRes()
-      await catchUp(makeReq(), second, jest.fn())
-      expect(second.statusCode).toBe(429)
-      expect(second.body).toEqual({ code: "catchup_rate_limited" })
+      await catchUp(
+        makeReq({ body: { before: new Date(T0 + 85000).toISOString() } }),
+        second,
+        jest.fn(),
+      )
+      expect(second.statusCode).toBe(200)
+      expect(fetchMock).toHaveBeenCalledTimes(2)
     })
 
     test("no gateway configured -> 503 catchup_unavailable", async () => {
@@ -619,7 +611,7 @@ describe("session catch-up", () => {
   describe("SaaS usage", () => {
     test("a generated summary is recorded once, as ai.chat of the session's organization", async () => {
       wireAxios()
-      await catchUp(makeReq({ userId: USER_ID }), makeRes(), jest.fn())
+      await catchUp(makeReq(), makeRes(), jest.fn())
 
       expect(saas.record).toHaveBeenCalledTimes(1)
       expect(saas.record).toHaveBeenCalledWith({
@@ -631,18 +623,10 @@ describe("session catch-up", () => {
       })
     })
 
-    test("a meeting guest's summary is recorded without a userId", async () => {
-      wireAxios()
-      await catchUp(makeReq(), makeRes(), jest.fn())
-      expect(saas.record).toHaveBeenCalledWith(
-        expect.objectContaining({ orgId: ORG_ID, userId: undefined }),
-      )
-    })
-
     test("a replay from the cache is not recorded", async () => {
       wireAxios()
       await catchUp(makeReq(), makeRes(), jest.fn())
-      await catchUp(makeReq({ userId: USER_ID }), makeRes(), jest.fn())
+      await catchUp(makeReq(), makeRes(), jest.fn())
       expect(saas.record).toHaveBeenCalledTimes(1)
     })
 
@@ -682,7 +666,7 @@ describe("session catch-up", () => {
         gatewayStream(["Voici ", "le résumé."]),
       )
       const second = makeRes()
-      await catchUp(makeReq({ userId: USER_ID }), second, jest.fn())
+      await catchUp(makeReq(), second, jest.fn())
 
       expect(global.fetch).toHaveBeenCalledTimes(1)
       expect(parseSSE(second).map((e) => e.event)).toEqual([
@@ -751,7 +735,7 @@ describe("session catch-up", () => {
     test("enabled:true when a service and a flavor resolve and the plan allows ai.chat", async () => {
       wireAxios()
       const res = makeRes()
-      await catchUpStatus(makeReq({ userId: USER_ID }), res, jest.fn())
+      await catchUpStatus(makeReq(), res, jest.fn())
       expect(res.statusCode).toBe(200)
       expect(res.body).toEqual({ enabled: true })
       expect(saas.allowed).toHaveBeenCalledWith({
