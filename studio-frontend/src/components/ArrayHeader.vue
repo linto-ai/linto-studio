@@ -1,6 +1,7 @@
 <template>
   <th>
     <button
+      v-if="sortable"
       @click="sortBy($event, eventLabel)"
       :class="[
         'table-header-button',
@@ -14,6 +15,10 @@
       <slot v-if="hasSlot"></slot>
       <span class="label" v-else>{{ label }}</span>
     </button>
+    <template v-else>
+      <slot v-if="hasSlot"></slot>
+      <span class="label" v-else>{{ label }}</span>
+    </template>
   </th>
 </template>
 <script>
@@ -23,6 +28,7 @@ export default {
     label: { type: String, required: false },
     sortListKey: { type: String, required: true },
     sortListDirection: { type: String, required: true },
+    sortable: { type: Boolean, default: true },
   },
   data() {
     return {}

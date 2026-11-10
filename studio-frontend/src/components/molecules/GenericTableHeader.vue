@@ -25,6 +25,7 @@
         :label="column.label"
         :sortListDirection="sortListDirection"
         :sortListKey="sortListKey"
+        :sortable="column.sortable !== false"
         :eventLabel="column.key">
         <slot
           v-if="$scopedSlots['header-' + column.key]"

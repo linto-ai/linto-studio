@@ -513,6 +513,16 @@
     "speaker_recognition": "Ma signature vocale"
   },
   "backoffice": {
+    "organisation_detail": {
+      "tab": {
+        "general": "Général",
+        "permissions": "Permissions",
+        "members": "Membres",
+        "profiles": "Profils",
+        "billing": "Facturation",
+        "api": "API"
+      }
+    },
     "search": "Rechercher",
     "navigation": {
       "activities": "Journal d'activité",

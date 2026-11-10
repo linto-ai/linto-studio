@@ -22,38 +22,45 @@
     </template>
     <div class="flex gap-large">
       <div class="flex1">
-        <div>
+        <Tabs v-model="activeTab" :tabs="tabs" />
+
+        <template v-if="activeTab === 'general'">
           <UpdateOrganizationForm :currentOrganization="organization" />
           <UpdateOrganizationMatchingUsers
             :currentOrganization="organization" />
+          <section>
+            <h2 class="medium-margin-bottom">Danger zone</h2>
+            <Button
+              @click="openDeleteModal"
+              variant="primary"
+              icon="trash"
+              :label="$t('organisation.delete_organization')"
+              intent="destructive" />
+          </section>
+        </template>
+
+        <template v-if="activeTab === 'permissions'">
           <UpdateOrganizationPermissions :currentOrganization="organization" />
           <UpdateOrganizationSecurityLevel
             v-if="enableSecurityLevel"
             :currentOrganization="organization" />
-        </div>
+        </template>
 
         <UpdateOrganizationUsers
+          v-if="activeTab === 'members'"
           :currentOrganization="organization"
           :userInfo="userInfo" />
 
         <UpdateOrganizationTranscriberProfiles
+          v-if="activeTab === 'profiles'"
           :organizationId="organizationId" />
-        <IsCloud>
-          <section>
-            <BackofficeOrgBilling :organizationId="organizationId" />
-          </section>
-        </IsCloud>
-        <section>
-          <ApiTokenSettings :organizationId="organizationId" />
+
+        <section v-if="activeTab === 'billing'">
+          <BackofficeOrgBilling :organizationId="organizationId" />
         </section>
-        <section>
-          <h2 class="medium-margin-bottom">Danger zone</h2>
-          <Button
-            @click="openDeleteModal"
-            variant="primary"
-            icon="trash"
-            :label="$t('organisation.delete_organization')"
-            intent="destructive" />
+
+        <section v-if="activeTab === 'api'">
+          <ApiTokenSettings :organizationId="organizationId" />
         </section>
       </div>
       <!-- <div style="width: 450px">
@@ -75,6 +82,7 @@ import { getEnv } from "@/tools/getEnv"
 import { apiGetOrganizationById } from "@/api/organisation.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { impersonationMixin } from "@/mixins/impersonation.js"
+import { routeTabMixin } from "@/mixins/routeTab.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
@@ -86,11 +94,11 @@ import UpdateOrganizationMatchingUsers from "@/components/UpdateOrganizationMatc
 import UpdateOrganizationTranscriberProfiles from "@/components/UpdateOrganizationTranscriberProfiles.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import Button from "@/components/atoms/Button.vue"
-import IsCloud from "@/components/atoms/IsCloud.vue"
+import Tabs from "@/components/molecules/Tabs.vue"
 import BackofficeOrgBilling from "@/components-cloud/BackofficeOrgBilling.vue"
 
 export default {
-  mixins: [platformRoleMixin, impersonationMixin],
+  mixins: [platformRoleMixin, impersonationMixin, routeTabMixin],
   props: {
     userInfo: {
       type: Object,
@@ -118,6 +126,22 @@ export default {
   computed: {
     enableSecurityLevel() {
       return getEnv("VUE_APP_ENABLE_SECURITY_LEVEL") === "true"
+    },
+    tabs() {
+      const tabs = [
+        { name: "general", icon: "gear" },
+        { name: "permissions", icon: "shield-check" },
+        { name: "members", icon: "users" },
+        { name: "profiles", icon: "waves" },
+      ]
+      if (getEnv("VUE_APP_MODE") === "cloud") {
+        tabs.push({ name: "billing", icon: "credit-card" })
+      }
+      tabs.push({ name: "api", icon: "key" })
+      return tabs.map((tab) => ({
+        ...tab,
+        label: this.$t(`backoffice.organisation_detail.tab.${tab.name}`),
+      }))
     },
   },
   methods: {
@@ -149,7 +173,7 @@ export default {
     ModalDeleteOrganization,
     ApiTokenSettings,
     Button,
-    IsCloud,
+    Tabs,
     BackofficeOrgBilling,
   },
 }

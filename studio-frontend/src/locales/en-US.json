@@ -512,6 +512,16 @@
     "speaker_recognition": "My voice signature"
   },
   "backoffice": {
+    "organisation_detail": {
+      "tab": {
+        "general": "General",
+        "permissions": "Permissions",
+        "members": "Members",
+        "profiles": "Profiles",
+        "billing": "Billing",
+        "api": "API"
+      }
+    },
     "search": "Search",
     "navigation": {
       "activities": "Activity log",
