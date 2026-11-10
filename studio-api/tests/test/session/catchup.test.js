@@ -10,12 +10,10 @@ jest.mock(`${process.cwd()}/lib/utility/axios`, () => ({
   post: jest.fn(),
 }))
 
-jest.mock(
-  `${process.cwd()}/components/WebServer/config/passport/middleware`,
-  () => ({
-    verifyAuthToken: jest.fn(),
-  }),
-)
+jest.mock(`${process.cwd()}/lib/saas`, () => ({
+  record: jest.fn(),
+  allowed: jest.fn(),
+}))
 
 jest.mock(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/offline.js`,
@@ -28,16 +26,9 @@ jest.mock(
   }),
 )
 
-const jwt = require("jsonwebtoken")
-
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const axios = require(`${process.cwd()}/lib/utility/axios`)
-const { verifyAuthToken } = require(
-  `${process.cwd()}/components/WebServer/config/passport/middleware`,
-)
-const PublicToken = require(
-  `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
-)
+const saas = require(`${process.cwd()}/lib/saas`)
 const {
   catchUp,
   catchUpStatus,
@@ -84,7 +75,9 @@ function longCaptions(count = 12, startAt = 0) {
   return out
 }
 
-function buildSession(overrides = {}, captions = longCaptions()) {
+// The session as the access middleware leaves it on req.liveSession: read
+// without its captions, which the controller pages itself.
+function lightSession(overrides = {}) {
   return {
     id: SESSION_ID,
     name: "Réunion Visio",
@@ -96,33 +89,30 @@ function buildSession(overrides = {}, captions = longCaptions()) {
     channels: [
       {
         id: 10,
+        index: 0,
         name: "fr",
         languages: "fr-FR",
         diarization: true,
         compressAudio: true,
         keepAudio: false,
         translations: [],
-        closedCaptions: captions,
-        translatedCaptions: {},
       },
     ],
     ...overrides,
   }
 }
 
-function publicTokenFor(sessionId = SESSION_ID) {
-  return PublicToken.generateTokens(sessionId, ORG_ID)
-}
-
-function userJwt(userId = USER_ID) {
-  return jwt.sign({ data: { userId, tokenId: "tok-1" } }, "whatever-secret")
-}
-
-function makeReq({ token, body = {}, id = SESSION_ID } = {}) {
+// A meeting guest (public token) by default, a member with `userId`.
+function makeReq({ body = {}, session = lightSession(), caller, userId } = {}) {
   return {
-    params: { id },
+    params: { id: session.id },
     body,
-    headers: token ? { authorization: `Bearer ${token}` } : {},
+    headers: {},
+    liveSession: session,
+    liveSessionCaller: caller || (userId ? `user:${userId}` : "public:guest-1"),
+    payload: userId
+      ? { data: { userId } }
+      : { fromPublic: true, data: { fromSession: session.id } },
   }
 }
 
@@ -274,11 +264,26 @@ async function settle(predicate = () => false) {
     await new Promise((resolve) => setImmediate(resolve))
 }
 
-function wireAxios(session, { services = true, flavors = true } = {}) {
+// Session-API fake: the channel captions are paged from the newest, each page
+// in chronological order, as Channel.getPaginatedCaptions does. `captions` may
+// be a function, read at every page (a live session that keeps growing).
+function wireAxios(
+  captions = longCaptions(),
+  { services = true, flavors = true } = {},
+) {
   axios.get.mockImplementation(async (url) => {
-    if (url.includes("/sessions/")) {
-      if (!session) throw new Error("404")
-      return session
+    const page = url.match(
+      /\/sessions\/[^/]+\/channels\/[^?]+\?limit=(\d+)&offset=(\d+)$/,
+    )
+    if (page) {
+      const all = typeof captions === "function" ? captions() : captions
+      const [limit, offset] = [Number(page[1]), Number(page[2])]
+      const newestFirst = [...all].reverse().slice(offset, offset + limit)
+      return {
+        closedCaptions: newestFirst.reverse(),
+        totalClosedCaptions: all.length,
+        translatedCaptions: {},
+      }
     }
     if (url.includes("/api/v1/services?")) {
       return {
@@ -299,6 +304,9 @@ function wireAxios(session, { services = true, flavors = true } = {}) {
   })
 }
 
+const channelPageCalls = () =>
+  axios.get.mock.calls.filter(([url]) => url.includes("/channels/"))
+
 describe("session catch-up", () => {
   let fetchMock
 
@@ -307,7 +315,9 @@ describe("session catch-up", () => {
     resetCatchupState()
     process.env.LLM_GATEWAY_SERVICES = "http://llm-gateway:8000"
     process.env.LLM_CATCHUP_SERVICE = "visio-catchup"
+    delete process.env.LLM_CATCHUP_MAX_CHARS
     delete process.env.LLM_CHAT_SERVICE_ID
+    saas.allowed.mockResolvedValue(true)
     model.organizations.getById.mockResolvedValue([
       { _id: ORG_ID, users: [{ userId: USER_ID, role: 4 }] },
     ])
@@ -347,11 +357,11 @@ describe("session catch-up", () => {
     })
   })
 
-  describe("auth matrix", () => {
-    test("a publicSessionToken minted for this session is accepted", async () => {
-      wireAxios(buildSession())
+  describe("summary", () => {
+    test("a meeting guest gets the summary streamed", async () => {
+      wireAxios()
       const res = makeRes()
-      await catchUp(makeReq({ token: publicTokenFor() }), res, jest.fn())
+      await catchUp(makeReq(), res, jest.fn())
 
       const events = parseSSE(res)
       expect(events.map((e) => e.event)).toEqual(["token", "token", "done"])
@@ -359,11 +369,10 @@ describe("session catch-up", () => {
       expect(res.headers["Content-Type"]).toBe("text/event-stream")
     })
 
-    test("a user JWT of an org member is accepted", async () => {
-      wireAxios(buildSession({ visibility: "organization" }))
-      verifyAuthToken.mockResolvedValue({ userId: USER_ID })
+    test("a member gets the summary streamed", async () => {
+      wireAxios()
       const res = makeRes()
-      await catchUp(makeReq({ token: userJwt() }), res, jest.fn())
+      await catchUp(makeReq({ userId: USER_ID }), res, jest.fn())
 
       expect(parseSSE(res).map((e) => e.event)).toEqual([
         "token",
@@ -371,72 +380,14 @@ describe("session catch-up", () => {
         "done",
       ])
     })
-
-    test("no Authorization header -> 401", async () => {
-      wireAxios(buildSession())
-      const res = makeRes()
-      await catchUp(makeReq({}), res, jest.fn())
-      expect(res.statusCode).toBe(401)
-      expect(res.body).toEqual({ code: "catchup_unauthorized" })
-    })
-
-    test("a public token minted for ANOTHER session -> 403", async () => {
-      wireAxios(buildSession())
-      const res = makeRes()
-      await catchUp(
-        makeReq({ token: publicTokenFor("other-session") }),
-        res,
-        jest.fn(),
-      )
-      expect(res.statusCode).toBe(403)
-      expect(res.body).toEqual({ code: "catchup_forbidden" })
-    })
-
-    test("a forged public token (wrong secret) -> 401", async () => {
-      wireAxios(buildSession())
-      const forged = jwt.sign(
-        { data: { fromPublic: true, fromSession: SESSION_ID, role: 0 } },
-        "not-the-right-secret",
-      )
-      const res = makeRes()
-      await catchUp(makeReq({ token: forged }), res, jest.fn())
-      expect(res.statusCode).toBe(401)
-    })
-
-    test("non-public session + public token -> 403", async () => {
-      wireAxios(buildSession({ visibility: "organization" }))
-      const res = makeRes()
-      await catchUp(makeReq({ token: publicTokenFor() }), res, jest.fn())
-      expect(res.statusCode).toBe(403)
-      expect(res.body).toEqual({ code: "catchup_forbidden" })
-    })
-
-    test("a user JWT of a NON member -> 403", async () => {
-      wireAxios(buildSession({ visibility: "organization" }))
-      verifyAuthToken.mockResolvedValue({ userId: "intruder" })
-      const res = makeRes()
-      await catchUp(makeReq({ token: userJwt("intruder") }), res, jest.fn())
-      expect(res.statusCode).toBe(403)
-    })
-
-    test("an unknown session -> 404", async () => {
-      wireAxios(null)
-      const res = makeRes()
-      await catchUp(makeReq({ token: publicTokenFor() }), res, jest.fn())
-      expect(res.statusCode).toBe(404)
-      expect(res.body).toEqual({ code: "session_not_found" })
-    })
   })
 
   describe("transcript", () => {
     test("`before` filters the captions handed to the gateway", async () => {
-      wireAxios(buildSession())
+      wireAxios()
       const res = makeRes()
       await catchUp(
-        makeReq({
-          token: publicTokenFor(),
-          body: { before: new Date(T0 + 85000).toISOString() },
-        }),
+        makeReq({ body: { before: new Date(T0 + 85000).toISOString() } }),
         res,
         jest.fn(),
       )
@@ -466,14 +417,11 @@ describe("session catch-up", () => {
       )
     })
 
-    test("maxChars caps the transcript and drops the OLDEST lines", async () => {
-      wireAxios(buildSession())
+    test("LLM_CATCHUP_MAX_CHARS caps the transcript and drops the OLDEST lines", async () => {
+      process.env.LLM_CATCHUP_MAX_CHARS = "260"
+      wireAxios()
       const res = makeRes()
-      await catchUp(
-        makeReq({ token: publicTokenFor(), body: { maxChars: 260 } }),
-        res,
-        jest.fn(),
-      )
+      await catchUp(makeReq(), res, jest.fn())
 
       const transcript = JSON.parse(fetchMock.mock.calls[0][1].body).context
         .transcript
@@ -482,44 +430,116 @@ describe("session catch-up", () => {
       expect(transcript).not.toContain("phrase numero 1 du")
     })
 
-    test("a pre-join transcript under 200 characters -> 204", async () => {
-      wireAxios(
-        buildSession({}, [
-          caption(1, 0, "Alice", "bonjour"),
-          caption(2, 5, "Bob", "salut"),
-        ]),
-      )
+    test("the caller cannot set the length: a maxChars in the body is ignored", async () => {
+      process.env.LLM_CATCHUP_MAX_CHARS = "260"
+      wireAxios()
       const res = makeRes()
-      await catchUp(makeReq({ token: publicTokenFor() }), res, jest.fn())
+      await catchUp(makeReq({ body: { maxChars: 100000 } }), res, jest.fn())
+
+      const transcript = JSON.parse(fetchMock.mock.calls[0][1].body).context
+        .transcript
+      expect(transcript.length).toBeLessThanOrEqual(260)
+    })
+
+    test("a long meeting is read from its end, page by page, only until the cap is reached", async () => {
+      // 1000 captions of about 60 characters: the 12000 default needs about
+      // 200 of them, so two pages of 200, never the 5 pages of the meeting.
+      wireAxios(longCaptions(1000))
+      const res = makeRes()
+      await catchUp(makeReq(), res, jest.fn())
+
+      const pages = channelPageCalls().map(([url]) => url)
+      expect(pages).toEqual([
+        `http://sessionapi:8005/v1/sessions/${SESSION_ID}/channels/10?limit=200&offset=0`,
+        `http://sessionapi:8005/v1/sessions/${SESSION_ID}/channels/10?limit=200&offset=200`,
+      ])
+      const transcript = JSON.parse(fetchMock.mock.calls[0][1].body).context
+        .transcript
+      expect(transcript.length).toBeLessThanOrEqual(12000)
+      expect(transcript).toContain("phrase numero 1000 du")
+      expect(transcript).not.toContain("phrase numero 1 du")
+      expect(transcript.split("\n")).toEqual(
+        [...transcript.split("\n")].sort(
+          (a, b) =>
+            Number(a.match(/numero (\d+)/)[1]) -
+            Number(b.match(/numero (\d+)/)[1]),
+        ),
+      )
+    })
+
+    test("a caption stored while paging is not repeated in the transcript", async () => {
+      const live = longCaptions(300)
+      let reads = 0
+      wireAxios(() => {
+        // The meeting goes on between the two pages.
+        if (reads++ === 1) live.push(caption(301, 3010, "Alice", "nouvelle"))
+        return live
+      })
+      const res = makeRes()
+      await catchUp(
+        makeReq({ body: { before: new Date(T0 + 3005000).toISOString() } }),
+        res,
+        jest.fn(),
+      )
+
+      expect(channelPageCalls()).toHaveLength(2)
+      const lines = JSON.parse(
+        fetchMock.mock.calls[0][1].body,
+      ).context.transcript.split("\n")
+      expect(new Set(lines).size).toBe(lines.length)
+      expect(lines.join("\n")).not.toContain("nouvelle")
+    })
+
+    test("the controller never loads the whole session with its captions", async () => {
+      wireAxios()
+      await catchUp(makeReq(), makeRes(), jest.fn())
+      const sessionReads = axios.get.mock.calls
+        .map(([url]) => url)
+        .filter((url) => url.startsWith("http://sessionapi"))
+      expect(sessionReads.length).toBeGreaterThan(0)
+      expect(sessionReads.every((url) => url.includes("/channels/"))).toBe(true)
+    })
+
+    test("a pre-join transcript under 200 characters -> 204", async () => {
+      wireAxios([
+        caption(1, 0, "Alice", "bonjour"),
+        caption(2, 5, "Bob", "salut"),
+      ])
+      const res = makeRes()
+      await catchUp(makeReq(), res, jest.fn())
       expect(res.statusCode).toBe(204)
       expect(fetchMock).not.toHaveBeenCalled()
     })
 
     test("no caption before `before` -> 204", async () => {
-      wireAxios(buildSession())
+      wireAxios()
       const res = makeRes()
       await catchUp(
-        makeReq({
-          token: publicTokenFor(),
-          body: { before: new Date(T0 - 60000).toISOString() },
-        }),
+        makeReq({ body: { before: new Date(T0 - 60000).toISOString() } }),
         res,
         jest.fn(),
       )
       expect(res.statusCode).toBe(204)
     })
+
+    test("an unknown channel index -> 204, no caption read", async () => {
+      wireAxios()
+      const res = makeRes()
+      await catchUp(makeReq({ body: { channelIndex: 3 } }), res, jest.fn())
+      expect(res.statusCode).toBe(204)
+      expect(channelPageCalls()).toHaveLength(0)
+    })
   })
 
   describe("cache / rate limit / availability", () => {
     test("a second caller in the same window replays the cache: done {cached:true}", async () => {
-      wireAxios(buildSession())
+      wireAxios()
       const first = makeRes()
-      await catchUp(makeReq({ token: publicTokenFor() }), first, jest.fn())
+      await catchUp(makeReq(), first, jest.fn())
       expect(fetchMock).toHaveBeenCalledTimes(1)
 
-      verifyAuthToken.mockResolvedValue({ userId: USER_ID })
       const second = makeRes()
-      await catchUp(makeReq({ token: userJwt() }), second, jest.fn())
+      await catchUp(makeReq({ userId: USER_ID }), second, jest.fn())
 
       const events = parseSSE(second)
       expect(events.map((e) => e.event)).toEqual(["token", "done"])
@@ -529,51 +549,52 @@ describe("session catch-up", () => {
     })
 
     test("the same caller twice within 20 s -> 429", async () => {
-      wireAxios(buildSession())
-      const token = publicTokenFor()
+      wireAxios()
       const first = makeRes()
-      await catchUp(makeReq({ token }), first, jest.fn())
+      await catchUp(makeReq(), first, jest.fn())
 
       const second = makeRes()
-      await catchUp(makeReq({ token }), second, jest.fn())
+      await catchUp(makeReq(), second, jest.fn())
       expect(second.statusCode).toBe(429)
       expect(second.body).toEqual({ code: "catchup_rate_limited" })
     })
 
     test("no gateway configured -> 503 catchup_unavailable", async () => {
       delete process.env.LLM_GATEWAY_SERVICES
-      wireAxios(buildSession())
+      wireAxios()
       const res = makeRes()
-      await catchUp(makeReq({ token: publicTokenFor() }), res, jest.fn())
+      await catchUp(makeReq(), res, jest.fn())
       expect(res.statusCode).toBe(503)
       expect(res.body).toEqual({ code: "catchup_unavailable" })
     })
 
     test("no catch-up service and no chat fallback -> 503", async () => {
-      wireAxios(buildSession(), { services: false, flavors: false })
+      wireAxios(longCaptions(), { services: false, flavors: false })
       const res = makeRes()
-      await catchUp(makeReq({ token: publicTokenFor() }), res, jest.fn())
+      await catchUp(makeReq(), res, jest.fn())
       expect(res.statusCode).toBe(503)
       expect(res.body).toEqual({ code: "catchup_unavailable" })
     })
 
     test("gateway refuses the completion -> 503", async () => {
-      wireAxios(buildSession())
+      wireAxios()
       global.fetch = jest.fn(async () => ({
         ok: false,
         status: 500,
         body: null,
       }))
       const res = makeRes()
-      await catchUp(makeReq({ token: publicTokenFor() }), res, jest.fn())
+      await catchUp(makeReq(), res, jest.fn())
       expect(res.statusCode).toBe(503)
     })
 
     test("LLM_CHAT_SERVICE_ID is the fallback when the catch-up route is unknown", async () => {
       process.env.LLM_CATCHUP_SERVICE = "does-not-exist"
       process.env.LLM_CHAT_SERVICE_ID = SERVICE_ID
+      const captions = longCaptions()
       axios.get.mockImplementation(async (url) => {
-        if (url.includes("/sessions/")) return buildSession()
+        if (url.includes("/channels/"))
+          return { closedCaptions: captions, totalClosedCaptions: 12 }
         if (url.includes("/api/v1/services?")) return { items: [] }
         if (url.includes(`/api/v1/services/${SERVICE_ID}`))
           return {
@@ -583,7 +604,7 @@ describe("session catch-up", () => {
         throw new Error("service not found")
       })
       const res = makeRes()
-      await catchUp(makeReq({ token: publicTokenFor() }), res, jest.fn())
+      await catchUp(makeReq(), res, jest.fn())
       expect(parseSSE(res).map((e) => e.event)).toEqual([
         "token",
         "token",
@@ -595,9 +616,52 @@ describe("session catch-up", () => {
     })
   })
 
+  describe("SaaS usage", () => {
+    test("a generated summary is recorded once, as ai.chat of the session's organization", async () => {
+      wireAxios()
+      await catchUp(makeReq({ userId: USER_ID }), makeRes(), jest.fn())
+
+      expect(saas.record).toHaveBeenCalledTimes(1)
+      expect(saas.record).toHaveBeenCalledWith({
+        orgId: ORG_ID,
+        userId: USER_ID,
+        capability: "ai.chat",
+        value: 1,
+        ref: { liveSessionId: SESSION_ID },
+      })
+    })
+
+    test("a meeting guest's summary is recorded without a userId", async () => {
+      wireAxios()
+      await catchUp(makeReq(), makeRes(), jest.fn())
+      expect(saas.record).toHaveBeenCalledWith(
+        expect.objectContaining({ orgId: ORG_ID, userId: undefined }),
+      )
+    })
+
+    test("a replay from the cache is not recorded", async () => {
+      wireAxios()
+      await catchUp(makeReq(), makeRes(), jest.fn())
+      await catchUp(makeReq({ userId: USER_ID }), makeRes(), jest.fn())
+      expect(saas.record).toHaveBeenCalledTimes(1)
+    })
+
+    test("a summary cut by a gateway error is not recorded", async () => {
+      wireAxios()
+      global.fetch = jest.fn(async () =>
+        rawGatewayStream([
+          `event: token\ndata: ${JSON.stringify({ content: "Voici " })}\n\n`,
+          `event: error\ndata: ${JSON.stringify({ error: "boom" })}\n\n`,
+        ]),
+      )
+      await catchUp(makeReq(), makeRes(), jest.fn())
+      expect(saas.record).not.toHaveBeenCalled()
+    })
+  })
+
   describe("end of the gateway stream", () => {
     test("an error event ends the stream: no done, the partial text is not cached", async () => {
-      wireAxios(buildSession())
+      wireAxios()
       global.fetch = jest.fn(async () =>
         rawGatewayStream([
           `event: token\ndata: ${JSON.stringify({ content: "Voici " })}\n\n`,
@@ -606,7 +670,7 @@ describe("session catch-up", () => {
         ]),
       )
       const first = makeRes()
-      await catchUp(makeReq({ token: publicTokenFor() }), first, jest.fn())
+      await catchUp(makeReq(), first, jest.fn())
 
       expect(first.ended).toBe(true)
       expect(parseSSE(first)).toEqual([
@@ -614,12 +678,11 @@ describe("session catch-up", () => {
         { event: "error", data: { message: "Streaming error" } },
       ])
 
-      verifyAuthToken.mockResolvedValue({ userId: USER_ID })
       global.fetch = jest.fn(async () =>
         gatewayStream(["Voici ", "le résumé."]),
       )
       const second = makeRes()
-      await catchUp(makeReq({ token: userJwt() }), second, jest.fn())
+      await catchUp(makeReq({ userId: USER_ID }), second, jest.fn())
 
       expect(global.fetch).toHaveBeenCalledTimes(1)
       expect(parseSSE(second).map((e) => e.event)).toEqual([
@@ -634,18 +697,14 @@ describe("session catch-up", () => {
         doNotFake: ["setImmediate", "nextTick", "queueMicrotask"],
       })
       try {
-        wireAxios(buildSession())
+        wireAxios()
         let signal
         global.fetch = jest.fn(async (url, options) => {
           signal = options.signal
           return stalledGatewayStream(signal, ["Voici "])
         })
         const res = makeRes()
-        const pending = catchUp(
-          makeReq({ token: publicTokenFor() }),
-          res,
-          jest.fn(),
-        )
+        const pending = catchUp(makeReq(), res, jest.fn())
         await settle(() => res.chunks.length > 0)
 
         jest.advanceTimersByTime(59 * 1000)
@@ -665,18 +724,14 @@ describe("session catch-up", () => {
     })
 
     test("the late joiner leaves mid-stream: gateway call aborted, nothing more written", async () => {
-      wireAxios(buildSession())
+      wireAxios()
       let signal
       global.fetch = jest.fn(async (url, options) => {
         signal = options.signal
         return stalledGatewayStream(signal, ["Voici "])
       })
       const res = makeRes()
-      const pending = catchUp(
-        makeReq({ token: publicTokenFor() }),
-        res,
-        jest.fn(),
-      )
+      const pending = catchUp(makeReq(), res, jest.fn())
       await settle(() => res.chunks.length > 0)
 
       res.emit("close")
@@ -688,31 +743,45 @@ describe("session catch-up", () => {
         { event: "token", data: { content: "Voici " } },
       ])
       expect(res.listeners.close).toEqual([])
+      expect(saas.record).not.toHaveBeenCalled()
     })
   })
 
   describe("status", () => {
-    test("enabled:true when a service and a flavor resolve", async () => {
-      wireAxios(buildSession())
+    test("enabled:true when a service and a flavor resolve and the plan allows ai.chat", async () => {
+      wireAxios()
       const res = makeRes()
-      await catchUpStatus(makeReq({ token: publicTokenFor() }), res, jest.fn())
+      await catchUpStatus(makeReq({ userId: USER_ID }), res, jest.fn())
       expect(res.statusCode).toBe(200)
       expect(res.body).toEqual({ enabled: true })
+      expect(saas.allowed).toHaveBeenCalledWith({
+        orgId: ORG_ID,
+        userId: USER_ID,
+        capability: "ai.chat",
+        value: 1,
+      })
     })
 
     test("enabled:false when the deployment has no LLM", async () => {
       delete process.env.LLM_GATEWAY_SERVICES
-      wireAxios(buildSession())
+      wireAxios()
       const res = makeRes()
-      await catchUpStatus(makeReq({ token: publicTokenFor() }), res, jest.fn())
+      await catchUpStatus(makeReq(), res, jest.fn())
       expect(res.body).toEqual({ enabled: false })
     })
 
-    test("status enforces the same auth -> 401 without a token", async () => {
-      wireAxios(buildSession())
+    test("enabled:false when the SaaS plan refuses ai.chat", async () => {
+      saas.allowed.mockResolvedValue(false)
+      wireAxios()
       const res = makeRes()
-      await catchUpStatus(makeReq({}), res, jest.fn())
-      expect(res.statusCode).toBe(401)
+      await catchUpStatus(makeReq(), res, jest.fn())
+      expect(res.body).toEqual({ enabled: false })
+    })
+
+    test("the status reads no caption", async () => {
+      wireAxios()
+      await catchUpStatus(makeReq(), makeRes(), jest.fn())
+      expect(channelPageCalls()).toHaveLength(0)
     })
   })
 })

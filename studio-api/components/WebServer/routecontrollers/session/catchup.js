@@ -2,18 +2,10 @@ const debug = require("debug")(
   "linto:components:WebServer:routecontrollers:session:catchup",
 )
 
-const crypto = require("crypto")
-
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const appLogger = require(`${process.cwd()}/lib/logger/logger.js`)
-const model = require(`${process.cwd()}/lib/mongodb/models`)
+const saas = require(`${process.cwd()}/lib/saas`)
 
-const PublicToken = require(
-  `${process.cwd()}/components/WebServer/config/passport/token/public_generator`,
-)
-const { verifyAuthToken } = require(
-  `${process.cwd()}/components/WebServer/config/passport/middleware`,
-)
 const { initCaptionsForConversation } = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
 )
@@ -23,8 +15,6 @@ const { buildTranscriptText } = require(
 const { resolveServiceId, resolveFlavorId } = require(
   `${process.cwd()}/components/WebServer/controllers/llm/index.js`,
 )
-
-const jwtDecode = require("jwt-decode")
 
 const TYPES = require(`${process.cwd()}/lib/dao/conversation/types`)
 
@@ -36,6 +26,8 @@ const RATE_LIMIT_WINDOW_MS = 20 * 1000
 const BEFORE_BUCKET_MS = 30 * 1000
 const MAX_TOKENS = 400
 const STREAM_IDLE_TIMEOUT_MS = 60 * 1000
+const CAPTIONS_PAGE_SIZE = 200
+const MAX_CAPTION_PAGES = 50
 const DEFAULT_CATCHUP_SERVICE = "visio-catchup"
 const USER_PROMPT = "Résume-moi ce qui a été dit avant mon arrivée."
 
@@ -56,76 +48,9 @@ function resetCatchupState() {
   rateLimiter.clear()
 }
 
-function extractBearer(req) {
-  const header = req?.headers?.authorization
-  if (!header) return null
-  const parts = header.split(" ")
-  return (parts.length > 1 ? parts[1] : parts[0]) || null
-}
-
-function hashToken(token) {
-  return crypto.createHash("sha256").update(token).digest("hex").slice(0, 16)
-}
-
-async function authorize(req, sessionId, session) {
-  const token = extractBearer(req)
-  if (!token) return { ok: false, status: 401, code: "catchup_unauthorized" }
-
-  let tokenData = null
-  try {
-    tokenData = jwtDecode(token + "")
-  } catch (err) {
-    return { ok: false, status: 401, code: "catchup_unauthorized" }
-  }
-
-  if (tokenData?.data?.fromPublic && tokenData?.data?.fromSession) {
-    if (tokenData.data.fromSession !== sessionId)
-      return { ok: false, status: 403, code: "catchup_forbidden" }
-    const valid = PublicToken.validateToken(token, sessionId)
-    if (!valid) return { ok: false, status: 401, code: "catchup_unauthorized" }
-    if (session?.visibility !== "public")
-      return { ok: false, status: 403, code: "catchup_forbidden" }
-    return { ok: true, callerId: `public:${hashToken(token)}` }
-  }
-
-  const userData = await verifyAuthToken(token)
-  if (!userData?.userId)
-    return { ok: false, status: 401, code: "catchup_unauthorized" }
-
-  const isMember = await isOrganizationMember(
-    session?.organizationId,
-    userData.userId,
-  )
-  if (!isMember) return { ok: false, status: 403, code: "catchup_forbidden" }
-
-  return { ok: true, callerId: `user:${userData.userId}` }
-}
-
-async function isOrganizationMember(organizationId, userId) {
-  if (!organizationId || !userId) return false
-  try {
-    const organizations = await model.organizations.getById(
-      organizationId.toString(),
-    )
-    if (!organizations || organizations.length !== 1) return false
-    return (organizations[0].users || []).some(
-      (user) => user.userId?.toString() === userId.toString(),
-    )
-  } catch (err) {
-    debug(`organization membership check failed: ${err.message}`)
-    return false
-  }
-}
-
-async function fetchSession(sessionId) {
-  const endpoint = process.env.SESSION_API_ENDPOINT
-  if (!endpoint) return null
-  try {
-    return await axios.get(`${endpoint}/sessions/${sessionId}`)
-  } catch (err) {
-    debug(`session ${sessionId} not fetched: ${err.message}`)
-    return null
-  }
+function catchupMaxChars() {
+  const value = parseInt(process.env.LLM_CATCHUP_MAX_CHARS, 10)
+  return Number.isInteger(value) && value > 0 ? value : DEFAULT_MAX_CHARS
 }
 
 function pickChannel(session, channelIndex) {
@@ -148,6 +73,42 @@ function filterCaptionsBefore(closedCaptions, beforeMs) {
   })
 }
 
+function captionKey(caption) {
+  return caption?.segmentId != null
+    ? `s:${caption.segmentId}`
+    : `t:${caption?.astart}|${caption?.start}|${caption?.text}`
+}
+
+// Pages come newest first; a caption stored meanwhile shifts them by one.
+async function fetchCaptionsBefore(sessionId, channelId, beforeMs, maxChars) {
+  const url =
+    `${process.env.SESSION_API_ENDPOINT}/sessions/` +
+    `${encodeURIComponent(sessionId)}/channels/${encodeURIComponent(channelId)}`
+  const pages = []
+  const seen = new Set()
+  let chars = 0
+
+  for (let page = 0; page < MAX_CAPTION_PAGES && chars < maxChars; page++) {
+    const result = await axios.get(
+      `${url}?limit=${CAPTIONS_PAGE_SIZE}&offset=${page * CAPTIONS_PAGE_SIZE}`,
+    )
+    const captions = Array.isArray(result?.closedCaptions)
+      ? result.closedCaptions
+      : []
+    const kept = []
+    for (const caption of filterCaptionsBefore(captions, beforeMs)) {
+      const key = captionKey(caption)
+      if (seen.has(key)) continue
+      seen.add(key)
+      kept.push(caption)
+      chars += (caption.text || "").length + (caption.locutor || "").length + 3
+    }
+    pages.unshift(kept)
+    if (captions.length < CAPTIONS_PAGE_SIZE) break
+  }
+  return pages.flat()
+}
+
 function capTranscript(text, maxChars) {
   if (!text || text.length <= maxChars) return text || ""
   const lines = text.split("\n")
@@ -161,7 +122,14 @@ function capTranscript(text, maxChars) {
 async function buildCatchupTranscript(session, channel, captions) {
   const singleChannelSession = {
     ...session,
-    channels: [{ ...channel, keepAudio: false, closedCaptions: captions }],
+    channels: [
+      {
+        ...channel,
+        keepAudio: false,
+        closedCaptions: captions,
+        translatedCaptions: {},
+      },
+    ],
   }
   const conversations = await initCaptionsForConversation(
     singleChannelSession,
@@ -199,6 +167,15 @@ async function resolveCatchupFlavor() {
   return null
 }
 
+function aiChatUsage(req) {
+  return {
+    orgId: req.liveSession.organizationId,
+    userId: req.payload?.data?.userId,
+    capability: "ai.chat",
+    value: 1,
+  }
+}
+
 function openSSE(res) {
   res.setHeader("Content-Type", "text/event-stream")
   res.setHeader("Cache-Control", "no-cache")
@@ -212,28 +189,18 @@ function writeEvent(res, event, payload) {
 
 async function catchUp(req, res, next) {
   try {
-    const sessionId = req.params.id
+    const session = req.liveSession
+    const sessionId = session.id
     const body = req.body || {}
     const channelIndex = Number.isInteger(body.channelIndex)
       ? body.channelIndex
       : DEFAULT_CHANNEL_INDEX
-    const maxChars =
-      Number.isFinite(body.maxChars) && body.maxChars > 0
-        ? Math.floor(body.maxChars)
-        : DEFAULT_MAX_CHARS
     const beforeMs = body.before ? Date.parse(body.before) : null
     const before = Number.isNaN(beforeMs) ? null : beforeMs
 
-    const session = await fetchSession(sessionId)
-    if (!session || !session.id)
-      return res.status(404).json({ code: "session_not_found" })
-
-    const auth = await authorize(req, sessionId, session)
-    if (!auth.ok) return res.status(auth.status).json({ code: auth.code })
-
     pruneExpired()
 
-    const rateKey = `${sessionId}:${auth.callerId}`
+    const rateKey = `${sessionId}:${req.liveSessionCaller}`
     const last = rateLimiter.get(rateKey)
     const now = Date.now()
     if (last && now - last < RATE_LIMIT_WINDOW_MS)
@@ -243,7 +210,13 @@ async function catchUp(req, res, next) {
     const channel = pickChannel(session, channelIndex)
     if (!channel) return res.status(204).end()
 
-    const captions = filterCaptionsBefore(channel.closedCaptions, before)
+    const maxChars = catchupMaxChars()
+    const captions = await fetchCaptionsBefore(
+      sessionId,
+      channel.id,
+      before,
+      maxChars,
+    )
     if (captions.length === 0) return res.status(204).end()
 
     const rawTranscript = await buildCatchupTranscript(
@@ -378,6 +351,11 @@ async function catchUp(req, res, next) {
         })
       }
       writeEvent(res, "done", { cached: false })
+      if (full)
+        await saas.record({
+          ...aiChatUsage(req),
+          ref: { liveSessionId: sessionId },
+        })
       return res.end()
     } finally {
       clearTimeout(idleTimer)
@@ -396,16 +374,9 @@ async function catchUp(req, res, next) {
 
 async function catchUpStatus(req, res, next) {
   try {
-    const sessionId = req.params.id
-    const session = await fetchSession(sessionId)
-    if (!session || !session.id)
-      return res.status(404).json({ code: "session_not_found" })
-
-    const auth = await authorize(req, sessionId, session)
-    if (!auth.ok) return res.status(auth.status).json({ code: auth.code })
-
     const flavor = await resolveCatchupFlavor()
-    return res.status(200).json({ enabled: !!flavor })
+    const enabled = !!flavor && (await saas.allowed(aiChatUsage(req)))
+    return res.status(200).json({ enabled })
   } catch (error) {
     return next(error)
   }
@@ -417,6 +388,7 @@ module.exports = {
   resetCatchupState,
   capTranscript,
   filterCaptionsBefore,
+  fetchCaptionsBefore,
   pickChannel,
   resolveCatchupFlavor,
 }
