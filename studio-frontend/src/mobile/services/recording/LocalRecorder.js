@@ -7,11 +7,17 @@ const LEVEL_INTERVAL_MS = 100
 // Owns the microphone stream, the MediaRecorder and the level meter of one
 // recording. Chunks and levels are pushed to the callbacks; nothing about
 // storage or UI lives here. destroy() releases every resource.
+// onMuted / onUnmuted: the system took the microphone away and gave it back
+// (iOS mutes it while the page is hidden, a call or Siri mutes it too); the
+// MediaRecorder keeps running meanwhile, the caller decides what to do.
+// onInterrupted: the recording cannot go on (track ended, recorder error).
 export class LocalRecorder {
-  constructor({ onChunk, onLevel, onInterrupted }) {
+  constructor({ onChunk, onLevel, onInterrupted, onMuted, onUnmuted }) {
     this.onChunk = onChunk
     this.onLevel = onLevel
     this.onInterrupted = onInterrupted
+    this.onMuted = onMuted
+    this.onUnmuted = onUnmuted
     this.stream = null
     this.mediaRecorder = null
     this.audioContext = null
@@ -33,6 +39,9 @@ export class LocalRecorder {
     this.mediaRecorder.addEventListener("dataavailable", (event) =>
       this.handleChunk(event.data),
     )
+    this.mediaRecorder.addEventListener("error", (event) =>
+      this.handleRecorderError(event),
+    )
     this.watchTrack()
     this.startLevelMeter()
     this.mediaRecorder.start(CHUNK_INTERVAL_MS)
@@ -45,6 +54,23 @@ export class LocalRecorder {
 
   resume() {
     if (this.mediaRecorder?.state === "paused") this.mediaRecorder.resume()
+  }
+
+  // Hands what was captured since the last chunk to onChunk now instead of
+  // at the next timeslice: called before the page may be frozen or killed.
+  flush() {
+    if (!this.isActive) return
+    try {
+      this.mediaRecorder.requestData()
+    } catch (error) {
+      console.error("cannot flush the recorder", error)
+    }
+  }
+
+  // The level meter's AudioContext may be suspended while the page was
+  // hidden or the audio session interrupted.
+  resumeLevelMeter() {
+    this.audioContext?.resume().catch(() => {})
   }
 
   // Resolves once the last chunk has been delivered to onChunk.
@@ -65,6 +91,10 @@ export class LocalRecorder {
     return this.mediaRecorder?.state && this.mediaRecorder.state !== "inactive"
   }
 
+  get isMuted() {
+    return this.stream?.getAudioTracks()[0]?.muted ?? false
+  }
+
   destroy() {
     clearInterval(this.levelTimer)
     this.stream?.getTracks().forEach((track) => track.stop())
@@ -83,7 +113,16 @@ export class LocalRecorder {
   watchTrack() {
     const track = this.stream.getAudioTracks()[0]
     if (!track) return
+    // Property assignment: the handlers die with the track. track.stop()
+    // (destroy) never fires them.
     track.onended = () => this.onInterrupted("track-ended")
+    track.onmute = () => this.onMuted()
+    track.onunmute = () => this.onUnmuted()
+  }
+
+  handleRecorderError(event) {
+    console.error("media recorder error", event.error)
+    this.onInterrupted("recorder-error")
   }
 
   startLevelMeter() {

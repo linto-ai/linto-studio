@@ -15,7 +15,8 @@
       ref="editor"
       :locale="editorLocale"
       no-header
-      no-verbatim />
+      no-verbatim
+      :no-theme-toggle="noThemeToggle ? '' : null" />
   </div>
 </template>
 
@@ -139,6 +140,12 @@ export default {
     displaySubtitles: { type: Boolean, default: false },
     // Forwarded to the status banner; "idle" when the host has no microphone.
     microphoneStatus: { type: String, default: "idle" },
+    // For a host whose chrome has no dark values (the mobile app): no
+    // high-contrast switch, and the theme stored by another page of the same
+    // site (a public link on desktop) is not applied. Sent to the editor as
+    // an empty attribute, which the Vue 3 custom element reads as true (a
+    // bound true would arrive as the string "true").
+    noThemeToggle: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -273,6 +280,20 @@ export default {
         await this.wakeLock.release()
       }
     },
+    // The editor owns the switch; the app follows so its own chrome — the
+    // layout, the header, the status banner — goes dark with it.
+    followTheme(core) {
+      const storedTheme = readStoredTheme()
+      if (storedTheme !== null) core.theme.value = storedTheme
+      applyTheme(core.theme.value)
+      // Re-read after every theme switch: each theme declares its own primary
+      core.primaryColor.value = readBrandColor() || null
+      this.offTheme = core.on("theme:change", ({ theme }) => {
+        applyTheme(theme)
+        storeTheme(theme)
+        core.primaryColor.value = readBrandColor() || null
+      })
+    },
     async initEditor() {
       const el = this.$refs.editor
       const { core } = el
@@ -304,18 +325,8 @@ export default {
         ({ fontSize }) => storeTranscriptFontSize(fontSize),
       )
 
-      // The editor owns the switch; the app follows so its own chrome — the
-      // layout, the header, the status banner — goes dark with it.
-      const storedTheme = readStoredTheme()
-      if (storedTheme !== null) core.theme.value = storedTheme
-      applyTheme(core.theme.value)
-      // Re-read after every theme switch: each theme declares its own primary
       core.primaryColor.value = readBrandColor() || null
-      this.offTheme = core.on("theme:change", ({ theme }) => {
-        applyTheme(theme)
-        storeTheme(theme)
-        core.primaryColor.value = readBrandColor() || null
-      })
+      if (!this.noThemeToggle) this.followTheme(core)
 
       this.livePlugin = createLivePlugin({
         tts: getEnv("VUE_APP_ENABLE_TTS") === "true",

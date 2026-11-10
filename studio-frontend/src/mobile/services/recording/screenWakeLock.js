@@ -1,15 +1,23 @@
 // Keeps the screen on while recording or live (iOS suspends the microphone
-// when the screen locks). The lock is lost when the page is hidden and
-// re-acquired when it comes back. release() must be called when done.
+// when the screen locks). The browser drops the lock whenever the page is
+// hidden: the owner calls acquire() again when the page is visible again.
+// release() must be called when done.
 export function createScreenWakeLock() {
   let sentinel = null
   let wanted = false
 
   async function acquire() {
     wanted = true
-    if (!navigator.wakeLock || sentinel) return sentinel !== null
+    if (!navigator.wakeLock) return false
+    if (sentinel) return true
     try {
-      sentinel = await navigator.wakeLock.request("screen")
+      const granted = await navigator.wakeLock.request("screen")
+      // released while the request was pending: give it straight back
+      if (!wanted) {
+        await granted.release()
+        return false
+      }
+      sentinel = granted
       sentinel.addEventListener("release", () => {
         sentinel = null
       })
@@ -22,18 +30,11 @@ export function createScreenWakeLock() {
 
   async function release() {
     wanted = false
-    document.removeEventListener("visibilitychange", onVisibilityChange)
     if (sentinel) {
       await sentinel.release()
       sentinel = null
     }
   }
-
-  function onVisibilityChange() {
-    if (wanted && document.visibilityState === "visible") acquire()
-  }
-
-  document.addEventListener("visibilitychange", onVisibilityChange)
 
   return {
     acquire,

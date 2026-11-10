@@ -50,6 +50,7 @@
         :websocket-instance="socket"
         :current-organization-scope="organizationId"
         :microphone-status="microphoneStatus"
+        no-theme-toggle
         @retry-microphone="retryAudioConnection"
         @reconfigure-microphone="restartMicrophone"
         @buy-live-pack="offerLivePackPurchase"

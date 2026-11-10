@@ -5,14 +5,10 @@
       <TranscriptionCreditBanner
         v-if="transcriptionCreditExhausted"
         :reset-at="transcriptionCredit.resetAt" />
-      <NotificationBanner
-        v-if="isRecording && !recorder.wakeLockOk"
-        variant="warning"
-        icon="warning"
-        align="start"
-        role="status">
-        {{ $t("mobile.record.keep_screen_on") }}
-      </NotificationBanner>
+      <RecordingNotice
+        v-if="recordingNotice"
+        :notice="recordingNotice"
+        @dismiss="dismissLastGap" />
 
       <section class="m-record-page__stage">
         <RecordTimer
@@ -28,6 +24,7 @@
           class="m-record-page__pause"
           :icon="recorder.state === 'paused' ? 'play' : 'pause'"
           icon-weight="fill"
+          :disabled="recorder.state === 'paused' && recorder.microphoneMuted"
           :label="
             recorder.state === 'paused'
               ? $t('mobile.record.resume')
@@ -110,7 +107,6 @@
 <script>
 import { mapGetters } from "vuex"
 import PageHeader from "@/mobile/components/PageHeader.vue"
-import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 import ListRow from "@/mobile/components/ListRow.vue"
 import RecordButton from "@/mobile/components/record/RecordButton.vue"
 import RecordTimer from "@/mobile/components/record/RecordTimer.vue"
@@ -123,6 +119,7 @@ import RecordingSheet from "@/mobile/components/record/RecordingSheet.vue"
 import MicrophoneSheet from "@/mobile/components/record/MicrophoneSheet.vue"
 import TranscriptionCreditPill from "@/mobile/components/record/TranscriptionCreditPill.vue"
 import TranscriptionCreditBanner from "@/mobile/components/record/TranscriptionCreditBanner.vue"
+import RecordingNotice from "@/mobile/components/record/RecordingNotice.vue"
 import { recordingControllerMixin } from "@/mobile/mixins/recordingController.js"
 import { transcriptionSettingsMixin } from "@/mobile/mixins/transcriptionSettings.js"
 import { libraryActionsMixin } from "@/mobile/mixins/libraryActions.js"
@@ -130,12 +127,12 @@ import { documentShareMixin } from "@/mobile/mixins/documentShare.js"
 import { microphoneChoiceMixin } from "@/mobile/mixins/microphoneChoice.js"
 import { transcriptionCreditMixin } from "@/mobile/mixins/transcriptionCredit.js"
 import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
+import { pickRecordingNotice } from "@/mobile/tools/pickRecordingNotice.js"
 
 export default {
   name: "MobileRecord",
   components: {
     PageHeader,
-    NotificationBanner,
     ListRow,
     RecordButton,
     RecordTimer,
@@ -148,6 +145,7 @@ export default {
     MicrophoneSheet,
     TranscriptionCreditPill,
     TranscriptionCreditBanner,
+    RecordingNotice,
   },
   mixins: [
     recordingControllerMixin,
@@ -164,6 +162,9 @@ export default {
     ...mapGetters("mobileRecordings", ["library", "localBytes"]),
     online() {
       return onlineStatus.online
+    },
+    recordingNotice() {
+      return pickRecordingNotice(this.recorder)
     },
     isRecording() {
       return (

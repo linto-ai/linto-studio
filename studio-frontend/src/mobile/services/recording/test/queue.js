@@ -60,6 +60,22 @@ test.serial(
   },
 )
 
+test.serial(
+  "updateRecording() keeps every field of patches sent together",
+  async (t) => {
+    await createRecording(sampleRecording())
+    await Promise.all([
+      updateRecording("rec-1", { sizeBytes: 1200 }),
+      updateRecording("rec-1", { gaps: [{ atMs: 0, durationMs: 5 }] }),
+      updateRecording("rec-1", { status: "naming" }),
+    ])
+    const stored = await getRecording("rec-1")
+    t.is(stored.sizeBytes, 1200)
+    t.is(stored.gaps.length, 1)
+    t.is(stored.status, "naming")
+  },
+)
+
 test.serial("updateRecording() returns null for an unknown id", async (t) => {
   t.is(await updateRecording("nope", { status: "ready" }), null)
 })

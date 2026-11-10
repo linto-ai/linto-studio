@@ -1,10 +1,12 @@
+import { countRoundedMinutes } from "./countRoundedMinutes.js"
+
 /**
  * Human duration for lists: "42 min", "1 h 12", "< 1 min".
  * @param {number} milliseconds
  * @returns {string}
  */
 export function formatDurationShort(milliseconds) {
-  const totalMinutes = Math.round(Math.max(0, milliseconds) / 60_000)
+  const totalMinutes = countRoundedMinutes(milliseconds)
   if (totalMinutes < 1) return "< 1 min"
   const hours = Math.floor(totalMinutes / 60)
   const minutes = totalMinutes % 60

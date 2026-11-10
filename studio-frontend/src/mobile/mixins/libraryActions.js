@@ -1,6 +1,7 @@
 import { formatDurationShort } from "@/mobile/tools/formatDurationShort.js"
 import { formatFileSize } from "@/mobile/tools/formatFileSize.js"
 import { isRecordingQuiet } from "@/mobile/tools/isRecordingQuiet.js"
+import { sumGapDurations } from "@/mobile/tools/sumGapDurations.js"
 import { saveKeepAudioPreference } from "@/mobile/services/preferences/keepAudioPreference.js"
 import { buildRecordingFile } from "@/mobile/services/recording/buildRecordingFile.js"
 import { shareFile } from "@/mobile/services/export/shareFile.js"
@@ -28,7 +29,17 @@ export const libraryActionsMixin = {
         this.stoppedRecording.durationMs || 0,
       )
       const size = formatFileSize(this.stoppedRecording.sizeBytes || 0)
-      return this.$t("mobile.record.stopped_summary", { duration, size })
+      const summary = this.$t("mobile.record.stopped_summary", {
+        duration,
+        size,
+      })
+      const gaps = this.stoppedRecording.gaps || []
+      if (gaps.length === 0) return summary
+      const gapsSummary = this.$tc("mobile.record.gaps_summary", gaps.length, {
+        count: gaps.length,
+        duration: formatDurationShort(sumGapDurations(gaps)),
+      })
+      return `${summary} · ${gapsSummary}`
     },
   },
   watch: {

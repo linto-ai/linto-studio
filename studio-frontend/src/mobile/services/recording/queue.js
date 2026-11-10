@@ -37,14 +37,20 @@ export async function appendChunk(recordingId, index, blob) {
   await db.put("chunks", { recordingId, index, blob })
 }
 
+// Read and write in one transaction: patches sent close together (chunk
+// progress, gaps, stop) are applied one after the other, none of them
+// writes back a stale copy of the fields it does not change.
 export async function updateRecording(id, patch) {
   const db = await database()
-  const current = await db.get("recordings", id)
+  const transaction = db.transaction("recordings", "readwrite")
+  const current = await transaction.store.get(id)
   if (!current) {
+    await transaction.done
     return null
   }
   const updated = { ...current, ...patch }
-  await db.put("recordings", updated)
+  await transaction.store.put(updated)
+  await transaction.done
   return updated
 }
 
