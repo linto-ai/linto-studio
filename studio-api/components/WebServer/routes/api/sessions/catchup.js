@@ -8,11 +8,10 @@ const { catchUp, catchUpStatus } = require(
 
 const catchUpOrg = (req) => req.liveSession?.organizationId
 
-// under /api/organizations/:organizationId/sessions
 module.exports = (webserver) => {
   return [
     {
-      path: "/:id/catchup",
+      path: "/",
       method: "post",
       requireAuth: true,
       requireOrganizationMemberAccess: true,
@@ -25,7 +24,7 @@ module.exports = (webserver) => {
       controller: catchUp,
     },
     {
-      path: "/:id/catchup/status",
+      path: "/status",
       method: "get",
       requireAuth: true,
       requireOrganizationMemberAccess: true,
