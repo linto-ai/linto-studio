@@ -54,6 +54,8 @@ LLM_GATEWAY_SCOPE=
 LLM_CHAT_SERVICE_ID=
 # Gateway service used by the live catch-up summary
 LLM_CATCHUP_SERVICE=visio-catchup
+# Characters of transcript the catch-up summarizes, newest kept (~10 min of speech)
+LLM_CATCHUP_MAX_CHARS=12000
 # WebSocket URL is automatically derived from LLM_GATEWAY_SERVICES
 # (http://localhost:8010 -> ws://localhost:8010)
 # V2 WebSocket endpoints:
