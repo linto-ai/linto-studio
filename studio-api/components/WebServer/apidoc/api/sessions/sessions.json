@@ -793,7 +793,7 @@
     "post": {
       "tags": ["sessions"],
       "summary": "Stream a summary of what was said in a running session before the caller joined",
-      "description": "For a participant who joins a live session late. The captions of one channel spoken before `before` are summarized by the LLM gateway service named by LLM_CATCHUP_SERVICE (LLM_CHAT_SERVICE_ID as a fallback). The answer is streamed as Server-Sent Events (text/event-stream): token events ({ content }), then one done event ({ cached }, true when the summary is replayed from the 60 s cache shared by the joiners of the session), or an error event ({ message }). Accepts the publicSessionToken returned by GET /api/sessions/public/{id} (public sessions only) or the JWT of a member of the session organization. One call per caller every 20 seconds.",
+      "description": "For a participant who joins a live session late. The captions of one channel spoken before `before` are summarized by the LLM gateway service named by LLM_CATCHUP_SERVICE (LLM_CHAT_SERVICE_ID as a fallback). The answer is streamed as Server-Sent Events (text/event-stream): token events ({ content }), then one done event ({ cached }, true when the summary is replayed from the 60 s cache shared by the joiners of the session), or an error event ({ message }), which ends the stream. The gateway call is cut after 60 s without data (error \"LLM stream timed out\") and when the caller disconnects. Accepts the publicSessionToken returned by GET /api/sessions/public/{id} (public sessions only) or the JWT of a member of the session organization. One call per caller every 20 seconds.",
       "parameters": [
         {
           "name": "id",

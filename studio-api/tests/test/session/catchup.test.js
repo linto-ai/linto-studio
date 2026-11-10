@@ -133,7 +133,22 @@ function makeRes() {
     body: null,
     chunks: [],
     ended: false,
+    writableEnded: false,
     headersSent: false,
+    listeners: {},
+    on(event, fn) {
+      ;(this.listeners[event] ||= []).push(fn)
+      return this
+    },
+    removeListener(event, fn) {
+      this.listeners[event] = (this.listeners[event] || []).filter(
+        (l) => l !== fn,
+      )
+      return this
+    },
+    emit(event) {
+      for (const fn of this.listeners[event] || []) fn()
+    },
     status(code) {
       this.statusCode = code
       return this
@@ -141,6 +156,7 @@ function makeRes() {
     json(payload) {
       this.body = payload
       this.ended = true
+      this.writableEnded = true
       return this
     },
     setHeader(k, v) {
@@ -156,6 +172,7 @@ function makeRes() {
     },
     end() {
       this.ended = true
+      this.writableEnded = true
       return this
     },
   }
@@ -198,6 +215,63 @@ function gatewayStream(tokens, { ok = true, status = 200 } = {}) {
       },
     },
   }
+}
+
+function rawGatewayStream(frames) {
+  const encoder = new TextEncoder()
+  let i = 0
+  return {
+    ok: true,
+    status: 200,
+    body: {
+      getReader() {
+        return {
+          async read() {
+            if (i >= frames.length) return { done: true, value: undefined }
+            return { done: false, value: encoder.encode(frames[i++]) }
+          },
+        }
+      },
+    },
+  }
+}
+
+// Sends `tokens`, then stays silent until the request is aborted, like an LLM
+// that hangs mid-generation.
+function stalledGatewayStream(signal, tokens) {
+  const frames = tokens.map(
+    (t) => `event: token\ndata: ${JSON.stringify({ content: t })}\n\n`,
+  )
+  const encoder = new TextEncoder()
+  let i = 0
+  return {
+    ok: true,
+    status: 200,
+    body: {
+      getReader() {
+        return {
+          read() {
+            if (i < frames.length)
+              return Promise.resolve({
+                done: false,
+                value: encoder.encode(frames[i++]),
+              })
+            return new Promise((resolve, reject) => {
+              const abort = () =>
+                reject(new Error("This operation was aborted"))
+              if (signal.aborted) return abort()
+              signal.addEventListener("abort", abort, { once: true })
+            })
+          },
+        }
+      },
+    },
+  }
+}
+
+async function settle(predicate = () => false) {
+  for (let i = 0; i < 200 && !predicate(); i++)
+    await new Promise((resolve) => setImmediate(resolve))
 }
 
 function wireAxios(session, { services = true, flavors = true } = {}) {
@@ -518,6 +592,102 @@ describe("session catch-up", () => {
       expect(JSON.parse(global.fetch.mock.calls[0][1].body).flavor_id).toBe(
         FLAVOR_ID,
       )
+    })
+  })
+
+  describe("end of the gateway stream", () => {
+    test("an error event ends the stream: no done, the partial text is not cached", async () => {
+      wireAxios(buildSession())
+      global.fetch = jest.fn(async () =>
+        rawGatewayStream([
+          `event: token\ndata: ${JSON.stringify({ content: "Voici " })}\n\n`,
+          `event: error\ndata: ${JSON.stringify({ error: "Streaming error" })}\n\n`,
+          `event: token\ndata: ${JSON.stringify({ content: "jamais lu" })}\n\n`,
+        ]),
+      )
+      const first = makeRes()
+      await catchUp(makeReq({ token: publicTokenFor() }), first, jest.fn())
+
+      expect(first.ended).toBe(true)
+      expect(parseSSE(first)).toEqual([
+        { event: "token", data: { content: "Voici " } },
+        { event: "error", data: { message: "Streaming error" } },
+      ])
+
+      verifyAuthToken.mockResolvedValue({ userId: USER_ID })
+      global.fetch = jest.fn(async () =>
+        gatewayStream(["Voici ", "le résumé."]),
+      )
+      const second = makeRes()
+      await catchUp(makeReq({ token: userJwt() }), second, jest.fn())
+
+      expect(global.fetch).toHaveBeenCalledTimes(1)
+      expect(parseSSE(second).map((e) => e.event)).toEqual([
+        "token",
+        "token",
+        "done",
+      ])
+    })
+
+    test("a gateway silent for 60 s is cut: error event, gateway call aborted", async () => {
+      jest.useFakeTimers({
+        doNotFake: ["setImmediate", "nextTick", "queueMicrotask"],
+      })
+      try {
+        wireAxios(buildSession())
+        let signal
+        global.fetch = jest.fn(async (url, options) => {
+          signal = options.signal
+          return stalledGatewayStream(signal, ["Voici "])
+        })
+        const res = makeRes()
+        const pending = catchUp(
+          makeReq({ token: publicTokenFor() }),
+          res,
+          jest.fn(),
+        )
+        await settle(() => res.chunks.length > 0)
+
+        jest.advanceTimersByTime(59 * 1000)
+        await settle()
+        expect(res.ended).toBe(false)
+
+        jest.advanceTimersByTime(1000)
+        await pending
+        expect(signal.aborted).toBe(true)
+        expect(parseSSE(res)).toEqual([
+          { event: "token", data: { content: "Voici " } },
+          { event: "error", data: { message: "LLM stream timed out" } },
+        ])
+      } finally {
+        jest.useRealTimers()
+      }
+    })
+
+    test("the late joiner leaves mid-stream: gateway call aborted, nothing more written", async () => {
+      wireAxios(buildSession())
+      let signal
+      global.fetch = jest.fn(async (url, options) => {
+        signal = options.signal
+        return stalledGatewayStream(signal, ["Voici "])
+      })
+      const res = makeRes()
+      const pending = catchUp(
+        makeReq({ token: publicTokenFor() }),
+        res,
+        jest.fn(),
+      )
+      await settle(() => res.chunks.length > 0)
+
+      res.emit("close")
+      await pending
+
+      expect(signal.aborted).toBe(true)
+      expect(res.ended).toBe(true)
+      expect(parseSSE(res)).toEqual([
+        { event: "token", data: { content: "Voici " } },
+      ])
+      expect(res.listeners.close).toEqual([])
     })
   })
 

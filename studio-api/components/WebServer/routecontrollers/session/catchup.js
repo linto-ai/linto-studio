@@ -35,6 +35,7 @@ const CACHE_TTL_MS = 60 * 1000
 const RATE_LIMIT_WINDOW_MS = 20 * 1000
 const BEFORE_BUCKET_MS = 30 * 1000
 const MAX_TOKENS = 400
+const STREAM_IDLE_TIMEOUT_MS = 60 * 1000
 const DEFAULT_CATCHUP_SERVICE = "visio-catchup"
 const USER_PROMPT = "Résume-moi ce qui a été dit avant mon arrivée."
 
@@ -282,73 +283,108 @@ async function catchUp(req, res, next) {
       organization_id: session.organizationId || undefined,
     }
 
-    let response
-    try {
-      response = await fetch(`${baseUrl}/api/v1/chat/completions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(gatewayPayload),
-      })
-    } catch (err) {
-      appLogger.warn(`[Catchup] gateway unreachable: ${err.message}`)
-      return res.status(503).json({ code: "catchup_unavailable" })
+    const upstream = new AbortController()
+    let timedOut = false
+    let clientGone = false
+    let idleTimer = null
+    const armIdleTimer = () => {
+      clearTimeout(idleTimer)
+      idleTimer = setTimeout(() => {
+        timedOut = true
+        upstream.abort()
+      }, STREAM_IDLE_TIMEOUT_MS)
     }
-
-    if (!response || !response.ok || !response.body) {
-      appLogger.warn(`[Catchup] gateway error ${response?.status}`)
-      return res.status(503).json({ code: "catchup_unavailable" })
+    const onClientClose = () => {
+      if (res.writableEnded) return
+      clientGone = true
+      upstream.abort()
     }
-
-    openSSE(res)
-
-    let full = ""
-    const reader = response.body.getReader()
-    const decoder = new TextDecoder()
-    let buffer = ""
-    let eventType = null
+    if (typeof res.on === "function") res.on("close", onClientClose)
 
     try {
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split("\n")
-        buffer = lines.pop()
-        for (const line of lines) {
-          if (line.startsWith("event: ")) {
-            eventType = line.slice(7).trim()
-            continue
-          }
-          if (!line.startsWith("data: ")) continue
-          const data = line.slice(6)
-          let parsed = null
-          try {
-            parsed = JSON.parse(data)
-          } catch (err) {}
-          if (eventType === "token" && parsed?.content) {
-            full += parsed.content
-            writeEvent(res, "token", { content: parsed.content })
-          } else if (eventType === "error") {
-            writeEvent(res, "error", {
-              message: parsed?.message || parsed?.error || "LLM service error",
-            })
+      armIdleTimer()
+      let response
+      try {
+        response = await fetch(`${baseUrl}/api/v1/chat/completions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(gatewayPayload),
+          signal: upstream.signal,
+        })
+      } catch (err) {
+        const reason = timedOut ? "gateway timed out" : "gateway unreachable"
+        appLogger.warn(`[Catchup] ${reason}: ${err.message}`)
+        return res.status(503).json({ code: "catchup_unavailable" })
+      }
+
+      if (!response || !response.ok || !response.body) {
+        appLogger.warn(`[Catchup] gateway error ${response?.status}`)
+        return res.status(503).json({ code: "catchup_unavailable" })
+      }
+
+      openSSE(res)
+
+      let full = ""
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      let eventType = null
+
+      try {
+        while (true) {
+          armIdleTimer()
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split("\n")
+          buffer = lines.pop()
+          for (const line of lines) {
+            if (line.startsWith("event: ")) {
+              eventType = line.slice(7).trim()
+              continue
+            }
+            if (!line.startsWith("data: ")) continue
+            const data = line.slice(6)
+            let parsed = null
+            try {
+              parsed = JSON.parse(data)
+            } catch (err) {}
+            if (eventType === "token" && parsed?.content) {
+              full += parsed.content
+              writeEvent(res, "token", { content: parsed.content })
+            } else if (eventType === "error") {
+              const message =
+                parsed?.message || parsed?.error || "LLM service error"
+              appLogger.warn(`[Catchup] gateway stream error: ${message}`)
+              writeEvent(res, "error", { message })
+              return res.end()
+            }
           }
         }
+      } catch (err) {
+        if (clientGone) return res.end()
+        const message = timedOut
+          ? "LLM stream timed out"
+          : "LLM stream interrupted"
+        appLogger.warn(`[Catchup] ${message}: ${err.message}`)
+        writeEvent(res, "error", { message })
+        return res.end()
       }
-    } catch (err) {
-      appLogger.warn(`[Catchup] stream interrupted: ${err.message}`)
-      writeEvent(res, "error", { message: "LLM stream interrupted" })
-      return res.end()
-    }
 
-    if (full) {
-      summaryCache.set(cacheKey, {
-        text: full,
-        expiresAt: Date.now() + CACHE_TTL_MS,
-      })
+      if (full) {
+        summaryCache.set(cacheKey, {
+          text: full,
+          expiresAt: Date.now() + CACHE_TTL_MS,
+        })
+      }
+      writeEvent(res, "done", { cached: false })
+      return res.end()
+    } finally {
+      clearTimeout(idleTimer)
+      if (typeof res.removeListener === "function")
+        res.removeListener("close", onClientClose)
+      upstream.abort()
     }
-    writeEvent(res, "done", { cached: false })
-    return res.end()
   } catch (error) {
     if (res.headersSent) {
       writeEvent(res, "error", { message: "Internal error" })
