@@ -4,7 +4,6 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
-const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 const Mailing = require(`${process.cwd()}/lib/mailer/mailing`)
 
 const userUtility = require(
@@ -27,6 +26,7 @@ const { NodemailerError } = require(
   `${process.cwd()}/components/WebServer/error/exception/nodemailer`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 
 const admin_projection = {
   email: 1,
@@ -106,20 +106,14 @@ async function deleteUser(req, res, next) {
       throw new UserUnsupportedMediaType("userIds must be an array")
 
     // Check if deleting these users would remove all human super admins
-    let superAdminsToDelete = 0
-    for (const userId of req.body.userIds) {
-      const users = await model.users.getById(userId, true)
-      if (
-        users.length === 1 &&
-        users[0].type === USER_TYPE.USER &&
-        ROLE.hasPlatformRoleAccess(users[0].role, ROLE.SUPER_ADMINISTRATOR)
-      ) {
-        superAdminsToDelete++
-      }
-    }
+    const superAdminsToDelete = throwIfError(
+      await model.users.countSuperAdmins(req.body.userIds),
+    )
 
     if (superAdminsToDelete > 0) {
-      const totalSuperAdmins = await model.users.countSuperAdmins()
+      const totalSuperAdmins = throwIfError(
+        await model.users.countSuperAdmins(),
+      )
       debug(
         `Total super admins: ${totalSuperAdmins}, Super admins to delete: ${superAdminsToDelete}`,
       )

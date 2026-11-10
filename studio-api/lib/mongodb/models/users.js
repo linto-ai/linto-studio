@@ -356,6 +356,18 @@ class UsersModel extends MongoModel {
     }
   }
 
+  async getByIds(ids) {
+    try {
+      const query = {
+        _id: { $in: this.getObjectIds(ids) },
+      }
+      return await this.mongoRequest(query, public_projection)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getByEmail(email, serverAccess = false) {
     try {
       if (typeof email !== "string") return []
@@ -506,12 +518,14 @@ class UsersModel extends MongoModel {
     }
   }
 
-  async countSuperAdmins() {
+  // Human super administrators, platform wide or among the given ids
+  async countSuperAdmins(ids = undefined) {
     try {
       const query = {
         role: { $bitsAllSet: ROLE.SUPER_ADMINISTRATOR },
         type: USER_TYPE.USER,
       }
+      if (ids) query._id = { $in: this.getObjectIds(ids) }
       const result = await this.mongoRequest(query, { _id: 1 })
       return result.length
     } catch (error) {

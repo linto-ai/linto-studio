@@ -4,6 +4,7 @@ const debug = require("debug")(
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const platformAccess = require(`./platform`)
+const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 
 const CONVERSATION_RIGHTS = require(
   `${process.cwd()}/lib/dao/conversation/rights`,
@@ -13,6 +14,8 @@ const ORGANIZATION_ROLES = require(
 )
 
 const projection = ["owner", "sharedWithUsers", "organization"]
+const batchProjection = { owner: 1, sharedWithUsers: 1, organization: 1 }
+const organizationProjection = { users: 1 }
 
 const {
   ConversationReadAccessDenied,
@@ -87,28 +90,9 @@ module.exports = {
       next,
       req.body.conversations,
       req.payload.data.userId,
-      false,
       CONVERSATION_RIGHTS.SHARE,
       ORGANIZATION_ROLES.MAINTAINER,
       ConversationShareAccessDenied,
-    )
-  },
-  batchAccess: async (
-    req,
-    next,
-    convId,
-    userId,
-    restricted,
-    right,
-    rightException,
-  ) => {
-    return await batchAccess(
-      next,
-      convId,
-      userId,
-      restricted,
-      right,
-      rightException,
     )
   },
   access: async (
@@ -125,17 +109,26 @@ module.exports = {
   asReadBatchAccess: async (req, res, next) => {
     const conversations = req.body.conversations
     if (!conversations) return next(new ConversationIdRequire())
-    for (const convId of conversations.split(",")) {
-      const readable = await hasAccess(
-        convId,
-        req.payload.data.userId,
-        CONVERSATION_RIGHTS.READ,
-      )
-      if (!readable) return next(new ConversationReadAccessDenied())
+    try {
+      const batch = await loadBatch(conversations.split(","))
+      for (const { conv, organization } of batch) {
+        const refusal = accessRefusal(
+          conv,
+          organization,
+          req.payload.data.userId,
+          false,
+          CONVERSATION_RIGHTS.READ,
+          ConversationReadAccessDenied,
+        )
+        if (refusal) return next(new ConversationReadAccessDenied())
+      }
+      return next()
+    } catch (err) {
+      return next(err)
     }
-    return next()
   },
   hasAccess,
+  loadBatch,
 }
 
 // Same decision tree as access(), usable without req/res/next context
@@ -154,11 +147,33 @@ async function hasAccess(convId, userId, right, restricted = false) {
   return granted
 }
 
+async function access(next, convId, userId, restricted, right, rightException) {
+  try {
+    if (!convId) return next(new ConversationIdRequire())
+    const lconv = await model.conversations.getById(convId, projection)
+    if (lconv.length !== 1) return next(new ConversationNotShared())
+    const conv = lconv[0]
+
+    if (grantedByConversation(conv, userId, restricted, right)) return next()
+    const organization = await loadOrganization(conv)
+    const refusal = organizationRefusal(
+      conv,
+      organization,
+      userId,
+      right,
+      rightException,
+    )
+    if (refusal) return next(refusal)
+    return next()
+  } catch (err) {
+    return next(err)
+  }
+}
+
 async function batchAccess(
   next,
   conversations,
   userId,
-  restricted,
   rightConvo,
   rightOrga,
   rightException,
@@ -166,130 +181,167 @@ async function batchAccess(
   if (!conversations || conversations.length === 0) {
     return next(new ConversationIdRequire())
   }
-  for (const convId of conversations.split(",")) {
-    const conv = (await model.conversations.getById(convId, projection))[0]
-    const organization = await model.organizations.getById(
-      conv.organization.organizationId,
-    )
-    const luser = organization[0].users.filter(
-      (user) =>
-        user.userId === userId &&
-        ORGANIZATION_ROLES.hasRoleAccess(user.role, rightOrga),
-    )
-    if (luser.length === 1) {
-      continue
-    } else if (conv.owner === userId) {
-      continue
-    } else if (
-      conv.organization.customRights.length !== 0 ||
-      conv.sharedWithUsers.length !== 0
-    ) {
-      if (conv.sharedWithUsers.length !== 0) {
-        let ushare = conv.sharedWithUsers.filter(
-          (userShare) =>
-            userShare.userId === userId &&
-            CONVERSATION_RIGHTS.hasRightAccess(userShare.right, rightConvo),
-        )
-        if (ushare.length === 1) continue
-      }
-      let customRight = conv.organization.customRights.filter(
-        (orgaCustomRight) => orgaCustomRight.userId === userId,
-      )
-      if (
-        customRight.length === 1 &&
-        CONVERSATION_RIGHTS.hasRightAccess(customRight[0].right, rightConvo)
-      ) {
-        continue
-      } else return next(new rightException())
-    } else {
-      return next(new rightException())
-    }
-  }
-  return next()
-}
-
-async function access(next, convId, userId, restricted, right, rightException) {
-  let nextCalled = false // if next is called, nextCalled is undefined
-
   try {
-    if (!convId) return next(new ConversationIdRequire())
-    else {
-      const lconv = await model.conversations.getById(convId, projection)
-      if (lconv.length !== 1) return next(new ConversationNotShared())
-      else {
-        const conv = lconv[0]
-        if (conv.owner === userId) {
-          return next()
-        }
-        if (conv.organization.organizationId === undefined)
-          return next(new rightException())
-        if (!restricted)
-          nextCalled = await shareAccess(conv, userId, right, next, nextCalled)
-        if (nextCalled !== undefined)
-          nextCalled = await organizationAccess(
-            conv,
-            userId,
-            right,
-            next,
-            rightException,
-          )
-      }
+    const batch = await loadBatch(conversations.split(","))
+    for (const { conv, organization } of batch) {
+      const refusal = shareBatchRefusal(
+        conv,
+        organization,
+        userId,
+        rightConvo,
+        rightOrga,
+        rightException,
+      )
+      if (refusal) return next(refusal)
     }
-
-    if (nextCalled === undefined) return
-    else return next(new rightException())
+    return next()
   } catch (err) {
     return next(err)
   }
 }
 
-async function shareAccess(conv, userId, right, next) {
-  if (conv.sharedWithUsers.length !== 0) {
-    let ushare = conv.sharedWithUsers.filter(
-      (userShare) =>
-        userShare.userId === userId &&
-        CONVERSATION_RIGHTS.hasRightAccess(userShare.right, right),
-    )
-    if (ushare.length === 1) return next()
-  }
-  return false
+async function loadOrganization(conv) {
+  const organizationId = conv.organization.organizationId
+  if (organizationId === undefined) return undefined
+  const lorga = await model.organizations.getById(organizationId)
+  return lorga[0]
 }
 
-async function organizationAccess(conv, userId, right, next, rightException) {
-  const lorga = await model.organizations.getById(
-    conv.organization.organizationId,
+// Conversations then their organizations, one query per collection, in the
+// order of the ids; an unknown id gives an undefined conv
+async function loadBatch(convIds, convProjection = batchProjection) {
+  const conversations = throwIfError(
+    await model.conversations.getConvsListByIds(convIds, convProjection),
   )
-  if (lorga.length !== 1) return next(new rightException())
-
-  const luser = lorga[0].users.filter((user) => user.userId === userId)
-  if (luser.length !== 1) next(new ConversationNotShared())
-  else {
-    const user = luser[0] // user right in organization
-    if (
-      ORGANIZATION_ROLES.hasRoleAccess(user.role, ORGANIZATION_ROLES.MAINTAINER)
-    ) {
-      // MAINTAINER or above
-      return next()
-    } else if (conv.organization.customRights.length !== 0) {
-      // Custom rights for specific member
-      let customRight = conv.organization.customRights.filter(
-        (orgaCustomRight) => orgaCustomRight.userId === userId,
-      )
-
-      if (customRight.length === 1) {
-        if (CONVERSATION_RIGHTS.hasRightAccess(customRight[0].right, right))
-          return next()
-        else return next(new rightException())
-      }
-    }
-
-    // Member got right to share
-    if (
-      CONVERSATION_RIGHTS.hasRightAccess(conv.organization.membersRight, right)
+  const organizationIds = new Set(
+    conversations.map((conv) => conv.organization.organizationId),
+  )
+  let organizations = []
+  if (organizationIds.size > 0) {
+    organizations = throwIfError(
+      await model.organizations.getByIds(
+        [...organizationIds],
+        organizationProjection,
+      ),
     )
-      return next()
-    else return next(new ConversationNotShared())
   }
 
-  return false
+  const conversationById = new Map(
+    conversations.map((conv) => [conv._id.toString(), conv]),
+  )
+  const organizationById = new Map(
+    organizations.map((orga) => [orga._id.toString(), orga]),
+  )
+  return convIds.map((convId) => {
+    const conv = conversationById.get(convId)
+    let organization
+    if (conv)
+      organization = organizationById.get(conv.organization.organizationId)
+    return { convId, conv, organization }
+  })
+}
+
+// The single entry matching, undefined when there is none or several
+function onlyMatch(list, predicate) {
+  const matches = list.filter(predicate)
+  if (matches.length === 1) return matches[0]
+  return undefined
+}
+
+function isSharedWith(conv, userId, right) {
+  const share = onlyMatch(
+    conv.sharedWithUsers,
+    (share) =>
+      share.userId === userId &&
+      CONVERSATION_RIGHTS.hasRightAccess(share.right, right),
+  )
+  return share !== undefined
+}
+
+// Owner and direct shares grant without looking at the organization
+function grantedByConversation(conv, userId, restricted, right) {
+  if (conv.owner === userId) return true
+  if (conv.organization.organizationId === undefined) return false
+  return !restricted && isSharedWith(conv, userId, right)
+}
+
+// Refusal for a loaded conversation and its organization, null when granted
+function accessRefusal(
+  conv,
+  organization,
+  userId,
+  restricted,
+  right,
+  rightException,
+) {
+  if (!conv) return new ConversationNotShared()
+  if (grantedByConversation(conv, userId, restricted, right)) return null
+  return organizationRefusal(conv, organization, userId, right, rightException)
+}
+
+function organizationRefusal(
+  conv,
+  organization,
+  userId,
+  right,
+  rightException,
+) {
+  if (!organization) return new rightException()
+
+  const member = onlyMatch(organization.users, (user) => user.userId === userId)
+  if (!member) return new ConversationNotShared()
+  if (
+    ORGANIZATION_ROLES.hasRoleAccess(member.role, ORGANIZATION_ROLES.MAINTAINER)
+  ) {
+    return null
+  }
+
+  const customRight = onlyMatch(
+    conv.organization.customRights,
+    (customRight) => customRight.userId === userId,
+  )
+  if (customRight) {
+    if (CONVERSATION_RIGHTS.hasRightAccess(customRight.right, right))
+      return null
+    return new rightException()
+  }
+
+  if (CONVERSATION_RIGHTS.hasRightAccess(conv.organization.membersRight, right))
+    return null
+  return new ConversationNotShared()
+}
+
+// Share batch tree: organization role first, then owner, share and custom right
+function shareBatchRefusal(
+  conv,
+  organization,
+  userId,
+  rightConvo,
+  rightOrga,
+  rightException,
+) {
+  if (!conv) return new ConversationNotShared()
+  if (!organization) return new rightException()
+
+  const member = onlyMatch(
+    organization.users,
+    (user) =>
+      user.userId === userId &&
+      ORGANIZATION_ROLES.hasRoleAccess(user.role, rightOrga),
+  )
+  if (member) return null
+  if (conv.owner === userId) return null
+  if (isSharedWith(conv, userId, rightConvo)) return null
+
+  const customRight = onlyMatch(
+    conv.organization.customRights,
+    (customRight) => customRight.userId === userId,
+  )
+  if (
+    customRight &&
+    CONVERSATION_RIGHTS.hasRightAccess(customRight.right, rightConvo)
+  ) {
+    return null
+  }
+  return new rightException()
 }

@@ -159,13 +159,9 @@ class ConvoModel extends MongoModel {
 
   async getConvsListByIds(convIds, filter) {
     try {
-      convIds = convIds.map((id) => {
-        if (typeof id === "string") return this.getObjectId(id)
-        else return id
-      })
       const query = {
         _id: {
-          $in: convIds,
+          $in: this.getObjectIds(convIds),
         },
       }
       return await this.mongoRequest(query, filter)
