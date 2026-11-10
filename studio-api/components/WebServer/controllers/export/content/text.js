@@ -20,12 +20,10 @@ const { escapeRegex } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 const { computeSpeakerDisplayName } = require(
   `${process.cwd()}/lib/utility/computeSpeakerDisplayName`,
 )
-const { format, parseISO, addSeconds } = require("date-fns")
-
-const { en } = require("date-fns/locale")
-const { DateTime } = require("luxon")
-
-const systemTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+const moment = require("moment")
+const { timezoneOffsetMinutes } = require(
+  `${process.cwd()}/lib/utility/timezoneOffset`,
+)
 
 function processTurn(paragraphs_content, data, options = {}) {
   const conversation = data.text
@@ -94,28 +92,21 @@ function processTurn(paragraphs_content, data, options = {}) {
 }
 
 function processTurnTable(paragraphs_content, conversation, data, query) {
-  let TZ,
-    offsetMinutes,
-    startTime = -1
-  if (conversation?.metadata?.channel?.channel_start_time) {
-    startTime = conversation.metadata.channel.channel_start_time
-    TZ = query.timezone || systemTimezone
-    const dt = DateTime.now().setZone(TZ)
-    if (!dt.isValid) TZ = systemTimezone
-
-    offsetMinutes = DateTime.now().setZone(TZ).offset
+  const startTime = conversation?.metadata?.channel?.channel_start_time
+  let startMoment
+  if (startTime) {
+    startMoment = moment(startTime, moment.ISO_8601).add(
+      timezoneOffsetMinutes(query.timezone),
+      "minutes",
+    )
   }
 
   let lang = conversation.locale
   const lines = []
   for (const text of conversation.text) {
     let datetime
-    if (startTime !== -1) {
-      const startDatetime = addSeconds(
-        parseISO(startTime),
-        text.stime + offsetMinutes * 60,
-      )
-      datetime = format(startDatetime, "HH:mm", { locale: en })
+    if (startMoment) {
+      datetime = startMoment.clone().add(text.stime, "seconds").format("HH:mm")
     } else {
       if (text.stime === undefined || text.etime === undefined) {
         datetime =
