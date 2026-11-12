@@ -175,6 +175,23 @@ export default {
   created() {
     this.$store.dispatch("mobileRecordings/load")
   },
+  // Leaving would cut the microphone without stopping: the recording would
+  // be sent at the next launch with its default settings. Leaving while
+  // recording stops it instead and opens the usual stop sheet; while the
+  // microphone starts, the page waits for it.
+  beforeRouteLeave(to, from, next) {
+    switch (true) {
+      case this.isRecording:
+        next(false)
+        this.stopRecording()
+        break
+      case this.recorder.state === "starting":
+        next(false)
+        break
+      default:
+        next()
+    }
+  },
   methods: {
     onMainButton() {
       if (this.isRecording) {
