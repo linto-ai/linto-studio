@@ -6,11 +6,14 @@ import { computeCheckoutReturnUrl } from "@/tools/billing/computeCheckoutReturnU
 import { isLiveCreditBelowAdmission } from "@/tools/billing/isLiveCreditBelowAdmission"
 import { computePackGroups } from "@/tools/billing/pack/computePackGroups"
 import { getEnv } from "@/tools/getEnv"
+import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 import { leavePageFor } from "@/tools/leavePageFor"
 
 // The organization's prepaid live minutes on the live pages (preparation,
 // running live): the balance and the live packs an admin may buy (Stripe
-// Checkout, back on the same page: see consumeCreditsCheckoutReturn).
+// Checkout, back on the same page: see consumeCreditsCheckoutReturn). Not
+// in the native app: store rules on payments, and Checkout could not come
+// back to the app; admins are sent to the desktop app instead.
 // Expects liveOrganizationId from the host, which loads what it shows.
 export const liveCreditMixin = {
   data() {
@@ -46,7 +49,15 @@ export const liveCreditMixin = {
       return groups.find((group) => group.kind === "live")?.packs ?? []
     },
     canBuyLivePack() {
-      return this.isOrganizationAdmin && this.livePacks.length > 0
+      return (
+        !IS_NATIVE_APP && this.isOrganizationAdmin && this.livePacks.length > 0
+      )
+    },
+    // Who to turn to when the minutes cannot be bought here
+    liveRechargeHint() {
+      return IS_NATIVE_APP && this.isOrganizationAdmin
+        ? this.$t("mobile.live.recharge_on_desktop")
+        : this.$t("mobile.live.ask_admin")
     },
   },
   methods: {
@@ -60,7 +71,7 @@ export const liveCreditMixin = {
       ])
     },
     loadLivePacks() {
-      if (getEnv("VUE_APP_MODE") !== "cloud") return null
+      if (IS_NATIVE_APP || getEnv("VUE_APP_MODE") !== "cloud") return null
       return this.$store.dispatch("billing/loadPackCatalog")
     },
     async buyLivePack(packKey) {

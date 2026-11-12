@@ -245,6 +245,7 @@
     "buy_pack_selected": "Buy {duration} · {price}",
     "buy_failed": "Could not open the payment page. Try again.",
     "ask_admin": "Ask an administrator of the organization to top up the live credit.",
+    "recharge_on_desktop": "Top up the live credit from LinTO Studio on a computer.",
     "recharge": "Top up",
     "recharge_title": "Top up live credit",
     "no_pack_available": "No live pack is available for this organization."

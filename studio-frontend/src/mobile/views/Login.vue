@@ -45,7 +45,7 @@
         }}</a>
       </form>
 
-      <div v-if="methods.oidc.length > 0" class="m-login__sso">
+      <div v-if="showSso" class="m-login__sso">
         <p class="m-muted">{{ $t("login.or_continue_with") }}</p>
         <SsoProviderLink
           v-for="provider in methods.oidc"
@@ -109,6 +109,11 @@ export default {
     }
   },
   computed: {
+    // Not in the native app yet: the SSO flow ends on the instance's
+    // website, in the browser, and nothing brings the session back.
+    showSso() {
+      return !IS_NATIVE_APP && this.methods.oidc.length > 0
+    },
     instanceAddress() {
       return formatInstanceAddress(this.instance.address)
     },

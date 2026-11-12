@@ -12,14 +12,16 @@ const PROBE_TIMEOUT_MS = 8000
  * public and answers a JSON array, where a front or another site answers
  * HTML. A CORS refusal looks like an unreachable instance.
  * @param {string} input - the address the user typed
+ * @param {AbortSignal} signal - aborts the check (the user canceled)
  * @returns {Promise<{ ok: true, instance: { address: string, base: string } }
  *   | { ok: false, reason: "invalid" | "unreachable" }>}
  */
-export async function findInstance(input) {
+export async function findInstance(input, signal) {
   const address = normalizeInstanceAddress(input)
   if (!address) return { ok: false, reason: "invalid" }
   for (const base of listInstanceBaseCandidates(address)) {
-    if (await answersLoginMethods(base)) {
+    if (signal.aborted) break
+    if (await answersLoginMethods(base, signal)) {
       return { ok: true, instance: { address, base } }
     }
   }
@@ -48,11 +50,11 @@ async function loadRecordings() {
   }
 }
 
-async function answersLoginMethods(base) {
+async function answersLoginMethods(base, signal) {
   try {
     const response = await fetch(`${base}/auth/list`, {
       credentials: "omit",
-      signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+      signal: AbortSignal.any([signal, AbortSignal.timeout(PROBE_TIMEOUT_MS)]),
     })
     if (!response.ok) return false
     return Array.isArray(await response.json())

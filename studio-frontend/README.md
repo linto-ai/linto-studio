@@ -259,7 +259,9 @@ Scripts:
 - The API must accept the app's origin: `CORS_ENABLED=true` and
   `https://localhost` in `CORS_API_WHITELIST` (studio-api), websocket included.
 - Debug build signed with the debug key: not for distribution.
-- Password login only: an OIDC/SSO login does not come back to the app yet.
+- Password login only: the SSO buttons are hidden (`Login.vue`, `showSso`),
+  an OIDC flow would end on the instance's website and not come back to the
+  app.
 - Default Capacitor icon and splash screen.
 - Only the API addresses follow the chosen instance: its mode and flags are
   those of the build. "Forgot password" and "Create account" open the

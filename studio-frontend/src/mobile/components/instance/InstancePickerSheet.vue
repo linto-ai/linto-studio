@@ -158,7 +158,10 @@ export default {
     },
   },
   watch: {
+    // Closing the sheet cancels a check in progress: the instance the user
+    // turned away from must not be switched to once the check answers.
     value(open) {
+      this.cancelSubmission()
       if (open) this.reset()
     },
     async choice(value) {
@@ -169,7 +172,12 @@ export default {
     },
   },
   created() {
+    // The submission in progress; not reactive, nothing renders it
+    this.submission = null
     this.reset()
+  },
+  beforeDestroy() {
+    this.cancelSubmission()
   },
   methods: {
     reset() {
@@ -181,10 +189,16 @@ export default {
       this.error = ""
       this.confirming = false
     },
+    // Each await may outlive the sheet (closed, reopened, submitted again):
+    // past one, an aborted submission stops without touching anything.
     async submit() {
+      this.cancelSubmission()
+      const submission = new AbortController()
+      this.submission = submission
       this.error = ""
       this.pending = true
-      const result = await this.resolveChoice()
+      const result = await this.resolveChoice(submission.signal)
+      if (submission.signal.aborted) return
       if (!result.ok) {
         this.pending = false
         this.error = ERROR_MESSAGES[result.reason]
@@ -195,8 +209,10 @@ export default {
         this.$emit("input", false)
         return
       }
+      const unsentCount = await countUnsentRecordings()
+      if (submission.signal.aborted) return
       this.pickedInstance = result.instance
-      this.unsentCount = await countUnsentRecordings()
+      this.unsentCount = unsentCount
       if (this.unsentCount > 0) {
         this.pending = false
         this.askConfirmation()
@@ -204,8 +220,13 @@ export default {
       }
       await switchInstance(this.pickedInstance)
     },
-    resolveChoice() {
-      if (this.choice === OTHER) return findInstance(this.typedAddress)
+    cancelSubmission() {
+      this.submission?.abort()
+      this.submission = null
+      this.pending = false
+    },
+    resolveChoice(signal) {
+      if (this.choice === OTHER) return findInstance(this.typedAddress, signal)
       const option = this.options.find((item) => item.value === this.choice)
       return { ok: true, instance: option.instance }
     },

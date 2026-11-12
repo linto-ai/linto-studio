@@ -83,6 +83,7 @@ import EndLiveSheet from "@/mobile/components/live/EndLiveSheet.vue"
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
 import LivePackPurchaseForm from "@/mobile/components/live/LivePackPurchaseForm.vue"
 import { liveSessionMixin } from "@/mobile/mixins/liveSession.js"
+import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 
 // The live session inside the app: the same live editor component as the
 // classic quick meeting (captions, translations, wake lock), the shared
@@ -115,17 +116,23 @@ export default {
     },
     // The catalog is loaded when asked for, and the live only paused
     // (quickSessionPauseMixin) when there is a pack to show: an admin of an
-    // organization without live packs is told so, the live goes on.
+    // organization without live packs is told so, the live goes on. The
+    // native app sells nothing: it says who can top up.
     async offerLivePackPurchase() {
       await this.loadLivePacks()
-      if (!this.canBuyLivePack) {
-        this.$store.dispatch(
-          "system/showError",
-          this.$t("mobile.live.no_pack_available"),
-        )
-        return
+      switch (true) {
+        case IS_NATIVE_APP:
+          this.$store.dispatch("system/showInfo", this.liveRechargeHint)
+          break
+        case !this.canBuyLivePack:
+          this.$store.dispatch(
+            "system/showError",
+            this.$t("mobile.live.no_pack_available"),
+          )
+          break
+        default:
+          this.openLivePackPurchase()
       }
-      this.openLivePackPurchase()
     },
     // Closed on the way to the payment page: the purchase decides (see
     // buyLivePackDuringLive)

@@ -28,7 +28,7 @@
           icon="info"
           align="start"
           role="status"
-          >{{ $t("mobile.live.ask_admin") }}</NotificationBanner
+          >{{ liveRechargeHint }}</NotificationBanner
         >
       </LiveCreditExhausted>
 
