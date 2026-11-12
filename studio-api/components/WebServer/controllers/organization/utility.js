@@ -70,10 +70,16 @@ async function deleteCategoriesFromScope(scopeId) {
   )
 }
 
-// Audio file, record, subtitles, then scoped categories and tags
+const CHILD_PROJECTION = ["type", "metadata.audio.filepath"]
+
+// Children first, then the record: the orphan check counts conversations
+// still referencing the audio, and children are never listed by organization
 async function deleteConversationCascade(conversation) {
-  if (conversation.metadata?.audio?.filepath) {
-    await deleteAudioFileIfOrphaned(conversation.metadata.audio.filepath)
+  for (const childId of conversation.type?.child_conversations ?? []) {
+    const child = throwIfError(
+      await model.conversations.getById(childId, CHILD_PROJECTION),
+    )
+    if (child.length === 1) await deleteConversationCascade(child[0])
   }
 
   const resultConvo = throwIfError(
@@ -81,6 +87,10 @@ async function deleteConversationCascade(conversation) {
   )
   if (resultConvo.deletedCount !== 1)
     throw new ConversationError("Error when deleting conversation")
+
+  if (conversation.metadata?.audio?.filepath) {
+    await deleteAudioFileIfOrphaned(conversation.metadata.audio.filepath)
+  }
 
   throwIfError(
     await model.conversationSubtitles.deleteAllFromConv(

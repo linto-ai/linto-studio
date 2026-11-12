@@ -8,7 +8,11 @@ const mockSaas = {
 jest.mock(`${process.cwd()}/lib/saas`, () => mockSaas)
 
 const mockModel = {
-  conversations: { getByOrga: jest.fn(), delete: jest.fn() },
+  conversations: {
+    getByOrga: jest.fn(),
+    getById: jest.fn(),
+    delete: jest.fn(),
+  },
   conversationSubtitles: {
     deleteAllFromConv: jest.fn(),
     deleteAllFromOrga: jest.fn(),
@@ -68,6 +72,7 @@ describe("deleteOrganizationCascade", () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockModel.conversations.getByOrga.mockResolvedValue([])
+    mockModel.conversations.getById.mockResolvedValue([])
     mockModel.conversations.delete.mockResolvedValue({ deletedCount: 1 })
     mockModel.conversationSubtitles.deleteAllFromConv.mockResolvedValue({
       deletedCount: 0,
@@ -147,14 +152,65 @@ describe("deleteOrganizationCascade", () => {
     expect(mockModel.organizations.delete).toHaveBeenCalledWith(ORG_ID)
 
     const convOrder = lastCallOrder(mockModel.conversations.delete)
+    const audioOrder = lastCallOrder(mockDeleteAudioFileIfOrphaned)
     const taxonomyOrder = lastCallOrder(mockModel.categories.delete)
     const speakerIdOrder = lastCallOrder(
       mockModel.voiceSamples.deleteAllFromOrganization,
     )
     const orgaOrder = lastCallOrder(mockModel.organizations.delete)
+    expect(convOrder).toBeLessThan(audioOrder)
     expect(convOrder).toBeLessThan(taxonomyOrder)
     expect(taxonomyOrder).toBeLessThan(speakerIdOrder)
     expect(speakerIdOrder).toBeLessThan(orgaOrder)
+  })
+
+  test("deletes child conversations and their audio before the parent record", async () => {
+    const parent = {
+      _id: "parent",
+      type: { child_conversations: ["c1", "c2"] },
+      metadata: {},
+    }
+    const children = {
+      c1: {
+        _id: "c1",
+        type: { child_conversations: ["c3"] },
+        metadata: { audio: { filepath: "audios/c1.mp3" } },
+      },
+      c2: {
+        _id: "c2",
+        type: { child_conversations: [] },
+        metadata: { audio: { filepath: "audios/c2.mp3" } },
+      },
+      c3: { _id: "c3", type: { child_conversations: [] }, metadata: {} },
+    }
+    mockModel.conversations.getByOrga.mockResolvedValue([parent])
+    mockModel.conversations.getById.mockImplementation(async (id) =>
+      children[id] ? [children[id]] : [],
+    )
+
+    await deleteOrganizationCascade(ORG_ID)
+
+    const deleted = mockModel.conversations.delete.mock.calls.map(([id]) => id)
+    expect(deleted).toEqual(["c3", "c1", "c2", "parent"])
+    expect(mockDeleteAudioFileIfOrphaned.mock.calls.map(([fp]) => fp)).toEqual([
+      "audios/c1.mp3",
+      "audios/c2.mp3",
+    ])
+    expect(mockModel.conversations.getById).toHaveBeenCalledWith("c1", [
+      "type",
+      "metadata.audio.filepath",
+    ])
+  })
+
+  test("skips a child id that no longer resolves", async () => {
+    mockModel.conversations.getByOrga.mockResolvedValue([
+      { _id: "parent", type: { child_conversations: ["gone"] }, metadata: {} },
+    ])
+
+    await deleteOrganizationCascade(ORG_ID)
+
+    expect(mockModel.conversations.delete).toHaveBeenCalledTimes(1)
+    expect(mockModel.conversations.delete).toHaveBeenCalledWith("parent")
   })
 
   test("does not delete the organization when a conversation deletion fails", async () => {
