@@ -38,6 +38,10 @@ const getters = {
   pending: (state) =>
     state.items.filter((item) => PENDING_STATUSES.includes(item.status)),
   pendingCount: (state, getters) => getters.pending.length,
+  // Everything not on the server yet, the one being recorded included.
+  unsentCount: (state) =>
+    state.items.filter((item) => item.status !== RECORDING_STATUS.UPLOADED)
+      .length,
   localBytes: (state, getters) => sumRecordingBytes(getters.library),
   byId: (state) => (id) => state.items.find((item) => item.id === id),
 }
@@ -94,6 +98,10 @@ const actions = {
     if (state.uploadingId === id) uploadAbortController?.abort()
     await queue.deleteRecording(id)
     commit("remove", id)
+  },
+  async removeAll({ state, dispatch }) {
+    const ids = state.items.map((item) => item.id)
+    await Promise.all(ids.map((id) => dispatch("remove", id)))
   },
   // The entry disappears with its audio: the media itself lives on the
   // server, in the media list.

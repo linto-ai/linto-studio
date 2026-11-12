@@ -1,14 +1,20 @@
 import store from "@/mobile/store.js"
 import i18n from "@/i18n"
+import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 
 const SERVICE_WORKER_URL = "/sw-mobile.js"
 const SERVICE_WORKER_SCOPE = "/m/"
 
-// Production only: the dev server has no service worker, and a stale one
-// would hide hot reloads. The worker activates immediately (skipWaiting);
-// assets are hashed, so the running page keeps working until it reloads.
+// Production web build only: the dev server has no service worker, a stale
+// one would hide hot reloads, and the native app ships its files already.
+// The worker activates immediately (skipWaiting); assets are hashed, so the
+// running page keeps working until it reloads.
 export async function registerServiceWorker() {
-  if (!import.meta.env.PROD || !("serviceWorker" in navigator)) {
+  if (
+    IS_NATIVE_APP ||
+    !import.meta.env.PROD ||
+    !("serviceWorker" in navigator)
+  ) {
     return
   }
   try {

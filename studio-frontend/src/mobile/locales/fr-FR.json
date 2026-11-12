@@ -40,6 +40,23 @@
     "create_account": "Créer un compte",
     "error": "E-mail ou mot de passe incorrect"
   },
+  "instance": {
+    "change": "Changer d'instance",
+    "title": "Instance LinTO Studio",
+    "intro": "Réservé aux usages avancés. Sauf indication contraire, restez sur l'instance de production.",
+    "production": "Production",
+    "default": "Par défaut",
+    "recent": "Utilisée récemment",
+    "other": "Autre instance…",
+    "other_hint": "Saisir une adresse",
+    "address": "Adresse de l'instance",
+    "address_placeholder": "https://studio.mon-organisation.fr",
+    "use": "Utiliser cette instance",
+    "invalid_address": "Cette adresse n'est pas valide.",
+    "unreachable": "Instance injoignable ou n'autorisant pas l'app.",
+    "unsent_warning": "{count} enregistrement non envoyé sera supprimé de ce téléphone. | {count} enregistrements non envoyés seront supprimés de ce téléphone.",
+    "delete_and_switch": "Supprimer et changer"
+  },
   "not_found": {
     "title": "Cette page n'existe pas",
     "back_home": "Retour à l'accueil"

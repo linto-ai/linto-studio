@@ -22,6 +22,9 @@
     "serve-local": "vite --mode local",
     "serve-dev": "vite --mode development",
     "build": "vite build --mode production && vite build --mode production --config vite.mobile.config.js",
+    "build:app": "vite build --mode app --config vite.app.config.js",
+    "app:sync": "npm run build:app && cap sync android",
+    "app:apk": "npm run app:sync && cd android && ./gradlew assembleDebug && cp app/build/outputs/apk/debug/app-debug.apk linto-studio-debug.apk",
     "preview": "vite preview --port 80",
     "lint": "eslint --fix src",
     "test:lint": "eslint src",
@@ -36,6 +39,7 @@
     ],
     "files": [
       "src/**/test/**/*",
+      "config/**/test/**/*",
       "!node_modules",
       "!src/**/test/helpers/*"
     ],
@@ -44,6 +48,9 @@
     }
   },
   "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.6.0",
     "@iconify/vue2": "^2.1.0",
     "@joeattardi/emoji-button": "^4.6.4",
     "@linto-ai/transcript-ui-webcomponent": "file:../studio-sdk/components/transcript-ui/packages/webcomponent",
@@ -70,6 +77,7 @@
     "wavesurfer.js": "^7.4.2"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.6.0",
     "@eslint/js": "^10.0.1",
     "@vitejs/plugin-vue2": "^2.3.4",
     "ava": "^7.0.0",

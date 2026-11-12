@@ -1,5 +1,9 @@
 // Entry point of the mobile app served under /m/. It shares the API layer,
 // the store modules and the i18n messages with the classic app, nothing else.
+
+// First: points the native app at its saved instance before the API modules
+// read their URLs (side effect, see the module).
+import "@/mobile/services/native/applySavedInstance.js"
 import Vue from "vue"
 import Debug from "debug"
 
@@ -16,6 +20,7 @@ import { watchOnlineStatus } from "@/mobile/services/network/onlineStatus.js"
 import { startUploadResumption } from "@/mobile/services/recording/resumeUploads.js"
 import { clearMobileAppOptOut } from "@/mobile/services/preferences/clearMobileAppOptOut.js"
 import { clearSsoReturn } from "@/mobile/services/session/markSsoReturn.js"
+import { listenForBackButton } from "@/mobile/services/native/listenForBackButton.js"
 
 import "@/mobile/style/tokens.css"
 import "@/mobile/style/base.css"
@@ -39,6 +44,7 @@ clearSsoReturn()
 listenForInstallPrompt()
 registerServiceWorker()
 watchOnlineStatus()
+listenForBackButton(router)
 // Uploads need the organization scope: wait for the first guarded navigation.
 router.onReady(() => startUploadResumption())
 

@@ -38,7 +38,7 @@ let init = function (webserver) {
       if (isNaN(status)) return res.status(500).json(body)
       return res.status(status).json(body)
     } else if (err) {
-      debug("Error handler caught an error:", err)
+      debug(`Error handler caught an error (ip: ${req.ip}):`, err)
       debug(err)
       return res.status(500).send({ message: err.message })
     }

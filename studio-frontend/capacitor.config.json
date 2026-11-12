@@ -1,0 +1,12 @@
+{
+  "appId": "ai.linto.studio",
+  "appName": "LinTO Studio",
+  "webDir": "dist-app",
+  "android": {
+    "allowMixedContent": true
+  },
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  }
+}

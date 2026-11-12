@@ -4,6 +4,8 @@
 !studio-sdk/components/transcript-ui/
 studio-frontend/node_modules/
 studio-frontend/dist/
+studio-frontend/dist-app/
+studio-frontend/android/
 studio-frontend/.env
 studio-frontend/.env.*
 studio-frontend/.git/

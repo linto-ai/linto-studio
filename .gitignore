@@ -20,6 +20,8 @@ storages
 # Frontend
 coverage
 .nyc_output
+# Front embedded in the native app (npm run build:app)
+**/dist-app
 
 # Application
 *.class

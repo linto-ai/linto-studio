@@ -40,6 +40,23 @@
     "create_account": "Create an account",
     "error": "Wrong email or password"
   },
+  "instance": {
+    "change": "Change instance",
+    "title": "LinTO Studio instance",
+    "intro": "For advanced use. Unless told otherwise, stay on the production instance.",
+    "production": "Production",
+    "default": "Default",
+    "recent": "Recently used",
+    "other": "Other instance…",
+    "other_hint": "Enter an address",
+    "address": "Instance address",
+    "address_placeholder": "https://studio.my-organization.com",
+    "use": "Use this instance",
+    "invalid_address": "This address is not valid.",
+    "unreachable": "Instance unreachable or not allowing the app.",
+    "unsent_warning": "{count} unsent recording will be deleted from this phone. | {count} unsent recordings will be deleted from this phone.",
+    "delete_and_switch": "Delete and change"
+  },
   "not_found": {
     "title": "This page does not exist",
     "back_home": "Back to home"

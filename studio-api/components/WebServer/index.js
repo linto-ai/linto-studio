@@ -39,7 +39,7 @@ if (process.env.CORS_ENABLED === "true") {
         if (allowed) {
           callback(null, true)
         } else {
-          callback(new Error("Not allowed by CORS"))
+          callback(new Error(`Not allowed by CORS: origin ${origin}`))
         }
       },
     }

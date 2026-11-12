@@ -1,5 +1,6 @@
 import Vue from "vue"
 import { detectInstallPlatform } from "@/mobile/tools/detectInstallPlatform.js"
+import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 
 const DISMISS_STORAGE_KEY = "mobile.install.dismissedUntil"
 const DISMISS_DAYS = 7
@@ -60,8 +61,11 @@ function updateStandalone() {
   installPrompt.standalone = isStandaloneDisplay()
 }
 
+// The native app is installed by definition: no install offer there.
 function isStandaloneDisplay() {
-  return standaloneQuery.matches || navigator.standalone === true
+  return (
+    IS_NATIVE_APP || standaloneQuery.matches || navigator.standalone === true
+  )
 }
 
 function readDismissedUntil() {

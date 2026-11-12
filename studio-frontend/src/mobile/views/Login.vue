@@ -40,7 +40,7 @@
           block
           :label="$t('mobile.login.submit')"
           :loading="pending" />
-        <a href="/reset-password" class="m-login__link">{{
+        <a :href="resetPasswordUrl" class="m-login__link">{{
           $t("login.recover_password")
         }}</a>
       </form>
@@ -53,12 +53,17 @@
           :name="provider.name"
           :path="provider.path" />
       </div>
-      <a href="/create-account" class="m-login__link">{{
+      <a :href="createAccountUrl" class="m-login__link">{{
         $t("mobile.login.create_account")
       }}</a>
     </main>
+    <InstanceFooter
+      v-if="instance"
+      :address="instanceAddress"
+      @change="instancePickerOpen = true" />
     <InstallGuideIos v-model="iosGuideOpen" />
     <InstallGuideAndroid v-model="androidGuideOpen" />
+    <InstancePickerSheet v-if="instance" v-model="instancePickerOpen" />
   </div>
 </template>
 
@@ -68,6 +73,11 @@ import InstallBanner from "@/mobile/components/InstallBanner.vue"
 import InstallGuideIos from "@/mobile/components/InstallGuideIos.vue"
 import InstallGuideAndroid from "@/mobile/components/InstallGuideAndroid.vue"
 import SsoProviderLink from "@/mobile/components/SsoProviderLink.vue"
+import InstanceFooter from "@/mobile/components/instance/InstanceFooter.vue"
+import InstancePickerSheet from "@/mobile/components/instance/InstancePickerSheet.vue"
+import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
+import { loadSavedInstance } from "@/mobile/services/native/instanceStorage.js"
+import { formatInstanceAddress } from "@/mobile/tools/formatInstanceAddress.js"
 import { loadLoginMethods } from "@/mobile/services/session/loadLoginMethods.js"
 import { loginWithPassword } from "@/mobile/services/session/loginWithPassword.js"
 import { installMixin } from "@/mobile/mixins/install.js"
@@ -82,6 +92,8 @@ export default {
     InstallGuideIos,
     InstallGuideAndroid,
     SsoProviderLink,
+    InstanceFooter,
+    InstancePickerSheet,
   },
   mixins: [installMixin],
   data() {
@@ -91,12 +103,31 @@ export default {
       pending: false,
       failed: false,
       methods: { local: true, oidc: [] },
+      // Native app only: the instance it talks to, which the user can change
+      instance: IS_NATIVE_APP ? loadSavedInstance() : null,
+      instancePickerOpen: false,
     }
+  },
+  computed: {
+    instanceAddress() {
+      return formatInstanceAddress(this.instance.address)
+    },
+    // The native app does not embed these pages: they open on the
+    // instance's website, in the browser.
+    resetPasswordUrl() {
+      return this.instancePageUrl("/reset-password")
+    },
+    createAccountUrl() {
+      return this.instancePageUrl("/create-account")
+    },
   },
   async created() {
     this.methods = await loadLoginMethods()
   },
   methods: {
+    instancePageUrl(path) {
+      return this.instance ? `${this.instance.address}${path}` : path
+    },
     async submit() {
       this.pending = true
       this.failed = false

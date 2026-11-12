@@ -45,7 +45,10 @@
         icon="device-mobile"
         :label="$t('mobile.account.install')"
         @click="$emit('install')" />
+      <!-- The native app embeds only the mobile front: no classic app to
+           switch to. -->
       <ListRow
+        v-if="!isNativeApp"
         icon="desktop"
         :label="$t('mobile.account.full_version')"
         @click="optOut" />
@@ -68,6 +71,7 @@ import ListRow from "@/mobile/components/ListRow.vue"
 import { setLanguage } from "@/mobile/services/preferences/setLanguage.js"
 import { optOutOfMobileApp } from "@/mobile/services/preferences/optOutOfMobileApp.js"
 import { logout } from "@/tools/auth/logout"
+import { IS_NATIVE_APP, MOBILE_BASE } from "@/mobile/const/appTarget.js"
 
 export default {
   name: "AccountSheet",
@@ -81,6 +85,9 @@ export default {
     roleLabel: { type: String, default: "" },
     canInstall: { type: Boolean, default: false },
   },
+  data() {
+    return { isNativeApp: IS_NATIVE_APP }
+  },
   computed: {
     version() {
       return __APP_VERSION__
@@ -91,7 +98,7 @@ export default {
     optOut: optOutOfMobileApp,
     logout() {
       logout({ redirect: false })
-      window.location.href = "/m/login"
+      window.location.href = `${MOBILE_BASE}login`
     },
   },
 }
