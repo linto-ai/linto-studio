@@ -1,4 +1,3 @@
-const Mail = require("nodemailer/lib/mailer")
 const randomstring = require("randomstring")
 const ms = require("ms")
 

@@ -26,90 +26,91 @@ const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 
 const saas = require(`${process.cwd()}/lib/saas`)
 
-async function getUsersListByConversation(userId, conversation, organiaztion) {
+// Users listed for one conversation
+async function getUsersListByConversation(userId, conversation, organization) {
+  const result = await getUsersListByConversations(userId, [
+    { conversation, organization },
+  ])
+  if (result instanceof Error) return result
+  return result[0]
+}
+
+// Users listed for several conversations, one users query for all of them
+async function getUsersListByConversations(userId, items) {
   try {
-    let isShare = false
-    let sharedUser = undefined
-
-    let external_members = []
-    let organization_members = []
-
-    for (const swUser of conversation.sharedWithUsers) {
-      if (swUser.userId === userId) {
-        isShare = true
-        sharedUser = swUser
-      }
-    }
-
-    for (const swUser of conversation.sharedWithUsers) {
-      let user = await model.users.getById(swUser.userId)
-      if (user.length !== 1) {
-        logger.info("User not found", { userId: swUser.userId })
-      } else {
-        if (
-          isShare &&
-          (!user.private ||
-            CONVERSATION_RIGHTS.hasRightAccess(
-              sharedUser.right,
-              CONVERSATION_RIGHTS.SHARE,
-            ))
-        ) {
-          external_members.push({ ...user[0], role: 0, right: swUser.right })
-        } else if (!isShare) {
-          external_members.push({ ...user[0], role: 0, right: swUser.right })
-        }
-      }
-    }
-
-    for (const oUser of organiaztion.users) {
-      if (oUser.type === USER_TYPE.M2M) continue
-      let user = await model.users.getById(oUser.userId)
-      if (user.length !== 1) {
-        logger.info("User not found", { userId: oUser.userId })
-      } else {
-        if (
-          isShare &&
-          CONVERSATION_RIGHTS.hasRightAccess(
-            sharedUser.right,
-            CONVERSATION_RIGHTS.SHARE,
-          )
-        ) {
-          organization_members.push({
-            ...user[0],
-            role: oUser.role,
-            right: CONVERSATION_RIGHTS.setRight(
-              oUser.role,
-              conversation.organization.membersRight,
-            ),
-          })
-        } else if (!isShare) {
-          organization_members.push({
-            ...user[0],
-            role: oUser.role,
-            right: CONVERSATION_RIGHTS.setRight(
-              oUser.role,
-              conversation.organization.membersRight,
-            ),
-          })
-        }
-      }
-    }
-
-    for (const oUser of conversation.organization.customRights) {
-      let orgaUser = organization_members.find(
-        (u) => u._id.toString() === oUser.userId,
-      )
-      if (orgaUser) orgaUser.right = oUser.right
-    }
-
-    return {
-      external_members,
-      organization_members,
-    }
+    const usersById = await loadUsersById(
+      items.flatMap(({ conversation, organization }) =>
+        listedUserIds(conversation, organization),
+      ),
+    )
+    return items.map(({ conversation, organization }) =>
+      conversationUsers(userId, conversation, organization, usersById),
+    )
   } catch (error) {
     console.error(error)
     return error
   }
+}
+
+function listedUserIds(conversation, organization) {
+  const shared = conversation.sharedWithUsers.map((share) => share.userId)
+  const members = organization.users
+    .filter((member) => member.type !== USER_TYPE.M2M)
+    .map((member) => member.userId)
+  return [...shared, ...members]
+}
+
+async function loadUsersById(userIds) {
+  const ids = [...new Set(userIds)]
+  if (ids.length === 0) return new Map()
+  const users = throwIfError(await model.users.getByIds(ids))
+  return new Map(users.map((user) => [user._id.toString(), user]))
+}
+
+function conversationUsers(userId, conversation, organization, usersById) {
+  const share = conversation.sharedWithUsers.find(
+    (swUser) => swUser.userId === userId,
+  )
+  // Members are listed to organization members and to shares holding the share right
+  const listMembers =
+    !share ||
+    CONVERSATION_RIGHTS.hasRightAccess(share.right, CONVERSATION_RIGHTS.SHARE)
+  const customRightById = new Map(
+    conversation.organization.customRights.map((customRight) => [
+      customRight.userId,
+      customRight.right,
+    ]),
+  )
+
+  const external_members = []
+  for (const swUser of conversation.sharedWithUsers) {
+    const user = usersById.get(swUser.userId)
+    if (!user) {
+      logger.info("User not found", { userId: swUser.userId })
+    } else {
+      external_members.push({ ...user, role: 0, right: swUser.right })
+    }
+  }
+
+  const organization_members = []
+  for (const oUser of organization.users) {
+    if (oUser.type === USER_TYPE.M2M) continue
+    const user = usersById.get(oUser.userId)
+    if (!user) {
+      logger.info("User not found", { userId: oUser.userId })
+    } else if (listMembers) {
+      let right = customRightById.get(oUser.userId)
+      if (right === undefined) {
+        right = CONVERSATION_RIGHTS.setRight(
+          oUser.role,
+          conversation.organization.membersRight,
+        )
+      }
+      organization_members.push({ ...user, role: oUser.role, right })
+    }
+  }
+
+  return { external_members, organization_members }
 }
 
 async function removeUserFromPlatform(userId) {
@@ -192,4 +193,8 @@ async function removeUserFromPlatform(userId) {
   }
 }
 
-module.exports = { getUsersListByConversation, removeUserFromPlatform }
+module.exports = {
+  getUsersListByConversation,
+  getUsersListByConversations,
+  removeUserFromPlatform,
+}

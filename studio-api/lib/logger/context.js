@@ -289,7 +289,7 @@ class LoggerContext {
       }
 
       if (socketEvent.from === "session") {
-        const [sessionId, channelId] = socketEvent.sessionId.split("/")
+        const [sessionId] = socketEvent.sessionId.split("/")
         const session = await storeCacheSession(sessionId)
         context.session = session
 

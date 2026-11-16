@@ -233,8 +233,11 @@ export default {
         if (getEnv("VUE_APP_DEBUG") === "*") {
           console.error(error)
         }
+        const tooManyAttempts = error?.error?.response?.status === 429
         this.$store.dispatch("system/addNotification", {
-          message: this.$t("login.error"),
+          message: this.$t(
+            tooManyAttempts ? "login.too_many_attempts" : "login.error",
+          ),
           type: "error",
         })
       }

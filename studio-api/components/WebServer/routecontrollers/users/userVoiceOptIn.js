@@ -27,7 +27,6 @@ const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 const { SPEAKER_TYPE } = require(
   `${process.cwd()}/lib/dao/speakerIdentification/naming`,
 )
-const limits = require(`${process.cwd()}/lib/dao/speakerIdentification/limits`)
 
 const { verifyOrgMembership } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/speaker/optedInMembers`,

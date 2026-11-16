@@ -2,9 +2,6 @@ const debug = require("debug")(
   `linto:components:WebServer:controllers:export:format:resume`,
 )
 
-const docx = require("docx")
-const { SectionType } = docx
-
 const {
   generateHeader,
   textColumn,

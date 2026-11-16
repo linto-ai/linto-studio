@@ -14,6 +14,10 @@ const orgaUtility = require(
 )
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const conversationAccess = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
+)
+const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 
 const { fetchJob } = require(
   `${process.cwd()}/components/WebServer/controllers/job/fetchHandler`,
@@ -109,11 +113,9 @@ async function getConversation(req, res, next) {
       let filter = ["name", "owner", "organization", "sharedWithUsers", "jobs"]
 
       let projection = {}
-      req.query.key.split(",").map((key) => {
-        if (!projection.hasOwnProperty(key)) {
-          projection[key] = projectionValue
-        }
-      })
+      for (const key of req.query.key.split(",")) {
+        projection[key] = projectionValue
+      }
 
       filter.forEach((field) => {
         if (projectionValue === 1) projection[field] = 1
@@ -184,24 +186,26 @@ async function getUsersByConversation(req, res, next) {
 
 async function getUsersByConversationList(req, res, next) {
   try {
-    let result = []
-    const conversationsIds = req.body.conversations.split(",")
-    for (const conversationId of conversationsIds) {
-      const conversation = await model.conversations.getById(conversationId)
+    const batch = await conversationAccess.loadBatch(
+      req.body.conversations.split(","),
+      { sharedWithUsers: 1, organization: 1 },
+    )
+    const items = batch.map(({ conv, organization }) => {
+      if (!conv) throw new ConversationNotFound()
+      if (!organization) throw new OrganizationNotFound()
+      return { conversation: conv, organization }
+    })
 
-      let organization = await model.organizations.getById(
-        conversation[0].organization.organizationId,
-      )
-      if (organization.length !== 1) throw new OrganizationNotFound()
-
-      const userId = req.payload.data.userId
-      const conversationUsers = await userUtility.getUsersListByConversation(
-        userId,
-        conversation[0],
-        organization[0],
-      )
-      result.push({ conversationId, member: { ...conversationUsers } })
-    }
+    const members = throwIfError(
+      await userUtility.getUsersListByConversations(
+        req.payload.data.userId,
+        items,
+      ),
+    )
+    const result = batch.map(({ convId }, index) => ({
+      conversationId: convId,
+      member: members[index],
+    }))
     res.status(200).send(result)
   } catch (err) {
     next(err)

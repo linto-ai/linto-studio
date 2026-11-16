@@ -154,7 +154,7 @@ async function importTranscription(req, res) {
   if (req.body.segmentCharSize)
     filter.segmentCharSize = req.body.segmentCharSize
 
-  let transcription = {}
+  let transcription
   try {
     transcription = JSON.parse(req.body.transcription)
   } catch (err) {

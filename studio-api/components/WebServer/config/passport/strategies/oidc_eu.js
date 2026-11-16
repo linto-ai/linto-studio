@@ -11,6 +11,9 @@ const TokenGenerator = require("../token/generator")
 const { MultipleUserFound, DisabledUser } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
+const { UserError } = require(
+  `${process.cwd()}/components/WebServer/error/exception/users`,
+)
 
 const { populateUserToOrganization } = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,

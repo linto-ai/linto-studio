@@ -33,9 +33,6 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/controllers/session/session.js`,
 )
-const { Unauthorized, UnauthorizedProxy } = require(
-  `${process.cwd()}/components/WebServer/error/exception/auth`,
-)
 
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 

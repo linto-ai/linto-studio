@@ -163,7 +163,7 @@ async function getTemplatePlaceholders(req, res, next) {
  *   - format: Export format (pdf, docx, html)
  */
 async function exportWithTemplate(req, res, next) {
-  let url = null // Declare outside try for error logging
+  let url // Declared outside the try for error logging
   try {
     const { jobId, format } = req.params
 

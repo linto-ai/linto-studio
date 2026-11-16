@@ -10,7 +10,7 @@ const param_metadata = require('../../data/conversation/metadata.json')
 
 
 describe('initialzation conversation', () => {
-  let MOCK_TRANSCRIPTION_NO_PUNC, MOCK_TRANSCRIPTION_PUNC
+  let MOCK_TRANSCRIPTION_NO_PUNC
   let user_id, job_id, conversation_metadata
 
   beforeAll(async () => {

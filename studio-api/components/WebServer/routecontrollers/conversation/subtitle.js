@@ -8,7 +8,6 @@ const validator = require(`${process.cwd()}/lib/dao/schema/validator`)
 const PUNCTUATION_REGEX = /[,.!?]/
 const COMPOSE_WORD_REGEX = /['-]/
 
-const { duration } = require("moment")
 const { v4: uuidv4 } = require("uuid")
 
 const {
@@ -85,7 +84,7 @@ function splitSubtitles(conv, query) {
       words.push(conv_seg.words[i])
       segment += word + " "
       etime = conv_seg.words[i].etime
-      segmentDuration = etime - stime
+      const segmentDuration = etime - stime
 
       // on punctuation mark, split the segment if it's too long
       if (PUNCTUATION_REGEX.test(word)) {
@@ -184,23 +183,17 @@ function splitSubtitles(conv, query) {
 }
 
 function generateScreen(text, stime, etime, id, words) {
-  //genere sid here
-  let screen = {
+  const trimmed = text.trim()
+  if (trimmed === "") return undefined
+
+  return {
     stime,
     etime,
     turn_id: id,
     screen_id: uuidv4(),
+    text: [trimmed],
+    words,
   }
-
-  if (Array.isArray(text)) {
-    screen.text = segment.trim()
-  } else screen.text = [text.trim()]
-
-  if (screen.text[0] === " " || screen.text[0] === "") return undefined
-
-  screen.words = words
-
-  return screen
 }
 
 function secondsToSRT(seconds, type = "srt") {

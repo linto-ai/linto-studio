@@ -3,10 +3,6 @@ const debug = require("debug")(
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
-const {} = require(
-  `${process.cwd()}/components/WebServer/error/exception/session`,
-)
-
 async function getAllSessionData(req, res, next) {
   try {
     const sessionAlias = await model.sessionData.getAll()

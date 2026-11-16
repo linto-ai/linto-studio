@@ -239,7 +239,7 @@ async function deleteSessionAudioFiles(sessionId) {
   if (!sessionId) return
   const model = require(`${process.cwd()}/lib/mongodb/models`)
   const folder = getAudioSessionFolder()
-  let entries = []
+  let entries
   try {
     entries = await fs.promises.readdir(`${getStorageFolder()}/${folder}`)
   } catch (error) {
