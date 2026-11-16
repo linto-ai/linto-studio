@@ -5,6 +5,9 @@ const debug = require("debug")(
 const auth_middleware = require(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )
+const mobileSso = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/auth/mobileSso`,
+)
 var passport = require("passport")
 
 module.exports = (webServer) => {
@@ -13,7 +16,10 @@ module.exports = (webServer) => {
       path: "/oidc/google/login",
       method: "get",
       requireAuth: false,
-      controller: [auth_middleware.oidc_google_authenticate],
+      controller: [
+        mobileSso.remember,
+        auth_middleware.oidc_google_authenticate,
+      ],
     },
     {
       path: "/oidc/google/cb",
@@ -22,6 +28,7 @@ module.exports = (webServer) => {
       controller: [
         (req, res, next) => {
           passport.authenticate("google", { session: false }, (err, token) => {
+            if (mobileSso.finish(req, res, err ? null : token)) return
             const failureRedirect =
               (process.env.FRONTEND_DOMAIN || "") + "/login"
             if (err || !token) {

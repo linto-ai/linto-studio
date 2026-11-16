@@ -189,6 +189,11 @@ ORGANIZATION_SSO_CALLBACK_URI=
 # PEM file of an extra CA to trust for identity providers (dev, self-signed IdP)
 ORGANIZATION_SSO_CA_FILE=
 
+# SSO login from the mobile apps: comma-separated return addresses (custom
+# scheme or app link) the apps may ask for. Empty, every SSO login ends on the
+# front. Default: the LinTO Studio app.
+MOBILE_SSO_REDIRECT_URIS=ai.linto.studio://login/oidc
+
 OIDC_GOOGLE_ENABLED=false
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=

@@ -10,6 +10,9 @@ const { encrypt, decrypt } = require(
 const auth_middleware = require(
   `${process.cwd()}/components/WebServer/config/passport/middleware`,
 )
+const mobileSso = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/auth/mobileSso`,
+)
 var passport = require("passport")
 
 module.exports = (webServer) => {
@@ -18,7 +21,7 @@ module.exports = (webServer) => {
       path: "/oidc/login",
       method: "get",
       requireAuth: false,
-      controller: [auth_middleware.oidc_authenticate],
+      controller: [mobileSso.remember, auth_middleware.oidc_authenticate],
     },
     {
       path: "/oidc/cb",
@@ -30,6 +33,7 @@ module.exports = (webServer) => {
             "oidc",
             { session: false },
             (err, token, info) => {
+              if (mobileSso.finish(req, res, err ? null : token)) return
               if (err) {
                 console.error(err)
                 return res.redirect("/cm-api/auth/login/oidc") // failureRedirect

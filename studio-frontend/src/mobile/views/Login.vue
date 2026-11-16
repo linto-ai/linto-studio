@@ -47,6 +47,10 @@
 
       <div v-if="showSso" class="m-login__sso">
         <p class="m-muted">{{ $t("login.or_continue_with") }}</p>
+        <p v-if="ssoFailed" class="m-login__error" role="alert">
+          <PhIcon name="warning-circle" size="sm" />
+          {{ $t("mobile.login.sso_error") }}
+        </p>
         <SsoProviderLink
           v-for="provider in methods.oidc"
           :key="provider.name"
@@ -109,10 +113,12 @@ export default {
     }
   },
   computed: {
-    // Not in the native app yet: the SSO flow ends on the instance's
-    // website, in the browser, and nothing brings the session back.
     showSso() {
-      return !IS_NATIVE_APP && this.methods.oidc.length > 0
+      return this.methods.oidc.length > 0
+    },
+    // Native app: the SSO login came back without a session (listenForSsoReturn.js)
+    ssoFailed() {
+      return this.$route.query.error === "sso"
     },
     instanceAddress() {
       return formatInstanceAddress(this.instance.address)

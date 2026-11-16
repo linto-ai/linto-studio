@@ -38,7 +38,8 @@
     "password": "Password",
     "submit": "Sign in",
     "create_account": "Create an account",
-    "error": "Wrong email or password"
+    "error": "Wrong email or password",
+    "sso_error": "The sign-in did not complete. Try again."
   },
   "boot": {
     "connecting": "Connecting to {address}…"

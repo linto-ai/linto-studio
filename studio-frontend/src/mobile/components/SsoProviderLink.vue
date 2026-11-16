@@ -1,5 +1,5 @@
 <template>
-  <a :href="href" class="m-sso" @click="markSsoReturn">
+  <a :href="href" class="m-sso" @click="startLogin">
     <span class="m-sso__disc" :style="{ background: icon.background }">
       <img :src="icon.src" alt="" class="m-sso__icon" />
     </span>
@@ -11,11 +11,14 @@
 import { getEnv } from "@/tools/getEnv"
 import { oidcProviderIcon } from "@/mobile/tools/oidcProviderIcon.js"
 import { markSsoReturn } from "@/mobile/services/session/markSsoReturn.js"
+import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
+import { startSsoLogin } from "@/mobile/services/native/startSsoLogin.js"
 
 // One OIDC provider of the login page. Same target as the classic button:
 // the API starts the flow and lands on /login/oidc, whose page reloads "/"
 // once the cookies are set; the SSO-return cookie set here brings that
-// load back to the mobile app.
+// load back to the mobile app. The native app has no such page: its login
+// runs in the phone's browser and comes back by a link (startSsoLogin.js).
 export default {
   name: "SsoProviderLink",
   props: {
@@ -34,7 +37,16 @@ export default {
       return this.$te(key) ? this.$t(key) : this.$t("login.sso.default")
     },
   },
-  methods: { markSsoReturn },
+  methods: {
+    startLogin(event) {
+      if (IS_NATIVE_APP) {
+        event.preventDefault()
+        startSsoLogin(this.path)
+      } else {
+        markSsoReturn()
+      }
+    },
+  },
 }
 </script>
 

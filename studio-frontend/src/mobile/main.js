@@ -21,6 +21,7 @@ import { startUploadResumption } from "@/mobile/services/recording/resumeUploads
 import { clearMobileAppOptOut } from "@/mobile/services/preferences/clearMobileAppOptOut.js"
 import { clearSsoReturn } from "@/mobile/services/session/markSsoReturn.js"
 import { listenForBackButton } from "@/mobile/services/native/listenForBackButton.js"
+import { listenForSsoReturn } from "@/mobile/services/native/listenForSsoReturn.js"
 import { stopLeftoverRecording } from "@/mobile/services/recording/recordingAudio.js"
 
 import "@/mobile/style/tokens.css"
@@ -47,6 +48,7 @@ listenForInstallPrompt()
 registerServiceWorker()
 watchOnlineStatus()
 listenForBackButton(router)
+listenForSsoReturn(router)
 stopLeftoverRecording()
 // Uploads need the organization scope: wait for the first guarded navigation.
 router.onReady(() => startUploadResumption())
