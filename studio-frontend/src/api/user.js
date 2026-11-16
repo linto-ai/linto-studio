@@ -104,6 +104,19 @@ export async function apiLoginUser(email, password) {
   )
 }
 
+// Native app: the code an SSO login came back with, against the session
+export async function apiExchangeMobileSsoCode(code, codeVerifier) {
+  return await sendRequest(
+    `${BASE_AUTH}/oidc/mobile/token`,
+    { method: "post" },
+    {
+      code,
+      code_verifier: codeVerifier,
+    },
+    null,
+  )
+}
+
 export async function apiLoginUserMagicLink(magicId) {
   return await sendRequest(
     `${BASE_AUTH}/login/magic-link`,

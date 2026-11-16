@@ -13,6 +13,9 @@ const { generateUserToken } = require(
 const ssoLogin = require(
   `${process.cwd()}/components/WebServer/controllers/organization/ssoLogin`,
 )
+const mobileSso = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/auth/mobileSso`,
+)
 
 const SESSION_KEY = "organizationSso"
 
@@ -97,9 +100,11 @@ async function organizationSsoCallback(req, res, next) {
     )
     await ssoLogin.attachUserToOrganization(token.user_id, organization._id)
 
+    if (mobileSso.finish(req, res, token)) return
     res.redirect(frontUrl(`/login/oidc?token=${token.auth_token}`))
   } catch (err) {
     debug("organization sso callback failed: %o", err)
+    if (mobileSso.finish(req, res, null)) return
     redirectWithError(res, err.reason || "idp_error")
   }
 }

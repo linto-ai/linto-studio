@@ -22,6 +22,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Return of an SSO login run in the browser
+                 (src/mobile/const/mobileSsoRedirectUri.js). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="ai.linto.studio"
+                    android:host="login"
+                    android:path="/oidc" />
+            </intent-filter>
+
         </activity>
 
         <provider

@@ -5,7 +5,10 @@ module.exports = (webServer) => {
   let api_routes = {
     "/": require("./root")(webServer),
     "/healthcheck": require("./api/healthcheck/healthcheck")(webServer),
-    "/auth": [...require("./auth/index.js")(webServer)],
+    "/auth": [
+      ...require("./auth/index.js")(webServer),
+      ...require("./auth/oidc_mobile.js")(webServer),
+    ],
     "/api/users/self/favorites": require("./api/users/favorites.js")(webServer),
     "/api/users/self/default-organization":
       require("./api/users/defaultOrganization.js")(webServer),

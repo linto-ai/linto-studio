@@ -259,9 +259,12 @@ Scripts:
 - The API must accept the app's origin: `CORS_ENABLED=true` and
   `https://localhost` in `CORS_API_WHITELIST` (studio-api), websocket included.
 - Debug build signed with the debug key: not for distribution.
-- Password login only: the SSO buttons are hidden (`Login.vue`, `showSso`),
-  an OIDC flow would end on the instance's website and not come back to the
-  app.
+- SSO login runs in the phone's browser and comes back to the app through
+  the link `ai.linto.studio://login/oidc`
+  (`src/mobile/services/native/startSsoLogin.js`, `listenForSsoReturn.js`,
+  intent filter in `AndroidManifest.xml`). The instance must list that link in
+  `MOBILE_SSO_REDIRECT_URIS` (studio-api, its default); on an older instance
+  the login ends on the instance's website and does not come back.
 - Default Capacitor icon and splash screen.
 - Only the API addresses follow the chosen instance: its mode and flags are
   those of the build. "Forgot password" and "Create account" open the

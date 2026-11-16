@@ -5,6 +5,9 @@ const {
 } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/auth/organizationSso.js`,
 )
+const mobileSso = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/auth/mobileSso`,
+)
 
 // Bring your own SSO: the organization's OIDC provider, picked from the email
 // domain. The session cookie is scoped to /auth/oidc (WebServer/index.js).
@@ -20,7 +23,7 @@ module.exports = (webServer) => {
       path: "/oidc/organization/login",
       method: "get",
       requireAuth: false,
-      controller: loginWithOrganizationSso,
+      controller: [mobileSso.remember, loginWithOrganizationSso],
     },
     {
       path: "/oidc/organization/cb",

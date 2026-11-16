@@ -38,7 +38,8 @@
     "password": "Mot de passe",
     "submit": "Se connecter",
     "create_account": "Créer un compte",
-    "error": "E-mail ou mot de passe incorrect"
+    "error": "E-mail ou mot de passe incorrect",
+    "sso_error": "La connexion n'a pas abouti. Réessayez."
   },
   "instance": {
     "change": "Changer d'instance",
