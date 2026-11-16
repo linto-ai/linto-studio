@@ -15,6 +15,13 @@ export const MOBILE_ROUTES = [
     component: () => import("@/mobile/views/Login.vue"),
   },
   {
+    path: "/api-unreachable",
+    // API_UNREACHABLE_ROUTE (src/const/apiUnreachableRoute.js)
+    name: "api-unreachable",
+    meta: { public: true },
+    component: () => import("@/mobile/views/ApiUnreachable.vue"),
+  },
+  {
     path: "/record",
     name: "record",
     meta: { upload: true },

@@ -1,4 +1,4 @@
-import { LocalRecorder } from "@/mobile/services/recording/LocalRecorder.js"
+import { createRecorder } from "@/mobile/services/recording/createRecorder.js"
 import { createScreenWakeLock } from "@/mobile/services/recording/screenWakeLock.js"
 import { appendChunk } from "@/mobile/services/recording/queue.js"
 import { requestPersistentStorage } from "@/mobile/services/recording/requestPersistentStorage.js"
@@ -7,6 +7,7 @@ import { RECORDING_STATUS } from "@/mobile/const/recordingStatus.js"
 import { PAUSE_REASON } from "@/mobile/const/pauseReason.js"
 import { readKeepAudioPreference } from "@/mobile/services/preferences/keepAudioPreference.js"
 import { generateId } from "@/tools/generateId.js"
+import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 
 const TICK_MS = 250
 const MAX_DURATION_MS = 4 * 60 * 60 * 1000
@@ -20,6 +21,10 @@ const MAX_DURATION_MS = 4 * 60 * 60 * 1000
 // pauses itself when the page is hidden (or the microphone muted) and
 // resumes itself when both are back; the time in between is stored as a
 // gap. Pausing the same MediaRecorder keeps one continuous file.
+//
+// The native app records through the phone, in a foreground service: it
+// goes on in the background and with the screen locked, so none of the
+// above applies there (no automatic pause, no screen kept on).
 export const recordingControllerMixin = {
   data() {
     return {
@@ -36,20 +41,23 @@ export const recordingControllerMixin = {
         pauseReason: null,
         gaps: [],
         lastGap: null,
+        capturesInBackground: IS_NATIVE_APP,
       },
     }
   },
   created() {
-    this.localRecorder = null
+    this.audioRecorder = null
     this.wakeLock = createScreenWakeLock()
     this.ticker = null
     this.tickStartedAt = 0
     this.pausedAt = null
     this.isStopping = false
-    // Chunk writes run one after the other, and stopRecording waits for
-    // them: a late chunk write never lands after the stop patch.
-    this.chunkWrites = Promise.resolve()
-    document.addEventListener("visibilitychange", this.onVisibilityChange)
+    // Chunk and progress writes run one after the other, and stopRecording
+    // waits for them: a late write never lands after the stop patch.
+    this.audioWrites = Promise.resolve()
+    if (!this.recorder.capturesInBackground) {
+      document.addEventListener("visibilitychange", this.onVisibilityChange)
+    }
     window.addEventListener("beforeunload", this.warnBeforeLeaving)
   },
   beforeDestroy() {
@@ -61,16 +69,18 @@ export const recordingControllerMixin = {
     async startRecording(deviceId = null) {
       this.recorder.state = "starting"
       const id = generateId()
-      this.localRecorder = new LocalRecorder({
-        onChunk: (index, blob) => this.storeChunk(id, index, blob),
-        onLevel: (level) => this.trackLevel(level),
-        onInterrupted: () => this.stopRecording({ interrupted: true }),
-        onMuted: () => this.onMicrophoneMuted(),
-        onUnmuted: () => this.onMicrophoneUnmuted(),
-      })
       try {
-        const mimeType = await this.localRecorder.start(deviceId)
-        await this.createQueueEntry(id, mimeType)
+        this.audioRecorder = await createRecorder({
+          onChunk: (index, blob) => this.storeChunk(id, index, blob),
+          onProgress: (sizeBytes) => this.storeProgress(id, sizeBytes),
+          onLevel: (level) => this.trackLevel(level),
+          onInterrupted: () => this.stopRecording({ interrupted: true }),
+          onMuted: () => this.onMicrophoneMuted(),
+          onUnmuted: () => this.onMicrophoneUnmuted(),
+          notification: this.buildRecordingNotification(),
+        })
+        const audio = await this.audioRecorder.start(deviceId)
+        await this.createQueueEntry(id, audio)
       } catch (error) {
         console.error("cannot start recording", error)
         this.releaseRecorder()
@@ -80,7 +90,7 @@ export const recordingControllerMixin = {
       }
       requestPersistentStorage()
       this.pausedAt = null
-      this.chunkWrites = Promise.resolve()
+      this.audioWrites = Promise.resolve()
       Object.assign(this.recorder, {
         id,
         elapsedMs: 0,
@@ -90,20 +100,25 @@ export const recordingControllerMixin = {
         pauseReason: null,
         gaps: [],
         lastGap: null,
-        microphoneMuted: this.localRecorder.isMuted,
+        microphoneMuted: this.audioRecorder.isMuted,
         state: "recording",
       })
       this.startTicker()
       this.pauseIfCannotCapture()
-      await this.acquireWakeLock()
+      if (!this.recorder.capturesInBackground) await this.acquireWakeLock()
     },
     // Hidden or muted while starting: those transitions fired before the
     // recording was live and were ignored.
     pauseIfCannotCapture() {
-      if (document.visibilityState === "hidden") {
-        this.onPageHidden()
-      } else if (this.localRecorder.isMuted) {
-        this.pauseRecording(PAUSE_REASON.MICROPHONE)
+      switch (true) {
+        case this.recorder.capturesInBackground:
+          break
+        case document.visibilityState === "hidden":
+          this.onPageHidden()
+          break
+        case this.audioRecorder.isMuted:
+          this.pauseRecording(PAUSE_REASON.MICROPHONE)
+          break
       }
     },
     // Resuming on a muted microphone would record silence as if it were
@@ -113,13 +128,13 @@ export const recordingControllerMixin = {
         this.pauseRecording(PAUSE_REASON.USER)
       } else if (
         this.recorder.state === "paused" &&
-        !this.localRecorder.isMuted
+        !this.audioRecorder.isMuted
       ) {
         this.resumeRecording()
       }
     },
     pauseRecording(reason) {
-      this.localRecorder.pause()
+      this.audioRecorder.pause()
       this.stopTicker()
       this.pausedAt = Date.now()
       this.recorder.pauseReason = reason
@@ -127,8 +142,8 @@ export const recordingControllerMixin = {
     },
     resumeRecording() {
       this.recordAutomaticPauseGap()
-      this.localRecorder.resume()
-      this.localRecorder.resumeLevelMeter()
+      this.audioRecorder.resume()
+      this.audioRecorder.resumeLevelMeter()
       this.startTicker()
       this.recorder.pauseReason = null
       this.recorder.state = "recording"
@@ -158,7 +173,7 @@ export const recordingControllerMixin = {
       this.recorder.lastGap = null
     },
     async stopRecording({ interrupted = false } = {}) {
-      if (!this.localRecorder || this.recorder.state === "idle") return
+      if (!this.audioRecorder || this.recorder.state === "idle") return
       // Several causes can ask at once (track ended, page visible again).
       if (this.isStopping) return
       this.isStopping = true
@@ -171,8 +186,10 @@ export const recordingControllerMixin = {
     async finishRecording(interrupted) {
       this.recordAutomaticPauseGap()
       this.stopTicker()
-      await this.localRecorder.stop()
-      await this.chunkWrites
+      // What the recorder knows better than the page (native file: where
+      // it ended up, exact duration and size).
+      const recorderPatch = await this.audioRecorder.stop()
+      await this.audioWrites
       this.releaseRecorder()
       if (interrupted) this.recorder.interruptedAt = this.recorder.elapsedMs
       await this.$store.dispatch("mobileRecordings/patch", {
@@ -183,6 +200,7 @@ export const recordingControllerMixin = {
         peakLevel: this.recorder.peakLevel,
         interruptedAt: this.recorder.interruptedAt,
         gaps: [...this.recorder.gaps],
+        ...recorderPatch,
       })
       this.recorder.state = "idle"
       this.recorder.pauseReason = null
@@ -192,7 +210,7 @@ export const recordingControllerMixin = {
     onVisibilityChange() {
       const isRecording =
         this.recorder.state === "recording" || this.recorder.state === "paused"
-      if (!this.localRecorder || !isRecording || this.isStopping) return
+      if (!this.audioRecorder || !isRecording || this.isStopping) return
       if (document.visibilityState === "hidden") {
         this.onPageHidden()
       } else {
@@ -205,7 +223,7 @@ export const recordingControllerMixin = {
     // (iOS may mute the track just before): pausedAt stays, the gap still
     // starts at the mute.
     onPageHidden() {
-      this.localRecorder.flush()
+      this.audioRecorder.flush()
       if (this.recorder.state === "recording") {
         this.pauseRecording(PAUSE_REASON.BACKGROUND)
       } else if (this.recorder.pauseReason === PAUSE_REASON.MICROPHONE) {
@@ -213,7 +231,7 @@ export const recordingControllerMixin = {
       }
     },
     onPageVisible() {
-      if (!this.localRecorder.isActive) {
+      if (!this.audioRecorder.isActive) {
         this.stopRecording({ interrupted: true })
         return
       }
@@ -238,7 +256,7 @@ export const recordingControllerMixin = {
         this.recorder.state === "paused" &&
         this.recorder.pauseReason !== PAUSE_REASON.USER
       const canCapture =
-        document.visibilityState === "visible" && !this.localRecorder?.isMuted
+        document.visibilityState === "visible" && !this.audioRecorder?.isMuted
       if (pausedAutomatically && canCapture && !this.isStopping) {
         this.resumeRecording()
       }
@@ -260,9 +278,25 @@ export const recordingControllerMixin = {
         sizeBytes: this.recorder.sizeBytes,
         durationMs: this.recorder.elapsedMs,
       }
-      this.chunkWrites = this.chunkWrites.then(() =>
+      this.audioWrites = this.audioWrites.then(() =>
         this.persistChunk(index, blob, progress),
       )
+    },
+    // Native app: the recorder writes its file by itself, only the size
+    // reached is saved, for the same reason.
+    storeProgress(id, sizeBytes) {
+      this.recorder.sizeBytes = sizeBytes
+      const progress = { id, sizeBytes, durationMs: this.recorder.elapsedMs }
+      this.audioWrites = this.audioWrites.then(() =>
+        this.persistProgress(progress),
+      )
+    },
+    async persistProgress(progress) {
+      try {
+        await this.$store.dispatch("mobileRecordings/patch", progress)
+      } catch (error) {
+        console.error("cannot store recording progress", error)
+      }
     },
     async persistChunk(index, blob, progress) {
       try {
@@ -274,7 +308,7 @@ export const recordingControllerMixin = {
     },
     // Transcription and sharing are set when the stop sheet closes: the
     // recording never waits for the services list.
-    createQueueEntry(id, mimeType) {
+    createQueueEntry(id, { mimeType, audioFileUri }) {
       return this.$store.dispatch("mobileRecordings/create", {
         id,
         organizationId:
@@ -285,6 +319,7 @@ export const recordingControllerMixin = {
           this.$t("mobile.record.default_name"),
         ),
         mimeType,
+        audioFileUri,
         transcription: null,
         sharing: null,
         keepAudio: readKeepAudioPreference(),
@@ -311,6 +346,17 @@ export const recordingControllerMixin = {
       this.recorder.elapsedMs = Date.now() - this.tickStartedAt
       if (this.recorder.elapsedMs >= MAX_DURATION_MS) this.stopRecording()
     },
+    // Shown by the native app while it records (foreground service).
+    buildRecordingNotification() {
+      return {
+        title: this.$t("mobile.record.notification.title"),
+        body: this.$t("mobile.record.notification.body"),
+        channelName: this.$t("mobile.record.notification.channel_name"),
+        channelDescription: this.$t(
+          "mobile.record.notification.channel_description",
+        ),
+      }
+    },
     warnBeforeLeaving(event) {
       if (
         this.recorder.state === "recording" ||
@@ -321,8 +367,8 @@ export const recordingControllerMixin = {
     },
     releaseRecorder() {
       this.stopTicker()
-      this.localRecorder?.destroy()
-      this.localRecorder = null
+      this.audioRecorder?.destroy()
+      this.audioRecorder = null
       this.wakeLock.release()
     },
   },

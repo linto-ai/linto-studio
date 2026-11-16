@@ -40,6 +40,9 @@
     "create_account": "Create an account",
     "error": "Wrong email or password"
   },
+  "boot": {
+    "connecting": "Connecting to {address}…"
+  },
   "instance": {
     "change": "Change instance",
     "title": "LinTO Studio instance",
@@ -91,6 +94,7 @@
     "starting": "Starting…",
     "stop": "Stop",
     "denied": "Microphone refused. Allow it in the browser settings.",
+    "denied_app": "Microphone refused. Allow it in the phone settings.",
     "blocked": "Microphone unavailable on this device",
     "pause": "Pause",
     "resume": "Resume",
@@ -99,6 +103,7 @@
     "notice": {
       "stay_in_app": "Leaving or locking the screen pauses the recording.",
       "stay_in_app_screen_on": "Leaving or letting the screen lock pauses the recording.",
+      "keeps_recording": "You can lock the screen or switch apps: the recording goes on.",
       "paused_automatically": "Paused: the microphone is no longer available. Recording resumes as soon as it is back.",
       "resumed": "Recording resumed. Less than a minute was not recorded. | Recording resumed. {duration} was not recorded. | Recording resumed. {duration} were not recorded."
     },
@@ -109,6 +114,12 @@
     "gaps_summary": "{count} gap ({duration} not recorded) | {count} gaps ({duration} not recorded)",
     "offline_send": "Offline: the recording will be sent by itself when the network is back.",
     "interrupted": "The recording was interrupted (microphone lost or app closed by the phone). What was captured is kept.",
+    "notification": {
+      "title": "Recording in progress",
+      "body": "Tap to go back to LinTO Studio.",
+      "channel_name": "Recording",
+      "channel_description": "Shows that a recording is in progress."
+    },
     "microphone": "Microphone",
     "microphone_default": "Default microphone",
     "microphone_choose": "Choose the microphone",

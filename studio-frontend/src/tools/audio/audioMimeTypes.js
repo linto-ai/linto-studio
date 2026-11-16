@@ -2,6 +2,8 @@ const MIME_EXTENSION_MAP = {
   "audio/webm": "webm",
   "audio/ogg": "ogg",
   "audio/mp4": "mp4",
+  // ADTS stream written by the native app's recorder
+  "audio/aac": "aac",
 }
 
 const SUPPORTED_RECORDING_TYPES = [

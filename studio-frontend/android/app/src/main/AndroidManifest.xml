@@ -33,6 +33,16 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
+        <!-- Recording in the background (@capawesome-team/capacitor-android-foreground-service):
+             the service keeps the microphone allowed once the app is hidden or
+             the screen locked. stopWithTask: swiping the app away ends it, the
+             recorder stops with the app and its notification must not stay. -->
+        <receiver android:name="io.capawesome.capacitorjs.plugins.foregroundservice.NotificationActionBroadcastReceiver" />
+        <service
+            android:name="io.capawesome.capacitorjs.plugins.foregroundservice.AndroidForegroundService"
+            android:foregroundServiceType="microphone"
+            android:stopWithTask="true" />
     </application>
 
     <!-- Permissions -->
@@ -42,4 +52,10 @@
          them at runtime when the page requests the microphone. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- Recording service: its type, its notification, and the CPU kept
+         awake while the screen is off. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 </manifest>

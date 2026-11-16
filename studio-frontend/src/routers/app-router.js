@@ -18,6 +18,9 @@ import { TRANSCRIPTION_CREATE_QUERY_PARAM } from "@/const/transcriptionCreate.js
 import { computeTranscriptionCreateRequest } from "@/tools/transcriptionCreate/computeTranscriptionCreateRequest.js"
 import { computeCheckoutReturn } from "@/tools/billing/computeCheckoutReturn.js"
 import i18n from "@/i18n"
+import { isUnreachableResult } from "@/tools/request/isUnreachableResult.js"
+import { API_UNREACHABLE_ROUTE } from "@/const/apiUnreachableRoute.js"
+import { buildApiUnreachableRoute } from "@/tools/buildApiUnreachableRoute.js"
 
 const defaultComponents = {}
 
@@ -65,6 +68,19 @@ function handleGenericScope(to) {
   }
 }
 
+// Retrying from the "API unreachable" page while the API is still down
+// redirects to that very page: vue-router drops it as a duplicate and
+// afterEach never stops the loader, so the navigation is canceled instead
+// (as the other redirects of the guard do).
+function redirectToApiUnreachable(to, from, next) {
+  const target = buildApiUnreachableRoute(to)
+  if (router.resolve(target).route.fullPath === from.fullPath) {
+    store.dispatch("system/setIsLoading", false)
+    return next(false)
+  }
+  return next(target)
+}
+
 // Helper functions for router guards
 const authGuards = {
   isAuthenticated: () => {
@@ -92,17 +108,26 @@ const authGuards = {
     }
   },
 
+  // The user, or null once the navigation is redirected: to login when the
+  // session is refused, to the "API unreachable" page when nothing answered
+  // (no reason to sign the user out).
   async checkUserAuth(next, to, from) {
     const reqUser = await store.dispatch("user/fetchUser")
-    if (reqUser.status === "error") {
-      logout()
-      return next({
-        name: "login",
-        query: { next: from.query.next || to.fullPath },
-      })
+    switch (true) {
+      case reqUser?.status === "success":
+        return reqUser
+      case isUnreachableResult(reqUser):
+        store.dispatch("apiStatus/markUnreachable", reqUser)
+        redirectToApiUnreachable(to, from, next)
+        return null
+      default:
+        logout()
+        next({
+          name: "login",
+          query: { next: from.query.next || to.fullPath },
+        })
+        return null
     }
-
-    return reqUser
   },
 
   async handleOrganizationScope(to, next) {
@@ -407,6 +432,21 @@ let router = new Router({
       },
     },
     // PUBLIC ROUTES
+    {
+      path: "/interface/api-unreachable",
+      name: API_UNREACHABLE_ROUTE,
+      components: {
+        default: () => import("../views/ApiUnreachable.vue"),
+        ...componentsWithoutHeader,
+      },
+      meta: {
+        public: true,
+        responsive: true,
+        breadcrumb: {
+          showInBreadcrumb: false,
+        },
+      },
+    },
     {
       path: "/interface/404",
       name: "not_found",
@@ -884,6 +924,16 @@ router.beforeEach(async (to, from, next) => {
       return next()
     }
 
+    // The API answers first, login included: otherwise each page fails on
+    // its own requests, or waits for them (an address out of reach never
+    // answers).
+    if (to.name === API_UNREACHABLE_ROUTE) {
+      return next()
+    }
+    if (!(await store.dispatch("apiStatus/check"))) {
+      return redirectToApiUnreachable(to, from, next)
+    }
+
     // Handle magic link authentication
     if (to.name === "magic-link-login") {
       return await authGuards.handleMagicLinkAuth(to, next)
@@ -950,7 +1000,10 @@ router.beforeEach(async (to, from, next) => {
 
     // Fetch user data
     routerDebug("Fetching user data")
-    await authGuards.checkUserAuth(next, to, from)
+    const reqUser = await authGuards.checkUserAuth(next, to, from)
+    if (!reqUser) {
+      return
+    }
     routerDebug("User fetched")
 
     // Fetch organizations

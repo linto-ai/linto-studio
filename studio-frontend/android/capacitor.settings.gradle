@@ -4,3 +4,12 @@ project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/
 
 include ':capacitor-app'
 project(':capacitor-app').projectDir = new File('../node_modules/@capacitor/app/android')
+
+include ':capacitor-filesystem'
+project(':capacitor-filesystem').projectDir = new File('../node_modules/@capacitor/filesystem/android')
+
+include ':capawesome-team-capacitor-android-foreground-service'
+project(':capawesome-team-capacitor-android-foreground-service').projectDir = new File('../node_modules/@capawesome-team/capacitor-android-foreground-service/android')
+
+include ':capgo-capacitor-audio-recorder'
+project(':capgo-capacitor-audio-recorder').projectDir = new File('../node_modules/@capgo/capacitor-audio-recorder/android')

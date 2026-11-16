@@ -1,7 +1,7 @@
 import { apiCreateConversation } from "@/api/conversation.js"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import * as queue from "@/mobile/services/recording/queue.js"
-import { buildRecordingFile } from "@/mobile/services/recording/buildRecordingFile.js"
+import { buildRecordingFile } from "@/mobile/services/recording/recordingAudio.js"
 import { mapUploadError } from "@/mobile/tools/mapUploadError.js"
 import { DEFAULT_MEMBERS_RIGHT } from "@/mobile/const/defaultMembersRight.js"
 import { resolveUploadSettings } from "@/mobile/services/transcription/resolveUploadSettings.js"

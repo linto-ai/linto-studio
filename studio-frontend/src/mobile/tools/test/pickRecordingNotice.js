@@ -6,6 +6,7 @@ const RECORDING = {
   pauseReason: null,
   lastGap: null,
   wakeLockOk: true,
+  capturesInBackground: false,
 }
 
 test("pickRecordingNotice() shows nothing when not recording", (t) => {
@@ -62,4 +63,14 @@ test("pickRecordingNotice() reports the last gap until dismissed", (t) => {
   t.is(notice.message, "mobile.record.notice.resumed")
   t.is(notice.durationMs, 240_000)
   t.true(notice.dismissible)
+})
+
+test("pickRecordingNotice() tells the native app keeps recording", (t) => {
+  const notice = pickRecordingNotice({
+    ...RECORDING,
+    capturesInBackground: true,
+    wakeLockOk: false,
+  })
+  t.is(notice.message, "mobile.record.notice.keeps_recording")
+  t.is(notice.variant, "info")
 })

@@ -21,12 +21,14 @@ import { startUploadResumption } from "@/mobile/services/recording/resumeUploads
 import { clearMobileAppOptOut } from "@/mobile/services/preferences/clearMobileAppOptOut.js"
 import { clearSsoReturn } from "@/mobile/services/session/markSsoReturn.js"
 import { listenForBackButton } from "@/mobile/services/native/listenForBackButton.js"
+import { stopLeftoverRecording } from "@/mobile/services/recording/recordingAudio.js"
 
 import "@/mobile/style/tokens.css"
 import "@/mobile/style/base.css"
 import "@/style/_utilities.scss"
 import "@/mobile/style/buttons.css"
 import "@/mobile/style/notification-banner.css"
+import "@/mobile/style/api-unreachable.css"
 
 // Global atoms (Button, PhIcon…) are what the shared live component expects.
 Vue.use(Atoms)
@@ -45,6 +47,7 @@ listenForInstallPrompt()
 registerServiceWorker()
 watchOnlineStatus()
 listenForBackButton(router)
+stopLeftoverRecording()
 // Uploads need the organization scope: wait for the first guarded navigation.
 router.onReady(() => startUploadResumption())
 

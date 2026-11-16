@@ -1,0 +1,61 @@
+// The classic app's look of the technical details of the shared
+// ApiUnreachable screen (views/ApiUnreachable.vue documents the class
+// contract): a disclosure like the share menu's, the API address in mono.
+.api-unreachable__details {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.api-unreachable__details-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--small-gap);
+  padding: var(--tiny-gap) 0;
+  font-weight: 600;
+  color: var(--primary-color);
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.api-unreachable__details-caret {
+  transition: transform 0.15s ease;
+}
+
+.api-unreachable__details[open] .api-unreachable__details-caret {
+  transform: rotate(90deg);
+}
+
+.api-unreachable__details-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tiny-gap);
+  margin: var(--small-gap) 0 0;
+
+  dt {
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0 0 var(--small-gap);
+  }
+}
+
+.api-unreachable__details-code {
+  font-family: var(--font-family-mono);
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .api-unreachable__details-caret {
+    transition: none;
+  }
+}

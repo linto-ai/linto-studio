@@ -1,9 +1,12 @@
 import store from "@/mobile/store.js"
 import { logout } from "@/tools/auth/logout"
 import { pickDefaultOrganization } from "@/mobile/tools/pickDefaultOrganization.js"
+import { isUnreachableResult } from "@/tools/request/isUnreachableResult.js"
 
 // Loads the user, its organizations and the current organization scope once.
-// Returns false when the cookie is stale (the caller sends the user to login).
+// Returns false when the cookie is stale (the caller sends the user to login)
+// or when the API did not answer: then the user stays signed in and apiStatus
+// is told (the caller shows the "API unreachable" page).
 export async function ensureSession() {
   const userLoaded = await loadUser()
   if (!userLoaded) {
@@ -24,18 +27,26 @@ async function loadUser() {
     return true
   }
   const result = await store.dispatch("user/fetchUser")
-  if (result.status !== "success") {
-    logout({ redirect: false })
-    return false
+  switch (true) {
+    case result?.status === "success":
+      return true
+    case isUnreachableResult(result):
+      store.dispatch("apiStatus/markUnreachable", result)
+      return false
+    default:
+      logout({ redirect: false })
+      return false
   }
-  return true
 }
 
 async function loadOrganizations() {
   if (store.getters["organizations/getOrganizationLength"] > 0) {
     return
   }
-  await store.dispatch("organizations/fetchOrganizations")
+  const result = await store.dispatch("organizations/fetchOrganizations")
+  if (isUnreachableResult(result)) {
+    store.dispatch("apiStatus/markUnreachable", result)
+  }
 }
 
 async function selectOrganizationScope() {

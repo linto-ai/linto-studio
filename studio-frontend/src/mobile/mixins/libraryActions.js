@@ -3,7 +3,7 @@ import { formatFileSize } from "@/mobile/tools/formatFileSize.js"
 import { isRecordingQuiet } from "@/mobile/tools/isRecordingQuiet.js"
 import { sumGapDurations } from "@/mobile/tools/sumGapDurations.js"
 import { saveKeepAudioPreference } from "@/mobile/services/preferences/keepAudioPreference.js"
-import { buildRecordingFile } from "@/mobile/services/recording/buildRecordingFile.js"
+import { buildRecordingFile } from "@/mobile/services/recording/recordingAudio.js"
 import { shareFile } from "@/mobile/services/export/shareFile.js"
 
 // What the Record page does with its recordings: the stop sheet after a
