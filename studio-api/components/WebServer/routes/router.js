@@ -23,6 +23,9 @@ const user_middlewares = require(
 const folder_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/folder.js`,
 )
+const session_middlewares = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/session.js`,
+)
 
 const platform_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/platform.js`,
@@ -135,6 +138,8 @@ const loadMiddlewares = (route) => {
     middlewares.push(organization_middlewares.asUploaderAccess)
   if (route.requireOrganizationMemberAccess)
     middlewares.push(organization_middlewares.asMemberAccess)
+  if (route.requireOrganizationSession)
+    middlewares.push(session_middlewares.asOrganizationSession)
 
   if (route.requireFolderManagerAccess)
     middlewares.push(folder_middlewares.asManagerAccess)

@@ -1,0 +1,59 @@
+/* The mobile look of the technical details of the shared ApiUnreachable
+   screen (views/ApiUnreachable.vue documents the class contract): a
+   disclosure like the record page's sharing settings, the API address in
+   mono. Class selectors only. */
+
+.api-unreachable__details {
+  font-size: var(--m-font-size-sm);
+  color: var(--m-text-muted);
+}
+
+.api-unreachable__details-summary {
+  min-height: var(--m-tap);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--m-space-2);
+  font-weight: 600;
+  color: var(--m-primary);
+  cursor: pointer;
+  list-style: none;
+}
+
+.api-unreachable__details-summary::-webkit-details-marker {
+  display: none;
+}
+
+.api-unreachable__details-caret {
+  transition: transform 0.15s;
+}
+
+.api-unreachable__details[open] .api-unreachable__details-caret {
+  transform: rotate(90deg);
+}
+
+.api-unreachable__details-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--m-space-1);
+  margin: var(--m-space-2) 0 0;
+}
+
+.api-unreachable__details-list dt {
+  font-weight: 600;
+}
+
+.api-unreachable__details-list dd {
+  margin: 0 0 var(--m-space-2);
+}
+
+.api-unreachable__details-code {
+  font-family: ui-monospace, monospace;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .api-unreachable__details-caret {
+    transition: none;
+  }
+}

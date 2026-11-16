@@ -7,15 +7,16 @@
       class="m-player__audio"
       controls
       preload="metadata"
-      :src="url"></audio>
+      :src="url"
+      @error="failed = true"></audio>
   </div>
 </template>
 
 <script>
-import { getRecordingChunks } from "@/mobile/services/recording/queue.js"
+import { openRecordingAudio } from "@/mobile/services/recording/recordingAudio.js"
 
-// Plays a local recording back from its stored chunks. The object URL is
-// created when the player shows up and revoked when it goes away.
+// Plays a local recording back from where its audio is stored. The URL is
+// opened when the player shows up and released when it goes away.
 export default {
   name: "RecordingPlayer",
   props: {
@@ -26,22 +27,22 @@ export default {
     return { url: null, failed: false }
   },
   async created() {
+    // Not reactive: only released, also when the player went away before
+    // the audio was opened.
+    this.audio = null
+    this.closed = false
     try {
-      const chunks = await getRecordingChunks(this.recordingId)
-      if (chunks.length === 0) {
-        this.failed = true
-        return
-      }
-      this.url = URL.createObjectURL(
-        new Blob(chunks, { type: this.mimeType || undefined }),
-      )
+      this.audio = await openRecordingAudio(this.recordingId, this.mimeType)
     } catch (error) {
       console.error("cannot load recording for playback", error)
-      this.failed = true
     }
+    if (this.closed) this.audio?.release()
+    this.url = this.audio?.url ?? null
+    this.failed = this.audio === null
   },
   beforeDestroy() {
-    if (this.url) URL.revokeObjectURL(this.url)
+    this.closed = true
+    this.audio?.release()
   },
 }
 </script>

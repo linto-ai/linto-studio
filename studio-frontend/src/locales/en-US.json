@@ -1103,6 +1103,21 @@
     "contact": "Contact"
   },
   "global_error": {
+    "api_unreachable": {
+      "title": "Can't reach {name}",
+      "text": "The server does not answer. Check your internet connection, then try again.",
+      "retry": "Try again",
+      "still": "{name} still does not answer.",
+      "details": "Technical details",
+      "api_address": "API address",
+      "failure_label": "Error",
+      "failure": {
+        "timeout": "Response timed out",
+        "http": "HTTP response {status}",
+        "network": "No answer (network down, address out of reach or request refused by the browser)",
+        "unexpected": "Unexpected answer from the server"
+      }
+    },
     "auth_magic_link": "The authentication link has expired, please request again for an authentication link",
     "back_to_home": "Back to home",
     "page_not_found": "The page is not found, or you don't have the rights to access it"

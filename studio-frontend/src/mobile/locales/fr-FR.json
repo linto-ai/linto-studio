@@ -41,6 +41,9 @@
     "error": "E-mail ou mot de passe incorrect",
     "sso_error": "La connexion n'a pas abouti. Réessayez."
   },
+  "boot": {
+    "connecting": "Connexion à {address}…"
+  },
   "instance": {
     "change": "Changer d'instance",
     "title": "Instance LinTO Studio",
@@ -92,6 +95,7 @@
     "starting": "Démarrage…",
     "stop": "Arrêter",
     "denied": "Micro refusé. Autorisez-le dans les réglages du navigateur.",
+    "denied_app": "Micro refusé. Autorisez-le dans les réglages du téléphone.",
     "blocked": "Micro indisponible sur cet appareil",
     "pause": "Pause",
     "resume": "Reprendre",
@@ -100,6 +104,7 @@
     "notice": {
       "stay_in_app": "Quitter ou verrouiller l'écran met l'enregistrement en pause.",
       "stay_in_app_screen_on": "Quitter ou laisser l'écran se verrouiller met l'enregistrement en pause.",
+      "keeps_recording": "Vous pouvez verrouiller l'écran ou changer d'app : l'enregistrement continue.",
       "paused_automatically": "En pause : le micro n'est plus disponible. L'enregistrement reprendra dès son retour.",
       "resumed": "Enregistrement repris. Moins d'une minute n'a pas été enregistrée. | Enregistrement repris. {duration} n'a pas été enregistrée. | Enregistrement repris. {duration} n'ont pas été enregistrées."
     },
@@ -110,6 +115,12 @@
     "gaps_summary": "{count} coupure ({duration} non enregistrées) | {count} coupures ({duration} non enregistrées)",
     "offline_send": "Hors connexion : l'enregistrement partira de lui-même au retour du réseau.",
     "interrupted": "L'enregistrement a été interrompu (micro perdu ou app fermée par le téléphone). Ce qui a été capté est conservé.",
+    "notification": {
+      "title": "Enregistrement en cours",
+      "body": "Touchez pour revenir à LinTO Studio.",
+      "channel_name": "Enregistrement",
+      "channel_description": "Indique qu'un enregistrement est en cours."
+    },
     "microphone": "Micro",
     "microphone_default": "Micro par défaut",
     "microphone_choose": "Choisir le micro",

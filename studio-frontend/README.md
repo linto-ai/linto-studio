@@ -175,7 +175,13 @@ with "Other instance…" and its address, e.g. `http://192.168.1.10:8001`.
 
 - Node.js 22 and npm 10 (as for the rest of the frontend). The Capacitor
   packages (`@capacitor/core`, `@capacitor/android`, `@capacitor/cli`) and
-  the `@capacitor/app` plugin (Android back button) are in `package.json`.
+  the plugins are in `package.json`:
+  - `@capacitor/app`: Android back button;
+  - `@capgo/capacitor-audio-recorder` (MPL-2.0, used unmodified, source:
+    https://github.com/Cap-go/capacitor-audio-recorder): native recording;
+  - `@capawesome-team/capacitor-android-foreground-service`: the recording
+    service;
+  - `@capacitor/filesystem`: the recording files.
 - JDK 21 (`java -version`).
 - Android SDK with `platform-tools`, `platforms;android-36` and
   `build-tools;36.0.0`. Android Studio is not needed. Gradle is downloaded by
@@ -235,18 +241,52 @@ Scripts:
 - The Android back button closes an open sheet, goes back from a sub-page and
   sends the app to the background from home or login
   (`src/mobile/services/native/listenForBackButton.js`).
+- Recording goes on in the background and with the screen locked (see
+  below). The microphone choice is hidden: the phone's default input is
+  used.
 - `mobile.html` is written as `index.html`, the page Capacitor loads.
 - Only the files of `public/` the mobile front refers to are copied (fonts,
   images, `config.js`), not the classic app's assets
   (`config/vite/nativeAppPlugins.js`).
+
+### Recording in the background
+
+The web page cannot record once hidden; the app records through the phone
+instead (`src/mobile/services/recording/NativeRecorder.js`, picked by
+`createRecorder.js`):
+
+- a foreground service of type `microphone`, with a notification
+  ("Recording in progress"), keeps the microphone allowed once the app is
+  hidden or the screen locked; it starts when recording starts, from the
+  app shown (Android 14 requires it), and stops with the recording;
+- the plugin writes one AAC file (ADTS, 16 kHz, 32 kbit/s), readable up to
+  its last frame if the app is killed. It writes in the cache
+  (`capacitor-audio-recorder/`); the file is moved to the app's files
+  (`recordings/`) when the recording stops, Android may clear the cache;
+- the recording entry stores the file's URI (`audioFileUri`) instead of
+  chunks in IndexedDB. `recordingAudio.js` reads the audio wherever it is
+  (send, share, play, delete); the web builds drop the native modules;
+- the file size is saved every 10 s. At the next start, a recording cut
+  short is recovered: its file moved and queued like on the web, a
+  recording still held by the plugin stopped, files no recording points to
+  deleted (`recoverNativeRecordings.js`).
+
+Asked on the first recording: the microphone, then the notifications
+(Android 13+; refused, the recording works all the same). The plugin
+reports no error on Android: a file that has not grown for two size
+reports (about 20 s, outside a pause) interrupts the recording. Not
+detected: a phone call during the recording (Android records silence, no
+gap is reported).
 
 ### Files
 
 - `capacitor.config.json`: app id `ai.linto.studio`, name, `webDir`.
 - `android/`: the native project, committed. Build outputs, the copied web
   front (`app/src/main/assets/public`) and `local.properties` are ignored.
-  The microphone permissions are declared in
-  `android/app/src/main/AndroidManifest.xml`.
+  The microphone, foreground service and notification permissions, and the
+  recording service, are declared in
+  `android/app/src/main/AndroidManifest.xml`; the notification icon is
+  `android/app/src/main/res/drawable/ic_stat_recording.xml`.
 - `dist-app/` is not committed. The only committed APK is
   `android/linto-studio-debug.apk` (`android/.gitignore` ignores the others).
 

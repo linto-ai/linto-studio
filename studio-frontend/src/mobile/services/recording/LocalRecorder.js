@@ -45,7 +45,11 @@ export class LocalRecorder {
     this.watchTrack()
     this.startLevelMeter()
     this.mediaRecorder.start(CHUNK_INTERVAL_MS)
-    return this.mediaRecorder.mimeType || this.mimeType
+    // The audio goes to onChunk: no file (see NativeRecorder).
+    return {
+      mimeType: this.mediaRecorder.mimeType || this.mimeType,
+      audioFileUri: null,
+    }
   }
 
   pause() {
@@ -73,14 +77,15 @@ export class LocalRecorder {
     this.audioContext?.resume().catch(() => {})
   }
 
-  // Resolves once the last chunk has been delivered to onChunk.
+  // Resolves once the last chunk has been delivered to onChunk, with
+  // nothing to add to the recording (see NativeRecorder).
   stop() {
     return new Promise((resolve) => {
       if (!this.mediaRecorder || this.mediaRecorder.state === "inactive") {
-        resolve()
+        resolve({})
         return
       }
-      this.mediaRecorder.addEventListener("stop", () => resolve(), {
+      this.mediaRecorder.addEventListener("stop", () => resolve({}), {
         once: true,
       })
       this.mediaRecorder.stop()

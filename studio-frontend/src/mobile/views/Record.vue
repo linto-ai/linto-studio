@@ -49,6 +49,7 @@
           :summary="transcriptionSummary"
           @click="settingsOpen = true" />
         <ListRow
+          v-if="canChooseMicrophone"
           icon="microphone"
           :label="$t('mobile.record.microphone')"
           :hint="microphoneLabel"
@@ -128,6 +129,7 @@ import { microphoneChoiceMixin } from "@/mobile/mixins/microphoneChoice.js"
 import { transcriptionCreditMixin } from "@/mobile/mixins/transcriptionCredit.js"
 import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 import { pickRecordingNotice } from "@/mobile/tools/pickRecordingNotice.js"
+import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 
 export default {
   name: "MobileRecord",
@@ -156,7 +158,11 @@ export default {
     transcriptionCreditMixin,
   ],
   data() {
-    return { settingsOpen: false }
+    return {
+      settingsOpen: false,
+      // The native recorder always uses the phone's default input.
+      canChooseMicrophone: !IS_NATIVE_APP,
+    }
   },
   computed: {
     ...mapGetters("mobileRecordings", ["library", "localBytes"]),

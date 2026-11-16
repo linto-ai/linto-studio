@@ -1,5 +1,9 @@
 import * as queue from "@/mobile/services/recording/queue.js"
 import { uploadRecording } from "@/mobile/services/recording/uploadRecording.js"
+import {
+  deleteRecordingAudio,
+  recoverRecordingFiles,
+} from "@/mobile/services/recording/recordingAudio.js"
 import { sortRecordingsByDate } from "@/mobile/tools/sortRecordingsByDate.js"
 import { normalizeLoadedRecordings } from "@/mobile/tools/normalizeLoadedRecordings.js"
 import { sumRecordingBytes } from "@/mobile/tools/sumRecordingBytes.js"
@@ -19,6 +23,11 @@ const state = () => ({
 // Aborts the upload in progress (the one of state.uploadingId). Not in the
 // state: Vuex would observe it. Set and cleared by `upload` only.
 let uploadAbortController = null
+
+// The load in progress: pages and the upload resumption ask for it at the
+// same time on startup. One load at a time, the others wait for it: two
+// would recover (move) the same native file at once.
+let loading = null
 
 const PENDING_STATUSES = [
   RECORDING_STATUS.QUEUED,
@@ -72,18 +81,11 @@ const mutations = {
 }
 
 const actions = {
-  async load({ state, commit }) {
-    const { keep, remove } = normalizeLoadedRecordings(
-      await queue.listRecordings(),
-      state.uploadingId,
-    )
-    await Promise.all(remove.map((id) => queue.deleteRecording(id)))
-    await Promise.all(
-      keep
-        .filter((item) => item.status === RECORDING_STATUS.QUEUED)
-        .map((item) => queue.updateRecording(item.id, { status: item.status })),
-    )
-    commit("setItems", keep)
+  load(context) {
+    loading ??= loadRecordings(context).finally(() => {
+      loading = null
+    })
+    return loading
   },
   async create({ commit }, recording) {
     commit("upsert", await queue.createRecording(recording))
@@ -94,9 +96,9 @@ const actions = {
   },
   // Removing the recording being sent cancels the request too, so the
   // server does not create its media.
-  async remove({ state, commit }, id) {
+  async remove({ state, getters, commit }, id) {
     if (state.uploadingId === id) uploadAbortController?.abort()
-    await queue.deleteRecording(id)
+    await deleteStoredRecording(getters.byId(id) ?? { id })
     commit("remove", id)
   },
   async removeAll({ state, dispatch }) {
@@ -163,6 +165,32 @@ const actions = {
       await dispatch("upload", item.id)
     }
   },
+}
+
+async function loadRecordings({ state, commit }) {
+  const loadStartedAt = Date.now()
+  const stored = await recoverRecordingFiles(
+    await queue.listRecordings(),
+    loadStartedAt,
+  )
+  const { keep, remove } = normalizeLoadedRecordings(stored, state.uploadingId)
+  await Promise.all(
+    remove.map((id) =>
+      deleteStoredRecording(stored.find((item) => item.id === id)),
+    ),
+  )
+  await Promise.all(
+    keep
+      .filter((item) => item.status === RECORDING_STATUS.QUEUED)
+      .map((item) => queue.updateRecording(item.id, { status: item.status })),
+  )
+  commit("setItems", keep)
+}
+
+// The entry and its audio, wherever the audio is stored.
+async function deleteStoredRecording(recording) {
+  await queue.deleteRecording(recording.id)
+  await deleteRecordingAudio(recording)
 }
 
 export default { namespaced: true, state, getters, mutations, actions }
