@@ -277,6 +277,18 @@ class OrganizationModel extends MongoModel {
     }
   }
 
+  async getByIds(ids, projection = undefined) {
+    try {
+      const query = {
+        _id: { $in: this.getObjectIds(ids) },
+      }
+      return await this.mongoRequest(query, projection)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async getByIdAndUser(orgaId, userId, options = {}) {
     try {
       const { bypass = false } = options

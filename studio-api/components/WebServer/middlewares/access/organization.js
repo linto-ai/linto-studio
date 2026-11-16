@@ -15,6 +15,9 @@ const {
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
 
+const { ConversationNotShared } = require(
+  `${process.cwd()}/components/WebServer/error/exception/conversation`,
+)
 const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 
 async function isSystemAdmin(req) {

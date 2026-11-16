@@ -86,6 +86,8 @@ module.exports = (webServer) => {
     /* Alias are api only on the studio side */
     api_routes["/api/organizations/:organizationId/sessions"] =
       require("./api/sessions/data.js")(webServer)
+    api_routes["/api/organizations/:organizationId/sessions/:id/catchup"] =
+      require("./api/sessions/catchup.js")(webServer)
     api_routes["/api/administration"] = [
       ...api_routes["/api/administration"],
       ...require("./api/administration/sessions")(webServer),

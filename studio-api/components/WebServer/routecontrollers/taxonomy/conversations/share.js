@@ -1,4 +1,3 @@
-const { DocumentAttributes } = require("docx")
 const debug = require("debug")(
   `linto:components:WebServer:routecontrollers:taxonomy:conversations:share`,
 )

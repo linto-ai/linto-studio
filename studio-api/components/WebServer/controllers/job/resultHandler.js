@@ -24,7 +24,7 @@ async function handleKeywordResult(result, conversation) {
     conversation._id.toString(),
     "keyword",
   )
-  let categoryId = ""
+  let categoryId
 
   if (category.length === 0) {
     let result = await model.categories.createDefaultCategories(

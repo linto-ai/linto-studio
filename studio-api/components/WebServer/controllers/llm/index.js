@@ -505,6 +505,8 @@ async function getJobMarkdownContent(jobId) {
 module.exports = {
   generateText,
   request,
+  resolveServiceId,
+  resolveFlavorId,
   requestAPIV2,
   pollingLlm: processJobWithWebSocket,
   initWebSocketConnection,

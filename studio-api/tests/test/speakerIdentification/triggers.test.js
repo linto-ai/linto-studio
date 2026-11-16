@@ -3,7 +3,6 @@ jest.mock("debug", () => () => () => {})
 // --- files/store mock (enums + pure helpers) -------------------------------
 const STORAGE_MODE = { AUDIO: "audio", EMBEDDINGS: "embeddings" }
 const SYNC_STATE = { SYNCED: "synced", PENDING: "pending", ERROR: "error" }
-const COLLECTION_TYPE = { CUSTOM: "custom", ORGANIZATION: "organization" }
 const mockResolveStoragePath = jest.fn((p) => (p ? `/abs/${p}` : null))
 const mockCascadeDeleteSampleFiles = jest.fn()
 

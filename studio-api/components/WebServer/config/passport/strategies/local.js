@@ -47,15 +47,14 @@ async function generateUserToken(email, password, done) {
     if (typeof email !== "string" || typeof password !== "string")
       return done(new InvalidCredential())
 
-    let users = await model.users.getTokenByEmail(email)
-    if (users.length === 1) user = users[0]
-    else if (users.length > 1) throw new MultipleUserFound()
-    else throw new UserNotFound()
+    const users = await model.users.getTokenByEmail(email)
+    if (users.length > 1) throw new MultipleUserFound()
+    if (users.length === 0) throw new UserNotFound()
+    const user = users[0]
 
     if (user.suspend) throw new DisabledUser()
     if (!user.salt) throw new UnableToGenerateKeyToken()
-    if (!user || !validatePassword(password, user))
-      return done(new InvalidCredential())
+    if (!validatePassword(password, user)) return done(new InvalidCredential())
 
     if (process.env.SMTP_HOST && user.emailIsVerified === false)
       throw new EmailNotVerified()
@@ -91,13 +90,12 @@ async function generateResetUserToken(magicId, psw, done) {
   try {
     if (typeof magicId !== "string") return done(new InvalidCredential())
 
-    let users = await model.users.getByMagicId(magicId, true)
-    if (users.length === 1) user = users[0]
-    else if (users.length > 1) throw new MultipleUserFound()
-    else throw new UserNotFound()
+    const users = await model.users.getByMagicId(magicId, true)
+    if (users.length > 1) throw new MultipleUserFound()
+    if (users.length === 0) throw new UserNotFound()
+    const user = users[0]
 
-    if (!user) return done(new InvalidCredential())
-    else if (!moment().isBefore(user.authLink.validityDate))
+    if (!moment().isBefore(user.authLink.validityDate))
       return done(new ExpiredLink())
 
     const verified = verifiedFieldsFromLink(user)

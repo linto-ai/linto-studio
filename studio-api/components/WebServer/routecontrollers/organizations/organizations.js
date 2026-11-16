@@ -36,7 +36,7 @@ async function createOrganization(req, res, next) {
       token: "",
     }
 
-    if (!!req.body.users) organization.users.push(...req.body.users)
+    if (req.body.users) organization.users.push(...req.body.users)
 
     const result = await model.organizations.create(organization)
     if (result.insertedCount !== 1) throw new OrganizationError()
