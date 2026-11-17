@@ -1,7 +1,6 @@
 import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 import { ensureSession } from "@/mobile/services/session/ensureSession.js"
 import store from "@/mobile/store.js"
-import { getEnv } from "@/tools/getEnv"
 import { canStartLive } from "@/mobile/tools/canStartLive.js"
 import { canUploadMedia } from "@/mobile/tools/canUploadMedia.js"
 import { API_UNREACHABLE_ROUTE } from "@/const/apiUnreachableRoute.js"
@@ -64,7 +63,7 @@ function hasOrganizationRights(to) {
     return canUploadMedia(permissions, role)
   }
   if (to.meta?.live) {
-    const sessionsEnabled = getEnv("VUE_APP_ENABLE_SESSION") === "true"
+    const sessionsEnabled = store.getters["apiStatus/hasSession"]
     return sessionsEnabled && canStartLive(permissions, role)
   }
   return true

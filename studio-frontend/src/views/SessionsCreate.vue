@@ -11,8 +11,6 @@
   </LayoutV2>
 </template>
 <script>
-import { getEnv } from "@/tools/getEnv.js"
-
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 
@@ -42,7 +40,7 @@ export default {
   async created() {
     // In SaaS the session permission depends on the org's plan: know it before
     // deciding whether the page is accessible.
-    if (getEnv("VUE_APP_MODE") === "cloud") {
+    if (this.$store.getters["apiStatus/isSaas"]) {
       await this.$store.dispatch(
         "billing/fetchUsage",
         this.currentOrganizationScope,

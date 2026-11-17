@@ -4,14 +4,15 @@ import { customDebug } from "@/tools/customDebug"
 import { bus } from "@/tools/eventBus.js"
 import { getCookie } from "@/tools/auth/getCookie"
 import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 import store from "@/store/index.js"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import { generateId } from "@/tools/generateId"
 import { isMediaFromOtherOrganization } from "@/tools/isMediaFromOtherOrganization"
 import { apiGetConversationById } from "@/api/conversation.js"
 
-const socketioUrl = getEnv("VUE_APP_SESSION_WS")
-const socketioPath = getEnv("VUE_APP_SESSION_WS_PATH")
+const socketioUrl = API_ENDPOINTS.socketOrigin
+const socketioPath = API_ENDPOINTS.socketPath
 
 // After this many failed attempts socket.io gives up: status becomes
 // "failed" and the user has to trigger retry() manually (status dot/banner).

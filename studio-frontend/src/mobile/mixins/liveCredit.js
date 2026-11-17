@@ -5,7 +5,6 @@ import { computeCheckoutReturn } from "@/tools/billing/computeCheckoutReturn"
 import { computeCheckoutReturnUrl } from "@/tools/billing/computeCheckoutReturnUrl"
 import { isLiveCreditBelowAdmission } from "@/tools/billing/isLiveCreditBelowAdmission"
 import { computePackGroups } from "@/tools/billing/pack/computePackGroups"
-import { getEnv } from "@/tools/getEnv"
 import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 import { leavePageFor } from "@/tools/leavePageFor"
 
@@ -64,14 +63,14 @@ export const liveCreditMixin = {
     // The balance and the pack catalog. The catalog is loaded whatever the
     // role: who may buy is decided when it is shown, not now.
     loadLiveCredit() {
-      if (getEnv("VUE_APP_MODE") !== "cloud") return null
+      if (!this.$store.getters["apiStatus/isSaas"]) return null
       return Promise.all([
         refreshLiveCredit(this.$store, this.liveOrganizationId),
         this.loadLivePacks(),
       ])
     },
     loadLivePacks() {
-      if (IS_NATIVE_APP || getEnv("VUE_APP_MODE") !== "cloud") return null
+      if (IS_NATIVE_APP || !this.$store.getters["apiStatus/isSaas"]) return null
       return this.$store.dispatch("billing/loadPackCatalog")
     },
     async buyLivePack(packKey) {

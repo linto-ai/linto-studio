@@ -1,10 +1,14 @@
 const debug = require("debug")("linto:components:WebServer:routes:routes")
 const PROVIDER = require(`${process.cwd()}/lib/dao/oidc/provider`)
+const { isSessionApiConfigured, isSpeakerIdentificationEnabled } = require(
+  `${process.cwd()}/lib/features`,
+)
 
 module.exports = (webServer) => {
   let api_routes = {
     "/": require("./root")(webServer),
     "/healthcheck": require("./api/healthcheck/healthcheck")(webServer),
+    "/features": require("./api/healthcheck/features")(webServer),
     "/auth": [
       ...require("./auth/index.js")(webServer),
       ...require("./auth/oidc_mobile.js")(webServer),
@@ -57,7 +61,7 @@ module.exports = (webServer) => {
     "/api/publication": require("./api/publication/publication")(webServer),
   }
 
-  if (process.env.ENABLE_SPEAKER_IDENTIFICATION === "true") {
+  if (isSpeakerIdentificationEnabled()) {
     api_routes["/api/users/self/voice"] =
       require("./api/users/userVoiceOptIn")(webServer)
     api_routes["/api/organizations/:organizationId/voiceprint-collections"] =
@@ -82,7 +86,7 @@ module.exports = (webServer) => {
   }
 
   let proxy_routes = []
-  if (process.env.SESSION_API_ENDPOINT !== "") {
+  if (isSessionApiConfigured()) {
     proxy_routes.push(require("./proxy/sessions/session.js")(webServer))
     proxy_routes.push(require("./proxy/sessions/sessionAdmin.js")(webServer))
 

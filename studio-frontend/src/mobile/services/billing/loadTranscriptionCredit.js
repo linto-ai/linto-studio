@@ -1,4 +1,3 @@
-import { getEnv } from "@/tools/getEnv"
 import { computeTranscriptionCredit } from "@/mobile/tools/computeTranscriptionCredit.js"
 
 const STORAGE_PREFIX = "mobile.transcriptionCredit."
@@ -14,7 +13,7 @@ const STORAGE_PREFIX = "mobile.transcriptionCredit."
  * @returns {Promise<{ minutes: number, resetAt: string|null, syncedAt: number, cached: boolean }|null>}
  */
 export async function loadTranscriptionCredit(store, organizationId) {
-  if (getEnv("VUE_APP_MODE") !== "cloud" || !organizationId) return null
+  if (!store.getters["apiStatus/isSaas"] || !organizationId) return null
   const [usage, lots] = await Promise.all([
     store.dispatch("billing/fetchUsage", organizationId),
     store.dispatch("billing/fetchCreditLots", organizationId),

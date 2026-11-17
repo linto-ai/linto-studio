@@ -1,6 +1,4 @@
 <script>
-import { getEnv } from "@/tools/getEnv"
-
 // Functional (no instance, no DOM surgery) so the slotted content's own
 // reactive v-if patches through Vue's normal diff. vue-fragment's <fragment>
 // detaches its container div from the DOM at mount and only ever moves the
@@ -10,8 +8,8 @@ import { getEnv } from "@/tools/getEnv"
 export default {
   name: "IsCloud",
   functional: true,
-  render(h, { slots }) {
-    return getEnv("VUE_APP_MODE") === "cloud" ? slots().default : null
+  render(h, { slots, parent }) {
+    return parent.$store.getters["apiStatus/isSaas"] ? slots().default : null
   },
 }
 </script>

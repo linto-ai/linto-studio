@@ -1,10 +1,5 @@
 NODE_ENV=development
-VUE_APP_HOST=Host
-VUE_APP_PUBLIC_MEDIA=API_HOST
-VUE_APP_CONVO_API=API_URL
-VUE_APP_CONVO_AUTH=AUTH_URL
-VUE_APP_SESSION_WS=SESSION_WS_URL
-VUE_APP_SESSION_WS_PATH=/socket.io
+VUE_APP_CONVO_API=API_URL # absolute, ending in /api: auth, media and socket.io are derived from it
 VUE_APP_DEBUG=*
 VUE_APP_WEBSOCKET_TRANSPORTS=websocket
 VUE_APP_MULTIFILE=false
@@ -23,12 +18,9 @@ VUE_APP_SHOW_PARTIALS=true # default: true. Show in-progress text in live sessio
 VUE_APP_WATERMARK_FREQUENCY=600 # in seconds
 VUE_APP_WATERMARK_DURATION=10 # in seconds
 VUE_APP_WATERMARK_CONTENT="Transcription by LinTO.ai $linto Open Source AI by $linagora"
-VUE_APP_ENABLE_SESSION=false
-VUE_APP_ENABLE_SPEAKER_IDENTIFICATION=false
 VUE_APP_EXPERIMENTAL_HIGHLIGHT=false
 VUE_APP_EXPERIMENTAL_DARK_THEME=true
 VUE_APP_SHOW_LOGIN_FOOTER=false
 VUE_APP_SHOW_BETA_LIVE_TRANSCRIPTION=false
-VUE_APP_MODE="cloud" # default: "basic"
-VUE_APP_SAAS_LIVE_PRODUCT_URL=https://linto.ai/live # cloud mode: where the locked "Sessions" entry leads
+VUE_APP_SAAS_LIVE_PRODUCT_URL=https://linto.ai/live # SaaS deployments: where the locked "Sessions" entry leads
 VUE_APP_ENABLE_MOBILE_APP=true # default: true. Phones (touch screen, short side <= 767px) open the mobile app under /m/

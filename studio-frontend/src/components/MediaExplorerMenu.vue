@@ -87,7 +87,7 @@ export default {
   },
   computed: {
     sessionEnable() {
-      return getEnv("VUE_APP_ENABLE_SESSION") === "true"
+      return this.$store.getters["apiStatus/hasSession"]
     },
     currentUserId() {
       return this.$store.getters["user/getUserId"]

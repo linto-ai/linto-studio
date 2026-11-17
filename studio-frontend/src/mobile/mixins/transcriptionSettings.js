@@ -8,7 +8,6 @@ import { computeTranscriptionChoices } from "@/mobile/tools/computeTranscription
 import { buildTranscriptionSettings } from "@/mobile/tools/buildTranscriptionSettings.js"
 import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 import { isSpeakerIdentificationCapable } from "@/mobile/tools/isSpeakerIdentificationCapable.js"
-import { getEnv } from "@/tools/getEnv"
 import RIGHTS_LIST from "@/const/rigthsList.js"
 import { DEFAULT_MEMBERS_RIGHT } from "@/mobile/const/defaultMembersRight.js"
 
@@ -40,7 +39,7 @@ export const transcriptionSettingsMixin = {
     speakerIdentificationCapable() {
       return isSpeakerIdentificationCapable(
         this.currentService,
-        getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true",
+        this.$store.getters["apiStatus/hasSpeakerIdentification"],
       )
     },
     voiceCollections() {
@@ -105,7 +104,7 @@ export const transcriptionSettingsMixin = {
     this.servicesLoaded = true
     this.applyPreferences(readTranscriptionPreferences(this.organizationScope))
     this.$store.dispatch("folders/fetchFolders")
-    if (getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true") {
+    if (this.$store.getters["apiStatus/hasSpeakerIdentification"]) {
       this.$store.dispatch("organizations/loadVoiceprintCollections")
     }
   },

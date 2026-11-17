@@ -16,35 +16,17 @@ const swaggerUi = require("swagger-ui-express")
 let swaggerDocument = require("./apidoc/swagger.json")
 
 const CORS = require("cors")
-let corsOptions = null
+const logger = require(`${process.cwd()}/lib/logger/logger`)
+const { computeCorsOptions } = require(`${process.cwd()}/lib/corsOrigin`)
 
-if (process.env.CORS_ENABLED === "true") {
-  const whitelistRaw = process.env.CORS_API_WHITELIST || ""
-
-  if (whitelistRaw === "*") {
-    corsOptions = { origin: "*" }
-  } else if (whitelistRaw.length > 0) {
-    const whitelistDomains = whitelistRaw.split(",").map((d) => d.trim())
-
-    corsOptions = {
-      origin: function (origin, callback) {
-        if (!origin) {
-          return callback(null, true)
-        }
-
-        const allowed = whitelistDomains.some((domain) =>
-          origin.includes(domain),
-        )
-
-        if (allowed) {
-          callback(null, true)
-        } else {
-          callback(new Error(`Not allowed by CORS: origin ${origin}`))
-        }
-      },
-    }
-  }
+// CORS_API_WHITELIST alone decides (lib/corsOrigin.js).
+const corsOptions = computeCorsOptions(process.env.CORS_API_WHITELIST)
+if (process.env.CORS_ENABLED !== undefined) {
+  logger.warn(
+    "CORS_ENABLED is ignored: CORS_API_WHITELIST alone decides (empty: no CORS, *: any origin)",
+  )
 }
+
 class WebServer extends Component {
   constructor(app) {
     super(app)

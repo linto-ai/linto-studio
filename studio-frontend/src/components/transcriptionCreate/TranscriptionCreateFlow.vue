@@ -58,7 +58,6 @@ import {
 } from "@/services/transcriptionCreate/startQuickSession.js"
 import { uploadFiles } from "@/services/transcriptionCreate/uploadFiles.js"
 import { isSaasRefusal } from "@/tools/billing/isSaasRefusal"
-import { getEnv } from "@/tools/getEnv"
 import { buildBotRequest } from "@/tools/transcriptionCreate/buildBotRequest.js"
 import { buildConversationRequest } from "@/tools/transcriptionCreate/buildConversationRequest.js"
 import { buildQuickSessionRequest } from "@/tools/transcriptionCreate/buildQuickSessionRequest.js"
@@ -128,6 +127,11 @@ export default {
   computed: {
     ...mapGetters("billing", ["isLiveCreditExhausted"]),
     ...mapGetters("quickSession", ["runningQuickSession"]),
+    ...mapGetters("apiStatus", [
+      "isSaas",
+      "hasSession",
+      "hasSpeakerIdentification",
+    ]),
     ...mapGetters("organizations", {
       organizationId: "getCurrentOrganizationScope",
       voiceprintCollections: "getVoiceprintCollections",
@@ -145,12 +149,11 @@ export default {
         // Likewise for the minutes transcribed once the audio is complete.
         services: this.isTranscriptionExhausted ? [] : this.loadedServices,
         collections: this.voiceprintCollections,
-        speakerIdentificationEnabled:
-          getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true",
+        speakerIdentificationEnabled: this.hasSpeakerIdentification,
       }
     },
     isSessionEnabled() {
-      return getEnv("VUE_APP_ENABLE_SESSION") === "true"
+      return this.hasSession
     },
     sources() {
       return [
@@ -297,7 +300,7 @@ export default {
   async created() {
     this.$store.dispatch("folders/fetchFolders")
     // The session source depends on the org's plan and live on its balance.
-    if (getEnv("VUE_APP_MODE") === "cloud") {
+    if (this.isSaas) {
       await Promise.all([
         this.$store.dispatch("billing/fetchUsage", this.organizationId),
         this.$store.dispatch("billing/fetchCreditLots", this.organizationId),
@@ -522,7 +525,7 @@ export default {
     // The sidebar gauges and the next refusal read the quota and the packs
     // from the store: keep them in step with what was just used or refused.
     refreshUsage() {
-      if (getEnv("VUE_APP_MODE") !== "cloud") return
+      if (!this.isSaas) return
       this.$store.dispatch("billing/fetchUsage", this.organizationId)
       this.$store.dispatch("billing/fetchCreditLots", this.organizationId)
     },

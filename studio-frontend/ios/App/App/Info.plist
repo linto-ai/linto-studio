@@ -22,6 +22,20 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!-- SSO return: the API sends the phone's browser back to
+	     ai.linto.studio://login/oidc (src/mobile/const/mobileSsoRedirectUri.js),
+	     which opens the app (listenForSsoReturn.js). -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>ai.linto.studio</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>ai.linto.studio</string>
+			</array>
+		</dict>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<!-- Shown by iOS when the app first asks for the microphone; without it the app is killed at that request. -->

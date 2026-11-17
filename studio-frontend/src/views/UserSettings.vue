@@ -76,6 +76,7 @@
 import { apiUpdateUserInfo, apiSendVerificationLink } from "@/api/user.js"
 import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
 import Loading from "@/components/atoms/Loading.vue"
 import UserAvatar from "@/components/atoms/UserAvatar.vue"
@@ -175,7 +176,7 @@ export default {
           formData.append("file", file)
           // TODO: put this function in api/user.js
           let req = await this.$options.filters.sendMultipartFormData(
-            `${getEnv("VUE_APP_CONVO_API")}/users/self/picture`,
+            `${API_ENDPOINTS.api}/users/self/picture`,
             "put",
             formData,
             { timeout: 3000, redirect: false },

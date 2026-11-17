@@ -1,7 +1,4 @@
 import { ORGANIZATION_PERMISSIONS } from "@/const/organizationPermissions"
-import { getEnv } from "@/tools/getEnv"
-
-const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 
 export const organizationPermissionsMixin = {
   methods: {
@@ -65,7 +62,7 @@ export const organizationPermissionsMixin = {
     // SaaS: also gated by the live.sessions entitlement (plans catalog).
     canSessionInCurrentOrganization() {
       if (!this.hasSessionPermission(this.organizationPermissions)) return false
-      if (!IS_MODE_CLOUD) return true
+      if (!this.$store.getters["apiStatus/isSaas"]) return true
       return this.$store.getters["billing/can"]("live.sessions")
     },
     canMicrophoneInCurrentOrganization() {

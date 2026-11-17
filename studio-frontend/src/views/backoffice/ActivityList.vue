@@ -102,7 +102,6 @@ import {
   apiExportActivityLogs,
   ACTIVITY_SCOPE_BY_TAB,
 } from "@/api/admin.js"
-import { getEnv } from "@/tools/getEnv"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
@@ -139,8 +138,6 @@ const SAAS_ACTION_KEY = {
   "billing.user.purged": "user_purged",
 }
 
-const IS_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
-
 export default {
   props: {},
   data() {
@@ -168,7 +165,7 @@ export default {
         //   label: this.$t("activity_list.tabs.sessions"),
         //   icon: "broadcast",
         // },
-        ...(IS_CLOUD
+        ...(this.$store.getters["apiStatus/isSaas"]
           ? [
               {
                 name: "billing",

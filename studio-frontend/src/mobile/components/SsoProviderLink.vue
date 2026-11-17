@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 import { oidcProviderIcon } from "@/mobile/tools/oidcProviderIcon.js"
 import { markSsoReturn } from "@/mobile/services/session/markSsoReturn.js"
 import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     href() {
-      return `${getEnv("VUE_APP_CONVO_AUTH")}/${this.path}/login`
+      return `${API_ENDPOINTS.auth}/${this.path}/login`
     },
     icon() {
       return oidcProviderIcon(this.name)

@@ -90,9 +90,6 @@ import ModalCreateOrganization from "@/components/ModalCreateOrganization.vue"
 import FavoriteStar from "@/components/atoms/FavoriteStar.vue"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
-import { getEnv } from "@/tools/getEnv"
-
-const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 
 export default {
   name: "ModalSwitchOrg",
@@ -123,10 +120,11 @@ export default {
       isFavoriteOrganization: "isFavoriteOrganization",
     }),
     ...mapGetters("system", ["isMobile"]),
+    ...mapGetters("apiStatus", ["isSaas"]),
     // In SaaS a new organization is a Business subscription: anyone can buy
     // one. Elsewhere it takes the platform role.
     canCreateOrganization() {
-      return IS_MODE_CLOUD || this.isOrganizationInitiator
+      return this.isSaas || this.isOrganizationInitiator
     },
     isOpen: {
       get() {
@@ -165,7 +163,7 @@ export default {
     // SaaS: the organization is created by the Business checkout, from the
     // wizard's organization step.
     createOrganization() {
-      if (!IS_MODE_CLOUD) {
+      if (!this.isSaas) {
         this.isCreateModalOpen = true
         return
       }

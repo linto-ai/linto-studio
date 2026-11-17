@@ -73,7 +73,6 @@ import InstallGuideIos from "@/mobile/components/InstallGuideIos.vue"
 import InstallGuideAndroid from "@/mobile/components/InstallGuideAndroid.vue"
 import { currentUserMixin } from "@/mobile/mixins/currentUser.js"
 import { installMixin } from "@/mobile/mixins/install.js"
-import { getEnv } from "@/tools/getEnv"
 import { listUserOrganizations } from "@/mobile/tools/listUserOrganizations.js"
 import { canStartLive } from "@/mobile/tools/canStartLive.js"
 import { canUploadMedia } from "@/mobile/tools/canUploadMedia.js"
@@ -127,7 +126,7 @@ export default {
     },
     // Instance flag: shown disabled, with the reason as subtitle.
     liveEnabled() {
-      return getEnv("VUE_APP_ENABLE_SESSION") === "true"
+      return this.$store.getters["apiStatus/hasSession"]
     },
     liveSubtitle() {
       return this.liveEnabled

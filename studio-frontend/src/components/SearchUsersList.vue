@@ -24,7 +24,7 @@
 </template>
 <script>
 import { debounceMixin } from "../mixins/debounce"
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 import Loading from "@/components/atoms/Loading.vue"
 import { apiSearchUser } from "../api/user.js"
 import { USER_SEARCH_MIN_LENGTH } from "@/const/userSearch.js"
@@ -107,7 +107,7 @@ export default {
       }, 50)
     },
     imgFullPath(imgPath) {
-      return getEnv("VUE_APP_PUBLIC_MEDIA") + "/" + imgPath
+      return `${API_ENDPOINTS.media}/${imgPath}`
     },
   },
   components: { Loading, UserInfoInline },

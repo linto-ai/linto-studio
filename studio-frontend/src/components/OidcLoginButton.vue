@@ -6,7 +6,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
 export default {
   props: {
@@ -19,14 +19,9 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      BASE_AUTH: getEnv("VUE_APP_CONVO_AUTH"),
-    }
-  },
   computed: {
     link() {
-      return `${this.BASE_AUTH}/${this.path}/login`
+      return `${API_ENDPOINTS.auth}/${this.path}/login`
     },
     label() {
       if (this.$te(`login.sso.${this.name}`)) {

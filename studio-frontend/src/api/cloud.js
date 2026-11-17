@@ -1,11 +1,9 @@
 import { sendRequest } from "../tools/request/sendRequest"
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
 // The SaaS plugin (linto-saas) is mounted at /cloud on studio-api, sibling to
-// /api (so the Stripe webhook bypasses studio auth). VUE_APP_CONVO_API ends in
-// /api, so we strip it to reach /cloud.
-const CLOUD_API =
-  getEnv("VUE_APP_CONVO_API").replace(/\/api\/?$/, "") + "/cloud"
+// /api (so the Stripe webhook bypasses studio auth).
+const CLOUD_API = `${API_ENDPOINTS.root}/cloud`
 
 // GET /cloud/plans -> [{ planKey, displayName, description, pricing, entitlements }]
 export async function apiGetPlans(notif = null) {

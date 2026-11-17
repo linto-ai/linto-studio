@@ -1,5 +1,5 @@
 import { apiGetPublicUserById } from "../../api/user.js"
-import { getEnv } from "../getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
 export async function getUserInfo(userId) {
   try {
@@ -11,7 +11,7 @@ export async function getUserInfo(userId) {
         lastname: user.data.lastname,
         fullname: user.data.firstname + " " + user.data.lastname,
         email: user.data.email,
-        img: getEnv("VUE_APP_PUBLIC_MEDIA") + "/" + user.data.img,
+        img: `${API_ENDPOINTS.media}/${user.data.img}`,
         visibility: user.data.visibility,
       }
     } else {
@@ -21,7 +21,7 @@ export async function getUserInfo(userId) {
         lastname: "user",
         fullname: "private user",
         email: "",
-        img: getEnv("VUE_APP_PUBLIC_MEDIA") + "/pictures/default.jpg",
+        img: `${API_ENDPOINTS.media}/pictures/default.jpg`,
         visibility: "private",
       }
     }

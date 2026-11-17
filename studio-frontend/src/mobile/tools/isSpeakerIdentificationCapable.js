@@ -1,9 +1,9 @@
 /**
  * Whether a transcription service can recognize enrolled voices: the
- * feature flag is on and its first diarization sub-service advertises
+ * deployment offers it and its first diarization sub-service advertises
  * speaker identification.
  * @param {object} service - one entry of GET /services
- * @param {boolean} featureEnabled - VUE_APP_ENABLE_SPEAKER_IDENTIFICATION
+ * @param {boolean} featureEnabled - the apiStatus/hasSpeakerIdentification getter
  * @returns {boolean}
  */
 export function isSpeakerIdentificationCapable(service, featureEnabled) {

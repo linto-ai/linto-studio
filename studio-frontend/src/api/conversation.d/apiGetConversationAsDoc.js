@@ -1,8 +1,8 @@
 import { apiGetConversationChild } from "@/api/conversation.js"
 import { apiGetCanonicalConv } from "./apiGetCanonicalConv.js"
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
-const BASE_API = getEnv("VUE_APP_CONVO_API")
+const BASE_API = API_ENDPOINTS.api
 
 function convertLocaleToLanguages(locales) {
   switch (true) {

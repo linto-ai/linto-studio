@@ -144,7 +144,6 @@ export default {
       resendingVerification: false,
       loginMethodsIndexedByPath: {},
       showOrganizationSso: false,
-      BASE_AUTH: getEnv("VUE_APP_CONVO_AUTH"),
     }
   },
   mounted() {

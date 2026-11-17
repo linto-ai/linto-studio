@@ -221,7 +221,6 @@
 <script>
 import { mapGetters } from "vuex"
 import { apiSendVerificationLink } from "@/api/user.js"
-import { getEnv } from "@/tools/getEnv"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
@@ -299,6 +298,7 @@ export default {
     }),
     ...mapGetters("system", ["isMobile"]),
     ...mapGetters("organizations", ["isImpersonatingCurrentOrganization"]),
+    ...mapGetters("apiStatus", ["hasSession", "hasSpeakerIdentification"]),
     // Billing is the org's Stripe account: its admins only, and not while
     // impersonating (the whole org block is hidden then).
     canSeeBilling() {
@@ -310,12 +310,12 @@ export default {
     canManageSessionNotice() {
       return (
         (this.isAdmin || this.isMaintainer) &&
-        getEnv("VUE_APP_ENABLE_SESSION") === "true" &&
+        this.hasSession &&
         this.hasSessionPermission(this.organizationPermissions)
       )
     },
     speakerIdentificationEnabled() {
-      return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"
+      return this.hasSpeakerIdentification
     },
     isModalOpen: {
       get() {

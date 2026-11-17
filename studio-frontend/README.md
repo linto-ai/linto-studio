@@ -39,12 +39,13 @@ All values are strings: boolean flags are only on when set to exactly
 
 | Variable                       | Default                       | Description                                                                                                       |
 | ------------------------------ | ----------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `VUE_APP_CONVO_API`            | `http://127.0.0.1:8001/api`   | studio-api REST URL, ending in `/api` (the billing routes are derived from it by replacing `/api` with `/cloud`). |
-| `VUE_APP_CONVO_AUTH`           | `http://127.0.0.1:8001/auth`  | studio-api authentication URL (password login, OIDC/SSO providers).                                               |
-| `VUE_APP_PUBLIC_MEDIA`         | `http://127.0.0.1:8001/media` | Public media URL (user pictures).                                                                                 |
-| `VUE_APP_SESSION_WS`           | `http://127.0.0.1:8001`       | Socket.IO server URL for live events (sessions, media, transcription progress).                                  |
-| `VUE_APP_SESSION_WS_PATH`      | _(Socket.IO default)_         | Socket.IO path, usually `/socket.io`.                                                                             |
+| `VUE_APP_CONVO_API`            | `http://127.0.0.1:8001/api`   | studio-api REST URL: **absolute** (`http://` or `https://`) and ending in `/api`. Every other studio-api URL is derived from its root (see below); a path such as `/cm-api/api` is refused and shown as the API being unreachable. |
 | `VUE_APP_WEBSOCKET_TRANSPORTS` | `websocket`                   | Comma-separated Socket.IO transports, e.g. `websocket,polling`.                                                   |
+
+From the root of `VUE_APP_CONVO_API` (`https://studio.linto.ai/cm-api/api`
+→ `https://studio.linto.ai/cm-api`, `src/const/apiEndpoints.js`): `/auth`,
+`/media`, `/features`, `/cloud`, and Socket.IO at the root's origin with the
+path `<root path>/socket.io`. A deployment must serve studio-api that way.
 
 #### Branding
 
@@ -57,12 +58,17 @@ All values are strings: boolean flags are only on when set to exactly
 
 #### Features
 
+SaaS mode (billing, plans and entitlements, live credit, organization
+switcher), live sessions and speaker identification are not front settings:
+the front asks studio-api `GET /features` before showing any page, and the
+API answers from its own configuration (`CloudService` component,
+`SESSION_API_ENDPOINT` + `BrokerClient` component,
+`ENABLE_SPEAKER_IDENTIFICATION`). An API without this route (older than the
+front) is shown as unreachable: deploy studio-api first.
+
 | Variable                                | Default                 | Description                                                                                                                                  |
 | --------------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `VUE_APP_MODE`                          | `basic`                 | `cloud` turns on the SaaS features: billing, plans and entitlements, live credit, organization switcher. Must match studio-api's mode.      |
-| `VUE_APP_SAAS_LIVE_PRODUCT_URL`         | `https://linto.ai/live` | Cloud mode only: page opened by the locked "Sessions" menu entry.                                                                           |
-| `VUE_APP_ENABLE_SESSION`                | `false`                 | Enable live sessions (session pages, menu entries, quick sessions).                                                                         |
-| `VUE_APP_ENABLE_SPEAKER_IDENTIFICATION` | `false`                 | Enable speaker identification (voice samples, organization permission, transcription option).                                               |
+| `VUE_APP_SAAS_LIVE_PRODUCT_URL`         | `https://linto.ai/live` | SaaS deployments only: page opened by the locked "Sessions" menu entry.                                                                           |
 | `VUE_APP_ENABLE_SECURITY_LEVEL`         | `false`                 | Enable the security level choice on transcriptions and transcriber profiles.                                                                |
 | `VUE_APP_DISABLE_USER_CREATION`         | `false`                 | Hide account creation (sign-up links and page).                                                                                              |
 | `VUE_APP_DISABLE_USER_INVITATION`       | `false`                 | Disable invitations by email (organization members, conversation sharing).                                                                  |
@@ -148,8 +154,9 @@ The mobile front (`src/mobile/`) is also embedded in an Android app with
 [Capacitor](https://capacitorjs.com/). The app does not load a website: it
 ships the built HTML/JS and calls the API of an instance, by default
 `https://studio.linto.ai/cm-api` (`src/mobile/const/defaultInstance.js`).
-The other settings (`VUE_APP_MODE`, theme, flags…) come from the frontend
-`.env` at build time.
+The deployment's features come from that API (`GET /features`, see
+[Features](#features)); the other settings (theme, flags…) come from the frontend `.env` at
+build time.
 
 ### Instance
 
@@ -159,10 +166,8 @@ the app looks for the API under `<address>/cm-api`, then `<address>`: the
 first one whose `GET /auth/list` answers a JSON array wins
 (`src/mobile/services/native/switchInstance.js`). From that base:
 
-- `VUE_APP_CONVO_API` = base + `/api`, `VUE_APP_CONVO_AUTH` = base + `/auth`,
-  `VUE_APP_PUBLIC_MEDIA` = base + `/media`;
-- `VUE_APP_SESSION_WS` = the base's origin, `VUE_APP_SESSION_WS_PATH` = the
-  base's path + `/socket.io` (socket.io reads a URL path as a namespace).
+`VUE_APP_CONVO_API` = base + `/api`, and every other URL is derived from it
+as on the web (see [Backend services](#backend-services)).
 
 The instance is saved in `localStorage` and written into
 `window.VUE_APP_CONFIG` before any API module loads
@@ -296,17 +301,21 @@ gap is reported).
   (`server.cleartext`, `android.allowMixedContent`) so the app, served over
   `https://localhost`, can reach an API on `http://` in the local network.
   Remove both before any release.
-- The API must accept the app's origin: `CORS_ENABLED=true` and
-  `https://localhost` in `CORS_API_WHITELIST` (studio-api), websocket included.
+- The API must accept the app's origin: in `CORS_API_WHITELIST`
+  (studio-api), `localhost` (any scheme) or both
+  `https://localhost` (Android) and `capacitor://localhost` (iOS). Entries
+  are matched exactly, not as substrings.
 - Debug build signed with the debug key: not for distribution.
 - SSO login runs in the phone's browser and comes back to the app through
   the link `ai.linto.studio://login/oidc`
   (`src/mobile/services/native/startSsoLogin.js`, `listenForSsoReturn.js`,
-  intent filter in `AndroidManifest.xml`). The instance must list that link in
+  intent filter in `AndroidManifest.xml`, `CFBundleURLTypes` in the iOS
+  `Info.plist`). The instance must list that link in
   `MOBILE_SSO_REDIRECT_URIS` (studio-api, its default); on an older instance
   the login ends on the instance's website and does not come back.
 - Default Capacitor icon and splash screen.
-- Only the API addresses follow the chosen instance: its mode and flags are
-  those of the build. "Forgot password" and "Create account" open the
+- The API address and the deployment's features (`GET /features`) follow the
+  chosen instance; the other flags (theme, name…) are those of the build.
+  "Forgot password" and "Create account" open the
   instance's address in the browser, which is the website only when the
   instance address is the web front's.

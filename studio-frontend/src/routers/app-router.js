@@ -1,7 +1,6 @@
 import Vue from "vue"
 import Router from "vue-router"
 
-import { getEnv } from "@/tools/getEnv.js"
 import store from "@/store/index.js"
 import { getCookie } from "@/tools/auth/getCookie"
 import { setCookie } from "@/tools/auth/setCookie"
@@ -884,7 +883,6 @@ router.beforeEach(async (to, from, next) => {
   store.dispatch("system/setIsLoading", true)
   const randomId = generateId()
   const routerDebug = customDebug("vue:debug:router:" + randomId)
-  const enableSession = getEnv("VUE_APP_ENABLE_SESSION") === "true"
 
   document.nextRoute = to
   document.prevRoute = from
@@ -909,11 +907,6 @@ router.beforeEach(async (to, from, next) => {
       return next()
     }
 
-    // Redirect to 404 if sessions are disabled but trying to access session page
-    if (!enableSession && to.meta?.sessionPage) {
-      return next({ name: "not_found" })
-    }
-
     // Redirect to 404
     if (to.name === "not_found_redirect") {
       return next({ name: "not_found" })
@@ -932,6 +925,14 @@ router.beforeEach(async (to, from, next) => {
     }
     if (!(await store.dispatch("apiStatus/check"))) {
       return redirectToApiUnreachable(to, from, next)
+    }
+
+    // The deployment features are known from here on (GET /features).
+    const enableSession = store.getters["apiStatus/hasSession"]
+
+    // Redirect to 404 if sessions are disabled but trying to access session page
+    if (!enableSession && to.meta?.sessionPage) {
+      return next({ name: "not_found" })
     }
 
     // Handle magic link authentication
@@ -1014,7 +1015,7 @@ router.beforeEach(async (to, from, next) => {
     // OnboardingWizard and the billing pages never show their own spinner
     // for it — it rides the same global loader as organizations/tags.
     if (
-      getEnv("VUE_APP_MODE") === "cloud" &&
+      store.getters["apiStatus/isSaas"] &&
       store.getters["billing/plans"].length === 0
     ) {
       await store.dispatch("billing/fetchPlans")

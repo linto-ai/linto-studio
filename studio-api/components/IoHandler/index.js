@@ -6,6 +6,7 @@ const { createAdapter } = require("@socket.io/redis-adapter")
 const { createClient } = require("redis")
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
+const { computeCorsOptions } = require(`${process.cwd()}/lib/corsOrigin`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const SOCKET_EVENTS = require(`${process.cwd()}/lib/dao/log/socketEvent`)
@@ -133,12 +134,13 @@ class IoHandler extends Component {
     this.memorySessions = {}
     this.memoryMedias = {}
 
+    // Same origins as the REST API (lib/corsOrigin.js); only the HTTP
+    // transport (long-polling) is subject to CORS, not the WebSocket one.
+    const corsOptions = computeCorsOptions(process.env.CORS_API_WHITELIST)
     this.io = socketIO(this.app.components["WebServer"].httpServer, {
-      cors: {
-        origin: process.env.CORS_API_WHITELIST.split(","),
-        methods: ["GET", "POST"],
-        credentials: true,
-      },
+      ...(corsOptions && {
+        cors: { ...corsOptions, methods: ["GET", "POST"], credentials: true },
+      }),
     })
 
     // Register socket.io's engine on WebServer's shared upgrade router; this

@@ -1,10 +1,10 @@
 import { sendRequest } from "../tools/request/sendRequest"
 import { sendMultipartFormData } from "../tools/request/sendMultipartFormData"
 
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
-const BASE_API = getEnv("VUE_APP_CONVO_API")
-const BASE_AUTH = getEnv("VUE_APP_CONVO_AUTH")
+const BASE_API = API_ENDPOINTS.api
+const BASE_AUTH = API_ENDPOINTS.auth
 
 export async function apiGetPersonalUserInfo() {
   const getUserInfos = await sendRequest(`${BASE_API}/users/self`, {

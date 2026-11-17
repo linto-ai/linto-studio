@@ -66,8 +66,11 @@ LLM_CATCHUP_MAX_CHARS=12000
 NLP_SERVICES=<nlp_service_host>
 NLP_METHOD=frequencies,textrank
 
-# Cross domain accessibility
-CORS_ENABLED=false
+# Cross domain accessibility (REST and socket.io): origins allowed to call the
+# API from a browser, comma separated. Empty: none (same origin only). "*": any.
+# A full origin (https://studio.example.org, capacitor://localhost) matches
+# exactly; a bare host (localhost) matches it under any scheme. The native app
+# needs localhost (Android https://localhost, iOS capacitor://localhost).
 CORS_API_WHITELIST=
 
 # Express settings

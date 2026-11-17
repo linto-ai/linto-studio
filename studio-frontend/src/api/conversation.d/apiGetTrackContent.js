@@ -1,7 +1,7 @@
 import { sendRequest } from "@/tools/request/sendRequest.js"
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
-const BASE_API = getEnv("VUE_APP_CONVO_API")
+const BASE_API = API_ENDPOINTS.api
 
 // The content of one track, a conversation of its own: turns and speakers.
 // The editor version and the last update come from the same backend read,

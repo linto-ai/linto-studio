@@ -1,7 +1,7 @@
 import { sendRequest } from "../tools/request/sendRequest"
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
-const BASE_API = getEnv("VUE_APP_CONVO_API")
+const BASE_API = API_ENDPOINTS.api
 
 export async function apiGetSubtitle(conversationId, subtitleId, notif = null) {
   return await sendRequest(

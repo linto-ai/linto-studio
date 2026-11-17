@@ -39,7 +39,6 @@
 <script>
 import { mapGetters } from "vuex"
 
-import { getEnv } from "@/tools/getEnv"
 import MenuBrandHeader from "@/components/MenuBrandHeader.vue"
 import MenuOrgSwitcher from "@/components/MenuOrgSwitcher.vue"
 import IsCloud from "@/components/atoms/IsCloud.vue"
@@ -95,7 +94,7 @@ export default {
       return Object.values(this.organizations)
     },
     sessionEnable() {
-      return getEnv("VUE_APP_ENABLE_SESSION") === "true"
+      return this.$store.getters["apiStatus/hasSession"]
     },
     userName() {
       return userName(this.userInfo)

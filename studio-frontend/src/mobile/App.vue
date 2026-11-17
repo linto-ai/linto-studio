@@ -10,6 +10,7 @@
 import MobileNotifications from "@/mobile/components/MobileNotifications.vue"
 import AppLoading from "@/mobile/components/AppLoading.vue"
 import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 import { formatApiAddress } from "@/tools/formatApiAddress.js"
 
 export default {
@@ -17,16 +18,19 @@ export default {
   components: { MobileNotifications, AppLoading },
   data() {
     // Until the first navigation is resolved (the guard waits for the API,
-    // up to the healthcheck timeout), nothing would be shown.
+    // up to the GET /features timeout), nothing would be shown.
     return { ready: false }
   },
   computed: {
+    // A misconfigured address (not absolute) is shown as written.
+    apiAddress() {
+      return API_ENDPOINTS.root
+        ? formatApiAddress(API_ENDPOINTS.root)
+        : getEnv("VUE_APP_CONVO_API")
+    },
     loadingMessage() {
       return this.$t("mobile.boot.connecting", {
-        address: formatApiAddress(
-          getEnv("VUE_APP_CONVO_API"),
-          window.location.href,
-        ),
+        address: this.apiAddress,
       })
     },
   },

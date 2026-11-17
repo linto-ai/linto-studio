@@ -2,7 +2,7 @@
   <div>{{ simplifiedUrl }}</div>
 </template>
 <script>
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
 export default {
   props: {
@@ -19,7 +19,7 @@ export default {
     simplifiedUrl() {
       let urlWithoutBase = ""
       try {
-        const BASE_API = new URL(getEnv("VUE_APP_CONVO_API"))
+        const BASE_API = new URL(API_ENDPOINTS.api)
 
         urlWithoutBase = this.url.replace(BASE_API.pathname, "") // Supprimer le domaine de l'URL
       } catch (error) {

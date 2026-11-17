@@ -10,6 +10,9 @@ class App {
 
       // Auto-loads components based on process.env.COMPONENTS list
       this.components = {}
+      // True once every component is loaded: the WebServer already answers
+      // while the next ones load (GET /features waits for it).
+      this.componentsLoaded = false
       process.env.COMPONENTS.split(",")
         .reduce((prev, componentFolderName) => {
           return prev.then(async () => {
@@ -32,6 +35,8 @@ class App {
               this.components["IoHandler"],
             )
           }
+
+          this.componentsLoaded = true
         })
     } catch (e) {
       console.error(debug.namespace, e)

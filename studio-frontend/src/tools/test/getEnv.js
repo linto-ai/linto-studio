@@ -3,7 +3,7 @@ import test from "ava"
 // Mock DEFAULTENV
 const DEFAULTENV = {
   VUE_APP_NAME: "LinTO Studio",
-  VUE_APP_MODE: "basic",
+  VUE_APP_THEME: "LinTO-green",
 }
 
 // Mock getCurrentTheme

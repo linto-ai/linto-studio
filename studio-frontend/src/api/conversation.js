@@ -2,10 +2,10 @@ import conversationsPerPage from "../const/conversationsPerPage"
 import { sendMultipartFormData } from "../tools/request/sendMultipartFormData"
 import { sendRequest } from "../tools/request/sendRequest"
 
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 import i18n from "@/i18n"
 
-const BASE_API = getEnv("VUE_APP_CONVO_API")
+const BASE_API = API_ENDPOINTS.api
 
 const DEFAULT_PAGE_SIZE = conversationsPerPage
 // The downloads send the client timezone and the interface locale, read at

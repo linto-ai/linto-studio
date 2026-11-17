@@ -10,7 +10,6 @@ import {
   apiDeleteVoiceprintCollection,
 } from "@/api/voiceprintCollection"
 import { indexOrganizationsRoles } from "@/tools/rights/indexOrganizationsRoles"
-import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
 import createMediaModule from "../modules/mediaModuleFactory"
 import { setCookie } from "@/tools/auth/setCookie"
@@ -49,7 +48,7 @@ const actions = {
     return req
   },
   async setCurrentOrganizationScope(
-    { commit, dispatch, state },
+    { commit, dispatch, state, rootGetters },
     organizationId,
   ) {
     // This action also runs on same-org navigations (router guard), so guard
@@ -97,7 +96,7 @@ const actions = {
       // to avoid blocking navigation; gated by the feature flag to skip the
       // request entirely when speaker identification is disabled.
       commit("setVoiceprintCollections", [])
-      if (getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true") {
+      if (rootGetters["apiStatus/hasSpeakerIdentification"]) {
         dispatch("loadVoiceprintCollections")
       }
     }

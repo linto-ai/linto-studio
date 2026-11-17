@@ -36,7 +36,6 @@
 
 <script>
 import { getEnv } from "@/tools/getEnv"
-import { resolveApiUrl } from "@/tools/resolveApiUrl.js"
 
 // Where both routers send any page while the API does not answer
 // (apiStatus): same screen in the classic and the mobile app, which frames
@@ -52,7 +51,8 @@ export default {
   data() {
     return {
       appName: getEnv("VUE_APP_NAME"),
-      apiUrl: resolveApiUrl(getEnv("VUE_APP_CONVO_API"), window.location.href),
+      // As configured: the details must show a wrong address as it is.
+      apiUrl: getEnv("VUE_APP_CONVO_API"),
       pending: false,
     }
   },

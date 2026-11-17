@@ -1,9 +1,9 @@
 import { sendRequest, throwIfError } from "../tools/request/sendRequest"
 import COLORS from "../const/colors"
 
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
-const BASE_API = getEnv("VUE_APP_CONVO_API")
+const BASE_API = API_ENDPOINTS.api
 
 // -- -- Categories -- -- //
 

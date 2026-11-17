@@ -25,5 +25,54 @@
         }
       }
     }
+  },
+  "/features": {
+    "get": {
+      "tags": ["healthcheck"],
+      "summary": "What this deployment offers",
+      "description": "Public. The fronts (web and mobile) read these flags instead of their own configuration, before anyone signs in.",
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["saas", "session", "speakerIdentification"],
+                "properties": {
+                  "saas": {
+                    "type": "boolean",
+                    "description": "SaaS mode: the CloudService component runs the billing plugin"
+                  },
+                  "session": {
+                    "type": "boolean",
+                    "description": "Live sessions: SESSION_API_ENDPOINT is set and the BrokerClient component is loaded"
+                  },
+                  "speakerIdentification": {
+                    "type": "boolean",
+                    "description": "Speaker identification: ENABLE_SPEAKER_IDENTIFICATION is true"
+                  }
+                }
+              },
+              "example": {
+                "saas": true,
+                "session": true,
+                "speakerIdentification": false
+              }
+            }
+          }
+        },
+        "503": {
+          "description": "The API is starting: its components are not all loaded yet",
+          "content": {
+            "application/json": {
+              "example": {
+                "status": "starting"
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

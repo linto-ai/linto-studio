@@ -28,9 +28,6 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { mapGetters, mapActions } from "vuex"
-import { getEnv } from "@/tools/getEnv"
-
-const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 
 // Render the default slot only when the current plan grants `capability`.
 // In non-cloud modes (premise / self-hosted) nothing is gated, so it always
@@ -52,8 +49,9 @@ export default {
   },
   computed: {
     ...mapGetters("billing", ["can", "plans", "planFor"]),
+    ...mapGetters("apiStatus", ["isSaas"]),
     allowed() {
-      if (!IS_MODE_CLOUD) return true
+      if (!this.isSaas) return true
       return this.can(this.capability)
     },
     lockedPlan() {

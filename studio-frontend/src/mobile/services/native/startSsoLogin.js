@@ -1,4 +1,4 @@
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 import { MOBILE_SSO_REDIRECT_URI } from "@/mobile/const/mobileSsoRedirectUri.js"
 import { saveSsoVerifier } from "@/mobile/services/native/ssoVerifierStorage.js"
 import { buildMobileSsoLoginUrl } from "@/mobile/tools/buildMobileSsoLoginUrl.js"
@@ -18,7 +18,7 @@ export async function startSsoLogin(providerPath) {
     saveSsoVerifier(codeVerifier)
     window.location.assign(
       buildMobileSsoLoginUrl({
-        authBase: getEnv("VUE_APP_CONVO_AUTH"),
+        authBase: API_ENDPOINTS.auth,
         providerPath,
         redirectUri: MOBILE_SSO_REDIRECT_URI,
         codeChallenge,

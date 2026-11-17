@@ -36,17 +36,12 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex"
-import { getEnv } from "@/tools/getEnv"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import UserAvatar from "@/components/atoms/UserAvatar.vue"
 import Chip from "@/components/atoms/Chip.vue"
 import IsCloud from "@/components/atoms/IsCloud.vue"
 import ModalSwitchOrg from "@/components/ModalSwitchOrg.vue"
 // Button is registered globally by the atoms plugin (components/atoms/index.js).
-
-// Same one-off check as IsCloud.vue/HasEntitlement.vue: avoids a wasted
-// /cloud/plans call in self-hosted (basic) builds.
-const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 
 export default {
   name: "MenuOrgSwitcher",
@@ -66,8 +61,10 @@ export default {
     }),
     // A locked org has no plan to show: it reads as Free but is not
     ...mapGetters("billing", ["planLabel", "isFree", "isUnmetered", "locked"]),
+    // Same check as IsCloud.vue/HasEntitlement.vue: avoids a wasted
+    // /cloud/plans call on self-hosted deployments.
     isCloudMode() {
-      return IS_MODE_CLOUD
+      return this.$store.getters["apiStatus/isSaas"]
     },
   },
   watch: {

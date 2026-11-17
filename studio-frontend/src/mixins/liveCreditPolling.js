@@ -1,6 +1,3 @@
-import { getEnv } from "@/tools/getEnv"
-
-const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 const POLL_INTERVAL_MS = 60 * 1000
 
 // Keeps the org's live credit fresh while a live is displayed, so the view
@@ -18,7 +15,7 @@ export const liveCreditPollingMixin = {
     // credit, the Sessions mode never does (SPEC-SAAS §1.2).
     isLiveCreditWatched() {
       return (
-        IS_MODE_CLOUD &&
+        this.$store.getters["apiStatus/isSaas"] &&
         !this.isFromPublicLink &&
         !!this.currentOrganizationScope &&
         this.session?.visibility === "user"

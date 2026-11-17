@@ -190,7 +190,6 @@ import { partitionMembersBySeat } from "@/tools/seats/partitionMembersBySeat.js"
 import { computeNextSort } from "@/tools/computeNextSort.js"
 import { sortArray } from "@/tools/sortList.js"
 import { userName } from "@/tools/user/userName.js"
-import { getEnv } from "@/tools/getEnv.js"
 
 import { apiGetOrganizationById } from "@/api/organisation.js"
 import {
@@ -212,7 +211,6 @@ import Tabs from "@/components/molecules/Tabs.vue"
 import IsCloud from "@/components/atoms/IsCloud.vue"
 import SeatsPanel from "@/components-cloud/SeatsPanel.vue"
 
-const IS_MODE_CLOUD = getEnv("VUE_APP_MODE") === "cloud"
 const SEATS_TAB = "seats"
 const MEMBERS_TAB = "members"
 
@@ -283,6 +281,7 @@ export default {
     ...mapGetters("organizations", {
       currentOrganizationScopeId: "getCurrentOrganizationScope",
     }),
+    ...mapGetters("apiStatus", ["isSaas"]),
     organizationId() {
       return this.currentOrganization._id
     },
@@ -298,7 +297,7 @@ export default {
     },
     // In the backoffice the figures are the displayed organization's own.
     collaborationAllowed() {
-      if (!IS_MODE_CLOUD) return true
+      if (!this.isSaas) return true
       if (this.isBackofficePage) {
         return this.orgUsage?.capabilities?.collaboration?.enabled === true
       }
@@ -348,7 +347,7 @@ export default {
     // Seats are a cloud billing notion. Elsewhere the two tabs only tell the
     // privileged roles apart, and a member is promoted from the role column.
     hasSeats() {
-      return IS_MODE_CLOUD && !this.isUnmeteredOrganization
+      return this.isSaas && !this.isUnmeteredOrganization
     },
     isMembersTab() {
       return this.activeTab === MEMBERS_TAB
@@ -533,7 +532,7 @@ export default {
       this.clearSelection()
     },
     loadUsage() {
-      if (IS_MODE_CLOUD && this.isBackofficePage) this.loadOrgUsage()
+      if (this.isSaas && this.isBackofficePage) this.loadOrgUsage()
       if (!this.isOwnOrganization) return
       this.$store.dispatch("billing/fetchUsageByMember", this.organizationId)
       // Admin-only route: it carries the billing period the seat price is

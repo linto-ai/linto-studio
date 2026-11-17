@@ -1,4 +1,4 @@
-import { getEnv } from "@/tools/getEnv"
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
 export default function userAvatar(userInfos) {
   const imageUrl = userInfos.img ?? "pictures/default.jpg"
@@ -6,17 +6,10 @@ export default function userAvatar(userInfos) {
   if (imageUrl.startsWith("http") || imageUrl.startsWith("blob"))
     return imageUrl
 
-  const baseUrl = window.location.origin
-  let publicMedia = getEnv("VUE_APP_PUBLIC_MEDIA").trim("/")
-
-  if (!publicMedia.startsWith("http")) {
-    publicMedia = `${baseUrl}${publicMedia}`
-  }
-
-  // remove trailing slash
+  // remove leading slash
   if (imageUrl.startsWith("/")) {
-    return `${publicMedia}${imageUrl}`
+    return `${API_ENDPOINTS.media}${imageUrl}`
   }
 
-  return `${publicMedia}/${imageUrl}`
+  return `${API_ENDPOINTS.media}/${imageUrl}`
 }

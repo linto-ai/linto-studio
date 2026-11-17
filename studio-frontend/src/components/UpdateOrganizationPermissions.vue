@@ -42,7 +42,6 @@ import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
-import { getEnv } from "@/tools/getEnv"
 
 import { apiAdminUpdateOrganisation } from "@/api/organisation.js"
 
@@ -108,7 +107,7 @@ export default {
   },
   computed: {
     speakerIdentificationEnabled() {
-      return getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true"
+      return this.$store.getters["apiStatus/hasSpeakerIdentification"]
     },
   },
   mounted() {},

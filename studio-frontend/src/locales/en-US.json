@@ -1115,7 +1115,8 @@
         "timeout": "Response timed out",
         "http": "HTTP response {status}",
         "network": "No answer (network down, address out of reach or request refused by the browser)",
-        "unexpected": "Unexpected answer from the server"
+        "unexpected": "Unexpected answer from the server",
+        "invalid_address": "The API address is not a full URL: it must start with http:// or https://"
       }
     },
     "auth_magic_link": "The authentication link has expired, please request again for an authentication link",
