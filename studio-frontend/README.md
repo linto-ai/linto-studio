@@ -319,3 +319,43 @@ gap is reported).
   "Forgot password" and "Create account" open the
   instance's address in the browser, which is the website only when the
   instance address is the web front's.
+
+## Native iOS app (Capacitor) — proof of concept
+
+Same app as Android (`ios/`, Swift Package Manager, iOS 15+, bundle id
+`ai.linto.studio`), with the microphone and background audio declared in
+`ios/App/App/Info.plist`, as well as the SSO return link. No Apple developer
+account is needed for the simulator.
+
+### Simulator build from GitHub Actions
+
+`.github/workflows/ios-simulator.yml` builds it, unsigned, on each push
+touching the front on `next` or `master` (or by hand from the Actions
+tab, once the workflow is on the default branch). Its artifact
+`linto-studio-ios-simulator` holds `App.app`, for Apple silicon and Intel
+Macs. On a Mac with Xcode (App Store, then open it once to install the iOS
+simulator):
+
+```bash
+# GitHub zips the artifact around our own zip (which keeps the app's
+# executable bit): unzip twice.
+unzip linto-studio-ios-simulator.zip -d artifact
+unzip artifact/linto-studio-ios-simulator.zip
+open -a Simulator
+xcrun simctl install booted App.app
+xcrun simctl launch booted ai.linto.studio
+```
+
+### Build on a Mac
+
+Xcode and Node 22, then from `studio-frontend/`:
+
+```bash
+npm ci
+npm run app:sync:ios   # builds the front and copies it into ios/
+npx cap run ios        # picks a simulator; or `npx cap open ios` and run from Xcode
+```
+
+The API must accept `capacitor://localhost` (or a bare `localhost`) in its
+`CORS_API_WHITELIST`. The simulator records with the Mac's microphone;
+background recording can only be checked on an iPhone.

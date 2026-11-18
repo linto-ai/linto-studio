@@ -1,0 +1,82 @@
+name: iOS simulator build
+
+# Builds the native app (Capacitor, studio-frontend/ios) for the iOS
+# simulator, unsigned: no Apple developer account needed. The artifact
+# (App.app zipped) installs on a Mac's simulator, see
+# studio-frontend/README.md.
+#
+# The front embeds its build: any change to it, or to the transcript-ui SDK
+# it bundles, makes a new app. Android-only changes do not.
+
+on:
+  push:
+    branches: [next, master]
+    paths:
+      - "studio-frontend/**"
+      - "studio-sdk/components/transcript-ui/**"
+      - "!studio-frontend/android/**"
+      - ".github/workflows/ios-simulator.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A series of pushes builds only the last one.
+concurrency:
+  group: ios-simulator-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.repository_owner == 'linto-ai'
+    runs-on: macos-15
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: studio-frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      # Capacitor 8 needs a recent Xcode: the newest stable one on the runner.
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: studio-frontend/package-lock.json
+
+      - run: npm ci
+
+      # No .env: the API address is the app's default instance
+      # (src/mobile/const/defaultInstance.js) or the one picked at login,
+      # and the features come from that API (GET /features).
+      - run: npm run app:sync:ios
+
+      # Both simulator architectures (Apple silicon and Intel Macs).
+      - name: Build for the simulator
+        run: |
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath build \
+            ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package App.app
+        run: |
+          ditto -c -k --keepParent \
+            build/Build/Products/Debug-iphonesimulator/App.app \
+            "$RUNNER_TEMP/linto-studio-ios-simulator.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linto-studio-ios-simulator
+          path: ${{ runner.temp }}/linto-studio-ios-simulator.zip
+          retention-days: 14
