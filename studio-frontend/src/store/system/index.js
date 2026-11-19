@@ -6,7 +6,7 @@ import {
   isImpersonatingUser,
 } from "@/tools/backoffice/userImpersonation.js"
 import { clearImpersonatedOrgId } from "@/tools/backoffice/clearImpersonatedOrgId.js"
-import { apiImpersonateUser } from "@/api/user.js"
+import { apiImpersonateUser, apiLogout } from "@/api/user.js"
 
 const state = {
   // set once at bootstrap; start/stop impersonation reloads the app
@@ -130,7 +130,9 @@ const actions = {
     // full reload re-bootstraps the app as the impersonated user
     window.location.href = "/"
   },
-  stopUserImpersonation({ dispatch }) {
+  async stopUserImpersonation({ dispatch }) {
+    // revokes the impersonation token, still the current one here
+    await apiLogout()
     const auth = getOriginalAuth()
     if (auth?.authToken) {
       dispatch("auth/save", auth, { root: true })
