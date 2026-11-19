@@ -107,14 +107,14 @@ test("default profile: the first wins a tie, none without candidates", (t) => {
   t.is(computeDefaultProfile([], ["*"]), null)
 })
 
-test("default service: the recommended one", (t) => {
-  const french = { ...kaldiService, serviceName: "other", order: 9 }
-  t.is(computeDefaultService([french, kaldiService], ["fr"]), kaldiService)
+test("default service: the first one", (t) => {
+  const french = { ...kaldiService, serviceName: "other" }
+  t.is(computeDefaultService([french, kaldiService], ["fr"]), french)
   t.is(computeDefaultService([], ["fr"]), null)
 })
 
 test("default service: one following the language beats a detecting one", (t) => {
-  const detecting = { ...whisperService, language: "*", order: 0 }
+  const detecting = { ...whisperService, language: "*" }
   t.is(computeDefaultService([detecting, kaldiService], ["fr"]), kaldiService)
 })
 

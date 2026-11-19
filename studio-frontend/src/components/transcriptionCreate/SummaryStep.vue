@@ -81,20 +81,12 @@
         <template v-else>{{ noEngineLabel }}</template>
       </SummaryRow>
 
+      <!-- The API picks the engine: the row only says when there is none. -->
       <SummaryRow
-        v-if="isOffline && offlineEngines.length !== 1"
+        v-if="isOffline && !engines.service"
         icon="cpu"
         :label="offlineEngineLabel">
-        <SummarySelect
-          v-if="offlineEngines.length > 0"
-          :label="offlineEngineLabel"
-          :items="offlineEngines"
-          :value="draft.serviceName"
-          :disabled="sending"
-          @input="
-            $emit('change', { serviceName: $event, serviceChosenByUser: true })
-          " />
-        <template v-else>{{ noEngineLabel }}</template>
+        {{ noEngineLabel }}
       </SummaryRow>
 
       <SummaryRow
@@ -274,7 +266,6 @@ export default {
     speakerOptions: { type: Object, required: true },
     // Compatible engines: [{ id, name, description }]
     liveEngines: { type: Array, required: true },
-    offlineEngines: { type: Array, required: true },
     sourceIcon: { type: String, required: true },
     offlineEngineLabel: { type: String, required: true },
     isFolderPrivate: { type: Boolean, default: false },

@@ -23,7 +23,6 @@ export function createDraft({ source, securityLevel }) {
     profileId: null,
     profileChosenByUser: false,
     serviceName: null,
-    serviceChosenByUser: false,
     speakers: { isSeparated: true, count: null, collectionIds: [] },
     speakersChosenByUser: false,
     membersRight: DEFAULT_MEMBERS_RIGHT,

@@ -22,6 +22,18 @@ const { addFileMetadataToConversation } = require(
 const { applySpeakerIdentification } = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/injection`,
 )
+const { listTranscriptionServices } = require(
+  `${process.cwd()}/components/WebServer/controllers/services/utility`,
+)
+const { selectGenericTranscriptionService } = require(
+  `${process.cwd()}/lib/transcription/selectTranscriptionService`,
+)
+const { transcriptionRequestFor } = require(
+  `${process.cwd()}/lib/transcription/transcriptionRequestFor`,
+)
+const { ConversationNoTranscriptionService } = require(
+  `${process.cwd()}/components/WebServer/error/exception/conversation`,
+)
 
 const fs = require("fs")
 const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -29,6 +41,9 @@ const saas = require(`${process.cwd()}/lib/saas`)
 
 async function offline(conversation, isConversation = true) {
   try {
+    if (!conversation.metadata.transcription.endpoint) {
+      await assignGenericService(conversation)
+    }
     const transcriptionService = getTranscriptionService(
       conversation.metadata.transcription.endpoint,
       true,
@@ -70,6 +85,27 @@ async function offline(conversation, isConversation = true) {
   } catch (err) {
     throw err
   }
+}
+
+// Picked as for a language to detect; the recording's language is still sent.
+async function assignGenericService(conversation) {
+  const services = await listTranscriptionServices(conversation.securityLevel)
+  const service = selectGenericTranscriptionService(services)
+  if (!service) throw new ConversationNoTranscriptionService()
+
+  const transcription = conversation.metadata.transcription
+  Object.assign(
+    transcription,
+    transcriptionRequestFor(service, {
+      language: transcription.lang || "*",
+      config: transcription.transcriptionConfig || {},
+    }),
+  )
+  debug(
+    "picked %s for the session recording %s",
+    service.serviceName,
+    conversation._id,
+  )
 }
 
 async function injectSpeakerIdentification(conversation) {

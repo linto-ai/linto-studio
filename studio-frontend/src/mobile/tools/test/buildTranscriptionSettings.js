@@ -14,8 +14,8 @@ test("buildTranscriptionSettings() maps language and diarization", (t) => {
     language: "en-US",
     diarization: true,
   })
-  t.is(settings.serviceName, "whisper-large")
-  t.is(settings.endpoint, "stt-whisper/transcribe")
+  t.false("serviceName" in settings)
+  t.false("endpoint" in settings)
   t.is(settings.lang, "en-US")
   t.true(settings.config.diarizationConfig.enableDiarization)
   t.is(settings.config.diarizationConfig.serviceName, "pyannote")

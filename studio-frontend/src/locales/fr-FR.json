@@ -959,7 +959,6 @@
       "languages_changed": "Langue remplacée, aucun moteur disponible pour : {languages}",
       "translations_removed": "Traduction retirée, indisponible avec ces langues : {languages}",
       "profile_changed": "Le moteur en direct choisi n'est plus compatible : un autre a été sélectionné.",
-      "service_changed": "Le moteur choisi n'est plus compatible : un autre a été sélectionné.",
       "speakers_changed": "Le choix pour les locuteurs n'est plus disponible : il a été remplacé."
     },
     "engine": {

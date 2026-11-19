@@ -31,7 +31,7 @@ const STEPS = [
  * @param {{ profiles: object[], services: object[], collections: object[], speakerIdentificationEnabled: boolean }} catalog
  * @returns {{ draft: object, notices: { key: string, codes?: string[] }[] }}
  *   notice key: "languages_changed" | "translations_removed" | "profile_changed"
- *     | "service_changed" | "speakers_changed"
+ *     | "speakers_changed"
  */
 export function reconcileDraft(draft, catalog) {
   const notices = []
@@ -122,20 +122,12 @@ function reconcileProfile(draft, catalog, notices) {
   }
 }
 
-function reconcileService(draft, catalog, notices) {
+// The API picks the service used: this one only shapes the draft's options.
+function reconcileService(draft, catalog) {
   if (!isOfflineRequested(draft)) return draft
   const compatible = computeCompatibleServices(catalog.services, draft)
-  const isCurrentCompatible = compatible.some(
-    (service) => service.serviceName === draft.serviceName,
-  )
-  if (draft.serviceChosenByUser && isCurrentCompatible) return draft
-  if (draft.serviceChosenByUser) notices.push({ key: "service_changed" })
   const service = computeDefaultService(compatible, draft.languages)
-  return {
-    ...draft,
-    serviceName: service?.serviceName ?? null,
-    serviceChosenByUser: false,
-  }
+  return { ...draft, serviceName: service?.serviceName ?? null }
 }
 
 function reconcileSpeakers(draft, catalog, notices) {

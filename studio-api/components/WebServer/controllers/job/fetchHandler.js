@@ -4,6 +4,9 @@ const debug = require("debug")(
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const { BUILT_IN_NUMBER_CONVERSION_MODELS } = require(
+  `${process.cwd()}/lib/transcription/modelTypes`,
+)
 const { handleResult } = require(
   `${process.cwd()}/components/WebServer/controllers/job/resultHandler`,
 )
@@ -91,10 +94,11 @@ async function fetchResult(conv_id, job) {
 async function getResult(job, metadata) {
   try {
     let url = `${process.env.GATEWAY_SERVICES}/${job.endpoint}/results/${job.result_id}`
-    const isWhisper =
-      metadata.transcription?.transcriptionConfig?.modelType === "whisper"
+    const convertsNumbers = BUILT_IN_NUMBER_CONVERSION_MODELS.includes(
+      metadata.transcription?.transcriptionConfig?.modelType,
+    )
     if (
-      !isWhisper &&
+      !convertsNumbers &&
       metadata.transcription.transcriptionConfig.enableNormalization &&
       metadata.transcription.lang !== "*"
     ) {

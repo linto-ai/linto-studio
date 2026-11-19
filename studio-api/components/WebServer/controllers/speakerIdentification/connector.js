@@ -16,6 +16,9 @@ const fs = require("fs")
 const path = require("path")
 const FormData = require("form-data")
 const axios = require("axios").default
+const { serviceEndpoint, parseInfo } = require(
+  `${process.cwd()}/lib/transcription/serviceDescriptor`,
+)
 
 // Synchronous timeouts (ms), aligned with the transcription service (05 §3)
 const COMPUTE_TIMEOUT = 120000
@@ -84,26 +87,6 @@ async function discoverSpeakerIdEndpoint() {
     }
   }
   return null
-}
-
-function serviceEndpoint(service) {
-  if (Array.isArray(service.endpoints) && service.endpoints.length > 0) {
-    return String(service.endpoints[0].endpoint || service.endpoints[0]).replace(
-      /^\/+/,
-      "",
-    )
-  }
-  return service.serviceName || service.name || null
-}
-
-function parseInfo(info) {
-  if (info == null) return null
-  if (typeof info === "object") return info
-  try {
-    return JSON.parse(info)
-  } catch (err) {
-    return null
-  }
 }
 
 /** Reset the discovery cache (used by tests and after configuration changes). */

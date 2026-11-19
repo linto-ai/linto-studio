@@ -84,8 +84,8 @@ test("conversation request: a file goes as a track", (t) => {
   t.is(request.membersRight, 3)
   t.is(request.securityLevel, 1)
   t.is(request.folderId, "folder")
-  t.is(request.serviceName, "whisper")
-  t.is(request.endpoint, "whisper/transcribe")
+  t.false("serviceName" in request)
+  t.false("endpoint" in request)
   t.deepEqual(request.tracks, ["binary"])
   t.is(JSON.parse(request.transcriptionConfig).language, "*")
 })
@@ -99,7 +99,11 @@ test("quick session, both: live profile, chosen translations, end service", (t) 
   t.deepEqual(channels[0].translations, ["es"])
   t.true(channels[0].enableLiveTranscripts)
   t.false(channels[0].compressAudio)
-  t.is(channels[0].meta.transcriptionService.serviceName, "whisper")
+  t.deepEqual(Object.keys(channels[0].meta.transcriptionService), [
+    "lang",
+    "speakerIdentificationCollections",
+    "config",
+  ])
   t.deepEqual(meta, { securityLevel: 1, membersRight: 3 })
 })
 

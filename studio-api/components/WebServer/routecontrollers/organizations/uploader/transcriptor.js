@@ -37,14 +37,21 @@ const {
   ConversationMetadataRequire,
   ConversationError,
   ConversationSecurityLevelForbidden,
+  ConversationNoTranscriptionService,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 const { OrganizationNotFound } = require(
   `${process.cwd()}/components/WebServer/error/exception/organization`,
 )
-const { getTranscriptionServiceByEndpoint } = require(
+const { listTranscriptionServices, matchesEndpoint } = require(
   `${process.cwd()}/components/WebServer/controllers/services/utility`,
+)
+const { selectTranscriptionService } = require(
+  `${process.cwd()}/lib/transcription/selectTranscriptionService`,
+)
+const { transcriptionRequestFor } = require(
+  `${process.cwd()}/lib/transcription/transcriptionRequestFor`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 const saas = require(`${process.cwd()}/lib/saas`)
@@ -83,11 +90,15 @@ async function transcribe(isSingleFile, req, res, next) {
       ConversationMetadataRequire,
       "lang param is required",
     )
-    requireParam(
-      req.body.endpoint,
-      ConversationMetadataRequire,
-      "serviceEndpoint param is required",
-    )
+    // Without a named service, one is picked below.
+    const serviceNamed = namesService(req.body)
+    if (serviceNamed) {
+      requireParam(
+        req.body.endpoint,
+        ConversationMetadataRequire,
+        "serviceEndpoint param is required",
+      )
+    }
 
     req.body.membersRight = isNaN(req.body.membersRight)
       ? CONVERSATION_RIGHT.READ
@@ -121,28 +132,44 @@ async function transcribe(isSingleFile, req, res, next) {
       SECURITY_LEVELS.getValueOrDefault(req.body.securityLevel),
       SECURITY_LEVELS.getValueOrDefault(orgExists[0].securityLevel),
     )
-    const chosenService = await getTranscriptionServiceByEndpoint(
-      req.body.endpoint,
-    )
-    if (
-      !chosenService ||
-      !SECURITY_LEVELS.isAllowed(
-        chosenService.security_level,
-        req.body.securityLevel,
+    // A named service must be among the models meeting the level.
+    const services = await listTranscriptionServices(req.body.securityLevel)
+    if (serviceNamed) {
+      const isAllowed = services.some((service) =>
+        matchesEndpoint(service, req.body.endpoint),
       )
-    ) {
-      throw new ConversationSecurityLevelForbidden()
+      if (!isAllowed) throw new ConversationSecurityLevelForbidden()
     }
 
     // Speaker identification: validate the requested collections and inject the
     // server-built config into transcriptionConfig (the client never provides
     // Qdrant collection names). Returns the security headers for the gateway.
     const speakerId = await applySpeakerIdentification(req.body, orgExists[0])
-    req.body.transcriptionConfig = JSON.stringify(speakerId.transcriptionConfig)
+    let transcriptionConfig = speakerId.transcriptionConfig
     // Keep the security headers (which may carry the shared X-Speaker-Id-Token)
     // in a local variable: never stash them on req.body, where they could ride
     // along into a log payload (cf. logger/context.js DELETE body capture).
     const speakerIdHeaders = speakerId.headers
+
+    if (!serviceNamed) {
+      const service = selectTranscriptionService(services, {
+        language: req.body.lang,
+        diarization:
+          transcriptionConfig.diarizationConfig?.enableDiarization === true,
+        speakerIdentification: speakerId.enabled,
+      })
+      if (!service) throw new ConversationNoTranscriptionService()
+      debug("picked %s for lang %s", service.serviceName, req.body.lang)
+      const request = transcriptionRequestFor(service, {
+        language: req.body.lang,
+        config: transcriptionConfig,
+      })
+      req.body.serviceName = request.serviceName
+      req.body.endpoint = request.endpoint
+      req.body.lang = request.lang
+      transcriptionConfig = request.transcriptionConfig
+    }
+    req.body.transcriptionConfig = JSON.stringify(transcriptionConfig)
 
     if (req.body.folderId && req.body.folderId !== "null") {
       const folderResult = await model.folders.getById(req.body.folderId)
@@ -231,6 +258,12 @@ async function transcribe(isSingleFile, req, res, next) {
   } catch (err) {
     next(err)
   }
+}
+
+function namesService(body) {
+  return [body.serviceName, body.endpoint].some(
+    (value) => typeof value === "string" && value.trim() !== "",
+  )
 }
 
 async function createConversation(processing_job, body) {

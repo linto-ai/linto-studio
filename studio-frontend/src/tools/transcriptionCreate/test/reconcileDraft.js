@@ -13,7 +13,7 @@ function reconcile(choices, usedCatalog = catalog) {
   )
 }
 
-test("starts on the profile hearing the most and the recommended service", (t) => {
+test("starts on the profile hearing the most and the first service", (t) => {
   const { draft, notices } = reconcile({})
   t.is(draft.profileId, "europe")
   t.is(draft.serviceName, "whisper")
@@ -83,14 +83,13 @@ test("a profile chosen by the user is replaced out loud once incompatible", (t) 
   t.deepEqual(notices, [{ key: "profile_changed" }])
 })
 
-test("a service chosen by the user is replaced out loud once incompatible", (t) => {
+test("the service follows the languages, silently", (t) => {
   const { draft, notices } = reconcile({
     languages: ["*"],
     serviceName: "kaldi",
-    serviceChosenByUser: true,
   })
   t.is(draft.serviceName, "whisper")
-  t.deepEqual(notices, [{ key: "service_changed" }])
+  t.deepEqual(notices, [])
 })
 
 test("languages win over translations, out loud", (t) => {

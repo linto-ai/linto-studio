@@ -68,7 +68,7 @@
 
     <TranscriptionSettingsSheet
       v-model="settingsOpen"
-      :services="services"
+      :service="currentService"
       :choices="choices"
       :voice-collections="voiceCollections"
       :voice-identification-capable="speakerIdentificationCapable"

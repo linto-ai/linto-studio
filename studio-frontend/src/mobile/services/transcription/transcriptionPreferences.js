@@ -1,7 +1,7 @@
 const STORAGE_PREFIX = "mobile.transcription."
 
 // Per-organization memory of the last transcription choices
-// ({ serviceName, language, diarization }). Storage failures are silent:
+// ({ language, diarization }). Storage failures are silent:
 // the defaults simply apply again.
 export function readTranscriptionPreferences(organizationId) {
   try {

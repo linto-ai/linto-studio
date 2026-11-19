@@ -3,10 +3,8 @@ import {
   readTranscriptionPreferences,
   saveTranscriptionPreferences,
 } from "@/mobile/services/transcription/transcriptionPreferences.js"
-import { pickRecommendedService } from "@/mobile/tools/pickRecommendedService.js"
 import { computeTranscriptionChoices } from "@/mobile/tools/computeTranscriptionChoices.js"
 import { buildTranscriptionSettings } from "@/mobile/tools/buildTranscriptionSettings.js"
-import getDescriptionByLanguage from "@/tools/getDescriptionByLanguage.js"
 import { isSpeakerIdentificationCapable } from "@/mobile/tools/isSpeakerIdentificationCapable.js"
 import { getEnv } from "@/tools/getEnv"
 import RIGHTS_LIST from "@/const/rigthsList.js"
@@ -21,7 +19,6 @@ export const transcriptionSettingsMixin = {
       services: [],
       servicesLoaded: false,
       choices: {
-        serviceName: null,
         language: null,
         diarization: true,
         voiceCollections: [],
@@ -34,8 +31,9 @@ export const transcriptionSettingsMixin = {
     organizationScope() {
       return this.$store.getters["organizations/getCurrentOrganizationScope"]
     },
+    // The service the choices are offered for: the API picks the one used.
     currentService() {
-      return pickRecommendedService(this.services, this.choices.serviceName)
+      return this.services[0] ?? null
     },
     speakerIdentificationCapable() {
       return isSpeakerIdentificationCapable(
@@ -85,11 +83,6 @@ export const transcriptionSettingsMixin = {
         return this.$t("mobile.settings.no_service")
       }
       const language = this.languageLabel(this.choices.language)
-      const service = getDescriptionByLanguage(
-        this.currentService.desc,
-        this.$i18n.locale,
-        this.currentService.serviceName,
-      )
       const speakers = this.transcriptionSettings.diarization
         ? this.$t("mobile.settings.speakers_auto")
         : this.$t("mobile.settings.speakers_off")
@@ -97,7 +90,7 @@ export const transcriptionSettingsMixin = {
         this.transcriptionSettings.speakerIdentificationCollections.length > 0
           ? ` · ${this.$t("mobile.settings.voices_on")}`
           : ""
-      return `${language} · ${service} · ${speakers}${voices}`
+      return `${language} · ${speakers}${voices}`
     },
   },
   async created() {
@@ -118,9 +111,7 @@ export const transcriptionSettingsMixin = {
       )
     },
     updateChoices(choices) {
-      const serviceChanged = choices.serviceName !== this.choices.serviceName
       this.choices = choices
-      if (serviceChanged) this.applyPreferences({ ...choices, language: null })
       saveTranscriptionPreferences(this.organizationScope, this.choices)
     },
     languageLabel(language) {

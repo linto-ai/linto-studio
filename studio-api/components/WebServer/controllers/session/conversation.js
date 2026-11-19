@@ -150,13 +150,15 @@ async function initCaptionsForConversation(sessionData, name) {
           )
 
           caption.metadata.audio = generateAudioMetadata(audioId, audioFormat)
+          // Without a service, one is picked later (cf. uploader/offline.js).
+          const transcriptionService = channel.meta.transcriptionService || {}
           const {
             serviceName,
             endpoint,
             lang,
             config,
             speakerIdentificationCollections,
-          } = channel.meta.transcriptionService
+          } = transcriptionService
           caption.metadata.transcription = {
             serviceName,
             endpoint,
@@ -164,9 +166,8 @@ async function initCaptionsForConversation(sessionData, name) {
             transcriptionConfig: config,
             speakerIdentificationCollections,
           }
-          caption.metadata.normalize.filter = extractSegmentFilter(
-            channel.meta.transcriptionService,
-          )
+          caption.metadata.normalize.filter =
+            extractSegmentFilter(transcriptionService)
           caption.jobs.transcription.state = "waiting"
           captions.push(caption)
 

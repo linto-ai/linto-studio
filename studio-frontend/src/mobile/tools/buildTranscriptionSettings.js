@@ -1,9 +1,8 @@
 import generateServiceConfig from "../../tools/generateServiceConfig.js"
 
 /**
- * Builds the upload fields (serviceName, endpoint, lang, config) for a
- * service and the two choices a phone user makes: language and speaker
- * separation. Punctuation follows the service (built-in or its first
+ * Builds the upload fields (lang, config) from the phone user's language and
+ * speaker separation. Punctuation follows the service (built-in or its first
  * sub-service).
  * @param {object} service - one entry of GET /services
  * @param {{ language: string, diarization: boolean, speakerIdentificationCollections?: string[] }} choices

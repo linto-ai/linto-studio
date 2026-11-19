@@ -28,7 +28,6 @@
     :notices="notices"
     :speakerOptions="speakerOptions"
     :liveEngines="liveEngines"
-    :offlineEngines="offlineEngines"
     :sourceIcon="sourceIcon"
     :offlineEngineLabel="offlineEngineLabel"
     :isFolderPrivate="isFolderPrivate"
@@ -46,7 +45,6 @@ import { mapGetters } from "vuex"
 import { bus } from "@/tools/eventBus.js"
 
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
-import { AUTO_LANGUAGE } from "@/const/transcriptionCreate.js"
 import { livePackPurchaseMixin } from "@/mixins/livePackPurchase.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
@@ -64,13 +62,10 @@ import { buildConversationRequest } from "@/tools/transcriptionCreate/buildConve
 import { buildQuickSessionRequest } from "@/tools/transcriptionCreate/buildQuickSessionRequest.js"
 import { readMediaDuration } from "@/tools/audio/readMediaDuration.js"
 import { computeCompatibleProfiles } from "@/tools/transcriptionCreate/computeCompatibleProfiles.js"
-import { computeCompatibleServices } from "@/tools/transcriptionCreate/computeCompatibleServices.js"
 import { computeDraftEngines } from "@/tools/transcriptionCreate/computeDraftEngines.js"
 import { computeFilesMinutes } from "@/tools/transcriptionCreate/computeFilesMinutes.js"
 import { computeLanguageSelection } from "@/tools/transcriptionCreate/computeLanguageSelection.js"
 import { computeProfileLanguages } from "@/tools/transcriptionCreate/computeProfileLanguages.js"
-import { computeServiceLanguages } from "@/tools/transcriptionCreate/computeServiceLanguages.js"
-import { computeServiceName } from "@/tools/transcriptionCreate/computeServiceName.js"
 import { computeSourceNotice } from "@/tools/transcriptionCreate/computeSourceNotice.js"
 import { computeSpeakerOptions } from "@/tools/transcriptionCreate/computeSpeakerOptions.js"
 import { computeTimingOptions } from "@/tools/transcriptionCreate/computeTimingOptions.js"
@@ -205,15 +200,6 @@ export default {
           description: this.formatEngineLanguages(
             computeProfileLanguages(profile),
           ),
-        }),
-      )
-    },
-    offlineEngines() {
-      return computeCompatibleServices(this.catalog.services, this.draft).map(
-        (service) => ({
-          id: service.serviceName,
-          name: computeServiceName(service, this.$i18n.locale),
-          description: this.formatServiceLanguages(service),
         }),
       )
     },
@@ -380,12 +366,6 @@ export default {
       this.updateDraft({
         languages: computeLanguageSelection(this.draft.languages, next),
       })
-    },
-    formatServiceLanguages(service) {
-      const codes = computeServiceLanguages(service)
-      return codes.includes(AUTO_LANGUAGE)
-        ? this.$t("lang.automatic")
-        : this.formatEngineLanguages(codes)
     },
     formatEngineLanguages(codes) {
       return this.$t("transcription_create.engine.languages", {

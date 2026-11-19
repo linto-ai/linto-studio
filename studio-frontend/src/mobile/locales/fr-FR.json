@@ -161,10 +161,9 @@
   },
   "settings": {
     "title": "Transcription",
-    "service": "Service",
     "language": "Langue",
     "diarization": "Séparer les locuteurs",
-    "no_diarization": "Ce service ne sépare pas les locuteurs.",
+    "no_diarization": "La séparation des locuteurs n'est pas disponible.",
     "no_service": "Aucun service de transcription disponible",
     "speakers_auto": "locuteurs auto",
     "speakers_off": "sans locuteurs",

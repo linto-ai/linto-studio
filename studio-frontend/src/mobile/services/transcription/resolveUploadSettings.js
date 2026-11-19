@@ -2,7 +2,6 @@ import i18n from "@/i18n"
 import { loadTranscriptionServices } from "@/mobile/services/transcription/loadTranscriptionServices.js"
 import { readTranscriptionPreferences } from "@/mobile/services/transcription/transcriptionPreferences.js"
 import { computeTranscriptionChoices } from "@/mobile/tools/computeTranscriptionChoices.js"
-import { pickRecommendedService } from "@/mobile/tools/pickRecommendedService.js"
 import { buildTranscriptionSettings } from "@/mobile/tools/buildTranscriptionSettings.js"
 
 // Transcription and sharing of a recording sent without them: recorded
@@ -15,7 +14,7 @@ export async function resolveUploadSettings(organizationId) {
   const saved = readTranscriptionPreferences(organizationId)
   const services = await loadTranscriptionServices()
   const choices = computeTranscriptionChoices(services, saved, i18n.locale)
-  const service = pickRecommendedService(services, choices.serviceName)
+  const service = services[0]
   return {
     transcription: service
       ? buildTranscriptionSettings(service, {

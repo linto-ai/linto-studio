@@ -6,11 +6,12 @@ import { computeSpeakersMode } from "./computeSpeakersMode.js"
 const MODELS_WITH_BUILT_IN_PUNCTUATION = ["whisper", "nemo"]
 
 /**
- * Service configuration for a draft. Punctuation isn't a choice: it follows
- * the service, built-in or its first sub-service when it has one.
+ * Transcription choices of a draft; the API picks the service and adapts them.
+ * Punctuation isn't a choice: it follows the service, built-in or its first
+ * sub-service when it has one.
  * @param {object} draft
  * @param {object} service - one entry of GET /services
- * @returns {object} see generateServiceConfig
+ * @returns {{ lang: string, speakerIdentificationCollections: string[], config: object }}
  */
 export function buildServiceConfig(draft, service) {
   const { count, collectionIds } = draft.speakers

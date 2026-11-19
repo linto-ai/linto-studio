@@ -958,7 +958,6 @@
       "languages_changed": "Language replaced, no engine available for: {languages}",
       "translations_removed": "Translation removed, unavailable with these languages: {languages}",
       "profile_changed": "The chosen live engine is no longer compatible: another one was selected.",
-      "service_changed": "The chosen engine is no longer compatible: another one was selected.",
       "speakers_changed": "The speakers choice is no longer available: it was replaced."
     },
     "engine": {

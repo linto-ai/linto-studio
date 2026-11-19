@@ -11,8 +11,6 @@ export default function generateServiceConfig(
   const hasBuiltInPunctuation = ["whisper", "nemo"].includes(service.model_type)
 
   return {
-    serviceName: service.serviceName,
-    endpoint: removeLeadingSlash(service.endpoints[0].endpoint),
     lang: languageValue,
     // Studio collection ids the server will resolve into the diarization
     // speakerIdentificationConfig (kept out of `config`: it is a separate,
@@ -49,8 +47,4 @@ export default function generateServiceConfig(
           },
     },
   }
-}
-
-function removeLeadingSlash(str) {
-  return str.replace(/^\/+/, "")
 }

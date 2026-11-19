@@ -40,7 +40,6 @@ export const whisperService = {
   model_type: "whisper",
   language: "*,fr-FR,en-US",
   security_level: 2,
-  order: 2,
   endpoints: [{ endpoint: "/whisper/transcribe" }],
   sub_services: {
     diarization: [
@@ -56,7 +55,6 @@ export const kaldiService = {
   model_type: "kaldi",
   language: "fr-FR",
   security_level: 2,
-  order: 1,
   endpoints: [{ endpoint: "/kaldi/transcribe" }],
   sub_services: {
     diarization: [],

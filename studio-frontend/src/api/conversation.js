@@ -269,11 +269,9 @@ export async function apiCreateConversation(
     description,
     membersRight,
     securityLevel,
-    serviceName,
     transcriptionConfig,
     speakerIdentificationCollections,
     lang,
-    endpoint,
     tracks,
     url, // tracks or url is required
     folderId,
@@ -290,10 +288,8 @@ export async function apiCreateConversation(
     formData.append("description", description)
     formData.append("membersRight", membersRight)
     formData.append("securityLevel", securityLevel)
-    formData.append("serviceName", serviceName)
     formData.append("transcriptionConfig", transcriptionConfig)
     formData.append("lang", lang)
-    formData.append("endpoint", endpoint)
 
     // Studio collection ids for speaker identification (server validates
     // ownership and builds the diarization speakerIdentificationConfig).

@@ -14,11 +14,9 @@ export function buildConversationRequest(draft, service, fileField) {
     description: "",
     membersRight: draft.membersRight,
     securityLevel: draft.securityLevel,
-    serviceName: config.serviceName,
     transcriptionConfig: JSON.stringify(config.config),
     speakerIdentificationCollections: config.speakerIdentificationCollections,
     lang: config.lang,
-    endpoint: config.endpoint,
     tracks: [fileField.file],
     folderId: draft.folderId,
   }

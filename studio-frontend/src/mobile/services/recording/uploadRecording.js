@@ -31,12 +31,10 @@ export async function uploadRecording(id, onProgress, signal) {
       membersRight: sharing?.membersRight ?? DEFAULT_MEMBERS_RIGHT,
       folderId: sharing?.folderId || undefined,
       securityLevel: DEFAULT_SECURITY_LEVEL,
-      serviceName: transcription.serviceName,
       transcriptionConfig: JSON.stringify(transcription.config),
       speakerIdentificationCollections:
         transcription.speakerIdentificationCollections ?? [],
       lang: transcription.lang,
-      endpoint: transcription.endpoint,
       tracks: [file],
     },
     null,
