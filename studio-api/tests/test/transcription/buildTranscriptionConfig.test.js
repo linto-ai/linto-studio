@@ -130,4 +130,16 @@ describe("buildTranscriptionConfig for the hf models", () => {
       expect(config.vadConfig.minDuration).toBe(30)
     }
   })
+
+  it("recognizes the model inside a longer declared type", () => {
+    const config = buildTranscriptionConfig(
+      {
+        model_type: "openai/whisper-large-v3-turbo",
+        sub_services: { punctuation: [{ service_name: "punctuation" }] },
+      },
+      { language: "fr", config: {} },
+    )
+    expect(config.modelType).toBe("whisper")
+    expect(config.punctuationConfig.enablePunctuation).toBe(false)
+  })
 })

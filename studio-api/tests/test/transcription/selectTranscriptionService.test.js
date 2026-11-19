@@ -236,6 +236,21 @@ describe("selectTranscriptionService", () => {
     )
   })
 
+  it("recognizes the model inside a longer declared type", () => {
+    const hfQwen = { ...qwen, model_type: "qwen3_asr" }
+    const hfCohere = {
+      ...cohere,
+      model_type: "CohereLabs/cohere-transcribe-03-2026",
+    }
+    const voxtral = { ...cohere, serviceName: "voxtral", model_type: "voxtral" }
+    expect(
+      pick({ language: "fr" }, [whisper, hfQwen, hfCohere]).serviceName,
+    ).toBe("cohere")
+    expect(
+      pick({ language: "fr" }, [voxtral, whisper, hfQwen]).serviceName,
+    ).toBe("qwen")
+  })
+
   it("takes the first service listed when no model of the rule is running", () => {
     const kaldi = { serviceName: "kaldi", model_type: "kaldi", language: "pl" }
     const untyped = { serviceName: "untyped", language: "pl" }
