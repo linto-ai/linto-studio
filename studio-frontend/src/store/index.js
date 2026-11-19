@@ -13,6 +13,7 @@ import quickSession from "./quickSession"
 import billing from "./billing"
 import transcriptionCreate from "./transcriptionCreate"
 import apiStatus from "./apiStatus"
+import auth from "./auth"
 
 Vue.use(Vuex)
 
@@ -29,6 +30,7 @@ export default new Vuex.Store({
     billing,
     transcriptionCreate,
     apiStatus,
+    auth,
     "favorites/conversations": createMediaModule("users/self/favorites"),
     "shared/conversations": createMediaModule("conversations/shared"),
     // organizations conv are registered programmatically during "setCurrentOrganizationScope"

@@ -1,5 +1,3 @@
-import { getCookie } from "@/tools/auth/getCookie"
-import { logout } from "@/tools/auth/logout"
 import {
   apiGetPersonalUserInfo,
   apiUpdateUserInfo,
@@ -18,8 +16,8 @@ const actions = {
   resetState({ state }) {
     Object.assign(state, defaultState)
   },
-  async fetchUser({ commit, dispatch }) {
-    const token = getCookie("authToken")
+  async fetchUser({ commit, rootGetters }) {
+    const token = rootGetters["auth/token"]
     const getUserInfos = await apiGetPersonalUserInfo()
 
     if (getUserInfos.status === "success") {
@@ -36,7 +34,7 @@ const actions = {
   async login({ commit }, payload) {},
   async logout({ commit, dispatch }) {
     // the caller handles the reload (see AppSettingsModal)
-    logout({ redirect: false })
+    await dispatch("auth/logout", null, { root: true })
     dispatch("resetState")
     commit(
       "system/addNotification",

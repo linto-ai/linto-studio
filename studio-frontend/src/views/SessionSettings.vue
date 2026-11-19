@@ -266,7 +266,6 @@ import EMPTY_FIELD from "@/const/emptyField"
 import { formsMixin } from "@/mixins/forms.js"
 
 import isSameDateTimeWithoutSeconds from "@/tools/date/isSameDateTimeWithoutSeconds.js"
-import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 import { getEnv } from "@/tools/getEnv"
 
 import { apiUpdateSession } from "@/api/session.js"
@@ -425,7 +424,7 @@ export default {
       )
     },
     isAuthenticated() {
-      return isAuthenticated()
+      return this.$store.getters["auth/isLoggedIn"]
     },
     enableWatermark() {
       return getEnv("VUE_APP_ENABLE_WATERMARK") === "true"

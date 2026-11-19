@@ -56,7 +56,6 @@
 </template>
 
 <script>
-import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 import { getEnv } from "@/tools/getEnv"
 import { getLogoAltName } from "@/tools/getLogoAltName"
 
@@ -92,7 +91,7 @@ export default {
       return this.$store.getters["organizations/getCurrentOrganization"]
     },
     isAuthenticated: function () {
-      return isAuthenticated()
+      return this.$store.getters["auth/isLoggedIn"]
     },
 
     logo() {

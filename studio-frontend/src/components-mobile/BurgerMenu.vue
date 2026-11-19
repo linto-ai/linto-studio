@@ -45,7 +45,6 @@ import IsCloud from "@/components/atoms/IsCloud.vue"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"
 import { userName } from "@/tools/user/userName.js"
-import { logout } from "@/tools/auth/logout"
 
 import MediaExplorerMenu from "@/components/MediaExplorerMenu.vue"
 import BackofficeSidebar from "@/components/BackofficeSidebar.vue"
@@ -66,8 +65,9 @@ export default {
   },
   mounted() {},
   methods: {
-    logout() {
-      logout()
+    async logout() {
+      await this.$store.dispatch("auth/logout")
+      window.location.href = "/"
     },
     handleOpenOrganization() {
       this.$router.push({

@@ -2,13 +2,8 @@ import Vue from "vue"
 import Router from "vue-router"
 
 import store from "@/store/index.js"
-import { getCookie } from "@/tools/auth/getCookie"
-import { setCookie } from "@/tools/auth/setCookie"
-import { apiLoginUserMagicLink } from "@/api/user"
 import { apiGetUserRightFromConversation } from "@/api/conversation"
 import PUBLIC_ROUTES from "../const/publicRoutes"
-import { logout } from "../tools/auth/logout"
-import { resetCookie } from "../tools/auth/resetCookie"
 import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"
 import { isAtLeastSystemAdministrator } from "@/tools/rights/platformRoles.js"
@@ -83,20 +78,15 @@ function redirectToApiUnreachable(to, from, next) {
 // Helper functions for router guards
 const authGuards = {
   isAuthenticated: () => {
-    return getCookie("authToken") !== null
+    return store.getters["auth/isLoggedIn"]
   },
 
   async handleMagicLinkAuth(to, next) {
     const conversationId = to?.query?.conversationId
     const magicId = to?.params?.magicId
 
-    const login = await apiLoginUserMagicLink(magicId)
+    const login = await store.dispatch("auth/loginWithMagicLink", magicId)
     if (login.status === "success") {
-      setCookie("userId", login.data.user_id, 7)
-      setCookie("authToken", login.data.auth_token, 7)
-      setCookie("refreshToken", login.data.refresh_token, 14)
-      setCookie("cm_orga_scope", "")
-
       let redirect = conversationId
         ? { path: "/interface/conversations/" + conversationId }
         : { name: "inbox" }
@@ -119,13 +109,17 @@ const authGuards = {
         store.dispatch("apiStatus/markUnreachable", reqUser)
         redirectToApiUnreachable(to, from, next)
         return null
-      default:
-        logout()
-        next({
+      default: {
+        await store.dispatch("auth/logout")
+        // Full page load: the websocket opened with the refused token at boot
+        // (App.vue) must not live on into the login page.
+        const login = router.resolve({
           name: "login",
           query: { next: from.query.next || to.fullPath },
         })
+        window.location.href = login.href
         return null
+      }
     }
   },
 
@@ -1036,7 +1030,7 @@ router.beforeEach(async (to, from, next) => {
 
       // Redirect to login if user is not admin else go to backoffice
       if (platformRole <= 1) {
-        resetCookie()
+        await store.dispatch("auth/logout")
         const next_url = from.query.next || to.fullPath
         window.location.href = `/login?error=no_organization&next=${encodeURIComponent(next_url)}`
         return

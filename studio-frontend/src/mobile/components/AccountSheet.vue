@@ -70,7 +70,6 @@ import BottomSheet from "@/mobile/components/BottomSheet.vue"
 import ListRow from "@/mobile/components/ListRow.vue"
 import { setLanguage } from "@/mobile/services/preferences/setLanguage.js"
 import { optOutOfMobileApp } from "@/mobile/services/preferences/optOutOfMobileApp.js"
-import { logout } from "@/tools/auth/logout"
 import { IS_NATIVE_APP, MOBILE_BASE } from "@/mobile/const/appTarget.js"
 
 export default {
@@ -96,8 +95,8 @@ export default {
   methods: {
     changeLanguage: setLanguage,
     optOut: optOutOfMobileApp,
-    logout() {
-      logout({ redirect: false })
+    async logout() {
+      await this.$store.dispatch("auth/logout")
       window.location.href = `${MOBILE_BASE}login`
     },
   },

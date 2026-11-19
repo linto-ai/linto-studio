@@ -372,8 +372,8 @@ export default {
     closeModal() {
       this.$store.dispatch("settings/setModalOpen", false)
     },
-    logout() {
-      this.$store.dispatch("user/logout")
+    async logout() {
+      await this.$store.dispatch("user/logout")
       this.closeModal()
       document.location.reload()
     },

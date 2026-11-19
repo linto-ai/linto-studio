@@ -3,8 +3,7 @@
 </template>
 <script>
 import Loading from "@/components/atoms/Loading.vue"
-import { getOidcToken, apiGetPersonalUserInfo } from "@/api/user.js"
-import { setCookie } from "@/tools/auth/setCookie.js"
+import { apiGetPersonalUserInfo } from "@/api/user.js"
 
 export default {
   props: {},
@@ -16,23 +15,23 @@ export default {
   },
   methods: {
     async fetchToken() {
-      if (this.$route?.query?.token) {
-        setCookie("authToken", this.$route?.query?.token, 7)
-        setCookie("cm_orga_scope", "")
-
+      const token = this.$route?.query?.token
+      if (token) {
+        // The user info request needs the token: saved first, the user id after
+        const auth = { userId: null, authToken: token, refreshToken: null }
+        await this.$store.dispatch("auth/save", auth)
         const userReq = await apiGetPersonalUserInfo()
         if (userReq.status == "success") {
-          setCookie("userId", userReq.data._id, 7)
+          await this.$store.dispatch("auth/save", {
+            ...auth,
+            userId: userReq.data._id,
+          })
           this.redirect()
           return
         }
       } else {
-        let res = await getOidcToken()
-
+        const res = await this.$store.dispatch("auth/loginWithOidc")
         if (res.status == "success") {
-          setCookie("userId", res.data.user_id, 7)
-          setCookie("authToken", res.data.auth_token, 7)
-          setCookie("cm_orga_scope", "")
           this.redirect()
           return
         }

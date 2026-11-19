@@ -2,7 +2,6 @@ import io from "socket.io-client"
 import Vue from "vue"
 import { customDebug } from "@/tools/customDebug"
 import { bus } from "@/tools/eventBus.js"
-import { getCookie } from "@/tools/auth/getCookie"
 import { getEnv } from "@/tools/getEnv"
 import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 import store from "@/store/index.js"
@@ -86,7 +85,7 @@ export default class ApiEventWebSocket {
       return Promise.resolve()
     }
 
-    const userToken = token ?? this.currentToken ?? getCookie("authToken")
+    const userToken = token ?? this.currentToken ?? store.getters["auth/token"]
     this.currentToken = userToken
     this.setStatus(WEBSOCKET_STATUS.CONNECTING)
 

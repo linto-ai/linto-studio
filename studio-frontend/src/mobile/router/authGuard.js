@@ -1,4 +1,3 @@
-import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 import { ensureSession } from "@/mobile/services/session/ensureSession.js"
 import store from "@/mobile/store.js"
 import { canStartLive } from "@/mobile/tools/canStartLive.js"
@@ -28,7 +27,7 @@ async function resolveNavigation(to) {
       return buildApiUnreachableRoute(to)
     case Boolean(to.meta?.public):
       return undefined
-    case !isAuthenticated():
+    case !store.getters["auth/isLoggedIn"]:
       return loginRoute(to)
     default:
       return resolvePrivateNavigation(to)

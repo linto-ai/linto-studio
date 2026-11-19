@@ -1,6 +1,6 @@
 import { sendRequest } from "../tools/request/sendRequest"
 import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
-import { getCookie } from "@/tools/auth/getCookie"
+import store from "@/store/index.js"
 
 const BASE_API = API_ENDPOINTS.api
 
@@ -99,7 +99,7 @@ export async function apiSendChatMessage(
   content,
   { onToken, onDone, onError },
 ) {
-  const userToken = getCookie("authToken")
+  const userToken = store.getters["auth/token"]
   const url = `${chatDiscussionsUrl(conversationId)}/${discussionId}/messages`
 
   try {

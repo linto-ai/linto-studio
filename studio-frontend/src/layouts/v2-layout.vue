@@ -47,7 +47,6 @@
 </template>
 <script>
 import { Fragment } from "vue-fragment"
-import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 import { mapGetters } from "vuex"
 
 import BurgerMenu from "@/components-mobile/BurgerMenu.vue"
@@ -92,7 +91,7 @@ export default {
   },
   computed: {
     isAuthenticated() {
-      return isAuthenticated()
+      return this.$store.getters["auth/isLoggedIn"]
     },
     isQuickSessionPage() {
       return this.$route.name === "quick session"

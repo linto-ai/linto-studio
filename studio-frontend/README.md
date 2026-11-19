@@ -332,15 +332,12 @@ account is needed for the simulator.
 `.github/workflows/ios-simulator.yml` builds it, unsigned, on each push
 touching the front on `next` or `master` (or by hand from the Actions
 tab, once the workflow is on the default branch). Its artifact
-`linto-studio-ios-simulator` holds `App.app`, for Apple silicon and Intel
+`linto-studio-ios-simulator.zip` holds `App.app`, for Apple silicon and Intel
 Macs. On a Mac with Xcode (App Store, then open it once to install the iOS
 simulator):
 
 ```bash
-# GitHub zips the artifact around our own zip (which keeps the app's
-# executable bit): unzip twice.
-unzip linto-studio-ios-simulator.zip -d artifact
-unzip artifact/linto-studio-ios-simulator.zip
+unzip linto-studio-ios-simulator.zip
 open -a Simulator
 xcrun simctl install booted App.app
 xcrun simctl launch booted ai.linto.studio
@@ -348,7 +345,8 @@ xcrun simctl launch booted ai.linto.studio
 
 ### Build on a Mac
 
-Xcode and Node 22, then from `studio-frontend/`:
+Xcode and the Node version of the repository's `.nvmrc`, then from
+`studio-frontend/`:
 
 ```bash
 npm ci

@@ -3,7 +3,6 @@ import i18n from "../i18n.js"
 import { timeAgo } from "../tools/date/formatDate.js"
 import { getCookie } from "../tools/auth/getCookie"
 import { sendRequest } from "../tools/request/sendRequest"
-import { logout } from "../tools/auth/logout"
 import { sendMultipartFormData } from "../tools/request/sendMultipartFormData.js"
 import { setCookie } from "../tools/auth/setCookie.js"
 import { timeToHMS } from "../tools/date/timeToHMS.js"
@@ -17,8 +16,6 @@ import { testPasswordConfirm } from "../tools/fields/testPasswordConfirm.js"
 // Send request
 
 Vue.filter("sendRequest", sendRequest)
-
-Vue.filter("logout", logout)
 
 // Send request multipart formData
 Vue.filter("sendMultipartFormData", sendMultipartFormData)

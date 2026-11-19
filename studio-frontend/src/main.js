@@ -14,6 +14,7 @@ import ApiEventWebSocket from "@/services/websocket/ApiEventWebSocket.js"
 import Atoms from "./components/atoms/index.js"
 import "./filters/index.js"
 import { getEnv } from "@/tools/getEnv"
+import { watchAuthInOtherTabs } from "@/tools/auth/watchAuthInOtherTabs.js"
 
 import Loading from "vue-loading-overlay"
 
@@ -36,6 +37,8 @@ Vue.prototype.$apiEventWS = new ApiEventWebSocket()
 Debug.enable(getEnv("VUE_APP_DEBUG"))
 
 if (!redirectingToMobileApp) {
+  watchAuthInOtherTabs(() => store.getters["auth/current"])
+
   new Vue({
     router,
     store,

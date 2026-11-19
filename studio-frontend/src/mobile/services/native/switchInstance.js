@@ -3,7 +3,6 @@ import { MOBILE_BASE } from "@/mobile/const/appTarget.js"
 import { saveInstance } from "@/mobile/services/native/instanceStorage.js"
 import { normalizeInstanceAddress } from "@/mobile/tools/normalizeInstanceAddress.js"
 import { listInstanceBaseCandidates } from "@/mobile/tools/listInstanceBaseCandidates.js"
-import { logout } from "@/tools/auth/logout"
 
 const PROBE_TIMEOUT_MS = 8000
 
@@ -39,7 +38,7 @@ export async function countUnsentRecordings() {
 export async function switchInstance(instance) {
   await loadRecordings()
   await store.dispatch("mobileRecordings/removeAll")
-  logout({ redirect: false })
+  await store.dispatch("auth/logout")
   saveInstance(instance)
   window.location.replace(`${MOBILE_BASE}login`)
 }

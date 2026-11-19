@@ -35,7 +35,6 @@ import { mapActions, mapGetters } from "vuex"
 import { bus } from "@/main"
 
 import { customDebug } from "@/tools/customDebug.js"
-import isAuthenticated from "@/tools/auth/isAuthenticated.js"
 import getCurrentTheme from "@/tools/getCurrentTheme.js"
 import { getEnv } from "@/tools/getEnv"
 
@@ -82,7 +81,7 @@ export default {
       return this.$route.meta.public
     },
     isAuthenticated: function () {
-      return isAuthenticated()
+      return this.$store.getters["auth/isLoggedIn"]
     },
     // The scope set by the router, without the default organization fallback
     // of getCurrentOrganizationScope: subscribing to it first, while the

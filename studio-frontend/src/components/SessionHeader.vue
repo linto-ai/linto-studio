@@ -25,8 +25,6 @@
   </div>
 </template>
 <script>
-import isAuthenticated from "@/tools/auth/isAuthenticated.js"
-
 import SessionStatus from "@/components/SessionStatus.vue"
 import SessionLiveActions from "@/components/SessionLiveActions.vue"
 import { mapGetters } from "vuex"
@@ -56,7 +54,7 @@ export default {
   },
   computed: {
     isAuthenticated() {
-      return isAuthenticated()
+      return this.$store.getters["auth/isLoggedIn"]
     },
     ...mapGetters("system", ["isMobile"]),
   },

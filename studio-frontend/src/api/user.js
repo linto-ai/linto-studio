@@ -2,6 +2,7 @@ import { sendRequest } from "../tools/request/sendRequest"
 import { sendMultipartFormData } from "../tools/request/sendMultipartFormData"
 
 import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
+import { LOGOUT_TIMEOUT_MS } from "@/const/auth.js"
 
 const BASE_API = API_ENDPOINTS.api
 const BASE_AUTH = API_ENDPOINTS.auth
@@ -125,6 +126,16 @@ export async function apiLoginUserMagicLink(magicId) {
       psw: "psw", // Needed
       magicId,
     },
+    null,
+  )
+}
+
+// Revokes the current token in the API (the auth store module's logout)
+export async function apiLogout() {
+  return await sendRequest(
+    `${BASE_AUTH}/logout`,
+    { method: "get", timeout: LOGOUT_TIMEOUT_MS },
+    {},
     null,
   )
 }

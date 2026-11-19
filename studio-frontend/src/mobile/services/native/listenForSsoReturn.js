@@ -1,7 +1,7 @@
 import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 import { MOBILE_SSO_REDIRECT_URI } from "@/mobile/const/mobileSsoRedirectUri.js"
 import { takeSsoVerifier } from "@/mobile/services/native/ssoVerifierStorage.js"
-import { loginWithSsoCode } from "@/mobile/services/session/loginWithSsoCode.js"
+import store from "@/mobile/store.js"
 import { readMobileSsoReturn } from "@/mobile/tools/readMobileSsoReturn.js"
 
 // Native app only: an SSO login started by startSsoLogin.js ends in the
@@ -34,8 +34,11 @@ async function finishSsoLogin(url, router) {
   }
   let signedIn = false
   if (ssoReturn.code) {
-    const result = await loginWithSsoCode(ssoReturn.code, codeVerifier)
-    signedIn = result.ok
+    const result = await store.dispatch("auth/loginWithSsoCode", {
+      code: ssoReturn.code,
+      codeVerifier,
+    })
+    signedIn = result?.status === "success"
   }
   if (signedIn) {
     // Same landing as the password login (Login.vue)

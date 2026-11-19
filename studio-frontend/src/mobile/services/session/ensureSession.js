@@ -1,5 +1,4 @@
 import store from "@/mobile/store.js"
-import { logout } from "@/tools/auth/logout"
 import { pickDefaultOrganization } from "@/mobile/tools/pickDefaultOrganization.js"
 import { isUnreachableResult } from "@/tools/request/isUnreachableResult.js"
 
@@ -34,7 +33,7 @@ async function loadUser() {
       store.dispatch("apiStatus/markUnreachable", result)
       return false
     default:
-      logout({ redirect: false })
+      await store.dispatch("auth/logout")
       return false
   }
 }

@@ -5,8 +5,6 @@ import {
   clearOriginalAuth,
   isImpersonatingUser,
 } from "@/tools/backoffice/userImpersonation.js"
-import { getCookie } from "@/tools/auth/getCookie"
-import { setCookie } from "@/tools/auth/setCookie"
 import { clearImpersonatedOrgId } from "@/tools/backoffice/clearImpersonatedOrgId.js"
 import { apiImpersonateUser } from "@/api/user.js"
 
@@ -107,7 +105,7 @@ const actions = {
   setIsLoading({ commit }, isLoading) {
     commit("setIsLoading", isLoading)
   },
-  async startUserImpersonation(_, userId) {
+  async startUserImpersonation({ dispatch, rootGetters }, userId) {
     const res = await apiImpersonateUser(userId)
     if (res?.status !== "success" || !res.data?.auth_token) {
       throw new Error(res?.message || "Unable to impersonate user")
@@ -116,28 +114,26 @@ const actions = {
     // org and user impersonation are mutually exclusive
     clearImpersonatedOrgId()
 
-    saveOriginalAuth({
-      userId: getCookie("userId"),
-      authToken: getCookie("authToken"),
-      refreshToken: getCookie("refreshToken"),
-    })
+    saveOriginalAuth(rootGetters["auth/current"])
 
-    setCookie("userId", res.data.user_id, 7)
-    setCookie("authToken", res.data.auth_token, 7)
     // impersonation token is short lived and not refreshable
-    setCookie("refreshToken", null, null)
-    setCookie("cm_orga_scope", null, null)
+    await dispatch(
+      "auth/save",
+      {
+        userId: res.data.user_id,
+        authToken: res.data.auth_token,
+        refreshToken: null,
+      },
+      { root: true },
+    )
 
     // full reload re-bootstraps the app as the impersonated user
     window.location.href = "/"
   },
-  stopUserImpersonation() {
+  stopUserImpersonation({ dispatch }) {
     const auth = getOriginalAuth()
-    if (auth) {
-      setCookie("userId", auth.userId, 7)
-      setCookie("authToken", auth.authToken, 7)
-      setCookie("refreshToken", auth.refreshToken, 14)
-      setCookie("cm_orga_scope", null, null)
+    if (auth?.authToken) {
+      dispatch("auth/save", auth, { root: true })
     }
     clearOriginalAuth()
     window.location.href = "/backoffice/users"

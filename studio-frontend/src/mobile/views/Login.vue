@@ -83,7 +83,6 @@ import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 import { loadSavedInstance } from "@/mobile/services/native/instanceStorage.js"
 import { formatInstanceAddress } from "@/mobile/tools/formatInstanceAddress.js"
 import { loadLoginMethods } from "@/mobile/services/session/loadLoginMethods.js"
-import { loginWithPassword } from "@/mobile/services/session/loginWithPassword.js"
 import { installMixin } from "@/mobile/mixins/install.js"
 
 // Phones reaching studio.linto.ai land here (redirect.js): the install
@@ -142,9 +141,12 @@ export default {
     async submit() {
       this.pending = true
       this.failed = false
-      const result = await loginWithPassword(this.email, this.password)
+      const result = await this.$store.dispatch("auth/loginWithPassword", {
+        email: this.email,
+        password: this.password,
+      })
       this.pending = false
-      if (!result.ok) {
+      if (result?.status !== "success") {
         this.failed = true
         return
       }

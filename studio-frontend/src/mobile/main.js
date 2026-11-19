@@ -14,6 +14,7 @@ import store from "@/mobile/store.js"
 import i18n from "@/i18n"
 import { addMobileMessages } from "@/mobile/services/i18n/addMobileMessages.js"
 import { getEnv } from "@/tools/getEnv"
+import { watchAuthInOtherTabs } from "@/tools/auth/watchAuthInOtherTabs.js"
 import { registerServiceWorker } from "@/mobile/services/pwa/registerServiceWorker.js"
 import { listenForInstallPrompt } from "@/mobile/services/pwa/installPrompt.js"
 import { watchOnlineStatus } from "@/mobile/services/network/onlineStatus.js"
@@ -50,6 +51,7 @@ watchOnlineStatus()
 listenForBackButton(router)
 listenForSsoReturn(router)
 stopLeftoverRecording()
+watchAuthInOtherTabs(() => store.getters["auth/current"])
 // Uploads need the organization scope: wait for the first guarded navigation.
 router.onReady(() => startUploadResumption())
 

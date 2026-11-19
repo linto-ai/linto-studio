@@ -1,7 +1,6 @@
 import axios from "axios"
 import { bus } from "@/tools/eventBus.js"
 import store from "@/store/index.js"
-import { getCookie } from "../auth/getCookie"
 import { getImpersonatedOrgId } from "../backoffice/getImpersonatedOrgId.js"
 import { readErrorPayload } from "@/tools/request/readErrorPayload.js"
 
@@ -28,7 +27,7 @@ export async function sendRequest(
     defaultQueryParams["userScope"] = "backoffice-readonly"
   }
 
-  const userToken = getCookie("authToken")
+  const userToken = store.getters["auth/token"]
   try {
     let req = null
     if (params.method === "get") {

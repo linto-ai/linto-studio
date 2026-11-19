@@ -108,11 +108,7 @@
 import { getEnv } from "@/tools/getEnv"
 
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
-import {
-  apiLoginUser,
-  apiResendVerificationEmail,
-  getLoginMethods,
-} from "@/api/user"
+import { apiResendVerificationEmail, getLoginMethods } from "@/api/user"
 import MainContentPublic from "@/components/MainContentPublic.vue"
 import { testEmail } from "@/tools/fields/testEmail"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"
@@ -208,13 +204,11 @@ export default {
         this.testPasswordEmpty()
 
         if (this.formValid) {
-          let login = await apiLoginUser(this.email.value, this.password.value)
+          let login = await this.$store.dispatch("auth/loginWithPassword", {
+            email: this.email.value,
+            password: this.password.value,
+          })
           if (login.status === "success") {
-            this.setCookie("userId", login.data.user_id, 7)
-            this.setCookie("authToken", login.data.auth_token, 7)
-            this.setCookie("refreshToken", login.data.refresh_token, 14)
-            this.setCookie("cm_orga_scope", "")
-
             if (this.$route?.query?.next) {
               window.location.href = this.$route?.query?.next
             } else {
@@ -247,9 +241,6 @@ export default {
     },
     testPasswordEmpty() {
       return testFieldEmpty(this.password, (key) => this.$t(key))
-    },
-    setCookie(name, value, exdays) {
-      return this.$options.filters.setCookie(name, value, exdays)
     },
     async handleResendVerification() {
       this.resendingVerification = true
