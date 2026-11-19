@@ -4,7 +4,7 @@ const debug = require("debug")(
 const axios = require(`${process.cwd()}/lib/utility/axios`)
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const { BUILT_IN_NUMBER_CONVERSION_MODELS } = require(
+const { BUILT_IN_NUMBER_CONVERSION_MODELS, knownModelType } = require(
   `${process.cwd()}/lib/transcription/modelTypes`,
 )
 const { handleResult } = require(
@@ -94,8 +94,9 @@ async function fetchResult(conv_id, job) {
 async function getResult(job, metadata) {
   try {
     let url = `${process.env.GATEWAY_SERVICES}/${job.endpoint}/results/${job.result_id}`
+    // A request naming its service keeps the model type its client sent
     const convertsNumbers = BUILT_IN_NUMBER_CONVERSION_MODELS.includes(
-      metadata.transcription?.transcriptionConfig?.modelType,
+      knownModelType(metadata.transcription?.transcriptionConfig?.modelType),
     )
     if (
       !convertsNumbers &&

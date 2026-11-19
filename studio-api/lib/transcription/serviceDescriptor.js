@@ -1,5 +1,5 @@
 // Readers of a service entry of the gateway listing
-const { KNOWN_MODEL_TYPE } = require(
+const { knownModelType } = require(
   `${process.cwd()}/lib/transcription/modelTypes`,
 )
 
@@ -13,14 +13,8 @@ function serviceEndpoint(service) {
   return service.serviceName || service.name || null
 }
 
-// The known model the declared type names, else the type as declared
 function serviceModelType(service) {
-  const declared = String(service.model_type || "")
-    .trim()
-    .toLowerCase()
-  const known = declared.match(KNOWN_MODEL_TYPE)
-  if (known) return known[0]
-  return declared
+  return knownModelType(service.model_type)
 }
 
 // The gateway may serialize the info of a sub-service
