@@ -1,4 +1,4 @@
-import { createRecorder } from "@/mobile/services/recording/createRecorder.js"
+import { createRecorder } from "@/mobile/services/recording/createRecorder.ts"
 import { createScreenWakeLock } from "@/mobile/services/recording/screenWakeLock.js"
 import { appendChunk } from "@/mobile/services/recording/queue.js"
 import { requestPersistentStorage } from "@/mobile/services/recording/requestPersistentStorage.js"

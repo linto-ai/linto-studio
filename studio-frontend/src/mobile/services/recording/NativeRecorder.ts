@@ -1,4 +1,9 @@
 import { CapacitorAudioRecorder } from "@capgo/capacitor-audio-recorder"
+import type {
+  RecordingErrorEvent,
+  StopRecordingResult,
+} from "@capgo/capacitor-audio-recorder"
+import type { PluginListenerHandle } from "@capacitor/core"
 import {
   ForegroundService,
   Importance,
@@ -11,6 +16,12 @@ import {
 } from "@/mobile/services/recording/nativeAudioFiles.js"
 import { scaleNativeLevel } from "@/mobile/tools/scaleNativeLevel.js"
 import { countStalledReports } from "@/mobile/tools/countStalledReports.js"
+import type {
+  NativeRecorderOptions,
+  Recorder,
+  RecorderStart,
+  RecorderStopPatch,
+} from "@/mobile/services/recording/Recorder.ts"
 
 // AAC in ADTS: a stream of self-contained frames, readable up to the last
 // one when the app is killed before the recording stops.
@@ -36,8 +47,27 @@ const NOTIFICATION_ICON = "ic_stat_recording"
 // whose size goes to onProgress, and stop() answers what the page cannot
 // know (where the file ended up, its exact duration and size).
 // The microphone is never muted here: no onMuted / onUnmuted.
-export class NativeRecorder {
-  constructor({ onLevel, onInterrupted, onProgress, notification }) {
+export class NativeRecorder implements Recorder {
+  onLevel: NativeRecorderOptions["onLevel"]
+  onInterrupted: NativeRecorderOptions["onInterrupted"]
+  onProgress: NativeRecorderOptions["onProgress"]
+  notification: NativeRecorderOptions["notification"]
+  active: boolean
+  paused: boolean
+  serviceStarted: boolean
+  audioFileUri: string | null
+  levelTimer: ReturnType<typeof setTimeout> | undefined
+  progressTimer: ReturnType<typeof setTimeout> | undefined
+  errorListener: PluginListenerHandle | null
+  lastSize: number | null
+  stalledReports: number
+
+  constructor({
+    onLevel,
+    onInterrupted,
+    onProgress,
+    notification,
+  }: NativeRecorderOptions) {
     this.onLevel = onLevel
     this.onInterrupted = onInterrupted
     this.onProgress = onProgress
@@ -46,8 +76,8 @@ export class NativeRecorder {
     this.paused = false
     this.serviceStarted = false
     this.audioFileUri = null
-    this.levelTimer = null
-    this.progressTimer = null
+    this.levelTimer = undefined
+    this.progressTimer = undefined
     this.errorListener = null
     this.lastSize = null
     this.stalledReports = 0
@@ -55,7 +85,7 @@ export class NativeRecorder {
 
   // Rejects like getUserMedia when the microphone is refused (a
   // NotAllowedError), so the page reacts the same way.
-  async start() {
+  async start(): Promise<RecorderStart> {
     await requestMicrophone()
     await this.startService()
     try {
@@ -79,7 +109,7 @@ export class NativeRecorder {
     return { mimeType: MIME_TYPE, audioFileUri: this.audioFileUri }
   }
 
-  pause() {
+  pause(): void {
     if (this.active && !this.paused) {
       this.paused = true
       CapacitorAudioRecorder.pauseRecording().catch((error) =>
@@ -88,7 +118,7 @@ export class NativeRecorder {
     }
   }
 
-  resume() {
+  resume(): void {
     if (this.active && this.paused) {
       this.paused = false
       CapacitorAudioRecorder.resumeRecording().catch((error) =>
@@ -98,14 +128,14 @@ export class NativeRecorder {
   }
 
   // The file is written as it goes: nothing waits to be handed over.
-  flush() {}
+  flush(): void {}
 
   // The level is read from the plugin, nothing to wake up.
-  resumeLevelMeter() {}
+  resumeLevelMeter(): void {}
 
   // Resolves with the recording's patch once the file is finished and
   // moved out of the cache: { audioFileUri, durationMs?, sizeBytes? }.
-  async stop() {
+  async stop(): Promise<RecorderStopPatch> {
     switch (true) {
       case !this.active:
         return {}
@@ -116,18 +146,18 @@ export class NativeRecorder {
     }
   }
 
-  get isActive() {
+  get isActive(): boolean {
     return this.active
   }
 
-  get isMuted() {
+  get isMuted(): boolean {
     return false
   }
 
   // Also called when the page goes away while recording (the router keeps
   // it from happening, a reload does not): the plugin stops so the file is
   // finished, and the next start of the app queues it.
-  destroy() {
+  destroy(): void {
     this.clearTimers()
     this.errorListener?.remove()
     this.errorListener = null
@@ -138,7 +168,7 @@ export class NativeRecorder {
     this.stopService()
   }
 
-  async finishFile(stopped) {
+  async finishFile(stopped: StopRecordingResult): Promise<RecorderStopPatch> {
     await this.stopService()
     const recordedUri = stopped.uri || this.audioFileUri
     const audioFileUri = (await moveToRecordings(recordedUri)) ?? recordedUri
@@ -155,7 +185,7 @@ export class NativeRecorder {
   // A notification denied only hides it: the service, and the recording,
   // go on. Without the service, recording still works while the app is
   // shown, so a failure there does not stop the start.
-  async startService() {
+  async startService(): Promise<void> {
     try {
       await ForegroundService.requestPermissions()
       await ForegroundService.createNotificationChannel({
@@ -179,7 +209,7 @@ export class NativeRecorder {
     }
   }
 
-  async stopService() {
+  async stopService(): Promise<void> {
     if (this.serviceStarted) {
       this.serviceStarted = false
       await ForegroundService.stopForegroundService().catch((error) =>
@@ -190,18 +220,18 @@ export class NativeRecorder {
 
   // Emitted by the plugin on iOS only; on Android a failure shows as a
   // file that stops growing (reportProgress).
-  handleRecorderError(event) {
+  handleRecorderError(event: RecordingErrorEvent): void {
     console.error("native recorder error", event?.message)
     this.onInterrupted("recorder-error")
   }
 
   // One reading at a time: the next one is planned once the previous
   // answered. Not read while the page is hidden, nobody sees the meter.
-  scheduleLevel() {
+  scheduleLevel(): void {
     this.levelTimer = setTimeout(() => this.readLevel(), LEVEL_INTERVAL_MS)
   }
 
-  async readLevel() {
+  async readLevel(): Promise<void> {
     if (document.visibilityState === "visible" && !this.paused) {
       try {
         const { value } = await CapacitorAudioRecorder.getCurrentAmplitude()
@@ -217,14 +247,14 @@ export class NativeRecorder {
   // crash, that the recording holds audio. A file that stopped growing
   // means the recorder stopped writing: the recording is interrupted, as
   // when the web microphone is lost.
-  scheduleProgress() {
+  scheduleProgress(): void {
     this.progressTimer = setTimeout(
       () => this.reportProgress(),
       PROGRESS_INTERVAL_MS,
     )
   }
 
-  async reportProgress() {
+  async reportProgress(): Promise<void> {
     const sizeBytes = this.audioFileUri
       ? await readAudioFileSize(this.audioFileUri)
       : null
@@ -247,15 +277,15 @@ export class NativeRecorder {
     }
   }
 
-  clearTimers() {
+  clearTimers(): void {
     clearTimeout(this.levelTimer)
     clearTimeout(this.progressTimer)
-    this.levelTimer = null
-    this.progressTimer = null
+    this.levelTimer = undefined
+    this.progressTimer = undefined
   }
 }
 
-async function requestMicrophone() {
+async function requestMicrophone(): Promise<void> {
   const { recordAudio } = await CapacitorAudioRecorder.requestPermissions()
   if (recordAudio !== "granted") {
     throw new DOMException("microphone refused", "NotAllowedError")
@@ -264,11 +294,11 @@ async function requestMicrophone() {
 
 // A recorder that cannot stop cleanly keeps its file (readable up to its
 // last frame): the rejection carries where it is.
-async function stopPluginRecording() {
+async function stopPluginRecording(): Promise<StopRecordingResult> {
   try {
     return await CapacitorAudioRecorder.stopRecording()
   } catch (error) {
     console.error("the recording did not stop cleanly", error)
-    return error?.data ?? {}
+    return (error as { data?: StopRecordingResult } | null)?.data ?? {}
   }
 }

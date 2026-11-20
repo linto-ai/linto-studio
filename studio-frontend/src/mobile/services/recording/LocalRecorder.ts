@@ -1,8 +1,21 @@
 import { getSupportedRecordingMimeType } from "@/tools/audio/audioMimeTypes.js"
 import { buildAudioConstraints } from "@/mobile/tools/buildAudioConstraints.js"
+import type {
+  LocalRecorderOptions,
+  Recorder,
+  RecorderStart,
+  RecorderStopPatch,
+} from "@/mobile/services/recording/Recorder.ts"
 
 const CHUNK_INTERVAL_MS = 10_000
 const LEVEL_INTERVAL_MS = 100
+
+// Older Safari only has the prefixed AudioContext.
+declare global {
+  interface Window {
+    webkitAudioContext?: typeof AudioContext
+  }
+}
 
 // Owns the microphone stream, the MediaRecorder and the level meter of one
 // recording. Chunks and levels are pushed to the callbacks; nothing about
@@ -11,8 +24,27 @@ const LEVEL_INTERVAL_MS = 100
 // (iOS mutes it while the page is hidden, a call or Siri mutes it too); the
 // MediaRecorder keeps running meanwhile, the caller decides what to do.
 // onInterrupted: the recording cannot go on (track ended, recorder error).
-export class LocalRecorder {
-  constructor({ onChunk, onLevel, onInterrupted, onMuted, onUnmuted }) {
+export class LocalRecorder implements Recorder {
+  onChunk: LocalRecorderOptions["onChunk"]
+  onLevel: LocalRecorderOptions["onLevel"]
+  onInterrupted: LocalRecorderOptions["onInterrupted"]
+  onMuted: LocalRecorderOptions["onMuted"]
+  onUnmuted: LocalRecorderOptions["onUnmuted"]
+  stream: MediaStream | null
+  mediaRecorder: MediaRecorder | null
+  audioContext: AudioContext | null
+  analyser: AnalyserNode | null
+  levelTimer: ReturnType<typeof setInterval> | undefined
+  chunkIndex: number
+  mimeType: string
+
+  constructor({
+    onChunk,
+    onLevel,
+    onInterrupted,
+    onMuted,
+    onUnmuted,
+  }: LocalRecorderOptions) {
     this.onChunk = onChunk
     this.onLevel = onLevel
     this.onInterrupted = onInterrupted
@@ -22,12 +54,12 @@ export class LocalRecorder {
     this.mediaRecorder = null
     this.audioContext = null
     this.analyser = null
-    this.levelTimer = null
+    this.levelTimer = undefined
     this.chunkIndex = 0
     this.mimeType = ""
   }
 
-  async start(deviceId = null) {
+  async start(deviceId: string | null = null): Promise<RecorderStart> {
     this.stream = await navigator.mediaDevices.getUserMedia(
       buildAudioConstraints(deviceId),
     )
@@ -52,20 +84,20 @@ export class LocalRecorder {
     }
   }
 
-  pause() {
+  pause(): void {
     if (this.mediaRecorder?.state === "recording") this.mediaRecorder.pause()
   }
 
-  resume() {
+  resume(): void {
     if (this.mediaRecorder?.state === "paused") this.mediaRecorder.resume()
   }
 
   // Hands what was captured since the last chunk to onChunk now instead of
   // at the next timeslice: called before the page may be frozen or killed.
-  flush() {
+  flush(): void {
     if (!this.isActive) return
     try {
-      this.mediaRecorder.requestData()
+      this.mediaRecorder?.requestData()
     } catch (error) {
       console.error("cannot flush the recorder", error)
     }
@@ -73,13 +105,13 @@ export class LocalRecorder {
 
   // The level meter's AudioContext may be suspended while the page was
   // hidden or the audio session interrupted.
-  resumeLevelMeter() {
+  resumeLevelMeter(): void {
     this.audioContext?.resume().catch(() => {})
   }
 
   // Resolves once the last chunk has been delivered to onChunk, with
   // nothing to add to the recording (see NativeRecorder).
-  stop() {
+  stop(): Promise<RecorderStopPatch> {
     return new Promise((resolve) => {
       if (!this.mediaRecorder || this.mediaRecorder.state === "inactive") {
         resolve({})
@@ -92,15 +124,17 @@ export class LocalRecorder {
     })
   }
 
-  get isActive() {
-    return this.mediaRecorder?.state && this.mediaRecorder.state !== "inactive"
+  get isActive(): boolean {
+    return (
+      this.mediaRecorder !== null && this.mediaRecorder.state !== "inactive"
+    )
   }
 
-  get isMuted() {
+  get isMuted(): boolean {
     return this.stream?.getAudioTracks()[0]?.muted ?? false
   }
 
-  destroy() {
+  destroy(): void {
     clearInterval(this.levelTimer)
     this.stream?.getTracks().forEach((track) => track.stop())
     this.audioContext?.close().catch(() => {})
@@ -109,14 +143,14 @@ export class LocalRecorder {
     this.audioContext = null
   }
 
-  handleChunk(blob) {
+  handleChunk(blob: Blob): void {
     if (!blob || blob.size === 0) return
     this.onChunk(this.chunkIndex, blob)
     this.chunkIndex += 1
   }
 
-  watchTrack() {
-    const track = this.stream.getAudioTracks()[0]
+  watchTrack(): void {
+    const track = this.stream?.getAudioTracks()[0]
     if (!track) return
     // Property assignment: the handlers die with the track. track.stop()
     // (destroy) never fires them.
@@ -125,25 +159,24 @@ export class LocalRecorder {
     track.onunmute = () => this.onUnmuted()
   }
 
-  handleRecorderError(event) {
+  handleRecorderError(event: ErrorEvent): void {
     console.error("media recorder error", event.error)
     this.onInterrupted("recorder-error")
   }
 
-  startLevelMeter() {
+  startLevelMeter(): void {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext
-    if (!AudioContextClass) return
+    if (!AudioContextClass || !this.stream) return
     this.audioContext = new AudioContextClass()
     // Created after an await: browsers may hand it out suspended.
     this.audioContext.resume().catch(() => {})
-    this.analyser = this.audioContext.createAnalyser()
-    this.analyser.fftSize = 256
-    this.audioContext
-      .createMediaStreamSource(this.stream)
-      .connect(this.analyser)
-    const samples = new Uint8Array(this.analyser.frequencyBinCount)
+    const analyser = this.audioContext.createAnalyser()
+    this.analyser = analyser
+    analyser.fftSize = 256
+    this.audioContext.createMediaStreamSource(this.stream).connect(analyser)
+    const samples = new Uint8Array(analyser.frequencyBinCount)
     this.levelTimer = setInterval(() => {
-      this.analyser.getByteTimeDomainData(samples)
+      analyser.getByteTimeDomainData(samples)
       this.onLevel(computeRmsLevel(samples))
     }, LEVEL_INTERVAL_MS)
   }
@@ -151,7 +184,7 @@ export class LocalRecorder {
 
 // Speech on a phone mic is quiet (RMS 0.02 to 0.1): both RMS and peak
 // are boosted so a normal voice fills a good part of the meter.
-function computeRmsLevel(samples) {
+function computeRmsLevel(samples: Uint8Array): number {
   let sum = 0
   let peak = 0
   for (const sample of samples) {

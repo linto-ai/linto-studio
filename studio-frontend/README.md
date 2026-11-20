@@ -257,8 +257,8 @@ Scripts:
 ### Recording in the background
 
 The web page cannot record once hidden; the app records through the phone
-instead (`src/mobile/services/recording/NativeRecorder.js`, picked by
-`createRecorder.js`):
+instead (`src/mobile/services/recording/NativeRecorder.ts`, picked by
+`createRecorder.ts`):
 
 - a foreground service of type `microphone`, with a notification
   ("Recording in progress"), keeps the microphone allowed once the app is
