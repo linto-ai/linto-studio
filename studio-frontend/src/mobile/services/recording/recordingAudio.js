@@ -1,6 +1,6 @@
 import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 import { getExtensionForMimeType } from "@/tools/audio/audioMimeTypes.js"
-import * as queue from "@/mobile/services/recording/queue.js"
+import * as queue from "@/api/indexedDB/queue.js"
 
 // Where the audio of a recording lives: 10 s chunks in IndexedDB (web), or
 // one file on the phone (native app, recording.audioFileUri). The native
@@ -77,7 +77,7 @@ async function openChunks(recordingId, mimeType) {
 // The condition is a build constant: the web build drops these imports.
 function importNativeAudioFiles() {
   return IS_NATIVE_APP
-    ? import("@/mobile/services/recording/nativeAudioFiles.js")
+    ? import("@/api/device/nativeAudioFiles.js")
     : Promise.resolve(null)
 }
 

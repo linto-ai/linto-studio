@@ -1,4 +1,4 @@
-import { apiGetExportContent } from "@/api/service.js"
+import { apiGetExportContent } from "@/api/studio-api/service.js"
 import { resolveReportId } from "./resolveReportId.js"
 import { loadVersions } from "./loadVersions.js"
 import { loadGenerations } from "./loadGenerations.js"

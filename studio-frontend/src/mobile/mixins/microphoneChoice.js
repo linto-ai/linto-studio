@@ -1,4 +1,4 @@
-import { listMicrophones } from "@/mobile/services/recording/listMicrophones.js"
+import { listMicrophones } from "@/api/device/listMicrophones.js"
 
 const STORAGE_KEY = "mobile.record.deviceId"
 

@@ -11,7 +11,7 @@
   </Modal>
 </template>
 <script>
-import { apiDeleteMultipleUsers } from "@/api/admin.js"
+import { apiDeleteMultipleUsers } from "@/api/studio-api/admin.js"
 
 import Modal from "@/components/molecules/Modal.vue"
 import { bus } from "../main"

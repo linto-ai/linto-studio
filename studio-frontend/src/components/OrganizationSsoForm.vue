@@ -16,7 +16,7 @@ import { testEmail } from "@/tools/fields/testEmail"
 import {
   apiResolveOrganizationSso,
   organizationSsoLoginUrl,
-} from "@/api/user.js"
+} from "@/api/studio-api/user.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 

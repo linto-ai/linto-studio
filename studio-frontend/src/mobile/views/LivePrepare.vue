@@ -120,7 +120,6 @@ import LivePackPurchaseForm from "@/mobile/components/live/LivePackPurchaseForm.
 import BottomSheet from "@/mobile/components/BottomSheet.vue"
 import { liveCreditMixin } from "@/mobile/mixins/liveCredit.js"
 import { livePrepareMixin } from "@/mobile/mixins/livePrepare.js"
-import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 
 export default {
   name: "MobileLivePrepare",
@@ -147,7 +146,7 @@ export default {
   },
   computed: {
     online() {
-      return onlineStatus.online
+      return this.$store.state.mobileNetwork.online
     },
   },
 }

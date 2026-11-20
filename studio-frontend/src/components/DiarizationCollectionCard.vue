@@ -82,8 +82,8 @@
 import Button from "@/components/atoms/Button.vue"
 import { COLLECTION_TYPE, STORAGE_MODE } from "@/tools/voiceprint/voiceprintConstants.js"
 import resolveDiarizationCollectionName from "@/tools/voiceprint/resolveDiarizationCollectionName.js"
-import { apiGetOptedInMembers } from "@/api/voiceprintCollection.js"
-import { apiGetSpeakerLabels } from "@/api/speakerLabel.js"
+import { apiGetOptedInMembers } from "@/api/studio-api/voiceprintCollection.js"
+import { apiGetSpeakerLabels } from "@/api/studio-api/speakerLabel.js"
 
 export default {
   name: "DiarizationCollectionCard",

@@ -1,4 +1,4 @@
-import { getLLMService } from "@/api/service.js"
+import { getLLMService } from "@/api/studio-api/service.js"
 import { filterLLMServicesBySecurityLevel } from "@/tools/rights/filterBySecurityLevel.js"
 import { buildReportCatalogEntry } from "@/tools/llm/buildReportCatalogEntry.js"
 

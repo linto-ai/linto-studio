@@ -226,7 +226,7 @@ import {
   apiCreatePortalSession,
   apiGetBillingOverview,
   apiGetCredits,
-} from "@/api/cloud"
+} from "@/api/studio-api/cloud"
 import { SETTINGS_QUERY_PARAM } from "@/const/settingsQueryParam"
 import { computeAvailableBalances } from "@/tools/billing/computeAvailableBalances"
 import { computeBillingReturnUrl } from "@/tools/billing/computeBillingReturnUrl"

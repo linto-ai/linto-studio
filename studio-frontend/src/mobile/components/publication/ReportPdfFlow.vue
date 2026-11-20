@@ -16,11 +16,11 @@
 </template>
 
 <script>
-import { apiGetPublicationTemplates } from "@/api/publication.js"
+import { apiGetPublicationTemplates } from "@/api/studio-api/publication.js"
 import ReportTemplatesSheet from "@/mobile/components/publication/ReportTemplatesSheet.vue"
 import PdfReader from "@/mobile/components/publication/PdfReader.vue"
 import { exportReportPdf } from "@/mobile/services/publication/exportReportPdf.js"
-import { shareFile } from "@/mobile/services/export/shareFile.js"
+import { shareFile } from "@/api/device/shareFile.js"
 import { getTemplateDisplayName } from "@/tools/publication/getTemplateDisplayName.js"
 
 // "Download" on an AI report of the editor: pick a publication template of

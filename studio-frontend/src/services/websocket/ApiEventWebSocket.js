@@ -8,7 +8,7 @@ import store from "@/store/index.js"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import { generateId } from "@/tools/generateId"
 import { isMediaFromOtherOrganization } from "@/tools/isMediaFromOtherOrganization"
-import { apiGetConversationById } from "@/api/conversation.js"
+import { apiGetConversationById } from "@/api/studio-api/conversation.js"
 
 const socketioUrl = API_ENDPOINTS.socketOrigin
 const socketioPath = API_ENDPOINTS.socketPath

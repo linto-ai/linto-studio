@@ -49,7 +49,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import { apiGetUserOrganizations } from "@/api/admin.js"
+import { apiGetUserOrganizations } from "@/api/studio-api/admin.js"
 import GenericTable from "@/components/molecules/GenericTable.vue"
 import { sortArray } from "@/tools/sortList.js"
 export default {

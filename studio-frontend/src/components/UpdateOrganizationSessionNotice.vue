@@ -31,7 +31,7 @@ import { bus } from "@/tools/eventBus.js"
 import {
   apiGetOrganisationSessionNotice,
   apiUpdateOrganisationSessionNotice,
-} from "@/api/organisation.js"
+} from "@/api/studio-api/organisation.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 // Loading is registered globally by the atoms plugin (components/atoms/index.js).

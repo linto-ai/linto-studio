@@ -4,11 +4,11 @@ import {
   apiUpdateUserImage,
   apiSetDefaultOrganization,
   apiUnsetDefaultOrganization,
-} from "@/api/user"
+} from "@/api/studio-api/user"
 import {
   apiRemoveConversationFromFavorites,
   apiAddConversationToFavorites,
-} from "@/api/conversation"
+} from "@/api/studio-api/conversation"
 import { state as defaultState } from "./state"
 import i18n from "@/i18n"
 

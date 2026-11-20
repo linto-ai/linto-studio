@@ -2,7 +2,7 @@ import Vue from "vue"
 import Router from "vue-router"
 
 import store from "@/store/index.js"
-import { apiGetUserRightFromConversation } from "@/api/conversation"
+import { apiGetUserRightFromConversation } from "@/api/studio-api/conversation"
 import PUBLIC_ROUTES from "../const/publicRoutes"
 import { customDebug } from "@/tools/customDebug.js"
 import { generateId } from "@/tools/generateId.js"

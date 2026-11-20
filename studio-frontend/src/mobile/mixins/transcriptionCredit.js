@@ -1,5 +1,5 @@
 import { loadTranscriptionCredit } from "@/mobile/services/billing/loadTranscriptionCredit.js"
-import { onBackOnline } from "@/mobile/services/network/onlineStatus.js"
+import { subscribeToNetwork } from "@/api/device/network.js"
 
 // Transcription minutes on the Record page: read when the page opens and
 // when the network comes back. A recording refused for a spent quota is
@@ -23,12 +23,15 @@ export const transcriptionCreditMixin = {
   },
   created() {
     this.refreshTranscriptionCredit()
-    this.stopWatchingNetwork = onBackOnline(this.refreshTranscriptionCredit)
+    this.stopWatchingNetwork = subscribeToNetwork(this.refreshWhenOnline)
   },
   beforeDestroy() {
     this.stopWatchingNetwork()
   },
   methods: {
+    refreshWhenOnline(online) {
+      if (online) this.refreshTranscriptionCredit()
+    },
     async refreshTranscriptionCredit() {
       this.transcriptionCredit = await loadTranscriptionCredit(
         this.$store,

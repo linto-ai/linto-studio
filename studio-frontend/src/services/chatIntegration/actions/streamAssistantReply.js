@@ -1,4 +1,4 @@
-import { apiSendChatMessage } from "@/api/chat"
+import { apiSendChatMessage } from "@/api/studio-api/chat"
 import { generateId } from "@/tools/generateId"
 import { computeChatReplyError } from "@/tools/computeChatReplyError"
 import { showErrorReply } from "./showErrorReply"

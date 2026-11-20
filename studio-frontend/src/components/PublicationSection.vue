@@ -185,7 +185,7 @@ import {
   apiDeletePublicationTemplate,
   apiUpdatePublicationTemplateScope,
   apiDownloadPublicationTemplate,
-} from "@/api/publication"
+} from "@/api/studio-api/publication"
 import Button from "@/components/atoms/Button.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import PhIcon from "@/components/atoms/PhIcon.vue"

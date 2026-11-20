@@ -54,7 +54,7 @@
 import Modal from "@/components/molecules/Modal.vue"
 import Button from "@/components/atoms/Button.vue"
 import Droparea from "@/components/molecules/Droparea.vue"
-import { apiCreateVoiceSample } from "@/api/voiceSample.js"
+import { apiCreateVoiceSample } from "@/api/studio-api/voiceSample.js"
 import { formatCompactDuration } from "@/tools/formatDuration.js"
 import { audioDuration } from "@/tools/audio/audioDuration.js"
 import { isVoiceSampleTooShort } from "@/tools/voiceprint/isVoiceSampleTooShort.js"

@@ -17,7 +17,7 @@ import { getEnv } from "@/tools/getEnv"
 import { watchAuthInOtherTabs } from "@/tools/auth/watchAuthInOtherTabs.js"
 import { registerServiceWorker } from "@/mobile/services/pwa/registerServiceWorker.js"
 import { listenForInstallPrompt } from "@/mobile/services/pwa/installPrompt.js"
-import { watchOnlineStatus } from "@/mobile/services/network/onlineStatus.js"
+import { isOnline, subscribeToNetwork } from "@/api/device/network.js"
 import { startUploadResumption } from "@/mobile/services/recording/resumeUploads.js"
 import { clearMobileAppOptOut } from "@/mobile/services/preferences/clearMobileAppOptOut.js"
 import { clearSsoReturn } from "@/mobile/services/session/markSsoReturn.js"
@@ -47,7 +47,8 @@ clearMobileAppOptOut()
 clearSsoReturn()
 listenForInstallPrompt()
 registerServiceWorker()
-watchOnlineStatus()
+store.commit("mobileNetwork/setOnline", isOnline())
+subscribeToNetwork((online) => store.commit("mobileNetwork/setOnline", online))
 listenForBackButton(router)
 listenForSsoReturn(router)
 stopLeftoverRecording()

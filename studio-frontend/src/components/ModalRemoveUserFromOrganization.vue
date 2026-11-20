@@ -21,7 +21,7 @@
 import { Fragment } from "vue-fragment"
 
 import { bus } from "@/main.js"
-import { apiRemoveUserFromOrganisation } from "@/api/user.js"
+import { apiRemoveUserFromOrganisation } from "@/api/studio-api/user.js"
 
 import Modal from "@/components/molecules/Modal.vue"
 export default {

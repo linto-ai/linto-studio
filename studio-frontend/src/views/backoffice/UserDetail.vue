@@ -18,7 +18,7 @@
   </MainContentBackoffice>
 </template>
 <script>
-import { apiGetPublicUserById } from "@/api/user.js"
+import { apiGetPublicUserById } from "@/api/studio-api/user.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { impersonationMixin } from "@/mixins/impersonation.js"
 import { userName } from "@/tools/user/userName.js"

@@ -1,4 +1,4 @@
-import { apiExportWithTemplate } from "@/api/publication.js"
+import { apiExportWithTemplate } from "@/api/studio-api/publication.js"
 import { exportFilename } from "@/tools/llm/exportFilename.js"
 import { getTemplateDisplayName } from "@/tools/publication/getTemplateDisplayName.js"
 

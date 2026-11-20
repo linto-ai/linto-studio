@@ -3,7 +3,7 @@
 </template>
 <script>
 import Loading from "@/components/atoms/Loading.vue"
-import { apiGetPersonalUserInfo } from "@/api/user.js"
+import { apiGetPersonalUserInfo } from "@/api/studio-api/user.js"
 
 export default {
   props: {},

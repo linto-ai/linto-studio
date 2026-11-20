@@ -1,4 +1,4 @@
-import { apiGetExportContent } from "@/api/service.js"
+import { apiGetExportContent } from "@/api/studio-api/service.js"
 import { isLoadStale } from "./isLoadStale.js"
 
 // Part of a load: dropped when the load is stale for the report. Resolves

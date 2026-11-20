@@ -19,7 +19,7 @@
 import { bus } from "@/main.js"
 
 import { formsMixin } from "@/mixins/forms.js"
-import { apiDeleteSessionTemplate } from "@/api/session.js"
+import { apiDeleteSessionTemplate } from "@/api/studio-api/session.js"
 import Modal from "@/components/molecules/Modal.vue"
 export default {
   mixins: [formsMixin],

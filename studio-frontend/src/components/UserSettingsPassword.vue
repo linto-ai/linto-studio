@@ -41,7 +41,7 @@ import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
 import { mapActions } from "vuex"
 
-import { apiAdminUpdateUser } from "@/api/admin.js"
+import { apiAdminUpdateUser } from "@/api/studio-api/admin.js"
 import { testPassword } from "@/tools/fields/testPassword.js"
 
 export default {

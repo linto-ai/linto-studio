@@ -93,8 +93,14 @@
   </MainContentBackoffice>
 </template>
 <script>
-import { apiGetAllUsers, apiGetAllOrganizations } from "@/api/admin.js"
-import { apiGetPlatformKpiSeries, exportKpiSeries } from "@/api/kpi.js"
+import {
+  apiGetAllUsers,
+  apiGetAllOrganizations,
+} from "@/api/studio-api/admin.js"
+import {
+  apiGetPlatformKpiSeries,
+  exportKpiSeries,
+} from "@/api/studio-api/kpi.js"
 
 import { formatDuration } from "@/tools/formatDuration.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"

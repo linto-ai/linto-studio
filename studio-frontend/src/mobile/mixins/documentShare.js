@@ -1,5 +1,5 @@
 import { fetchDocumentFile } from "@/mobile/services/library/fetchDocumentFile.js"
-import { shareFile } from "@/mobile/services/export/shareFile.js"
+import { shareFile } from "@/api/device/shareFile.js"
 
 // "Share this document" from a library entry: the generated document as a
 // PDF through the phone's share sheet (or a download). One at a time.

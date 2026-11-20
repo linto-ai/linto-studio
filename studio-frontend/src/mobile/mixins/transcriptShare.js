@@ -1,5 +1,5 @@
 import { fetchTranscriptFile } from "@/mobile/services/export/fetchTranscriptFile.js"
-import { shareFile } from "@/mobile/services/export/shareFile.js"
+import { shareFile } from "@/api/device/shareFile.js"
 
 // "Share the verbatim" actions of the media list: fetch the export, then the
 // phone's share sheet (or a download). One export at a time.

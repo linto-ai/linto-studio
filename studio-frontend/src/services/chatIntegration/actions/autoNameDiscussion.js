@@ -1,4 +1,4 @@
-import { apiUpdateChatDiscussionTitle } from "@/api/chat"
+import { apiUpdateChatDiscussionTitle } from "@/api/studio-api/chat"
 import { truncateTitle } from "@/tools/truncateTitle"
 
 // Optimistic: the list updates now, the PATCH follows in the background. A

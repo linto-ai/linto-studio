@@ -84,7 +84,7 @@ import {
   apiGetOrganisationSso,
   apiUpdateOrganisationSso,
   apiDeleteOrganisationSso,
-} from "@/api/organisation.js"
+} from "@/api/studio-api/organisation.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"

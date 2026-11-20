@@ -3,7 +3,7 @@ import {
   apiCreateQuickSession,
   apiGetQuickSession,
   apiDeleteQuickSession,
-} from "@/api/session.js"
+} from "@/api/studio-api/session.js"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 
 // Live sessions from the phone: profiles that allow a quick meeting, the

@@ -2,7 +2,7 @@ import { createAudioPlugin } from "@linto-ai/transcript-ui-webcomponent"
 import {
   apiGetAudioFileFromConversation,
   apiGetAudioWaveFormFromConversation,
-} from "@/api/conversation"
+} from "@/api/studio-api/conversation"
 
 // The audio of a track, fetched through the API: the player plays an object
 // URL and draws the waveform peaks.

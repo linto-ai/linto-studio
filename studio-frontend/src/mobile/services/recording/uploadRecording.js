@@ -1,10 +1,11 @@
-import { apiCreateConversation } from "@/api/conversation.js"
+import { apiCreateConversation } from "@/api/studio-api/conversation.js"
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
-import * as queue from "@/mobile/services/recording/queue.js"
+import * as queue from "@/api/indexedDB/queue.js"
 import { buildRecordingFile } from "@/mobile/services/recording/recordingAudio.js"
 import { mapUploadError } from "@/mobile/tools/mapUploadError.js"
 import { DEFAULT_MEMBERS_RIGHT } from "@/mobile/const/defaultMembersRight.js"
 import { resolveUploadSettings } from "@/mobile/services/transcription/resolveUploadSettings.js"
+import { isOnline } from "@/api/device/network.js"
 
 // Sends one local recording through the same endpoint as a classic upload.
 // Never throws: { ok, conversationId }, { ok: false, error }, or
@@ -20,7 +21,7 @@ export async function uploadRecording(id, onProgress, signal) {
   }
   const { transcription, sharing } = await settingsOf(recording)
   if (!transcription) {
-    const code = navigator.onLine ? "no_service" : "offline"
+    const code = isOnline() ? "no_service" : "offline"
     return { ok: false, error: { code, retryable: true } }
   }
   const result = await apiCreateConversation(
@@ -49,7 +50,7 @@ export async function uploadRecording(id, onProgress, signal) {
   if (result.canceled) {
     return { ok: false, canceled: true }
   }
-  return { ok: false, error: mapUploadError(result, navigator.onLine) }
+  return { ok: false, error: mapUploadError(result, isOnline()) }
 }
 
 // The choices frozen when the stop sheet closed, else the remembered ones.

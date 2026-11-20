@@ -51,10 +51,10 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import { apiGetTranscriberProfilesByOrganization } from "@/api/session.js"
+import { apiGetTranscriberProfilesByOrganization } from "@/api/studio-api/session.js"
 import { sortArray } from "@/tools/sortList.js"
 
-import { apiAdminDeleteTranscriberProfile } from "@/api/admin.js"
+import { apiAdminDeleteTranscriberProfile } from "@/api/studio-api/admin.js"
 import bulkRequest from "@/tools/request/bulkRequest.js"
 
 import TranscriberProfileTable from "@/components/TranscriberProfileTable.vue"

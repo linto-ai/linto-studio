@@ -186,14 +186,14 @@ import { formatDateOrDash } from "@/tools/date/formatDate.js"
 import {
   apiGetVoiceprintCollection,
   apiGetOptedInMembers,
-} from "@/api/voiceprintCollection.js"
+} from "@/api/studio-api/voiceprintCollection.js"
 import {
   apiGetSpeakerLabels,
   apiCreateSpeakerLabel,
   apiUpdateSpeakerLabel,
   apiDeleteSpeakerLabel,
-} from "@/api/speakerLabel.js"
-import { apiGetVoiceSamples } from "@/api/voiceSample.js"
+} from "@/api/studio-api/speakerLabel.js"
+import { apiGetVoiceSamples } from "@/api/studio-api/voiceSample.js"
 import { COLLECTION_TYPE } from "@/tools/voiceprint/voiceprintConstants.js"
 import { formatCompactDuration } from "@/tools/formatDuration.js"
 

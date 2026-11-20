@@ -1,4 +1,4 @@
-import { apiGetTranscriptionService } from "@/api/service.js"
+import { apiGetTranscriptionService } from "@/api/studio-api/service.js"
 
 // Transcription services offered by the STT gateway, all languages.
 // Never throws: an unreachable gateway is an empty list.

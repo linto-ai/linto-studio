@@ -1,4 +1,4 @@
-import * as queue from "@/mobile/services/recording/queue.js"
+import * as queue from "@/api/indexedDB/queue.js"
 import { uploadRecording } from "@/mobile/services/recording/uploadRecording.js"
 import {
   deleteRecordingAudio,

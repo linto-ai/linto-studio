@@ -1,4 +1,4 @@
-import { apiGetMetadataLLMService } from "@/api/service.js"
+import { apiGetMetadataLLMService } from "@/api/studio-api/service.js"
 import { mapStatus } from "@/tools/llm/mapStatus.js"
 import { computeEpochMs } from "@/tools/date/computeEpochMs.js"
 import { ensureJob } from "./ensureJob.js"

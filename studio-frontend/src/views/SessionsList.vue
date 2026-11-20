@@ -16,7 +16,7 @@ import { bus } from "@/main.js"
 import {
   apiCountFutureSessions,
   apiCountActiveSessions,
-} from "@/api/session.js"
+} from "@/api/studio-api/session.js"
 
 import Tabs from "@/components/molecules/Tabs.vue"
 import SessionWeekList from "@/components/SessionWeekList.vue"

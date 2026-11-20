@@ -84,7 +84,7 @@
 <script>
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { impersonationMixin } from "@/mixins/impersonation.js"
-import { apiGetAllUsers } from "@/api/admin.js"
+import { apiGetAllUsers } from "@/api/studio-api/admin.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"

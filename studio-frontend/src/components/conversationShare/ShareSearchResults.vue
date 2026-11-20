@@ -62,7 +62,7 @@
 <script>
 import { mapGetters } from "vuex"
 
-import { apiSearchUser } from "@/api/user.js"
+import { apiSearchUser } from "@/api/studio-api/user.js"
 import { debounceMixin } from "@/mixins/debounce.js"
 
 import GenericTable from "@/components/molecules/GenericTable.vue"

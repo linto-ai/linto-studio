@@ -1,0 +1,374 @@
+import nextServices from "../../const/nextServices"
+import { sendRequest } from "../../tools/request/sendRequest"
+
+import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
+
+const BASE_API = API_ENDPOINTS.api
+
+function getLangCode(lang) {
+  const lang_code = {
+    en: "en-US",
+    fr: "fr-FR",
+  }
+
+  if (!lang_code[lang]) {
+    throw new Error("Language not supported")
+  }
+
+  return lang_code[lang]
+}
+const lang_code_alias = {
+  en: ["en-US", "en-GB", "en-AU", "en-CA", "en-IN", "en-NZ", "en-ZA"],
+  fr: ["fr-FR", "fr-CA", "fr-BE", "fr-CH"],
+}
+
+export async function apiGetTranscriptionService(lang, signal) {
+  const getTranscriptionService = await sendRequest(
+    `${BASE_API}/services`,
+    { method: "get", signal },
+    {},
+    null,
+  )
+
+  try {
+    const res = getTranscriptionService?.data ?? []
+    const transcriptionServicesList = res.filter(
+      (service) => !service?.desc?.type,
+    )
+
+    if (lang && lang !== "*") {
+      return transcriptionServicesList.filter(
+        (service) => lang_code_alias[lang].indexOf(service.language) !== -1,
+      )
+    } else {
+      return transcriptionServicesList
+    }
+  } catch (e) {
+    return []
+  }
+}
+
+export async function apiGetNlpService(notif) {
+  const getHighlightsService = await sendRequest(
+    `${BASE_API}/services`,
+    { method: "get" },
+    {},
+    notif,
+  )
+
+  const res = (getHighlightsService?.data ?? [])
+    .filter((service) => service.scope.indexOf("nlp") !== -1)
+    .concat(nextServices)
+
+  return res
+}
+
+export async function getLLMService(organizationId, securityLevel) {
+  const req = await sendRequest(
+    `${BASE_API}/services/${organizationId}/llm`,
+    { method: "get" },
+    { securityLevel },
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data
+  } else {
+    return []
+  }
+}
+
+// The generated documents (LLM jobs) of a conversation; null when the request
+// failed, so that callers never mistake a failure for "no job".
+export async function apiGetMetadataLLMService(conversationId) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/list`,
+    { method: "get" },
+    {},
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data || []
+  } else {
+    return null
+  }
+}
+
+/**
+ * Update job result (creates new version in LLM Gateway)
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - LLM Gateway job ID
+ * @param {string} content - New content (markdown)
+ * @returns {Promise<object|null>} Result with version number or null
+ */
+export async function apiUpdateExportResult(conversationId, jobId, content) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/result`,
+    { method: "put" },
+    { content },
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data
+  } else {
+    return null
+  }
+}
+
+/**
+ * List all versions for a job from LLM Gateway
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - LLM Gateway job ID
+ * @returns {Promise<Array>} List of versions
+ */
+export async function apiListExportVersions(conversationId, jobId) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/versions`,
+    { method: "get" },
+    {},
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data?.versions || []
+  } else {
+    return []
+  }
+}
+
+/**
+ * Get a specific version by number from LLM Gateway
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - LLM Gateway job ID
+ * @param {number} versionNumber - Version number
+ * @returns {Promise<object|null>} Version data or null
+ */
+export async function apiGetExportVersion(
+  conversationId,
+  jobId,
+  versionNumber,
+) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/versions/${versionNumber}`,
+    { method: "get" },
+    {},
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data?.version || req.data
+  } else {
+    return null
+  }
+}
+
+/**
+ * Restore a specific version in LLM Gateway
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - LLM Gateway job ID
+ * @param {number} versionNumber - Version number to restore
+ * @returns {Promise<object|null>} Restored version data or null
+ */
+export async function apiRestoreExportVersion(
+  conversationId,
+  jobId,
+  versionNumber,
+) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/versions/${versionNumber}/restore`,
+    { method: "post" },
+    {},
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data
+  } else {
+    return null
+  }
+}
+
+/**
+ * Generate document (PDF/DOCX) from job result
+ * @param {string} conversationId - Conversation ID
+ * @param {string} jobId - LLM Gateway job ID
+ * @param {string} format - Document format ('pdf' or 'docx')
+ * @param {number} [versionNumber] - Optional version number to export (uses latest if not provided)
+ * @returns {Promise<Blob|null>} Document blob or null
+ */
+export async function apiExportDocument(
+  conversationId,
+  jobId,
+  format,
+  versionNumber = null,
+) {
+  const body = { format }
+  if (versionNumber !== null && versionNumber !== undefined) {
+    body.versionNumber = versionNumber
+  }
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/document`,
+    { method: "post", responseType: "blob" },
+    body,
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data
+  } else {
+    return null
+  }
+}
+
+/**
+ * List generation history for a conversation/service
+ * @param {string} conversationId - Conversation ID
+ * @param {string} serviceId - LLM service ID to filter generations
+ * @returns {Promise<Array>} List of generations
+ */
+export async function apiListGenerations(conversationId, serviceId) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/generations`,
+    { method: "get" },
+    { serviceId },
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data?.generations || []
+  }
+  return []
+}
+
+/**
+ * Get a specific generation
+ * @param {string} conversationId - Conversation ID
+ * @param {string} generationId - Generation ID
+ * @returns {Promise<object|null>} Generation data or null
+ */
+export async function apiGetGeneration(conversationId, generationId) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/generations/${generationId}`,
+    { method: "get" },
+    {},
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data?.generation || null
+  }
+  return null
+}
+
+/**
+ * Create a new generation record
+ * @param {string} conversationId - Conversation ID
+ * @param {string} serviceId - LLM service ID
+ * @param {string} jobId - LLM Gateway job ID
+ * @param {string} serviceName - Optional service name
+ * @returns {Promise<object|null>} Created generation or null
+ */
+export async function apiCreateGeneration(
+  conversationId,
+  serviceId,
+  jobId,
+  serviceName,
+) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/generations`,
+    { method: "post" },
+    { serviceId, jobId, serviceName },
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data?.generation || null
+  }
+  return null
+}
+
+/**
+ * Get export content from LLM Gateway (no local cache)
+ * @param {string} conversationId
+ * @param {string} jobId
+ * @returns {Promise<{status: string, content?: string, version?: number, gatewayAvailable?: boolean, error?: string}>}
+ */
+export async function apiGetExportContent(conversationId, jobId) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/content`,
+    { method: "get" },
+    {},
+    null,
+  )
+
+  if (req.status === "success") {
+    return req.data
+  }
+
+  // Handle error responses
+  const statusCode = req?.error?.response?.status
+  const responseData = req?.error?.response?.data
+
+  if (statusCode === 404) {
+    return {
+      status: "job_not_found",
+      gatewayAvailable: responseData?.gatewayAvailable ?? true,
+      error: responseData?.error || "Job not found",
+    }
+  }
+
+  if (statusCode === 503) {
+    return {
+      status: "gateway_unavailable",
+      gatewayAvailable: false,
+      error: responseData?.error || "LLM Gateway unavailable",
+    }
+  }
+
+  // Return generic error for other cases
+  return {
+    status: "error",
+    error: responseData?.error || req?.error?.message || "Unknown error",
+  }
+}
+
+/**
+ * Delete a generation
+ * @param {string} conversationId
+ * @param {string} generationId
+ * @returns {Promise<boolean>} true if deleted
+ */
+export async function apiDeleteGeneration(conversationId, generationId) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/generations/${generationId}`,
+    { method: "delete" },
+    {},
+    null,
+  )
+
+  return req.status === "success"
+}
+
+/**
+ * Delete a specific version from a job
+ * @param {string} conversationId
+ * @param {string} jobId
+ * @param {number} versionNumber
+ * @returns {Promise<boolean>} true if deleted
+ */
+export async function apiDeleteExportVersion(
+  conversationId,
+  jobId,
+  versionNumber,
+) {
+  const req = await sendRequest(
+    `${BASE_API}/conversations/${conversationId}/export/${jobId}/versions/${versionNumber}`,
+    { method: "delete" },
+    {},
+    null,
+  )
+
+  return req.status === "success"
+}

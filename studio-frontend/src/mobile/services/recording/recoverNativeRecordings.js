@@ -1,12 +1,12 @@
 import { CapacitorAudioRecorder } from "@capgo/capacitor-audio-recorder"
 import { ForegroundService } from "@capawesome-team/capacitor-android-foreground-service"
-import * as queue from "@/mobile/services/recording/queue.js"
+import * as queue from "@/api/indexedDB/queue.js"
 import {
   deleteAudioFile,
   listRecorderFiles,
   moveToRecordings,
   readAudioFileSize,
-} from "@/mobile/services/recording/nativeAudioFiles.js"
+} from "@/api/device/nativeAudioFiles.js"
 import { listOrphanAudioFiles } from "@/mobile/tools/listOrphanAudioFiles.js"
 import { fileNameOfUri } from "@/mobile/tools/fileNameOfUri.js"
 

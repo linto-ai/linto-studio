@@ -2,13 +2,13 @@ import {
   apiGetOrganizationById,
   apiGetUserOrganizations,
   apiDeleteOrganisation,
-} from "@/api/organisation"
+} from "@/api/studio-api/organisation"
 import {
   apiGetVoiceprintCollections,
   apiCreateVoiceprintCollection,
   apiUpdateVoiceprintCollection,
   apiDeleteVoiceprintCollection,
-} from "@/api/voiceprintCollection"
+} from "@/api/studio-api/voiceprintCollection"
 import { indexOrganizationsRoles } from "@/tools/rights/indexOrganizationsRoles"
 import store from "@/store/index.js"
 import createMediaModule from "../modules/mediaModuleFactory"

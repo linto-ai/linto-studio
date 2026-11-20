@@ -127,7 +127,6 @@ import { libraryActionsMixin } from "@/mobile/mixins/libraryActions.js"
 import { documentShareMixin } from "@/mobile/mixins/documentShare.js"
 import { microphoneChoiceMixin } from "@/mobile/mixins/microphoneChoice.js"
 import { transcriptionCreditMixin } from "@/mobile/mixins/transcriptionCredit.js"
-import { onlineStatus } from "@/mobile/services/network/onlineStatus.js"
 import { pickRecordingNotice } from "@/mobile/tools/pickRecordingNotice.js"
 import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 
@@ -167,7 +166,7 @@ export default {
   computed: {
     ...mapGetters("mobileRecordings", ["library", "localBytes"]),
     online() {
-      return onlineStatus.online
+      return this.$store.state.mobileNetwork.online
     },
     recordingNotice() {
       return pickRecordingNotice(this.recorder)

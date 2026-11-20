@@ -1,4 +1,4 @@
-import { apiGetPublicUserById } from "../../api/user.js"
+import { apiGetPublicUserById } from "../../api/studio-api/user.js"
 import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
 export async function getUserInfo(userId) {

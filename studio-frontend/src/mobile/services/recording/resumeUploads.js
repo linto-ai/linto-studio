@@ -1,5 +1,5 @@
 import store from "@/mobile/store.js"
-import { onBackOnline } from "@/mobile/services/network/onlineStatus.js"
+import { isOnline, subscribeToNetwork } from "@/api/device/network.js"
 
 const RETRY_INTERVAL_MS = 60_000
 
@@ -7,17 +7,21 @@ const RETRY_INTERVAL_MS = 60_000
 // back, when the app is shown again, and every minute while visible.
 export function startUploadResumption() {
   retry()
-  onBackOnline(retry)
+  subscribeToNetwork(retryWhenOnline)
   document.addEventListener("visibilitychange", retryWhenVisible)
   setInterval(retryWhenVisible, RETRY_INTERVAL_MS)
 }
 
 async function retry() {
-  if (!navigator.onLine) return
+  if (!isOnline()) return
   if (!store.state.mobileRecordings.loaded) {
     await store.dispatch("mobileRecordings/load")
   }
   await store.dispatch("mobileRecordings/retryPending")
+}
+
+function retryWhenOnline(online) {
+  if (online) retry()
 }
 
 function retryWhenVisible() {

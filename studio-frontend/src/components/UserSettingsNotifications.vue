@@ -44,7 +44,7 @@
 import { Fragment } from "vue-fragment"
 import { mapActions } from "vuex"
 import { bus } from "@/main.js"
-import { apiUpdateUserInfo } from "@/api/user"
+import { apiUpdateUserInfo } from "@/api/studio-api/user"
 
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 export default {

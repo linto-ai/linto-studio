@@ -306,7 +306,9 @@ The router is responsible for loading page data. When a page component mounts, i
 ### API Calls
 
 - All API calls must be written in `src/api/` — never inline in components or store actions
-- One file per resource/domain
+  - `src/api/studio-api/`: calls to the backend (studio-api), one file per resource/domain
+  - `src/api/device/`: what the page asks the browser or the phone (microphones, screen wake lock, share sheet, online status, the app's audio files…), one file per capability
+  - `src/api/indexedDB/`: the local database in the browser (the mobile recordings queue)
 
 ### Internationalization
 

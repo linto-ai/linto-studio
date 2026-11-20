@@ -36,7 +36,7 @@
 </template>
 <script>
 import getStartOfWeek from "@/tools/date/getStartOfWeek"
-import { apiGetSessionsBetweenDates } from "@/api/session.js"
+import { apiGetSessionsBetweenDates } from "@/api/studio-api/session.js"
 
 import WeekSelector from "@/components/WeekSelector.vue"
 import SessionDayLine from "@/components/SessionDayLine.vue"

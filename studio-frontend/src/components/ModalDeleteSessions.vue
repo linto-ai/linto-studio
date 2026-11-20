@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { apiAdminDeleteSession } from "@/api/admin.js"
+import { apiAdminDeleteSession } from "@/api/studio-api/admin.js"
 import bulkRequest from "@/tools/request/bulkRequest.js"
 import { bus } from "@/main"
 

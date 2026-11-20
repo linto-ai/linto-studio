@@ -22,7 +22,7 @@
 import { Fragment } from "vue-fragment"
 
 import { bus } from "@/main.js"
-import { apiLeaveOrganisation } from "@/api/organisation.js"
+import { apiLeaveOrganisation } from "@/api/studio-api/organisation.js"
 
 import Modal from "@/components/molecules/Modal.vue"
 export default {
