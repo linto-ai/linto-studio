@@ -279,13 +279,18 @@ List publication templates available on the organization.
 
 ```javascript
 // Javascript
-const templates = await linTO.getPublicationTemplates()
+const templates = await linTO.getPublicationTemplates({ serviceId, organizationId })
 ```
 
 ```python
 # Python
-templates = await linTO.get_publication_templates()
+templates = await linTO.get_publication_templates(service_id=None, organization_id=None)
 ```
+
+| Parameter      | required | value  | description                                    | default value          |
+| -------------- | -------- | ------ | ---------------------------------------------- | ---------------------- |
+| serviceId      | no       | String | Only the templates linked to that LLM service  | None                   |
+| organizationId | no       | String | Organization the templates belong to           | the first organization |
 
 #### getTemplatePlaceholders
 
@@ -293,13 +298,18 @@ Get placeholders defined on a publication template.
 
 ```javascript
 // Javascript
-const placeholders = await linTO.getTemplatePlaceholders(templateId)
+const placeholders = await linTO.getTemplatePlaceholders(templateId, { organizationId })
 ```
 
 ```python
 # Python
-placeholders = await linTO.get_template_placeholders(template_id)
+placeholders = await linTO.get_template_placeholders(template_id, organization_id=None)
 ```
+
+| Parameter      | required | value  | description                          | default value          |
+| -------------- | -------- | ------ | ------------------------------------ | ---------------------- |
+| templateId     | yes      | String | Publication template id              |                        |
+| organizationId | no       | String | Organization the template belongs to | the first organization |
 
 #### exportWithTemplate
 
@@ -315,12 +325,13 @@ const file = await linTO.exportWithTemplate(jobId, { ...options })
 file = await linTO.export_with_template(job_id, **options)
 ```
 
-| Parameter     | required | value  | description                | default value |
-| ------------- | -------- | ------ | -------------------------- | ------------- |
-| jobId         | yes      | String | Source export job id       |               |
-| format        | no       | String | Output format              | "pdf"         |
-| templateId    | no       | String | Publication template id    | None          |
-| versionNumber | no       | Int    | Template version           | None          |
+| Parameter      | required | value  | description                     | default value |
+| -------------- | -------- | ------ | ------------------------------- | ------------- |
+| jobId          | yes      | String | Source export job id            |               |
+| conversationId | yes      | String | Conversation the job belongs to |               |
+| format         | no       | String | Output format                   | "pdf"         |
+| templateId     | no       | String | Publication template id         | None          |
+| versionNumber  | no       | Int    | Template version                | None          |
 
 ---
 
