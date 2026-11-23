@@ -7,10 +7,16 @@ const randomstring = require("randomstring")
 const TokenGenerator = require(
   `${process.cwd()}/components/WebServer/config/passport/token/generator`,
 )
-const { UserError, UserNotFound } = require(
+const { UserError, UserNotFound, UserConflict } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
 )
 const PLATFORM_ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
+const { parseExternalIdentity } = require(
+  `${process.cwd()}/lib/utility/externalIdentity`,
+)
+const { isDuplicateKey } = require(
+  `${process.cwd()}/lib/mongodb/error/customErrors`,
+)
 
 // Token routes take a user id: only machine accounts may be handled here
 async function getApiKeyUser(userId) {
@@ -71,42 +77,89 @@ async function generateApiKeyToken(
   }
 }
 
-async function createApiKey(reqPayload, role = PLATFORM_ROLE.UNDEFINED) {
-  try {
-    const { body, payload, params } = reqPayload
-    let clientMetadata = {}
-    if (body.metadata) {
-      try {
-        const parsed = JSON.parse(body.metadata)
+function parseBoolean(value) {
+  if (typeof value === "boolean") return value
+  if (value === "true" || value === 1 || value === "1") return true
+  if (value === "false" || value === 0 || value === "0") return false
+  throw new Error("quickMeeting must be a boolean")
+}
 
-        if (typeof parsed === "object" && parsed !== null) {
-          clientMetadata = parsed
-        }
-      } catch {}
+function parseClientMetadata(raw) {
+  let parsed = raw
+  if (typeof raw === "string") {
+    try {
+      parsed = JSON.parse(raw)
+    } catch {
+      parsed = {}
     }
-
-    const metadata = {
-      ...clientMetadata,
-      createdBy: payload.data.userId,
-      organizationId: params.organizationId,
-    }
-    const userPayload = {
-      firstname: body.name || "API Key",
-      lastname: "",
-      metadata,
-    }
-
-    const createdUser = await model.users.createApiKey(userPayload, role)
-    if (createdUser.insertedCount !== 1) throw new UserError()
-
-    return await generateApiKeyToken(
-      { _id: createdUser.insertedId, role },
-      undefined,
-      body.expires_in,
-    )
-  } catch (err) {
-    throw err
   }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {}
+  const metadata = { ...parsed }
+  try {
+    if (metadata.externalIdentity !== undefined) {
+      metadata.externalIdentity = parseExternalIdentity(
+        metadata.externalIdentity,
+      )
+    }
+    if (metadata.quickMeeting !== undefined) {
+      metadata.quickMeeting = parseBoolean(metadata.quickMeeting)
+    }
+  } catch (err) {
+    throw new UserError(`Invalid metadata: ${err.message}`)
+  }
+  return metadata
+}
+
+function identityConflict({ provider, subject }) {
+  return new UserConflict(
+    `An API key already stands for ${provider}:${subject} in this organization`,
+    { code: "external_identity_conflict" },
+  )
+}
+
+async function assertExternalIdentityIsFree(identity, organizationId) {
+  if (!identity) return
+  const existing = await model.users.findApiKeyByExternalIdentity(
+    { provider: identity.provider, subject: identity.subject },
+    { organizationId },
+  )
+  if (existing.length > 0) throw identityConflict(identity)
+}
+
+async function createApiKey({
+  name,
+  expiresIn,
+  metadata: rawMetadata,
+  createdBy,
+  organizationId,
+  role = PLATFORM_ROLE.UNDEFINED,
+}) {
+  const clientMetadata = parseClientMetadata(rawMetadata)
+  const identity = clientMetadata.externalIdentity
+  await assertExternalIdentityIsFree(identity, organizationId)
+
+  const createdUser = await model.users.createApiKey(
+    {
+      firstname: name || "API Key",
+      lastname: "",
+      metadata: {
+        ...clientMetadata,
+        createdBy,
+        organizationId,
+      },
+    },
+    role,
+  )
+  if (identity && isDuplicateKey(createdUser.error)) {
+    throw identityConflict(identity)
+  }
+  if (createdUser.insertedCount !== 1) throw new UserError()
+
+  return await generateApiKeyToken(
+    { _id: createdUser.insertedId, role },
+    undefined,
+    expiresIn,
+  )
 }
 
 async function listApiKey(idList, orgaRoles = undefined) {
@@ -217,6 +270,7 @@ async function deleteApiKey(tokenId, revoke = false) {
 
 module.exports = {
   createApiKey,
+  parseClientMetadata,
   generateApiKeyToken,
   getApiKey,
   refreshApiKey,

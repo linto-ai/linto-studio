@@ -22,6 +22,10 @@ const TokenHandler = require(
   `${process.cwd()}/components/WebServer/controllers/apikey/token`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const { parseExternalSubject } = require(
+  `${process.cwd()}/lib/utility/externalIdentity`,
+)
+const { validEmail } = require(`${process.cwd()}/lib/utility/emailDomain`)
 
 const { storeFile, defaultPicture, deleteFile, getStorageFolder } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
@@ -49,8 +53,9 @@ function deletePictureIfCustom(img) {
 
 async function checkTokenBelongsToOrganization(params) {
   try {
-    const user = await model.users.getById(params.tokenId)
-    if (user.length !== 1 || user[0].type === USER_TYPE.M2M) {
+    // The public projection has no `type`
+    const user = await model.users.getById(params.tokenId, true)
+    if (user.length !== 1 || user[0].type !== USER_TYPE.M2M) {
       throw new UserError("Requested API key not found")
     }
 
@@ -90,7 +95,13 @@ async function createApiKey(req, res, next) {
       )
     }
 
-    let token = await TokenHandler.createApiKey(req)
+    let token = await TokenHandler.createApiKey({
+      name: req.body.name,
+      expiresIn: req.body.expires_in,
+      metadata: req.body.metadata,
+      createdBy: req.payload.data.userId,
+      organizationId: req.params.organizationId,
+    })
     if (!token) throw new UserError("API key not created")
     await addM2mUserToOrganization(
       req.params.organizationId,
@@ -115,9 +126,17 @@ async function listApiKeyFromOrga(req, res, next) {
     if (organization.length !== 1)
       throw new OrganizationUnsupportedMediaType("Organization not found")
 
-    const apiKeyUsers = organization[0].users
+    let apiKeyUsers = organization[0].users
       .filter((u) => u.type === USER_TYPE.M2M)
       .map((u) => u.userId)
+
+    const filter = externalIdentityFilter(req.query)
+    if (filter) {
+      const matching = await model.users.findApiKeyByExternalIdentity(filter, {
+        ids: apiKeyUsers,
+      })
+      apiKeyUsers = matching.map((u) => u._id.toString())
+    }
 
     const apiKeyList = await TokenHandler.listApiKey(
       apiKeyUsers,
@@ -128,6 +147,23 @@ async function listApiKeyFromOrga(req, res, next) {
   } catch (err) {
     next(err)
   }
+}
+
+function externalIdentityFilter(query = {}) {
+  const filter = {}
+  if (query.externalSubject !== undefined) {
+    const parsed = parseExternalSubject(query.externalSubject)
+    if (!parsed) {
+      throw new UserError("externalSubject must be <provider>:<subject>")
+    }
+    Object.assign(filter, parsed)
+  }
+  if (query.externalEmail !== undefined) {
+    const email = validEmail(query.externalEmail)
+    if (!email) throw new UserError("externalEmail is not a valid email")
+    filter.email = email
+  }
+  return Object.keys(filter).length ? filter : null
 }
 
 async function refreshApiKey(req, res, next) {
@@ -160,15 +196,18 @@ async function deleteApiKey(req, res, next) {
       req.params,
     )
 
-    // Clean up the custom picture file (if any) before deleting the user
-    // so we do not leak orphan files on disk.
-    deletePictureIfCustom(user.img)
+    const revokeOnly = req.query.revoke === "true"
+    if (!revokeOnly) {
+      // Clean up the custom picture file (if any) before deleting the user
+      // so we do not leak orphan files on disk.
+      deletePictureIfCustom(user.img)
 
-    organization.users = organization.users.filter(
-      (oUser) => oUser.userId !== req.params.tokenId,
-    )
-    const result = await model.organizations.update(organization)
-    if (result.matchedCount === 0) throw new OrganizationError()
+      organization.users = organization.users.filter(
+        (oUser) => oUser.userId !== req.params.tokenId,
+      )
+      const result = await model.organizations.update(organization)
+      if (result.matchedCount === 0) throw new OrganizationError()
+    }
 
     const tokens = await TokenHandler.deleteApiKey(
       req.params.tokenId,
@@ -218,20 +257,42 @@ async function updateApiKeyPicture(req, res, next) {
   }
 }
 
+const IMMUTABLE_METADATA_KEYS = [
+  "externalIdentity",
+  "createdBy",
+  "organizationId",
+]
+
 async function updateApiKey(req, res, next) {
   try {
     const name = typeof req.body.name === "string" ? req.body.name.trim() : ""
-    if (!name) throw new UserError("Name is required")
+    const hasMetadata =
+      req.body.metadata !== undefined && req.body.metadata !== null
+    if (!name && !hasMetadata)
+      throw new UserError("Name or metadata is required")
 
-    await checkTokenBelongsToOrganization(req.params)
+    const { user } = await checkTokenBelongsToOrganization(req.params)
 
-    const result = await model.users.update({
-      _id: req.params.tokenId,
-      firstname: name,
-    })
+    const values = { _id: req.params.tokenId }
+    if (name) values.firstname = name
+    if (hasMetadata) {
+      const patch = TokenHandler.parseClientMetadata(req.body.metadata)
+      for (const key of IMMUTABLE_METADATA_KEYS) {
+        if (patch[key] !== undefined) {
+          throw new UserError(`metadata.${key} cannot be changed`)
+        }
+      }
+      values.metadata = { ...(user.metadata || {}), ...patch }
+    }
+
+    const result = await model.users.update(values)
     if (result.matchedCount === 0) throw new UserError("API key not updated")
 
-    res.status(200).send({ message: "API key updated", name })
+    res.status(200).send({
+      message: "API key updated",
+      ...(name ? { name } : {}),
+      ...(values.metadata ? { metadata: values.metadata } : {}),
+    })
   } catch (err) {
     next(err)
   }

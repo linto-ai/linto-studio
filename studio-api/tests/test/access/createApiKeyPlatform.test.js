@@ -55,8 +55,7 @@ describe("createApiKeyPlatform", () => {
     expect(next).not.toHaveBeenCalled()
     expect(res.status).toHaveBeenCalledWith(201)
     expect(TokenHandler.createApiKey).toHaveBeenCalledWith(
-      expect.anything(),
-      role,
+      expect.objectContaining({ createdBy: "caller", role }),
     )
   })
 

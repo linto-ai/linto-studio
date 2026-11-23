@@ -20,13 +20,21 @@ const cache = {
 async function storeCacheUser(userId) {
   if (cache.users[userId]) return cache.users[userId]
 
-  const user = (await model.users.getById(userId))[0]
+  const user = (
+    await model.users.getByIdFilter(userId, {
+      firstname: 1,
+      lastname: 1,
+      email: 1,
+      type: 1,
+    })
+  )[0]
   if (!user) return null
 
   return (cache.users[userId] = {
     lastname: user.lastname,
     firstname: user.firstname,
     email: user.email,
+    type: user.type,
   })
 }
 
@@ -180,6 +188,7 @@ class LoggerContext {
         await storeCacheUser(userId) // Ensure user is cached
         context.user = {
           id: userId || null,
+          tokenId: req.payload.data.tokenId || null,
           role: {
             value: roleValue || null,
             name: P_ROLE.print(roleValue || null),

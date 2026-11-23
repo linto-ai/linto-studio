@@ -25,7 +25,13 @@ async function createApiKeyPlatform(req, res, next) {
     )
       throw new UserForbidden("An API key cannot exceed your platform role")
 
-    let token = await TokenHandler.createApiKey(req, req.body.role)
+    let token = await TokenHandler.createApiKey({
+      name: req.body.name,
+      expiresIn: req.body.expires_in,
+      metadata: req.body.metadata,
+      createdBy: req.payload.data.userId,
+      role: req.body.role,
+    })
     if (token === undefined) return res.status(500).send()
 
     res.status(201).send({

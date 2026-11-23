@@ -433,14 +433,14 @@ class OrganizationModel extends MongoModel {
 
   // Idempotent: matchedCount 0 when the user is already a member (or the
   // organization does not exist).
-  async addMember(id, userId, role) {
+  async addMember(id, userId, role, type) {
     try {
       const query = {
         _id: this.getObjectId(id),
         "users.userId": { $ne: userId.toString() },
       }
       return await this.mongoUpdateOne(query, "$addToSet", {
-        users: { userId: userId.toString(), role },
+        users: { userId: userId.toString(), role, ...(type ? { type } : {}) },
       })
     } catch (error) {
       console.error(error)
