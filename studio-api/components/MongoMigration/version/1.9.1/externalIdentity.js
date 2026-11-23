@@ -4,6 +4,39 @@ const IDENTITY = "metadata.externalIdentity"
 
 const INDEXES = [
   {
+    collection: "externalEntitlements",
+    keys: { organizationId: 1, provider: 1, kind: 1, email: 1 },
+    options: {
+      unique: true,
+      name: "entitlement_user_key",
+      partialFilterExpression: { kind: "user" },
+    },
+  },
+  {
+    collection: "externalEntitlements",
+    keys: { organizationId: 1, provider: 1, kind: 1, domain: 1 },
+    options: {
+      unique: true,
+      name: "entitlement_domain_key",
+      partialFilterExpression: { kind: "domain" },
+    },
+  },
+  {
+    collection: "externalEntitlements",
+    keys: { kind: 1, provider: 1, subject: 1 },
+    options: { name: "entitlement_by_subject" },
+  },
+  {
+    collection: "externalEntitlements",
+    keys: { kind: 1, email: 1 },
+    options: { name: "entitlement_by_email" },
+  },
+  {
+    collection: "externalEntitlements",
+    keys: { kind: 1, domain: 1 },
+    options: { name: "entitlement_by_domain" },
+  },
+  {
     collection: "users",
     keys: {
       [`${IDENTITY}.provider`]: 1,
@@ -109,8 +142,31 @@ async function dropIndex(db, { collection, keys }) {
   if (found) await db.collection(collection).dropIndex(found.name)
 }
 
+// The order guard compares `updatedAt` in the database, where a string never
+// compares with a date
+async function convertStringDates(db) {
+  for (const field of ["updatedAt", "created"]) {
+    await db
+      .collection("externalEntitlements")
+      .updateMany({ [field]: { $type: "string" } }, [
+        {
+          $set: {
+            [field]: {
+              $convert: {
+                input: `$${field}`,
+                to: "date",
+                onError: `$${field}`,
+              },
+            },
+          },
+        },
+      ])
+  }
+}
+
 module.exports = {
   async up(db) {
+    await convertStringDates(db)
     for (const index of RETIRED) await dropIndex(db, index)
     for (const index of INDEXES) await ensureIndex(db, index)
   },

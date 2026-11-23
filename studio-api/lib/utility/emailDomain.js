@@ -44,6 +44,13 @@ function validEmail(email) {
   return isEmail(value) ? value : null
 }
 
+// The normalized domain, null when the value is not one
+function validDomain(domain) {
+  if (typeof domain !== "string") return null
+  const value = normalizeEmailDomain(domain)
+  return isEmailDomain(value) ? value : null
+}
+
 module.exports = {
   emailDomain,
   normalizeEmailDomain,
@@ -51,4 +58,5 @@ module.exports = {
   isEmail,
   normalizeEmail,
   validEmail,
+  validDomain,
 }

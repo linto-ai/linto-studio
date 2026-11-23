@@ -1,0 +1,444 @@
+{
+  "/api/v1/organizations/{organizationId}/entitlements/users/{email}": {
+    "put": {
+      "tags": ["entitlements"],
+      "summary": "Declare the AI rights of one person",
+      "description": "Upsert: creates or replaces, never answers 201. Never creates an API key: the key is born just-in-time at the first use (`POST /api/auth/external/token`). `features: {}` takes every right away. The rights are read at every gated call and at every token exchange, never copied onto the linked key, which is left as it is. `updatedAt` is an order guard, checked and written in one operation: a PUT older than the state Studio holds is ignored and answered `200 {\"ignored\": true}` with that state, so concurrent messages end on the latest one. Auth: an API key that is ADMIN (6) of `{organizationId}`, the root organization of the external system.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "email",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "email"
+          },
+          "description": "Email of the person, lowercase, percent-encoded",
+          "example": "jdoe%40twake.app"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "subject": {
+                  "type": "string",
+                  "description": "id of the person at the external system (recommended)"
+                },
+                "features": {
+                  "$ref": "#/components/schemas/EntitlementFeatures"
+                },
+                "plan": {
+                  "type": "string",
+                  "description": "free label, informative"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "ISO 8601 timestamp of the source message"
+                },
+                "provider": {
+                  "type": "string",
+                  "description": "see the query parameter of GET"
+                }
+              },
+              "required": ["features"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["user"]
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "the root organization the record was declared under"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "id of the person at the external system"
+                  },
+                  "features": {
+                    "$ref": "#/components/schemas/EntitlementFeatures"
+                  },
+                  "plan": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "ignored": {
+                    "type": "boolean",
+                    "description": "present and true when the PUT was older than the state Studio holds: nothing was written"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid body (`code: invalid_body`, detail in `error`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The key is not an admin of this organization"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["entitlements"],
+      "summary": "The person no longer exists: erase their state",
+      "description": "Idempotent: `204` whether or not a record existed. The person has no right left; the linked key and its organization membership stay, so past usage keeps its attribution. `updatedAt` is the same order guard as on PUT: a record holding a later state is kept and answered `200 {\"ignored\": true}` with that state.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "email",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "email"
+          },
+          "description": "Email of the person, lowercase, percent-encoded",
+          "example": "jdoe%40twake.app"
+        },
+        {
+          "in": "query",
+          "name": "provider",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "External system this record belongs to, `external` by default; not part of the v1 contract, one system writes under one root organization."
+        },
+        {
+          "in": "query",
+          "name": "updatedAt",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": "When the person was deleted in the external system; a record updated later is kept",
+          "example": "2026-09-14T10:32:00Z"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Ignored: the record holds a later state, answered as it is with `ignored: true`"
+        },
+        "204": {
+          "description": "Erased"
+        },
+        "400": {
+          "description": "Invalid query (`code: invalid_body`, detail in `error`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The key is not an admin of this organization"
+        }
+      }
+    },
+    "get": {
+      "tags": ["entitlements"],
+      "summary": "The state Studio holds for a person",
+      "description": "Support and replay control.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "email",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "email"
+          },
+          "description": "Email of the person, lowercase, percent-encoded",
+          "example": "jdoe%40twake.app"
+        },
+        {
+          "in": "query",
+          "name": "provider",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "External system this record belongs to, `external` by default; not part of the v1 contract, one system writes under one root organization."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["user"]
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "the root organization the record was declared under"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "id of the person at the external system"
+                  },
+                  "features": {
+                    "$ref": "#/components/schemas/EntitlementFeatures"
+                  },
+                  "plan": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "ignored": {
+                    "type": "boolean",
+                    "description": "present and true when the PUT was older than the state Studio holds: nothing was written"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Unknown (`code: not_found`)"
+        },
+        "400": {
+          "description": "Invalid body (`code: invalid_body`, detail in `error`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The key is not an admin of this organization"
+        }
+      }
+    }
+  },
+  "/api/v1/organizations/{organizationId}/entitlements/domains/{domain}": {
+    "put": {
+      "tags": ["entitlements"],
+      "summary": "Declare the AI rights of a whole email domain",
+      "description": "Same fields as a person, without `subject`. Every user whose email is in that domain inherits these rights, with no per-user call; a record set on a person wins over their domain. It creates nothing else in Studio: no organization, no API key. `features: {}` takes the rights away. Auth: an API key that is ADMIN (6) of `{organizationId}`, the root organization of the external system.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "domain",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Email domain of the external organization, lowercase",
+          "example": "collectivite.fr"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "features": {
+                  "$ref": "#/components/schemas/EntitlementFeatures"
+                },
+                "plan": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "provider": {
+                  "type": "string"
+                }
+              },
+              "required": ["features"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["domain"]
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "the root organization the record was declared under"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "domain": {
+                    "type": "string"
+                  },
+                  "features": {
+                    "$ref": "#/components/schemas/EntitlementFeatures"
+                  },
+                  "plan": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "ignored": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid body (`code: invalid_body`, detail in `error`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The key is not an admin of this organization"
+        }
+      }
+    },
+    "get": {
+      "tags": ["entitlements"],
+      "summary": "The state Studio holds for a domain",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "in": "path",
+          "name": "domain",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Email domain of the external organization, lowercase",
+          "example": "collectivite.fr"
+        },
+        {
+          "in": "query",
+          "name": "provider",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "External system this record belongs to, `external` by default; not part of the v1 contract, one system writes under one root organization."
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["domain"]
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "the root organization the record was declared under"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "domain": {
+                    "type": "string"
+                  },
+                  "features": {
+                    "$ref": "#/components/schemas/EntitlementFeatures"
+                  },
+                  "plan": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "ignored": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Unknown (`code: not_found`)"
+        },
+        "400": {
+          "description": "Invalid body (`code: invalid_body`, detail in `error`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The key is not an admin of this organization"
+        }
+      }
+    }
+  }
+}

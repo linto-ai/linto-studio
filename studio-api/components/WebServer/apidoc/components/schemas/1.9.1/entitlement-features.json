@@ -1,0 +1,39 @@
+{
+  "EntitlementFeatures": {
+    "type": "object",
+    "description": "Nested, extensible object, one key per feature. An absent key is false, an unknown key is kept and ignored. `{}` takes every right away.",
+    "properties": {
+      "transcription": {
+        "type": "object",
+        "properties": {
+          "live": {
+            "type": "boolean",
+            "description": "live transcription during a visio"
+          },
+          "async": {
+            "type": "boolean",
+            "description": "deferred transcription of a recording"
+          }
+        }
+      },
+      "summary": {
+        "type": "boolean",
+        "description": "reserved"
+      },
+      "translation": {
+        "type": "boolean",
+        "description": "reserved"
+      },
+      "recording": {
+        "type": "boolean",
+        "description": "video recording of a visio. Not an AI feature, LinTO is not called for it. Alone, it opens no LinTO right: no key is born, no token is minted for it."
+      }
+    },
+    "example": {
+      "transcription": {
+        "live": true,
+        "async": true
+      }
+    }
+  }
+}

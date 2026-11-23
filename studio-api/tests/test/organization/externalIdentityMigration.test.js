@@ -48,6 +48,13 @@ const names = (state, collection) =>
 test("creates every index, the identity of a key unique per organization", async () => {
   const { db, state } = fakeDb()
   await migration.up(db)
+  expect(names(state, "externalEntitlements")).toEqual([
+    "entitlement_by_domain",
+    "entitlement_by_email",
+    "entitlement_by_subject",
+    "entitlement_domain_key",
+    "entitlement_user_key",
+  ])
   expect(names(state, "users")).toEqual([
     "api_key_external_email",
     "api_key_external_identity_key",
@@ -63,6 +70,12 @@ test("creates every index, the identity of a key unique per organization", async
   ])
 })
 
+test("converts the string dates", async () => {
+  const { db, state } = fakeDb()
+  await migration.up(db)
+  expect(state.converted).toEqual(["updatedAt", "created"])
+})
+
 test("playing it twice changes nothing", async () => {
   const { db, state } = fakeDb()
   await migration.up(db)
@@ -72,8 +85,13 @@ test("playing it twice changes nothing", async () => {
 })
 
 test("an index on the same keys with other options is replaced", async () => {
+  const keys = { organizationId: 1, provider: 1, kind: 1, email: 1 }
   const { db, state } = fakeDb({
     indexes: {
+      externalEntitlements: [
+        { name: "_id_", key: { _id: 1 } },
+        { name: "plain", key: keys },
+      ],
       users: [
         {
           name: "older",
@@ -86,6 +104,12 @@ test("an index on the same keys with other options is replaced", async () => {
     },
   })
   await migration.up(db)
+  expect(names(state, "externalEntitlements")).not.toContain("plain")
+  const replaced = state.indexes.externalEntitlements.find(
+    (index) => index.name === "entitlement_user_key",
+  )
+  expect(replaced.key).toEqual(keys)
+  expect(replaced.unique).toBe(true)
   expect(names(state, "users")).not.toContain("older")
 })
 

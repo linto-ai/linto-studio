@@ -189,18 +189,23 @@ class MongoModel {
     }
   }
 
-  // Update ONE, define update operator param
-  async mongoUpdateOne(query, operator, values, filters) {
-    if (values._id) {
-      delete values._id
+  // Update ONE: an operator and its values, or a whole update document and
+  // its options
+  async mongoUpdateOne(query, operatorOrUpdate, values, filters) {
+    let update = operatorOrUpdate
+    let options = values
+    if (typeof operatorOrUpdate === "string") {
+      if (values._id) {
+        delete values._id
+      }
+      update = { [operatorOrUpdate]: values }
+      options = filters
     }
-    let payload = {}
-    payload[operator] = values
 
     try {
       const result = await MongoDriver.constructor.db
         .collection(this.collection)
-        .updateOne(query, payload, filters)
+        .updateOne(query, update, options)
       return result
     } catch (error) {
       debug("mongoUpdateOne error:", error)
