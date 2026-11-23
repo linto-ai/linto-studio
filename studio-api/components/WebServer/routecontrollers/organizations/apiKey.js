@@ -261,6 +261,7 @@ const IMMUTABLE_METADATA_KEYS = [
   "externalIdentity",
   "createdBy",
   "organizationId",
+  "justInTime",
 ]
 
 async function updateApiKey(req, res, next) {

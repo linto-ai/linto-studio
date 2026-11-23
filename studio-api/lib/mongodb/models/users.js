@@ -307,6 +307,26 @@ class UsersModel extends MongoModel {
     })
   }
 
+  async findApiKeyOfPerson({ provider, subject, email }, organizationId) {
+    const or = []
+    if (subject) {
+      or.push({
+        "metadata.externalIdentity.provider": provider,
+        "metadata.externalIdentity.subject": subject,
+      })
+    }
+    if (email) or.push({ "metadata.externalIdentity.email": email })
+    if (or.length === 0 || !organizationId) return []
+    return this.mongoRequest(
+      {
+        type: USER_TYPE.M2M,
+        "metadata.organizationId": organizationId,
+        $or: or,
+      },
+      { projection: personal_projection, sort: { created: -1 } },
+    )
+  }
+
   async listApiKeyList(ids, projection = {}) {
     try {
       const objectIdArray = ids.map((id) => {

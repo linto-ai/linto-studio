@@ -169,6 +169,12 @@ TOKEN_DAYS_TIME=7d
 EXTENDED_TOKEN_DAYS_TIME=14d
 REFRESH_TOKEN_DAYS_TIME=14d
 IMPERSONATION_TOKEN_DAYS_TIME=1h
+# Identity bridge (POST /api/auth/external/token): lifetime of the short tokens,
+# calls per minute and caller credential, and lifetime of the API keys it
+# creates just-in-time
+EXTERNAL_EXCHANGE_TOKEN_TTL=1h
+EXTERNAL_EXCHANGE_RATE_LIMIT=3000
+EXTERNAL_JIT_KEY_EXPIRES_IN=3650d
 
 # Authentification settings
 JWT_ALGORITHM=HS256

@@ -15,4 +15,11 @@ module.exports = {
     "No entitlement is recorded for this subject",
     "not_found",
   ),
+  EntitlementMissing: createException(
+    "EntitlementMissing",
+    "entitlement",
+    404,
+    "No entitlement stands for this identity",
+    "no_entitlement",
+  ),
 }

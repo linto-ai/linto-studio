@@ -23,6 +23,15 @@ const mockModel = {
     getDomain: jest.fn(async (organizationId, provider, domain) =>
       mockFound({ organizationId, provider, kind: "domain", domain }),
     ),
+    findUser: jest.fn(async () => []),
+    findDomain: jest.fn(async (organizationId, domain) =>
+      [...mockStore.values()].filter(
+        (record) =>
+          record.kind === "domain" &&
+          record.organizationId === organizationId &&
+          record.domain === domain,
+      ),
+    ),
     upsertUnlessNewer: jest.fn(async (key, values, onInsert = {}) => {
       const stored = mockStore.get(mockKeyOf(key))
       if (stored && values.updatedAt && stored.updatedAt > values.updatedAt) {
@@ -69,6 +78,9 @@ const {
 )
 const { parseFeatures } = require(
   `${process.cwd()}/lib/dao/entitlement/features`,
+)
+const { resolveFeatures } = require(
+  `${process.cwd()}/components/WebServer/controllers/entitlement/resolve`,
 )
 
 const ROOT = "0123456789abcdef01234567"
@@ -432,6 +444,20 @@ describe("PUT domains/{domain}", () => {
     const second = await putDomain(message)
     expect(second.body).toEqual(first.body)
     expect(mockStore.size).toBe(1)
+  })
+
+  test("a member of a domain given a right resolves to it", async () => {
+    await putDomain({ features: LIVE })
+    expect(
+      await resolveFeatures(
+        {
+          provider: "meet:linagora",
+          subject: "lemon-42",
+          email: "alice@collectivite.fr",
+        },
+        ROOT,
+      ),
+    ).toEqual(LIVE)
   })
 
   test("empty features take the rights away, the record stays", async () => {

@@ -1,3 +1,13 @@
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
+
+// `recording` is left out: LinTO is never called for it
+const LINTO_FEATURES = [
+  "transcription.live",
+  "transcription.async",
+  "summary",
+  "translation",
+]
+
 function isObject(value) {
   return !!value && typeof value === "object" && !Array.isArray(value)
 }
@@ -23,7 +33,42 @@ function hasFeature(features, path) {
   return node === true
 }
 
+function hasActiveFeature(features) {
+  if (!isObject(features)) return false
+  return Object.values(features).some(
+    (value) => value === true || (isObject(value) && hasActiveFeature(value)),
+  )
+}
+
+function hasLintoFeature(features) {
+  return LINTO_FEATURES.some((path) => hasFeature(features, path))
+}
+
+// `features` is null for a caller that stands for no external identity
+function canQuickMeeting(caller, features) {
+  if (caller?.type === USER_TYPE.M2M && caller.metadata?.quickMeeting === false)
+    return false
+  return !features || hasFeature(features, "transcription.live")
+}
+
+function capabilitiesFrom(features, caller) {
+  const transcription = features.transcription || {}
+  return {
+    ...features,
+    quickMeeting: canQuickMeeting(caller, features),
+    transcription: {
+      ...transcription,
+      live: transcription.live === true,
+      async: transcription.async === true,
+    },
+  }
+}
+
 module.exports = {
   parseFeatures,
   hasFeature,
+  hasActiveFeature,
+  hasLintoFeature,
+  canQuickMeeting,
+  capabilitiesFrom,
 }

@@ -50,7 +50,7 @@ async function generateApiKeyToken(
       const tokenCreatedAt = new Date()
       const tokenExpiresAt = new Date(Date.now() + expires_in)
       const [insertedToken] = await Promise.all([
-        model.tokens.insert(user._id, token_salt, expires_in, true),
+        model.tokens.insert(user._id, token_salt, expires_in),
         model.users.update({
           _id: user._id.toString(),
           tokenCreatedAt,
@@ -133,8 +133,12 @@ async function createApiKey({
   createdBy,
   organizationId,
   role = PLATFORM_ROLE.UNDEFINED,
+  justInTime = false,
 }) {
   const clientMetadata = parseClientMetadata(rawMetadata)
+  if (clientMetadata.justInTime !== undefined) {
+    throw new UserError("Invalid metadata: justInTime is set by the bridge")
+  }
   const identity = clientMetadata.externalIdentity
   await assertExternalIdentityIsFree(identity, organizationId)
 
@@ -146,6 +150,7 @@ async function createApiKey({
         ...clientMetadata,
         createdBy,
         organizationId,
+        ...(justInTime ? { justInTime: true } : {}),
       },
     },
     role,
@@ -160,6 +165,14 @@ async function createApiKey({
     undefined,
     expiresIn,
   )
+}
+
+function isExpired(expiresAt, now = Date.now()) {
+  return !!expiresAt && new Date(expiresAt).getTime() < now
+}
+
+function hasValidToken(rows) {
+  return rows.some((row) => !isExpired(row.expiresAt))
 }
 
 async function listApiKey(idList, orgaRoles = undefined) {
@@ -186,8 +199,6 @@ async function listApiKey(idList, orgaRoles = undefined) {
   const tokenMap = new Map(tokens.map((t) => [t.userId, t]))
   const roleMap = new Map(orgaRoles?.map((r) => [r.userId, r]) || [])
 
-  const now = Date.now()
-
   const merged = idList.map((id) => {
     const userDoc = userMap.get(id)
     const token = tokenMap.get(id)
@@ -198,7 +209,7 @@ async function listApiKey(idList, orgaRoles = undefined) {
     const createdAt = token?.createdAt || tokenCreatedAt
     const expiresAt = token?.expiresAt || tokenExpiresAt
     const expiresIn = token?.expiresIn
-    const expired = !token || (expiresAt && new Date(expiresAt).getTime() < now)
+    const expired = !token || isExpired(expiresAt)
 
     return {
       userId: id,
@@ -271,6 +282,7 @@ async function deleteApiKey(tokenId, revoke = false) {
 module.exports = {
   createApiKey,
   parseClientMetadata,
+  hasValidToken,
   generateApiKeyToken,
   getApiKey,
   refreshApiKey,

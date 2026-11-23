@@ -57,6 +57,11 @@ const INDEXES = [
       partialFilterExpression: { [`${IDENTITY}.email`]: { $exists: true } },
     },
   },
+  {
+    collection: "tokens",
+    keys: { userId: 1 },
+    options: { name: "userId_1" },
+  },
 ]
 
 // Superseded by api_key_external_identity_key

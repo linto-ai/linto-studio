@@ -28,6 +28,7 @@ module.exports = (webServer) => {
       require("./api/organization/folders")(webServer),
     "/api/v1/organizations/:organizationId/entitlements":
       require("./api/v1/entitlements")(webServer),
+    "/api/auth/external": require("./api/auth/external")(webServer),
     "/api/conversations": [
       ...require("./api/conversation/share")(webServer),
       ...require("./api/conversation/conversations")(webServer),
