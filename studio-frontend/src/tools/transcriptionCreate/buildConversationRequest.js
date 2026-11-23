@@ -16,6 +16,7 @@ export function buildConversationRequest(draft, service, fileField) {
     securityLevel: draft.securityLevel,
     transcriptionConfig: JSON.stringify(config.config),
     speakerIdentificationCollections: config.speakerIdentificationCollections,
+    hotwordDictionaries: draft.hotwordDictionaryIds,
     lang: config.lang,
     tracks: [fileField.file],
     folderId: draft.folderId,

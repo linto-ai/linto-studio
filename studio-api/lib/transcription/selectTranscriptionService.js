@@ -1,4 +1,4 @@
-const { parseInfo, serviceModelType } = require(
+const { parseInfo, serviceModelType, supportsHotwords } = require(
   `${process.cwd()}/lib/transcription/serviceDescriptor`,
 )
 const { ROUTING_RULES, DEFAULT_MODEL_TYPES } = require(
@@ -10,8 +10,7 @@ const AUTO_LANGUAGE = "*"
 /**
  * The first running model of the routing rules, else the first able service.
  * @param {object[]} services - transcription entries of the gateway listing
- * @param {object} request - see filterTranscriptionServices, and
- * @param {boolean} request.hotwords - whether the request carries hotwords
+ * @param {object} request - see filterTranscriptionServices
  * @returns {object|null}
  */
 function selectTranscriptionService(services, request) {
@@ -42,11 +41,17 @@ function selectGenericTranscriptionService(services) {
  * @param {string} request.language - "fr-FR", "fr", "*" for automatic detection
  * @param {boolean} request.diarization
  * @param {boolean} request.speakerIdentification
+ * @param {boolean} request.hotwords
  * @returns {object[]}
  */
 function filterTranscriptionServices(
   services,
-  { language, diarization = false, speakerIdentification = false },
+  {
+    language,
+    diarization = false,
+    speakerIdentification = false,
+    hotwords = false,
+  },
 ) {
   const listing = services.filter(
     (service) => listedLanguage(service, language) !== null,
@@ -60,6 +65,7 @@ function filterTranscriptionServices(
   if (speakerIdentification) {
     candidates = narrowTo(candidates, supportsSpeakerIdentification)
   }
+  if (hotwords) candidates = narrowTo(candidates, supportsHotwords)
   return candidates
 }
 

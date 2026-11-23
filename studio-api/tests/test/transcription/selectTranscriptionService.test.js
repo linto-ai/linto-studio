@@ -192,6 +192,43 @@ describe("selectTranscriptionService", () => {
     expect(pick({ language: "fr", hotwords: false }).serviceName).toBe("cohere")
   })
 
+  it("keeps to the services applying hotwords when one can take the request", () => {
+    const frenchKaldi = {
+      serviceName: "kaldi",
+      model_type: "kaldi",
+      language: "fr",
+    }
+    expect(
+      names(
+        filterTranscriptionServices([cohere, frenchKaldi, whisper], {
+          language: "fr",
+          hotwords: true,
+        }),
+      ),
+    ).toEqual(["whisper"])
+    expect(
+      pick({ language: "fr", hotwords: true }, [frenchKaldi, whisper])
+        .serviceName,
+    ).toBe("whisper")
+  })
+
+  it("still proposes a service when none applies hotwords", () => {
+    expect(pick({ language: "fr", hotwords: true }, [cohere]).serviceName).toBe(
+      "cohere",
+    )
+  })
+
+  it("puts diarization before hotwords", () => {
+    const plainQwen = { ...qwen, sub_services: {} }
+    const diarizingCohere = cohere
+    expect(
+      pick({ language: "fr", diarization: true, hotwords: true }, [
+        plainQwen,
+        diarizingCohere,
+      ]).serviceName,
+    ).toBe("cohere")
+  })
+
   it("follows the rules whatever the services list beyond them", () => {
     const cohereListingAll = { ...cohere, language: "*,fr,en,pl" }
     const list = [cohereListingAll, whisper]

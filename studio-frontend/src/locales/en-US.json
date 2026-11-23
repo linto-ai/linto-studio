@@ -502,6 +502,7 @@
     "email_not_verified": "Your email is not verified. Please verify your email to access all features.",
     "pending_email": "A confirmation was sent to {email}. This address will replace the current one once validated.",
     "speaker_identification": "Speaker identification",
+    "hotword_dictionaries": "Dictionaries",
     "sso": "SSO",
     "session_notice": "Session disclaimer",
     "speaker_recognition": "My voice signature"
@@ -927,6 +928,8 @@
       "speaker_separation": "Speaker separation",
       "speaker_count": "Number of speakers",
       "speaker_identification": "Speaker identification",
+      "hotword_dictionaries": "Dictionaries",
+      "no_dictionary": "No dictionary",
       "sharing": "Sharing",
       "folder": "Folder",
       "visio_subtitles": "Subtitles in the videoconference",
@@ -958,7 +961,8 @@
       "languages_changed": "Language replaced, no engine available for: {languages}",
       "translations_removed": "Translation removed, unavailable with these languages: {languages}",
       "profile_changed": "The chosen live engine is no longer compatible: another one was selected.",
-      "speakers_changed": "The speakers choice is no longer available: it was replaced."
+      "speakers_changed": "The speakers choice is no longer available: it was replaced.",
+      "hotwords_changed": "The chosen dictionaries are no longer available: they were removed."
     },
     "engine": {
       "languages": "Languages: {languages}"
@@ -2516,6 +2520,30 @@
         "upgrade": "Upgrade your plan"
       }
     }
+  },
+  "hotword_dictionaries": {
+    "title": "Dictionaries",
+    "description": "Group in a dictionary the words the transcription must recognize: proper nouns, product names, jargon. A dictionary is chosen when a transcription is started.",
+    "add": "Add a dictionary",
+    "empty": "No dictionary. Create one to use it in your transcriptions.",
+    "words_count": "No word | {n} word | {n} words",
+    "create_title": "New dictionary",
+    "edit_title": "Edit the dictionary",
+    "delete_title": "Delete the dictionary",
+    "delete_confirm": "Delete the dictionary \"{name}\"?",
+    "name": "Name",
+    "name_placeholder": "e.g. Product names",
+    "description_label": "Description",
+    "words": "Words",
+    "words_help": "One word or phrase per line, or separated by commas.",
+    "too_many": "A dictionary holds at most {max} words.",
+    "too_long": "\"{word}\" is longer than {max} characters.",
+    "save": "Save",
+    "save_success": "Dictionary saved",
+    "save_error": "The dictionary could not be saved",
+    "name_taken": "A dictionary already has this name",
+    "delete_success": "Dictionary deleted",
+    "delete_error": "The dictionary could not be deleted"
   },
   "speaker_diarization": {
     "title": "Speaker identification",

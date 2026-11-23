@@ -1,0 +1,212 @@
+{
+  "/api/organizations/{organizationId}/hotword-dictionaries": {
+    "get": {
+      "tags": ["hotword dictionaries - organization"],
+      "summary": "List hotword dictionaries",
+      "description": "Returns the hotword dictionaries of the organization, the newest first.",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Organization ID"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "List of hotword dictionaries",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HotwordDictionary"
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    },
+    "post": {
+      "tags": ["hotword dictionaries - organization"],
+      "summary": "Create a hotword dictionary",
+      "description": "A word is free text (it may be a phrase) of at most 60 chars, without comma. Duplicates are dropped, whatever the case.",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Organization ID"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "words": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 60
+                  }
+                }
+              },
+              "required": ["name"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Dictionary created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HotwordDictionary"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "409": {
+          "description": "A dictionary of the organization already has this name"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/hotword-dictionaries/{dictionaryId}": {
+    "patch": {
+      "tags": ["hotword dictionaries - organization"],
+      "summary": "Update a hotword dictionary",
+      "description": "Only the given fields change. `words` replaces the whole list.",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "dictionaryId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "words": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 60
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Dictionary updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HotwordDictionary"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "409": {
+          "description": "A dictionary of the organization already has this name"
+        }
+      }
+    },
+    "delete": {
+      "tags": ["hotword dictionaries - organization"],
+      "summary": "Delete a hotword dictionary",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "dictionaryId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Dictionary deleted"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

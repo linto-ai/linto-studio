@@ -17,4 +17,5 @@ module.exports = {
   ...require("./voice-sample.json"),
   ...require("./voiceprint-collection.json"),
   ...require("./speaker-label.json"),
+  ...require("./hotword-dictionary.json"),
 }

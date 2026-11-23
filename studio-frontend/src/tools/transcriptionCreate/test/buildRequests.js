@@ -90,6 +90,15 @@ test("conversation request: a file goes as a track", (t) => {
   t.is(JSON.parse(request.transcriptionConfig).language, "*")
 })
 
+test("conversation request: carries the chosen dictionaries", (t) => {
+  const request = buildConversationRequest(
+    microphoneDraft({ hotwordDictionaryIds: ["products"] }),
+    whisperService,
+    { value: "meeting", file: "binary" },
+  )
+  t.deepEqual(request.hotwordDictionaries, ["products"])
+})
+
 test("quick session, both: live profile, chosen translations, end service", (t) => {
   const { channels, meta } = buildQuickSessionRequest(
     microphoneDraft({ translations: ["es"] }),

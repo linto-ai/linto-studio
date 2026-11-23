@@ -2,6 +2,8 @@
 // (cf. the gateway's docs/transcription-service-declaration.md)
 const BUILT_IN_PUNCTUATION_MODELS = ["whisper", "nemo", "cohere", "qwen"]
 const BUILT_IN_NUMBER_CONVERSION_MODELS = ["whisper", "cohere", "qwen"]
+// The models applying hotwords: Cohere Transcribe rejects a request with some
+const HOTWORDS_MODELS = ["whisper", "qwen"]
 const KNOWN_MODEL_TYPE = /whisper|cohere|qwen|nemo/
 
 // The known model a declared type names ("qwen3_asr" is "qwen"), else the
@@ -18,5 +20,6 @@ function knownModelType(declared) {
 module.exports = {
   BUILT_IN_PUNCTUATION_MODELS,
   BUILT_IN_NUMBER_CONVERSION_MODELS,
+  HOTWORDS_MODELS,
   knownModelType,
 }

@@ -20,6 +20,8 @@ const state = {
   // per-collection drill-down (labels, samples, signatures) stays local to
   // the components that need it. Reset on org change.
   voiceprintCollections: [],
+  // Hotword dictionaries of the current org, reset on org change.
+  hotwordDictionaries: [],
 }
 
 export default state

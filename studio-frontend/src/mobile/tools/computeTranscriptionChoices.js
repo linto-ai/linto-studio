@@ -6,7 +6,7 @@ import { DEFAULT_MEMBERS_RIGHT } from "../const/defaultMembersRight.js"
  * @param {object[]} services - GET /services
  * @param {object|null} saved - readTranscriptionPreferences()
  * @param {string} locale - app locale, e.g. "fr-FR"
- * @returns {{ language: string, diarization: boolean, voiceCollections: string[], membersRight: number, folderId: string|null }}
+ * @returns {{ language: string, diarization: boolean, voiceCollections: string[], hotwordDictionaries: string[], membersRight: number, folderId: string|null }}
  */
 export function computeTranscriptionChoices(services, saved, locale) {
   const languages = (services[0]?.language || "*").split(",")
@@ -18,8 +18,9 @@ export function computeTranscriptionChoices(services, saved, locale) {
       ? saved.language
       : (appLanguage ?? languages[0]),
     diarization: saved?.diarization ?? true,
-    // Not restored from storage: a deleted collection would be sent.
+    // Not restored from storage: a deleted one would be sent.
     voiceCollections: [],
+    hotwordDictionaries: [],
     membersRight: saved?.membersRight ?? DEFAULT_MEMBERS_RIGHT,
     folderId: saved?.folderId ?? null,
   }

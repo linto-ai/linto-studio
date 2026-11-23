@@ -79,6 +79,9 @@ const getters = {
   getVoiceprintCollections(state) {
     return state.voiceprintCollections ?? []
   },
+  getHotwordDictionaries(state) {
+    return state.hotwordDictionaries
+  },
   getUserRoleInOrganization: (state, getters, rootState, rootGetters) => {
     let organization = getters.getCurrentOrganization
     const userId = rootGetters["user/getUserId"]

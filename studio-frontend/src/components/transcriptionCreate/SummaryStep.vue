@@ -143,6 +143,24 @@
       </SummaryRow>
 
       <SummaryRow
+        v-if="hotwordsAvailable"
+        icon="book-open"
+        :label="$t('transcription_create.summary.hotword_dictionaries')">
+        <PopoverList
+          selection
+          multiple
+          fullWidth
+          :selectAll="false"
+          :closeOnClick="false"
+          :items="dictionaryItems"
+          :value="draft.hotwordDictionaryIds"
+          :ariaLabel="$t('transcription_create.summary.hotword_dictionaries')"
+          :placeholder="$t('transcription_create.summary.no_dictionary')"
+          :disabled="sending"
+          @input="$emit('change', { hotwordDictionaryIds: $event })" />
+      </SummaryRow>
+
+      <SummaryRow
         icon="share-network"
         :label="$t('transcription_create.summary.sharing')">
         <SummarySelect
@@ -216,6 +234,7 @@ import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
 import { AUTO_LANGUAGE } from "@/const/transcriptionCreate.js"
 import formatLanguage from "@/tools/formatLanguage"
 import { getEnv } from "@/tools/getEnv"
+import { computeHotwordsAvailable } from "@/tools/transcriptionCreate/computeHotwordsAvailable.js"
 import { computeOfferedLanguageCodes } from "@/tools/transcriptionCreate/computeOfferedLanguageCodes.js"
 import { computeTranslationOptions } from "@/tools/transcriptionCreate/computeTranslationOptions.js"
 import { formatLanguageList } from "@/tools/transcriptionCreate/formatLanguageList.js"
@@ -337,6 +356,15 @@ export default {
     },
     collectionItems() {
       return this.catalog.collections.map(({ _id, name }) => ({
+        id: _id,
+        name,
+      }))
+    },
+    hotwordsAvailable() {
+      return computeHotwordsAvailable(this.draft, this.catalog)
+    },
+    dictionaryItems() {
+      return this.catalog.dictionaries.map(({ _id, name }) => ({
         id: _id,
         name,
       }))

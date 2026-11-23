@@ -207,6 +207,10 @@ async function deleteOrganizationCascade(organizationId) {
   ])
   speakerIdResults.forEach(throwIfError)
 
+  throwIfError(
+    await model.hotwordDictionaries.deleteAllFromOrganization(organizationId),
+  )
+
   const resultOrga = throwIfError(
     await model.organizations.delete(organizationId),
   )

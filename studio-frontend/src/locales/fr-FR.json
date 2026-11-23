@@ -503,6 +503,7 @@
     "email_not_verified": "Votre adresse e-mail n'est pas vérifiée. Veuillez la vérifier pour accéder à l'ensemble des fonctionnalités.",
     "pending_email": "Une confirmation a été envoyée à {email}. Cette adresse remplacera l'actuelle une fois validée.",
     "speaker_identification": "Identification des locuteurs",
+    "hotword_dictionaries": "Dictionnaires",
     "sso": "Connexion SSO",
     "session_notice": "Informations des sessions",
     "speaker_recognition": "Ma signature vocale"
@@ -928,6 +929,8 @@
       "speaker_separation": "Séparation des locuteurs",
       "speaker_count": "Nombre de locuteurs",
       "speaker_identification": "Identification des locuteurs",
+      "hotword_dictionaries": "Dictionnaires",
+      "no_dictionary": "Aucun dictionnaire",
       "sharing": "Partage",
       "folder": "Dossier",
       "visio_subtitles": "Sous-titres dans la visio",
@@ -959,7 +962,8 @@
       "languages_changed": "Langue remplacée, aucun moteur disponible pour : {languages}",
       "translations_removed": "Traduction retirée, indisponible avec ces langues : {languages}",
       "profile_changed": "Le moteur en direct choisi n'est plus compatible : un autre a été sélectionné.",
-      "speakers_changed": "Le choix pour les locuteurs n'est plus disponible : il a été remplacé."
+      "speakers_changed": "Le choix pour les locuteurs n'est plus disponible : il a été remplacé.",
+      "hotwords_changed": "Les dictionnaires choisis ne sont plus disponibles : ils ont été retirés."
     },
     "engine": {
       "languages": "Langues : {languages}"
@@ -2516,6 +2520,30 @@
         "upgrade": "Passer au plan supérieur"
       }
     }
+  },
+  "hotword_dictionaries": {
+    "title": "Dictionnaires",
+    "description": "Regroupez dans un dictionnaire les mots que la transcription doit reconnaître : noms propres, noms de produits, jargon. Un dictionnaire se choisit au lancement d'une transcription.",
+    "add": "Ajouter un dictionnaire",
+    "empty": "Aucun dictionnaire. Créez-en un pour l'utiliser dans vos transcriptions.",
+    "words_count": "Aucun mot | {n} mot | {n} mots",
+    "create_title": "Nouveau dictionnaire",
+    "edit_title": "Modifier le dictionnaire",
+    "delete_title": "Supprimer le dictionnaire",
+    "delete_confirm": "Supprimer le dictionnaire « {name} » ?",
+    "name": "Nom",
+    "name_placeholder": "ex. Noms de produits",
+    "description_label": "Description",
+    "words": "Mots",
+    "words_help": "Un mot ou une expression par ligne, ou séparés par des virgules.",
+    "too_many": "Un dictionnaire contient au plus {max} mots.",
+    "too_long": "« {word} » dépasse {max} caractères.",
+    "save": "Enregistrer",
+    "save_success": "Dictionnaire enregistré",
+    "save_error": "Le dictionnaire n'a pas pu être enregistré",
+    "name_taken": "Un dictionnaire porte déjà ce nom",
+    "delete_success": "Dictionnaire supprimé",
+    "delete_error": "Le dictionnaire n'a pas pu être supprimé"
   },
   "speaker_diarization": {
     "title": "Identification des locuteurs",

@@ -38,6 +38,7 @@ export const europeProfile = {
 export const whisperService = {
   serviceName: "whisper",
   model_type: "whisper",
+  hotwords: true,
   language: "*,fr-FR,en-US",
   security_level: 2,
   endpoints: [{ endpoint: "/whisper/transcribe" }],
@@ -65,6 +66,7 @@ export const kaldiService = {
 export const catalog = {
   profiles: [frenchProfile, bilingualProfile, europeProfile],
   services: [kaldiService, whisperService],
+  dictionaries: [{ _id: "products", name: "Products" }],
   collections: [
     { _id: "team", type: "user" },
     { _id: "organization", type: "organization" },

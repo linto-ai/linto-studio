@@ -43,6 +43,9 @@ const mutations = {
       (c) => c._id !== collectionId,
     )
   },
+  setHotwordDictionaries(state, dictionaries) {
+    state.hotwordDictionaries = dictionaries
+  },
   deleteOrganization(state, id) {
     delete state.organizations[id]
     state.rolesInOrganizations.delete(id)

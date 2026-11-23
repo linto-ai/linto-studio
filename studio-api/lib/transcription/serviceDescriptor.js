@@ -1,5 +1,5 @@
 // Readers of a service entry of the gateway listing
-const { knownModelType } = require(
+const { HOTWORDS_MODELS, knownModelType } = require(
   `${process.cwd()}/lib/transcription/modelTypes`,
 )
 
@@ -17,6 +17,10 @@ function serviceModelType(service) {
   return knownModelType(service.model_type)
 }
 
+function supportsHotwords(service) {
+  return HOTWORDS_MODELS.includes(serviceModelType(service))
+}
+
 // The gateway may serialize the info of a sub-service
 function parseInfo(info) {
   if (info == null) return null
@@ -28,4 +32,9 @@ function parseInfo(info) {
   }
 }
 
-module.exports = { serviceEndpoint, serviceModelType, parseInfo }
+module.exports = {
+  serviceEndpoint,
+  serviceModelType,
+  supportsHotwords,
+  parseInfo,
+}

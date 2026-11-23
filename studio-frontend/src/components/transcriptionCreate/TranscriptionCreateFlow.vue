@@ -126,6 +126,7 @@ export default {
     ...mapGetters("organizations", {
       organizationId: "getCurrentOrganizationScope",
       voiceprintCollections: "getVoiceprintCollections",
+      hotwordDictionaries: "getHotwordDictionaries",
     }),
     organizationSecurityLevel() {
       const organization = this.$store.getters[
@@ -140,6 +141,7 @@ export default {
         // Likewise for the minutes transcribed once the audio is complete.
         services: this.isTranscriptionExhausted ? [] : this.loadedServices,
         collections: this.voiceprintCollections,
+        dictionaries: this.hotwordDictionaries,
         speakerIdentificationEnabled:
           getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true",
       }
@@ -279,9 +281,11 @@ export default {
     isLiveCreditExhausted: "reconcileWithCatalog",
     isTranscriptionExhausted: "reconcileWithCatalog",
     voiceprintCollections: "reconcileWithCatalog",
+    hotwordDictionaries: "reconcileWithCatalog",
   },
   async created() {
     this.$store.dispatch("folders/fetchFolders")
+    this.$store.dispatch("organizations/loadHotwordDictionaries")
     // The session source depends on the org's plan and live on its balance.
     if (getEnv("VUE_APP_MODE") === "cloud") {
       await Promise.all([

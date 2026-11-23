@@ -66,6 +66,10 @@ function initConversation(metadata, userId, job_id) {
     metadata.securityLevel,
   )
   if (metadata.folderId) conversation.folderId = metadata.folderId
+  if (metadata.hotwordDictionaryNames) {
+    conversation.metadata.transcription.hotwordDictionaries =
+      metadata.hotwordDictionaryNames
+  }
   if (metadata.segmentWordSize)
     conversation.metadata.normalize.filter.segmentWordSize =
       metadata.segmentWordSize

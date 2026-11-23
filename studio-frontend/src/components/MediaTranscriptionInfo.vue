@@ -128,6 +128,14 @@ export default {
           get: (m) => this.formatIdentification(m),
         },
       ]
+      if (this.medias.some((m) => this.hotwordDictionaries(m))) {
+        defs.push({
+          id: "hotwordDictionaries",
+          icon: "book-open",
+          label: this.$t("transcription_create.summary.hotword_dictionaries"),
+          get: (m) => this.hotwordDictionaries(m),
+        })
+      }
       // Session media show the language in MediaSessionInfo.
       if (this.isSessionMedia) {
         return defs.filter((def) => def.id !== "language")
@@ -267,6 +275,9 @@ export default {
       }
       // An array renders one collection per line (see InfoRow).
       return names
+    },
+    hotwordDictionaries(media) {
+      return media?.metadata?.transcription?.hotwordDictionaries ?? null
     },
     // The config references collections by their `qdrantCollectionName`; resolve
     // it to the human collection name from the org store.

@@ -9,6 +9,9 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
+const { supportsHotwords } = require(
+  `${process.cwd()}/lib/transcription/serviceDescriptor`,
+)
 
 async function fetchGatewayServices(scope) {
   try {
@@ -29,9 +32,17 @@ function filterBySecurityLevel(transcriptionServices, securityLevel) {
 
 async function listSaasServices(scope, securityLevel = null) {
   const saas_service_info = await fetchGatewayServices(scope)
+  const transcription = filterBySecurityLevel(
+    saas_service_info.transcription,
+    securityLevel,
+  )
   // NLP services are not filtered
   return [
-    ...filterBySecurityLevel(saas_service_info.transcription, securityLevel),
+    // Lets a client offer hotwords without knowing the models
+    ...transcription.map((service) => ({
+      ...service,
+      hotwords: supportsHotwords(service),
+    })),
     ...saas_service_info.nlp,
   ]
 }

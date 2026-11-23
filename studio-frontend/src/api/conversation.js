@@ -271,6 +271,7 @@ export async function apiCreateConversation(
     securityLevel,
     transcriptionConfig,
     speakerIdentificationCollections,
+    hotwordDictionaries,
     lang,
     tracks,
     url, // tracks or url is required
@@ -300,6 +301,13 @@ export async function apiCreateConversation(
       formData.append(
         "speakerIdentificationCollections",
         JSON.stringify(speakerIdentificationCollections),
+      )
+    }
+
+    if (Array.isArray(hotwordDictionaries) && hotwordDictionaries.length > 0) {
+      formData.append(
+        "hotwordDictionaries",
+        JSON.stringify(hotwordDictionaries),
       )
     }
 

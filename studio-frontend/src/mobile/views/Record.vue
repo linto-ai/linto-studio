@@ -72,6 +72,8 @@
       :choices="choices"
       :voice-collections="voiceCollections"
       :voice-identification-capable="speakerIdentificationCapable"
+      :hotword-dictionaries="hotwordDictionaries"
+      :hotwords-available="hotwordsAvailable"
       :organization-id="organizationScope"
       @change="updateChoices" />
     <StopRecordingSheet

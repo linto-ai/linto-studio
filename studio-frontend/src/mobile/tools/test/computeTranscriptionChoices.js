@@ -21,6 +21,7 @@ test("computeTranscriptionChoices() restores the remembered choices", (t) => {
     language: "en-US",
     diarization: false,
     voiceCollections: [],
+    hotwordDictionaries: [],
     membersRight: 3,
     folderId: "f1",
   })

@@ -11,6 +11,7 @@ import { DEFAULT_MEMBERS_RIGHT } from "../../mobile/const/defaultMembersRight.js
  *   languages: [AUTO_LANGUAGE] or bare language codes (["fr", "en"])
  *   speakers.count: fixed number of speakers, null to leave it automatic
  *   speakers.collectionIds: lists naming the speakers, see computeSpeakersMode
+ *   hotwordDictionaryIds: dictionaries of words to favour, for a file
  */
 export function createDraft({ source, securityLevel }) {
   return {
@@ -25,6 +26,7 @@ export function createDraft({ source, securityLevel }) {
     serviceName: null,
     speakers: { isSeparated: true, count: null, collectionIds: [] },
     speakersChosenByUser: false,
+    hotwordDictionaryIds: [],
     membersRight: DEFAULT_MEMBERS_RIGHT,
     folderId: null,
     visio: {

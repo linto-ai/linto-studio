@@ -6,7 +6,10 @@ import {
 import { computeTranscriptionChoices } from "@/mobile/tools/computeTranscriptionChoices.js"
 import { buildTranscriptionSettings } from "@/mobile/tools/buildTranscriptionSettings.js"
 import { isSpeakerIdentificationCapable } from "@/mobile/tools/isSpeakerIdentificationCapable.js"
+import { computeHotwordsAvailable } from "@/tools/transcriptionCreate/computeHotwordsAvailable.js"
+import { computeLanguageCode } from "@/tools/computeLanguageCode.js"
 import { getEnv } from "@/tools/getEnv"
+import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import RIGHTS_LIST from "@/const/rigthsList.js"
 import { DEFAULT_MEMBERS_RIGHT } from "@/mobile/const/defaultMembersRight.js"
 
@@ -22,6 +25,7 @@ export const transcriptionSettingsMixin = {
         language: null,
         diarization: true,
         voiceCollections: [],
+        hotwordDictionaries: [],
         membersRight: DEFAULT_MEMBERS_RIGHT,
         folderId: null,
       },
@@ -44,15 +48,34 @@ export const transcriptionSettingsMixin = {
     voiceCollections() {
       return this.$store.getters["organizations/getVoiceprintCollections"]
     },
+    hotwordDictionaries() {
+      return this.$store.getters["organizations/getHotwordDictionaries"]
+    },
+    // A recording is sent as a file, at the default security level.
+    hotwordsAvailable() {
+      return computeHotwordsAvailable(
+        {
+          source: "file",
+          securityLevel: DEFAULT_SECURITY_LEVEL,
+          languages: [computeLanguageCode(this.choices.language)],
+        },
+        { services: this.services, dictionaries: this.hotwordDictionaries },
+      )
+    },
     transcriptionSettings() {
       if (!this.currentService) return null
-      return buildTranscriptionSettings(this.currentService, {
+      const settings = buildTranscriptionSettings(this.currentService, {
         language: this.choices.language,
         diarization: this.choices.diarization,
         speakerIdentificationCollections: this.speakerIdentificationCapable
           ? this.choices.voiceCollections
           : [],
       })
+      let hotwordDictionaries = []
+      if (this.hotwordsAvailable) {
+        hotwordDictionaries = this.choices.hotwordDictionaries
+      }
+      return { ...settings, hotwordDictionaries }
     },
     // A folder deleted since it was chosen falls back to the inbox.
     sharingSettings() {
@@ -98,6 +121,7 @@ export const transcriptionSettingsMixin = {
     this.servicesLoaded = true
     this.applyPreferences(readTranscriptionPreferences(this.organizationScope))
     this.$store.dispatch("folders/fetchFolders")
+    this.$store.dispatch("organizations/loadHotwordDictionaries")
     if (getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true") {
       this.$store.dispatch("organizations/loadVoiceprintCollections")
     }

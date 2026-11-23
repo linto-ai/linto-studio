@@ -103,6 +103,16 @@
                 </a>
               </li>
               <li
+                v-if="isAtLeastMaintainer"
+                :class="{ active: selectedTab === 'hotwordDictionaries' }">
+                <a href="#" @click="selectTab('hotwordDictionaries')">
+                  <ph-icon name="book-open" weight="bold"></ph-icon>
+                  <span>{{
+                    $t("app_settings_modal.hotword_dictionaries")
+                  }}</span>
+                </a>
+              </li>
+              <li
                 :class="{ active: selectedTab === 'sessionNotice' }"
                 v-if="canManageSessionNotice">
                 <a href="#" @click="selectTab('sessionNotice')">
@@ -185,6 +195,11 @@
             @quit="leaveSpeakerIdentification" />
         </div>
         <div
+          v-if="selectedTab === 'hotwordDictionaries' && isAtLeastMaintainer"
+          class="app-settings__section">
+          <HotwordDictionarySettings :organizationId="organizationId" />
+        </div>
+        <div
           v-if="selectedTab === 'sso' && isAdmin"
           class="app-settings__section flex col">
           <HasEntitlement capability="sso.custom" lockedPlaceholder>
@@ -243,6 +258,7 @@ import HasEntitlement from "@/components-cloud/HasEntitlement.vue"
 import Modal from "@/components/molecules/Modal.vue"
 import ApiTokenSettings from "@/components/ApiTokenSettings.vue"
 import SpeakerIdentificationSettings from "@/components/SpeakerIdentificationSettings.vue"
+import HotwordDictionarySettings from "@/components/HotwordDictionarySettings.vue"
 import UserSettingsVoiceOptIn from "@/components/UserSettingsVoiceOptIn.vue"
 import OrganizationSettingsBilling from "@/components-cloud/OrganizationSettingsBilling.vue"
 
@@ -267,6 +283,7 @@ export default {
     Modal,
     ApiTokenSettings,
     SpeakerIdentificationSettings,
+    HotwordDictionarySettings,
     UserSettingsVoiceOptIn,
     OrganizationSettingsBilling,
   },

@@ -9,6 +9,7 @@ import {
   apiUpdateVoiceprintCollection,
   apiDeleteVoiceprintCollection,
 } from "@/api/voiceprintCollection"
+import { apiGetHotwordDictionaries } from "@/api/hotwordDictionary"
 import { indexOrganizationsRoles } from "@/tools/rights/indexOrganizationsRoles"
 import { getEnv } from "@/tools/getEnv"
 import store from "@/store/index.js"
@@ -100,6 +101,8 @@ const actions = {
       if (getEnv("VUE_APP_ENABLE_SPEAKER_IDENTIFICATION") === "true") {
         dispatch("loadVoiceprintCollections")
       }
+      // Loaded by the screens reading them, which only uploaders reach
+      commit("setHotwordDictionaries", [])
     }
 
     // Clear selected tags when switching organizations
@@ -164,6 +167,16 @@ const actions = {
     const collections = await apiGetVoiceprintCollections(organizationId)
     commit("setVoiceprintCollections", collections)
     return state.voiceprintCollections
+  },
+  async loadHotwordDictionaries({ commit, state }) {
+    const organizationId = state.currentOrganizationScope
+    if (!organizationId) return []
+    const dictionaries = await apiGetHotwordDictionaries(organizationId)
+    // The organization may have changed while the request was running
+    if (state.currentOrganizationScope === organizationId) {
+      commit("setHotwordDictionaries", dictionaries)
+    }
+    return state.hotwordDictionaries
   },
   async createVoiceprintCollection({ commit, state }, payload) {
     const organizationId = state.currentOrganizationScope

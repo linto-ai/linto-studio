@@ -46,10 +46,24 @@
             :selected="selectedCollections.includes(collection._id)"
             :voices="voicesByCollection[collection._id] || []"
             :loaded="collection._id in voicesByCollection"
-            @toggle="toggleCollection(collection._id)"
+            @toggle="toggleChoice('voiceCollections', collection._id)"
             @load-voices="loadVoices(collection)" />
         </ul>
         <p class="m-muted">{{ $t("mobile.settings.voices_help") }}</p>
+      </div>
+      <div v-if="hotwordsAvailable" class="m-settings__field">
+        <span>{{ $t("mobile.settings.dictionaries") }}</span>
+        <label
+          v-for="dictionary in hotwordDictionaries"
+          :key="dictionary._id"
+          class="m-settings__toggle">
+          <span class="m-grow">{{ dictionary.name }}</span>
+          <input
+            type="checkbox"
+            :checked="selectedDictionaries.includes(dictionary._id)"
+            @change="toggleChoice('hotwordDictionaries', dictionary._id)" />
+        </label>
+        <p class="m-muted">{{ $t("mobile.settings.dictionaries_help") }}</p>
       </div>
       <SharingSettingsFields
         :members-right="choices.membersRight"
@@ -82,6 +96,8 @@ export default {
     choices: { type: Object, required: true },
     voiceCollections: { type: Array, default: () => [] },
     voiceIdentificationCapable: { type: Boolean, default: false },
+    hotwordDictionaries: { type: Array, default: () => [] },
+    hotwordsAvailable: { type: Boolean, default: false },
     organizationId: { type: String, default: "" },
   },
   data() {
@@ -93,6 +109,9 @@ export default {
     },
     selectedCollections() {
       return this.choices.voiceCollections ?? []
+    },
+    selectedDictionaries() {
+      return this.choices.hotwordDictionaries ?? []
     },
     supportsDiarization() {
       return (this.service?.sub_services?.diarization?.length ?? 0) > 0
@@ -112,12 +131,12 @@ export default {
         [collection._id]: voices,
       }
     },
-    toggleCollection(id) {
-      const current = this.selectedCollections
+    toggleChoice(key, id) {
+      const current = this.choices[key] ?? []
       const next = current.includes(id)
         ? current.filter((item) => item !== id)
         : [...current, id]
-      this.update("voiceCollections", next)
+      this.update(key, next)
     },
     languageLabel(language) {
       return language === "*"

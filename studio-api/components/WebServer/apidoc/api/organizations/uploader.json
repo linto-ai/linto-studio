@@ -29,7 +29,7 @@
                 },
                 "endpoint": {
                   "type": "string",
-                  "description": "Endpoint of the transcription service (see the services api), required with serviceName. Without a named service, one is picked from lang, transcriptionConfig (diarization), speakerIdentificationCollections, and transcriptionConfig is adapted to it"
+                  "description": "Endpoint of the transcription service (see the services api), required with serviceName. Without a named service, one is picked from lang, transcriptionConfig (diarization), speakerIdentificationCollections, hotwordDictionaries, and transcriptionConfig is adapted to it"
                 },
                 "serviceName": {
                   "type": "string",
@@ -45,6 +45,10 @@
                 "speakerIdentificationCollections": {
                   "type": "string",
                   "description": "JSON array of voiceprint collection ids of the organization used to name the speakers"
+                },
+                "hotwordDictionaries": {
+                  "type": "string",
+                  "description": "JSON array of hotword dictionary ids of the organization. Their words are sent to the transcription model when it applies hotwords, and left out otherwise; hotwords given in transcriptionConfig are ignored"
                 },
                 "description": {
                   "type": "string",

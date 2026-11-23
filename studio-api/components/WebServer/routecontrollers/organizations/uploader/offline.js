@@ -44,6 +44,9 @@ async function offline(conversation, isConversation = true) {
     if (!conversation.metadata.transcription.endpoint) {
       await assignGenericService(conversation)
     }
+    // Hotwords only come from the dictionaries of an upload
+    delete conversation.metadata.transcription.transcriptionConfig?.hotwords
+    delete conversation.metadata.transcription.hotwordDictionaries
     const transcriptionService = getTranscriptionService(
       conversation.metadata.transcription.endpoint,
       true,

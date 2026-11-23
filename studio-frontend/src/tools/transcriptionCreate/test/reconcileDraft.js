@@ -203,6 +203,30 @@ test("a removed translation can't stay the visio subtitles", (t) => {
   t.is(draft.visio.subtitleSource, "original")
 })
 
+test("dictionaries are kept for a file while a service applies hotwords", (t) => {
+  const { draft, notices } = reconcile({
+    source: "file",
+    hotwordDictionaryIds: ["products", "deleted"],
+  })
+  t.deepEqual(draft.hotwordDictionaryIds, ["products"])
+  t.deepEqual(notices, [{ key: "hotwords_changed" }])
+  t.deepEqual(reconcileDraft(draft, catalog).notices, [])
+})
+
+test("dictionaries are dropped out loud once no service applies hotwords", (t) => {
+  const { draft, notices } = reconcile(
+    { source: "file", languages: ["fr"], hotwordDictionaryIds: ["products"] },
+    { ...catalog, services: [catalog.services[0]] },
+  )
+  t.deepEqual(draft.hotwordDictionaryIds, [])
+  t.deepEqual(notices, [{ key: "hotwords_changed" }])
+})
+
+test("dictionaries are for files only", (t) => {
+  const { draft } = reconcile({ hotwordDictionaryIds: ["products"] })
+  t.deepEqual(draft.hotwordDictionaryIds, [])
+})
+
 test("is stable: reconciling twice changes nothing", (t) => {
   const once = reconcile({ languages: ["fr"], translations: ["es"] })
   t.deepEqual(reconcileDraft(once.draft, catalog).draft, once.draft)

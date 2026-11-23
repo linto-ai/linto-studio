@@ -12,6 +12,7 @@ module.exports = {
   editorRevisions: require("./editorRevisions.js"),
   favorites: require("./favorites.js"),
   folders: require("./folders.js"),
+  hotwordDictionaries: require("./hotwordDictionaries.js"),
   kpi: {
     sessions: require("./kpi.session.js"),
   },

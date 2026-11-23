@@ -53,6 +53,10 @@ const { selectTranscriptionService } = require(
 const { transcriptionRequestFor } = require(
   `${process.cwd()}/lib/transcription/transcriptionRequestFor`,
 )
+const { withHotwords } = require(`${process.cwd()}/lib/transcription/hotwords`)
+const { readHotwords } = require(
+  `${process.cwd()}/components/WebServer/controllers/hotwords/injection`,
+)
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 const saas = require(`${process.cwd()}/lib/saas`)
 
@@ -134,11 +138,12 @@ async function transcribe(isSingleFile, req, res, next) {
     )
     // A named service must be among the models meeting the level.
     const services = await listTranscriptionServices(req.body.securityLevel)
+    let service = null
     if (serviceNamed) {
-      const isAllowed = services.some((service) =>
-        matchesEndpoint(service, req.body.endpoint),
+      service = services.find((candidate) =>
+        matchesEndpoint(candidate, req.body.endpoint),
       )
-      if (!isAllowed) throw new ConversationSecurityLevelForbidden()
+      if (!service) throw new ConversationSecurityLevelForbidden()
     }
 
     // Speaker identification: validate the requested collections and inject the
@@ -151,12 +156,18 @@ async function transcribe(isSingleFile, req, res, next) {
     // along into a log payload (cf. logger/context.js DELETE body capture).
     const speakerIdHeaders = speakerId.headers
 
+    const { words: hotwords, dictionaryNames } = await readHotwords(
+      req.body,
+      req.params.organizationId,
+    )
+
     if (!serviceNamed) {
-      const service = selectTranscriptionService(services, {
+      service = selectTranscriptionService(services, {
         language: req.body.lang,
         diarization:
           transcriptionConfig.diarizationConfig?.enableDiarization === true,
         speakerIdentification: speakerId.enabled,
+        hotwords: hotwords.length > 0,
       })
       if (!service) throw new ConversationNoTranscriptionService()
       debug("picked %s for lang %s", service.serviceName, req.body.lang)
@@ -168,6 +179,10 @@ async function transcribe(isSingleFile, req, res, next) {
       req.body.endpoint = request.endpoint
       req.body.lang = request.lang
       transcriptionConfig = request.transcriptionConfig
+    }
+    transcriptionConfig = withHotwords(transcriptionConfig, service, hotwords)
+    if (transcriptionConfig.hotwords) {
+      req.body.hotwordDictionaryNames = dictionaryNames
     }
     req.body.transcriptionConfig = JSON.stringify(transcriptionConfig)
 

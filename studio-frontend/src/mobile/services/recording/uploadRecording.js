@@ -34,6 +34,7 @@ export async function uploadRecording(id, onProgress, signal) {
       transcriptionConfig: JSON.stringify(transcription.config),
       speakerIdentificationCollections:
         transcription.speakerIdentificationCollections ?? [],
+      hotwordDictionaries: transcription.hotwordDictionaries ?? [],
       lang: transcription.lang,
       tracks: [file],
     },

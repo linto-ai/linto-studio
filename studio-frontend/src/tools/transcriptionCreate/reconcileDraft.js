@@ -4,6 +4,7 @@ import { computeCompatibleServices } from "./computeCompatibleServices.js"
 import { computeDefaultProfile } from "./computeDefaultProfile.js"
 import { computeDefaultService } from "./computeDefaultService.js"
 import { computeDraftEngines } from "./computeDraftEngines.js"
+import { computeHotwordsAvailable } from "./computeHotwordsAvailable.js"
 import { computeOfferedLanguageCodes } from "./computeOfferedLanguageCodes.js"
 import { computeProfileTranslations } from "./computeProfileTranslations.js"
 import { computeSpeakerOptions } from "./computeSpeakerOptions.js"
@@ -20,6 +21,7 @@ const STEPS = [
   reconcileProfile,
   reconcileService,
   reconcileSpeakers,
+  reconcileHotwords,
   reconcileKeepAudio,
   reconcileSubtitleSource,
 ]
@@ -28,10 +30,10 @@ const STEPS = [
  * Brings a draft back to what the organization offers after any change, and
  * tells what had to change among the user's own choices.
  * @param {object} draft - see createDraft
- * @param {{ profiles: object[], services: object[], collections: object[], speakerIdentificationEnabled: boolean }} catalog
+ * @param {{ profiles: object[], services: object[], collections: object[], dictionaries: object[], speakerIdentificationEnabled: boolean }} catalog
  * @returns {{ draft: object, notices: { key: string, codes?: string[] }[] }}
  *   notice key: "languages_changed" | "translations_removed" | "profile_changed"
- *     | "speakers_changed"
+ *     | "speakers_changed" | "hotwords_changed"
  */
 export function reconcileDraft(draft, catalog) {
   const notices = []
@@ -159,6 +161,19 @@ function reconcileSpeakers(draft, catalog, notices) {
 
 function isCollectionOffered({ collections }, id) {
   return collections.some((collection) => collection._id === id)
+}
+
+// Keeps the dictionaries still offered, none once hotwords are out of reach.
+function reconcileHotwords(draft, catalog, notices) {
+  let offered = []
+  if (computeHotwordsAvailable(draft, catalog)) {
+    offered = draft.hotwordDictionaryIds.filter((id) =>
+      catalog.dictionaries.some((dictionary) => dictionary._id === id),
+    )
+  }
+  if (offered.length === draft.hotwordDictionaryIds.length) return draft
+  notices.push({ key: "hotwords_changed" })
+  return { ...draft, hotwordDictionaryIds: offered }
 }
 
 // The version made at the end needs the audio.

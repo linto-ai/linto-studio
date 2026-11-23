@@ -33,6 +33,7 @@ const mockModel = {
   },
   voiceOptIns: { deleteAllFromOrganization: jest.fn() },
   speakerIdSyncOps: { deleteAllFromOrganization: jest.fn() },
+  hotwordDictionaries: { deleteAllFromOrganization: jest.fn() },
   organizations: { delete: jest.fn() },
 }
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => mockModel)
@@ -101,6 +102,9 @@ describe("deleteOrganizationCascade", () => {
     mockModel.speakerIdSyncOps.deleteAllFromOrganization.mockResolvedValue({
       deletedCount: 0,
     })
+    mockModel.hotwordDictionaries.deleteAllFromOrganization.mockResolvedValue({
+      deletedCount: 0,
+    })
     mockModel.organizations.delete.mockResolvedValue({ deletedCount: 1 })
     mockSaas.cancelSubscriptions.mockResolvedValue(0)
   })
@@ -149,6 +153,9 @@ describe("deleteOrganizationCascade", () => {
     expect(mockModel.tags.deleteAllFromCategory).toHaveBeenCalledWith("cat1")
     expect(mockModel.categories.delete).toHaveBeenCalledWith("cat1")
     expect(mockDropOrganizationSpeakers).toHaveBeenCalledWith(ORG_ID, [], [])
+    expect(
+      mockModel.hotwordDictionaries.deleteAllFromOrganization,
+    ).toHaveBeenCalledWith(ORG_ID)
     expect(mockModel.organizations.delete).toHaveBeenCalledWith(ORG_ID)
 
     const convOrder = lastCallOrder(mockModel.conversations.delete)
