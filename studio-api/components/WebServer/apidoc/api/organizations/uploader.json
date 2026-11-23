@@ -64,6 +64,10 @@
                 "sharedWithUsers": {
                   "type": "string",
                   "description": "Users to share the conversation with"
+                },
+                "partial": {
+                  "type": "boolean",
+                  "description": "The file is the beginning of the audio: the conversation stays pending and open to append until it is finished. Requires a file, not a url"
                 }
               },
               "required": ["name", "endpoint", "lang"]
@@ -149,6 +153,118 @@
         },
         "415": {
           "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/conversations/{conversationId}/append": {
+    "post": {
+      "tags": ["organizations uploader"],
+      "summary": "Append the next audio to a conversation created with partial",
+      "description": "The audio is transcribed with the settings of the conversation and joined to its audio, whose duration grows accordingly. Appended audios keep the order their requests arrived in, in the audio as in the transcription.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "file",
+                  "format": "binary",
+                  "description": "Audio that follows the ones already sent"
+                }
+              },
+              "required": ["file"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Information about the conversation processus"
+                  },
+                  "conversationId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "message": "The audio is being processed and will follow the previous ones",
+                "conversationId": "6501a2b3c4d5e6f708091a2b"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        }
+      }
+    }
+  },
+  "/api/organizations/{organizationId}/conversations/{conversationId}/finish": {
+    "post": {
+      "tags": ["organizations uploader"],
+      "summary": "Close a conversation created with partial",
+      "description": "No audio can be appended afterwards. The conversation is done once every appended audio is transcribed.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        },
+        {
+          "$ref": "#/components/parameters/ConversationId"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Information about the conversation processus"
+                  },
+                  "conversationId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "message": "The conversation is closed once its last audio is processed",
+                "conversationId": "6501a2b3c4d5e6f708091a2b"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
         }
       }
     }

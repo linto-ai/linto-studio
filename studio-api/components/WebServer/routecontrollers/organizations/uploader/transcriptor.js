@@ -49,8 +49,11 @@ const { getTranscriptionServiceByEndpoint } = require(
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
 const saas = require(`${process.cwd()}/lib/saas`)
 
-const { applySpeakerIdentification } = require(
+const { applySpeakerIdentification, parseCollectionIds } = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/injection`,
+)
+const { openToAppend } = require(
+  `${process.cwd()}/components/WebServer/controllers/conversation/partial`,
 )
 
 async function transcribeReq(req, res, next) {
@@ -104,6 +107,13 @@ async function transcribe(isSingleFile, req, res, next) {
     if (!SECURITY_LEVELS.isValid(req.body.securityLevel)) {
       throw new ConversationMetadataRequire(
         "Invalid securityLevel value. Allowed values: 0, 1, 2",
+      )
+    }
+
+    req.body.partial = String(req.body.partial) === "true"
+    if (req.body.partial && (req.body.url || !isSingleFile)) {
+      throw new ConversationMetadataRequire(
+        "A partial conversation requires a single uploaded file",
       )
     }
 
@@ -255,6 +265,13 @@ async function createConversation(processing_job, body) {
         body.file_data,
         body.endpoint,
       )
+    }
+
+    if (body.partial) {
+      openToAppend(conversation)
+      // Kept to transcribe the next parts with the same speaker identification
+      conversation.metadata.transcription.speakerIdentificationCollections =
+        parseCollectionIds(body.speakerIdentificationCollections)
     }
 
     const result = await model.conversations.create(conversation)

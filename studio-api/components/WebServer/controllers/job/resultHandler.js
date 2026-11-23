@@ -9,7 +9,12 @@ const { segmentNormalizeText } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/normalizeSegment`,
 )
 
+const { placePart } = require(
+  `${process.cwd()}/components/WebServer/controllers/conversation/partial`,
+)
+
 const JOBS = require(`${process.cwd()}/lib/dao/conversation/jobs.js`)
+const PART_STATES = require(`${process.cwd()}/lib/dao/conversation/partStates`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
 async function handleResult(result, job, conversation) {
@@ -81,4 +86,35 @@ async function handleTranscriptionResult(result, conversation) {
   )
 }
 
-module.exports = { handleResult }
+// False when the part was merged by another call in the meantime
+async function handlePartResult(result, part, offset, conversation) {
+  const transcribed = {
+    speakers: [],
+    text: [],
+    metadata: conversation.metadata,
+  }
+  // A silent part has no transcription, which is not an error here
+  if (result?.transcription_result?.length > 0) {
+    const normalizeTranscription = segmentNormalizeText(
+      result,
+      conversation.locale,
+      conversation.metadata.normalize.filter,
+    )
+    SttWrapper.transcriptionToConversation(normalizeTranscription, transcribed)
+  }
+
+  const content = placePart(transcribed, conversation.speakers, offset)
+  const merged = await model.conversations.updatePart(
+    conversation._id.toString(),
+    part.id,
+    PART_STATES.PENDING,
+    { state: PART_STATES.DONE },
+    content,
+  )
+  if (merged.matchedCount !== 1) return false
+
+  conversation.speakers.push(...content.speakers)
+  return true
+}
+
+module.exports = { handleResult, handlePartResult }

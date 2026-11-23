@@ -51,12 +51,15 @@ async function prepareFileFormData(files, url) {
   }
 }
 
-async function validateConversation(conversationId) {
+async function validateConversation(conversationId, projection) {
   if (!conversationId) {
     throw new ConversationMetadataRequire("conversationId param is required")
   }
 
-  const conversation = await model.conversations.getById(conversationId)
+  const conversation = await model.conversations.getById(
+    conversationId,
+    projection,
+  )
   if (conversation.length !== 1) throw new ConversationNotFound()
   return conversation[0]
 }

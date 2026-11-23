@@ -9,6 +9,7 @@ const path = require("path")
 const {
   transformAudio,
   mergeAudio,
+  concatAudio,
   hasAudioStream,
   convertToFlac,
   probeAudioDuration,
@@ -226,6 +227,27 @@ async function storeFile(files, type = STORE_TYPE.AUDIO, name = undefined) {
     }
   } catch (error) {
     throw error
+  }
+}
+
+async function joinAudio(filepaths, filename) {
+  const fileName = uuidv4()
+  const output_audio = `${getStorageFolder()}/${getAudioFolder()}/${fileName}.mp3`
+
+  try {
+    await concatAudio(
+      filepaths.map((filepath) => `${getStorageFolder()}/${filepath}`),
+      output_audio,
+    )
+  } catch (err) {
+    deleteFile(output_audio)
+    throw err
+  }
+
+  return {
+    filePath: `${getAudioFolder()}/${fileName}.mp3`,
+    storageFilePath: output_audio,
+    filename,
   }
 }
 
@@ -452,6 +474,7 @@ async function storeAndCreateSample(
 
 module.exports = {
   storeFile,
+  joinAudio,
   defaultPicture,
   deleteFile,
   deleteAudioFileIfOrphaned,
