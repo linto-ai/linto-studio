@@ -15,6 +15,9 @@ const platform = require(
   `${process.cwd()}/components/WebServer/middlewares/access/platform`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
+const { isExternalCaller } = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/externalEntitlement`,
+)
 
 async function createOrganization(req, res, next) {
   try {
@@ -76,6 +79,11 @@ async function getOrganization(req, res, next) {
         (u) => u.type !== USER_TYPE.M2M,
       )
     }
+    if (await isExternalCaller(req)) {
+      organization.users = organization.users.filter(
+        (u) => u.userId === req.payload.data.userId,
+      )
+    }
 
     let orgaUser = []
 
@@ -102,6 +110,13 @@ async function listSelfOrganization(req, res, next) {
     let organizations = await model.organizations.listSelf(
       req.payload.data.userId,
     )
+    if (await isExternalCaller(req)) {
+      for (const organization of organizations) {
+        organization.users = organization.users.filter(
+          (u) => u.userId === req.payload.data.userId,
+        )
+      }
+    }
     return res.status(200).send(organizations)
   } catch (err) {
     next(err)

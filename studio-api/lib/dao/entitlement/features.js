@@ -1,3 +1,4 @@
+const PERMISSIONS = require(`${process.cwd()}/lib/dao/organization/permissions`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
 // `recording` is left out: LinTO is never called for it
@@ -7,6 +8,14 @@ const LINTO_FEATURES = [
   "summary",
   "translation",
 ]
+
+const PERMISSION_FEATURES = Object.freeze({
+  [PERMISSIONS.UPLOAD]: "transcription.async",
+  [PERMISSIONS.SUMMARY]: "summary",
+  [PERMISSIONS.MICROPHONE]: "transcription.live",
+  [PERMISSIONS.BOT]: "transcription.live",
+  [PERMISSIONS.SESSION]: "transcription.live",
+})
 
 function isObject(value) {
   return !!value && typeof value === "object" && !Array.isArray(value)
@@ -65,6 +74,7 @@ function capabilitiesFrom(features, caller) {
 }
 
 module.exports = {
+  PERMISSION_FEATURES,
   parseFeatures,
   hasFeature,
   hasActiveFeature,

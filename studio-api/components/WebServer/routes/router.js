@@ -34,6 +34,9 @@ const platform_middlewares = require(
 const entitlement_middlewares = require(
   `${process.cwd()}/components/WebServer/middlewares/access/entitlement.js`,
 )
+const external_entitlement_middlewares = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/externalEntitlement.js`,
+)
 const saas = require(`${process.cwd()}/lib/saas`)
 
 const { Unauthorized, UnauthorizedProxy } = require(
@@ -157,7 +160,10 @@ const loadMiddlewares = (route) => {
     Object.keys(permissionMiddlewareMap).forEach((permission) => {
       const permissionValue = parseInt(permission)
       if ((route.orgaPermissionAccess & permissionValue) === permissionValue) {
-        const desiredMiddleware = permissionMiddlewareMap[permissionValue]
+        // A path that ends a consumption skips the feature gate of external keys
+        const desiredMiddleware = route.endsConsumption
+          ? organization_middlewares.ungatedPermission(permissionValue)
+          : permissionMiddlewareMap[permissionValue]
         if (desiredMiddleware) middlewares.push(desiredMiddleware)
       }
     })
@@ -170,6 +176,14 @@ const loadMiddlewares = (route) => {
   // No-op when the linto-saas plugin is absent.
   if (route.requireEntitlement !== undefined)
     middlewares.push(entitlement_middlewares.build(route.requireEntitlement))
+
+  if (route.startsQuickMeeting)
+    middlewares.push(external_entitlement_middlewares.quickMeetingAccess)
+
+  if (route.ownedBy)
+    middlewares.push(session_middlewares.asOwnedByExternalCaller(route.ownedBy))
+  if (route.denyExternalKeys)
+    middlewares.push(external_entitlement_middlewares.denyExternalCaller)
 
   return middlewares
 }
@@ -228,10 +242,15 @@ const createProxyRoutes = (webServer, proxy_routes) => {
     proxy.proxyPaths.forEach((proxyPath) => {
       if (proxyPath.disabled) return
 
-      const middlewares = loadMiddlewares(proxyPath)
-      // middlewares.push(logger)
-
       proxyPath.paths.forEach((path) => {
+        const middlewares = loadMiddlewares({
+          ...proxyPath,
+          endsConsumption: path.endsConsumption,
+          startsQuickMeeting: path.startsQuickMeeting,
+          ownedBy: path.ownedBy,
+        })
+        // middlewares.push(logger)
+
         //we alter req.payload, req.params, req.query, req.body if require
         path.method.forEach((method) => {
           const proxy = createProxyMiddleware({

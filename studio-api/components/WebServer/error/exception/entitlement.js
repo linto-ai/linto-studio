@@ -22,4 +22,11 @@ module.exports = {
     "No entitlement stands for this identity",
     "no_entitlement",
   ),
+  EntitlementFeatureForbidden: createException(
+    "EntitlementFeatureForbidden",
+    "entitlement",
+    403,
+    "This feature is not enabled for this identity",
+    "no_entitlement",
+  ),
 }

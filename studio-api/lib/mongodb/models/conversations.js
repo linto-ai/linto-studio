@@ -8,6 +8,7 @@ const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const TYPE = require(`${process.cwd()}/lib/dao/conversation/types`)
 const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
+const usersModel = require(`./users`)
 
 const BSON_MAX_SIZE = 16 * 1024 * 1024
 class ConvoModel extends MongoModel {
@@ -20,6 +21,13 @@ class ConvoModel extends MongoModel {
       const dateTime = moment().format()
       conversation.created = dateTime
       conversation.last_update = dateTime
+
+      if (
+        conversation.organization?.membersRight &&
+        (await usersModel.isExternalKey(conversation.owner))
+      ) {
+        conversation.organization.membersRight = RIGHTS.UNDEFINED
+      }
 
       if (conversation.text?.length > 0) {
         let docSize = calculateObjectSize(conversation)

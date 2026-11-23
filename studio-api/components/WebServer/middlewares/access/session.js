@@ -6,17 +6,40 @@ const axios = require(`${process.cwd()}/lib/utility/axios`)
 const { SessionNotFound, SessionForbidden } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
+const { isExternalCaller } = require(`./externalEntitlement`)
 
-async function fetchLiveSession(sessionId) {
+async function fetchFromSessionApi(resource, id, query = "") {
   const endpoint = process.env.SESSION_API_ENDPOINT
-  if (!endpoint || !sessionId) return null
+  if (!endpoint || !id) return null
   try {
     return await axios.get(
-      `${endpoint}/sessions/${encodeURIComponent(sessionId)}?withCaptions=false`,
+      `${endpoint}/${resource}/${encodeURIComponent(id)}${query}`,
     )
   } catch (err) {
-    debug(`session ${sessionId} not fetched: ${err.message}`)
+    debug(`${resource} ${id} not fetched: ${err.message}`)
     return null
+  }
+}
+
+function fetchLiveSession(sessionId) {
+  return fetchFromSessionApi("sessions", sessionId, "?withCaptions=false")
+}
+
+const fetchOwned = {
+  sessions: fetchLiveSession,
+  templates: (id) => fetchFromSessionApi("templates", id),
+}
+
+function asOwnedByExternalCaller(resource) {
+  return async (req, res, next) => {
+    try {
+      if (!(await isExternalCaller(req))) return next()
+      const owned = await fetchOwned[resource](req.params.id)
+      if (owned?.owner !== req.payload.data.userId) throw new SessionNotFound()
+      next()
+    } catch (err) {
+      next(err)
+    }
   }
 }
 
@@ -36,4 +59,5 @@ async function asOrganizationSession(req, res, next) {
 
 module.exports = {
   asOrganizationSession,
+  asOwnedByExternalCaller,
 }

@@ -9,6 +9,9 @@ const { SessionError, SessionForbidden, SessionConflict } = require(
 const { Unauthorized, UnauthorizedProxy } = require(
   `${process.cwd()}/components/WebServer/error/exception/auth`,
 )
+const { isExternalCaller } = require(
+  `${process.cwd()}/components/WebServer/middlewares/access/externalEntitlement`,
+)
 const SECURITY_LEVELS = require(
   `${process.cwd()}/lib/dao/conversation/securityLevels`,
 )
@@ -213,6 +216,26 @@ async function filterPrivateSessions(jsonString, req) {
   } catch (err) {
     debug("Error filtering private sessions:", err)
     return jsonString
+  }
+}
+
+// A failure lists nothing
+function keepOwnedByExternalCaller(listKey) {
+  return async (jsonString, req) => {
+    try {
+      if (!(await isExternalCaller(req))) return jsonString
+      const body = JSON.parse(jsonString)
+      const items = body[listKey]
+      if (!Array.isArray(items)) return jsonString
+      const owned = items.filter(
+        (item) => item.owner === req.payload.data.userId,
+      )
+      body[listKey] = owned
+      body.totalItems = body.totalItems - (items.length - owned.length)
+      return JSON.stringify(body)
+    } catch (err) {
+      throw new UnauthorizedProxy()
+    }
   }
 }
 
@@ -435,6 +458,7 @@ module.exports = {
   afterProxyAccess,
   generatPublicToken,
   filterPrivateSessions,
+  keepOwnedByExternalCaller,
   hideStreamEndpoints,
   checkSessionMatchingOrganization,
   checkTemplateMatchingOrganization,

@@ -9,6 +9,10 @@ const VALIDITY_DATE = require(
 )
 const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 const { normalizeEmail } = require(`${process.cwd()}/lib/utility/emailDomain`)
+const { isExternalKey } = require(
+  `${process.cwd()}/lib/utility/externalIdentity`,
+)
+const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
@@ -380,6 +384,17 @@ class UsersModel extends MongoModel {
       console.error(error)
       return error
     }
+  }
+
+  async isExternalKey(userId) {
+    if (!/^[0-9a-f]{24}$/i.test(String(userId))) return false
+    const [user] = throwIfError(
+      await this.getByIdFilter(userId, {
+        type: 1,
+        "metadata.externalIdentity": 1,
+      }),
+    )
+    return isExternalKey(user)
   }
 
   async getByIds(ids) {

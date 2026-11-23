@@ -1,4 +1,5 @@
 const { validEmail } = require(`${process.cwd()}/lib/utility/emailDomain`)
+const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
 
 function nonEmptyString(value) {
   return typeof value === "string" && value.trim() !== ""
@@ -36,7 +37,12 @@ function parseExternalSubject(value) {
   }
 }
 
+function isExternalKey(user) {
+  return user?.type === USER_TYPE.M2M && !!user.metadata?.externalIdentity
+}
+
 module.exports = {
   parseExternalIdentity,
   parseExternalSubject,
+  isExternalKey,
 }

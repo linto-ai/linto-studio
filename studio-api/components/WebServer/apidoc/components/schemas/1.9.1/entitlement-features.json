@@ -1,24 +1,24 @@
 {
   "EntitlementFeatures": {
     "type": "object",
-    "description": "Nested, extensible object, one key per feature. An absent key is false, an unknown key is kept and ignored. `{}` takes every right away.",
+    "description": "Nested, extensible object, one key per feature. An absent key is false, an unknown key is kept and ignored. `{}` takes every right away. An API key standing for an external identity is checked against these features on every call of a route that needs an organization permission, whatever the method: UPLOAD needs `transcription.async`, SUMMARY needs `summary`, MICROPHONE, BOT and SESSION need `transcription.live`, SPEAKER_IDENTIFICATION needs nothing; otherwise 403 `no_entitlement` with the missing feature in `capability`. Ending or deleting is never refused for a missing feature: DELETE of a template, a quick meeting, a bot or a session, and PUT stop, pause and clear of a session. Humans and keys without an external identity are not concerned.",
     "properties": {
       "transcription": {
         "type": "object",
         "properties": {
           "live": {
             "type": "boolean",
-            "description": "live transcription during a visio"
+            "description": "live transcription during a visio: quick meetings, bots, sessions and session templates (permissions MICROPHONE, BOT, SESSION)"
           },
           "async": {
             "type": "boolean",
-            "description": "deferred transcription of a recording"
+            "description": "deferred transcription of a recording: upload, import and regeneration of a conversation (permission UPLOAD)"
           }
         }
       },
       "summary": {
         "type": "boolean",
-        "description": "reserved"
+        "description": "export of a conversation as a document (permission SUMMARY); the json, text and verbatim exports stay open"
       },
       "translation": {
         "type": "boolean",

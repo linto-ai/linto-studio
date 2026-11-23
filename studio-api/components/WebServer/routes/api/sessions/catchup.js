@@ -16,6 +16,7 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       requireOrganizationSession: true,
+      ownedBy: "sessions",
       requireEntitlement: {
         capability: "ai.chat",
         value: 1,
@@ -29,6 +30,7 @@ module.exports = (webserver) => {
       requireAuth: true,
       requireOrganizationMemberAccess: true,
       requireOrganizationSession: true,
+      ownedBy: "sessions",
       controller: catchUpStatus,
     },
   ]

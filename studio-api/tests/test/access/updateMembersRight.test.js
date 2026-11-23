@@ -1,5 +1,6 @@
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
   conversations: { getById: jest.fn(), update: jest.fn() },
+  users: { isExternalKey: jest.fn(async () => false) },
 }))
 jest.mock(`${process.cwd()}/lib/mailer/mailing`, () => ({}))
 for (const dep of [

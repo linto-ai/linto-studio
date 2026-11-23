@@ -4,6 +4,7 @@ const debug = require("debug")(
 
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const platformAccess = require(`./platform`)
+const { assertPermissionFeature } = require(`./externalEntitlement`)
 
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 
@@ -121,6 +122,9 @@ module.exports = {
   permissionSpeakerIdentification: async (req, res, next) => {
     await permissionAccess(req, res, next, PERMISSIONS.SPEAKER_IDENTIFICATION)
   },
+  ungatedPermission: (permission) => async (req, res, next) => {
+    await permissionAccess(req, res, next, permission, false)
+  },
   sessionSocketAccess: async (session, userId) => {
     return await sessionSocketAccess(session, userId, ROLES.MEMBER)
   },
@@ -128,7 +132,7 @@ module.exports = {
   denyBackofficeAccess,
 }
 
-async function permissionAccess(req, res, next, access) {
+async function permissionAccess(req, res, next, access, gated = true) {
   let organization
   if (req.params.organizationId) {
     organization = await model.organizations.getById(req.params.organizationId)
@@ -152,7 +156,12 @@ async function permissionAccess(req, res, next, access) {
         "Organization does not have the required permission",
       ),
     )
-  else next()
+  try {
+    if (gated) await assertPermissionFeature(req, access)
+  } catch (err) {
+    return next(err)
+  }
+  next()
 }
 
 async function access(req, next, organizationId, userId, right) {

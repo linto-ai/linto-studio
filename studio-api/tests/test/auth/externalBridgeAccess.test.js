@@ -1,5 +1,5 @@
 jest.mock("debug", () => () => () => {})
-const mockModel = { users: { getById: jest.fn() } }
+const mockModel = { users: { getByIdFilter: jest.fn() } }
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => mockModel)
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
@@ -14,7 +14,7 @@ const externalRoutes = require(
 )()
 
 async function run(role, query = {}) {
-  mockModel.users.getById.mockResolvedValue([{ _id: "u", role }])
+  mockModel.users.getByIdFilter.mockResolvedValue([{ _id: "u", role }])
   const next = jest.fn()
   await platform.isPlatformSystemAdministrator(
     { payload: { data: { userId: "u" } }, query, method: "POST" },
