@@ -66,6 +66,23 @@ async function getTranscriptionServiceByEndpoint(endpoint) {
   )
 }
 
+function llmScopes() {
+  const scopes = (process.env.LLM_GATEWAY_SCOPE || "")
+    .split(",")
+    .map((scope) => scope.trim())
+    .filter(Boolean)
+  return scopes.length ? scopes : ["linto"]
+}
+
+function resolveLlmScope(requested) {
+  const scopes = llmScopes()
+  if (requested === undefined || requested === "") return scopes[0]
+  if (!scopes.includes(requested)) {
+    throw new ServiceError(`LLM usage scope not allowed: ${requested}`)
+  }
+  return requested
+}
+
 /**
  * List LLM services from LLM Gateway V2
  * V2 API uses /api/v1/services with pagination
@@ -76,24 +93,27 @@ async function getTranscriptionServiceByEndpoint(endpoint) {
  *   Flavors are filtered by model.security_level, services with no remaining flavors are removed
  * @param {string} [userId] - Optional user ID; also returns services whose allowed
  *   user list includes this user (in addition to global + org services)
+ * @param {string} [scope] - Usage scope checked by resolveLlmScope (e.g. "meet")
  *
- * Only services listed for the LLM_GATEWAY_SCOPE usage scope (default "linto",
- * the LinTO Studio scope) are returned: the gateway also serves other client
- * products (LinTO Meet, Twake) with their own services.
+ * Only services listed for that usage scope (default the first of
+ * LLM_GATEWAY_SCOPE, else "linto", the LinTO Studio scope) are returned: the
+ * gateway also serves other client products (LinTO Meet, Twake) with their own
+ * services.
  */
 async function listLlmServices(
   organizationId = null,
   securityLevel = null,
   userId = null,
+  scope = null,
 ) {
   try {
     const gateway_services = process.env.LLM_GATEWAY_SERVICES
     debug("Security level requested:", securityLevel)
-    // V2 API endpoint with pagination, restricted to the Studio usage scope
-    const scope = process.env.LLM_GATEWAY_SCOPE || "linto"
+    // V2 API endpoint with pagination, restricted to one usage scope
+    const usageScope = scope || llmScopes()[0]
     let host =
       gateway_services +
-      `/api/v1/services?page=1&page_size=100&scope=${encodeURIComponent(scope)}`
+      `/api/v1/services?page=1&page_size=100&scope=${encodeURIComponent(usageScope)}`
 
     // Add organization filter if provided. The gateway returns global services
     // plus those whose allowed org/user lists include the caller.
@@ -143,6 +163,9 @@ async function listLlmServices(
             service_category: service.service_category || null,
             description: service.description,
             is_active: service.is_active,
+            metadata: service.metadata?.icon
+              ? { icon: service.metadata.icon }
+              : {},
             flavors: filteredFlavors,
           }
         })
@@ -162,5 +185,6 @@ async function listLlmServices(
 module.exports = {
   listSaasServices,
   listLlmServices,
+  resolveLlmScope,
   getTranscriptionServiceByEndpoint,
 }

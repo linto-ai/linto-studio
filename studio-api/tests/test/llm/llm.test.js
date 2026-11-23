@@ -99,6 +99,47 @@ describe("LLM Gateway V2 Integration", () => {
       expect(services[0].flavors[0]).toHaveProperty("is_default", true)
     })
 
+    it("forwards the usage scope and carries only the icon of the metadata", async () => {
+      mockAxios.get.mockResolvedValue({
+        items: [
+          {
+            id: "s",
+            name: "Meeting minutes",
+            route: "meeting-minutes",
+            service_type: "summary",
+            description: { en: "Minutes" },
+            is_active: true,
+            scopes: ["linto", "meet"],
+            metadata: { icon: "file-text", owner: "ops", prompt: "secret" },
+            flavors: [{ id: "f", name: "default", is_active: true, model: {} }],
+          },
+          {
+            id: "t",
+            name: "Plain",
+            route: "plain",
+            service_type: "summary",
+            is_active: true,
+            metadata: { owner: "ops" },
+            flavors: [{ id: "g", name: "default", is_active: true, model: {} }],
+          },
+        ],
+        total: 2,
+        page: 1,
+        page_size: 100,
+        pages: 1,
+      })
+
+      const services = await listLlmServices(null, null, null, "meet")
+
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        "http://localhost:8010/api/v1/services?page=1&page_size=100&scope=meet",
+        expect.objectContaining({ timeout: expect.any(Number) })
+      )
+      expect(services[0].metadata).toEqual({ icon: "file-text" })
+      expect(services[0]).not.toHaveProperty("scopes")
+      expect(services[1].metadata).toEqual({})
+    })
+
     it("should return empty array on API failure for graceful degradation", async () => {
       // Implementation returns [] on error instead of throwing
       // This allows the page to load with just Verbatim option when LLM Gateway is down
@@ -321,5 +362,60 @@ describe("LLM Gateway V2 Integration", () => {
       expect(completedJob({ status: "started" })).toBe(false)
       expect(completedJob({ status: "processing" })).toBe(false)
     })
+  })
+})
+
+describe("LLM usage scopes: LLM_GATEWAY_SCOPE is the allowed list", () => {
+  const { resolveLlmScope } = require(
+    `${process.cwd()}/components/WebServer/controllers/services/utility`,
+  )
+  const { getLlmServices } = require(
+    `${process.cwd()}/components/WebServer/routecontrollers/services/service`,
+  )
+
+  afterEach(() => {
+    delete process.env.LLM_GATEWAY_SCOPE
+  })
+
+  it("unset: linto only, as before", () => {
+    delete process.env.LLM_GATEWAY_SCOPE
+    expect(resolveLlmScope(undefined)).toBe("linto")
+    expect(resolveLlmScope("linto")).toBe("linto")
+    expect(() => resolveLlmScope("meet")).toThrow(/not allowed/)
+  })
+
+  it("a list: the first by default, the others on request, nothing else", () => {
+    process.env.LLM_GATEWAY_SCOPE = "linto, meet"
+    expect(resolveLlmScope(undefined)).toBe("linto")
+    expect(resolveLlmScope("")).toBe("linto")
+    expect(resolveLlmScope("meet")).toBe("meet")
+    expect(() => resolveLlmScope("twake")).toThrow(/not allowed/)
+    expect(() => resolveLlmScope(["meet", "twake"])).toThrow(/not allowed/)
+  })
+
+  it("the route answers 400 on a scope outside the list, without calling the gateway", async () => {
+    process.env.LLM_GATEWAY_SERVICES = "http://localhost:8010"
+    process.env.LLM_GATEWAY_SCOPE = "linto,meet"
+    mockAxios.get.mockClear()
+    const next = jest.fn()
+    const res = { status: jest.fn(() => res), send: jest.fn(() => res) }
+    await getLlmServices(
+      { params: { organizationId: "org" }, query: { scope: "twake" } },
+      res,
+      next,
+    )
+    expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
+    expect(res.status).not.toHaveBeenCalled()
+    expect(mockAxios.get).not.toHaveBeenCalled()
+  })
+
+  it("the route asks the gateway for the default scope when none is given", async () => {
+    process.env.LLM_GATEWAY_SERVICES = "http://localhost:8010"
+    process.env.LLM_GATEWAY_SCOPE = "meet,linto"
+    mockAxios.get.mockResolvedValue({ items: [] })
+    const res = { status: jest.fn(() => res), send: jest.fn(() => res) }
+    await getLlmServices({ params: {}, query: {} }, res, jest.fn())
+    expect(mockAxios.get.mock.calls.at(-1)[0]).toContain("&scope=meet")
+    expect(res.status).toHaveBeenCalledWith(200)
   })
 })
