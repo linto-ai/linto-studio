@@ -7,6 +7,6 @@ test("isRecordingQuiet() flags a flat meter", (t) => {
 })
 
 test("isRecordingQuiet() ignores recordings without a measured peak", (t) => {
-  t.false(isRecordingQuiet({}))
+  t.false(isRecordingQuiet({ peakLevel: null }))
   t.false(isRecordingQuiet(null))
 })

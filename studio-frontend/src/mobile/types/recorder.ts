@@ -1,3 +1,5 @@
+import type { AudioStorage } from "@/mobile/types/localRecording.ts"
+
 // What goes in and out of a recorder (see AbstractRecorder, in
 // services/recording/recorders), and the two parts the web recorder is
 // made of (AudioCapture, AudioChunkStorage).
@@ -41,16 +43,18 @@ export interface NativeRecorderOptions extends CommonRecorderOptions {
 // reads its own options and ignores the others.
 export type RecorderOptions = WebRecorderOptions & NativeRecorderOptions
 
-// Where the audio goes: chunks for the web (no file), a file for the app.
+// Where the audio goes, in the format of the recording's row: chunks for
+// the web, a file for the app.
 export interface RecorderStart {
   mimeType: string
-  audioFileUri: string | null
+  storage: AudioStorage
 }
 
-// What the recorder knows better than the page once stopped: the size
-// saved, and for the native file where it ended up and its exact duration.
+// What the recorder knows better than the page once stopped, as a part of
+// the row's `audio`: the size saved, and for the native file where it
+// ended up and its exact duration.
 export interface RecorderStopPatch {
-  audioFileUri?: string | null
+  storage?: AudioStorage
   durationMs?: number
   sizeBytes?: number
 }

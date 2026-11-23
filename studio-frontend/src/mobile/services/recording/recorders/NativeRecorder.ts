@@ -107,7 +107,10 @@ export class NativeRecorder extends AbstractRecorder {
     )
     this.scheduleLevel()
     this.scheduleProgress()
-    return { mimeType: MIME_TYPE, audioFileUri: this.audioFileUri }
+    return {
+      mimeType: MIME_TYPE,
+      storage: { kind: "file", uri: this.audioFileUri },
+    }
   }
 
   pause(): void {
@@ -128,8 +131,8 @@ export class NativeRecorder extends AbstractRecorder {
     }
   }
 
-  // Resolves with the recording's patch once the file is finished and
-  // moved out of the cache: { audioFileUri, durationMs?, sizeBytes? }.
+  // Resolves with the recording's audio patch once the file is finished
+  // and moved out of the cache: { storage, durationMs?, sizeBytes? }.
   async stop(): Promise<RecorderStopPatch> {
     switch (true) {
       case !this.active:
@@ -169,7 +172,7 @@ export class NativeRecorder extends AbstractRecorder {
     const audioFileUri = (await moveToRecordings(recordedUri)) ?? recordedUri
     const sizeBytes = await readAudioFileSize(audioFileUri)
     return {
-      audioFileUri,
+      storage: { kind: "file", uri: audioFileUri },
       ...(Number.isFinite(stopped.duration) && {
         durationMs: stopped.duration,
       }),

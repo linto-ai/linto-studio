@@ -25,7 +25,7 @@
     <progress
       v-if="recording.status === 'uploading'"
       class="m-library-item__progress"
-      :value="recording.progress || 0"
+      :value="recording.conversation.sendProgress"
       max="100"></progress>
   </li>
 </template>
@@ -54,8 +54,8 @@ export default {
         new Date(this.recording.createdAt).toISOString(),
         this.$i18n.locale,
       )
-      const duration = formatDurationShort(this.recording.durationMs || 0)
-      const size = formatFileSize(this.recording.sizeBytes || 0)
+      const duration = formatDurationShort(this.recording.audio.durationMs)
+      const size = formatFileSize(this.recording.audio.sizeBytes)
       return `${date} · ${duration} · ${size}`
     },
     status() {
@@ -67,11 +67,11 @@ export default {
     },
     statusLabel() {
       return this.$t(this.status.label, {
-        progress: this.recording.progress || 0,
+        progress: this.recording.conversation.sendProgress,
       })
     },
     errorMessage() {
-      const error = this.recording.error
+      const error = this.recording.conversation.sendError
       if (this.recording.status !== "error" || !error) return ""
       if (this.status.key === "ready_to_transcribe") {
         return this.$t("mobile.queue.ready_to_transcribe_hint")

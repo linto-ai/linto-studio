@@ -3,207 +3,188 @@
     <PageHeader :title="$t('mobile.home.record_title')" />
     <main class="m-page__content m-record-page">
       <TranscriptionCreditBanner
-        v-if="transcriptionCreditExhausted"
-        :reset-at="transcriptionCredit.resetAt" />
-      <RecordingNotice
-        v-if="recordingNotice"
-        :notice="recordingNotice"
-        @dismiss="dismissLastGap" />
-
-      <section class="m-record-page__stage">
-        <RecordTimer
-          v-if="isRecording"
-          :elapsed-ms="recorder.elapsedMs"
-          :paused="recorder.state === 'paused'" />
-        <LevelMeter
-          v-if="recorder.state === 'recording'"
-          :level="recorder.level" />
-        <RecordButton :state="recorder.state" @click="onMainButton" />
-        <Button
-          v-if="isRecording"
-          class="m-record-page__pause"
-          :icon="recorder.state === 'paused' ? 'play' : 'pause'"
-          icon-weight="fill"
-          :disabled="recorder.state === 'paused' && recorder.microphoneMuted"
-          :label="
-            recorder.state === 'paused'
-              ? $t('mobile.record.resume')
-              : $t('mobile.record.pause')
-          "
-          @click="togglePause" />
-        <p class="m-muted m-record-page__hint">
-          {{ $t("mobile.record.local_only") }}
-        </p>
+        v-if="creditExhausted"
+        :reset-at="credit.resetAt" />
+      <RecordingStage
+        :microphone-id="microphoneId"
+        :conversation-settings="conversationSettings"
+        @state-change="stageState = $event"
+        @stopped="stoppedRecordingId = $event">
         <TranscriptionCreditPill
-          v-if="
-            !isRecording && transcriptionCredit && !transcriptionCreditExhausted
-          "
-          :minutes="transcriptionCredit.minutes"
-          :synced-at="transcriptionCredit.syncedAt"
-          :cached="transcriptionCredit.cached" />
-      </section>
-
-      <template v-if="!isRecording">
-        <TranscriptionSettingsRow
-          :title="transcriptionRowTitle"
-          :summary="transcriptionSummary"
-          @click="settingsOpen = true" />
-        <ListRow
-          v-if="canChooseMicrophone"
-          icon="microphone"
-          :label="$t('mobile.record.microphone')"
-          :hint="microphoneLabel"
-          class="m-record-page__microphone"
-          @click="openMicrophonePicker" />
-      </template>
-
-      <LibraryList
-        :recordings="library"
-        :local-bytes="localBytes"
-        :online="online"
-        :credit-minutes="transcriptionCreditMinutes"
-        :credit-reset-at="transcriptionCredit && transcriptionCredit.resetAt"
-        @open="openRecording" />
+          v-if="!stageBusy && credit && !creditExhausted"
+          :minutes="credit.minutes"
+          :synced-at="credit.syncedAt"
+          :cached="credit.cached" />
+      </RecordingStage>
+      <RecordSettings
+        v-show="!stageBusy"
+        :value="choices"
+        :microphone-id="microphoneId"
+        :services="services"
+        :services-loaded="settingsReady"
+        :conversation-settings="conversationSettings"
+        :credit-exhausted="creditExhausted"
+        @input="updateChoices"
+        @update:microphone-id="chooseMicrophone" />
+      <RecordingLibrary
+        :credit-minutes="creditMinutes"
+        :credit-reset-at="credit && credit.resetAt" />
     </main>
-
-    <TranscriptionSettingsSheet
-      v-model="settingsOpen"
-      :services="services"
-      :choices="choices"
-      :voice-collections="voiceCollections"
-      :voice-identification-capable="speakerIdentificationCapable"
-      :organization-id="organizationScope"
-      @change="updateChoices" />
-    <StopRecordingSheet
-      v-model="stopSheetOpen"
-      :default-name="stoppedRecording ? stoppedRecording.name : ''"
-      :default-keep-audio="stoppedRecording ? stoppedRecording.keepAudio : true"
-      :summary="stoppedSummary"
-      :online="online"
-      :recording-id="stoppedRecording ? stoppedRecording.id : ''"
-      :mime-type="stoppedRecording ? stoppedRecording.mimeType : ''"
-      :quiet="stoppedQuiet"
-      :sharing-summary="sharingSummary"
-      @finish="finishStopped"
-      @discard="discardStopped" />
-    <MicrophoneSheet
-      v-model="microphoneSheetOpen"
-      :microphones="microphones"
-      :loaded="microphonesLoaded"
-      :current-id="microphoneId"
-      @choose="chooseMicrophone" />
-    <RecordingSheet
-      v-model="recordingSheetOpen"
-      :recording="selected"
-      :online="online"
-      :credit-minutes="transcriptionCreditMinutes"
-      @retry="retryUpload"
-      @rename="renameRecording"
-      @share-audio="shareAudio"
-      @share-document="shareDocument"
-      @remove="removeRecording" />
+    <StopRecordingFlow v-model="stoppedRecordingId" />
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex"
 import PageHeader from "@/mobile/components/PageHeader.vue"
-import ListRow from "@/mobile/components/ListRow.vue"
-import RecordButton from "@/mobile/components/record/RecordButton.vue"
-import RecordTimer from "@/mobile/components/record/RecordTimer.vue"
-import LevelMeter from "@/mobile/components/record/LevelMeter.vue"
-import TranscriptionSettingsRow from "@/mobile/components/record/TranscriptionSettingsRow.vue"
-import TranscriptionSettingsSheet from "@/mobile/components/record/TranscriptionSettingsSheet.vue"
-import StopRecordingSheet from "@/mobile/components/record/StopRecordingSheet.vue"
-import LibraryList from "@/mobile/components/record/LibraryList.vue"
-import RecordingSheet from "@/mobile/components/record/RecordingSheet.vue"
-import MicrophoneSheet from "@/mobile/components/record/MicrophoneSheet.vue"
-import TranscriptionCreditPill from "@/mobile/components/record/TranscriptionCreditPill.vue"
 import TranscriptionCreditBanner from "@/mobile/components/record/TranscriptionCreditBanner.vue"
-import RecordingNotice from "@/mobile/components/record/RecordingNotice.vue"
-import { recordingControllerMixin } from "@/mobile/mixins/recordingController.js"
-import { transcriptionSettingsMixin } from "@/mobile/mixins/transcriptionSettings.js"
-import { libraryActionsMixin } from "@/mobile/mixins/libraryActions.js"
-import { documentShareMixin } from "@/mobile/mixins/documentShare.js"
-import { microphoneChoiceMixin } from "@/mobile/mixins/microphoneChoice.js"
-import { transcriptionCreditMixin } from "@/mobile/mixins/transcriptionCredit.js"
-import { pickRecordingNotice } from "@/mobile/tools/pickRecordingNotice.js"
-import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
+import TranscriptionCreditPill from "@/mobile/components/record/TranscriptionCreditPill.vue"
+import RecordingStage from "@/mobile/components/record/RecordingStage.vue"
+import RecordSettings from "@/mobile/components/record/RecordSettings.vue"
+import RecordingLibrary from "@/mobile/components/record/RecordingLibrary.vue"
+import StopRecordingFlow from "@/mobile/components/record/StopRecordingFlow.vue"
+import { loadTranscriptionServices } from "@/mobile/services/transcription/loadTranscriptionServices.js"
+import { loadTranscriptionCredit } from "@/mobile/services/billing/loadTranscriptionCredit.js"
+import { subscribeToNetwork } from "@/api/device/network.js"
+import {
+  readTranscriptionPreferences,
+  saveTranscriptionPreferences,
+} from "@/api/localStorage/transcriptionPreferences.js"
+import {
+  readMicrophonePreference,
+  saveMicrophonePreference,
+} from "@/api/localStorage/microphonePreference.js"
+import { computeTranscriptionChoices } from "@/mobile/tools/computeTranscriptionChoices.js"
+import { computeConversationSettings } from "@/mobile/tools/computeConversationSettings.ts"
+import { DEFAULT_MEMBERS_RIGHT } from "@/mobile/const/defaultMembersRight.js"
 
+// Stage states during which the settings cannot change any more: they are
+// frozen on the recording when the microphone starts.
+const BUSY_STAGE_STATES = ["starting", "recording", "paused"]
+
+// The Record page: lays out the recording stage, the settings of the next
+// recordings, the library, and opens the stop sheet when a recording
+// stops. It holds what its parts share (the screen's choices, the
+// microphone, the services, the transcription minutes) and turns the
+// choices into the settings frozen on a recording. It never sees the
+// recorder (RecordingStage) nor writes the recordings (mobileRecordings).
 export default {
   name: "MobileRecord",
   components: {
     PageHeader,
-    ListRow,
-    RecordButton,
-    RecordTimer,
-    LevelMeter,
-    TranscriptionSettingsRow,
-    TranscriptionSettingsSheet,
-    StopRecordingSheet,
-    LibraryList,
-    RecordingSheet,
-    MicrophoneSheet,
-    TranscriptionCreditPill,
     TranscriptionCreditBanner,
-    RecordingNotice,
+    TranscriptionCreditPill,
+    RecordingStage,
+    RecordSettings,
+    RecordingLibrary,
+    StopRecordingFlow,
   },
-  mixins: [
-    recordingControllerMixin,
-    transcriptionSettingsMixin,
-    libraryActionsMixin,
-    documentShareMixin,
-    microphoneChoiceMixin,
-    transcriptionCreditMixin,
-  ],
   data() {
     return {
-      settingsOpen: false,
-      // The native recorder always uses the phone's default input.
-      canChooseMicrophone: !IS_NATIVE_APP,
+      // TranscriptionChoices, remembered per organization
+      choices: {
+        serviceName: null,
+        language: null,
+        diarization: true,
+        voiceCollections: [],
+        membersRight: DEFAULT_MEMBERS_RIGHT,
+        folderId: null,
+      },
+      microphoneId: readMicrophonePreference(),
+      services: [],
+      servicesLoaded: false,
+      // The folder list was asked for: a folder missing from it was deleted.
+      foldersLoaded: false,
+      credit: null,
+      stageState: "idle",
+      stoppedRecordingId: null,
     }
   },
   computed: {
-    ...mapGetters("mobileRecordings", ["library", "localBytes"]),
-    online() {
-      return this.$store.state.mobileNetwork.online
+    organizationId() {
+      return this.$store.getters["organizations/getCurrentOrganizationScope"]
     },
-    recordingNotice() {
-      return pickRecordingNotice(this.recorder)
+    stageBusy() {
+      return BUSY_STAGE_STATES.includes(this.stageState)
     },
-    isRecording() {
-      return (
-        this.recorder.state === "recording" || this.recorder.state === "paused"
+    settingsReady() {
+      return this.servicesLoaded && this.foldersLoaded
+    },
+    // A folder deleted since it was chosen falls back to the inbox.
+    existingFolderId() {
+      const folder = this.$store.getters["folders/getFolderById"](
+        this.choices.folderId,
       )
+      return folder ? folder._id : null
+    },
+    // What a recording started now is sent with; null until known.
+    conversationSettings() {
+      return this.settingsReady
+        ? computeConversationSettings(
+            this.services,
+            { ...this.choices, folderId: this.existingFolderId },
+            this.$store.getters["apiStatus/hasSpeakerIdentification"],
+          )
+        : null
+    },
+    creditMinutes() {
+      return this.credit?.minutes ?? null
+    },
+    // A recording refused for a spent quota is never sent again by itself:
+    // the user decides what consumes the minutes.
+    creditExhausted() {
+      return this.credit?.minutes === 0
     },
   },
   created() {
     this.$store.dispatch("mobileRecordings/load")
-  },
-  // Leaving would cut the microphone without stopping: the recording would
-  // be sent at the next launch with its default settings. Leaving while
-  // recording stops it instead and opens the usual stop sheet; while the
-  // microphone starts, the page waits for it.
-  beforeRouteLeave(to, from, next) {
-    switch (true) {
-      case this.isRecording:
-        next(false)
-        this.stopRecording()
-        break
-      case this.recorder.state === "starting":
-        next(false)
-        break
-      default:
-        next()
+    this.loadServices()
+    this.loadFolders()
+    if (this.$store.getters["apiStatus/hasSpeakerIdentification"]) {
+      this.$store.dispatch("organizations/loadVoiceprintCollections")
     }
+    this.refreshCredit()
+    this.stopWatchingNetwork = subscribeToNetwork(this.onNetworkChange)
+  },
+  beforeDestroy() {
+    this.stopWatchingNetwork()
   },
   methods: {
-    onMainButton() {
-      if (this.isRecording) {
-        this.stopRecording()
-      } else if (this.recorder.state === "idle") {
-        this.startRecording(this.microphoneId)
+    async loadServices() {
+      this.services = await loadTranscriptionServices()
+      this.choices = computeTranscriptionChoices(
+        this.services,
+        readTranscriptionPreferences(this.organizationId),
+        this.$i18n.locale,
+      )
+      this.servicesLoaded = true
+    },
+    async loadFolders() {
+      try {
+        await this.$store.dispatch("folders/fetchFolders")
+      } catch {
+        // Logged by the store: the folder is then dropped (inbox).
       }
+      this.foldersLoaded = true
+    },
+    async refreshCredit() {
+      this.credit = await loadTranscriptionCredit(
+        this.$store,
+        this.organizationId,
+      )
+    },
+    // Opened offline, the page gets its services once the network is back.
+    onNetworkChange(online) {
+      if (!online) return
+      this.refreshCredit()
+      if (this.services.length === 0) this.loadServices()
+    },
+    updateChoices(choices) {
+      this.choices = choices
+      saveTranscriptionPreferences(this.organizationId, choices)
+    },
+    chooseMicrophone(deviceId) {
+      this.microphoneId = deviceId
+      saveMicrophonePreference(deviceId)
     },
   },
 }
@@ -212,27 +193,5 @@ export default {
 <style scoped>
 .m-record-page {
   gap: var(--m-space-4);
-}
-
-.m-record-page__stage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--m-space-4);
-  padding: var(--m-space-4) 0;
-}
-
-.m-record-page__pause {
-  min-width: 160px;
-}
-
-.m-record-page__hint {
-  text-align: center;
-  max-width: 320px;
-}
-
-.m-record-page__microphone {
-  border-radius: var(--m-radius);
-  box-shadow: var(--m-shadow-1);
 }
 </style>

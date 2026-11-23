@@ -41,7 +41,7 @@ export class WebRecorder extends AbstractRecorder {
   // The audio is saved in chunks: no file.
   async start(): Promise<RecorderStart> {
     const { mimeType } = await this.capture.start()
-    return { mimeType, audioFileUri: null }
+    return { mimeType, storage: { kind: "chunks" } }
   }
 
   // What was captured since the last chunk is handed to the storage first:

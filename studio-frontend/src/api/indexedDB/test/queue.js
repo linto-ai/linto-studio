@@ -1,5 +1,7 @@
 import test from "ava"
 import * as fakeIndexedDb from "fake-indexeddb"
+import { openDB } from "idb"
+import { buildLocalRecording } from "../../../mobile/tools/buildLocalRecording.ts"
 import {
   createRecording,
   appendChunk,
@@ -36,7 +38,17 @@ test.beforeEach(() => {
 })
 
 function sampleRecording(id = "rec-1") {
-  return { id, name: "Meeting", status: "recording", createdAt: 1 }
+  return buildLocalRecording({
+    id,
+    organizationId: "org-1",
+    name: "Meeting",
+    keepAudio: true,
+    locale: "fr-FR",
+    mimeType: "audio/webm",
+    storage: { kind: "chunks" },
+    settings: null,
+    createdAt: 1,
+  })
 }
 
 test.serial(
@@ -53,10 +65,10 @@ test.serial(
   "updateRecording() merges a patch and returns the new row",
   async (t) => {
     await createRecording(sampleRecording())
-    const updated = await updateRecording("rec-1", { status: "ready" })
-    t.is(updated.status, "ready")
+    const updated = await updateRecording("rec-1", { status: "queued" })
+    t.is(updated.status, "queued")
     t.is(updated.name, "Meeting")
-    t.is((await getRecording("rec-1")).status, "ready")
+    t.is((await getRecording("rec-1")).status, "queued")
   },
 )
 
@@ -65,19 +77,72 @@ test.serial(
   async (t) => {
     await createRecording(sampleRecording())
     await Promise.all([
-      updateRecording("rec-1", { sizeBytes: 1200 }),
-      updateRecording("rec-1", { gaps: [{ atMs: 0, durationMs: 5 }] }),
+      updateRecording("rec-1", { audio: { sizeBytes: 1200 } }),
+      updateRecording("rec-1", {
+        audio: { gaps: [{ atMs: 0, durationMs: 5, reason: "background" }] },
+      }),
       updateRecording("rec-1", { status: "naming" }),
     ])
     const stored = await getRecording("rec-1")
-    t.is(stored.sizeBytes, 1200)
-    t.is(stored.gaps.length, 1)
+    t.is(stored.audio.sizeBytes, 1200)
+    t.is(stored.audio.gaps.length, 1)
     t.is(stored.status, "naming")
   },
 )
 
+test.serial(
+  "updateRecording() keeps the other fields of a part it patches",
+  async (t) => {
+    await createRecording(sampleRecording())
+    await updateRecording("rec-1", { conversation: { id: "conv-1" } })
+    const stored = await getRecording("rec-1")
+    t.is(stored.conversation.id, "conv-1")
+    t.is(stored.conversation.sendProgress, 0)
+    t.is(stored.audio.mimeType, "audio/webm")
+  },
+)
+
+test.serial(
+  "opening the database migrates version 1 rows into parts",
+  async (t) => {
+    const v1 = await openDB("linto-mobile", 1, {
+      upgrade(db) {
+        db.createObjectStore("recordings", { keyPath: "id" })
+        const chunks = db.createObjectStore("chunks", {
+          keyPath: ["recordingId", "index"],
+        })
+        chunks.createIndex("byRecording", "recordingId")
+      },
+    })
+    await v1.put("recordings", {
+      id: "old",
+      organizationId: "org-1",
+      createdAt: 1,
+      name: "Old",
+      status: "queued",
+      sizeBytes: 300,
+      audioFileUri: null,
+      transcription: null,
+      sharing: null,
+    })
+    await v1.put("chunks", {
+      recordingId: "old",
+      index: 0,
+      blob: new Blob(["a"]),
+    })
+    v1.close()
+    const [row] = await listRecordings()
+    t.is(row.audio.sizeBytes, 300)
+    t.deepEqual(row.audio.storage, { kind: "chunks" })
+    t.is(row.conversation.transcription, null)
+    t.is(typeof row.locale, "string")
+    t.false("sizeBytes" in row)
+    t.is((await getRecordingChunks("old")).length, 1)
+  },
+)
+
 test.serial("updateRecording() returns null for an unknown id", async (t) => {
-  t.is(await updateRecording("nope", { status: "ready" }), null)
+  t.is(await updateRecording("nope", { status: "queued" }), null)
 })
 
 test.serial("getRecordingChunks() returns blobs in index order", async (t) => {

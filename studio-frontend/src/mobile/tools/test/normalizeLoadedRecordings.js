@@ -1,40 +1,60 @@
 import test from "ava"
-import { normalizeLoadedRecordings } from "../normalizeLoadedRecordings.js"
+import { normalizeLoadedRecordings } from "../normalizeLoadedRecordings.ts"
 
-test("normalizeLoadedRecordings() queues legacy kept items and stale recordings", (t) => {
-  const { keep, remove } = normalizeLoadedRecordings([
-    { id: "a", status: "ready" },
-    { id: "b", status: "recording", sizeBytes: 1200 },
-    { id: "c", status: "recording", sizeBytes: 0 },
-    { id: "d", status: "uploaded" },
-    { id: "e", status: "naming" },
+function row(
+  id,
+  status,
+  { sizeBytes = 0, durationMs = 0, sendProgress = 0 } = {},
+) {
+  return {
+    id,
+    status,
+    audio: { sizeBytes, durationMs, interruptedAt: null },
+    conversation: { sendProgress },
+  }
+}
+
+test("normalizeLoadedRecordings() queues stop sheets left open and stale recordings", (t) => {
+  const { keep, remove, patches } = normalizeLoadedRecordings([
+    row("b", "recording", { sizeBytes: 1200, durationMs: 30_000 }),
+    row("c", "recording"),
+    row("d", "uploaded"),
+    row("e", "naming"),
   ])
   t.deepEqual(
     keep.map((r) => [r.id, r.status]),
     [
-      ["a", "queued"],
       ["b", "queued"],
       ["d", "uploaded"],
       ["e", "queued"],
     ],
   )
-  t.true(keep[1].interruptedAt > 0)
+  t.is(keep[0].audio.interruptedAt, 30_000)
+  t.is(keep[0].audio.sizeBytes, 1200)
   t.deepEqual(remove, ["c"])
+  t.deepEqual(patches, [
+    { id: "b", patch: { status: "queued", audio: { interruptedAt: 30_000 } } },
+    { id: "e", patch: { status: "queued" } },
+  ])
 })
 
 test("normalizeLoadedRecordings() queues interrupted uploads but not the one in progress", (t) => {
-  const { keep } = normalizeLoadedRecordings(
+  const { keep, patches } = normalizeLoadedRecordings(
     [
-      { id: "a", status: "uploading", progress: 40 },
-      { id: "b", status: "uploading", progress: 70 },
+      row("a", "uploading", { sendProgress: 40 }),
+      row("b", "uploading", { sendProgress: 70 }),
     ],
     "b",
   )
   t.deepEqual(
-    keep.map((r) => [r.id, r.status, r.progress]),
+    keep.map((r) => [r.id, r.status, r.conversation.sendProgress]),
     [
       ["a", "queued", 0],
       ["b", "uploading", 70],
     ],
+  )
+  t.deepEqual(
+    patches.map((item) => item.id),
+    ["a"],
   )
 })

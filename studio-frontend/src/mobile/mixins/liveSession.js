@@ -10,8 +10,7 @@ import { loadEditor } from "@/mobile/services/editor/loadEditor.js"
 import { buildRecordingName } from "@/mobile/tools/buildRecordingName.js"
 import { liveCreditMixin } from "@/mobile/mixins/liveCredit.js"
 import { isLiveCreditBelowAdmission } from "@/tools/billing/isLiveCreditBelowAdmission"
-
-const DEVICE_STORAGE_KEY = "mobile.record.deviceId"
+import { readMicrophonePreference } from "@/api/localStorage/microphonePreference.js"
 
 // Lifecycle of the live page: load the running quick session, stream the
 // microphone to its first channel, end it into a conversation.
@@ -20,7 +19,7 @@ export const liveSessionMixin = {
   data() {
     return {
       socket: realtimeSocket,
-      deviceId: readStoredDeviceId(),
+      deviceId: readMicrophonePreference(),
       editorReady: false,
       endSheetOpen: false,
       ending: false,
@@ -113,12 +112,4 @@ export const liveSessionMixin = {
       this.$router.replace({ name: "media" })
     },
   },
-}
-
-function readStoredDeviceId() {
-  try {
-    return localStorage.getItem(DEVICE_STORAGE_KEY) || null
-  } catch {
-    return null
-  }
 }

@@ -48,7 +48,7 @@ const STATUS_VIEWS = Object.freeze({
  * the transcription minutes available. A refusal for a spent quota waits
  * for minutes; once they cover the recording, it is the user's to send
  * (it consumes the organization's minutes), not an error.
- * @param {{ status: string, error?: { code: string }, durationMs?: number }} recording
+ * @param {import("../types/localRecording.ts").LocalRecording} recording
  * @param {boolean} online
  * @param {number|null} [availableMinutes] - null when not counted or unknown
  * @returns {{ key: string, tone: string, icon: string, label: string }}
@@ -63,10 +63,13 @@ export function describeRecordingStatus(
 }
 
 function computeStatusKey(recording, online, availableMinutes) {
-  const { status, error } = recording
+  const { status } = recording
   if (status === "queued") return online ? "queued_online" : "queued_offline"
-  if (status === "error" && error?.code === "quota") {
-    return isCoveredByCredit(recording, availableMinutes)
+  if (
+    status === "error" &&
+    recording.conversation.sendError?.code === "quota"
+  ) {
+    return isCoveredByCredit(recording.audio.durationMs, availableMinutes)
       ? "ready_to_transcribe"
       : "waiting_credit"
   }
