@@ -581,6 +581,24 @@ class LinTO {
   }
 
   /**
+   * Fetch a public live session. The request carries the SDK token, or
+   * `options.token`, when one is set, and no Authorization header otherwise.
+   *
+   * @param {string} sessionId
+   * @param {Object} [options]
+   * @param {string} [options.token] - override the SDK token.
+   * @param {string} [options.password] - the password of a protected session.
+   * @returns {Promise<Object>}
+   */
+  async getPublicSession(sessionId, { token, password } = {}) {
+    return await this.apiService.getPublicSession({
+      sessionId,
+      token,
+      password,
+    })
+  }
+
+  /**
    * One-shot orchestration: create the quick-meeting, optionally patch its meta
    * (e.g. inject a native bot join token), make it public, then launch the bot.
    * Returns { sessionId, channelId, botId }.
@@ -593,6 +611,8 @@ class LinTO {
    * @param {string} opts.botUrl - the room URL the bot navigates to.
    * @param {string} [opts.provider="visio"]
    * @param {boolean} [opts.makePublic=false] - PATCH visibility:"public".
+   * @param {boolean} [opts.enableDisplaySub=true] - have the bot show the captions
+   *   in the meeting (native visio bot: republish them into the LiveKit room).
    * @param {(sessionId:string, channelId:string) => Promise<Object>} [opts.metaWithToken]
    *   - async hook returning the FULL meta to persist once the channel id is
    *   known (used to add a Meet-minted native join token before the bot starts).
@@ -605,6 +625,7 @@ class LinTO {
     provider = "visio",
     makePublic = false,
     metaWithToken,
+    enableDisplaySub = true,
   } = {}) {
     const session = await this.createQuickMeeting({
       organizationId,
@@ -651,6 +672,7 @@ class LinTO {
         url: botUrl,
         channelId,
         provider,
+        enableDisplaySub,
       })
       botId = getId(bot) || bot.id
     } catch (err) {

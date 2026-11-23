@@ -123,9 +123,85 @@ describe("LinTO live meeting-bot flow", () => {
     expect(patches).toContainEqual({
       meta: { native: { "visio-native": { livekitUrl: "ws://lk", room: "r1", token: "jwt" } } },
     })
-    // The bot POST used the visio provider.
+    // The bot POST used the visio provider and asked for in-meeting captions.
     const botCall = captured.find((c) => c.url.endsWith("/bots"))
     expect(JSON.parse(botCall.body).provider).toBe("visio")
+    expect(JSON.parse(botCall.body).enableDisplaySub).toBe(true)
+  })
+
+  test("launchVisioBot forwards an explicit enableDisplaySub:false to the bot", async () => {
+    const { mock, captured } = makeFetchMock([
+      {
+        match: (r) =>
+          r.method === "POST" && r.url.endsWith(`/organizations/${ORG}/quickMeeting/`),
+        payload: { id: "sess-2", channels: [{ id: "chan-2" }] },
+        status: 201,
+      },
+      {
+        match: (r) => r.method === "POST" && r.url.endsWith(`/organizations/${ORG}/bots`),
+        payload: { id: "bot-2" },
+        status: 201,
+      },
+    ])
+    global.fetch = mock
+
+    await linto.launchVisioBot({
+      organizationId: ORG,
+      channel: { name: "Main", transcriberProfileId: "p-1" },
+      botUrl: "https://meet.test/r2",
+      enableDisplaySub: false,
+    })
+    const botCall = captured.find((c) => c.url.endsWith("/bots"))
+    expect(JSON.parse(botCall.body).enableDisplaySub).toBe(false)
+  })
+
+  test("getPublicSession reads the public route, with the SDK token if any", async () => {
+    const { mock, captured } = makeFetchMock([
+      {
+        match: (r) => r.method === "GET" && r.url.endsWith("/sessions/public/sess-1"),
+        payload: { id: "sess-1", publicSessionToken: "pst" },
+      },
+    ])
+    global.fetch = mock
+
+    const session = await linto.getPublicSession("sess-1")
+    expect(session.publicSessionToken).toBe("pst")
+    expect(captured[0].url).toBe(`${BASE}/api/sessions/public/sess-1`)
+    expect(captured[0].auth).toBe("Bearer tok-1")
+  })
+
+  test("getPublicSession sends the password of a protected session, encoded", async () => {
+    const { mock, captured } = makeFetchMock([
+      { match: (r) => r.method === "GET", payload: { id: "a/b c" } },
+    ])
+    global.fetch = mock
+
+    await linto.getPublicSession("a/b c", { password: "p&w=1 ?" })
+    expect(captured[0].url).toBe(
+      `${BASE}/api/sessions/public/a%2Fb%20c?password=p%26w%3D1%20%3F`
+    )
+  })
+
+  test("getPublicSession sends no Authorization header without a token", async () => {
+    const { mock, captured } = makeFetchMock([
+      { match: (r) => r.method === "GET", payload: { id: "sess-1" } },
+    ])
+    global.fetch = mock
+    linto.apiService.token = null
+
+    await linto.getPublicSession("sess-1")
+    expect(captured[0].auth).toBeNull()
+    expect(captured[0].url).toBe(`${BASE}/api/sessions/public/sess-1`)
+
+    await linto.getPublicSession("sess-1", { token: "override" })
+    expect(captured[1].auth).toBe("Bearer override")
+  })
+
+  test("getPublicSession fails with the HTTP status", async () => {
+    global.fetch = jest.fn(async () => new Response("{}", { status: 404 }))
+    await expect(linto.getPublicSession("missing")).rejects.toThrow(
+      "Request failed with status 404"
+    )
   })
 
   test("launchVisioBot rolls back the session when the bot fails", async () => {

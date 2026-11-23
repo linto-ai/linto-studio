@@ -256,6 +256,21 @@ export class StudioApiService {
     )(args)
   }
 
+  async getPublicSession({ sessionId, token, password } = {}) {
+    if (!sessionId) throw new Error("sessionId is required")
+    const query = password ? `?password=${encodeURIComponent(password)}` : ""
+    const id = encodeURIComponent(sessionId)
+    const bearer = token || this.token
+    const req = new Request(
+      `${this.baseApiUrl}/sessions/public/${id}${query}`,
+      {
+        method: "GET",
+        headers: bearer ? { Authorization: `Bearer ${bearer}` } : {},
+      }
+    )
+    return await sendRequest(req)
+  }
+
   // -- Decorators --
 
   #withOrganizationId(method) {
