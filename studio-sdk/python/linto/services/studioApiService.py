@@ -167,7 +167,6 @@ class StudioApiService:
         if kwargs.get("membersRight") is not None:
             form.add_field("membersRight", str(int(kwargs["membersRight"])))
 
-        # The conversation stays open to append_audio until it is completed
         if kwargs.get("partial"):
             form.add_field("partial", "true")
 
@@ -190,8 +189,7 @@ class StudioApiService:
     @with_token
     @with_organization_id
     async def append_audio(self, conversationId, file=None, complete=False, **kwargs):
-        """Append the next audio to a conversation created with partial, close
-        it with complete, or both. The organization is the conversation's."""
+        """Append audio to a partial conversation, close it with complete, or both."""
         if file is None and not complete:
             raise ValueError("append_audio needs a file, complete, or both")
 
