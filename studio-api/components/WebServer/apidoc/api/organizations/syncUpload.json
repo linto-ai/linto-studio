@@ -1,0 +1,73 @@
+{
+  "/api/organizations/{organizationId}/conversations/create?sync=true": {
+    "post": {
+      "tags": ["organizations uploader"],
+      "summary": "Transcribe an audio and answer the transcription without storing anything",
+      "description": "Same route as the creation of a conversation, with sync set. The uploaded file is sent to transcription as it is, nothing is stored nor converted, and the request waits for the transcription (up to one hour). The usage is counted as for any upload.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrganizationId"
+        }
+      ],
+      "requestBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "file",
+                  "format": "binary",
+                  "description": "Audio file to transcribe. A single file, a url is not accepted"
+                },
+                "sync": {
+                  "type": "boolean",
+                  "description": "Must be true. Cannot be combined with partial"
+                },
+                "endpoint": {
+                  "type": "string",
+                  "description": "Endpoint of the transcription service (can fetch information from service api)"
+                },
+                "lang": {
+                  "type": "string",
+                  "description": "Language of the audio"
+                },
+                "transcriptionConfig": {
+                  "$ref": "#/components/schemas/TranscriptionConfig"
+                },
+                "securityLevel": {
+                  "$ref": "#/components/schemas/SecurityLevel"
+                }
+              },
+              "required": ["file", "sync", "endpoint", "lang"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "The conversation that would have been created, with its turns and speakers, without id",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conversation"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "415": {
+          "$ref": "#/components/responses/UnsupportedMediaType"
+        },
+        "502": {
+          "description": "The transcription failed or took too long"
+        }
+      }
+    }
+  }
+}

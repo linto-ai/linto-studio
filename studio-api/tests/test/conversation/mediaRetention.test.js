@@ -102,7 +102,7 @@ describe("conversations.create", () => {
 })
 
 describe("conversations.listExpired", () => {
-  test("asks for the media whose date is over, with what the deletion reads", async () => {
+  test("asks for the media whose date is over, without their text", async () => {
     conversations.mongoRequest = jest.fn(async () => [])
 
     await conversations.listExpired(100)
@@ -110,12 +110,7 @@ describe("conversations.listExpired", () => {
     const [query, options] = conversations.mongoRequest.mock.calls[0]
     expect(query).toEqual({ expiresAt: { $lte: moment().format() } })
     expect(options).toEqual({
-      projection: {
-        type: 1,
-        "metadata.audio.filepath": 1,
-        "organization.organizationId": 1,
-        expiresAt: 1,
-      },
+      projection: { text: 0 },
       sort: { expiresAt: 1 },
       limit: 100,
     })

@@ -7,6 +7,7 @@ const moment = require("moment")
 const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const TYPE = require(`${process.cwd()}/lib/dao/conversation/types`)
+const PART_STATES = require(`${process.cwd()}/lib/dao/conversation/partStates`)
 const MEDIA_RETENTION = require(
   `${process.cwd()}/lib/dao/organization/mediaRetention`,
 )
@@ -38,12 +39,7 @@ class ConvoModel extends MongoModel {
     try {
       const query = { expiresAt: { $lte: moment().format() } }
       return await this.mongoRequest(query, {
-        projection: {
-          type: 1,
-          "metadata.audio.filepath": 1,
-          "organization.organizationId": 1,
-          expiresAt: 1,
-        },
+        projection: { text: 0 },
         sort: { expiresAt: 1 },
         limit,
       })
@@ -445,6 +441,95 @@ class ConvoModel extends MongoModel {
     }
   }
 
+  // The position in parts is the arrival order of the appends
+  async addPart(_id, organizationId, part) {
+    try {
+      const query = {
+        _id: this.getObjectId(_id),
+        "organization.organizationId": organizationId,
+        "jobs.transcription.partial": true,
+      }
+      return await this.mongoUpdateOne(query, "$push", {
+        "jobs.transcription.parts": part,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // A part leaves a state once, whoever handles it: nothing matches afterwards
+  async updatePart(_id, partId, state, values, content = {}) {
+    try {
+      const query = {
+        _id: this.getObjectId(_id),
+        "jobs.transcription.parts": { $elemMatch: { id: partId, state } },
+      }
+      const update = { $set: {} }
+      for (const [key, value] of Object.entries(values)) {
+        update.$set[`jobs.transcription.parts.$.${key}`] = value
+      }
+      if (content.text) {
+        update.$push = {
+          speakers: { $each: content.speakers },
+          text: { $each: content.text },
+        }
+      }
+
+      return await MongoDriver.constructor.db
+        .collection(this.collection)
+        .updateOne(query, update)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // Only a part whose job is not dispatched yet can leave the queue
+  async removePart(_id, partId) {
+    try {
+      const query = {
+        _id: this.getObjectId(_id),
+      }
+      return await this.mongoUpdateOne(query, "$pull", {
+        "jobs.transcription.parts": {
+          id: partId,
+          state: PART_STATES.UPLOADING,
+        },
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // The audio only moves on from the file it was built on: a concurrent join
+  // of the same part matches nothing
+  async joinPart(_id, partId, previousFilepath, metadata) {
+    try {
+      const query = {
+        _id: this.getObjectId(_id),
+        "metadata.audio.filepath": previousFilepath,
+        "jobs.transcription.parts": {
+          $elemMatch: { id: partId, filepath: { $exists: true } },
+        },
+      }
+      return await MongoDriver.constructor.db
+        .collection(this.collection)
+        .updateOne(query, {
+          $set: {
+            "metadata.audio": metadata.audio,
+            "metadata.file": metadata.file,
+            last_update: moment().format(),
+          },
+          $unset: { "jobs.transcription.parts.$.filepath": "" },
+        })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async updateTurn(_id, text) {
     try {
       const query = {
@@ -557,7 +642,8 @@ class ConvoModel extends MongoModel {
         "type.mode": TYPE.CANONICAL,
       }
 
-      return await this.mongoRequest(query)
+      // The text of a conversation open to append grows while it is processing
+      return await this.mongoRequest(query, { text: 0 })
     } catch (error) {
       console.error(error)
       return error

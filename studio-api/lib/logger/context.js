@@ -369,7 +369,11 @@ class LoggerContext {
       const context = await this.createContext(req)
       context.activity = activity
 
-      const conversation = await storeCacheConversation(payload.conversationId)
+      // A sync transcription stores no conversation to read back
+      let conversation = payload.conversation
+      if (!conversation) {
+        conversation = await storeCacheConversation(payload.conversationId)
+      }
       context.transcription = {
         conversationId: payload.conversationId,
         name: conversation.name,

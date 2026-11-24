@@ -1,0 +1,276 @@
+// POST conversations/create and its two flags: partial leaves the conversation
+// pending and open to append, sync hands the request over to the sync upload.
+
+// music-metadata is ESM-only, not loadable by Jest
+jest.mock("music-metadata", () => ({ parseStream: jest.fn() }), {
+  virtual: true,
+})
+
+let mockCreated
+
+jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
+  organizations: {
+    getByIdAndUser: jest.fn(async () => [{ _id: "org-1", securityLevel: 0 }]),
+  },
+  conversations: {
+    create: jest.fn(async (conversation) => {
+      mockCreated = conversation
+      conversation._id = "conv-1"
+      return { insertedCount: 1, insertedId: "conv-1" }
+    }),
+  },
+  categories: { createDefaultCategories: jest.fn(async () => {}) },
+}))
+jest.mock(`${process.cwd()}/lib/logger/manager`, () => ({
+  logTranscriptionEvent: jest.fn(),
+}))
+jest.mock(
+  `${process.cwd()}/components/WebServer/controllers/services/utility`,
+  () => ({
+    getTranscriptionServiceByEndpoint: jest.fn(async () => ({
+      security_level: 0,
+    })),
+  }),
+)
+jest.mock(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+  () => ({ deleteFile: jest.fn() }),
+)
+jest.mock(
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/syncUpload.js`,
+  () => ({ transcribeSync: jest.fn(async () => {}) }),
+)
+jest.mock(
+  `${process.cwd()}/components/WebServer/controllers/conversation/upload`,
+  () => ({
+    dispatchUpload: jest.fn(async () => ({
+      processingJob: { jobid: "job-1" },
+      file_data: {
+        filePath: "audios/first.mp3",
+        storageFilePath: "/storage/audios/first.mp3",
+        filename: "first.wav",
+      },
+      seconds: 12.5,
+    })),
+    recordUpload: jest.fn(async () => {}),
+  }),
+)
+jest.mock(
+  `${process.cwd()}/components/WebServer/controllers/conversation/generator`,
+  () => ({
+    ...jest.requireActual(
+      `${process.cwd()}/components/WebServer/controllers/conversation/generator`,
+    ),
+    addFileMetadataToConversation: jest.fn(async (conversation, file) => {
+      conversation.metadata.audio = {
+        filename: file.filename,
+        duration: 12.5,
+        mimetype: "audio/mpeg",
+        filepath: file.filePath,
+      }
+      return conversation
+    }),
+    addAudioDuration: jest.fn(),
+  }),
+)
+
+const { transcribeReq } = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/transcriptor.js`,
+)
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+const upload = require(
+  `${process.cwd()}/components/WebServer/controllers/conversation/upload`,
+)
+const { deleteFile } = require(
+  `${process.cwd()}/components/WebServer/controllers/files/store`,
+)
+const { transcribeSync } = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/syncUpload.js`,
+)
+
+function request(body = {}, files = { file: { name: "first.wav" } }) {
+  return {
+    params: { organizationId: "org-1" },
+    payload: { data: { userId: "user-1" } },
+    body: { name: "meeting", lang: "fr-FR", endpoint: "stt", ...body },
+    files,
+  }
+}
+
+async function create(req) {
+  const res = {
+    status: jest.fn(() => res),
+    send: jest.fn(() => res),
+    on: jest.fn(),
+  }
+  const next = jest.fn()
+  await transcribeReq(req, res, next)
+  return { res, next }
+}
+
+beforeEach(() => {
+  jest.clearAllMocks()
+  mockCreated = undefined
+})
+
+describe("create with partial", () => {
+  test("the conversation is pending and open to append", async () => {
+    const { res, next } = await create(request({ partial: "true" }))
+
+    expect(next).not.toHaveBeenCalled()
+    expect(res.status).toHaveBeenCalledWith(201)
+    expect(res.send).toHaveBeenCalledWith(
+      expect.objectContaining({ conversationId: "conv-1" }),
+    )
+
+    const job = mockCreated.jobs.transcription
+    expect(job.state).toBe("pending")
+    expect(job.partial).toBe(true)
+    expect(job.job_id).toBeUndefined()
+    expect(job.parts).toHaveLength(1)
+    expect(job.parts[0]).toMatchObject({
+      job_id: "job-1",
+      duration: 12.5,
+      state: "pending",
+    })
+    // Already the audio of the conversation: nothing to join
+    expect(job.parts[0].filepath).toBeUndefined()
+    expect(mockCreated.metadata.audio.filepath).toBe("audios/first.mp3")
+  })
+
+  test("keeps the speaker identification collections for the next parts", async () => {
+    await create(request({ partial: "true" }))
+
+    expect(
+      mockCreated.metadata.transcription.speakerIdentificationCollections,
+    ).toEqual([])
+  })
+
+  test("is refused with a url", async () => {
+    const { next } = await create(
+      request({ partial: "true", url: "https://example.org/audio.mp3" }, null),
+    )
+
+    expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
+    expect(model.conversations.create).not.toHaveBeenCalled()
+  })
+
+  test("is refused with several files", async () => {
+    const files = { file: [{ name: "a.wav" }, { name: "b.wav" }] }
+
+    const { next } = await create(request({ partial: "true" }, files))
+
+    expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
+    expect(model.conversations.create).not.toHaveBeenCalled()
+  })
+})
+
+describe("create with sync", () => {
+  test("hands the request over once validated, and stores nothing itself", async () => {
+    const req = request({ sync: "true", transcriptionConfig: "{}" })
+
+    const { res, next } = await create(req)
+
+    expect(next).not.toHaveBeenCalled()
+    expect(transcribeSync).toHaveBeenCalledWith(req, res, {})
+    expect(upload.dispatchUpload).not.toHaveBeenCalled()
+    expect(upload.recordUpload).not.toHaveBeenCalled()
+    expect(model.conversations.create).not.toHaveBeenCalled()
+  })
+
+  test("needs no name and looks up no folder", async () => {
+    const { next } = await create(
+      request({ sync: "true", name: undefined, folderId: "folder-1" }),
+    )
+
+    expect(next).not.toHaveBeenCalled()
+    expect(transcribeSync).toHaveBeenCalledTimes(1)
+  })
+
+  test("keeps the checks of a regular upload", async () => {
+    const { next } = await create(request({ sync: "true", lang: undefined }))
+
+    expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
+    expect(transcribeSync).not.toHaveBeenCalled()
+  })
+
+  test("a failure of the sync upload is answered as an error", async () => {
+    const failure = Object.assign(new Error("worker crashed"), { status: 502 })
+    transcribeSync.mockRejectedValueOnce(failure)
+
+    const { next } = await create(request({ sync: "true" }))
+
+    expect(next).toHaveBeenCalledWith(failure)
+  })
+
+  test("is refused together with partial", async () => {
+    const { next } = await create(request({ sync: "true", partial: "true" }))
+
+    expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
+    expect(transcribeSync).not.toHaveBeenCalled()
+  })
+
+  test("is refused with a url or several files", async () => {
+    const withUrl = await create(
+      request({ sync: "true", url: "https://example.org/audio.mp3" }, null),
+    )
+    expect(withUrl.next.mock.calls[0][0]).toMatchObject({ status: 400 })
+
+    const files = { file: [{ name: "a.wav" }, { name: "b.wav" }] }
+    const several = await create(request({ sync: "true" }, files))
+    expect(several.next.mock.calls[0][0]).toMatchObject({ status: 400 })
+
+    expect(transcribeSync).not.toHaveBeenCalled()
+  })
+})
+
+describe("create, partial or not", () => {
+  test("stores and dispatches the upload in one call, then meters it", async () => {
+    await create(request({ transcriptionConfig: '{"enablePunctuation":true}' }))
+
+    expect(upload.dispatchUpload).toHaveBeenCalledWith({
+      files: { file: { name: "first.wav" } },
+      url: undefined,
+      endpoint: "stt",
+      transcriptionConfig: '{"enablePunctuation":true}',
+      isSingleFile: true,
+      headers: {},
+      organizationId: "org-1",
+      userId: "user-1",
+    })
+    expect(upload.recordUpload).toHaveBeenCalledWith({
+      organizationId: "org-1",
+      userId: "user-1",
+      seconds: 12.5,
+      ref: { conversationId: "conv-1" },
+    })
+  })
+
+  test("a conversation that cannot be created leaves no audio behind", async () => {
+    model.conversations.create.mockResolvedValueOnce({ insertedCount: 0 })
+
+    const { next } = await create(request())
+
+    expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
+    expect(deleteFile).toHaveBeenCalledWith("/storage/audios/first.mp3")
+    expect(upload.recordUpload).not.toHaveBeenCalled()
+  })
+})
+
+describe("create without partial", () => {
+  test.each([[undefined], ["false"], [""]])(
+    "partial=%p keeps the single job",
+    async (partial) => {
+      const { next } = await create(request({ partial }))
+
+      expect(next).not.toHaveBeenCalled()
+      const job = mockCreated.jobs.transcription
+      expect(job.job_id).toBe("job-1")
+      expect(job.partial).toBeUndefined()
+      expect(job.parts).toBeUndefined()
+      expect(
+        mockCreated.metadata.transcription.speakerIdentificationCollections,
+      ).toBeUndefined()
+    },
+  )
+})

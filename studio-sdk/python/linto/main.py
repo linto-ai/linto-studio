@@ -11,7 +11,7 @@ class LinTO:
             base_url=base_url, token=auth_token
         )
 
-    async def upload(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=None, members_right=None, speaker_collection_ids=None):
+    async def upload(self, file, enable_diarization=True, number_of_speaker="0", language="*", enablePunctuation=True, name=None, members_right=None, speaker_collection_ids=None, partial=False):
         """Upload a file and return its conversation_id, without polling.
 
         Performs only the upload step. The returned conversation_id can be
@@ -24,6 +24,10 @@ class LinTO:
         then populate speaker_name in the transcript. Use
         get_org_voiceprint_collection_id() to obtain the organization-level
         collection. Ignored unless diarization is effectively enabled.
+
+        Pass partial=True when the file is only the beginning of the audio:
+        the conversation stays open, append() sends the next audio with the
+        same transcription settings and complete() closes it.
         """
         if name is None:
             name = f"imported file {datetime.now().isoformat()}"
@@ -36,8 +40,33 @@ class LinTO:
             name=name,
             membersRight=members_right,
             speakerIdentificationCollections=speaker_collection_ids,
+            partial=partial,
         )
         return res["conversationId"]
+
+    async def append(self, conversation_id, file=None, complete=False, organization_id=None):
+        """Append the next audio to a conversation created with
+        upload(partial=True).
+
+        The appended audios are joined and transcribed in the order their
+        requests arrive. complete=True closes the conversation, with this last
+        audio or without any: it is done once every appended audio is
+        transcribed, and poll_media() waits for it. organization_id defaults
+        to the one upload() used (the account's first organization).
+        """
+        return await self.api_service.append_audio(
+            conversationId=conversation_id,
+            file=file,
+            complete=complete,
+            **({"organizationId": organization_id} if organization_id else {}),
+        )
+
+    async def complete(self, conversation_id, organization_id=None):
+        """Close a conversation created with upload(partial=True), without
+        sending more audio."""
+        return await self.append(
+            conversation_id, complete=True, organization_id=organization_id
+        )
 
     async def get_media(self, conversation_id):
         """One-shot fetch of a FINISHED media (no polling loop).

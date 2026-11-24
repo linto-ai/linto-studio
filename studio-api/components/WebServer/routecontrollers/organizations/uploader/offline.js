@@ -22,8 +22,12 @@ const { addFileMetadataToConversation } = require(
 const { applySpeakerIdentification } = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/injection`,
 )
+const { ConversationError } = require(
+  `${process.cwd()}/components/WebServer/error/exception/conversation`,
+)
 
 const fs = require("fs")
+const PART_STATES = require(`${process.cwd()}/lib/dao/conversation/partStates`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const saas = require(`${process.cwd()}/lib/saas`)
 
@@ -171,6 +175,11 @@ async function sessionReq(conversationId) {
 async function offlineReq(req, res, next) {
   try {
     const conversation = await validateConversation(req.params.conversationId)
+    // Until it is closed, its parts are still being transcribed and joined
+    const job = conversation.jobs?.transcription
+    if (job?.parts && !PART_STATES.isSettled(job.state)) {
+      throw new ConversationError("Conversation is still being appended")
+    }
     offline(conversation, true)
 
     res
@@ -199,4 +208,5 @@ async function cleanConversation(conversation, processing_job) {
 module.exports = {
   offlineReq,
   sessionReq,
+  injectSpeakerIdentification,
 }

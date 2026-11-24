@@ -3,6 +3,7 @@ const debug = require("debug")(
 )
 
 const { spawn } = require("child_process")
+const path = require("path")
 const ARG_TRANSFORM = ["-vn", "-ar", "16000", "-ac", "1", "-b:a", "96k"]
 /*
 ffmpeg -i in.whatever -vn -ar 16000 -ac 1 -b:a 96k out.mp3
@@ -40,6 +41,38 @@ async function mergeAudio(files, audioPath) {
       audioPath,
     ],
     { detached: true },
+  )
+  await handleStreamProcess(streamProcess)
+}
+
+// Files from transformAudio put end to end: streams are copied, not encoded
+// again. With -xerror an unreadable file fails the call instead of being skipped.
+async function concatAudio(files, audioPath) {
+  const streamProcess = spawn(
+    "ffmpeg",
+    [
+      "-y",
+      "-xerror",
+      "-f",
+      "concat",
+      "-safe",
+      "0",
+      "-protocol_whitelist",
+      "file,pipe",
+      "-i",
+      "pipe:0",
+      "-c",
+      "copy",
+      audioPath,
+    ],
+    { detached: true },
+  )
+  streamProcess.stdin.on("error", (error) => {
+    debug(`stdin error: ${error.message}`)
+  })
+  // Without the file protocol, entries are resolved against the pipe
+  streamProcess.stdin.end(
+    files.map((file) => `file 'file:${path.resolve(file)}'`).join("\n"),
   )
   await handleStreamProcess(streamProcess)
 }
@@ -138,6 +171,7 @@ async function handleStreamProcess(streamProcess) {
 module.exports = {
   transformAudio,
   mergeAudio,
+  concatAudio,
   hasAudioStream,
   convertToFlac,
   probeAudioDuration,

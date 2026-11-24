@@ -14,11 +14,11 @@ jest.mock(
     mergeAudio: jest.fn(),
     hasAudioStream: (filePath) => mockHasAudioStream(filePath),
     convertToFlac: jest.fn(),
-    probeAudioDuration: jest.fn(),
+    probeAudioDuration: jest.fn(async () => 42.5),
   }),
 )
 
-const { storeFile, STORE_TYPE } = require(
+const { storeFile, probeUpload, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
@@ -67,6 +67,39 @@ describe("storeFile media type", () => {
   test("rejects an explicit non-media type without probing", async () => {
     await expect(
       storeFile(upload("report.pdf", "application/pdf"), STORE_TYPE.AUDIO),
+    ).rejects.toMatchObject({ status: 415 })
+    expect(mockHasAudioStream).not.toHaveBeenCalled()
+  })
+})
+
+// A sync upload is only checked and measured: nothing of it stays on disk
+describe("probeUpload", () => {
+  const { transformAudio } = require(
+    `${process.cwd()}/components/WebServer/controllers/files/transform`,
+  )
+
+  test("gives the duration without converting nor keeping the file", async () => {
+    transformAudio.mockClear()
+
+    const seconds = await probeUpload(upload("meeting.wav", "audio/wav"))
+
+    expect(seconds).toBe(42.5)
+    expect(transformAudio).not.toHaveBeenCalled()
+    expect(fs.readdirSync(path.join(volume, "audios"))).toEqual([])
+  })
+
+  test("refuses a file without audio and leaves nothing behind", async () => {
+    mockHasAudioStream.mockResolvedValue(false)
+
+    await expect(
+      probeUpload(upload("file", "application/octet-stream")),
+    ).rejects.toMatchObject({ status: 415 })
+    expect(fs.readdirSync(path.join(volume, "audios"))).toEqual([])
+  })
+
+  test("refuses an explicit non-media type without writing it", async () => {
+    await expect(
+      probeUpload(upload("report.pdf", "application/pdf")),
     ).rejects.toMatchObject({ status: 415 })
     expect(mockHasAudioStream).not.toHaveBeenCalled()
   })

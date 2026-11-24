@@ -166,6 +166,26 @@ handle.on("error", callback)
 | name              | no       | String                          | Name of the media in LinTO Studio                                                        | "imported file ${date}" |
 | membersRight      | no       | Int                             | Default permission bitmask for organization members on the resulting conversation (1 = read) | None                |
 
+#### Appending audio to a conversation (Python)
+
+When the audio arrives in pieces (a meeting being recorded), upload the first piece with `partial=True`: the conversation stays open. `append` sends the next pieces, transcribed with the same settings and joined in the order their requests arrive; `complete` closes the conversation (pass `complete=True` to `append` to close it with its last piece). Once closed, the conversation is done when every piece is transcribed: `poll_media` waits for it.
+
+```python
+# Python
+conversation_id = await linTO.upload(first_piece, language="fr", partial=True)
+await linTO.append(conversation_id, next_piece)
+await linTO.complete(conversation_id)  # or append(conversation_id, last_piece, complete=True)
+
+handle = await linTO.poll_media(conversation_id)
+```
+
+| Parameter       | required | value  | description                                                                  | default value                     |
+| --------------- | -------- | ------ | ---------------------------------------------------------------------------- | --------------------------------- |
+| partial         | no       | Bool   | `upload` only: keep the conversation open to `append`                         | False                             |
+| file            | no       | bytes  | `append` only: the next piece of audio, required unless `complete` is True    |                                   |
+| complete        | no       | Bool   | `append` only: close the conversation                                         | False                             |
+| organization_id | no       | String | `append` and `complete`: the conversation's organization                      | the account's first organization |
+
 #### listServices
 
 List ASR (speech-to-text) services available to the current account. Each service exposes a `service_name` field that can be referenced elsewhere.
