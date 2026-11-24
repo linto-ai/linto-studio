@@ -13,8 +13,15 @@ const mockConversation = () => ({
   },
   jobs: { transcription: { state: "pending", partial: true, parts: [] } },
 })
-const mockRecord = jest.fn(async () => {})
-const mockEnforce = jest.fn(async () => null)
+const mockDispatched = () => ({
+  processingJob: { jobid: "job-2" },
+  file_data: {
+    filePath: "audios/part-2.mp3",
+    storageFilePath: "/storage/audios/part-2.mp3",
+    filename: "part-2.wav",
+  },
+  seconds: 42.5,
+})
 let mockOpen
 
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
@@ -31,41 +38,20 @@ jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
     update: jest.fn(async () => ({ matchedCount: 1 })),
   },
 }))
-jest.mock(`${process.cwd()}/lib/utility/axios`, () => ({
-  postFormData: jest.fn(async () => ({ jobid: "job-2" })),
-}))
-jest.mock(`${process.cwd()}/lib/saas`, () => ({
-  enforce: (...args) => mockEnforce(...args),
-  record: (...args) => mockRecord(...args),
-}))
 jest.mock(
   `${process.cwd()}/components/WebServer/controllers/conversation/upload`,
   () => ({
-    prepareFileFormData: jest.fn(async () => {
-      mockCalls.push("storeFile")
-      return {
-        form: {},
-        file_data: {
-          filePath: "audios/part-2.mp3",
-          storageFilePath: "/storage/audios/part-2.mp3",
-          filename: "part-2.wav",
-        },
-      }
+    dispatchUpload: jest.fn(async () => {
+      mockCalls.push("dispatchUpload")
+      return mockDispatched()
     }),
+    recordUpload: jest.fn(async () => {}),
     validateConversation: jest.fn(async () => mockConversation()),
-    prepareRequest: jest.fn(() => ({ formData: {} })),
-    getTranscriptionService: jest.fn(
-      (endpoint) => `http://gateway/${endpoint}/transcribe`,
-    ),
   }),
 )
 jest.mock(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
   () => ({ deleteFile: jest.fn() }),
-)
-jest.mock(
-  `${process.cwd()}/components/WebServer/controllers/files/transform`,
-  () => ({ probeAudioDuration: jest.fn(async () => 42.5) }),
 )
 jest.mock(
   `${process.cwd()}/components/WebServer/controllers/job/fetchHandler`,
@@ -92,15 +78,11 @@ const { appendReq, finishReq } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/append.js`,
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const axios = require(`${process.cwd()}/lib/utility/axios`)
 const upload = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/upload`,
 )
 const { deleteFile } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
-)
-const { probeAudioDuration } = require(
-  `${process.cwd()}/components/WebServer/controllers/files/transform`,
 )
 const { fetchJob } = require(
   `${process.cwd()}/components/WebServer/controllers/job/fetchHandler`,
@@ -143,7 +125,7 @@ describe("appendReq", () => {
     expect(next).not.toHaveBeenCalled()
     expect(mockCalls).toEqual([
       "addPart",
-      "storeFile",
+      "dispatchUpload",
       "updatePart",
       "joinParts",
     ])
@@ -156,18 +138,19 @@ describe("appendReq", () => {
   })
 
   test("transcribes with the settings of the conversation", async () => {
-    await run(appendReq)
+    const req = request()
 
-    expect(upload.prepareRequest).toHaveBeenCalledWith(
-      {},
-      { punctuationConfig: {} },
-      true,
-      { "X-Organization-Id": "org-1" },
-    )
-    expect(axios.postFormData).toHaveBeenCalledWith(
-      "http://gateway/stt/transcribe",
-      { formData: {} },
-    )
+    await run(appendReq, req)
+
+    expect(upload.dispatchUpload).toHaveBeenCalledWith({
+      files: req.files,
+      endpoint: "stt",
+      transcriptionConfig: { punctuationConfig: {} },
+      requireDuration: true,
+      headers: { "X-Organization-Id": "org-1" },
+      organizationId: "org-1",
+      userId: "user-1",
+    })
   })
 
   test("the dispatched part carries its job, audio and duration", async () => {
@@ -195,19 +178,12 @@ describe("appendReq", () => {
     )
   })
 
-  test("meters the appended audio on import.minutes", async () => {
+  test("meters the appended audio", async () => {
     await run(appendReq)
 
-    expect(mockEnforce).toHaveBeenCalledWith({
-      orgId: "org-1",
-      capability: "import.minutes",
-      seconds: 42.5,
+    expect(upload.recordUpload).toHaveBeenCalledWith({
+      organizationId: "org-1",
       userId: "user-1",
-    })
-    expect(mockRecord).toHaveBeenCalledWith({
-      orgId: "org-1",
-      userId: "user-1",
-      capability: "import.minutes",
       seconds: 42.5,
       ref: { conversationId: "conv-1" },
     })
@@ -219,7 +195,7 @@ describe("appendReq", () => {
     const { next } = await run(appendReq)
 
     expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
-    expect(upload.prepareFileFormData).not.toHaveBeenCalled()
+    expect(upload.dispatchUpload).not.toHaveBeenCalled()
   })
 
   test("refuses a request without file, or with several", async () => {
@@ -234,42 +210,19 @@ describe("appendReq", () => {
     expect(model.conversations.addPart).not.toHaveBeenCalled()
   })
 
-  test("a refused quota leaves nothing behind", async () => {
+  test("a refused or failed dispatch frees its place in the queue", async () => {
     const refusal = Object.assign(new Error("Quota exceeded"), { status: 402 })
-    mockEnforce.mockRejectedValueOnce(refusal)
+    upload.dispatchUpload.mockRejectedValueOnce(refusal)
 
     const { next } = await run(appendReq)
 
     expect(next).toHaveBeenCalledWith(refusal)
-    expect(axios.postFormData).not.toHaveBeenCalled()
-    expect(deleteFile).toHaveBeenCalledWith("/storage/audios/part-2.mp3")
-    expect(model.conversations.removePart).toHaveBeenCalledTimes(1)
-    expect(joinParts).not.toHaveBeenCalled()
-    expect(mockRecord).not.toHaveBeenCalled()
-  })
-
-  test("a failed dispatch frees its place in the queue", async () => {
-    axios.postFormData.mockRejectedValueOnce(new Error("gateway down"))
-
-    const { next } = await run(appendReq)
-
-    expect(next.mock.calls[0][0].message).toBe("gateway down")
-    expect(deleteFile).toHaveBeenCalledWith("/storage/audios/part-2.mp3")
     expect(model.conversations.removePart).toHaveBeenCalledWith(
       "conv-1",
       model.conversations.addPart.mock.calls[0][2].id,
     )
-    expect(mockRecord).not.toHaveBeenCalled()
-  })
-
-  test("an audio whose duration cannot be read is refused", async () => {
-    probeAudioDuration.mockResolvedValueOnce(NaN)
-
-    const { next } = await run(appendReq)
-
-    expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
-    expect(axios.postFormData).not.toHaveBeenCalled()
-    expect(model.conversations.removePart).toHaveBeenCalledTimes(1)
+    expect(joinParts).not.toHaveBeenCalled()
+    expect(upload.recordUpload).not.toHaveBeenCalled()
   })
 
   test("a part dropped while it was processed is refused", async () => {
@@ -279,7 +232,7 @@ describe("appendReq", () => {
 
     expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
     expect(deleteFile).toHaveBeenCalledWith("/storage/audios/part-2.mp3")
-    expect(mockRecord).not.toHaveBeenCalled()
+    expect(upload.recordUpload).not.toHaveBeenCalled()
   })
 })
 

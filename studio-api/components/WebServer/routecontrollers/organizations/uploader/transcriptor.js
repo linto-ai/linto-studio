@@ -1,8 +1,6 @@
 const debug = require("debug")(
   `linto:components:WebServer:routecontrollers:organizations:uploader:transcriptor`,
 )
-const axios = require(`${process.cwd()}/lib/utility/axios`)
-
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const LogManager = require(`${process.cwd()}/lib/logger/manager`)
 
@@ -18,11 +16,7 @@ const { deleteFile } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 
-const {
-  prepareFileFormData,
-  prepareRequest,
-  getTranscriptionService,
-} = require(
+const { dispatchUpload, recordUpload } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/upload`,
 )
 
@@ -47,13 +41,15 @@ const { getTranscriptionServiceByEndpoint } = require(
   `${process.cwd()}/components/WebServer/controllers/services/utility`,
 )
 const { requireParam } = require(`${process.cwd()}/lib/utility/requireParam`)
-const saas = require(`${process.cwd()}/lib/saas`)
 
 const { applySpeakerIdentification, parseCollectionIds } = require(
   `${process.cwd()}/components/WebServer/controllers/speakerIdentification/injection`,
 )
 const { openToAppend } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/partial`,
+)
+const { transcribeSync } = require(
+  `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/syncUpload.js`,
 )
 
 async function transcribeReq(req, res, next) {
@@ -76,11 +72,16 @@ async function transcribeReq(req, res, next) {
 async function transcribe(isSingleFile, req, res, next) {
   try {
     const userId = req.payload.data.userId
-    requireParam(
-      req.body.name,
-      ConversationMetadataRequire,
-      "name param is required",
-    )
+    req.body.sync = String(req.body.sync) === "true"
+
+    // Nothing is created to carry a name
+    if (!req.body.sync) {
+      requireParam(
+        req.body.name,
+        ConversationMetadataRequire,
+        "name param is required",
+      )
+    }
     requireParam(
       req.body.lang,
       ConversationMetadataRequire,
@@ -111,9 +112,17 @@ async function transcribe(isSingleFile, req, res, next) {
     }
 
     req.body.partial = String(req.body.partial) === "true"
-    if (req.body.partial && (req.body.url || !isSingleFile)) {
+    if (req.body.partial && req.body.sync) {
       throw new ConversationMetadataRequire(
-        "A partial conversation requires a single uploaded file",
+        "A conversation cannot be both partial and sync",
+      )
+    }
+    if (
+      (req.body.partial || req.body.sync) &&
+      (req.body.url || !isSingleFile)
+    ) {
+      throw new ConversationMetadataRequire(
+        "partial and sync require a single uploaded file",
       )
     }
 
@@ -154,6 +163,11 @@ async function transcribe(isSingleFile, req, res, next) {
     // along into a log payload (cf. logger/context.js DELETE body capture).
     const speakerIdHeaders = speakerId.headers
 
+    if (req.body.sync) {
+      await transcribeSync(req, res, speakerIdHeaders)
+      return
+    }
+
     if (req.body.folderId && req.body.folderId !== "null") {
       const folderResult = await model.folders.getById(req.body.folderId)
       if (folderResult.length === 0)
@@ -172,57 +186,30 @@ async function transcribe(isSingleFile, req, res, next) {
       }
     }
 
-    const transcriptionService = getTranscriptionService(
-      req.body.endpoint,
+    const { processingJob, file_data, seconds } = await dispatchUpload({
+      files: req.files,
+      url: req.body.url,
+      endpoint: req.body.endpoint,
+      transcriptionConfig: req.body.transcriptionConfig,
       isSingleFile,
-    )
-    const formData = await prepareFileFormData(req.files, req.body.url)
-    req.body.file_data = formData.file_data
+      headers: speakerIdHeaders,
+      organizationId: req.params.organizationId,
+      userId,
+    })
+    req.body.file_data = file_data
 
     let conversation
-    let processingJob
     try {
-      const options = await prepareRequest(
-        formData.form,
-        req.body.transcriptionConfig,
-        isSingleFile,
-        speakerIdHeaders,
-      )
-
-      // SaaS gate: probe the stored file's duration so the plugin refuses (402)
-      // before the ASR is paid for. No probe and no gate when the plugin is absent.
-      if (saas.enabled()) {
-        let seconds = 0
-        try {
-          const probed = await addAudioDuration(
-            { metadata: {} },
-            formData.file_data,
-          )
-          seconds = probed?.metadata?.audio?.duration || 0
-        } catch (e) {
-          debug(`import duration probe failed: ${e && e.message}`)
-        }
-        await saas.enforce({
-          orgId: req.params.organizationId,
-          capability: "import.minutes",
-          seconds,
-          userId: req.payload?.data?.userId,
-        })
-      }
-
-      processingJob = await axios.postFormData(transcriptionService, options)
       conversation = await createConversation(processingJob, req.body)
     } catch (err) {
-      deleteFile(formData.file_data.storageFilePath)
+      deleteFile(file_data.storageFilePath)
       throw err
     }
 
-    // SaaS metering: the audio ingested. No-op in OSS.
-    await saas.record({
-      orgId: req.params.organizationId,
-      userId: req.payload?.data?.userId,
-      capability: "import.minutes",
-      seconds: conversation?.metadata?.audio?.duration || 0,
+    await recordUpload({
+      organizationId: req.params.organizationId,
+      userId,
+      seconds,
       ref: { conversationId: conversation._id.toString() },
     })
 

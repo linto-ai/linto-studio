@@ -1,10 +1,4 @@
-const debug = require("debug")(
-  `linto:components:WebServer:routecontrollers:organizations:uploader:append`,
-)
-const axios = require(`${process.cwd()}/lib/utility/axios`)
-
 const model = require(`${process.cwd()}/lib/mongodb/models`)
-const saas = require(`${process.cwd()}/lib/saas`)
 const PART_STATES = require(`${process.cwd()}/lib/dao/conversation/partStates`)
 const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 
@@ -14,19 +8,11 @@ const { newPart } = require(
 const { joinParts } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/partialAudio`,
 )
-const {
-  prepareFileFormData,
-  prepareRequest,
-  getTranscriptionService,
-  validateConversation,
-} = require(
+const { dispatchUpload, recordUpload, validateConversation } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/upload`,
 )
 const { deleteFile } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
-)
-const { probeAudioDuration } = require(
-  `${process.cwd()}/components/WebServer/controllers/files/transform`,
 )
 const { fetchJob } = require(
   `${process.cwd()}/components/WebServer/controllers/job/fetchHandler`,
@@ -51,37 +37,19 @@ async function dispatchPart(req, part) {
     "metadata",
   ])
   const transcription = conversation.metadata.transcription
+  const speakerIdHeaders = await injectSpeakerIdentification(conversation)
 
-  const { form, file_data } = await prepareFileFormData(req.files)
+  const { processingJob, file_data, seconds } = await dispatchUpload({
+    files: req.files,
+    endpoint: transcription.endpoint,
+    transcriptionConfig: transcription.transcriptionConfig,
+    // The next parts are placed after this duration
+    requireDuration: true,
+    headers: speakerIdHeaders,
+    organizationId,
+    userId: req.payload.data.userId,
+  })
   try {
-    const duration = await probeAudioDuration(file_data.storageFilePath)
-    if (!Number.isFinite(duration)) {
-      throw new ConversationError("Audio duration could not be read")
-    }
-
-    // SaaS gate before the ASR is paid for. No-op in OSS.
-    await saas.enforce({
-      orgId: organizationId,
-      capability: "import.minutes",
-      seconds: duration,
-      userId: req.payload.data.userId,
-    })
-
-    const speakerIdHeaders = await injectSpeakerIdentification(conversation)
-    const options = prepareRequest(
-      form,
-      transcription.transcriptionConfig,
-      true,
-      speakerIdHeaders,
-    )
-    const processingJob = await axios.postFormData(
-      getTranscriptionService(transcription.endpoint, true),
-      options,
-    )
-    if (!processingJob?.jobid) {
-      throw new ConversationError("Processing job ID is required")
-    }
-
     const dispatched = throwIfError(
       await model.conversations.updatePart(
         conversationId,
@@ -90,7 +58,7 @@ async function dispatchPart(req, part) {
         {
           job_id: processingJob.jobid,
           filepath: file_data.filePath,
-          duration,
+          duration: seconds,
           state: PART_STATES.PENDING,
         },
       ),
@@ -98,7 +66,7 @@ async function dispatchPart(req, part) {
     if (dispatched.matchedCount !== 1) {
       throw new ConversationError("The append took too long and was dropped")
     }
-    return duration
+    return seconds
   } catch (err) {
     deleteFile(file_data.storageFilePath)
     throw err
@@ -136,11 +104,9 @@ async function appendReq(req, res, next) {
       await validateConversation(conversationId, ["jobs", "metadata"]),
     )
 
-    // SaaS metering: the audio ingested. No-op in OSS.
-    await saas.record({
-      orgId: organizationId,
+    await recordUpload({
+      organizationId,
       userId: req.payload.data.userId,
-      capability: "import.minutes",
       seconds: duration,
       ref: { conversationId },
     })

@@ -68,7 +68,7 @@ async function handleKeywordResult(result, conversation) {
   await model.conversations.updateTag(conversation._id, tagList)
 }
 
-async function handleTranscriptionResult(result, conversation) {
+function fillConversation(result, conversation) {
   conversation.text = [] // Force a refresh in case of multiple spam of requested result
   const normalizeTranscription = segmentNormalizeText(
     result,
@@ -76,10 +76,14 @@ async function handleTranscriptionResult(result, conversation) {
     conversation.metadata.normalize.filter,
   )
 
-  conversation = SttWrapper.transcriptionToConversation(
+  return SttWrapper.transcriptionToConversation(
     normalizeTranscription,
     conversation,
   )
+}
+
+async function handleTranscriptionResult(result, conversation) {
+  conversation = fillConversation(result, conversation)
   await model.conversations.updateConvOnTranscriptionResult(
     conversation._id.toString(),
     conversation,
@@ -91,16 +95,12 @@ async function handlePartResult(result, part, offset, conversation) {
   const transcribed = {
     speakers: [],
     text: [],
+    locale: conversation.locale,
     metadata: conversation.metadata,
   }
   // A silent part has no transcription, which is not an error here
   if (result?.transcription_result?.length > 0) {
-    const normalizeTranscription = segmentNormalizeText(
-      result,
-      conversation.locale,
-      conversation.metadata.normalize.filter,
-    )
-    SttWrapper.transcriptionToConversation(normalizeTranscription, transcribed)
+    fillConversation(result, transcribed)
   }
 
   const content = placePart(transcribed, conversation.speakers, offset)
@@ -117,4 +117,4 @@ async function handlePartResult(result, part, offset, conversation) {
   return true
 }
 
-module.exports = { handleResult, handlePartResult }
+module.exports = { handleResult, handlePartResult, fillConversation }

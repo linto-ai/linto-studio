@@ -1,8 +1,17 @@
-const { storeFile, STORE_TYPE } = require(
+const debug = require("debug")(
+  "linto:components:WebServer:controllers:conversation:upload",
+)
+const axios = require(`${process.cwd()}/lib/utility/axios`)
+const saas = require(`${process.cwd()}/lib/saas`)
+
+const { storeFile, deleteFile, STORE_TYPE } = require(
   `${process.cwd()}/components/WebServer/controllers/files/store`,
 )
 const { downloadAudio } = require(
   `${process.cwd()}/components/WebServer/controllers/files/urlExtractor`,
+)
+const { addAudioDuration } = require(
+  `${process.cwd()}/components/WebServer/controllers/conversation/generator`,
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 
@@ -120,7 +129,92 @@ function prepareRequest(
   }
 }
 
+const IMPORT_CAPABILITY = "import.minutes"
+
+// 0 when the duration cannot be read
+async function probeSeconds(file_data) {
+  try {
+    const probed = await addAudioDuration({ metadata: {} }, file_data)
+    return probed?.metadata?.audio?.duration || 0
+  } catch (e) {
+    debug(`import duration probe failed: ${e && e.message}`)
+    return 0
+  }
+}
+
+async function sendToTranscription(
+  form,
+  seconds,
+  {
+    endpoint,
+    transcriptionConfig,
+    isSingleFile = true,
+    headers,
+    organizationId,
+    userId,
+  },
+) {
+  // SaaS gate: the plugin refuses (402) before the ASR is paid for. No-op
+  // in OSS.
+  await saas.enforce({
+    orgId: organizationId,
+    capability: IMPORT_CAPABILITY,
+    seconds,
+    userId,
+  })
+
+  const options = prepareRequest(
+    form,
+    transcriptionConfig,
+    isSingleFile,
+    headers,
+  )
+  const processingJob = await axios.postFormData(
+    getTranscriptionService(endpoint, isSingleFile),
+    options,
+  )
+  if (!processingJob?.jobid) {
+    throw new ConversationError("Processing job ID is required")
+  }
+  return processingJob
+}
+
+// The stored file is removed when the dispatch fails
+async function dispatchUpload({ files, url, requireDuration, ...request }) {
+  const { form, file_data } = await prepareFileFormData(files, url)
+  try {
+    // Only measured when someone reads it: the SaaS plugin, or the caller
+    let seconds = 0
+    if (saas.enabled() || requireDuration) {
+      seconds = await probeSeconds(file_data)
+    }
+    if (requireDuration && !seconds) {
+      throw new ConversationError("Audio duration could not be read")
+    }
+
+    const processingJob = await sendToTranscription(form, seconds, request)
+    return { processingJob, file_data, seconds }
+  } catch (err) {
+    deleteFile(file_data.storageFilePath)
+    throw err
+  }
+}
+
+// SaaS metering: the audio ingested. No-op in OSS.
+async function recordUpload({ organizationId, userId, seconds, ref }) {
+  await saas.record({
+    orgId: organizationId,
+    userId,
+    capability: IMPORT_CAPABILITY,
+    seconds,
+    ref,
+  })
+}
+
 module.exports = {
+  sendToTranscription,
+  dispatchUpload,
+  recordUpload,
   getTranscriptionService,
   prepareFileFormData,
   prepareTranscriptionRequest,
