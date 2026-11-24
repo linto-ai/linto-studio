@@ -472,6 +472,16 @@ class OrganizationModel extends MongoModel {
     return rows[0].sessionNotice ?? ""
   }
 
+  // null when the organization keeps its media, or does not exist.
+  // Re-throws on DB error.
+  async getMediaRetention(id) {
+    const rows = await this.mongoRequest(
+      { _id: this.getObjectId(id) },
+      { projection: { _id: 0, mediaRetention: 1 } },
+    )
+    return rows[0]?.mediaRetention ?? null
+  }
+
   // matchedCount 0 when the organization does not exist. Re-throws on DB error.
   async updateSessionNotice(id, sessionNotice) {
     return await this.mongoUpdateOne({ _id: this.getObjectId(id) }, "$set", {

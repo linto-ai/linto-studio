@@ -1323,6 +1323,15 @@
       "title_updated": "Titre mis à jour",
       "description": "Description",
       "description_updated": "Description mise à jour",
+      "expiration": {
+        "label": "Suppression automatique",
+        "never": "Jamais",
+        "hint_date": "Le média et son audio seront supprimés à cette date.",
+        "hint_none": "Sans date, le média est conservé indéfiniment.",
+        "remove": "Ne jamais supprimer",
+        "updated": "Date de suppression mise à jour",
+        "removed": "Le média ne sera plus supprimé automatiquement"
+      },
       "duration": "Durée",
       "created": "Créé le",
       "tags": "Assignation de thématiques",
@@ -1608,6 +1617,17 @@
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
+    "media_retention": {
+      "label": "Suppression automatique des médias après",
+      "placeholder": "Jamais",
+      "unit_label": "Unité de la durée",
+      "unit_month": "Mois | Mois",
+      "unit_year": "Année | Années",
+      "hint": "Durée après laquelle un média créé est supprimé. Si le champ est vide, les médias ne seront jamais supprimés.",
+      "value_error": "Saisissez un nombre entier entre 1 et {max}, ou laissez vide",
+      "summary_month": "{count} mois | {count} mois",
+      "summary_year": "{count} an | {count} ans"
+    },
     "personal_space_name": "Mon espace : {name}",
     "kpi": {
       "error": "Une erreur est survenue lors de la récupération des données",

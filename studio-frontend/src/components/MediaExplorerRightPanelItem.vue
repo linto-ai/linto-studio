@@ -78,6 +78,33 @@
             @change="handleFolderChange" />
         </div>
 
+        <!-- Automatic deletion -->
+        <div class="media-section">
+          <template v-if="readOnly">
+            <h4 class="section-title field-label">
+              {{ $t("media_explorer.panel.expiration.label") }}
+            </h4>
+            <span>{{ expirationText }}</span>
+          </template>
+          <template v-else>
+            <FormInput
+              inputFullWidth
+              :field="expirationField"
+              v-model="expirationField.value"
+              with-confirmation
+              @on-confirm="handleExpirationUpdate" />
+            <span class="open-media-hint">{{ expirationHint }}</span>
+            <div class="actions-container" v-if="hasExpiration">
+              <Button
+                @click="handleExpirationRemove"
+                :label="$t('media_explorer.panel.expiration.remove')"
+                icon="x"
+                variant="secondary"
+                size="sm" />
+            </div>
+          </template>
+        </div>
+
         <!-- Actions section -->
         <div class="media-section">
           <h4 class="section-title field-label">
@@ -158,6 +185,10 @@ import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.j
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import FolderSelector from "./FolderSelector.vue"
+import getFullDate from "@/tools/date/getFullDate.js"
+import incrementByNDays from "@/tools/date/incrementByNDays.js"
+import dateInputToIso from "@/tools/date/dateInputToIso.js"
+import { formatFullDate } from "@/tools/date/formatFullDate.js"
 import { mapGetters } from "vuex"
 
 export default {
@@ -197,6 +228,14 @@ export default {
         value: "",
         label: this.$t("media_explorer.panel.description"),
         placeholder: this.$t("media_explorer.panel.default_description"),
+      },
+      expirationField: {
+        ...EMPTY_FIELD,
+        value: "",
+        label: this.$t("media_explorer.panel.expiration.label"),
+        type: "date",
+        // The date has to be a day to come
+        customParams: { min: getFullDate(incrementByNDays(new Date(), 1)) },
       },
     }
   },
@@ -238,6 +277,24 @@ export default {
         .map((tagId) => this.getTagById(tagId))
         .filter((tag) => !!tag)
     },
+    hasExpiration() {
+      return !!this.reactiveSelectedMedia?.expiresAt
+    },
+    expirationText() {
+      if (!this.hasExpiration) {
+        return this.$t("media_explorer.panel.expiration.never")
+      }
+      return formatFullDate(
+        this.reactiveSelectedMedia.expiresAt,
+        this.$i18n.locale,
+      )
+    },
+    expirationHint() {
+      if (this.hasExpiration) {
+        return this.$t("media_explorer.panel.expiration.hint_date")
+      }
+      return this.$t("media_explorer.panel.expiration.hint_none")
+    },
   },
   watch: {
     reactiveSelectedMedia: {
@@ -250,14 +307,17 @@ export default {
             !oldMedia ||
             newMedia._id !== oldMedia._id ||
             newMedia.name !== oldMedia.name ||
-            newMedia.description !== oldMedia.description
+            newMedia.description !== oldMedia.description ||
+            newMedia.expiresAt !== oldMedia.expiresAt
           ) {
             this.titleField.value = newMedia.name || ""
             this.descriptionField.value = newMedia.description || ""
+            this.resetExpirationField()
           }
         } else {
           this.titleField.value = ""
           this.descriptionField.value = ""
+          this.expirationField.value = ""
         }
       },
     },
@@ -274,7 +334,60 @@ export default {
           ""
         this.descriptionField.value =
           this.reactiveSelectedMedia.description || ""
+        this.resetExpirationField()
       }
+    },
+
+    resetExpirationField() {
+      const expiresAt = this.reactiveSelectedMedia?.expiresAt
+      if (expiresAt) {
+        this.expirationField.value = getFullDate(new Date(expiresAt))
+      } else {
+        this.expirationField.value = ""
+      }
+    },
+
+    // An emptied date removes it, like the dedicated button
+    async handleExpirationUpdate() {
+      const expiresAt = dateInputToIso(this.expirationField.value)
+      if (expiresAt) {
+        await this.saveExpiration(
+          expiresAt,
+          this.$t("media_explorer.panel.expiration.updated"),
+        )
+      } else {
+        await this.handleExpirationRemove()
+      }
+    },
+
+    async handleExpirationRemove() {
+      await this.saveExpiration(
+        null,
+        this.$t("media_explorer.panel.expiration.removed"),
+      )
+    },
+
+    async saveExpiration(expiresAt, successMessage) {
+      if (!this.selectedMedia?._id) return
+      try {
+        await this.updateMediaProperty(
+          this.selectedMedia._id,
+          "expiresAt",
+          expiresAt,
+        )
+        this.$store.dispatch("system/addNotification", {
+          type: "success",
+          message: successMessage,
+        })
+      } catch (error) {
+        console.error("Expiration update error:", error)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("media_explorer.panel.update_error"),
+        })
+      }
+      // Back to the stored date, the new one or the previous one on error
+      this.$nextTick(() => this.resetExpirationField())
     },
 
     async handleCreateTag(tag) {

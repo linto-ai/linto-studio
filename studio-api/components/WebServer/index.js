@@ -129,6 +129,9 @@ class WebServer extends Component {
     this._onUpgrade = this._onUpgrade.bind(this)
 
     require("./routes/router.js")(this) // Loads all defined routes
+
+    // Deletes the media whose retention is over
+    require("./controllers/conversation/retention").start()
     WebServerErrorHandler.init(this) // Manage error from controllers
 
     // The LLM WebSocket manager needs the app reference to reach IoHandler.

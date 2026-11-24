@@ -23,6 +23,9 @@ const { fetchJob } = require(
   `${process.cwd()}/components/WebServer/controllers/job/fetchHandler`,
 )
 
+const TYPE = require(`${process.cwd()}/lib/dao/conversation/types`)
+const EXPIRATION = require(`${process.cwd()}/lib/dao/conversation/expiration`)
+
 const { ConversationNotFound, ConversationError } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
@@ -48,6 +51,21 @@ function stripProtectedFields(body) {
       ([key]) => !PROTECTED_FIELDS.includes(key.split(".")[0]),
     ),
   )
+}
+
+// null removes the date: the media is never deleted. A child has no date of
+// its own, it is deleted with its parent.
+function parseExpiration(input, conversation) {
+  if (TYPE.isChild(conversation.type?.mode)) {
+    throw new ConversationError("expiresAt is set on the parent conversation")
+  }
+  if (input === null) return null
+
+  const date = EXPIRATION.parseDate(input)
+  if (!date) {
+    throw new ConversationError("expiresAt expects a date to come, or null")
+  }
+  return date
 }
 
 async function deleteConversation(req, res, next) {
@@ -77,6 +95,9 @@ async function updateConversation(req, res, next) {
     const conv = {
       ...stripProtectedFields(req.body),
       _id: req.params.conversationId,
+    }
+    if (conv.expiresAt !== undefined) {
+      conv.expiresAt = parseExpiration(conv.expiresAt, conversation[0])
     }
 
     const result = await model.conversations.update(conv)
