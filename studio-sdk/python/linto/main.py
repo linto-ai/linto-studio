@@ -200,9 +200,9 @@ class LinTO:
             format=format,
         )
 
-    async def get_publication_templates(self):
-        """Get available publication templates."""
-        return await self.api_service.get_publication_templates()
+    async def get_publication_templates(self, service_id=None):
+        """Get the publication templates, optionally those linked to a service."""
+        return await self.api_service.get_publication_templates(serviceId=service_id)
 
     async def get_template_placeholders(self, template_id):
         """Get placeholders for a specific publication template."""
@@ -210,9 +210,19 @@ class LinTO:
             templateId=template_id
         )
 
-    async def export_with_template(self, job_id, format="pdf", template_id=None, version_number=None):
-        """Export a document using a publication template. Returns binary content."""
+    async def export_with_template(
+        self,
+        job_id,
+        format="pdf",
+        template_id=None,
+        version_number=None,
+        conversation_id=None,
+    ):
+        """Export the summary of the conversation's job through a publication template."""
+        if not conversation_id:
+            raise ValueError("conversation_id is required")
         return await self.api_service.export_with_template(
+            conversationId=conversation_id,
             jobId=job_id,
             format=format,
             templateId=template_id,
