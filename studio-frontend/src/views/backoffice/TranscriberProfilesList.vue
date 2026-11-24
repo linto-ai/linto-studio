@@ -4,7 +4,8 @@
       <HeaderTable
         :title="$t('backoffice.transcriber_profile_list.title')"
         @on-create="showModalCreateTranscriberProfile"
-        @on-delete="deleteSelectedProfiles"
+        @on-delete="showDeleteModal = true"
+        :disableDelete="selectedProfiles.length === 0"
         :add_button_label="
           $t(
             'backoffice.transcriber_profile_list.add_transcriber_profile_button',
@@ -92,6 +93,12 @@
       @on-confirm="onModalConfirm"
       @on-cancel="closeModal"
       @on-delete="onModalDelete" />
+
+    <ModalDeleteTranscriberProfiles
+      v-if="showDeleteModal"
+      :count="selectedProfiles.length"
+      @on-close="showDeleteModal = false"
+      @on-confirm="confirmDeleteProfiles" />
   </MainContentBackoffice>
 </template>
 <script>
@@ -109,6 +116,7 @@ import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import HeaderTable from "@/components/HeaderTable.vue"
 import ModalTranscriberProfile from "@/components/ModalTranscriberProfile.vue"
+import ModalDeleteTranscriberProfiles from "@/components/ModalDeleteTranscriberProfiles.vue"
 import NotificationBanner from "@/components/atoms/NotificationBanner.vue"
 
 export default {
@@ -150,6 +158,7 @@ export default {
       ],
       selectedProfiles: [],
       showModal: false,
+      showDeleteModal: false,
       editProfileId: null,
       sortListKey: "config.name",
       sortListDirection: "asc",
@@ -194,6 +203,10 @@ export default {
     onModalDelete() {
       this.closeModal()
       this.$refs.table.reset()
+    },
+    confirmDeleteProfiles() {
+      this.showDeleteModal = false
+      this.deleteSelectedProfiles()
     },
     async deleteSelectedProfiles() {
       const req = await bulkRequest(
@@ -248,6 +261,7 @@ export default {
     GenericTableRequest,
     HeaderTable,
     ModalTranscriberProfile,
+    ModalDeleteTranscriberProfiles,
     NotificationBanner,
   },
 }
