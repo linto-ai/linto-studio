@@ -1,9 +1,4 @@
-const {
-  newPart,
-  openToAppend,
-  isAbandoned,
-  placePart,
-} = require(
+const { newPart, openToAppend, isAbandoned, isLeftOpen, placePart } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/partial`,
 )
 
@@ -60,6 +55,49 @@ describe("isAbandoned", () => {
   })
 })
 
+describe("isLeftOpen", () => {
+  const moment = require("moment")
+  const hoursAgo = (hours) => moment().subtract(hours, "hours").format()
+  const open = (parts, created = hoursAgo(1)) => ({
+    created,
+    jobs: { transcription: { partial: true, parts } },
+  })
+
+  test("a recent audio keeps the conversation open", () => {
+    const conversation = open([{ id: "a" }, { id: "b", created: hoursAgo(23) }])
+
+    expect(isLeftOpen(conversation)).toBe(false)
+  })
+
+  test("a day without a new audio leaves it open for nothing", () => {
+    const conversation = open([{ id: "a" }, { id: "b", created: hoursAgo(25) }])
+
+    expect(isLeftOpen(conversation)).toBe(true)
+  })
+
+  test("only the last audio counts", () => {
+    const conversation = open([
+      { id: "a" },
+      { id: "b", created: hoursAgo(48) },
+      { id: "c", created: hoursAgo(2) },
+    ])
+
+    expect(isLeftOpen(conversation)).toBe(false)
+  })
+
+  test("never appended: counted from the creation of the conversation", () => {
+    expect(isLeftOpen(open([{ id: "a" }], hoursAgo(25)))).toBe(true)
+    expect(isLeftOpen(open([{ id: "a" }], hoursAgo(2)))).toBe(false)
+  })
+
+  test("a completed conversation is not concerned", () => {
+    const conversation = open([{ id: "a" }], hoursAgo(72))
+    conversation.jobs.transcription.partial = false
+
+    expect(isLeftOpen(conversation)).toBe(false)
+  })
+})
+
 describe("placePart", () => {
   test("shifts the words and the new speakers by the offset", () => {
     const part = {
@@ -84,10 +122,7 @@ describe("placePart", () => {
         { speaker_id: "new-1", speaker_name: "Alice", stime: 0, etime: 1 },
         { speaker_id: "new-2", speaker_name: "spk2", stime: 1, etime: 2 },
       ],
-      text: [
-        turn("new-1", [["un", 0, 1]]),
-        turn("new-2", [["deux", 1, 2]]),
-      ],
+      text: [turn("new-1", [["un", 0, 1]]), turn("new-2", [["deux", 1, 2]])],
     }
 
     const placed = placePart(part, known, 10)

@@ -5,6 +5,8 @@ const PART_STATES = require(`${process.cwd()}/lib/dao/conversation/partStates`)
 
 // A request that died before dispatching its job would hold the next parts
 const UPLOAD_TIMEOUT_MS = 30 * 60 * 1000
+// Without a new audio for that long, nobody is expected to complete it
+const APPEND_TIMEOUT_MS = 24 * 60 * 60 * 1000
 
 function newPart() {
   return {
@@ -37,6 +39,17 @@ function isAbandoned(part) {
     part.state === PART_STATES.UPLOADING &&
     moment().diff(moment(part.created)) > UPLOAD_TIMEOUT_MS
   )
+}
+
+// Still open long after its last audio. The first part has no date of its own:
+// it came with the conversation.
+function isLeftOpen(conversation) {
+  const job = conversation.jobs.transcription
+  if (!job.partial) return false
+
+  const lastPart = job.parts[job.parts.length - 1]
+  const lastAudio = lastPart?.created || conversation.created
+  return moment().diff(moment(lastAudio)) > APPEND_TIMEOUT_MS
 }
 
 // Rounded so that the sum carries no floating point noise
@@ -82,5 +95,6 @@ module.exports = {
   newPart,
   openToAppend,
   isAbandoned,
+  isLeftOpen,
   placePart,
 }

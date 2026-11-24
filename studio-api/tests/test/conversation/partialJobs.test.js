@@ -56,6 +56,9 @@ jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
       if (payload["jobs.transcription.state"]) {
         job.state = payload["jobs.transcription.state"]
       }
+      if (payload["jobs.transcription.partial"] !== undefined) {
+        job.partial = payload["jobs.transcription.partial"]
+      }
       return { matchedCount: 1 }
     }),
     updateJob: jest.fn(async () => ({ matchedCount: 1 })),
@@ -190,9 +193,17 @@ beforeEach(() => {
     speakers: [],
     text: [],
     metadata: {
-      transcription: { endpoint: "stt", lang: "fr-FR", transcriptionConfig: {} },
+      transcription: {
+        endpoint: "stt",
+        lang: "fr-FR",
+        transcriptionConfig: {},
+      },
       normalize: { filter: {} },
-      audio: { filename: "meeting.wav", filepath: "audios/a.mp3", duration: 10 },
+      audio: {
+        filename: "meeting.wav",
+        filepath: "audios/a.mp3",
+        duration: 10,
+      },
     },
     jobs: {
       transcription: {
@@ -441,7 +452,9 @@ describe("the audio of the conversation", () => {
   })
 
   test("a failed join is retried and does not hold the transcription", async () => {
-    store.joinAudio.mockRejectedValueOnce(new Error("ffmpeg exited with code 1"))
+    store.joinAudio.mockRejectedValueOnce(
+      new Error("ffmpeg exited with code 1"),
+    )
     jobDone("a", "un")
     jobDone("b", "deux")
     jobDone("c", "trois")
@@ -468,6 +481,19 @@ describe("closing the conversation", () => {
     expect(words()).toEqual(["un", "deux", "trois"])
     expect(mockDoc.jobs.transcription.state).toBe("pending")
     expect(result.conv_job.transcription.state).toBe("pending")
+  })
+
+  test("left open a day after its last audio, it completes by itself", async () => {
+    const yesterday = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString()
+    for (const queued of mockDoc.jobs.transcription.parts) {
+      queued.created = yesterday
+    }
+
+    await poll()
+
+    expect(mockDoc.jobs.transcription.partial).toBe(false)
+    expect(mockDoc.jobs.transcription.state).toBe("done")
+    expect(words()).toEqual(["un", "deux", "trois"])
   })
 
   test("once completed and everything merged, it is done", async () => {
@@ -504,7 +530,9 @@ describe("closing the conversation", () => {
   })
 
   test("an audio that could not be joined keeps it pending", async () => {
-    store.joinAudio.mockRejectedValueOnce(new Error("ffmpeg exited with code 1"))
+    store.joinAudio.mockRejectedValueOnce(
+      new Error("ffmpeg exited with code 1"),
+    )
     mockDoc.jobs.transcription.partial = false
 
     await poll()

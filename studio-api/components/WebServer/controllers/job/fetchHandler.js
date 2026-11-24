@@ -7,7 +7,7 @@ const model = require(`${process.cwd()}/lib/mongodb/models`)
 const { handleResult, handlePartResult } = require(
   `${process.cwd()}/components/WebServer/controllers/job/resultHandler`,
 )
-const { isAbandoned } = require(
+const { isAbandoned, isLeftOpen } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/partial`,
 )
 const { joinParts } = require(
@@ -105,6 +105,7 @@ async function fetchParts(conv_id, conv_job) {
       "metadata",
       "locale",
       "speakers",
+      "created",
     ])
   )[0]
   const job = conversation.jobs.transcription
@@ -112,6 +113,7 @@ async function fetchParts(conv_id, conv_job) {
   for (const part of job.parts.filter(isAbandoned)) {
     await dropPart(conversation, part)
   }
+  if (isLeftOpen(conversation)) await completePartial(conversation)
   await joinParts(conversation)
 
   let offset = 0
@@ -130,6 +132,17 @@ async function fetchParts(conv_id, conv_job) {
     await closePartial(conversation)
   }
   return { conv_id, conv_job: conversation.jobs }
+}
+
+// Same effect as complete=true on the append route
+async function completePartial(conversation) {
+  const completed = await model.conversations.update({
+    _id: conversation._id.toString(),
+    "jobs.transcription.partial": false,
+  })
+  if (completed.matchedCount === 1) {
+    conversation.jobs.transcription.partial = false
+  }
 }
 
 // Transcribed or failed, and its audio joined to the one of the conversation
