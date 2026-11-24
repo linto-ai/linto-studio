@@ -91,6 +91,10 @@ async function deleteConversationCascade(conversation) {
   if (conversation.metadata?.audio?.filepath) {
     await deleteAudioFileIfOrphaned(conversation.metadata.audio.filepath)
   }
+  // Appended audios not joined yet to the one of the conversation
+  for (const part of conversation.jobs?.transcription?.parts ?? []) {
+    await deleteAudioFileIfOrphaned(part.filepath)
+  }
 
   throwIfError(
     await model.conversationSubtitles.deleteAllFromConv(
