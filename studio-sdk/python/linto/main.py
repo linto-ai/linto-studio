@@ -24,10 +24,6 @@ class LinTO:
         then populate speaker_name in the transcript. Use
         get_org_voiceprint_collection_id() to obtain the organization-level
         collection. Ignored unless diarization is effectively enabled.
-
-        Pass partial=True when the file is only the beginning of the audio:
-        the conversation stays open, append() sends the next audio with the
-        same transcription settings and complete() closes it.
         """
         if name is None:
             name = f"imported file {datetime.now().isoformat()}"
@@ -45,15 +41,7 @@ class LinTO:
         return res["conversationId"]
 
     async def append(self, conversation_id, file=None, complete=False, organization_id=None):
-        """Append the next audio to a conversation created with
-        upload(partial=True).
-
-        The appended audios are joined and transcribed in the order their
-        requests arrive. complete=True closes the conversation, with this last
-        audio or without any: it is done once every appended audio is
-        transcribed, and poll_media() waits for it. organization_id defaults
-        to the one upload() used (the account's first organization).
-        """
+        """Append audio to a conversation created with upload(partial=True); complete=True closes it."""
         return await self.api_service.append_audio(
             conversationId=conversation_id,
             file=file,
@@ -62,8 +50,7 @@ class LinTO:
         )
 
     async def complete(self, conversation_id, organization_id=None):
-        """Close a conversation created with upload(partial=True), without
-        sending more audio."""
+        """Close a conversation created with upload(partial=True)."""
         return await self.append(
             conversation_id, complete=True, organization_id=organization_id
         )
@@ -200,9 +187,9 @@ class LinTO:
             format=format,
         )
 
-    async def get_publication_templates(self):
-        """Get available publication templates."""
-        return await self.api_service.get_publication_templates()
+    async def get_publication_templates(self, service_id=None):
+        """Get the publication templates, optionally those linked to a service."""
+        return await self.api_service.get_publication_templates(serviceId=service_id)
 
     async def get_template_placeholders(self, template_id):
         """Get placeholders for a specific publication template."""
@@ -210,9 +197,19 @@ class LinTO:
             templateId=template_id
         )
 
-    async def export_with_template(self, job_id, format="pdf", template_id=None, version_number=None):
-        """Export a document using a publication template. Returns binary content."""
+    async def export_with_template(
+        self,
+        job_id,
+        format="pdf",
+        template_id=None,
+        version_number=None,
+        conversation_id=None,
+    ):
+        """Export the summary of the conversation's job through a publication template."""
+        if not conversation_id:
+            raise ValueError("conversation_id is required")
         return await self.api_service.export_with_template(
+            conversationId=conversation_id,
             jobId=job_id,
             format=format,
             templateId=template_id,
