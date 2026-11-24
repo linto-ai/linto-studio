@@ -265,11 +265,16 @@ instead (`src/mobile/services/recording/recorders/NativeRecorder.ts`, picked by
   hidden or the screen locked; it starts when recording starts, from the
   app shown (Android 14 requires it), and stops with the recording;
 - the plugin writes one AAC file (ADTS, 16 kHz, 32 kbit/s), readable up to
-  its last frame if the app is killed. It writes in the cache
-  (`capacitor-audio-recorder/`); the file is moved to the app's files
-  (`recordings/`) when the recording stops, Android may clear the cache;
-- the recording's row stores where its file is
-  (`audio.storage: { kind: "file", uri }`) instead of chunks in IndexedDB
+  its last frame if the app is killed. It writes in a folder of its own
+  choice, not an option: the cache (`capacitor-audio-recorder/`) on
+  Android, `tmp/CapacitorAudioRecorder/` on iOS
+  (`src/mobile/const/nativeAudioFolders.js`, read in the plugin's source:
+  its version is pinned, and each stop logs an error if the file is found
+  elsewhere). The file is moved to the app's files (`recordings/`) when the
+  recording stops: the system may clear the cache and `tmp`;
+- the recording's row stores where its file is, relative to the app folder
+  holding it (`audio.storage: { kind: "file", file: { directory, path } }`),
+  never as an absolute path: on iOS it changes with each install or update
   (see `src/mobile/types/localRecording.ts`). The `mobileRecordings` store
   reads the audio wherever it is (send, share, play, delete:
   `src/mobile/store/recordings/recordingAudio.js`); the web builds drop the

@@ -1,6 +1,7 @@
 import { CapacitorAudioRecorder } from "@capgo/capacitor-audio-recorder"
 import type {
   RecordingErrorEvent,
+  RecordingInterruptionEndedEvent,
   StopRecordingResult,
 } from "@capgo/capacitor-audio-recorder"
 import type { PluginListenerHandle } from "@capacitor/core"
@@ -11,6 +12,7 @@ import {
 } from "@capawesome-team/capacitor-android-foreground-service"
 import {
   findCurrentRecorderFile,
+  locateRecordedFile,
   moveToRecordings,
   readAudioFileSize,
 } from "@/api/device/nativeAudioFiles.js"
@@ -22,6 +24,7 @@ import type {
   RecorderStart,
   RecorderStopPatch,
 } from "@/mobile/types/recorder.ts"
+import type { NativeFile } from "@/mobile/types/localRecording.ts"
 
 // AAC in ADTS: a stream of self-contained frames, readable up to the last
 // one when the app is killed before the recording stops.
@@ -54,11 +57,17 @@ export class NativeRecorder extends AbstractRecorder {
   notification: NativeRecorderOptions["notification"]
   active: boolean
   paused: boolean
+  // iOS: the system took the microphone (a call, Siri); the plugin paused.
+  systemInterrupted: boolean
   serviceStarted: boolean
-  audioFileUri: string | null
+  // The file the plugin writes now: on iOS, a new one after each
+  // interruption (see handleInterruptionEnded).
+  recorderFile: NativeFile | null
   levelTimer: ReturnType<typeof setTimeout> | undefined
   progressTimer: ReturnType<typeof setTimeout> | undefined
   errorListener: PluginListenerHandle | null
+  interruptionBeganListener: PluginListenerHandle | null
+  interruptionEndedListener: PluginListenerHandle | null
   lastSize: number | null
   stalledReports: number
 
@@ -75,11 +84,14 @@ export class NativeRecorder extends AbstractRecorder {
     this.notification = notification
     this.active = false
     this.paused = false
+    this.systemInterrupted = false
     this.serviceStarted = false
-    this.audioFileUri = null
+    this.recorderFile = null
     this.levelTimer = undefined
     this.progressTimer = undefined
     this.errorListener = null
+    this.interruptionBeganListener = null
+    this.interruptionEndedListener = null
     this.lastSize = null
     this.stalledReports = 0
   }
@@ -100,16 +112,24 @@ export class NativeRecorder extends AbstractRecorder {
       throw error
     }
     this.active = true
-    this.audioFileUri = await findCurrentRecorderFile()
+    this.recorderFile = await findCurrentRecorderFile()
     this.errorListener = await CapacitorAudioRecorder.addListener(
       "recordingError",
       (event) => this.handleRecorderError(event),
+    )
+    this.interruptionBeganListener = await CapacitorAudioRecorder.addListener(
+      "recordingInterruptionBegan",
+      () => this.handleInterruptionBegan(),
+    )
+    this.interruptionEndedListener = await CapacitorAudioRecorder.addListener(
+      "recordingInterruptionEnded",
+      (event) => this.handleInterruptionEnded(event),
     )
     this.scheduleLevel()
     this.scheduleProgress()
     return {
       mimeType: MIME_TYPE,
-      storage: { kind: "file", uri: this.audioFileUri },
+      storage: { kind: "file", file: this.recorderFile },
     }
   }
 
@@ -132,7 +152,7 @@ export class NativeRecorder extends AbstractRecorder {
   }
 
   // Resolves with the recording's audio patch once the file is finished
-  // and moved out of the cache: { storage, durationMs?, sizeBytes? }.
+  // and moved out of the recorder's folder: { storage, durationMs?, sizeBytes? }.
   async stop(): Promise<RecorderStopPatch> {
     switch (true) {
       case !this.active:
@@ -157,8 +177,7 @@ export class NativeRecorder extends AbstractRecorder {
   // finished, and the next start of the app queues it.
   destroy(): void {
     this.clearTimers()
-    this.errorListener?.remove()
-    this.errorListener = null
+    this.removeListeners()
     if (this.active) {
       this.active = false
       CapacitorAudioRecorder.stopRecording().catch(() => {})
@@ -166,13 +185,17 @@ export class NativeRecorder extends AbstractRecorder {
     this.stopService()
   }
 
+  // The plugin tells where its file is (an absolute URI); without an
+  // answer it can locate (a stop that failed, a folder it moved), the file
+  // it was last seen writing is kept.
   async finishFile(stopped: StopRecordingResult): Promise<RecorderStopPatch> {
     await this.stopService()
-    const recordedUri = stopped.uri || this.audioFileUri
-    const audioFileUri = (await moveToRecordings(recordedUri)) ?? recordedUri
-    const sizeBytes = await readAudioFileSize(audioFileUri)
+    const recorded =
+      (stopped.uri && locateRecordedFile(stopped.uri)) || this.recorderFile
+    const file = recorded && ((await moveToRecordings(recorded)) ?? recorded)
+    const sizeBytes = file ? await readAudioFileSize(file) : null
     return {
-      storage: { kind: "file", uri: audioFileUri },
+      storage: { kind: "file", file },
       ...(Number.isFinite(stopped.duration) && {
         durationMs: stopped.duration,
       }),
@@ -223,6 +246,35 @@ export class NativeRecorder extends AbstractRecorder {
     this.onInterrupted("recorder-error")
   }
 
+  // Emitted on iOS only. The file does not grow until the end: not a
+  // stall.
+  handleInterruptionBegan(): void {
+    this.systemInterrupted = true
+  }
+
+  // Resumed, the plugin writes a new file (a segment, joined to the others
+  // at the stop): the size reports follow it from scratch. Not resumed,
+  // the file stops growing and the stall ends the recording.
+  async handleInterruptionEnded({
+    shouldResume,
+  }: RecordingInterruptionEndedEvent): Promise<void> {
+    this.systemInterrupted = false
+    this.lastSize = null
+    this.stalledReports = 0
+    if (shouldResume) {
+      this.recorderFile = (await findCurrentRecorderFile()) ?? this.recorderFile
+    }
+  }
+
+  removeListeners(): void {
+    this.errorListener?.remove()
+    this.interruptionBeganListener?.remove()
+    this.interruptionEndedListener?.remove()
+    this.errorListener = null
+    this.interruptionBeganListener = null
+    this.interruptionEndedListener = null
+  }
+
   // One reading at a time: the next one is planned once the previous
   // answered. Not read while the page is hidden, nobody sees the meter.
   scheduleLevel(): void {
@@ -253,14 +305,14 @@ export class NativeRecorder extends AbstractRecorder {
   }
 
   async reportProgress(): Promise<void> {
-    const sizeBytes = this.audioFileUri
-      ? await readAudioFileSize(this.audioFileUri)
+    const sizeBytes = this.recorderFile
+      ? await readAudioFileSize(this.recorderFile)
       : null
     this.stalledReports = countStalledReports({
       count: this.stalledReports,
       previousSize: this.lastSize,
       sizeBytes,
-      paused: this.paused,
+      paused: this.paused || this.systemInterrupted,
     })
     this.lastSize = sizeBytes
     switch (true) {

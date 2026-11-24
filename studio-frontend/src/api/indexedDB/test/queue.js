@@ -141,6 +141,36 @@ test.serial(
   },
 )
 
+test.serial(
+  "opening the database locates a version 1 native file in its folder",
+  async (t) => {
+    const v1 = await openDB("linto-mobile", 1, {
+      upgrade(db) {
+        db.createObjectStore("recordings", { keyPath: "id" })
+        const chunks = db.createObjectStore("chunks", {
+          keyPath: ["recordingId", "index"],
+        })
+        chunks.createIndex("byRecording", "recordingId")
+      },
+    })
+    await v1.put("recordings", {
+      id: "native",
+      organizationId: "org-1",
+      createdAt: 1,
+      name: "Native",
+      status: "queued",
+      audioFileUri:
+        "file:///data/user/0/ai.linto.studio/files/recordings/a.aac",
+    })
+    v1.close()
+    const [row] = await listRecordings()
+    t.deepEqual(row.audio.storage, {
+      kind: "file",
+      file: { directory: "DATA", path: "recordings/a.aac" },
+    })
+  },
+)
+
 test.serial("updateRecording() returns null for an unknown id", async (t) => {
   t.is(await updateRecording("nope", { status: "queued" }), null)
 })

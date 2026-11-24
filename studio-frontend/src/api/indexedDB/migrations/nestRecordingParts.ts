@@ -2,6 +2,7 @@ import { DEFAULT_MEMBERS_RIGHT } from "../../../mobile/const/defaultMembersRight
 import { RECORDING_STATUS } from "../../../mobile/const/recordingStatus.js"
 import type {
   LocalRecording,
+  RecordedAudio,
   RecordingStatus,
   SharingSettings,
   TranscriptionSettings,
@@ -37,6 +38,14 @@ export interface FlatRecording {
   error?: LocalRecording["conversation"]["sendError"]
 }
 
+// A row of database version 2: LocalRecording, except for a native file,
+// still known by its absolute URI (see locateNativeFiles, version 3).
+export type NestedRecording = Omit<LocalRecording, "audio"> & {
+  audio: Omit<RecordedAudio, "storage"> & {
+    storage: { kind: "chunks" } | { kind: "file"; uri: string | null }
+  }
+}
+
 /**
  * Database version 2: a version 1 row in the LocalRecording shape. The
  * audio fields go under `audio` (a file URI means a native file, else web
@@ -49,7 +58,7 @@ export interface FlatRecording {
 export function nestRecordingParts(
   row: FlatRecording,
   locale: string,
-): LocalRecording {
+): NestedRecording {
   const durationMs = row.durationMs ?? 0
   return {
     id: row.id,

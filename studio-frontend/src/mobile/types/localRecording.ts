@@ -18,11 +18,23 @@ export type RecordingStatus =
 
 export type PauseReason = "user" | "background" | "microphone"
 
-// Where the audio of a recording is. The native file has no URI yet when
-// the plugin did not tell where it writes (it does at the stop).
+// A folder of the native app, as @capacitor/filesystem names it.
+export type NativeDirectory = "DATA" | "CACHE" | "TEMPORARY"
+
+// A file of the native app, relative to one of its folders. Never an
+// absolute path: on iOS the app's folders move at each install or update
+// (their path holds the app container's id).
+export interface NativeFile {
+  directory: NativeDirectory
+  // From the directory: "recordings/<name>.aac".
+  path: string
+}
+
+// Where the audio of a recording is. The native file is null while the
+// recorder's file is not found (it is again at the stop).
 export type AudioStorage =
   | { kind: "chunks" }
-  | { kind: "file"; uri: string | null }
+  | { kind: "file"; file: NativeFile | null }
 
 // A pause the user did not ask for: a hole in the audio.
 export interface RecordingGap {

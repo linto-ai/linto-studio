@@ -1,5 +1,6 @@
 import { openDB } from "idb"
 import { nestRecordingParts } from "./migrations/nestRecordingParts.ts"
+import { locateNativeFiles } from "./migrations/locateNativeFiles.ts"
 import { mergeRecordingPatch } from "../../mobile/tools/mergeRecordingPatch.ts"
 import { readLanguagePreference } from "../localStorage/languagePreference.js"
 
@@ -8,7 +9,7 @@ const DATABASE_NAME = "linto-mobile"
 // Each migration brings the database from its position in the list to the
 // next version: a phone opening the app runs the ones it has not run yet,
 // in order, before anything reads the database.
-const MIGRATIONS = [createStores, nestRecordings]
+const MIGRATIONS = [createStores, nestRecordings, locateRecordingFiles]
 const DATABASE_VERSION = MIGRATIONS.length
 
 // Local store of the phone's recordings: the ones waiting to be sent and
@@ -85,6 +86,15 @@ async function nestRecordings(db, transaction) {
   let cursor = await transaction.objectStore("recordings").openCursor()
   while (cursor) {
     await cursor.update(nestRecordingParts(cursor.value, locale))
+    cursor = await cursor.continue()
+  }
+}
+
+// Version 3: native files relative to their folder, see locateNativeFiles.
+async function locateRecordingFiles(db, transaction) {
+  let cursor = await transaction.objectStore("recordings").openCursor()
+  while (cursor) {
+    await cursor.update(locateNativeFiles(cursor.value))
     cursor = await cursor.continue()
   }
 }

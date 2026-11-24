@@ -16,8 +16,8 @@ export async function readRecordingFile(recording) {
   switch (storage.kind) {
     case "file": {
       const files = await importNativeAudioFiles()
-      return storage.uri && files
-        ? files.readAudioFile(storage.uri, fileName, type)
+      return storage.file && files
+        ? files.readAudioFile(storage.file, fileName, type)
         : null
     }
     default: {
@@ -34,9 +34,9 @@ export async function openRecordingAudio(recording) {
   switch (storage.kind) {
     case "file": {
       const files = await importNativeAudioFiles()
-      return storage.uri && files
-        ? { url: files.audioFileUrl(storage.uri), release() {} }
-        : null
+      const url =
+        storage.file && files && (await files.audioFileUrl(storage.file))
+      return url ? { url, release() {} } : null
     }
     default:
       return openChunks(recording.id, mimeType)
@@ -47,9 +47,9 @@ export async function openRecordingAudio(recording) {
 // here.
 export async function deleteRecordingAudio(recording) {
   const storage = recording.audio?.storage
-  if (storage?.kind === "file" && storage.uri) {
+  if (storage?.kind === "file" && storage.file) {
     const files = await importNativeAudioFiles()
-    await files?.deleteAudioFile(storage.uri)
+    await files?.deleteAudioFile(storage.file)
   }
 }
 
