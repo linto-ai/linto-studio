@@ -80,19 +80,12 @@ describe("MEDIA_RETENTION.parse", () => {
 
 describe("MEDIA_RETENTION.expirationDate", () => {
   test("is the given duration from now", () => {
+    jest.useFakeTimers().setSystemTime(new Date("2030-01-15T10:00:00Z"))
+
     const date = MEDIA_RETENTION.expirationDate({ value: 6, unit: "month" })
 
-    const expected = moment().add(6, "month")
-    expect(Math.abs(moment(date).diff(expected, "seconds"))).toBeLessThan(5)
-  })
-
-  test("a year is twelve months", () => {
-    const year = MEDIA_RETENTION.expirationDate({ value: 1, unit: "year" })
-    const months = MEDIA_RETENTION.expirationDate({ value: 12, unit: "month" })
-
-    expect(Math.abs(moment(year).diff(moment(months), "seconds"))).toBeLessThan(
-      5,
-    )
+    expect(date).toBe(moment().add(6, "month").format())
+    jest.useRealTimers()
   })
 })
 

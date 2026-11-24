@@ -6,19 +6,19 @@ jest.mock(`${process.cwd()}/lib/logger/logger`, () => ({
   error: jest.fn(),
 }))
 
-const mockListExpired = jest.fn()
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
-  conversations: { listExpired: (...args) => mockListExpired(...args) },
+  conversations: { listExpired: jest.fn() },
 }))
-const mockDeleteCascade = jest.fn()
 jest.mock(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
-  () => ({
-    deleteConversationCascade: (...args) => mockDeleteCascade(...args),
-  }),
+  () => ({ deleteConversationCascade: jest.fn() }),
 )
 
-const { deleteExpired, tick } = require(
+const model = require(`${process.cwd()}/lib/mongodb/models`)
+const { deleteConversationCascade } = require(
+  `${process.cwd()}/components/WebServer/controllers/organization/utility`,
+)
+const { tick } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/retention`,
 )
 
@@ -32,73 +32,74 @@ const batch = (size, prefix) =>
 
 beforeEach(() => {
   jest.clearAllMocks()
-  mockDeleteCascade.mockResolvedValue()
+  deleteConversationCascade.mockResolvedValue()
 })
 
-describe("deleteExpired", () => {
+describe("media retention check", () => {
   test("deletes each expired media with what depends on it", async () => {
-    mockListExpired.mockResolvedValue([media("a"), media("b")])
+    model.conversations.listExpired.mockResolvedValue([media("a"), media("b")])
 
-    const deleted = await deleteExpired()
+    await tick()
 
-    expect(deleted).toBe(2)
-    expect(mockDeleteCascade).toHaveBeenCalledWith(media("a"))
-    expect(mockDeleteCascade).toHaveBeenCalledWith(media("b"))
+    expect(deleteConversationCascade).toHaveBeenCalledWith(media("a"))
+    expect(deleteConversationCascade).toHaveBeenCalledWith(media("b"))
   })
 
   test("a media that cannot be deleted does not hold the others", async () => {
-    mockListExpired.mockResolvedValue([media("a"), media("b")])
-    mockDeleteCascade.mockRejectedValueOnce(new Error("already deleted"))
+    model.conversations.listExpired.mockResolvedValue([media("a"), media("b")])
+    deleteConversationCascade.mockRejectedValueOnce(
+      new Error("already deleted"),
+    )
 
-    const deleted = await deleteExpired()
+    await tick()
 
-    expect(deleted).toBe(1)
-    expect(mockDeleteCascade).toHaveBeenCalledTimes(2)
+    expect(deleteConversationCascade).toHaveBeenCalledTimes(2)
   })
 
-  test("fails when the list cannot be read", async () => {
-    mockListExpired.mockResolvedValue(new Error("database down"))
+  test("deletes nothing when the list cannot be read", async () => {
+    model.conversations.listExpired.mockResolvedValue(
+      new Error("database down"),
+    )
 
-    await expect(deleteExpired()).rejects.toThrow("database down")
-    expect(mockDeleteCascade).not.toHaveBeenCalled()
+    await tick()
+
+    expect(deleteConversationCascade).not.toHaveBeenCalled()
   })
-})
 
-describe("tick", () => {
   test("goes on while batches come back full", async () => {
-    mockListExpired
+    model.conversations.listExpired
       .mockResolvedValueOnce(batch(100, "first"))
       .mockResolvedValueOnce(batch(3, "second"))
 
     await tick()
 
-    expect(mockListExpired).toHaveBeenCalledTimes(2)
-    expect(mockDeleteCascade).toHaveBeenCalledTimes(103)
+    expect(model.conversations.listExpired).toHaveBeenCalledTimes(2)
+    expect(deleteConversationCascade).toHaveBeenCalledTimes(103)
   })
 
   test("stops on a batch that could not be fully deleted", async () => {
-    mockListExpired.mockResolvedValue(batch(100, "stuck"))
-    mockDeleteCascade.mockRejectedValue(new Error("storage down"))
+    model.conversations.listExpired.mockResolvedValue(batch(100, "stuck"))
+    deleteConversationCascade.mockRejectedValue(new Error("storage down"))
 
     await tick()
 
-    expect(mockListExpired).toHaveBeenCalledTimes(1)
+    expect(model.conversations.listExpired).toHaveBeenCalledTimes(1)
   })
 
   test("a failed check leaves the next one free to run", async () => {
-    mockListExpired
+    model.conversations.listExpired
       .mockResolvedValueOnce(new Error("database down"))
       .mockResolvedValueOnce([media("a")])
 
     await tick()
     await tick()
 
-    expect(mockDeleteCascade).toHaveBeenCalledTimes(1)
+    expect(deleteConversationCascade).toHaveBeenCalledTimes(1)
   })
 
   test("does not overlap a check still running", async () => {
     let release
-    mockListExpired.mockReturnValueOnce(
+    model.conversations.listExpired.mockReturnValueOnce(
       new Promise((resolve) => {
         release = () => resolve([])
       }),
@@ -109,6 +110,6 @@ describe("tick", () => {
     release()
     await running
 
-    expect(mockListExpired).toHaveBeenCalledTimes(1)
+    expect(model.conversations.listExpired).toHaveBeenCalledTimes(1)
   })
 })

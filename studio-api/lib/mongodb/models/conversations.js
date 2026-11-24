@@ -38,7 +38,12 @@ class ConvoModel extends MongoModel {
     try {
       const query = { expiresAt: { $lte: moment().format() } }
       return await this.mongoRequest(query, {
-        projection: { text: 0 },
+        projection: {
+          type: 1,
+          "metadata.audio.filepath": 1,
+          "organization.organizationId": 1,
+          expiresAt: 1,
+        },
         sort: { expiresAt: 1 },
         limit,
       })
@@ -88,6 +93,9 @@ class ConvoModel extends MongoModel {
       }
 
       if (payload.organizationId) delete payload.organizationId
+      // Written by updateExpiration only: a document read earlier and written
+      // back must not bring an old date back
+      delete payload.expiresAt
 
       const dateTime = moment().format()
       payload.last_update = dateTime
@@ -96,6 +104,20 @@ class ConvoModel extends MongoModel {
       let mutableElements = payload
 
       return await this.mongoUpdateOne(query, operator, mutableElements)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // null removes the date: the media is never deleted
+  async updateExpiration(conversationId, expiresAt) {
+    try {
+      const query = { _id: this.getObjectId(conversationId) }
+      return await this.mongoUpdateOne(query, "$set", {
+        expiresAt,
+        last_update: moment().format(),
+      })
     } catch (error) {
       console.error(error)
       return error

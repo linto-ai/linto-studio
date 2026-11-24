@@ -2,6 +2,5 @@
 // day for the user. null for an empty input.
 export default function dateInputToIso(value) {
   if (!value) return null
-  const [year, month, day] = value.split("-").map(Number)
-  return new Date(year, month - 1, day).toISOString()
+  return new Date(`${value}T00:00`).toISOString()
 }

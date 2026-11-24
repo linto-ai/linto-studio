@@ -10,11 +10,13 @@ jest.mock(`${process.cwd()}/lib/mongodb/driver`, () => ({
   constructor: { db: {}, mongoDb: {} },
 }))
 
-const mockGetMediaRetention = jest.fn()
 jest.mock(`${process.cwd()}/lib/mongodb/models/organizations`, () => ({
-  getMediaRetention: (...args) => mockGetMediaRetention(...args),
+  getMediaRetention: jest.fn(),
 }))
 
+const organizations = require(
+  `${process.cwd()}/lib/mongodb/models/organizations`,
+)
 const conversations = require(
   `${process.cwd()}/lib/mongodb/models/conversations`,
 )
@@ -34,9 +36,17 @@ async function create(conv) {
   return conversations.mongoInsert.mock.calls[0][0]
 }
 
+beforeAll(() => {
+  jest.useFakeTimers().setSystemTime(new Date("2030-01-15T10:00:00Z"))
+})
+
+afterAll(() => {
+  jest.useRealTimers()
+})
+
 beforeEach(() => {
   jest.clearAllMocks()
-  mockGetMediaRetention.mockResolvedValue({ value: 6, unit: "month" })
+  organizations.getMediaRetention.mockResolvedValue({ value: 6, unit: "month" })
   conversations.mongoInsert = jest.fn(async () => ({ insertedId: "conv-1" }))
 })
 
@@ -44,15 +54,12 @@ describe("conversations.create", () => {
   test("stamps the deletion date from the retention of the organization", async () => {
     const created = await create(conversation())
 
-    expect(mockGetMediaRetention).toHaveBeenCalledWith("org-1")
-    const expected = moment().add(6, "month")
-    expect(
-      Math.abs(moment(created.expiresAt).diff(expected, "seconds")),
-    ).toBeLessThan(5)
+    expect(organizations.getMediaRetention).toHaveBeenCalledWith("org-1")
+    expect(created.expiresAt).toBe(moment().add(6, "month").format())
   })
 
   test("without retention the media has no deletion date", async () => {
-    mockGetMediaRetention.mockResolvedValue(null)
+    organizations.getMediaRetention.mockResolvedValue(null)
 
     const created = await create(conversation())
 
@@ -60,7 +67,7 @@ describe("conversations.create", () => {
   })
 
   test("a copy does not inherit the date of its source", async () => {
-    mockGetMediaRetention.mockResolvedValue(null)
+    organizations.getMediaRetention.mockResolvedValue(null)
 
     const created = await create(
       conversation({ expiresAt: "2020-01-01T00:00:00+00:00" }),
@@ -76,13 +83,15 @@ describe("conversations.create", () => {
         conversation({ type: { mode, child_conversations: [] } }),
       )
 
-      expect(mockGetMediaRetention).not.toHaveBeenCalled()
+      expect(organizations.getMediaRetention).not.toHaveBeenCalled()
       expect(created).not.toHaveProperty("expiresAt")
     },
   )
 
   test("is not created when the retention cannot be read", async () => {
-    mockGetMediaRetention.mockRejectedValue(new Error("database down"))
+    organizations.getMediaRetention.mockRejectedValue(
+      new Error("database down"),
+    )
     jest.spyOn(console, "error").mockImplementation(() => {})
 
     const result = await conversations.create(conversation())
@@ -93,17 +102,20 @@ describe("conversations.create", () => {
 })
 
 describe("conversations.listExpired", () => {
-  test("asks for the media whose date is over, without their text", async () => {
+  test("asks for the media whose date is over, with what the deletion reads", async () => {
     conversations.mongoRequest = jest.fn(async () => [])
 
     await conversations.listExpired(100)
 
     const [query, options] = conversations.mongoRequest.mock.calls[0]
-    expect(Math.abs(moment().diff(moment(query.expiresAt.$lte)))).toBeLessThan(
-      5000,
-    )
+    expect(query).toEqual({ expiresAt: { $lte: moment().format() } })
     expect(options).toEqual({
-      projection: { text: 0 },
+      projection: {
+        type: 1,
+        "metadata.audio.filepath": 1,
+        "organization.organizationId": 1,
+        expiresAt: 1,
+      },
       sort: { expiresAt: 1 },
       limit: 100,
     })

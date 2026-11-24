@@ -43,6 +43,7 @@ const PROTECTED_FIELDS = [
   "metadata",
   "jobs",
   "type",
+  "expiresAt",
 ]
 
 function stripProtectedFields(body) {
@@ -96,12 +97,22 @@ async function updateConversation(req, res, next) {
       ...stripProtectedFields(req.body),
       _id: req.params.conversationId,
     }
-    if (conv.expiresAt !== undefined) {
-      conv.expiresAt = parseExpiration(conv.expiresAt, conversation[0])
+    let expiresAt
+    if (req.body.expiresAt !== undefined) {
+      expiresAt = parseExpiration(req.body.expiresAt, conversation[0])
     }
 
     const result = await model.conversations.update(conv)
     if (result.matchedCount === 0) throw new ConversationError()
+
+    if (expiresAt !== undefined) {
+      throwIfError(
+        await model.conversations.updateExpiration(
+          req.params.conversationId,
+          expiresAt,
+        ),
+      )
+    }
 
     res.status(200).send({
       message: "Conversation updated",

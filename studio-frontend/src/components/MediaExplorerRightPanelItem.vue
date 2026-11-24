@@ -96,7 +96,7 @@
             <span class="open-media-hint">{{ expirationHint }}</span>
             <div class="actions-container" v-if="hasExpiration">
               <Button
-                @click="handleExpirationRemove"
+                @click="saveExpiration(null)"
                 :label="$t('media_explorer.panel.expiration.remove')"
                 icon="x"
                 variant="secondary"
@@ -188,7 +188,6 @@ import FolderSelector from "./FolderSelector.vue"
 import getFullDate from "@/tools/date/getFullDate.js"
 import incrementByNDays from "@/tools/date/incrementByNDays.js"
 import dateInputToIso from "@/tools/date/dateInputToIso.js"
-import { formatFullDate } from "@/tools/date/formatFullDate.js"
 import { mapGetters } from "vuex"
 
 export default {
@@ -284,10 +283,9 @@ export default {
       if (!this.hasExpiration) {
         return this.$t("media_explorer.panel.expiration.never")
       }
-      return formatFullDate(
-        this.reactiveSelectedMedia.expiresAt,
-        this.$i18n.locale,
-      )
+      return this.formatDate(this.reactiveSelectedMedia.expiresAt, {
+        month: "long",
+      })
     },
     expirationHint() {
       if (this.hasExpiration) {
@@ -317,7 +315,7 @@ export default {
         } else {
           this.titleField.value = ""
           this.descriptionField.value = ""
-          this.expirationField.value = ""
+          this.resetExpirationField()
         }
       },
     },
@@ -349,26 +347,15 @@ export default {
 
     // An emptied date removes it, like the dedicated button
     async handleExpirationUpdate() {
-      const expiresAt = dateInputToIso(this.expirationField.value)
-      if (expiresAt) {
-        await this.saveExpiration(
-          expiresAt,
-          this.$t("media_explorer.panel.expiration.updated"),
-        )
-      } else {
-        await this.handleExpirationRemove()
-      }
+      await this.saveExpiration(dateInputToIso(this.expirationField.value))
     },
 
-    async handleExpirationRemove() {
-      await this.saveExpiration(
-        null,
-        this.$t("media_explorer.panel.expiration.removed"),
-      )
-    },
-
-    async saveExpiration(expiresAt, successMessage) {
+    async saveExpiration(expiresAt) {
       if (!this.selectedMedia?._id) return
+      let successMessage = this.$t("media_explorer.panel.expiration.updated")
+      if (expiresAt === null) {
+        successMessage = this.$t("media_explorer.panel.expiration.removed")
+      }
       try {
         await this.updateMediaProperty(
           this.selectedMedia._id,
