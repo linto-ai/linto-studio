@@ -28,4 +28,35 @@ function isEmail(value) {
   return isEmailDomain(normalizeEmailDomain(value.slice(at)))
 }
 
-module.exports = { emailDomain, normalizeEmailDomain, isEmailDomain, isEmail }
+// Normalize an email address so invitation, self sign-up and OIDC login
+// all resolve to the same account regardless of casing/whitespace.
+// Email lookups in Mongo are exact and case sensitive, while the OIDC
+// provider may return a capitalized email claim, so both writes and
+// lookups must be normalized consistently.
+function normalizeEmail(email) {
+  if (typeof email !== "string") return email
+  return email.trim().toLowerCase()
+}
+
+// The normalized email, null when the value is not one
+function validEmail(email) {
+  const value = normalizeEmail(email)
+  return isEmail(value) ? value : null
+}
+
+// The normalized domain, null when the value is not one
+function validDomain(domain) {
+  if (typeof domain !== "string") return null
+  const value = normalizeEmailDomain(domain)
+  return isEmailDomain(value) ? value : null
+}
+
+module.exports = {
+  emailDomain,
+  normalizeEmailDomain,
+  isEmailDomain,
+  isEmail,
+  normalizeEmail,
+  validEmail,
+  validDomain,
+}

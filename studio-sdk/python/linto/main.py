@@ -171,19 +171,40 @@ class LinTO:
             format=format,
         )
 
-    async def get_publication_templates(self):
-        """Get available publication templates."""
-        return await self.api_service.get_publication_templates()
+    async def get_publication_templates(self, service_id=None, organization_id=None):
+        """Get available publication templates (optionally those linked to a service).
 
-    async def get_template_placeholders(self, template_id):
-        """Get placeholders for a specific publication template."""
-        return await self.api_service.get_template_placeholders(
-            templateId=template_id
+        ``organization_id`` defaults to the first organization of the user.
+        """
+        return await self.api_service.get_publication_templates(
+            serviceId=service_id, organizationId=organization_id
         )
 
-    async def export_with_template(self, job_id, format="pdf", template_id=None, version_number=None):
-        """Export a document using a publication template. Returns binary content."""
+    async def get_template_placeholders(self, template_id, organization_id=None):
+        """Get placeholders for a specific publication template.
+
+        ``organization_id`` defaults to the first organization of the user.
+        """
+        return await self.api_service.get_template_placeholders(
+            templateId=template_id, organizationId=organization_id
+        )
+
+    async def export_with_template(
+        self,
+        job_id,
+        format="pdf",
+        template_id=None,
+        version_number=None,
+        conversation_id=None,
+    ):
+        """Export a document using a publication template. Returns binary content.
+
+        ``conversation_id`` is the conversation the job belongs to.
+        """
+        if not conversation_id:
+            raise ValueError("conversation_id is required")
         return await self.api_service.export_with_template(
+            conversationId=conversation_id,
             jobId=job_id,
             format=format,
             templateId=template_id,

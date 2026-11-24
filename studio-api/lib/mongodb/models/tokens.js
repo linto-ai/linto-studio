@@ -4,6 +4,8 @@ const debug = require("debug")(
 const MongoModel = require(`../model`)
 const ms = require("ms")
 
+const TOKEN_KIND = require(`${process.cwd()}/lib/dao/token/kinds`)
+
 function getExpiresIn(defaultValue = "14d") {
   try {
     return ms(process.env.REFRESH_TOKEN_DAYS_TIME || defaultValue)
@@ -17,12 +19,13 @@ class TokenModel extends MongoModel {
     super("tokens") // define name of 'users' collection elsewhere?
   }
 
-  async insert(user_id, salt, expires_in) {
+  async insert(user_id, salt, expires_in, extra) {
     try {
       let payload = {
         userId: user_id.toString(),
         salt: salt,
         createdAt: new Date(Date.now()),
+        ...extra,
       }
       if (expires_in) {
         payload.expiresIn = expires_in
@@ -56,6 +59,7 @@ class TokenModel extends MongoModel {
     try {
       const query = {
         userId: userId,
+        kind: { $ne: TOKEN_KIND.EXCHANGE },
       }
       return await this.mongoRequest(query)
     } catch (error) {
@@ -94,6 +98,7 @@ class TokenModel extends MongoModel {
     try {
       const query = {
         userId: { $in: ids },
+        kind: { $ne: TOKEN_KIND.EXCHANGE },
       }
       return await this.mongoRequest(query, {
         userId: 1,

@@ -5,6 +5,7 @@ const debug = require("debug")(
 const model = require(`${process.cwd()}/lib/mongodb/models`)
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const ORGANIZATION_ROLE = require(`${process.cwd()}/lib/dao/organization/roles`)
+const { firstOf } = require(`${process.cwd()}/lib/utility/firstOf`)
 
 const { UserForbidden } = require(
   `${process.cwd()}/components/WebServer/error/exception/users`,
@@ -33,15 +34,35 @@ module.exports = {
   isOrganizationInitiator: (req) =>
     checkAccess(req, ROLE.ORGANIZATION_INITIATOR),
   isReadOnlyScope,
+  callerOf,
+}
+
+const CALLER_PROJECTION = {
+  type: 1,
+  role: 1,
+  "metadata.externalIdentity": 1,
+  "metadata.organizationId": 1,
+  "metadata.quickMeeting": 1,
+}
+
+async function callerOf(req) {
+  if (req.caller === undefined) {
+    req.caller = firstOf(
+      await model.users.getByIdFilter(
+        req.payload.data.userId,
+        CALLER_PROJECTION,
+      ),
+    )
+  }
+  return req.caller
 }
 
 async function checkAccess(req, role) {
   try {
-    const { userId } = req.payload.data
-    const user = await model.users.getById(userId, true)
-    if (user.length === 0) return false
+    const user = await callerOf(req)
+    if (!user) return false
 
-    const userRole = user[0].role
+    const userRole = user.role
     if (userRole && ROLE.hasPlatformRoleAccess(userRole, role)) {
       if (role === ROLE.ORGANIZATION_INITIATOR) return true
 

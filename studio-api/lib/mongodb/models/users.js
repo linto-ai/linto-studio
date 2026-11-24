@@ -8,6 +8,11 @@ const VALIDITY_DATE = require(
   `${process.cwd()}/lib/dao/validityDate/validityDate.js`,
 )
 const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
+const { normalizeEmail } = require(`${process.cwd()}/lib/utility/emailDomain`)
+const { isExternalKey } = require(
+  `${process.cwd()}/lib/utility/externalIdentity`,
+)
+const { throwIfError } = require(`${process.cwd()}/lib/utility/throwIfError`)
 
 const ROLE = require(`${process.cwd()}/lib/dao/users/platformRole`)
 const USER_TYPE = require(`${process.cwd()}/lib/dao/users/types`)
@@ -41,16 +46,6 @@ const defaultUserPayload = {
     },
     organizations: { update: false, delete: false, add: true },
   },
-}
-
-// Normalize an email address so invitation, self sign-up and OIDC login
-// all resolve to the same account regardless of casing/whitespace.
-// Email lookups in Mongo are exact and case sensitive, while the OIDC
-// provider may return a capitalized email claim, so both writes and
-// lookups must be normalized consistently.
-function normalizeEmail(email) {
-  if (typeof email !== "string") return email
-  return email.trim().toLowerCase()
 }
 
 function generatePasswordHash(password) {
@@ -301,6 +296,41 @@ class UsersModel extends MongoModel {
     }
   }
 
+  async findApiKeyByExternalIdentity(identity, { organizationId, ids } = {}) {
+    const query = { type: USER_TYPE.M2M }
+    for (const field of ["provider", "subject", "email"]) {
+      if (identity[field] !== undefined) {
+        query[`metadata.externalIdentity.${field}`] = identity[field]
+      }
+    }
+    if (organizationId) query["metadata.organizationId"] = organizationId
+    if (ids) query._id = { $in: this.getObjectIds(ids) }
+    return this.mongoRequest(query, {
+      projection: personal_projection,
+      sort: { created: -1 },
+    })
+  }
+
+  async findApiKeyOfPerson({ provider, subject, email }, organizationId) {
+    const or = []
+    if (subject) {
+      or.push({
+        "metadata.externalIdentity.provider": provider,
+        "metadata.externalIdentity.subject": subject,
+      })
+    }
+    if (email) or.push({ "metadata.externalIdentity.email": email })
+    if (or.length === 0 || !organizationId) return []
+    return this.mongoRequest(
+      {
+        type: USER_TYPE.M2M,
+        "metadata.organizationId": organizationId,
+        $or: or,
+      },
+      { projection: personal_projection, sort: { created: -1 } },
+    )
+  }
+
   async listApiKeyList(ids, projection = {}) {
     try {
       const objectIdArray = ids.map((id) => {
@@ -354,6 +384,17 @@ class UsersModel extends MongoModel {
       console.error(error)
       return error
     }
+  }
+
+  async isExternalKey(userId) {
+    if (!/^[0-9a-f]{24}$/i.test(String(userId))) return false
+    const [user] = throwIfError(
+      await this.getByIdFilter(userId, {
+        type: 1,
+        "metadata.externalIdentity": 1,
+      }),
+    )
+    return isExternalKey(user)
   }
 
   async getByIds(ids) {

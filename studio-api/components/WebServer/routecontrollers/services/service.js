@@ -27,6 +27,12 @@ async function getSaasServices(req, res, next) {
 }
 
 async function getLlmServices(req, res, next) {
+  let scope
+  try {
+    scope = serviceUtility.resolveLlmScope(req.query.scope)
+  } catch (err) {
+    return next(err)
+  }
   try {
     if (!process.env.LLM_GATEWAY_SERVICES?.trim()) {
       return res
@@ -45,6 +51,7 @@ async function getLlmServices(req, res, next) {
       organizationId,
       securityLevel,
       userId,
+      scope,
     )
     res.status(200).send(services)
   } catch (err) {

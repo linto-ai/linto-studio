@@ -325,13 +325,7 @@ async function setupUserWorkspace(user, { firstLogin }) {
 }
 
 async function addM2mUserToOrganization(orgaId, m2m_id, role = ROLES.MEMBER) {
-  const organizations = (await model.organizations.getById(orgaId))[0]
-  organizations.users.push({
-    userId: m2m_id.toString(),
-    role: role,
-    type: USER_TYPE.M2M,
-  })
-  await model.organizations.update(organizations)
+  await model.organizations.addMember(orgaId, m2m_id, role, USER_TYPE.M2M)
 }
 
 module.exports = {

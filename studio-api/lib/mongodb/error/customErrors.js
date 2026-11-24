@@ -13,6 +13,11 @@ class MongoError extends Error {
   }
 }
 
+function isDuplicateKey(error) {
+  return error?.code === 11000
+}
+
 module.exports = {
   MongoError,
+  isDuplicateKey,
 }

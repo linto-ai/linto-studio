@@ -97,19 +97,21 @@ export class StudioApiService {
     )(args)
   }
 
-  async getTemplatePlaceholders({ templateId } = {}) {
-    return await this.#withToken(this.#getTemplatePlaceholders)({
-      templateId,
-    })
+  async getTemplatePlaceholders({ templateId, organizationId } = {}) {
+    return await this.#withToken(
+      this.#withOrganizationId(this.#getTemplatePlaceholders.bind(this))
+    )({ templateId, organizationId })
   }
 
   async exportWithTemplate({
+    conversationId,
     jobId,
     format = "pdf",
     templateId,
     versionNumber,
   } = {}) {
     return await this.#withToken(this.#exportWithTemplate)({
+      conversationId,
       jobId,
       format,
       templateId,
@@ -254,6 +256,21 @@ export class StudioApiService {
     return await this.#withToken(
       this.#withOrganizationId(this.#listConversations.bind(this))
     )(args)
+  }
+
+  async getPublicSession({ sessionId, token, password } = {}) {
+    if (!sessionId) throw new Error("sessionId is required")
+    const query = password ? `?password=${encodeURIComponent(password)}` : ""
+    const id = encodeURIComponent(sessionId)
+    const bearer = token || this.token
+    const req = new Request(
+      `${this.baseApiUrl}/sessions/public/${id}${query}`,
+      {
+        method: "GET",
+        headers: bearer ? { Authorization: `Bearer ${bearer}` } : {},
+      }
+    )
+    return await sendRequest(req)
   }
 
   // -- Decorators --
@@ -531,26 +548,31 @@ export class StudioApiService {
     })
   }
 
-  async #getPublicationTemplates({ token, organizationId }) {
-    const url = `${this.baseApiUrl}/publication/templates?organization_id=${encodeURIComponent(organizationId)}`
+  async #getPublicationTemplates({ token, organizationId, serviceId }) {
+    const query = buildQuery({ service_id: serviceId })
+    const url = `${this.baseApiUrl}/publication/organizations/${encodeURIComponent(organizationId)}/templates${query}`
     const req = prepareRequest(url, "GET", { token })
     return await sendRequest(req)
   }
 
-  async #getTemplatePlaceholders({ token, templateId }) {
-    const url = `${this.baseApiUrl}/publication/templates/${templateId}/placeholders`
+  async #getTemplatePlaceholders({ token, organizationId, templateId }) {
+    const url = `${this.baseApiUrl}/publication/organizations/${encodeURIComponent(organizationId)}/templates/${templateId}/placeholders`
     const req = prepareRequest(url, "GET", { token })
     return await sendRequest(req)
   }
 
   async #exportWithTemplate({
     token,
+    conversationId,
     jobId,
     format,
     templateId,
     versionNumber,
   }) {
-    let url = `${this.baseApiUrl}/publication/${jobId}/export/${format}`
+    if (!conversationId) {
+      throw new Error("conversationId is required")
+    }
+    let url = `${this.baseApiUrl}/publication/conversations/${encodeURIComponent(conversationId)}/jobs/${jobId}/export/${format}`
     const params = []
     if (templateId !== undefined && templateId !== null && templateId !== "") {
       params.push(`templateId=${encodeURIComponent(templateId)}`)

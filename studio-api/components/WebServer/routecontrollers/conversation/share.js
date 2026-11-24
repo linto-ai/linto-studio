@@ -17,6 +17,7 @@ const {
   ConversationNotFound,
   ConversationMetadataRequire,
   ConversationError,
+  ConversationShareAccessDenied,
 } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
@@ -43,6 +44,14 @@ async function updateConversationMembersRight(req, res, next) {
       req.params.conversationId,
     )
     if (conversation.length !== 1) throw new ConversationNotFound()
+    if (
+      membersRight !== RIGHTS.UNDEFINED &&
+      (await model.users.isExternalKey(conversation[0].owner))
+    ) {
+      throw new ConversationShareAccessDenied(
+        "A conversation of an external key is never shared with the organization",
+      )
+    }
 
     const result = await model.conversations.update({
       _id: req.params.conversationId,

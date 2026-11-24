@@ -1,5 +1,6 @@
 process.env.SESSION_API_ENDPOINT = "http://sessionapi:8005/v1"
 
+jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({}))
 jest.mock(`${process.cwd()}/lib/utility/axios`, () => ({
   get: jest.fn(),
 }))

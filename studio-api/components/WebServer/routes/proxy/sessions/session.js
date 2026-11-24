@@ -22,6 +22,7 @@ const {
   cleanPublicChannelContent,
   generatPublicToken,
   filterPrivateSessions,
+  keepOwnedByExternalCaller,
   hideStreamEndpoints,
   checkSessionMatchingOrganization,
   checkTemplateMatchingOrganization,
@@ -79,6 +80,7 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/templates",
             method: ["get"],
             forwardParams: proxyListForwardParams,
+            executeAfterResult: [keepOwnedByExternalCaller("sessionTemplates")],
           },
           {
             path: "/organizations/:organizationId/templates",
@@ -88,18 +90,22 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/templates/:id",
             method: ["get"],
+            ownedBy: "templates",
             forwardParams: proxyForwardParams,
             executeAfterResult: [afterProxyAccess],
           },
           {
             path: "/organizations/:organizationId/templates/:id",
             method: ["put"],
+            ownedBy: "templates",
             forwardParams: proxyForwardParams,
             executeBeforeResult: checkTemplateMatchingOrganization,
           },
           {
             path: "/organizations/:organizationId/templates/:id",
             method: ["delete"],
+            ownedBy: "templates",
+            endsConsumption: true,
             forwardParams: proxyForwardParams,
             executeBeforeResult: checkTemplateMatchingOrganization,
           },
@@ -153,6 +159,7 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["get"],
+            ownedBy: "sessions",
             executeBeforeResult: forwardSessionAlias,
             executeAfterResult: [
               afterProxyAccess,
@@ -165,6 +172,7 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/sessions/:id/channels/:channelId",
             method: ["get"],
+            ownedBy: "sessions",
             executeBeforeResult: forwardSessionAlias,
             executeAfterResult: [
               afterProxyAccess,
@@ -177,7 +185,11 @@ module.exports = (webServer) => {
             path: "/organizations/:organizationId/sessions",
             method: ["get"],
             forwardParams: proxyListForwardParams,
-            executeAfterResult: [filterPrivateSessions, hideStreamEndpoints],
+            executeAfterResult: [
+              keepOwnedByExternalCaller("sessions"),
+              filterPrivateSessions,
+              hideStreamEndpoints,
+            ],
           },
         ],
         requireAuth: true,
@@ -218,6 +230,7 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/quickMeeting/",
             method: ["post"],
+            startsQuickMeeting: true,
             forwardParams: proxyForwardParams,
             executeBeforeResult: chainBeforeResult(
               checkSessionMembersRight,
@@ -227,6 +240,8 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/quickMeeting/:id",
             method: ["delete"],
+            ownedBy: "sessions",
+            endsConsumption: true,
             forwardParams: proxyForwardParams,
             executeBeforeResult: storeQuickMeetingFromStop.bind(webServer),
           },
@@ -250,7 +265,13 @@ module.exports = (webServer) => {
           },
           {
             path: "/organizations/:organizationId/bots/:id",
-            method: ["get", "delete"],
+            method: ["get"],
+            forwardParams: proxyListForwardParams,
+          },
+          {
+            path: "/organizations/:organizationId/bots/:id",
+            method: ["delete"],
+            endsConsumption: true,
             forwardParams: proxyListForwardParams,
           },
         ],
@@ -276,6 +297,7 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["put", "patch"],
+            ownedBy: "sessions",
             forwardParams: proxyForwardParams,
             executeBeforeResult: chainBeforeResult(
               checkSessionMatchingOrganization,
@@ -285,30 +307,39 @@ module.exports = (webServer) => {
           {
             path: "/organizations/:organizationId/sessions/:id",
             method: ["delete"],
+            ownedBy: "sessions",
+            endsConsumption: true,
             forwardParams: proxyForwardParams,
             executeBeforeResult: storeSessionFromStop.bind(webServer),
           },
           {
             path: "/organizations/:organizationId/sessions/:id/stop",
             method: ["put"],
+            ownedBy: "sessions",
+            endsConsumption: true,
             forwardParams: proxyForwardParams,
             executeBeforeResult: checkSessionMatchingOrganization,
           },
           {
             path: "/organizations/:organizationId/sessions/:id/pause",
             method: ["put"],
+            ownedBy: "sessions",
+            endsConsumption: true,
             forwardParams: proxyForwardParams,
             executeBeforeResult: checkSessionMatchingOrganization,
           },
           {
             path: "/organizations/:organizationId/sessions/:id/resume",
             method: ["put"],
+            ownedBy: "sessions",
             forwardParams: proxyForwardParams,
             executeBeforeResult: checkSessionMatchingOrganization,
           },
           {
             path: "/organizations/:organizationId/sessions/:id/clear",
             method: ["put"],
+            ownedBy: "sessions",
+            endsConsumption: true,
             forwardParams: proxyForwardParams,
             executeBeforeResult: checkSessionMatchingOrganization,
           },

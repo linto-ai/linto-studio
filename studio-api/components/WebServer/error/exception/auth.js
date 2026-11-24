@@ -52,6 +52,28 @@ module.exports = {
     401,
     "You are not authorized to access this resource",
   ),
+  // Identity bridge
+  ExternalIdentityInvalid: createException(
+    "ExternalIdentityInvalid",
+    "auth",
+    400,
+    "Invalid external identity",
+    "invalid_external_identity",
+  ),
+  ExternalKeyRevoked: createException(
+    "ExternalKeyRevoked",
+    "auth",
+    403,
+    "The LinTO API key linked to this identity has been revoked",
+    "revoked",
+  ),
+  ExternalKeyExpired: createException(
+    "ExternalKeyExpired",
+    "auth",
+    403,
+    "The LinTO API key linked to this identity has expired",
+    "expired",
+  ),
   // Proxy
   UnauthorizedProxy: createException(
     "Unauthorized",

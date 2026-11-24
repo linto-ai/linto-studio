@@ -1,0 +1,229 @@
+{
+  "/api/auth/external/resolve": {
+    "post": {
+      "tags": ["auth"],
+      "summary": "Identity bridge: what an external identity may do",
+      "description": "Resolves the external identity against the `externalEntitlements` of the root organization `organizationId` (the record of the person, by subject at that provider then by email, else the record of their email domain) and answers the capabilities and the root organization, where their key lives. **No side effect**: no key, no token, no organization is created, so warming a cache at login never provisions anything. Auth: a SYSTEM_ADMINISTRATOR credential with `?userScope=backoffice`.",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "description": "`backoffice`: the SYSTEM_ADMINISTRATOR credential of the integration acts across organizations"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "organizationId": {
+                  "type": "string",
+                  "description": "the root organization of the external system, the `{organizationId}` of the v1 entitlements routes: only its records and its keys are read"
+                },
+                "provider": {
+                  "type": "string",
+                  "example": "meet:linagora",
+                  "description": "the external system presenting the identity"
+                },
+                "subject": {
+                  "type": "string",
+                  "description": "stable id of the person at the provider (e.g. the OIDC sub)"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "email of the person (lowercased server-side); the pivot between systems and the input of the domain resolution"
+                }
+              },
+              "required": ["organizationId", "provider"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "organizationId": {
+                    "type": "string",
+                    "description": "the root organization: the keys of every person of the external system live there"
+                  },
+                  "capabilities": {
+                    "type": "object",
+                    "description": "Computed from the entitlement at the time of the call, never stored on the key.",
+                    "properties": {
+                      "quickMeeting": {
+                        "type": "boolean",
+                        "description": "may start a quick meeting (transcription.live)"
+                      },
+                      "transcription": {
+                        "type": "object",
+                        "properties": {
+                          "live": {
+                            "type": "boolean"
+                          },
+                          "async": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid identity or root organization id (`code: invalid_external_identity`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The caller is not a SYSTEM_ADMINISTRATOR acting with `?userScope=backoffice`"
+        },
+        "404": {
+          "description": "No entitlement stands for this identity under the root organization, or every feature is off (`code: no_entitlement`); or the root organization does not exist"
+        },
+        "429": {
+          "description": "Rate limited, per caller credential (`EXTERNAL_EXCHANGE_RATE_LIMIT` calls a minute, 3000 by default)"
+        }
+      }
+    }
+  },
+  "/api/auth/external/token": {
+    "post": {
+      "tags": ["auth"],
+      "summary": "Identity bridge: exchange an external identity for a short token of its API key",
+      "description": "Same resolution as `/resolve`, then the key standing for that person: found by (provider, subject), then by email, among the keys of the root organization, or **created just-in-time** there when the person has an entitlement and no key yet. A just-in-time key is made a member of the root organization before any token is minted. Mints a token that expires after `EXTERNAL_EXCHANGE_TOKEN_TTL` (default 1h), revocable on its own; the token inherits the key's organization role. The keys of every person share the root organization, so a key standing for an external identity reaches only what it owns: its own sessions, templates and catch-ups, never listed nor opened for another key, and its conversations are never given to the members of the organization, whose list it does not see. The key carries the identity only (the rights are re-read from the entitlement on every gated call), and the long-lived key is never returned. Called only when the person actually starts something. Auth: a SYSTEM_ADMINISTRATOR credential with `?userScope=backoffice`.",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "userScope",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": ["backoffice"]
+          },
+          "description": "`backoffice`: the SYSTEM_ADMINISTRATOR credential of the integration acts across organizations"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "organizationId": {
+                  "type": "string",
+                  "description": "the root organization of the external system, the `{organizationId}` of the v1 entitlements routes: only its records and its keys are read"
+                },
+                "provider": {
+                  "type": "string",
+                  "example": "meet:linagora",
+                  "description": "the external system presenting the identity"
+                },
+                "subject": {
+                  "type": "string",
+                  "description": "stable id of the person at the provider (e.g. the OIDC sub)"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "email of the person (lowercased server-side); the pivot between systems and the input of the domain resolution"
+                }
+              },
+              "required": ["organizationId", "provider"]
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  },
+                  "expiresIn": {
+                    "type": "integer",
+                    "description": "seconds"
+                  },
+                  "expiresAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "userId": {
+                    "type": "string",
+                    "description": "id of the API key (a machine user)"
+                  },
+                  "organizationId": {
+                    "type": "string"
+                  },
+                  "capabilities": {
+                    "type": "object",
+                    "description": "Computed from the entitlement at the time of the call, never stored on the key.",
+                    "properties": {
+                      "quickMeeting": {
+                        "type": "boolean",
+                        "description": "may start a quick meeting (transcription.live, unless the key has `metadata.quickMeeting: false`)"
+                      },
+                      "transcription": {
+                        "type": "object",
+                        "properties": {
+                          "live": {
+                            "type": "boolean"
+                          },
+                          "async": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "externalIdentity": {
+                    "type": "object"
+                  },
+                  "created": {
+                    "type": "boolean",
+                    "description": "true when the key was created just-in-time by this call"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid identity or root organization id (`code: invalid_external_identity`)"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "description": "The caller is not a SYSTEM_ADMINISTRATOR acting with `?userScope=backoffice`, the linked key has been revoked by an administrator (`code: revoked`), or its token has expired (`code: expired`)"
+        },
+        "404": {
+          "description": "No entitlement stands for this identity under the root organization, or every feature is off (`code: no_entitlement`); or the root organization does not exist"
+        },
+        "429": {
+          "description": "Rate limited, per caller credential (`EXTERNAL_EXCHANGE_RATE_LIMIT` calls a minute, 3000 by default)"
+        }
+      }
+    }
+  }
+}

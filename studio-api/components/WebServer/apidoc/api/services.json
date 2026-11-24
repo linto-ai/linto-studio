@@ -69,6 +69,15 @@
         },
         {
           "$ref": "#/components/parameters/SecurityLevel"
+        },
+        {
+          "in": "query",
+          "name": "scope",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Usage scope of the services, one of `LLM_GATEWAY_SCOPE` (comma-separated, its first by default, `linto` when unset). Each service carries `metadata.icon` when the gateway has one."
         }
       ],
       "responses": {
@@ -81,6 +90,9 @@
               }
             }
           }
+        },
+        "400": {
+          "description": "The usage scope is not one of `LLM_GATEWAY_SCOPE`"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"

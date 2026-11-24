@@ -96,8 +96,23 @@ describe("LinTO Exports / Download — high-level wrappers (mocked apiService)",
       { _id: "tpl-1", name: "Default" },
     ])
     const res = await linto.getPublicationTemplates()
-    expect(linto.apiService.getPublicationTemplates).toHaveBeenCalledTimes(1)
+    expect(linto.apiService.getPublicationTemplates).toHaveBeenCalledWith({
+      serviceId: undefined,
+      organizationId: undefined,
+    })
     expect(res).toEqual([{ _id: "tpl-1", name: "Default" }])
+  })
+
+  test("getPublicationTemplates() forwards serviceId and organizationId", async () => {
+    linto.apiService.getPublicationTemplates = jest.fn(async () => [])
+    await linto.getPublicationTemplates({
+      serviceId: "minutes",
+      organizationId: "org-9",
+    })
+    expect(linto.apiService.getPublicationTemplates).toHaveBeenCalledWith({
+      serviceId: "minutes",
+      organizationId: "org-9",
+    })
   })
 
   test("getTemplatePlaceholders() forwards templateId", async () => {
@@ -107,14 +122,21 @@ describe("LinTO Exports / Download — high-level wrappers (mocked apiService)",
     const res = await linto.getTemplatePlaceholders("tpl-1")
     expect(linto.apiService.getTemplatePlaceholders).toHaveBeenCalledWith({
       templateId: "tpl-1",
+      organizationId: undefined,
     })
     expect(res).toEqual([{ key: "title" }])
+    await linto.getTemplatePlaceholders("tpl-1", { organizationId: "org-9" })
+    expect(linto.apiService.getTemplatePlaceholders).toHaveBeenLastCalledWith({
+      templateId: "tpl-1",
+      organizationId: "org-9",
+    })
   })
 
   test("exportWithTemplate() defaults format to 'pdf', leaves templateId/versionNumber undefined", async () => {
     linto.apiService.exportWithTemplate = jest.fn(async () => new ArrayBuffer(4))
-    await linto.exportWithTemplate("job-1")
+    await linto.exportWithTemplate("job-1", { conversationId: "conv-1" })
     expect(linto.apiService.exportWithTemplate).toHaveBeenCalledWith({
+      conversationId: "conv-1",
       jobId: "job-1",
       format: "pdf",
       templateId: undefined,
@@ -125,11 +147,13 @@ describe("LinTO Exports / Download — high-level wrappers (mocked apiService)",
   test("exportWithTemplate() forwards format, templateId, versionNumber when provided", async () => {
     linto.apiService.exportWithTemplate = jest.fn(async () => new ArrayBuffer(4))
     await linto.exportWithTemplate("job-1", {
+      conversationId: "conv-1",
       format: "docx",
       templateId: "tpl-9",
       versionNumber: 2,
     })
     expect(linto.apiService.exportWithTemplate).toHaveBeenCalledWith({
+      conversationId: "conv-1",
       jobId: "job-1",
       format: "docx",
       templateId: "tpl-9",
@@ -241,7 +265,7 @@ describe("StudioApiService Exports / Download — URL/payload via mocked fetch",
     expect(call.method).toBe("POST")
   })
 
-  test("getPublicationTemplates GETs /publication/templates?organization_id=... and returns array", async () => {
+  test("getPublicationTemplates GETs /publication/organizations/{org}/templates and returns array", async () => {
     const { mock, captured } = makeFetchMock([
       {
         match: (req) =>
@@ -251,7 +275,7 @@ describe("StudioApiService Exports / Download — URL/payload via mocked fetch",
       {
         match: (req) =>
           req.method === "GET" &&
-          /\/api\/publication\/templates\?organization_id=org-1/.test(req.url),
+          /\/api\/publication\/organizations\/org-1\/templates(\?|$)/.test(req.url),
         payload: [{ _id: "tpl-1", name: "Default" }],
       },
     ])
@@ -260,19 +284,24 @@ describe("StudioApiService Exports / Download — URL/payload via mocked fetch",
     const res = await linto.getPublicationTemplates()
     expect(res).toEqual([{ _id: "tpl-1", name: "Default" }])
     const call = captured.find((c) =>
-      /\/api\/publication\/templates\?organization_id=org-1/.test(c.url)
+      /\/api\/publication\/organizations\/org-1\/templates(\?|$)/.test(c.url)
     )
     expect(call).toBeDefined()
     expect(call.method).toBe("GET")
     expect(call.auth).toBe("Bearer tok-1")
   })
 
-  test("getTemplatePlaceholders GETs /publication/templates/{templateId}/placeholders", async () => {
+  test("getTemplatePlaceholders GETs /publication/organizations/{org}/templates/{templateId}/placeholders", async () => {
     const { mock, captured } = makeFetchMock([
       {
         match: (req) =>
+          req.method === "GET" && /\/api\/organizations(\?|$)/.test(req.url),
+        payload: [{ _id: "org-1" }],
+      },
+      {
+        match: (req) =>
           req.method === "GET" &&
-          /\/api\/publication\/templates\/tpl-7\/placeholders/.test(req.url),
+          /\/api\/publication\/organizations\/org-1\/templates\/tpl-7\/placeholders/.test(req.url),
         payload: [{ key: "title" }, { key: "speaker" }],
       },
     ])
@@ -281,27 +310,44 @@ describe("StudioApiService Exports / Download — URL/payload via mocked fetch",
     const res = await linto.getTemplatePlaceholders("tpl-7")
     expect(res).toEqual([{ key: "title" }, { key: "speaker" }])
     const call = captured.find((c) =>
-      /\/api\/publication\/templates\/tpl-7\/placeholders/.test(c.url)
+      /\/api\/publication\/organizations\/org-1\/templates\/tpl-7\/placeholders/.test(c.url)
     )
     expect(call).toBeDefined()
     expect(call.method).toBe("GET")
   })
 
-  test("exportWithTemplate GETs /publication/{jobId}/export/{format} WITHOUT templateId/versionNumber when undefined", async () => {
+  test("an explicit organizationId is the one in the path, no organization is fetched", async () => {
+    const { mock, captured } = makeFetchMock([
+      {
+        match: (req) => req.method === "GET" && /\/api\/publication\//.test(req.url),
+        payload: [],
+      },
+    ])
+    global.fetch = mock
+    const linto = makeLinto()
+    await linto.getPublicationTemplates({ organizationId: "org-42", serviceId: "minutes" })
+    await linto.getTemplatePlaceholders("tpl-7", { organizationId: "org-42" })
+    expect(captured.map((c) => c.url)).toEqual([
+      "https://example.test/api/publication/organizations/org-42/templates?service_id=minutes",
+      "https://example.test/api/publication/organizations/org-42/templates/tpl-7/placeholders",
+    ])
+  })
+
+  test("exportWithTemplate GETs /publication/conversations/{conversationId}/jobs/{jobId}/export/{format} WITHOUT templateId/versionNumber when undefined", async () => {
     const bytes = new Uint8Array([0x25, 0x50, 0x44, 0x46]) // %PDF
     const { mock, captured } = makeFetchMock([
       {
         match: (req) =>
           req.method === "GET" &&
-          /\/api\/publication\/job-1\/export\/pdf/.test(req.url),
+          /\/api\/publication\/conversations\/conv-1\/jobs\/job-1\/export\/pdf/.test(req.url),
         respond: async () => binaryResponse(bytes, "application/pdf"),
       },
     ])
     global.fetch = mock
     const linto = makeLinto()
-    const res = await linto.exportWithTemplate("job-1")
+    const res = await linto.exportWithTemplate("job-1", { conversationId: "conv-1" })
     const call = captured.find((c) =>
-      /\/api\/publication\/job-1\/export\/pdf/.test(c.url)
+      /\/api\/publication\/conversations\/conv-1\/jobs\/job-1\/export\/pdf/.test(c.url)
     )
     expect(call).toBeDefined()
     expect(call.method).toBe("GET")
@@ -316,18 +362,19 @@ describe("StudioApiService Exports / Download — URL/payload via mocked fetch",
       {
         match: (req) =>
           req.method === "GET" &&
-          /\/api\/publication\/job-2\/export\/docx/.test(req.url),
+          /\/api\/publication\/conversations\/conv-1\/jobs\/job-2\/export\/docx/.test(req.url),
         respond: async () => binaryResponse(new Uint8Array([1, 2, 3])),
       },
     ])
     global.fetch = mock
     const linto = makeLinto()
     await linto.exportWithTemplate("job-2", {
+      conversationId: "conv-1",
       format: "docx",
       templateId: "tpl-42",
     })
     const call = captured.find((c) =>
-      /\/api\/publication\/job-2\/export\/docx/.test(c.url)
+      /\/api\/publication\/conversations\/conv-1\/jobs\/job-2\/export\/docx/.test(c.url)
     )
     expect(call).toBeDefined()
     expect(call.url).toMatch(/templateId=tpl-42/)
@@ -339,19 +386,20 @@ describe("StudioApiService Exports / Download — URL/payload via mocked fetch",
       {
         match: (req) =>
           req.method === "GET" &&
-          /\/api\/publication\/job-3\/export\/pdf/.test(req.url),
+          /\/api\/publication\/conversations\/conv-1\/jobs\/job-3\/export\/pdf/.test(req.url),
         respond: async () => binaryResponse(new Uint8Array([9])),
       },
     ])
     global.fetch = mock
     const linto = makeLinto()
     await linto.exportWithTemplate("job-3", {
+      conversationId: "conv-1",
       format: "pdf",
       templateId: "tpl-1",
       versionNumber: 5,
     })
     const call = captured.find((c) =>
-      /\/api\/publication\/job-3\/export\/pdf/.test(c.url)
+      /\/api\/publication\/conversations\/conv-1\/jobs\/job-3\/export\/pdf/.test(c.url)
     )
     expect(call).toBeDefined()
     expect(call.url).toMatch(/templateId=tpl-1/)
@@ -363,15 +411,15 @@ describe("StudioApiService Exports / Download — URL/payload via mocked fetch",
       {
         match: (req) =>
           req.method === "GET" &&
-          /\/api\/publication\/job-4\/export\/odt/.test(req.url),
+          /\/api\/publication\/conversations\/conv-1\/jobs\/job-4\/export\/odt/.test(req.url),
         respond: async () => binaryResponse(new Uint8Array([7, 7])),
       },
     ])
     global.fetch = mock
     const linto = makeLinto()
-    await linto.exportWithTemplate("job-4", { format: "odt" })
+    await linto.exportWithTemplate("job-4", { conversationId: "conv-1", format: "odt" })
     const call = captured.find((c) =>
-      /\/api\/publication\/job-4\/export\/odt/.test(c.url)
+      /\/api\/publication\/conversations\/conv-1\/jobs\/job-4\/export\/odt/.test(c.url)
     )
     expect(call).toBeDefined()
     // Path-only (no template/version) -> no query other than the t= cache buster.

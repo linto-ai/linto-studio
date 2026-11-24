@@ -35,7 +35,7 @@ DB_PASS=example
 DB_NAME=conversations
 
 # Request a specific version of the database (optional)
-DB_MIGRATION_TARGET=1.9.0
+DB_MIGRATION_TARGET=1.9.1
 
 # STT Config
 GATEWAY_SERVICES=https://<domain>
@@ -47,8 +47,9 @@ DEFAULT_SEGMENT_WORD_SIZE=
 # LLM Gateway V2 Config
 # HTTP API endpoint (e.g., http://localhost:8010)
 LLM_GATEWAY_SERVICES=
-# Usage scope of the services listed in Studio (services carry a list of
-# scopes on the gateway: linto, meet, twake...). Default: linto
+# Usage scopes a client may list the services of (?scope=), comma-separated,
+# the first by default; services carry a list of scopes on the gateway
+# (linto, meet, twake...). Default: linto
 LLM_GATEWAY_SCOPE=
 # Chat service ID from LLM Gateway (required for chat feature)
 LLM_CHAT_SERVICE_ID=
@@ -168,6 +169,12 @@ TOKEN_DAYS_TIME=7d
 EXTENDED_TOKEN_DAYS_TIME=14d
 REFRESH_TOKEN_DAYS_TIME=14d
 IMPERSONATION_TOKEN_DAYS_TIME=1h
+# Identity bridge (POST /api/auth/external/token): lifetime of the short tokens,
+# calls per minute and caller credential, and lifetime of the API keys it
+# creates just-in-time
+EXTERNAL_EXCHANGE_TOKEN_TTL=1h
+EXTERNAL_EXCHANGE_RATE_LIMIT=3000
+EXTERNAL_JIT_KEY_EXPIRES_IN=3650d
 
 # Authentification settings
 JWT_ALGORITHM=HS256
