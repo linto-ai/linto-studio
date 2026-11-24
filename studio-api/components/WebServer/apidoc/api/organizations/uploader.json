@@ -67,7 +67,7 @@
                 },
                 "partial": {
                   "type": "boolean",
-                  "description": "The file is the beginning of the audio: the conversation stays pending and open to append until it is finished. Requires a file, not a url"
+                  "description": "The file is the beginning of the audio: the conversation stays pending and open to append until it is completed. Requires a file, not a url"
                 }
               },
               "required": ["name", "endpoint", "lang"]
@@ -160,8 +160,8 @@
   "/api/organizations/{organizationId}/conversations/{conversationId}/append": {
     "post": {
       "tags": ["organizations uploader"],
-      "summary": "Append the next audio to a conversation created with partial",
-      "description": "The audio is transcribed with the settings of the conversation and joined to its audio, whose duration grows accordingly. Appended audios keep the order their requests arrived in, in the audio as in the transcription.",
+      "summary": "Append the next audio to a conversation created with partial, or close it",
+      "description": "The audio is transcribed with the settings of the conversation and joined to its audio, whose duration grows accordingly. Appended audios keep the order their requests arrived in, in the audio as in the transcription. With complete, the conversation is closed: no audio can be appended afterwards and it is done once every appended audio is transcribed. A request needs a file, complete, or both.",
       "parameters": [
         {
           "$ref": "#/components/parameters/OrganizationId"
@@ -179,10 +179,14 @@
                 "file": {
                   "type": "file",
                   "format": "binary",
-                  "description": "Audio that follows the ones already sent"
+                  "description": "Audio that follows the ones already sent. Optional when complete is true"
+                },
+                "complete": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Closes the conversation, after the audio of the request when there is one. A refused audio leaves it open"
                 }
-              },
-              "required": ["file"]
+              }
             }
           }
         }
@@ -219,52 +223,6 @@
         },
         "415": {
           "$ref": "#/components/responses/UnsupportedMediaType"
-        }
-      }
-    }
-  },
-  "/api/organizations/{organizationId}/conversations/{conversationId}/finish": {
-    "post": {
-      "tags": ["organizations uploader"],
-      "summary": "Close a conversation created with partial",
-      "description": "No audio can be appended afterwards. The conversation is done once every appended audio is transcribed.",
-      "parameters": [
-        {
-          "$ref": "#/components/parameters/OrganizationId"
-        },
-        {
-          "$ref": "#/components/parameters/ConversationId"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "OK",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "description": "Information about the conversation processus"
-                  },
-                  "conversationId": {
-                    "type": "string"
-                  }
-                }
-              },
-              "example": {
-                "message": "The conversation is closed once its last audio is processed",
-                "conversationId": "6501a2b3c4d5e6f708091a2b"
-              }
-            }
-          }
-        },
-        "400": {
-          "$ref": "#/components/responses/BadRequest"
-        },
-        "401": {
-          "$ref": "#/components/responses/Unauthorized"
         }
       }
     }

@@ -58,7 +58,7 @@ const { importConversation } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/import.js`,
 )
 
-const { appendReq, finishReq } = require(
+const { appendReq } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/append.js`,
 )
 
@@ -134,15 +134,6 @@ module.exports = (webserver) => {
       requireOrganizationUploaderAccess: true,
       orgaPermissionAccess: PERMISSIONS.UPLOAD,
       controller: appendReq,
-    },
-    {
-      path: "/:organizationId/conversations/:conversationId/finish",
-      method: "post",
-      requireAuth: true,
-      requireConversationWriteAccess: true,
-      requireOrganizationUploaderAccess: true,
-      orgaPermissionAccess: PERMISSIONS.UPLOAD,
-      controller: finishReq,
     },
 
     /* Maintainer right*/

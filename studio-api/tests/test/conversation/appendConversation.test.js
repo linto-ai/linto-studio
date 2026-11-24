@@ -1,5 +1,6 @@
 // Appending an audio to a conversation created with partial=true: the part is
-// queued on arrival, then stored and sent to transcription.
+// queued on arrival, then stored and sent to transcription. The same route
+// closes the conversation, with or without a last audio.
 
 const mockCalls = []
 const mockConversation = () => ({
@@ -74,7 +75,7 @@ jest.mock(
   }),
 )
 
-const { appendReq, finishReq } = require(
+const { appendReq } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/append.js`,
 )
 const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -95,6 +96,7 @@ function request(overrides = {}) {
   return {
     params: { organizationId: "org-1", conversationId: "conv-1" },
     payload: { data: { userId: "user-1" } },
+    body: {},
     files: { file: { name: "part-2.wav", data: Buffer.from("audio") } },
     ...overrides,
   }
@@ -105,10 +107,10 @@ function response() {
   return res
 }
 
-async function run(controller, req = request()) {
+async function run(req = request()) {
   const res = response()
   const next = jest.fn()
-  await controller(req, res, next)
+  await appendReq(req, res, next)
   return { res, next }
 }
 
@@ -120,7 +122,7 @@ beforeEach(() => {
 
 describe("appendReq", () => {
   test("queues the part before storing the audio", async () => {
-    const { res, next } = await run(appendReq)
+    const { res, next } = await run()
 
     expect(next).not.toHaveBeenCalled()
     expect(mockCalls).toEqual([
@@ -140,7 +142,7 @@ describe("appendReq", () => {
   test("transcribes with the settings of the conversation", async () => {
     const req = request()
 
-    await run(appendReq, req)
+    await run(req)
 
     expect(upload.dispatchUpload).toHaveBeenCalledWith({
       files: req.files,
@@ -154,7 +156,7 @@ describe("appendReq", () => {
   })
 
   test("the dispatched part carries its job, audio and duration", async () => {
-    await run(appendReq)
+    await run()
 
     const partId = model.conversations.addPart.mock.calls[0][2].id
     expect(model.conversations.updatePart).toHaveBeenCalledWith(
@@ -171,7 +173,7 @@ describe("appendReq", () => {
   })
 
   test("joins its audio to the conversation once dispatched", async () => {
-    await run(appendReq)
+    await run()
 
     expect(joinParts).toHaveBeenCalledWith(
       expect.objectContaining({ _id: "conv-1" }),
@@ -179,7 +181,7 @@ describe("appendReq", () => {
   })
 
   test("meters the appended audio", async () => {
-    await run(appendReq)
+    await run()
 
     expect(upload.recordUpload).toHaveBeenCalledWith({
       organizationId: "org-1",
@@ -192,18 +194,17 @@ describe("appendReq", () => {
   test("refuses a conversation that is not open to append", async () => {
     mockOpen = false
 
-    const { next } = await run(appendReq)
+    const { next } = await run()
 
     expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
     expect(upload.dispatchUpload).not.toHaveBeenCalled()
   })
 
   test("refuses a request without file, or with several", async () => {
-    const none = await run(appendReq, request({ files: undefined }))
+    const none = await run(request({ files: undefined }))
     expect(none.next.mock.calls[0][0]).toMatchObject({ status: 400 })
 
     const several = await run(
-      appendReq,
       request({ files: { file: [{ name: "a.wav" }, { name: "b.wav" }] } }),
     )
     expect(several.next.mock.calls[0][0]).toMatchObject({ status: 400 })
@@ -214,7 +215,7 @@ describe("appendReq", () => {
     const refusal = Object.assign(new Error("Quota exceeded"), { status: 402 })
     upload.dispatchUpload.mockRejectedValueOnce(refusal)
 
-    const { next } = await run(appendReq)
+    const { next } = await run()
 
     expect(next).toHaveBeenCalledWith(refusal)
     expect(model.conversations.removePart).toHaveBeenCalledWith(
@@ -228,7 +229,7 @@ describe("appendReq", () => {
   test("a part dropped while it was processed is refused", async () => {
     model.conversations.updatePart.mockResolvedValueOnce({ matchedCount: 0 })
 
-    const { next } = await run(appendReq)
+    const { next } = await run()
 
     expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
     expect(deleteFile).toHaveBeenCalledWith("/storage/audios/part-2.mp3")
@@ -236,11 +237,15 @@ describe("appendReq", () => {
   })
 })
 
-describe("finishReq", () => {
-  test("closes the conversation to append and settles its jobs", async () => {
-    const { res, next } = await run(finishReq)
+describe("appendReq with complete", () => {
+  const closing = (overrides = {}) =>
+    request({ body: { complete: "true" }, ...overrides })
+
+  test("without audio, closes the conversation and settles its jobs", async () => {
+    const { res, next } = await run(closing({ files: undefined }))
 
     expect(next).not.toHaveBeenCalled()
+    expect(model.conversations.addPart).not.toHaveBeenCalled()
     expect(model.conversations.update).toHaveBeenCalledWith(
       expect.objectContaining({ "jobs.transcription.partial": false }),
     )
@@ -248,12 +253,61 @@ describe("finishReq", () => {
     expect(res.status).toHaveBeenCalledWith(200)
   })
 
+  test("with a last audio, closes once this audio is queued", async () => {
+    model.conversations.update.mockImplementationOnce(async () => {
+      mockCalls.push("close")
+      return { matchedCount: 1 }
+    })
+
+    const { res, next } = await run(closing())
+
+    expect(next).not.toHaveBeenCalled()
+    expect(mockCalls).toEqual([
+      "addPart",
+      "dispatchUpload",
+      "updatePart",
+      "joinParts",
+      "close",
+    ])
+    expect(upload.recordUpload).toHaveBeenCalled()
+    expect(res.send).toHaveBeenCalledWith({
+      message: "The conversation is closed once its last audio is processed",
+      conversationId: "conv-1",
+    })
+  })
+
+  test("accepts the flag sent as a boolean", async () => {
+    await run(request({ body: { complete: true }, files: undefined }))
+
+    expect(model.conversations.update).toHaveBeenCalled()
+  })
+
+  test("a refused last audio leaves the conversation open", async () => {
+    const refusal = Object.assign(new Error("Quota exceeded"), { status: 402 })
+    upload.dispatchUpload.mockRejectedValueOnce(refusal)
+
+    const { next } = await run(closing())
+
+    expect(next).toHaveBeenCalledWith(refusal)
+    expect(model.conversations.update).not.toHaveBeenCalled()
+  })
+
+  test("an audio sent under another field is not skipped", async () => {
+    const { next } = await run(
+      closing({ files: { audio: { name: "part-2.wav" } } }),
+    )
+
+    expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
+    expect(model.conversations.update).not.toHaveBeenCalled()
+  })
+
   test("refuses a conversation of another organization", async () => {
-    const req = request({
+    const req = closing({
+      files: undefined,
       params: { organizationId: "org-2", conversationId: "conv-1" },
     })
 
-    const { next } = await run(finishReq, req)
+    const { next } = await run(req)
 
     expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
     expect(model.conversations.update).not.toHaveBeenCalled()
@@ -266,7 +320,7 @@ describe("finishReq", () => {
       jobs: { transcription: { state: "done" } },
     })
 
-    const { next } = await run(finishReq)
+    const { next } = await run(closing({ files: undefined }))
 
     expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
     expect(model.conversations.update).not.toHaveBeenCalled()

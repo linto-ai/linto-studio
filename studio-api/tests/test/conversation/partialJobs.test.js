@@ -470,7 +470,7 @@ describe("closing the conversation", () => {
     expect(result.conv_job.transcription.state).toBe("pending")
   })
 
-  test("once finished and everything merged, it is done", async () => {
+  test("once completed and everything merged, it is done", async () => {
     await poll()
     mockDoc.jobs.transcription.partial = false
 
@@ -481,7 +481,7 @@ describe("closing the conversation", () => {
     expect(mockDoc.metadata.audio.filepath).toBe("audios/a+b+c.mp3")
   })
 
-  test("finished before the last transcription: closes when it is merged", async () => {
+  test("completed before the last transcription: closes when it is merged", async () => {
     jobRunning("c")
     mockDoc.jobs.transcription.partial = false
 
@@ -494,7 +494,7 @@ describe("closing the conversation", () => {
     expect(words()).toEqual(["un", "deux", "trois"])
   })
 
-  test("a part still being uploaded keeps it open after the finish", async () => {
+  test("a part still being uploaded keeps it open once completed", async () => {
     mockDoc.jobs.transcription.partial = false
     mockDoc.jobs.transcription.parts.push(uploading("d"))
 
