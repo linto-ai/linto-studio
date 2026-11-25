@@ -72,6 +72,11 @@ export class WebRecorder extends AbstractRecorder {
     return this.capture.isMuted
   }
 
+  // A hidden page gets a muted (iOS) or silent (Android) microphone.
+  get canCapture(): boolean {
+    return document.visibilityState === "visible" && !this.capture.isMuted
+  }
+
   destroy(): void {
     this.capture.destroy()
   }

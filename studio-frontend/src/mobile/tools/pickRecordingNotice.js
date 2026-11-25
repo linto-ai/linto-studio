@@ -2,7 +2,8 @@ import { PAUSE_REASON } from "../const/pauseReason.js"
 
 /**
  * The one notice shown above the recorder, most urgent first: an automatic
- * pause still running, then the gap of the last automatic pause (while
+ * pause still running (one only the user can end, after an interruption
+ * of the system, tells so), then the gap of the last automatic pause (while
  * recording: a user pause after it would contradict it), then the
  * standing advice: the native app keeps recording in the background, the
  * web page has to stay shown (stronger when the screen cannot be kept on).
@@ -19,6 +20,13 @@ export function pickRecordingNotice(recorder) {
   switch (true) {
     case state !== "recording" && state !== "paused":
       return null
+    case state === "paused" && pauseReason === PAUSE_REASON.INTERRUPTED:
+      return {
+        message: "mobile.record.notice.paused_until_resumed",
+        variant: "warning",
+        icon: "microphone-slash",
+        dismissible: false,
+      }
     case state === "paused" && pauseReason !== PAUSE_REASON.USER:
       return {
         message: "mobile.record.notice.paused_automatically",

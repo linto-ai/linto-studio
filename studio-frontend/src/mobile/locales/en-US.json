@@ -106,6 +106,7 @@
       "stay_in_app_screen_on": "Leaving or letting the screen lock pauses the recording.",
       "keeps_recording": "You can lock the screen or switch apps: the recording goes on.",
       "paused_automatically": "Paused: the microphone is no longer available. Recording resumes as soon as it is back.",
+      "paused_until_resumed": "Paused: a call or another app took the microphone. Tap Resume to go on.",
       "resumed": "Recording resumed. Less than a minute was not recorded. | Recording resumed. {duration} was not recorded. | Recording resumed. {duration} were not recorded."
     },
     "finished": "Recording finished",

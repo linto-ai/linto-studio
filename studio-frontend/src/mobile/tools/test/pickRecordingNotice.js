@@ -74,3 +74,15 @@ test("pickRecordingNotice() tells the native app keeps recording", (t) => {
   t.is(notice.message, "mobile.record.notice.keeps_recording")
   t.is(notice.variant, "info")
 })
+
+test("pickRecordingNotice() asks to resume after a system interruption", (t) => {
+  const notice = pickRecordingNotice({
+    ...RECORDING,
+    state: "paused",
+    pauseReason: "interrupted",
+    capturesInBackground: true,
+  })
+  t.is(notice.message, "mobile.record.notice.paused_until_resumed")
+  t.is(notice.variant, "warning")
+  t.false(notice.dismissible)
+})

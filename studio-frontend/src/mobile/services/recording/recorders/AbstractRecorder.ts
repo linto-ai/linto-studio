@@ -24,6 +24,11 @@ export abstract class AbstractRecorder {
 
   abstract get isMuted(): boolean
 
+  // Whether the recording can go on by itself after an automatic pause:
+  // the page decides from it to resume, never from what it sees itself
+  // (a hidden page stops the web recorder, not the native one).
+  abstract get canCapture(): boolean
+
   // Releases every resource (microphone, timers, service).
   abstract destroy(): void
 }
