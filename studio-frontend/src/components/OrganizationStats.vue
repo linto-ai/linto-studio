@@ -34,8 +34,8 @@
 <script>
 import { bus } from "@/main.js"
 import StatCard from "./StatCard.vue"
-import { getKpiByOrganization } from "@/api/kpi.js"
-import { apiCountConversation } from "@/api/conversation.js"
+import { getKpiByOrganization } from "@/api/studio-api/kpi.js"
+import { apiCountConversation } from "@/api/studio-api/conversation.js"
 import BarChart from "./molecules/BarChart.vue"
 import Tabs from "@/components/molecules/Tabs.vue"
 

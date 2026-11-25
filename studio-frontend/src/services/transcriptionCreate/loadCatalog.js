@@ -1,5 +1,5 @@
-import { apiGetTranscriptionService } from "@/api/service"
-import { apiGetTranscriberProfilesByOrganization } from "@/api/session.js"
+import { apiGetTranscriptionService } from "@/api/studio-api/service"
+import { apiGetTranscriberProfilesByOrganization } from "@/api/studio-api/session.js"
 
 /**
  * What a new transcription can be made with: the services and the profiles

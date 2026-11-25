@@ -1,4 +1,4 @@
-import { apiGetFeatures } from "@/api/features.js"
+import { apiGetFeatures } from "@/api/studio-api/features.js"
 import { computeApiFailure } from "@/tools/request/computeApiFailure.js"
 
 // Whether the API answers this front (classic and mobile), and what its

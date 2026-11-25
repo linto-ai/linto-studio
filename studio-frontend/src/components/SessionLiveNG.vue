@@ -31,7 +31,7 @@ import {
   apiGetSessionChannelTurns,
   apiGetPublicSessionChannelTurns,
   apiPatchSession,
-} from "@/api/session.js"
+} from "@/api/studio-api/session.js"
 import {
   createLivePlugin,
   createSubtitlePlugin,

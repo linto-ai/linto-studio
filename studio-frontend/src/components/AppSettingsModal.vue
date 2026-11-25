@@ -220,7 +220,7 @@
 
 <script>
 import { mapGetters } from "vuex"
-import { apiSendVerificationLink } from "@/api/user.js"
+import { apiSendVerificationLink } from "@/api/studio-api/user.js"
 import { orgaRoleMixin } from "@/mixins/orgaRole.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.js"

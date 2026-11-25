@@ -1,7 +1,7 @@
 import {
   apiGetAudioFileFromConversation,
   apiGetAudioWaveFormFromConversation,
-} from "../api/conversation.js"
+} from "../api/studio-api/conversation.js"
 import { bus } from "@/main.js"
 import { timeToHMS } from "../tools/date/timeToHMS.js"
 export const playerMixin = {

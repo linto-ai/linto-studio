@@ -54,7 +54,10 @@ import Modal from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import OrgaRoleSelector from "./molecules/OrgaRoleSelector.vue"
-import { apiCreateToken, apiUpdateTokenPicture } from "@/api/token.js"
+import {
+  apiCreateToken,
+  apiUpdateTokenPicture,
+} from "@/api/studio-api/token.js"
 import DurationInput from "@/components/molecules/DurationInput.vue"
 import Avatar from "@/components/atoms/Avatar.vue"
 import Button from "@/components/atoms/Button.vue"

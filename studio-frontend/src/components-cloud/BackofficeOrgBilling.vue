@@ -213,7 +213,7 @@ import {
   apiAdminSetOrgMode,
   apiAdminGrantCredits,
   apiAdminRefundLot,
-} from "@/api/cloud"
+} from "@/api/studio-api/cloud"
 import { formatDateOrDash } from "@/tools/date/formatDate"
 import { formatMinutesDuration } from "@/tools/formatMinutesDuration"
 import { buildOrgModePayload } from "@/tools/backoffice/buildOrgModePayload"

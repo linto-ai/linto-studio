@@ -39,7 +39,7 @@ import FormInput from "@/components/molecules/FormInput.vue"
 import { formsMixin } from "@/mixins/forms.js"
 import { testName } from "../tools/fields/testName"
 import CustomSelect from "@/components/molecules/CustomSelect.vue"
-import { apiGenerateSubtitle } from "../api/subtitle.js"
+import { apiGenerateSubtitle } from "../api/studio-api/subtitle.js"
 import { bus } from "@/main.js"
 export default {
   mixins: [formsMixin],

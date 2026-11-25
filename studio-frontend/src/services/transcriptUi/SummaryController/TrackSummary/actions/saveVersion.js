@@ -1,4 +1,4 @@
-import { apiUpdateExportResult } from "@/api/service.js"
+import { apiUpdateExportResult } from "@/api/studio-api/service.js"
 import { loadVersions } from "./loadVersions.js"
 
 // Saving creates a new version of the current job.

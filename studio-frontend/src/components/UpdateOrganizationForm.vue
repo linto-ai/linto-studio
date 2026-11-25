@@ -39,7 +39,7 @@ import { testName } from "@/tools/fields/testName"
 import { testContent } from "@/tools/fields/testContent"
 import { isOwnPersonalOrganization } from "@/tools/user/isOwnPersonalOrganization"
 
-import { apiUpdateOrganisation } from "@/api/organisation.js"
+import { apiUpdateOrganisation } from "@/api/studio-api/organisation.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import LabeledValue from "@/components/atoms/LabeledValue.vue"

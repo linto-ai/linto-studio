@@ -108,7 +108,10 @@
 import { getEnv } from "@/tools/getEnv"
 
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
-import { apiResendVerificationEmail, getLoginMethods } from "@/api/user"
+import {
+  apiResendVerificationEmail,
+  getLoginMethods,
+} from "@/api/studio-api/user"
 import MainContentPublic from "@/components/MainContentPublic.vue"
 import { testEmail } from "@/tools/fields/testEmail"
 import { testFieldEmpty } from "@/tools/fields/testEmpty"

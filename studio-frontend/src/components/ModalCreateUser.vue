@@ -36,7 +36,7 @@ import { formsMixin } from "@/mixins/forms.js"
 import { testName } from "@/tools/fields/testName.js"
 import { testEmail } from "@/tools/fields/testEmail.js"
 
-import { apiAdminCreateUser } from "@/api/admin.js"
+import { apiAdminCreateUser } from "@/api/studio-api/admin.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import Modal from "@/components/molecules/Modal.vue"

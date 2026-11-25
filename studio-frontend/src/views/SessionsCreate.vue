@@ -17,7 +17,7 @@ import { organizationPermissionsMixin } from "@/mixins/organizationPermissions.j
 import {
   apiGetSessionTemplates,
   apiGetTranscriberProfilesByOrganization,
-} from "@/api/session.js"
+} from "@/api/studio-api/session.js"
 
 import LayoutV2 from "@/layouts/v2-layout.vue"
 import SessionCreateContent from "@/components/SessionCreateContent.vue"

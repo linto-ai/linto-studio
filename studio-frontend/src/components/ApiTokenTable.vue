@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import { apiGetToken } from "@/api/token"
+import { apiGetToken } from "@/api/studio-api/token"
 import Avatar from "@/components/atoms/Avatar.vue"
 import Chip from "@/components/atoms/Chip.vue"
 import GenericTable from "@/components/molecules/GenericTable.vue"

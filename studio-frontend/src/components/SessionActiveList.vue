@@ -18,7 +18,7 @@
   </div>
 </template>
 <script>
-import { apiGetSessionsPaginated } from "@/api/session.js"
+import { apiGetSessionsPaginated } from "@/api/studio-api/session.js"
 import { genericSessionList } from "@/mixins/genericSessionList"
 import sortSessionByDate from "@/tools/session/sortSessionByDate"
 

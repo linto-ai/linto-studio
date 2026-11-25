@@ -12,7 +12,7 @@ import {
   apiUpdateSessionData,
   apiPatchSession,
   apiRemovePasswordFromSessionData,
-} from "../api/session"
+} from "../api/studio-api/session"
 
 import { sessionModelMixin } from "./sessionModel"
 import { bus } from "../main"

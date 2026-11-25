@@ -77,7 +77,7 @@ import {
   apiAdminUpdateAmazonTranscriberProfile,
   apiAdminDeleteTranscriberProfile,
   apiAdminGetTranscriberProfilesById,
-} from "@/api/admin.js"
+} from "@/api/studio-api/admin.js"
 import { bus } from "@/main.js"
 import transriberImageFromtype from "@/tools/transriberImageFromtype"
 import { getEnv } from "@/tools/getEnv"

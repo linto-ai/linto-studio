@@ -66,7 +66,7 @@ import {
   apiGetAllTokens,
   apiDeletePlatformToken,
   apiGetDetailToken,
-} from "@/api/admin"
+} from "@/api/studio-api/admin"
 import PlatformRoleSelector from "@/components/molecules/PlatformRoleSelector.vue"
 import { platformRoleMixin } from "@/mixins/platformRole"
 import HeaderTable from "@/components/HeaderTable.vue"

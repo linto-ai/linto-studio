@@ -13,15 +13,13 @@
 </template>
 
 <script>
-import { openRecordingAudio } from "@/mobile/services/recording/recordingAudio.js"
-
-// Plays a local recording back from where its audio is stored. The URL is
-// opened when the player shows up and released when it goes away.
+// Plays a local recording back. `openAudio` resolves with where to read it
+// ({ url, release }, null when nothing is stored): called when the player
+// shows up, released when it goes away.
 export default {
   name: "RecordingPlayer",
   props: {
-    recordingId: { type: String, required: true },
-    mimeType: { type: String, default: "" },
+    openAudio: { type: Function, required: true },
   },
   data() {
     return { url: null, failed: false }
@@ -32,7 +30,7 @@ export default {
     this.audio = null
     this.closed = false
     try {
-      this.audio = await openRecordingAudio(this.recordingId, this.mimeType)
+      this.audio = await this.openAudio()
     } catch (error) {
       console.error("cannot load recording for playback", error)
     }

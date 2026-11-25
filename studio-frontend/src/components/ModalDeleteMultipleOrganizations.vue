@@ -16,7 +16,7 @@
   </Modal>
 </template>
 <script>
-import { apiDeleteOrganisation } from "@/api/organisation.js"
+import { apiDeleteOrganisation } from "@/api/studio-api/organisation.js"
 import bulkRequest from "@/tools/request/bulkRequest.js"
 import { bus } from "@/main"
 

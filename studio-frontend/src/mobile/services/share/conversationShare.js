@@ -1,11 +1,11 @@
 import {
   apiGetUsersFromMultipleConversation,
   apiUpdateConversationMembersRight,
-} from "@/api/conversation.js"
+} from "@/api/studio-api/conversation.js"
 import {
   apiUpdateMultipleUsersInMultipleConversations,
   apiSearchUser,
-} from "@/api/user.js"
+} from "@/api/studio-api/user.js"
 import { indexConversationRightByUsers } from "@/tools/rights/indexConversationRightByUsers.js"
 
 const INVITED_RIGHT = 1

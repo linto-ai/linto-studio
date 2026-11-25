@@ -41,7 +41,7 @@ import { formsMixin } from "@/mixins/forms.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import Button from "@/components/atoms/Button.vue"
-import { apiCreateOrganisation } from "../api/organisation"
+import { apiCreateOrganisation } from "../api/studio-api/organisation"
 import Modal from "@/components/molecules/Modal.vue"
 
 export default {

@@ -1,4 +1,4 @@
-import { apiUpdateChatDiscussionTitle } from "@/api/chat"
+import { apiUpdateChatDiscussionTitle } from "@/api/studio-api/chat"
 import { notifyError } from "./notifyError"
 
 export async function renameDiscussion(chatIntegration, discussionId, title) {

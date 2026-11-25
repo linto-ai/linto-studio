@@ -31,7 +31,7 @@
 
 <script>
 import { bus } from "@/main.js"
-import { listToken, apiDeleteToken } from "@/api/token.js"
+import { listToken, apiDeleteToken } from "@/api/studio-api/token.js"
 import ApiTokenTable from "./ApiTokenTable.vue"
 import ModalCreateToken from "./ModalCreateToken.vue"
 import Button from "@/components/atoms/Button.vue"

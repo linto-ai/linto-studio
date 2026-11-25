@@ -26,7 +26,7 @@ import {
   apiAddSessionData,
   apiUpdateSessionData,
   apiRemoveSessionData,
-} from "@/api/session.js"
+} from "@/api/studio-api/session.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 

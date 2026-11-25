@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { apiSearchUser } from "@/api/user.js"
+import { apiSearchUser } from "@/api/studio-api/user.js"
 import { USER_SEARCH_MIN_LENGTH } from "@/const/userSearch.js"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
 

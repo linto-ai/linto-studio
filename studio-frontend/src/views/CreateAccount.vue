@@ -103,7 +103,7 @@ import { getEnv } from "@/tools/getEnv"
 
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import EMPTY_FIELD from "@/const/emptyField.js"
-import { apiCreateUser } from "@/api/user.js"
+import { apiCreateUser } from "@/api/studio-api/user.js"
 import MainContentPublic from "@/components/MainContentPublic.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import { testEmail } from "@/tools/fields/testEmail.js"

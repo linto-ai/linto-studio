@@ -162,7 +162,10 @@ import { meetsMetaSecurityLevel } from "@/tools/rights/filterBySecurityLevel"
 
 import EMPTY_FIELD from "@/const/emptyField"
 
-import { apiCreateSession, apiCreateSessionTemplate } from "@/api/session.js"
+import {
+  apiCreateSession,
+  apiCreateSessionTemplate,
+} from "@/api/studio-api/session.js"
 
 import { formsMixin } from "@/mixins/forms.js"
 import { organizationSecurityLevelMixin } from "@/mixins/organizationSecurityLevel.js"

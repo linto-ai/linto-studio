@@ -5,7 +5,7 @@ import {
   apiDeleteFolder,
   apiMoveConversationToFolder,
   apiUncategorizeConversations,
-} from "@/api/folder"
+} from "@/api/studio-api/folder"
 import i18n from "@/i18n"
 
 export default {

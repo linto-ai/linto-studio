@@ -413,7 +413,7 @@ import {
   apiUpdateVoiceOrganization,
   apiGetVoiceprintStatus,
   apiUpdateStorageMode,
-} from "@/api/userVoice.js"
+} from "@/api/studio-api/userVoice.js"
 import { formatDuration, formatCompactDuration } from "@/tools/formatDuration.js"
 import { audioDuration } from "@/tools/audio/audioDuration.js"
 import { voiceSignaturePlaybackMixin } from "@/mixins/voiceSignaturePlayback.js"

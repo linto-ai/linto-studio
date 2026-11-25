@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import { apiGetAllOrganizations } from "@/api/admin.js"
-import { apiGetOrganizationById } from "@/api/organisation.js"
+import { apiGetAllOrganizations } from "@/api/studio-api/admin.js"
+import { apiGetOrganizationById } from "@/api/studio-api/organisation.js"
 
 export default {
   name: "OrganizationSelector",

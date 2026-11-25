@@ -1,4 +1,4 @@
-import { apiListGenerations } from "@/api/service.js"
+import { apiListGenerations } from "@/api/studio-api/service.js"
 import { mapGenerations } from "@/tools/llm/mapGeneration.js"
 import { computeGenerationsIndex } from "@/tools/llm/computeGenerationsIndex.js"
 import { ensureJob } from "./ensureJob.js"

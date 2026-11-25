@@ -1,5 +1,5 @@
 import { createChatPlugin } from "@linto-ai/transcript-ui-webcomponent"
-import { apiGetChatStatus } from "@/api/chat"
+import { apiGetChatStatus } from "@/api/studio-api/chat"
 
 // Without the plugin, the editor offers no chat: it is installed only when
 // the backend has one.

@@ -1,4 +1,4 @@
-import { apiGetGenericFileFromConversation } from "@/api/conversation.js"
+import { apiGetGenericFileFromConversation } from "@/api/studio-api/conversation.js"
 import { exportFilename } from "@/tools/llm/exportFilename.js"
 
 // A generated document (summary, report…) of a conversation as a PDF File,

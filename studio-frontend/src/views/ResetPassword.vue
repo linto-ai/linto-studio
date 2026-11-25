@@ -42,7 +42,7 @@ import { getEnv } from "@/tools/getEnv"
 
 import LocalSwitcher from "@/components/LocalSwitcher.vue"
 import EMPTY_FIELD from "@/const/emptyField.js"
-import { apiRecoverPassword } from "../api/user"
+import { apiRecoverPassword } from "../api/studio-api/user"
 import { testEmail } from "@/tools/fields/testEmail"
 import MainContentPublic from "@/components/MainContentPublic.vue"
 import FormInput from "@/components/molecules/FormInput.vue"

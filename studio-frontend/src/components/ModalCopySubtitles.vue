@@ -17,7 +17,7 @@ import Modal from "@/components/molecules/Modal.vue"
 import FormInput from "@/components/molecules/FormInput.vue"
 import { formsMixin } from "@/mixins/forms.js"
 import { testName } from "../tools/fields/testName"
-import { apiCopySubtitle } from "../api/subtitle.js"
+import { apiCopySubtitle } from "../api/studio-api/subtitle.js"
 import { bus } from "@/main.js"
 export default {
   mixins: [formsMixin],

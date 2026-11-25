@@ -52,7 +52,7 @@ import {
   apiUpdateToken,
   apiUpdateTokenPicture,
   apiDeleteTokenPicture,
-} from "@/api/token.js"
+} from "@/api/studio-api/token.js"
 import Avatar from "@/components/atoms/Avatar.vue"
 import Button from "@/components/atoms/Button.vue"
 import userAvatar from "@/tools/user/userAvatar"

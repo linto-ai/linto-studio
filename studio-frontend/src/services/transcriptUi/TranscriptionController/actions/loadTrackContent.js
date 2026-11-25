@@ -1,4 +1,4 @@
-import { apiGetTrackContent } from "@/api/conversation.d/apiGetTrackContent.js"
+import { apiGetTrackContent } from "@/api/studio-api/conversation.d/apiGetTrackContent.js"
 import { applyTrackContent } from "./applyTrackContent.js"
 
 // One fetch at a time per track: a second request for a track being loaded

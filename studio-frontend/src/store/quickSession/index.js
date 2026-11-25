@@ -8,7 +8,7 @@ import {
   apiDeleteQuickSession,
   apiPauseSession,
   apiResumeSession,
-} from "@/api/session.js"
+} from "@/api/studio-api/session.js"
 import { capitalizeFirstLetter } from "@/tools/capitalizeFirstLetter.js"
 import router from "@/routers/app-router"
 

@@ -32,7 +32,7 @@ import {
   connectRealtime,
   realtimeSocket,
 } from "@/mobile/services/realtime/mediaUpdates.js"
-import { apiGetConversationWithRight } from "@/api/conversation.d/apiGetConversationWithRight.js"
+import { apiGetConversationWithRight } from "@/api/studio-api/conversation.d/apiGetConversationWithRight.js"
 import { TranscriptionController } from "@/services/transcriptUi/TranscriptionController/index.js"
 import { SummaryController } from "@/services/transcriptUi/SummaryController/index.js"
 import { ChatController } from "@/services/transcriptUi/ChatController/index.js"

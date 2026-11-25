@@ -73,7 +73,10 @@
   </div>
 </template>
 <script>
-import { apiUpdateUserInfo, apiSendVerificationLink } from "@/api/user.js"
+import {
+  apiUpdateUserInfo,
+  apiSendVerificationLink,
+} from "@/api/studio-api/user.js"
 import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
 import { API_ENDPOINTS } from "@/const/apiEndpoints.js"

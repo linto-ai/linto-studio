@@ -149,7 +149,7 @@ import {
   apiClearSession,
   apiStopSession,
   apiDeleteSession,
-} from "@/api/session.js"
+} from "@/api/studio-api/session.js"
 
 import ModalClearSession from "@/components/ModalClearSession.vue"
 import ModalForceDeleteSession from "@/components/ModalForceDeleteSession.vue"

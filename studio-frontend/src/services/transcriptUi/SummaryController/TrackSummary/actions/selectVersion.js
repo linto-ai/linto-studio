@@ -1,4 +1,4 @@
-import { apiGetExportVersion } from "@/api/service.js"
+import { apiGetExportVersion } from "@/api/studio-api/service.js"
 
 export async function selectVersion(trackSummary, id, versionNumber) {
   const { core } = trackSummary

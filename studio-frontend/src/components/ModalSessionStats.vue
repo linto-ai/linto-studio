@@ -89,7 +89,7 @@ import Modal from "@/components/molecules/Modal.vue"
 import Loading from "@/components/atoms/Loading.vue"
 import Button from "@/components/atoms/Button.vue"
 import ChannelStatsCard from "@/components/ChannelStatsCard.vue"
-import { getSessionKpiById } from "@/api/kpi"
+import { getSessionKpiById } from "@/api/studio-api/kpi"
 
 export default {
   name: "ModalSessionStats",

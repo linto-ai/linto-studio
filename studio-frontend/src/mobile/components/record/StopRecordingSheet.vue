@@ -4,10 +4,7 @@
     :title="$t('mobile.record.finished')"
     @input="$emit('input', $event)">
     <p class="m-muted">{{ summary }}</p>
-    <RecordingPlayer
-      v-if="value && recordingId"
-      :recording-id="recordingId"
-      :mime-type="mimeType" />
+    <RecordingPlayer v-if="value" :open-audio="openAudio" />
     <NotificationBanner
       v-if="quiet"
       variant="warning"
@@ -92,8 +89,8 @@ export default {
     defaultKeepAudio: { type: Boolean, default: true },
     summary: { type: String, default: "" },
     online: { type: Boolean, default: true },
-    recordingId: { type: String, default: "" },
-    mimeType: { type: String, default: "" },
+    // Opens the recording's audio for the player (see RecordingPlayer).
+    openAudio: { type: Function, required: true },
     quiet: { type: Boolean, default: false },
     sharingSummary: { type: String, default: "" },
   },

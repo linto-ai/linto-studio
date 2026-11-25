@@ -1,7 +1,7 @@
 import {
   apiGetGenericFileFromConversation,
   apiGetTextFileFromConversation,
-} from "@/api/conversation.js"
+} from "@/api/studio-api/conversation.js"
 import { exportFilename } from "@/tools/llm/exportFilename.js"
 import { TRANSCRIPT_EXPORT_FORMATS } from "@/mobile/const/transcriptExportFormats.js"
 

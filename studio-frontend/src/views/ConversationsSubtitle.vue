@@ -44,12 +44,12 @@
 <script>
 import { bus } from "../main"
 
-import { apiGetFileFromConversationSubtitle } from "@/api/conversation.js"
+import { apiGetFileFromConversationSubtitle } from "@/api/studio-api/conversation.js"
 import {
   apiUpdateScreen,
   apiAddScreen,
   apiDeleteScreen,
-} from "@/api/subtitle.js"
+} from "@/api/studio-api/subtitle.js"
 import { computeScreenWords } from "@/tools/transcription/computeScreenWords.js"
 
 import { subtitleMixin } from "@/mixins/subtitle.js"

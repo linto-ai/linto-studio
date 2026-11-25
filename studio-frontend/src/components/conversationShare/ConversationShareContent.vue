@@ -95,8 +95,8 @@ import { mapGetters } from "vuex"
 import {
   apiGetUsersFromMultipleConversation,
   apiUpdateConversationMembersRight,
-} from "@/api/conversation.js"
-import { apiUpdateMultipleUsersInMultipleConversations } from "@/api/user.js"
+} from "@/api/studio-api/conversation.js"
+import { apiUpdateMultipleUsersInMultipleConversations } from "@/api/studio-api/user.js"
 
 import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"

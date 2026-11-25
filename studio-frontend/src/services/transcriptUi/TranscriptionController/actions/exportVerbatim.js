@@ -2,7 +2,7 @@ import {
   apiGetGenericFileFromConversation,
   apiGetJsonFileFromConversation,
   apiGetTextFileFromConversation,
-} from "@/api/conversation.js"
+} from "@/api/studio-api/conversation.js"
 import { computeAssistantsTrack } from "@/tools/llm/computeAssistantsTrack.js"
 import { exportFilename } from "@/tools/llm/exportFilename.js"
 import { downloadBlob } from "@/tools/downloadBlob.js"

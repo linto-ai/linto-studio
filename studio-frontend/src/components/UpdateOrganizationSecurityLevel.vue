@@ -26,7 +26,7 @@
 <script>
 import { DEFAULT_SECURITY_LEVEL } from "@/const/securityLevels"
 import SECURITY_LEVELS_LIST from "@/const/securityLevelsList"
-import { apiAdminUpdateOrganisation } from "@/api/organisation.js"
+import { apiAdminUpdateOrganisation } from "@/api/studio-api/organisation.js"
 import Button from "@/components/atoms/Button.vue"
 
 export default {

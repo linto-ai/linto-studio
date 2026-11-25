@@ -23,7 +23,7 @@
 import { bus } from "@/main.js"
 import { mapGetters } from "vuex"
 
-import { apiGetToken } from "@/api/token"
+import { apiGetToken } from "@/api/studio-api/token"
 import Modal from "@/components/molecules/Modal.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import FormInput from "@/components/molecules/FormInput.vue"

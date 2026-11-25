@@ -1,4 +1,4 @@
-import { apiCreateChatDiscussion } from "@/api/chat"
+import { apiCreateChatDiscussion } from "@/api/studio-api/chat"
 import { mapDiscussion } from "../helpers"
 import { showDiscussion } from "./showDiscussion"
 

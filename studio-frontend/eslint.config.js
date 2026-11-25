@@ -3,6 +3,7 @@ import js from "@eslint/js"
 import pluginVue from "eslint-plugin-vue"
 import eslintConfigPrettier from "eslint-config-prettier"
 import globals from "globals"
+import tseslint from "typescript-eslint"
 
 export default defineConfig([
   js.configs.recommended,
@@ -21,5 +22,9 @@ export default defineConfig([
       // (e.g. #cell-config.type), which the rule would flag as modifiers.
       "vue/valid-v-slot": ["error", { allowModifiers: true }],
     },
+  },
+  {
+    files: ["**/*.ts"],
+    extends: [tseslint.configs.recommended],
   },
 ])

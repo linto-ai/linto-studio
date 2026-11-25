@@ -13,7 +13,10 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import { apiUpdateUserInfo, apiSendVerificationLink } from "@/api/user.js"
+import {
+  apiUpdateUserInfo,
+  apiSendVerificationLink,
+} from "@/api/studio-api/user.js"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"
 import { mapActions } from "vuex"
 

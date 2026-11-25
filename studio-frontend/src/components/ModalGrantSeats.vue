@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import { apiGrantSeatsToMembers } from "@/api/organizationSeats.js"
+import { apiGrantSeatsToMembers } from "@/api/studio-api/organizationSeats.js"
 import { computeProratedSeatPrice } from "@/tools/seats/computeProratedSeatPrice.js"
 import { computeSeatsNeeded } from "@/tools/seats/computeSeatsNeeded.js"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount"

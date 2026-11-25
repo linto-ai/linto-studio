@@ -2,7 +2,7 @@ import {
   apiCreateQuickSession,
   apiDeleteQuickSession,
   apiStartBot,
-} from "@/api/session.js"
+} from "@/api/studio-api/session.js"
 
 /**
  * Creates the quick session of a microphone recording.
