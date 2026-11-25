@@ -24,19 +24,24 @@ interface CommonRecorderOptions {
   onInterrupted: (reason: InterruptionReason) => void
   // Size of the audio saved so far, each time it grows.
   onProgress: (sizeBytes: number) => void
+  // The microphone is lost for a while (web: track muted; native: the
+  // system took it, a call or Siri), then back.
+  onMuted: () => void
+  onUnmuted: () => void
 }
 
 export interface WebRecorderOptions extends CommonRecorderOptions {
   recordingId: string
   // Microphone picked by the user; null for the browser's default input.
   deviceId: string | null
-  onMuted: () => void
-  onUnmuted: () => void
 }
 
 // The native recorder always uses the phone's default input.
 export interface NativeRecorderOptions extends CommonRecorderOptions {
   notification: RecordingNotification
+  // The system gave the microphone back without advising to resume (iOS):
+  // the recorder stays paused until the user resumes, instead of onUnmuted.
+  onResumeNeeded: () => void
 }
 
 // What the page hands to whichever recorder the build creates: each one

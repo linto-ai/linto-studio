@@ -16,7 +16,7 @@ export type RecordingStatus =
   | "uploaded"
   | "error"
 
-export type PauseReason = "user" | "background" | "microphone"
+export type PauseReason = "user" | "background" | "microphone" | "interrupted"
 
 // A folder of the native app, as @capacitor/filesystem names it.
 export type NativeDirectory = "DATA" | "CACHE" | "TEMPORARY"

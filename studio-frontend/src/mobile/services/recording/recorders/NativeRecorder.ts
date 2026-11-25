@@ -49,13 +49,20 @@ const NOTIFICATION_ICON = "ic_stat_recording"
 // Same contract as WebRecorder, except for the audio: one file instead of
 // chunks, whose size goes to onProgress, and stop() answers what the page
 // cannot know (where the file ended up, its exact duration and size).
-// The microphone is never muted here: no onMuted / onUnmuted.
+// The microphone is muted only when the system takes it (iOS: a call,
+// Siri, another app): onMuted, then onUnmuted once the plugin resumed by
+// itself, or onResumeNeeded when it waits for the user.
 export class NativeRecorder extends AbstractRecorder {
   onLevel: NativeRecorderOptions["onLevel"]
   onInterrupted: NativeRecorderOptions["onInterrupted"]
   onProgress: NativeRecorderOptions["onProgress"]
+  onMuted: NativeRecorderOptions["onMuted"]
+  onUnmuted: NativeRecorderOptions["onUnmuted"]
+  onResumeNeeded: NativeRecorderOptions["onResumeNeeded"]
   notification: NativeRecorderOptions["notification"]
   active: boolean
+  // The plugin is paused, by the page or by the system: the page's pause()
+  // and resume() only call the plugin when its state has to change.
   paused: boolean
   // iOS: the system took the microphone (a call, Siri); the plugin paused.
   systemInterrupted: boolean
@@ -75,12 +82,18 @@ export class NativeRecorder extends AbstractRecorder {
     onLevel,
     onInterrupted,
     onProgress,
+    onMuted,
+    onUnmuted,
+    onResumeNeeded,
     notification,
   }: NativeRecorderOptions) {
     super()
     this.onLevel = onLevel
     this.onInterrupted = onInterrupted
     this.onProgress = onProgress
+    this.onMuted = onMuted
+    this.onUnmuted = onUnmuted
+    this.onResumeNeeded = onResumeNeeded
     this.notification = notification
     this.active = false
     this.paused = false
@@ -142,12 +155,14 @@ export class NativeRecorder extends AbstractRecorder {
     }
   }
 
+  // After an interruption the plugin starts a new segment, or refuses
+  // (the microphone still taken): the recording cannot go on.
   resume(): void {
     if (this.active && this.paused) {
       this.paused = false
-      CapacitorAudioRecorder.resumeRecording().catch((error) =>
-        console.error("cannot resume the recording", error),
-      )
+      CapacitorAudioRecorder.resumeRecording()
+        .then(() => this.followCurrentRecorderFile())
+        .catch((error) => this.handleResumeFailed(error))
     }
   }
 
@@ -169,7 +184,12 @@ export class NativeRecorder extends AbstractRecorder {
   }
 
   get isMuted(): boolean {
-    return false
+    return this.systemInterrupted
+  }
+
+  // A hidden page does not matter here: the phone records.
+  get canCapture(): boolean {
+    return !this.systemInterrupted
   }
 
   // Also called when the page goes away while recording (the router keeps
@@ -246,24 +266,43 @@ export class NativeRecorder extends AbstractRecorder {
     this.onInterrupted("recorder-error")
   }
 
-  // Emitted on iOS only. The file does not grow until the end: not a
-  // stall.
-  handleInterruptionBegan(): void {
-    this.systemInterrupted = true
+  handleResumeFailed(error: unknown): void {
+    console.error("cannot resume the recording", error)
+    this.onInterrupted("recorder-error")
   }
 
-  // Resumed, the plugin writes a new file (a segment, joined to the others
-  // at the stop): the size reports follow it from scratch. Not resumed,
-  // the file stops growing and the stall ends the recording.
+  // Emitted on iOS only. The plugin paused itself: the file does not grow
+  // until the end, not a stall.
+  handleInterruptionBegan(): void {
+    this.systemInterrupted = true
+    this.paused = true
+    this.onMuted()
+  }
+
+  // shouldResume: the plugin resumed by itself, in a new file (a segment,
+  // joined to the others at the stop). Otherwise iOS did not advise to
+  // resume, or the plugin could not: it stays paused for the user.
   async handleInterruptionEnded({
     shouldResume,
   }: RecordingInterruptionEndedEvent): Promise<void> {
     this.systemInterrupted = false
+    switch (true) {
+      case shouldResume:
+        this.paused = false
+        await this.followCurrentRecorderFile()
+        this.onUnmuted()
+        break
+      default:
+        this.onResumeNeeded()
+    }
+  }
+
+  // After an interruption the plugin writes a new segment, also when the
+  // user resumes by hand: the size reports follow it from scratch.
+  async followCurrentRecorderFile(): Promise<void> {
     this.lastSize = null
     this.stalledReports = 0
-    if (shouldResume) {
-      this.recorderFile = (await findCurrentRecorderFile()) ?? this.recorderFile
-    }
+    this.recorderFile = (await findCurrentRecorderFile()) ?? this.recorderFile
   }
 
   removeListeners(): void {
@@ -312,7 +351,7 @@ export class NativeRecorder extends AbstractRecorder {
       count: this.stalledReports,
       previousSize: this.lastSize,
       sizeBytes,
-      paused: this.paused || this.systemInterrupted,
+      paused: this.paused,
     })
     this.lastSize = sizeBytes
     switch (true) {

@@ -70,8 +70,10 @@ const ROW_SAVE_TIMEOUT_MS = 10_000
 // gap. Pausing the same MediaRecorder keeps one continuous file.
 //
 // The native app records through the phone, in a foreground service: it
-// goes on in the background and with the screen locked, so none of the
-// above applies there (no automatic pause, no screen kept on).
+// goes on in the background and with the screen locked (no screen kept
+// on). It pauses itself only when the system takes the microphone (iOS: a
+// call, Siri), and resumes by itself when the system gives it back, or
+// waits for the user when the system did not advise to resume.
 //
 // Leaving the page would cut the microphone without stopping: while it
 // records, the stage keeps the router from leaving and stops instead (the
@@ -180,6 +182,7 @@ export default {
           onInterrupted: () => this.onRecorderInterrupted(),
           onMuted: () => this.onMicrophoneMuted(),
           onUnmuted: () => this.onMicrophoneUnmuted(),
+          onResumeNeeded: () => this.onResumeNeeded(),
           notification: this.buildRecordingNotification(),
         })
         const audio = await this.audioRecorder.start()
@@ -264,9 +267,8 @@ export default {
     // recording was live and were ignored.
     pauseIfCannotCapture() {
       switch (true) {
-        case this.session.capturesInBackground:
-          break
-        case document.visibilityState === "hidden":
+        case !this.session.capturesInBackground &&
+          document.visibilityState === "hidden":
           this.onPageHidden()
           break
         case this.audioRecorder.isMuted:
@@ -415,7 +417,8 @@ export default {
       this.session.microphoneMuted = true
       if (this.session.state !== "recording") return
       this.pauseRecording(
-        document.visibilityState === "hidden"
+        !this.session.capturesInBackground &&
+          document.visibilityState === "hidden"
           ? PAUSE_REASON.BACKGROUND
           : PAUSE_REASON.MICROPHONE,
       )
@@ -427,11 +430,29 @@ export default {
     resumeAfterAutomaticPause() {
       const pausedAutomatically =
         this.session.state === "paused" &&
-        this.session.pauseReason !== PAUSE_REASON.USER
-      const canCapture =
-        document.visibilityState === "visible" && !this.audioRecorder?.isMuted
-      if (pausedAutomatically && canCapture && !this.isStopping) {
+        this.session.pauseReason !== PAUSE_REASON.USER &&
+        this.session.pauseReason !== PAUSE_REASON.INTERRUPTED
+      if (
+        pausedAutomatically &&
+        this.audioRecorder?.canCapture &&
+        !this.isStopping
+      ) {
         this.resumeRecording()
+      }
+    },
+    // The microphone is back but the system did not advise to resume
+    // (native app, iOS): the recording waits for the user, who can now
+    // resume. A pause of the user stays one.
+    onResumeNeeded() {
+      this.session.microphoneMuted = false
+      switch (true) {
+        case this.session.state === "recording":
+          this.pauseRecording(PAUSE_REASON.INTERRUPTED)
+          break
+        case this.session.state === "paused" &&
+          this.session.pauseReason !== PAUSE_REASON.USER:
+          this.session.pauseReason = PAUSE_REASON.INTERRUPTED
+          break
       }
     },
     async acquireWakeLock() {
