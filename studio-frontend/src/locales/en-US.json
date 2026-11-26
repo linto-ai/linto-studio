@@ -492,7 +492,7 @@
     "account_title": "My account",
     "account_information": "Account information",
     "billing": "Billing",
-    "organization_information": "Organisation information",
+    "organization_information": "Organisation settings",
     "organization_members": "Organisation members",
     "preferences": "Preferences",
     "notifications": "Notifications",
@@ -1329,6 +1329,14 @@
       "title_updated": "Title updated",
       "description": "Description",
       "description_updated": "Description updated",
+      "expiration": {
+        "label": "Automatic deletion on this date",
+        "never": "Never",
+        "hint_none": "Without a date, the media is kept indefinitely.",
+        "remove": "Remove the deletion date",
+        "updated": "Deletion date updated",
+        "removed": "The media will no longer be deleted automatically"
+      },
       "duration": "Duration",
       "created": "Created",
       "tags": "Topic assignment",
@@ -1614,6 +1622,18 @@
     "description_description": "The description of your organisation",
     "description_label": "Description",
     "general_settings": "General settings",
+    "media_retention": {
+      "label": "Automatic deletion of new media after",
+      "placeholder": "Never",
+      "unit_label": "Unit of the duration",
+      "unit_hour": "Hour | Hours",
+      "unit_day": "Day | Days",
+      "unit_week": "Week | Weeks",
+      "unit_month": "Month | Months",
+      "unit_year": "Year | Years",
+      "hint": "How long after its creation a media is deleted. If the field is empty, media are never deleted.",
+      "value_error": "Enter a whole number from 1 to {max}, or leave empty"
+    },
     "personal_space_name": "My space: {name}",
     "kpi": {
       "error": "An error occurred while retrieving the data",

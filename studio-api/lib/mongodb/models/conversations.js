@@ -8,6 +8,10 @@ const ROLES = require(`${process.cwd()}/lib/dao/organization/roles`)
 const RIGHTS = require(`${process.cwd()}/lib/dao/conversation/rights`)
 const TYPE = require(`${process.cwd()}/lib/dao/conversation/types`)
 const PART_STATES = require(`${process.cwd()}/lib/dao/conversation/partStates`)
+const MEDIA_RETENTION = require(
+  `${process.cwd()}/lib/dao/organization/mediaRetention`,
+)
+const organizationsModel = require(`./organizations`)
 const LISTED = require(`${process.cwd()}/lib/dao/conversation/listed`)
 const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
@@ -17,11 +21,41 @@ class ConvoModel extends MongoModel {
     super("conversations")
   }
 
+  // Set once from the retention of the organization: changing the setting
+  // later leaves it as is. A child is deleted with its parent.
+  async stampExpiration(conversation) {
+    delete conversation.expiresAt
+
+    const organizationId = conversation.organization?.organizationId
+    if (!organizationId || TYPE.isChild(conversation.type?.mode)) return
+
+    const retention = await organizationsModel.getMediaRetention(organizationId)
+    if (retention) {
+      conversation.expiresAt = MEDIA_RETENTION.expirationDate(retention)
+    }
+  }
+
+  // Media whose retention is over, the oldest first
+  async listExpired(limit) {
+    try {
+      const query = { expiresAt: { $lte: moment().format() } }
+      return await this.mongoRequest(query, {
+        projection: { text: 0 },
+        sort: { expiresAt: 1 },
+        limit,
+      })
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
   async create(conversation) {
     try {
       const dateTime = moment().format()
       conversation.created = dateTime
       conversation.last_update = dateTime
+      await this.stampExpiration(conversation)
 
       if (conversation.text?.length > 0) {
         let docSize = calculateObjectSize(conversation)
@@ -56,6 +90,9 @@ class ConvoModel extends MongoModel {
       }
 
       if (payload.organizationId) delete payload.organizationId
+      // Written by updateExpiration only: a document read earlier and written
+      // back must not bring an old date back
+      delete payload.expiresAt
 
       const dateTime = moment().format()
       payload.last_update = dateTime
@@ -64,6 +101,20 @@ class ConvoModel extends MongoModel {
       let mutableElements = payload
 
       return await this.mongoUpdateOne(query, operator, mutableElements)
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  }
+
+  // null removes the date: the media is never deleted
+  async updateExpiration(conversationId, expiresAt) {
+    try {
+      const query = { _id: this.getObjectId(conversationId) }
+      return await this.mongoUpdateOne(query, "$set", {
+        expiresAt,
+        last_update: moment().format(),
+      })
     } catch (error) {
       console.error(error)
       return error

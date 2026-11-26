@@ -1,0 +1,45 @@
+{
+  "/api/administration/conversations/expired": {
+    "delete": {
+      "tags": ["administration conversations"],
+      "summary": "Delete the conversations whose retention is over",
+      "description": "Deletes every conversation whose expiresAt date is over, with its audio, its children and its subtitles. Each deletion is written to the activity log of its organization. Meant to be called on a schedule by the studio-tasks service, with a platform API key. A conversation that could not be deleted is counted in failed and tried again at the next call.",
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/UserScope"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "deleted": {
+                    "type": "integer",
+                    "description": "Number of conversations deleted"
+                  },
+                  "failed": {
+                    "type": "integer",
+                    "description": "Number of expired conversations that could not be deleted"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized"
+        },
+        "403": {
+          "description": "The caller is not a system administrator"
+        }
+      }
+    }
+  }
+}

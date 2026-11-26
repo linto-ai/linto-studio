@@ -384,6 +384,36 @@ class LoggerContext {
     }
   }
 
+  // A media deleted because its retention is over, listed with the activity
+  // of its organization
+  async createRetentionContext(req, conversation) {
+    try {
+      const context = await this.createContext(
+        req,
+        `Media ${conversation._id} deleted: retention over since ${conversation.expiresAt}`,
+      )
+      context.scope = "resource"
+      context.activity = "retention"
+
+      const organizationId = conversation.organization.organizationId
+      await storeCacheOrganization(organizationId)
+      context.organization = {
+        id: organizationId,
+        info: cache.organizations[organizationId],
+      }
+
+      context.retention = {
+        conversationId: conversation._id.toString(),
+        name: conversation.name,
+        expiresAt: conversation.expiresAt,
+      }
+
+      return context
+    } catch (err) {
+      return logError("Error creating log context for retention", err)
+    }
+  }
+
   async createSystemContext(
     message,
     { source = "system", level = DEFAULT_LEVEL } = {},

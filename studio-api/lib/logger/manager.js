@@ -148,6 +148,12 @@ class LogManager {
     if (ctx) model.activityLog.create(ctx)
   }
 
+  static async logRetentionEvent(req, conversation) {
+    const ctx = await context.createRetentionContext(req, conversation)
+    logger.log(ctx)
+    model.activityLog.create(ctx)
+  }
+
   static async logSystemEvent(message, payload = {}) {
     const ctx = await context.createSystemContext(message, payload)
     if (ctx) logger.log(ctx)

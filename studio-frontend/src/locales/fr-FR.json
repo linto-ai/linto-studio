@@ -495,7 +495,7 @@
     "billing": "Facturation",
     "preferences": "Préférences",
     "notifications": "Notifications",
-    "organization_information": "Informations de l'organisation",
+    "organization_information": "Paramètres de l'organisation",
     "organization_members": "Membres de l'organisation",
     "tags": "Thématiques",
     "title": "Paramètres",
@@ -1323,6 +1323,14 @@
       "title_updated": "Titre mis à jour",
       "description": "Description",
       "description_updated": "Description mise à jour",
+      "expiration": {
+        "label": "Suppression automatique à cette date",
+        "never": "Jamais",
+        "hint_none": "Sans date, le média est conservé indéfiniment.",
+        "remove": "Retirer la date de suppression",
+        "updated": "Date de suppression mise à jour",
+        "removed": "Le média ne sera plus supprimé automatiquement"
+      },
       "duration": "Durée",
       "created": "Créé le",
       "tags": "Assignation de thématiques",
@@ -1608,6 +1616,18 @@
     "description_description": "Description de l'organisation",
     "description_label": "Description",
     "general_settings": "Réglages",
+    "media_retention": {
+      "label": "Suppression automatique des nouveaux médias après",
+      "placeholder": "Jamais",
+      "unit_label": "Unité de la durée",
+      "unit_hour": "Heure | Heures",
+      "unit_day": "Jour | Jours",
+      "unit_week": "Semaine | Semaines",
+      "unit_month": "Mois | Mois",
+      "unit_year": "Année | Années",
+      "hint": "Durée après laquelle un média créé est supprimé. Si le champ est vide, les médias ne seront jamais supprimés.",
+      "value_error": "Saisissez un nombre entier entre 1 et {max}, ou laissez vide"
+    },
     "personal_space_name": "Mon espace : {name}",
     "kpi": {
       "error": "Une erreur est survenue lors de la récupération des données",

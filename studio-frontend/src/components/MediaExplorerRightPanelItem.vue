@@ -78,6 +78,45 @@
             @change="handleFolderChange" />
         </div>
 
+        <!-- Automatic deletion -->
+        <div class="media-section">
+          <template v-if="readOnly">
+            <h4 class="section-title field-label">
+              {{ $t("media_explorer.panel.expiration.label") }}
+            </h4>
+            <span>{{ expirationText }}</span>
+          </template>
+          <template v-else>
+            <FormInput
+              class="expiration-field"
+              inputFullWidth
+              :field="expirationField"
+              v-model="expirationField.value"
+              with-confirmation
+              @on-confirm="handleExpirationUpdate">
+              <template #content-after-input>
+                <Tooltip
+                  class="expiration-remove"
+                  position="left"
+                  :text="$t('media_explorer.panel.expiration.remove')">
+                  <Button
+                    type="button"
+                    @click="saveExpiration(null)"
+                    :disabled="!hasExpiration"
+                    :aria-label="$t('media_explorer.panel.expiration.remove')"
+                    icon="x"
+                    variant="primary"
+                    intent="destructive"
+                    size="sm" />
+                </Tooltip>
+              </template>
+            </FormInput>
+            <span class="open-media-hint" v-if="!hasExpiration">
+              {{ $t("media_explorer.panel.expiration.hint_none") }}
+            </span>
+          </template>
+        </div>
+
         <!-- Actions section -->
         <div class="media-section">
           <h4 class="section-title field-label">
@@ -153,11 +192,15 @@ import { mediaScopeMixin } from "@/mixins/mediaScope"
 import InputSelector from "@/components/atoms/InputSelector.vue"
 import ChipTag from "@/components/atoms/ChipTag.vue"
 import Button from "@/components/atoms/Button.vue"
+import Tooltip from "@/components/atoms/Tooltip.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
 import FormInput from "@/components/molecules/FormInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
 import FolderSelector from "./FolderSelector.vue"
+import getFullDate from "@/tools/date/getFullDate.js"
+import incrementByNDays from "@/tools/date/incrementByNDays.js"
+import dateInputToIso from "@/tools/date/dateInputToIso.js"
 import { mapGetters } from "vuex"
 
 export default {
@@ -167,6 +210,7 @@ export default {
     InputSelector,
     ChipTag,
     Button,
+    Tooltip,
     ModalDeleteConversations,
     FormInput,
     FolderSelector,
@@ -197,6 +241,14 @@ export default {
         value: "",
         label: this.$t("media_explorer.panel.description"),
         placeholder: this.$t("media_explorer.panel.default_description"),
+      },
+      expirationField: {
+        ...EMPTY_FIELD,
+        value: "",
+        label: this.$t("media_explorer.panel.expiration.label"),
+        type: "date",
+        // The date has to be a day to come
+        customParams: { min: getFullDate(incrementByNDays(new Date(), 1)) },
       },
     }
   },
@@ -238,6 +290,17 @@ export default {
         .map((tagId) => this.getTagById(tagId))
         .filter((tag) => !!tag)
     },
+    hasExpiration() {
+      return !!this.reactiveSelectedMedia?.expiresAt
+    },
+    expirationText() {
+      if (!this.hasExpiration) {
+        return this.$t("media_explorer.panel.expiration.never")
+      }
+      return this.formatDate(this.reactiveSelectedMedia.expiresAt, {
+        month: "long",
+      })
+    },
   },
   watch: {
     reactiveSelectedMedia: {
@@ -250,14 +313,17 @@ export default {
             !oldMedia ||
             newMedia._id !== oldMedia._id ||
             newMedia.name !== oldMedia.name ||
-            newMedia.description !== oldMedia.description
+            newMedia.description !== oldMedia.description ||
+            newMedia.expiresAt !== oldMedia.expiresAt
           ) {
             this.titleField.value = newMedia.name || ""
             this.descriptionField.value = newMedia.description || ""
+            this.resetExpirationField()
           }
         } else {
           this.titleField.value = ""
           this.descriptionField.value = ""
+          this.resetExpirationField()
         }
       },
     },
@@ -274,7 +340,49 @@ export default {
           ""
         this.descriptionField.value =
           this.reactiveSelectedMedia.description || ""
+        this.resetExpirationField()
       }
+    },
+
+    resetExpirationField() {
+      const expiresAt = this.reactiveSelectedMedia?.expiresAt
+      if (expiresAt) {
+        this.expirationField.value = getFullDate(new Date(expiresAt))
+      } else {
+        this.expirationField.value = ""
+      }
+    },
+
+    // An emptied date removes it, like the dedicated button
+    async handleExpirationUpdate() {
+      await this.saveExpiration(dateInputToIso(this.expirationField.value))
+    },
+
+    async saveExpiration(expiresAt) {
+      if (!this.selectedMedia?._id) return
+      let successMessage = this.$t("media_explorer.panel.expiration.updated")
+      if (expiresAt === null) {
+        successMessage = this.$t("media_explorer.panel.expiration.removed")
+      }
+      try {
+        await this.updateMediaProperty(
+          this.selectedMedia._id,
+          "expiresAt",
+          expiresAt,
+        )
+        this.$store.dispatch("system/addNotification", {
+          type: "success",
+          message: successMessage,
+        })
+      } catch (error) {
+        console.error("Expiration update error:", error)
+        this.$store.dispatch("system/addNotification", {
+          type: "error",
+          message: this.$t("media_explorer.panel.update_error"),
+        })
+      }
+      // Back to the stored date, the new one or the previous one on error
+      this.$nextTick(() => this.resetExpirationField())
     },
 
     async handleCreateTag(tag) {
@@ -520,5 +628,21 @@ export default {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+/* In the row of the date field, centred on it */
+.expiration-remove {
+  align-self: center;
+}
+
+/* A date picked but not applied keeps its buttons once the focus has left:
+   hidden, they would leave the new date looking saved */
+.expiration-field.form-field--with-confirmation :deep(.form-field__actions) {
+  opacity: 1;
+}
+
+/* Next to the edge of the screen the tooltip folds on the room left */
+.expiration-remove :deep(.tooltip-content__text) {
+  white-space: nowrap;
 }
 </style>

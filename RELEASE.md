@@ -15,6 +15,10 @@ _2026_11_26_
   - Partial conversations: append audio parts to a conversation until it is complete
   - Conversations deleted once fetched, for one-shot transcriptions
   - New upload dialog
+- Media retention
+  - Retention period per organization: each new media gets an expiration date
+  - Expiration date editable or removable per media
+  - Expired media are deleted with their audio, each deletion is written to the activity log
 - Sessions
   - Catch-up summary for participants joining a live session late
   - Organization notice shown to participants before they join
@@ -37,6 +41,7 @@ _2026_11_26_
   - Upgrade to MongoDB 9.0
   - Database migration `1.9.0` (`DB_MIGRATION_TARGET`)
   - Remove the studio-websocket service, real-time events are served by studio-api
+  - New studio-tasks service, run as a Kubernetes CronJob, deletes the expired media through studio-api
 - Bugfix
   - Fix words and punctuation lost on transcription import
   - Fix audio files left behind after a conversation is deleted

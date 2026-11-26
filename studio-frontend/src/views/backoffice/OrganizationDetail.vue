@@ -48,6 +48,9 @@
         </section>
         <section>
           <h2 class="medium-margin-bottom">Danger zone</h2>
+          <UpdateOrganizationMediaRetention
+            class="medium-margin-bottom"
+            :currentOrganization="organization" />
           <Button
             @click="openDeleteModal"
             variant="primary"
@@ -78,6 +81,7 @@ import { impersonationMixin } from "@/mixins/impersonation.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import UpdateOrganizationForm from "@/components/UpdateOrganizationForm.vue"
+import UpdateOrganizationMediaRetention from "@/components/UpdateOrganizationMediaRetention.vue"
 import UpdateOrganizationUsers from "@/components/UpdateOrganizationUsers.vue"
 import ModalDeleteOrganization from "@/components/ModalDeleteOrganization.vue"
 import UpdateOrganizationPermissions from "@/components/UpdateOrganizationPermissions.vue"
@@ -141,6 +145,7 @@ export default {
   components: {
     MainContentBackoffice,
     UpdateOrganizationForm,
+    UpdateOrganizationMediaRetention,
     UpdateOrganizationUsers,
     UpdateOrganizationPermissions,
     UpdateOrganizationSecurityLevel,

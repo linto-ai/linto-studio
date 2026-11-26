@@ -1,5 +1,9 @@
 jest.mock(`${process.cwd()}/lib/mongodb/models`, () => ({
-  conversations: { getById: jest.fn(), update: jest.fn() },
+  conversations: {
+    getById: jest.fn(),
+    update: jest.fn(),
+    updateExpiration: jest.fn(),
+  },
 }))
 for (const dep of [
   "controllers/conversation/utility",
@@ -32,6 +36,7 @@ beforeEach(() => {
   jest.clearAllMocks()
   model.conversations.getById.mockResolvedValue([{ _id: "conv-1" }])
   model.conversations.update.mockResolvedValue({ matchedCount: 1 })
+  model.conversations.updateExpiration.mockResolvedValue({ matchedCount: 1 })
 })
 
 describe("updateConversation protected fields", () => {
@@ -67,5 +72,72 @@ describe("updateConversation protected fields", () => {
       _id: "conv-1",
       name: "New",
     })
+  })
+})
+
+describe("updateConversation expiresAt", () => {
+  const moment = require("moment")
+  const inOneYear = moment().add(1, "year")
+
+  test("a date to come is stored in the format of the other dates", async () => {
+    const { res } = await patch({ expiresAt: inOneYear.toISOString() })
+
+    expect(res.status).toHaveBeenCalledWith(200)
+    expect(model.conversations.update).toHaveBeenCalledWith({ _id: "conv-1" })
+    expect(model.conversations.updateExpiration).toHaveBeenCalledWith(
+      "conv-1",
+      inOneYear.format(),
+    )
+  })
+
+  test("null removes the date", async () => {
+    const { res } = await patch({ expiresAt: null })
+
+    expect(res.status).toHaveBeenCalledWith(200)
+    expect(model.conversations.updateExpiration).toHaveBeenCalledWith(
+      "conv-1",
+      null,
+    )
+  })
+
+  test("a date that is not to come is refused without updating", async () => {
+    const expiresAt = moment().subtract(1, "day").toISOString()
+    const { next } = await patch({ name: "New", expiresAt })
+
+    expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
+    expect(model.conversations.update).not.toHaveBeenCalled()
+    expect(model.conversations.updateExpiration).not.toHaveBeenCalled()
+  })
+
+  test("a child conversation has no date of its own", async () => {
+    model.conversations.getById.mockResolvedValue([
+      { _id: "conv-1", type: { mode: "child" } },
+    ])
+
+    const { next } = await patch({ expiresAt: inOneYear.toISOString() })
+
+    expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
+    expect(model.conversations.update).not.toHaveBeenCalled()
+    expect(model.conversations.updateExpiration).not.toHaveBeenCalled()
+  })
+
+  test("an update of another field leaves the date as is", async () => {
+    await patch({ name: "New" })
+
+    expect(model.conversations.update).toHaveBeenCalledWith({
+      _id: "conv-1",
+      name: "New",
+    })
+    expect(model.conversations.updateExpiration).not.toHaveBeenCalled()
+  })
+
+  test("a dotted key does not reach the date", async () => {
+    await patch({ name: "New", "expiresAt.x": "2000-01-01" })
+
+    expect(model.conversations.update).toHaveBeenCalledWith({
+      _id: "conv-1",
+      name: "New",
+    })
+    expect(model.conversations.updateExpiration).not.toHaveBeenCalled()
   })
 })

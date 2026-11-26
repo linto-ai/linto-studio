@@ -22,6 +22,24 @@
                 },
                 "description": {
                   "type": "string"
+                },
+                "mediaRetention": {
+                  "type": "object",
+                  "nullable": true,
+                  "description": "How long the media created in the organization are kept. Each media gets its deletion date (expiresAt) when it is created, then it is deleted with its audio once the date is over. Changing the setting does not change the date of the media already created. null removes the retention: the media created afterwards are kept indefinitely, which is the default. Sent as JSON",
+                  "properties": {
+                    "value": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 120
+                    },
+                    "unit": {
+                      "type": "string",
+                      "enum": ["hour", "day", "week", "month", "year"]
+                    }
+                  },
+                  "required": ["value", "unit"],
+                  "example": { "value": 6, "unit": "month" }
                 }
               }
             }

@@ -1,0 +1,12 @@
+# Base URL of studio-api, without the /api suffix
+# (e.g. http://studio-api in a cluster, https://studio.example.com/cm-api from outside)
+STUDIO_API_URL=http://localhost:8001
+
+# Platform API key with the system administrator role, created in the
+# backoffice (API tokens)
+STUDIO_API_KEY=
+
+# Used only when STUDIO_API_KEY is empty: the service signs in and reads its
+# own API key from studio-api (see README)
+SUPER_ADMIN_EMAIL=
+SUPER_ADMIN_PWD=

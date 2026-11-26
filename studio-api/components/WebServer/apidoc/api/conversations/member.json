@@ -65,6 +65,12 @@
                 "description": {
                   "type": "string"
                 },
+                "expiresAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true,
+                  "description": "Date after which the media is deleted with its audio. Set at creation from the mediaRetention of the organization when there is one. Must be a date to come. null removes it: the media is never deleted"
+                },
                 "other": {
                   "type": "string",
                   "description": "Any other content field. owner, organization, sharedWithUsers, securityLevel, metadata, jobs and type are ignored, use their dedicated routes. deleteOnFetch is ignored too, it is only set at creation."

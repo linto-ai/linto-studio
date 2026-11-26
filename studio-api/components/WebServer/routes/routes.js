@@ -44,6 +44,7 @@ module.exports = (webServer) => {
       ...require("./api/administration/activity")(webServer),
       ...require("./api/administration/users")(webServer),
       ...require("./api/administration/organizations")(webServer),
+      ...require("./api/administration/conversations")(webServer),
       ...require("./api/administration/tokens")(webServer),
     ],
     "/api/chat": [
