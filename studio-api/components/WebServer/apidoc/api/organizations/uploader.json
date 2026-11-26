@@ -68,6 +68,10 @@
                 "partial": {
                   "type": "boolean",
                   "description": "The file is the beginning of the audio: the conversation stays pending and open to append until it is completed. Requires a file, not a url"
+                },
+                "deleteOnFetch": {
+                  "type": "boolean",
+                  "description": "One-shot conversation: created and transcribed as usual, it is never listed and is deleted, with its audio, once retrieved whole by its id after the end of its transcription"
                 }
               },
               "required": ["name", "endpoint", "lang"]

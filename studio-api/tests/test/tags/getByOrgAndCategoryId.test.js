@@ -110,6 +110,7 @@ describe("TagModel.getByOrgAndCategoryId", () => {
           tags: {
             $in: mockTags.map((t) => t._id.toString()),
           },
+          deleteOnFetch: { $ne: true },
         },
       })
 

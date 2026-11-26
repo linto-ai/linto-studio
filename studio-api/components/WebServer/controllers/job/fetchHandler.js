@@ -14,14 +14,6 @@ const { joinParts } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/partialAudio`,
 )
 const PART_STATES = require(`${process.cwd()}/lib/dao/conversation/partStates`)
-const { ConversationTranscriptionFailed } = require(
-  `${process.cwd()}/components/WebServer/error/exception/conversation`,
-)
-
-// Polled less and less often: a long job does not need a tight loop
-const WAIT_INTERVAL_MS = 2000
-const WAIT_INTERVAL_MAX_MS = 15000
-const WAIT_TIMEOUT_MS = 60 * 60 * 1000
 
 async function fetchLogs(host, job) {
   try {
@@ -258,31 +250,6 @@ async function getResult(job, metadata) {
   }
 }
 
-// Holds the caller until the job ends, then gives its result. `isCancelled`
-// stops the wait when nobody is left to answer.
-async function waitResult(job, metadata, isCancelled = () => false) {
-  const host = `${process.env.GATEWAY_SERVICES}/${job.endpoint}`
-  const deadline = Date.now() + WAIT_TIMEOUT_MS
-  let interval = WAIT_INTERVAL_MS
-
-  while (Date.now() < deadline) {
-    if (isCancelled()) {
-      throw new ConversationTranscriptionFailed("The request was closed")
-    }
-    const job_info = await axios.get(`${host}/job/${job.job_id}`)
-    if (job_info.state === "done" && job_info.result_id) {
-      return await getResult({ ...job, ...job_info }, metadata)
-    }
-    if (job_info.state === "error") {
-      const logs = await fetchLogs(host, job)
-      throw new ConversationTranscriptionFailed(logs)
-    }
-    await new Promise((resolve) => setTimeout(resolve, interval))
-    interval = Math.min(interval * 1.5, WAIT_INTERVAL_MAX_MS)
-  }
-  throw new ConversationTranscriptionFailed("The transcription took too long")
-}
-
 async function updateJobConversation(conv_id, conv_job, job_queue) {
   job_queue.map((job) => {
     conv_job[job.type] = {
@@ -294,4 +261,4 @@ async function updateJobConversation(conv_id, conv_job, job_queue) {
   await model.conversations.updateJob(conv_id, conv_job)
 }
 
-module.exports = { fetchJob, waitResult }
+module.exports = { fetchJob }

@@ -1,6 +1,7 @@
 const debug = require("debug")("linto:lib:mongodb:models:folders")
 const MongoModel = require(`../model`)
 const moment = require("moment")
+const LISTED = require(`${process.cwd()}/lib/dao/conversation/listed`)
 
 class FolderModel extends MongoModel {
   constructor() {
@@ -101,6 +102,7 @@ class FolderModel extends MongoModel {
       const matchStage = {
         folderId: { $in: folderIds },
         "organization.organizationId": organizationId,
+        ...LISTED,
       }
 
       if (userRole < ROLES.MAINTAINER) {

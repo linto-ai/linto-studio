@@ -1,5 +1,5 @@
 // One place checks the SaaS quota on the duration of an upload and sends it to
-// transcription: create, append and sync all go through it.
+// transcription: create and append both go through it.
 
 const mockCalls = []
 const mockEnforce = jest.fn(async () => null)
@@ -50,7 +50,7 @@ jest.mock(
   }),
 )
 
-const { dispatchUpload, sendToTranscription, recordUpload } = require(
+const { dispatchUpload, recordUpload } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/upload`,
 )
 const axios = require(`${process.cwd()}/lib/utility/axios`)
@@ -195,26 +195,6 @@ describe("dispatchUpload without the SaaS plugin", () => {
     const { seconds } = await dispatchUpload(upload({ requireDuration: true }))
 
     expect(seconds).toBe(90)
-  })
-})
-
-describe("sendToTranscription", () => {
-  test("is the gate an upload that is not stored goes through too", async () => {
-    const form = new (require("form-data"))()
-    form.append("file", Buffer.from("audio"), { filename: "raw" })
-
-    const job = await sendToTranscription(form, 75, {
-      endpoint: "stt",
-      transcriptionConfig: {},
-      organizationId: "org-1",
-      userId: "user-1",
-    })
-
-    expect(mockCalls).toEqual(["enforce", "transcribe"])
-    expect(mockEnforce).toHaveBeenCalledWith(
-      expect.objectContaining({ capability: "import.minutes", seconds: 75 }),
-    )
-    expect(job).toEqual({ jobid: "job-1" })
   })
 })
 
