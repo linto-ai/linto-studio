@@ -4,6 +4,7 @@ const debug = require("debug")(
 const MongoModel = require(`../model`)
 const COLOR = require(`${process.cwd()}/lib/dao/organization/color`)
 const DEFAULT_TAGS = require(`${process.cwd()}/config/tags`)
+const LISTED = require(`${process.cwd()}/lib/dao/conversation/listed`)
 const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 const moment = require("moment")
@@ -135,6 +136,7 @@ class TagModel extends MongoModel {
       const matchQuery = {
         "organization.organizationId": organizationId.toString(),
         tags: { $in: tagIdStrings },
+        ...LISTED,
       }
       if (folderId === "null" || folderId === null) {
         matchQuery.folderId = null

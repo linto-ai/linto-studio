@@ -388,20 +388,6 @@ async function readSampleDuration(absolutePath, clientDuration) {
   return clientDuration
 }
 
-// Duration of an upload that is not kept: checked like a stored one, never
-// converted. 0 when the duration cannot be read.
-async function probeUpload(file) {
-  assertSupportedMedia(file)
-  const filePath = `${getStorageFolder()}/${getAudioFolder()}/${uuidv4()}_tmp${path.extname(file.name)}`
-  await fs.promises.writeFile(filePath, file.data)
-  try {
-    await assertAudioContent(filePath, file.name)
-    return await readSampleDuration(filePath, 0)
-  } finally {
-    deleteFile(filePath)
-  }
-}
-
 /** Resolve audioFilePath inside the storage directory; null if it escapes it (path traversal). */
 function resolveStoragePath(audioFilePath) {
   const filePath = path.resolve(getStorageFolder(), audioFilePath)
@@ -488,7 +474,6 @@ async function storeAndCreateSample(
 
 module.exports = {
   storeFile,
-  probeUpload,
   joinAudio,
   defaultPicture,
   deleteFile,
