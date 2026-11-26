@@ -142,45 +142,18 @@ async function probeSeconds(file_data) {
   }
 }
 
-async function sendToTranscription(
-  form,
-  seconds,
-  {
-    endpoint,
-    transcriptionConfig,
-    isSingleFile = true,
-    headers,
-    organizationId,
-    userId,
-  },
-) {
-  // SaaS gate: the plugin refuses (402) before the ASR is paid for. No-op
-  // in OSS.
-  await saas.enforce({
-    orgId: organizationId,
-    capability: IMPORT_CAPABILITY,
-    seconds,
-    userId,
-  })
-
-  const options = prepareRequest(
-    form,
-    transcriptionConfig,
-    isSingleFile,
-    headers,
-  )
-  const processingJob = await axios.postFormData(
-    getTranscriptionService(endpoint, isSingleFile),
-    options,
-  )
-  if (!processingJob?.jobid) {
-    throw new ConversationError("Processing job ID is required")
-  }
-  return processingJob
-}
-
 // The stored file is removed when the dispatch fails
-async function dispatchUpload({ files, url, requireDuration, ...request }) {
+async function dispatchUpload({
+  files,
+  url,
+  requireDuration,
+  endpoint,
+  transcriptionConfig,
+  isSingleFile = true,
+  headers,
+  organizationId,
+  userId,
+}) {
   const { form, file_data } = await prepareFileFormData(files, url)
   try {
     // Only measured when someone reads it: the SaaS plugin, or the caller
@@ -192,7 +165,28 @@ async function dispatchUpload({ files, url, requireDuration, ...request }) {
       throw new ConversationError("Audio duration could not be read")
     }
 
-    const processingJob = await sendToTranscription(form, seconds, request)
+    // SaaS gate: the plugin refuses (402) before the ASR is paid for. No-op
+    // in OSS.
+    await saas.enforce({
+      orgId: organizationId,
+      capability: IMPORT_CAPABILITY,
+      seconds,
+      userId,
+    })
+
+    const options = prepareRequest(
+      form,
+      transcriptionConfig,
+      isSingleFile,
+      headers,
+    )
+    const processingJob = await axios.postFormData(
+      getTranscriptionService(endpoint, isSingleFile),
+      options,
+    )
+    if (!processingJob?.jobid) {
+      throw new ConversationError("Processing job ID is required")
+    }
     return { processingJob, file_data, seconds }
   } catch (err) {
     deleteFile(file_data.storageFilePath)
@@ -212,7 +206,6 @@ async function recordUpload({ organizationId, userId, seconds, ref }) {
 }
 
 module.exports = {
-  sendToTranscription,
   dispatchUpload,
   recordUpload,
   getTranscriptionService,

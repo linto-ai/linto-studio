@@ -24,12 +24,6 @@ const ConversationSecurityLevelForbidden = createException(
   403,
   "The selected transcription model does not meet the required confidentiality level",
 )
-const ConversationTranscriptionFailed = createException(
-  "ConversationTranscriptionFailed",
-  "conversation",
-  502,
-  "The transcription failed",
-)
 const ConversationNoFileUploaded = createException(
   "ConversationNoFileUploaded",
   "conversation",
@@ -174,7 +168,6 @@ module.exports = {
   ConversationIdRequire,
   ConversationError,
   ConversationSecurityLevelForbidden,
-  ConversationTranscriptionFailed,
   SpeakerIdentificationForbidden,
   ConversationNotFound,
   TurnNotFound,

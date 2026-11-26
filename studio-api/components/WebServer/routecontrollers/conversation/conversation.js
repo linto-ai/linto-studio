@@ -13,7 +13,9 @@ const orgaUtility = require(
   `${process.cwd()}/components/WebServer/controllers/organization/utility`,
 )
 
+const logger = require(`${process.cwd()}/lib/logger/logger`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
+const PART_STATES = require(`${process.cwd()}/lib/dao/conversation/partStates`)
 const conversationAccess = require(
   `${process.cwd()}/components/WebServer/middlewares/access/conversation`,
 )
@@ -40,6 +42,7 @@ const PROTECTED_FIELDS = [
   "metadata",
   "jobs",
   "type",
+  "deleteOnFetch",
 ]
 
 function stripProtectedFields(body) {
@@ -48,6 +51,24 @@ function stripProtectedFields(body) {
       ([key]) => !PROTECTED_FIELDS.includes(key.split(".")[0]),
     ),
   )
+}
+
+// Kept while it is transcribed: only the fetch of its final state deletes it
+function isLastFetch(conversation) {
+  return (
+    conversation.deleteOnFetch === true &&
+    PART_STATES.isSettled(conversation.jobs?.transcription?.state)
+  )
+}
+
+async function deleteFetched(conversation) {
+  try {
+    await orgaUtility.deleteConversationCascade(conversation)
+  } catch (err) {
+    logger.error(
+      `Conversation ${conversation._id} could not be deleted after its fetch: ${err && err.message}`,
+    )
+  }
 }
 
 async function deleteConversation(req, res, next) {
@@ -105,7 +126,9 @@ async function getConversation(req, res, next) {
     )
       await fetchJob(req.params.conversationId, conversation[0].jobs)
 
-    if (req?.query?.key && typeof req.query.key === "string") {
+    const hasKeyFilter =
+      Boolean(req?.query?.key) && typeof req.query.key === "string"
+    if (hasKeyFilter) {
       const projectionValue =
         req.query.projection && /^\d+$/.test(req.query.projection)
           ? parseInt(req.query.projection, 10)
@@ -126,10 +149,14 @@ async function getConversation(req, res, next) {
         req.params.conversationId,
         projection,
       )
-    } else
+    } else {
       conversation = await model.conversations.getById(
         req.params.conversationId,
       )
+    }
+    // Deleted by a concurrent fetch since the first read
+    if (conversation.length !== 1) throw new ConversationNotFound()
+
     const data = await conversationUtility.getUserRightFromConversation(
       req.payload.data.userId,
       conversation[0],
@@ -146,6 +173,11 @@ async function getConversation(req, res, next) {
       conversation[0] = await conversationUtility.generateAudioDuration(
         conversation[0],
       )
+    }
+
+    // A key filter only reads it. Deleted once the answer is written out
+    if (!hasKeyFilter && isLastFetch(conversation[0])) {
+      res.once("finish", () => deleteFetched(conversation[0]))
     }
 
     res.status(200).send({
@@ -248,6 +280,8 @@ async function duplicateConversation(req, res, next) {
     delete copy._id
     delete copy.created
     delete copy.last_update
+    // The copy is a regular media
+    delete copy.deleteOnFetch
 
     copy.name = source.name + " (copy)"
     copy.owner = req.payload.data.userId

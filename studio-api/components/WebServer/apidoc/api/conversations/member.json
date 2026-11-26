@@ -3,6 +3,7 @@
     "get": {
       "tags": ["conversations member"],
       "summary": "Retrieve a conversation based on an ID",
+      "description": "A conversation created with deleteOnFetch is deleted once it has been retrieved whole (no key filter) after the end of its transcription, done or error. Retrieved with a key filter, or while it is still processing, it is kept.",
       "parameters": [
         {
           "$ref": "#/components/parameters/ConversationId"
@@ -66,7 +67,7 @@
                 },
                 "other": {
                   "type": "string",
-                  "description": "Any other content field. owner, organization, sharedWithUsers, securityLevel, metadata, jobs and type are ignored, use their dedicated routes."
+                  "description": "Any other content field. owner, organization, sharedWithUsers, securityLevel, metadata, jobs and type are ignored, use their dedicated routes. deleteOnFetch is ignored too, it is only set at creation."
                 }
               }
             }
