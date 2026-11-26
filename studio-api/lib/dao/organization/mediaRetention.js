@@ -1,13 +1,13 @@
 const moment = require("moment")
 
-const UNITS = ["month", "year"]
+const UNITS = ["hour", "day", "week", "month", "year"]
 const MAX_VALUE = 120
 
 const MEDIA_RETENTION = Object.freeze({
   UNITS,
   MAX_VALUE,
 
-  // Undefined when the input is not a whole number of months or years
+  // Undefined when the input is not a whole number of one of the units
   parse: (input) => {
     const value = Number(input?.value)
     if (!Number.isInteger(value) || value < 1 || value > MAX_VALUE) return

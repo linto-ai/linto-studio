@@ -44,10 +44,6 @@ GATEWAY_SERVICES=https://<domain>
 DEFAULT_SEGMENT_CHAR_SIZE=2000
 DEFAULT_SEGMENT_WORD_SIZE=
 
-# How often (seconds) the media whose retention is over are deleted. The
-# retention itself is a setting of each organization (none by default)
-MEDIA_RETENTION_CHECK_INTERVAL=3600
-
 # LLM Gateway V2 Config
 # HTTP API endpoint (e.g., http://localhost:8010)
 LLM_GATEWAY_SERVICES=

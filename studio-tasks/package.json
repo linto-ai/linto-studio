@@ -1,0 +1,16 @@
+{
+  "name": "linto-studio-tasks",
+  "private": true,
+  "description": "Scheduled tasks of LinTO Studio, each run calls studio-api and stops",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/linto-ai/linto-studio.git"
+  },
+  "license": "GNU GPLv3",
+  "engines": {
+    "node": ">=22"
+  }
+}

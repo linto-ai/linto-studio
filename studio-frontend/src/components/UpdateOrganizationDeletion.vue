@@ -1,6 +1,9 @@
 <template>
   <section>
     <h2>{{ $t("organisation.danger_zone") }}</h2>
+    <UpdateOrganizationMediaRetention
+      class="medium-margin-bottom"
+      :currentOrganization="currentOrganization" />
     <Alert
       variant="error"
       icon="trash"
@@ -23,6 +26,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
+import UpdateOrganizationMediaRetention from "@/components/UpdateOrganizationMediaRetention.vue"
 export default {
   props: {
     currentOrganization: {
@@ -54,6 +58,6 @@ export default {
       }
     },
   },
-  components: {},
+  components: { UpdateOrganizationMediaRetention },
 }
 </script>

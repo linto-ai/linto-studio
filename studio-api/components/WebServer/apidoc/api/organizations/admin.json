@@ -35,7 +35,7 @@
                     },
                     "unit": {
                       "type": "string",
-                      "enum": ["month", "year"]
+                      "enum": ["hour", "day", "week", "month", "year"]
                     }
                   },
                   "required": ["value", "unit"],

@@ -492,7 +492,7 @@
     "account_title": "My account",
     "account_information": "Account information",
     "billing": "Billing",
-    "organization_information": "Organisation information",
+    "organization_information": "Organisation settings",
     "organization_members": "Organisation members",
     "preferences": "Preferences",
     "notifications": "Notifications",
@@ -1624,15 +1624,16 @@
     "description_label": "Description",
     "general_settings": "General settings",
     "media_retention": {
-      "label": "Automatic deletion of media after",
+      "label": "Automatic deletion of new media after",
       "placeholder": "Never",
       "unit_label": "Unit of the duration",
+      "unit_hour": "Hour | Hours",
+      "unit_day": "Day | Days",
+      "unit_week": "Week | Weeks",
       "unit_month": "Month | Months",
       "unit_year": "Year | Years",
       "hint": "How long after its creation a media is deleted. If the field is empty, media are never deleted.",
-      "value_error": "Enter a whole number from 1 to {max}, or leave empty",
-      "summary_month": "{count} month | {count} months",
-      "summary_year": "{count} year | {count} years"
+      "value_error": "Enter a whole number from 1 to {max}, or leave empty"
     },
     "personal_space_name": "My space: {name}",
     "kpi": {

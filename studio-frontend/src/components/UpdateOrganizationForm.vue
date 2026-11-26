@@ -4,42 +4,22 @@
       <h2>{{ $t("organisation.general_settings") }}</h2>
       <!--Organization Name, fixed for the user's own personal space -->
       <FormInput
-        :readonly="isOwnPersonalOrganization || !canEditOrganization"
+        :readonly="
+          isOwnPersonalOrganization ||
+          !(isAdmin || (isSystemAdministrator && isBackofficePage))
+        "
         :field="orgaName"
         v-model="orgaName.value" />
       <FormInput
-        :readonly="!canEditOrganization"
+        :readonly="!(isAdmin || (isSystemAdministrator && isBackofficePage))"
         :field="orgaDescription"
         v-model="orgaDescription.value" />
-
-      <FormInput
-        v-if="canEditOrganization"
-        :field="retentionValue"
-        v-model="retentionValue.value">
-        <template #content-after-input>
-          <select
-            v-model="retentionUnit"
-            :aria-label="$t('organisation.media_retention.unit_label')">
-            <option v-for="unit of retentionUnits" :key="unit" :value="unit">
-              {{
-                $tc(`organisation.media_retention.unit_${unit}`, retentionCount)
-              }}
-            </option>
-          </select>
-        </template>
-        <template #content-bottom-input>
-          <p class="small-text">
-            {{ $t("organisation.media_retention.hint") }}
-          </p>
-        </template>
-      </FormInput>
-      <FormInput v-else readonly :field="retentionSummary" />
 
       <Button
         type="submit"
         variant="primary"
         size="md"
-        v-if="canEditOrganization"
+        v-if="isAdmin || (isSystemAdministrator && isBackofficePage)"
         :label="$t('organisation.update_button')" />
     </section>
   </form>
@@ -57,11 +37,6 @@ import EMPTY_FIELD from "@/const/emptyField"
 
 import { testName } from "@/tools/fields/testName"
 import { testContent } from "@/tools/fields/testContent"
-import {
-  testMediaRetentionValue,
-  MEDIA_RETENTION_MAX_VALUE,
-} from "@/tools/fields/testMediaRetentionValue"
-import { buildMediaRetention } from "@/tools/buildMediaRetention"
 import { isOwnPersonalOrganization } from "@/tools/user/isOwnPersonalOrganization"
 
 import { apiUpdateOrganisation } from "@/api/organisation.js"
@@ -78,7 +53,7 @@ export default {
   },
   data() {
     return {
-      fields: ["orgaName", "orgaDescription", "retentionValue"],
+      fields: ["orgaName", "orgaDescription"],
       orgaName: {
         ...EMPTY_FIELD,
         value: this.currentOrganization.name,
@@ -87,21 +62,10 @@ export default {
       },
       orgaDescription: {
         ...EMPTY_FIELD,
-        value: this.currentOrganization.description ?? "",
+        value: this.currentOrganization.description,
         label: this.$t("organisation.description_label"),
         testField: testContent,
       },
-      retentionValue: {
-        ...EMPTY_FIELD,
-        value: String(this.currentOrganization.mediaRetention?.value ?? ""),
-        label: this.$t("organisation.media_retention.label"),
-        placeholder: this.$t("organisation.media_retention.placeholder"),
-        type: "number",
-        customParams: { min: 1, max: MEDIA_RETENTION_MAX_VALUE, step: 1 },
-        testField: testMediaRetentionValue,
-      },
-      retentionUnit: this.currentOrganization.mediaRetention?.unit ?? "month",
-      retentionUnits: ["month", "year"],
       organizationId: this.currentOrganization._id,
     }
   },
@@ -118,30 +82,6 @@ export default {
     isOwnPersonalOrganization() {
       return isOwnPersonalOrganization(this.currentOrganization, this.userId)
     },
-    canEditOrganization() {
-      return (
-        this.isAdmin || (this.isSystemAdministrator && this.isBackofficePage)
-      )
-    },
-    // The unit agrees with the duration, plural while none is typed
-    retentionCount() {
-      return Number(this.retentionValue.value) || 2
-    },
-    retentionSummary() {
-      const retention = this.currentOrganization.mediaRetention
-      let value = this.$t("organisation.media_retention.placeholder")
-      if (retention) {
-        value = this.$tc(
-          `organisation.media_retention.summary_${retention.unit}`,
-          retention.value,
-        )
-      }
-      return {
-        ...EMPTY_FIELD,
-        value,
-        label: this.$t("organisation.media_retention.label"),
-      }
-    },
   },
   methods: {
     async updateOrganization(event) {
@@ -151,10 +91,6 @@ export default {
         if (!this.isOwnPersonalOrganization) {
           payload.name = this.orgaName.value.trim()
         }
-        payload.mediaRetention = buildMediaRetention(
-          this.retentionValue.value,
-          this.retentionUnit,
-        )
 
         let req = await apiUpdateOrganisation(this.organizationId, payload, {
           timeout: 3000,

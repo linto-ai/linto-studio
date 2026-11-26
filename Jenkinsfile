@@ -133,6 +133,11 @@ def performBuildForFile(changedFiles, version, commit_sha) {
         buildDockerfile('studio-frontend', version, commit_sha, '', '.')
     }
 
+    if (changedFiles.contains('studio-tasks')) {
+        echo 'Files in studio-tasks path are modified. Running specific build steps for studio-tasks...'
+        buildDockerfile('studio-tasks', version, commit_sha)
+    }
+
     // After the public images, so a failure on the private side never holds them back
     if (changedFiles.contains('studio-api')) {
         echo 'Files in studio-api path are modified. Running specific build steps for studio-api-saas...'
@@ -251,6 +256,7 @@ pipeline {
                     def tag = "dev-${slug}"
                     buildStagingImage('studio-api', tag)
                     buildStagingImage('studio-frontend', tag, '.')
+                    buildStagingImage('studio-tasks', tag)
                 }
             }
         }

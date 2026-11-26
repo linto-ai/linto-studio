@@ -29,6 +29,7 @@ LinTO Studio is the web application of the LinTO platform. Upload or record medi
 |---|---|
 | `studio-api/` | REST API (Express, MongoDB) and Socket.io server, authentication, organizations, media, transcription jobs |
 | `studio-frontend/` | Web application (Vue) |
+| `studio-tasks/` | Scheduled tasks calling studio-api (deletion of the media whose retention is over) |
 | `studio-sdk/` | JavaScript and Python client libraries, and the transcript editor as a standalone component |
 | `doc/` | Screenshots and API documentation |
 

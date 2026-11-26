@@ -1,7 +1,7 @@
 const logger = require(`${process.cwd()}/lib/logger/logger`)
 
-// The media retention check filters on expiresAt, set only for the media of
-// an organization with a retention: sparse keeps the others out of the index.
+// The deletion of expired media filters on expiresAt, set only for the media
+// of an organization with a retention: sparse keeps the others out of the index.
 const INDEX_KEYS = { expiresAt: 1 }
 const INDEX_OPTIONS = { sparse: true }
 

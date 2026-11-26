@@ -44,11 +44,17 @@ beforeEach(() => {
 })
 
 describe("MEDIA_RETENTION.parse", () => {
-  test("keeps a number of months or years", () => {
-    expect(MEDIA_RETENTION.parse({ value: 6, unit: "month" })).toEqual({
-      value: 6,
-      unit: "month",
-    })
+  test.each(["hour", "day", "week", "month", "year"])(
+    "accepts the unit %s",
+    (unit) => {
+      expect(MEDIA_RETENTION.parse({ value: 3, unit })).toEqual({
+        value: 3,
+        unit,
+      })
+    },
+  )
+
+  test("reads the value given as a string", () => {
     expect(MEDIA_RETENTION.parse({ value: "2", unit: "year" })).toEqual({
       value: 2,
       unit: "year",
@@ -67,7 +73,7 @@ describe("MEDIA_RETENTION.parse", () => {
     [{ value: 1.5, unit: "year" }],
     [{ value: 121, unit: "month" }],
     [{ value: "many", unit: "month" }],
-    [{ value: 6, unit: "day" }],
+    [{ value: 6, unit: "minute" }],
     [{ value: 6 }],
     [{ unit: "month" }],
     ["6 month"],
@@ -123,7 +129,9 @@ describe("updateOrganization with mediaRetention", () => {
   })
 
   test("refuses an invalid retention without updating", async () => {
-    const { next } = await update({ mediaRetention: { value: 6, unit: "day" } })
+    const { next } = await update({
+      mediaRetention: { value: 6, unit: "minute" },
+    })
 
     expect(next.mock.calls[0][0]).toMatchObject({ status: 400 })
     expect(model.organizations.update).not.toHaveBeenCalled()
