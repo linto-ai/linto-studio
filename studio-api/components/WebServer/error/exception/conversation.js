@@ -30,6 +30,14 @@ const ConversationTranscriptionFailed = createException(
   502,
   "The transcription failed",
 )
+// The transcription ended without any word: the audio holds no speech
+const ConversationNoSpeech = createException(
+  "ConversationNoSpeech",
+  "conversation",
+  422,
+  "No speech was detected in the audio",
+  "NO_SPEECH",
+)
 const ConversationNoFileUploaded = createException(
   "ConversationNoFileUploaded",
   "conversation",
@@ -175,6 +183,7 @@ module.exports = {
   ConversationError,
   ConversationSecurityLevelForbidden,
   ConversationTranscriptionFailed,
+  ConversationNoSpeech,
   SpeakerIdentificationForbidden,
   ConversationNotFound,
   TurnNotFound,

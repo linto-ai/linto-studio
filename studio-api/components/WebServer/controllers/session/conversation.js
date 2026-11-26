@@ -25,6 +25,9 @@ const {
 const { SessionError } = require(
   `${process.cwd()}/components/WebServer/error/exception/session`,
 )
+const { ConversationNoSpeech } = require(
+  `${process.cwd()}/components/WebServer/error/exception/conversation`,
+)
 
 const { sessionReq } = require(
   `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/offline.js`,
@@ -561,6 +564,37 @@ function emitConversationFromSession(
   }
 }
 
+// Once the stopped session is deleted, a recording that no conversation refers
+// to is dropped, and the response says why no conversation was created
+async function settleStopWithoutConversation(result, req) {
+  if (!req.noConversation) return result
+  let body
+  try {
+    body = JSON.parse(result)
+  } catch (err) {
+    return result
+  }
+  if (body?.success !== true) return result
+
+  // The session is gone either way: a failed cleanup must not fail the stop
+  try {
+    await deleteSessionAudioFiles(req.params.id)
+  } catch (err) {
+    logger.warn(
+      `Session ${req.params.id}: recording not dropped: ${err?.message || err}`,
+    )
+  }
+  const reason = new ConversationNoSpeech(
+    "No speech was transcribed during the session",
+  )
+  body.error = {
+    code: reason.code,
+    status: reason.status,
+    message: reason.message,
+  }
+  return JSON.stringify(body)
+}
+
 async function storeSessionFromStop(req, next) {
   try {
     const session = await stopSessionAndFetch(req.params.id)
@@ -573,6 +607,7 @@ async function storeSessionFromStop(req, next) {
       req.params.id,
       "Session",
     )
+    if (!result) req.noConversation = true
     model.sessionData.deleteByOrganizationAndSession(
       session.organizationId,
       req.params.id,
@@ -613,6 +648,7 @@ async function storeQuickMeetingFromStop(req, next) {
           req.params.id,
           "Quick meeting",
         )
+        if (!result) req.noConversation = true
         next()
       } else {
         throw new SessionError(
@@ -630,5 +666,6 @@ module.exports = {
   storeSession,
   storeSessionFromStop,
   storeQuickMeetingFromStop,
+  settleStopWithoutConversation,
   initCaptionsForConversation,
 }

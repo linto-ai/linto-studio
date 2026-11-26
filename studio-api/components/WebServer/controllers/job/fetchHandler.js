@@ -14,7 +14,7 @@ const { joinParts } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/partialAudio`,
 )
 const PART_STATES = require(`${process.cwd()}/lib/dao/conversation/partStates`)
-const { ConversationTranscriptionFailed } = require(
+const { ConversationTranscriptionFailed, ConversationNoSpeech } = require(
   `${process.cwd()}/components/WebServer/error/exception/conversation`,
 )
 
@@ -59,9 +59,10 @@ async function fetchJob(conv_id, conv_job) {
       job_queue.map(async (job) => {
         const host = `${process.env.GATEWAY_SERVICES}/${job.endpoint}`
         let current_job = job
+        let job_info
         let logs
         try {
-          let job_info = await axios.get(`${host}/job/${job.job_id}`)
+          job_info = await axios.get(`${host}/job/${job.job_id}`)
 
           if (job_info.state === "error") {
             logs = await fetchLogs(host, job)
@@ -82,6 +83,15 @@ async function fetchJob(conv_id, conv_job) {
             logs !== undefined ? (current_job.job_logs = logs) : undefined
           } else logs !== undefined ? (current_job.job_logs = logs) : undefined
           current_job.state = "error"
+          // The job went through: keep its final steps and say why it failed
+          if (err instanceof ConversationNoSpeech) {
+            if (job_info?.steps) current_job.steps = job_info.steps
+            current_job.error = {
+              code: err.code,
+              status: err.status,
+              message: err.message,
+            }
+          }
         }
         return current_job
       }),

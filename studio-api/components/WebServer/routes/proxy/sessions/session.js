@@ -8,7 +8,11 @@ const proxyListForwardParams = [
   { "query.organizationId": "params.organizationId" },
 ]
 
-const { storeSessionFromStop, storeQuickMeetingFromStop } = require(
+const {
+  storeSessionFromStop,
+  storeQuickMeetingFromStop,
+  settleStopWithoutConversation,
+} = require(
   `${process.cwd()}/components/WebServer/controllers/session/conversation.js`,
 )
 const {
@@ -229,6 +233,7 @@ module.exports = (webServer) => {
             method: ["delete"],
             forwardParams: proxyForwardParams,
             executeBeforeResult: storeQuickMeetingFromStop.bind(webServer),
+            executeAfterResult: [settleStopWithoutConversation],
           },
         ],
         requireAuth: true,
@@ -287,6 +292,7 @@ module.exports = (webServer) => {
             method: ["delete"],
             forwardParams: proxyForwardParams,
             executeBeforeResult: storeSessionFromStop.bind(webServer),
+            executeAfterResult: [settleStopWithoutConversation],
           },
           {
             path: "/organizations/:organizationId/sessions/:id/stop",

@@ -102,6 +102,24 @@
               },
               "job_id": {
                 "type": "string"
+              },
+              "error": {
+                "type": "object",
+                "description": "Why the job is in error, when the reason is known. NO_SPEECH: the transcription ended without any word, the audio holds no speech",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "enum": ["NO_SPEECH"]
+                  },
+                  "status": {
+                    "type": "integer",
+                    "example": 422
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "No speech was detected in the audio"
+                  }
+                }
               }
             }
           }
