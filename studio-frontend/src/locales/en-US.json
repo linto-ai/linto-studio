@@ -1330,11 +1330,10 @@
       "description": "Description",
       "description_updated": "Description updated",
       "expiration": {
-        "label": "Automatic deletion",
+        "label": "Automatic deletion on this date",
         "never": "Never",
-        "hint_date": "The media and its audio will be deleted on this date.",
         "hint_none": "Without a date, the media is kept indefinitely.",
-        "remove": "Never delete",
+        "remove": "Remove the deletion date",
         "updated": "Deletion date updated",
         "removed": "The media will no longer be deleted automatically"
       },

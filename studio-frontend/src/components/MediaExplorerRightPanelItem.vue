@@ -92,16 +92,27 @@
               :field="expirationField"
               v-model="expirationField.value"
               with-confirmation
-              @on-confirm="handleExpirationUpdate" />
-            <span class="open-media-hint">{{ expirationHint }}</span>
-            <div class="actions-container" v-if="hasExpiration">
-              <Button
-                @click="saveExpiration(null)"
-                :label="$t('media_explorer.panel.expiration.remove')"
-                icon="x"
-                variant="secondary"
-                size="sm" />
-            </div>
+              @on-confirm="handleExpirationUpdate">
+              <template #content-after-input>
+                <Tooltip
+                  class="expiration-remove"
+                  position="left"
+                  :text="$t('media_explorer.panel.expiration.remove')">
+                  <Button
+                    type="button"
+                    @click="saveExpiration(null)"
+                    :disabled="!hasExpiration"
+                    :aria-label="$t('media_explorer.panel.expiration.remove')"
+                    icon="x"
+                    variant="primary"
+                    intent="destructive"
+                    size="sm" />
+                </Tooltip>
+              </template>
+            </FormInput>
+            <span class="open-media-hint" v-if="!hasExpiration">
+              {{ $t("media_explorer.panel.expiration.hint_none") }}
+            </span>
           </template>
         </div>
 
@@ -180,6 +191,7 @@ import { mediaScopeMixin } from "@/mixins/mediaScope"
 import InputSelector from "@/components/atoms/InputSelector.vue"
 import ChipTag from "@/components/atoms/ChipTag.vue"
 import Button from "@/components/atoms/Button.vue"
+import Tooltip from "@/components/atoms/Tooltip.vue"
 import ModalDeleteConversations from "./ModalDeleteConversations.vue"
 import { mediaExplorerRightPanelMixin } from "@/mixins/mediaExplorerRightPanel.js"
 import FormInput from "@/components/molecules/FormInput.vue"
@@ -197,6 +209,7 @@ export default {
     InputSelector,
     ChipTag,
     Button,
+    Tooltip,
     ModalDeleteConversations,
     FormInput,
     FolderSelector,
@@ -286,12 +299,6 @@ export default {
       return this.formatDate(this.reactiveSelectedMedia.expiresAt, {
         month: "long",
       })
-    },
-    expirationHint() {
-      if (this.hasExpiration) {
-        return this.$t("media_explorer.panel.expiration.hint_date")
-      }
-      return this.$t("media_explorer.panel.expiration.hint_none")
     },
   },
   watch: {
@@ -620,5 +627,15 @@ export default {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+/* In the row of the date field, centred on it */
+.expiration-remove {
+  align-self: center;
+}
+
+/* Next to the edge of the screen the tooltip folds on the room left */
+.expiration-remove :deep(.tooltip-content__text) {
+  white-space: nowrap;
 }
 </style>

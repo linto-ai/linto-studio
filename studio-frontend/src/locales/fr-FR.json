@@ -1324,11 +1324,10 @@
       "description": "Description",
       "description_updated": "Description mise à jour",
       "expiration": {
-        "label": "Suppression automatique",
+        "label": "Suppression automatique à cette date",
         "never": "Jamais",
-        "hint_date": "Le média et son audio seront supprimés à cette date.",
         "hint_none": "Sans date, le média est conservé indéfiniment.",
-        "remove": "Ne jamais supprimer",
+        "remove": "Retirer la date de suppression",
         "updated": "Date de suppression mise à jour",
         "removed": "Le média ne sera plus supprimé automatiquement"
       },
