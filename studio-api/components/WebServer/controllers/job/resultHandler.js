@@ -13,6 +13,10 @@ const { placePart } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/partial`,
 )
 
+const { ConversationNoSpeech } = require(
+  `${process.cwd()}/components/WebServer/error/exception/conversation`,
+)
+
 const JOBS = require(`${process.cwd()}/lib/dao/conversation/jobs.js`)
 const PART_STATES = require(`${process.cwd()}/lib/dao/conversation/partStates`)
 const model = require(`${process.cwd()}/lib/mongodb/models`)
@@ -83,6 +87,9 @@ function fillConversation(result, conversation) {
 }
 
 async function handleTranscriptionResult(result, conversation) {
+  if (!(result?.transcription_result?.length > 0)) {
+    throw new ConversationNoSpeech()
+  }
   conversation = fillConversation(result, conversation)
   await model.conversations.updateConvOnTranscriptionResult(
     conversation._id.toString(),
