@@ -1,5 +1,5 @@
 import { sendRequest } from "@/tools/request/sendRequest.js"
-import { apiGetMetadataLLMService } from "@/api/service.js"
+import { apiGetMetadataLLMService } from "@/api/studio-api/service.js"
 import { API_ENDPOINTS } from "@/const/apiEndpoints.js"
 
 // What the server holds for a recording sent from the phone: the

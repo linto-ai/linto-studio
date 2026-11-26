@@ -48,9 +48,6 @@ const { applySpeakerIdentification, parseCollectionIds } = require(
 const { openToAppend } = require(
   `${process.cwd()}/components/WebServer/controllers/conversation/partial`,
 )
-const { transcribeSync } = require(
-  `${process.cwd()}/components/WebServer/routecontrollers/organizations/uploader/syncUpload.js`,
-)
 
 async function transcribeReq(req, res, next) {
   try {
@@ -62,7 +59,12 @@ async function transcribeReq(req, res, next) {
       req.body.url || !(req.files && Array.isArray(req.files.file))
     const conversation = await transcribe(isSingleFile, req, res, next)
 
-    if (conversation && this?.app?.components?.IoHandler)
+    // A media deleted on fetch never shows up in the interface
+    if (
+      conversation &&
+      !conversation.deleteOnFetch &&
+      this?.app?.components?.IoHandler
+    )
       this.app.components.IoHandler.emit("new_conversation", conversation)
   } catch (err) {
     next(err)
@@ -72,16 +74,11 @@ async function transcribeReq(req, res, next) {
 async function transcribe(isSingleFile, req, res, next) {
   try {
     const userId = req.payload.data.userId
-    req.body.sync = String(req.body.sync) === "true"
-
-    // Nothing is created to carry a name
-    if (!req.body.sync) {
-      requireParam(
-        req.body.name,
-        ConversationMetadataRequire,
-        "name param is required",
-      )
-    }
+    requireParam(
+      req.body.name,
+      ConversationMetadataRequire,
+      "name param is required",
+    )
     requireParam(
       req.body.lang,
       ConversationMetadataRequire,
@@ -112,19 +109,12 @@ async function transcribe(isSingleFile, req, res, next) {
     }
 
     req.body.partial = String(req.body.partial) === "true"
-    if (req.body.partial && req.body.sync) {
+    if (req.body.partial && (req.body.url || !isSingleFile)) {
       throw new ConversationMetadataRequire(
-        "A conversation cannot be both partial and sync",
+        "A partial conversation requires a single uploaded file",
       )
     }
-    if (
-      (req.body.partial || req.body.sync) &&
-      (req.body.url || !isSingleFile)
-    ) {
-      throw new ConversationMetadataRequire(
-        "partial and sync require a single uploaded file",
-      )
-    }
+    req.body.deleteOnFetch = String(req.body.deleteOnFetch) === "true"
 
     const orgExists = await model.organizations.getByIdAndUser(
       req.params.organizationId,
@@ -162,11 +152,6 @@ async function transcribe(isSingleFile, req, res, next) {
     // in a local variable: never stash them on req.body, where they could ride
     // along into a log payload (cf. logger/context.js DELETE body capture).
     const speakerIdHeaders = speakerId.headers
-
-    if (req.body.sync) {
-      await transcribeSync(req, res, speakerIdHeaders)
-      return
-    }
 
     if (req.body.folderId && req.body.folderId !== "null") {
       const folderResult = await model.folders.getById(req.body.folderId)
@@ -259,6 +244,10 @@ async function createConversation(processing_job, body) {
       // Kept to transcribe the next parts with the same speaker identification
       conversation.metadata.transcription.speakerIdentificationCollections =
         parseCollectionIds(body.speakerIdentificationCollections)
+    }
+
+    if (body.deleteOnFetch) {
+      conversation.deleteOnFetch = true
     }
 
     const result = await model.conversations.create(conversation)

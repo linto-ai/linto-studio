@@ -1,5 +1,6 @@
 
 import aiohttp
+from urllib.parse import quote
 import json
 import logging
 from urllib.parse import quote
@@ -166,7 +167,6 @@ class StudioApiService:
         if kwargs.get("membersRight") is not None:
             form.add_field("membersRight", str(int(kwargs["membersRight"])))
 
-        # The conversation stays open to append_audio until it is completed
         if kwargs.get("partial"):
             form.add_field("partial", "true")
 
@@ -189,8 +189,7 @@ class StudioApiService:
     @with_token
     @with_organization_id
     async def append_audio(self, conversationId, file=None, complete=False, **kwargs):
-        """Append the next audio to a conversation created with partial, close
-        it with complete, or both. The organization is the conversation's."""
+        """Append audio to a partial conversation, close it with complete, or both."""
         if file is None and not complete:
             raise ValueError("append_audio needs a file, complete, or both")
 
@@ -426,22 +425,34 @@ class StudioApiService:
 
     @with_token
     @with_organization_id
-    async def get_publication_templates(self, **kwargs):
-        """Get available publication templates for the organization."""
+    async def get_publication_templates(self, serviceId=None, **kwargs):
+        """Get the organization's publication templates, optionally those linked to a service."""
         org_id = kwargs["organizationId"]
-        url = f"{self.base_api_url}/publication/templates?organization_id={org_id}"
+        url = f"{self.base_api_url}/publication/organizations/{org_id}/templates"
+        if serviceId:
+            url += f"?service_id={quote(str(serviceId), safe='')}"
         return await self._send_request("GET", url, **kwargs)
 
     @with_token
+    @with_organization_id
     async def get_template_placeholders(self, templateId, **kwargs):
         """Get placeholders for a specific publication template."""
-        url = f"{self.base_api_url}/publication/templates/{templateId}/placeholders"
+        org_id = kwargs["organizationId"]
+        url = (
+            f"{self.base_api_url}/publication/organizations/{org_id}"
+            f"/templates/{templateId}/placeholders"
+        )
         return await self._send_request("GET", url, **kwargs)
 
     @with_token
-    async def export_with_template(self, jobId, format, templateId=None, versionNumber=None, **kwargs):
+    async def export_with_template(
+        self, conversationId, jobId, format, templateId=None, versionNumber=None, **kwargs
+    ):
         """Export a document using a publication template. Returns binary content (PDF/DOCX)."""
-        url = f"{self.base_api_url}/publication/{jobId}/export/{format}"
+        url = (
+            f"{self.base_api_url}/publication/conversations/{conversationId}"
+            f"/jobs/{jobId}/export/{format}"
+        )
         params = []
         if templateId:
             params.append(f"templateId={templateId}")

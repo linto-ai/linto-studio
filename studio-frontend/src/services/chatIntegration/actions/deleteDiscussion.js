@@ -1,4 +1,4 @@
-import { apiDeleteChatDiscussion } from "@/api/chat"
+import { apiDeleteChatDiscussion } from "@/api/studio-api/chat"
 import { notifyError } from "./notifyError"
 import { showDiscussion } from "./showDiscussion"
 

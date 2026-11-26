@@ -64,6 +64,7 @@ describe("updateConversation protected fields", () => {
       metadata: { audio: { filepath: "../../etc/passwd" } },
       jobs: { transcription: { state: "done" } },
       type: { mode: "child" },
+      deleteOnFetch: true,
       _id: "other",
     })
     expect(res.status).toHaveBeenCalledWith(200)

@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { apiGetAdminSessions } from "@/api/admin.js"
+import { apiGetAdminSessions } from "@/api/studio-api/admin.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"

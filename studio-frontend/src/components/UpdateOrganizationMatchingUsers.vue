@@ -34,7 +34,7 @@ import EMPTY_FIELD from "@/const/emptyField"
 import {
   apiAdminUpdateOrganisation,
   apiInviteUsersMachingEmail,
-} from "@/api/organisation.js"
+} from "@/api/studio-api/organisation.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 

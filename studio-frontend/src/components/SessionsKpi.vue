@@ -34,7 +34,7 @@ import { bus } from "@/main.js"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"
 import Button from "@/components/atoms/Button.vue"
 import ModalSessionStats from "@/components/ModalSessionStats.vue"
-import { getSessionListKpi } from "@/api/kpi"
+import { getSessionListKpi } from "@/api/studio-api/kpi"
 import { timeToHMS } from "@/tools/date/timeToHMS"
 import { userName } from "@/tools/user/userName"
 export default {

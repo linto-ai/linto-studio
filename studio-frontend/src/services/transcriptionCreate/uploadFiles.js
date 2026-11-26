@@ -1,4 +1,4 @@
-import { apiCreateConversation } from "@/api/conversation"
+import { apiCreateConversation } from "@/api/studio-api/conversation"
 
 /**
  * Sends the files one by one and stops at the first failure.

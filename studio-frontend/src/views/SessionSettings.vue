@@ -268,7 +268,7 @@ import { formsMixin } from "@/mixins/forms.js"
 import isSameDateTimeWithoutSeconds from "@/tools/date/isSameDateTimeWithoutSeconds.js"
 import { getEnv } from "@/tools/getEnv"
 
-import { apiUpdateSession } from "@/api/session.js"
+import { apiUpdateSession } from "@/api/studio-api/session.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"

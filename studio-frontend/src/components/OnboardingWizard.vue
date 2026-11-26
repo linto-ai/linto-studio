@@ -66,7 +66,7 @@ import {
   readCheckoutDraft,
   clearCheckoutDraft,
 } from "@/components/OnboardingWizard.d/checkoutDraft.js"
-import { apiCreateCheckout } from "@/api/cloud.js"
+import { apiCreateCheckout } from "@/api/studio-api/cloud.js"
 import { computeCheckoutReturnUrl } from "@/tools/billing/computeCheckoutReturnUrl"
 import { computeReactivationDefaults } from "@/tools/billing/computeReactivationDefaults"
 import { leavePageFor } from "@/tools/leavePageFor"

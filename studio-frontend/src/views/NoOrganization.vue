@@ -45,7 +45,7 @@ import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { formsMixin } from "@/mixins/forms.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
-import { apiCreateOrganisation } from "@/api/organisation"
+import { apiCreateOrganisation } from "@/api/studio-api/organisation"
 
 export default {
   mixins: [formsMixin, platformRoleMixin],

@@ -15,7 +15,7 @@ import Modal from "@/components/molecules/Modal.vue"
 import getDurationFromSecond from "../tools/date/getDurationFromSecond"
 import DurationInput from "@/components/molecules/DurationInput.vue"
 import EMPTY_FIELD from "@/const/emptyField"
-import { apiRenewPlatformToken } from "@/api/admin"
+import { apiRenewPlatformToken } from "@/api/studio-api/admin"
 
 export default {
   props: {

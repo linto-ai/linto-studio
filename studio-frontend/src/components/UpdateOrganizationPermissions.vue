@@ -43,7 +43,7 @@ import { platformRoleMixin } from "@/mixins/platformRole.js"
 
 import EMPTY_FIELD from "@/const/emptyField"
 
-import { apiAdminUpdateOrganisation } from "@/api/organisation.js"
+import { apiAdminUpdateOrganisation } from "@/api/studio-api/organisation.js"
 
 import FormRadio from "@/components/molecules/FormRadio.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"

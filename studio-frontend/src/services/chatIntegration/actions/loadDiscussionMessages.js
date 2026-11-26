@@ -1,4 +1,4 @@
-import { apiGetChatDiscussion } from "@/api/chat"
+import { apiGetChatDiscussion } from "@/api/studio-api/chat"
 import { mapMessage } from "../helpers"
 import { notifyError } from "./notifyError"
 import { showDiscussion } from "./showDiscussion"

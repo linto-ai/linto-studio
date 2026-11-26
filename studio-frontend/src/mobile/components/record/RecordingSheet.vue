@@ -23,13 +23,10 @@
       </form>
       <template v-else>
         <p class="m-muted">{{ statusLine }}</p>
-        <RecordingPlayer
-          v-if="value"
-          :recording-id="recording.id"
-          :mime-type="recording.mimeType" />
+        <RecordingPlayer v-if="value" :open-audio="openAudio" />
         <RecordingServerLinks
-          v-if="value && recording.conversationId"
-          :conversation-id="recording.conversationId"
+          v-if="value && recording.conversation.id"
+          :conversation-id="recording.conversation.id"
           @share-document="$emit('share-document', $event)" />
         <div class="m-recording__actions">
           <ListRow
@@ -82,6 +79,8 @@ export default {
   props: {
     value: { type: Boolean, default: false },
     recording: { type: Object, default: null },
+    // Opens the recording's audio for the player (see RecordingPlayer).
+    openAudio: { type: Function, required: true },
     online: { type: Boolean, default: true },
     // Transcription minutes available, null when not counted or unknown
     creditMinutes: { type: Number, default: null },
@@ -119,7 +118,7 @@ export default {
     },
     statusLine() {
       return this.$t(this.status.label, {
-        progress: this.recording.progress || 0,
+        progress: this.recording.conversation.sendProgress,
       })
     },
   },

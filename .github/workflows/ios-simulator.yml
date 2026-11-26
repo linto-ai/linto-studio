@@ -10,7 +10,7 @@ name: iOS simulator build
 
 on:
   push:
-    branches: [next, master]
+    branches: [next, master, ios-recorder]
     paths:
       - "studio-frontend/**"
       - "studio-sdk/components/transcript-ui/**"

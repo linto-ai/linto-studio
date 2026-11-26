@@ -17,13 +17,13 @@ import { getEnv } from "@/tools/getEnv"
 import { watchAuthInOtherTabs } from "@/tools/auth/watchAuthInOtherTabs.js"
 import { registerServiceWorker } from "@/mobile/services/pwa/registerServiceWorker.js"
 import { listenForInstallPrompt } from "@/mobile/services/pwa/installPrompt.js"
-import { watchOnlineStatus } from "@/mobile/services/network/onlineStatus.js"
+import { isOnline, subscribeToNetwork } from "@/api/device/network.js"
 import { startUploadResumption } from "@/mobile/services/recording/resumeUploads.js"
 import { clearMobileAppOptOut } from "@/mobile/services/preferences/clearMobileAppOptOut.js"
 import { clearSsoReturn } from "@/mobile/services/session/markSsoReturn.js"
 import { listenForBackButton } from "@/mobile/services/native/listenForBackButton.js"
 import { listenForSsoReturn } from "@/mobile/services/native/listenForSsoReturn.js"
-import { stopLeftoverRecording } from "@/mobile/services/recording/recordingAudio.js"
+import { IS_NATIVE_APP } from "@/mobile/const/appTarget.js"
 
 import "@/mobile/style/tokens.css"
 import "@/mobile/style/base.css"
@@ -47,10 +47,11 @@ clearMobileAppOptOut()
 clearSsoReturn()
 listenForInstallPrompt()
 registerServiceWorker()
-watchOnlineStatus()
+store.commit("mobileNetwork/setOnline", isOnline())
+subscribeToNetwork((online) => store.commit("mobileNetwork/setOnline", online))
 listenForBackButton(router)
 listenForSsoReturn(router)
-stopLeftoverRecording()
+stopLeftoverNativeRecording()
 watchAuthInOtherTabs(() => store.getters["auth/current"])
 // Uploads need the organization scope: wait for the first guarded navigation.
 router.onReady(() => startUploadResumption())
@@ -61,3 +62,13 @@ new Vue({
   i18n,
   render: (h) => h(App),
 }).$mount("#app")
+
+// Native app: a recording a previous page left running is stopped at once,
+// with its notification (see nativeRecorderLeftover). The condition is a
+// build constant: the web build drops the import.
+function stopLeftoverNativeRecording() {
+  const leftover = IS_NATIVE_APP
+    ? import("@/api/device/nativeRecorderLeftover.js")
+    : Promise.resolve(null)
+  leftover.then((module) => module?.stopLeftoverRecording())
+}

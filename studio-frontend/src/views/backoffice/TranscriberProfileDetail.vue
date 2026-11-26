@@ -41,7 +41,7 @@ import {
   apiAdminUpdateTranscriberProfile,
   apiAdminUpdateAmazonTranscriberProfile,
   apiAdminDeleteTranscriberProfile,
-} from "@/api/admin.js"
+} from "@/api/studio-api/admin.js"
 
 export default {
   props: {},

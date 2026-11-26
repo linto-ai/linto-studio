@@ -216,7 +216,7 @@ import {
   apiAdminSetManualPlan,
   apiAdminListOrgs,
   apiAdminGetLedgerExport,
-} from "@/api/cloud.js"
+} from "@/api/studio-api/cloud.js"
 import { formatCurrencyAmount } from "@/tools/formatCurrencyAmount.js"
 import { buildManualPlanPayload } from "@/tools/backoffice/buildManualPlanPayload.js"
 import { parseSeatCount } from "@/tools/seats/parseSeatCount.js"

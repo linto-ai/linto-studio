@@ -2,7 +2,7 @@ import { mapGetters } from "vuex"
 import {
   apiGetAudioFileFromConversation,
   apiUpdateConversation,
-} from "@/api/conversation.js"
+} from "@/api/studio-api/conversation.js"
 
 export const mediaExplorerRightPanelMixin = {
   props: {},

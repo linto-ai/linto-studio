@@ -1,5 +1,5 @@
-import { apiGetOptedInMembers } from "@/api/voiceprintCollection.js"
-import { apiGetSpeakerLabels } from "@/api/speakerLabel.js"
+import { apiGetOptedInMembers } from "@/api/studio-api/voiceprintCollection.js"
+import { apiGetSpeakerLabels } from "@/api/studio-api/speakerLabel.js"
 import { COLLECTION_TYPE } from "@/tools/voiceprint/voiceprintConstants.js"
 
 // Names of the voices enrolled in a collection. Organization collections

@@ -42,7 +42,7 @@
 <script>
 import { Fragment } from "vue-fragment"
 import { bus } from "@/main.js"
-import { apiAdminUpdateUser } from "@/api/admin.js"
+import { apiAdminUpdateUser } from "@/api/studio-api/admin.js"
 
 import Checkbox from "@/components/atoms/Checkbox.vue"
 import FormCheckbox from "@/components/molecules/FormCheckbox.vue"

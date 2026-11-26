@@ -117,4 +117,4 @@ async function handlePartResult(result, part, offset, conversation) {
   return true
 }
 
-module.exports = { handleResult, handlePartResult, fillConversation }
+module.exports = { handleResult, handlePartResult }

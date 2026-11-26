@@ -75,7 +75,7 @@
 import { bus } from "@/main.js"
 import { getEnv } from "@/tools/getEnv"
 
-import { apiGetOrganizationById } from "@/api/organisation.js"
+import { apiGetOrganizationById } from "@/api/studio-api/organisation.js"
 import { platformRoleMixin } from "@/mixins/platformRole.js"
 import { impersonationMixin } from "@/mixins/impersonation.js"
 

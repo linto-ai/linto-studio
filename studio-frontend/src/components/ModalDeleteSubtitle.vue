@@ -25,7 +25,7 @@
   </Modal>
 </template>
 <script>
-import { apiDeleteSubtitles } from "../api/subtitle.js"
+import { apiDeleteSubtitles } from "../api/studio-api/subtitle.js"
 import { bus } from "@/main.js"
 import Modal from "@/components/molecules/Modal.vue"
 export default {

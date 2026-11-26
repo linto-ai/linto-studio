@@ -6,7 +6,7 @@ import {
   isImpersonatingUser,
 } from "@/tools/backoffice/userImpersonation.js"
 import { clearImpersonatedOrgId } from "@/tools/backoffice/clearImpersonatedOrgId.js"
-import { apiImpersonateUser, apiLogout } from "@/api/user.js"
+import { apiImpersonateUser, apiLogout } from "@/api/studio-api/user.js"
 
 const state = {
   // set once at bootstrap; start/stop impersonation reloads the app

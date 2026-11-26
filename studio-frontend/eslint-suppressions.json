@@ -4,7 +4,7 @@
       "count": 1
     }
   },
-  "src/api/conversation.d/apiGetConversationAsDoc.js": {
+  "src/api/studio-api/conversation.d/apiGetConversationAsDoc.js": {
     "no-unreachable": {
       "count": 1
     },
@@ -12,22 +12,22 @@
       "count": 1
     }
   },
-  "src/api/conversation.js": {
+  "src/api/studio-api/conversation.js": {
     "no-unused-vars": {
       "count": 2
     }
   },
-  "src/api/kpi.js": {
+  "src/api/studio-api/kpi.js": {
     "no-undef": {
       "count": 10
     }
   },
-  "src/api/service.js": {
+  "src/api/studio-api/service.js": {
     "no-unused-vars": {
       "count": 2
     }
   },
-  "src/api/session.js": {
+  "src/api/studio-api/session.js": {
     "no-undef": {
       "count": 1
     }

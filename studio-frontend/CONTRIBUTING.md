@@ -306,7 +306,10 @@ The router is responsible for loading page data. When a page component mounts, i
 ### API Calls
 
 - All API calls must be written in `src/api/` — never inline in components or store actions
-- One file per resource/domain
+  - `src/api/studio-api/`: calls to the backend (studio-api), one file per resource/domain
+  - `src/api/device/`: what the page asks the browser or the phone (microphones, screen wake lock, share sheet, online status, the app's audio files…), one file per capability
+  - `src/api/indexedDB/`: the local database in the browser (the mobile recordings queue). A change of what a row holds is a migration: a pure function in `src/api/indexedDB/migrations/` (with its test), appended to `MIGRATIONS` in `queue.js`, which runs it once on every phone
+  - `src/api/localStorage/`: what the app remembers on this browser or phone (preferences), one file per preference
 
 ### Internationalization
 

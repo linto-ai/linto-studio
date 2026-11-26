@@ -1,4 +1,4 @@
-import { getLoginMethods } from "@/api/user.js"
+import { getLoginMethods } from "@/api/studio-api/user.js"
 import { indexLoginMethods } from "@/mobile/tools/indexLoginMethods.js"
 
 // Login methods enabled on this platform. When the API cannot be reached

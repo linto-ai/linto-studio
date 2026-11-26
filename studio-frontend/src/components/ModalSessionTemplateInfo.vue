@@ -74,7 +74,7 @@ import MetadataList from "@/components/MetadataList.vue"
 import {
   apiGetSessionTemplate,
   apiGetTranscriberProfilesByOrganization,
-} from "@/api/session.js"
+} from "@/api/studio-api/session.js"
 
 export default {
   name: "ModalSessionTemplateInfo",

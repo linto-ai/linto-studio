@@ -1,4 +1,4 @@
-import { apiGetGenericFileFromConversation } from "@/api/conversation.js"
+import { apiGetGenericFileFromConversation } from "@/api/studio-api/conversation.js"
 import { computeCanGenerateReports } from "@/tools/llm/computeCanGenerateReports.js"
 import { markReportTouched } from "./markReportTouched.js"
 

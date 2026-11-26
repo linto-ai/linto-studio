@@ -30,7 +30,7 @@ import { mapActions } from "vuex"
 
 import { formsMixin } from "@/mixins/forms.js"
 
-import { apiAdminUpdateUser } from "@/api/admin.js"
+import { apiAdminUpdateUser } from "@/api/studio-api/admin.js"
 
 import { testName } from "@/tools/fields/testName"
 import { testEmail } from "@/tools/fields/testEmail"

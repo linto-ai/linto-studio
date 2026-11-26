@@ -37,10 +37,10 @@ All values are strings: boolean flags are only on when set to exactly
 
 #### Backend services
 
-| Variable                       | Default                       | Description                                                                                                       |
-| ------------------------------ | ----------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `VUE_APP_CONVO_API`            | `http://127.0.0.1:8001/api`   | studio-api REST URL: **absolute** (`http://` or `https://`) and ending in `/api`. Every other studio-api URL is derived from its root (see below); a path such as `/cm-api/api` is refused and shown as the API being unreachable. |
-| `VUE_APP_WEBSOCKET_TRANSPORTS` | `websocket`                   | Comma-separated Socket.IO transports, e.g. `websocket,polling`.                                                   |
+| Variable                       | Default                     | Description                                                                                                                                                                                                                        |
+| ------------------------------ | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VUE_APP_CONVO_API`            | `http://127.0.0.1:8001/api` | studio-api REST URL: **absolute** (`http://` or `https://`) and ending in `/api`. Every other studio-api URL is derived from its root (see below); a path such as `/cm-api/api` is refused and shown as the API being unreachable. |
+| `VUE_APP_WEBSOCKET_TRANSPORTS` | `websocket`                 | Comma-separated Socket.IO transports, e.g. `websocket,polling`.                                                                                                                                                                    |
 
 From the root of `VUE_APP_CONVO_API` (`https://studio.linto.ai/cm-api/api`
 → `https://studio.linto.ai/cm-api`, `src/const/apiEndpoints.js`): `/auth`,
@@ -49,12 +49,12 @@ path `<root path>/socket.io`. A deployment must serve studio-api that way.
 
 #### Branding
 
-| Variable                    | Default        | Description                                                                                                             |
-| --------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `VUE_APP_NAME`              | `LinTO Studio` | Application name shown in the interface and on the login pages.                                                        |
-| `VUE_APP_LOGO`              | _(none)_       | Logo file name, looked up in `public/img/`.                                                                             |
+| Variable                    | Default        | Description                                                                                                                |
+| --------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `VUE_APP_NAME`              | `LinTO Studio` | Application name shown in the interface and on the login pages.                                                            |
+| `VUE_APP_LOGO`              | _(none)_       | Logo file name, looked up in `public/img/`.                                                                                |
 | `VUE_APP_THEME`             | `LinTO-green`  | Theme key from `themes/index.js`: `LinTO-green`, `elysee` or `european-union`. An unknown key falls back to `LinTO-green`. |
-| `VUE_APP_SHOW_LOGIN_FOOTER` | `false`        | Show the footer of the login page.                                                                                      |
+| `VUE_APP_SHOW_LOGIN_FOOTER` | `false`        | Show the footer of the login page.                                                                                         |
 
 #### Features
 
@@ -66,43 +66,43 @@ API answers from its own configuration (`CloudService` component,
 `ENABLE_SPEAKER_IDENTIFICATION`). An API without this route (older than the
 front) is shown as unreachable: deploy studio-api first.
 
-| Variable                                | Default                 | Description                                                                                                                                  |
-| --------------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `VUE_APP_SAAS_LIVE_PRODUCT_URL`         | `https://linto.ai/live` | SaaS deployments only: page opened by the locked "Sessions" menu entry.                                                                           |
-| `VUE_APP_ENABLE_SECURITY_LEVEL`         | `false`                 | Enable the security level choice on transcriptions and transcriber profiles.                                                                |
-| `VUE_APP_DISABLE_USER_CREATION`         | `false`                 | Hide account creation (sign-up links and page).                                                                                              |
-| `VUE_APP_DISABLE_USER_INVITATION`       | `false`                 | Disable invitations by email (organization members, conversation sharing).                                                                  |
-| `VUE_APP_ENABLE_MOBILE_APP`             | `true`                  | Send phones to the mobile app under `/m/` (see [Mobile app](#mobile-app-m)).                                                                 |
+| Variable                          | Default                 | Description                                                                  |
+| --------------------------------- | ----------------------- | ---------------------------------------------------------------------------- |
+| `VUE_APP_SAAS_LIVE_PRODUCT_URL`   | `https://linto.ai/live` | SaaS deployments only: page opened by the locked "Sessions" menu entry.      |
+| `VUE_APP_ENABLE_SECURITY_LEVEL`   | `false`                 | Enable the security level choice on transcriptions and transcriber profiles. |
+| `VUE_APP_DISABLE_USER_CREATION`   | `false`                 | Hide account creation (sign-up links and page).                              |
+| `VUE_APP_DISABLE_USER_INVITATION` | `false`                 | Disable invitations by email (organization members, conversation sharing).   |
+| `VUE_APP_ENABLE_MOBILE_APP`       | `true`                  | Send phones to the mobile app under `/m/` (see [Mobile app](#mobile-app-m)). |
 
 #### Live sessions
 
-| Variable                      | Default                                                          | Description                                                                                                         |
-| ----------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `VUE_APP_DEFAULT_METADATA`    | _(empty)_                                                        | Comma-separated metadata keys pre-filled (with empty values) in the session creation form, e.g. `room,team`.      |
-| `VUE_APP_SHOW_PARTIALS`       | `true`                                                           | Show in-progress text by default (users can still toggle it).                                                      |
-| `VUE_APP_ENABLE_TTS`          | `false`                                                          | Enable browser text-to-speech of final segments.                                                                   |
-| `VUE_APP_ENABLE_WATERMARK`    | `false`                                                          | Enable the watermark settings on sessions.                                                                         |
+| Variable                      | Default                                                        | Description                                                                                                           |
+| ----------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `VUE_APP_DEFAULT_METADATA`    | _(empty)_                                                      | Comma-separated metadata keys pre-filled (with empty values) in the session creation form, e.g. `room,team`.          |
+| `VUE_APP_SHOW_PARTIALS`       | `true`                                                         | Show in-progress text by default (users can still toggle it).                                                         |
+| `VUE_APP_ENABLE_TTS`          | `false`                                                        | Enable browser text-to-speech of final segments.                                                                      |
+| `VUE_APP_ENABLE_WATERMARK`    | `false`                                                        | Enable the watermark settings on sessions.                                                                            |
 | `VUE_APP_WATERMARK_CONTENT`   | `Transcription by LinTO.ai $linto Open Source AI by $linagora` | Default watermark text; `$linto` and `$linagora` are replaced by the logos. A session's own settings take precedence. |
-| `VUE_APP_WATERMARK_FREQUENCY` | `600`                                                            | Default interval between two watermark displays, in seconds.                                                       |
-| `VUE_APP_WATERMARK_DURATION`  | `10`                                                             | Default watermark display duration, in seconds.                                                                    |
-| `VUE_APP_ACCEPTED_JITSI_URLS` | _(empty: any URL)_                                               | Comma-separated allowlist for Jitsi meeting URLs (substring match, case-insensitive).                              |
-| `VUE_APP_ACCEPTED_BBB_URLS`   | _(empty: any URL)_                                               | Same, for BigBlueButton.                                                                                            |
-| `VUE_APP_ACCEPTED_TEAMS_URLS` | _(empty: any URL)_                                               | Same, for Microsoft Teams.                                                                                          |
-| `VUE_APP_ACCEPTED_VISIO_URLS` | _(empty: any URL)_                                               | Same, for Visio.                                                                                                    |
+| `VUE_APP_WATERMARK_FREQUENCY` | `600`                                                          | Default interval between two watermark displays, in seconds.                                                          |
+| `VUE_APP_WATERMARK_DURATION`  | `10`                                                           | Default watermark display duration, in seconds.                                                                       |
+| `VUE_APP_ACCEPTED_JITSI_URLS` | _(empty: any URL)_                                             | Comma-separated allowlist for Jitsi meeting URLs (substring match, case-insensitive).                                 |
+| `VUE_APP_ACCEPTED_BBB_URLS`   | _(empty: any URL)_                                             | Same, for BigBlueButton.                                                                                              |
+| `VUE_APP_ACCEPTED_TEAMS_URLS` | _(empty: any URL)_                                             | Same, for Microsoft Teams.                                                                                            |
+| `VUE_APP_ACCEPTED_VISIO_URLS` | _(empty: any URL)_                                             | Same, for Visio.                                                                                                      |
 
 #### Debug
 
-| Variable               | Default  | Description                                                                                                    |
-| ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
-| `VUE_APP_DEBUG`        | _(none)_ | Namespaces enabled for the [`debug`](https://github.com/debug-js/debug) logger, e.g. `*` for everything.      |
-| `VUE_APP_SIMPLIFY_LOG` | `false`  | Print debug logs as plain `console.log` (each argument JSON-serialized) instead of using `debug`.            |
+| Variable               | Default  | Description                                                                                              |
+| ---------------------- | -------- | -------------------------------------------------------------------------------------------------------- |
+| `VUE_APP_DEBUG`        | _(none)_ | Namespaces enabled for the [`debug`](https://github.com/debug-js/debug) logger, e.g. `*` for everything. |
+| `VUE_APP_SIMPLIFY_LOG` | `false`  | Print debug logs as plain `console.log` (each argument JSON-serialized) instead of using `debug`.        |
 
 #### Build and container
 
-| Variable               | Default | Description                                                                                    |
-| ---------------------- | ------- | ---------------------------------------------------------------------------------------------- |
-| `NODE_ENV`             |         | Node environment for the dev tooling, `development` in `.envTemplate`.                         |
-| `WEBSERVER_HTTP_PORT`  | `8080`  | Docker image only: port nginx listens on (the image runs rootless, so it must be above 1023).  |
+| Variable              | Default | Description                                                                                   |
+| --------------------- | ------- | --------------------------------------------------------------------------------------------- |
+| `NODE_ENV`            |         | Node environment for the dev tooling, `development` in `.envTemplate`.                        |
+| `WEBSERVER_HTTP_PORT` | `8080`  | Docker image only: port nginx listens on (the image runs rootless, so it must be above 1023). |
 
 ### Run
 
@@ -257,24 +257,33 @@ Scripts:
 ### Recording in the background
 
 The web page cannot record once hidden; the app records through the phone
-instead (`src/mobile/services/recording/NativeRecorder.js`, picked by
-`createRecorder.js`):
+instead (`src/mobile/services/recording/recorders/NativeRecorder.ts`, picked by
+`createRecorder.ts`):
 
 - a foreground service of type `microphone`, with a notification
   ("Recording in progress"), keeps the microphone allowed once the app is
   hidden or the screen locked; it starts when recording starts, from the
   app shown (Android 14 requires it), and stops with the recording;
 - the plugin writes one AAC file (ADTS, 16 kHz, 32 kbit/s), readable up to
-  its last frame if the app is killed. It writes in the cache
-  (`capacitor-audio-recorder/`); the file is moved to the app's files
-  (`recordings/`) when the recording stops, Android may clear the cache;
-- the recording entry stores the file's URI (`audioFileUri`) instead of
-  chunks in IndexedDB. `recordingAudio.js` reads the audio wherever it is
-  (send, share, play, delete); the web builds drop the native modules;
+  its last frame if the app is killed. It writes in a folder of its own
+  choice, not an option: the cache (`capacitor-audio-recorder/`) on
+  Android, `tmp/CapacitorAudioRecorder/` on iOS
+  (`src/mobile/const/nativeAudioFolders.js`, read in the plugin's source:
+  its version is pinned, and each stop logs an error if the file is found
+  elsewhere). The file is moved to the app's files (`recordings/`) when the
+  recording stops: the system may clear the cache and `tmp`;
+- the recording's row stores where its file is, relative to the app folder
+  holding it (`audio.storage: { kind: "file", file: { directory, path } }`),
+  never as an absolute path: on iOS it changes with each install or update
+  (see `src/mobile/types/localRecording.ts`). The `mobileRecordings` store
+  reads the audio wherever it is (send, share, play, delete:
+  `src/mobile/store/recordings/recordingAudio.js`); the web builds drop the
+  native modules;
 - the file size is saved every 10 s. At the next start, a recording cut
   short is recovered: its file moved and queued like on the web, a
-  recording still held by the plugin stopped, files no recording points to
-  deleted (`recoverNativeRecordings.js`).
+  recording still held by the plugin stopped
+  (`src/api/device/nativeRecorderLeftover.js`), files no recording points to
+  deleted (`src/mobile/store/recordings/recoverNativeFiles.js`).
 
 Asked on the first recording: the microphone, then the notifications
 (Android 13+; refused, the recording works all the same). The plugin

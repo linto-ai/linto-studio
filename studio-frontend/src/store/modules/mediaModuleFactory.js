@@ -3,7 +3,7 @@ import {
   apiGetGenericConversationsCount,
   apiDeleteMultipleConversation,
   apiGetConversationById,
-} from "@/api/conversation"
+} from "@/api/studio-api/conversation"
 import i18n from "@/i18n"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 import USER_RIGHTS from "@/const/userRights"

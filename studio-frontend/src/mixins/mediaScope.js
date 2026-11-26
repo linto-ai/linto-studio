@@ -1,5 +1,5 @@
 import { mapGetters } from "vuex"
-import { apiDuplicateConversation } from "@/api/conversation"
+import { apiDuplicateConversation } from "@/api/studio-api/conversation"
 
 export const mediaScopeMixin = {
   computed: {

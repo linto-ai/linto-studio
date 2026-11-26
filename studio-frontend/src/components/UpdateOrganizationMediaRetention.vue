@@ -39,7 +39,7 @@ import {
 } from "@/tools/fields/testMediaRetentionValue"
 import { buildMediaRetention } from "@/tools/buildMediaRetention"
 
-import { apiUpdateOrganisation } from "@/api/organisation.js"
+import { apiUpdateOrganisation } from "@/api/studio-api/organisation.js"
 
 import FormInput from "@/components/molecules/FormInput.vue"
 

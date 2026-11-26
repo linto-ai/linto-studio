@@ -1,4 +1,4 @@
-import { apiListExportVersions } from "@/api/service.js"
+import { apiListExportVersions } from "@/api/studio-api/service.js"
 import { mapVersions } from "@/tools/llm/mapVersion.js"
 import { computeLatestVersionNumber } from "@/tools/llm/computeLatestVersionNumber.js"
 import { isLoadStale } from "./isLoadStale.js"

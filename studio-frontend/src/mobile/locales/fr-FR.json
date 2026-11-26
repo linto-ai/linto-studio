@@ -106,6 +106,7 @@
       "stay_in_app_screen_on": "Quitter ou laisser l'écran se verrouiller met l'enregistrement en pause.",
       "keeps_recording": "Vous pouvez verrouiller l'écran ou changer d'app : l'enregistrement continue.",
       "paused_automatically": "En pause : le micro n'est plus disponible. L'enregistrement reprendra dès son retour.",
+      "paused_until_resumed": "En pause : un appel ou une autre application a pris le micro. Touchez Reprendre pour continuer.",
       "resumed": "Enregistrement repris. Moins d'une minute n'a pas été enregistrée. | Enregistrement repris. {duration} n'a pas été enregistrée. | Enregistrement repris. {duration} n'ont pas été enregistrées."
     },
     "finished": "Enregistrement terminé",

@@ -100,7 +100,7 @@ import { bus } from "@/main.js"
 import {
   apiAdminGetTranscriberProfiles,
   apiAdminDeleteTranscriberProfile,
-} from "@/api/admin.js"
+} from "@/api/studio-api/admin.js"
 
 import bulkRequest from "@/tools/request/bulkRequest.js"
 import { sortArray } from "@/tools/sortList.js"

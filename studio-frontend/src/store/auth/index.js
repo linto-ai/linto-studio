@@ -4,7 +4,7 @@ import {
   apiLoginUserMagicLink,
   apiLogout,
   getOidcToken,
-} from "@/api/user.js"
+} from "@/api/studio-api/user.js"
 import { computeAuthFromLogin } from "@/tools/auth/computeAuthFromLogin.js"
 import { readStoredAuth } from "@/tools/auth/readStoredAuth.js"
 import { writeStoredAuth } from "@/tools/auth/writeStoredAuth.js"

@@ -1,6 +1,9 @@
 import { bus } from "@/main.js"
 import { ScreenList } from "../models/screenList.js"
-import { apiGetSubtitle, apiListSubtitleVersions } from "../api/subtitle.js"
+import {
+  apiGetSubtitle,
+  apiListSubtitleVersions,
+} from "../api/studio-api/subtitle.js"
 import { genericConversationMixin } from "./genericConversation.js"
 
 export const subtitleMixin = {

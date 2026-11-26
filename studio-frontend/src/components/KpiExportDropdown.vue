@@ -18,7 +18,7 @@
 import { mapActions } from "vuex"
 import Button from "@/components/atoms/Button.vue"
 import PopoverList from "@/components/atoms/PopoverList.vue"
-import { exportKpiSessions } from "@/api/kpi"
+import { exportKpiSessions } from "@/api/studio-api/kpi"
 
 export default {
   name: "KpiExportDropdown",

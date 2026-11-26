@@ -7,7 +7,7 @@ import {
   apiCreateCreditsCheckout,
   apiGetPacks,
   apiGetCredits,
-} from "@/api/cloud"
+} from "@/api/studio-api/cloud"
 import { ORGANIZATION_ROLES } from "@/const/organizationRoles"
 
 function currentOrg(rootGetters, orgId) {

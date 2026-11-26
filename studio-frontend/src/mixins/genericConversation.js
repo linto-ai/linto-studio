@@ -4,8 +4,8 @@ import {
   apiGetConversationById,
   apiGetConversationByIdExcluding,
   apiGetConversationChild,
-} from "@/api/conversation.js"
-import { apiGetUsersByConversationId } from "@/api/user.js"
+} from "@/api/studio-api/conversation.js"
+import { apiGetUsersByConversationId } from "@/api/studio-api/user.js"
 
 import USER_RIGHTS from "@/const/userRights.js"
 import { conversationModelMixin } from "./conversationModel.js"

@@ -91,7 +91,7 @@
 </template>
 <script>
 import { bus } from "@/main.js"
-import { exportKpiSessions } from "@/api/kpi"
+import { exportKpiSessions } from "@/api/studio-api/kpi"
 import {
   apiGetHttpActivityLogs,
   apiGetSessionActivityLogs,
@@ -101,7 +101,7 @@ import {
   apiGetAllOrganizations,
   apiExportActivityLogs,
   ACTIVITY_SCOPE_BY_TAB,
-} from "@/api/admin.js"
+} from "@/api/studio-api/admin.js"
 
 import MainContentBackoffice from "@/components/MainContentBackoffice.vue"
 import GenericTableRequest from "@/components/molecules/GenericTableRequest.vue"

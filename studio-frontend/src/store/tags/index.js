@@ -6,11 +6,11 @@ import {
   apiCreateOrganizationTag,
   apiDeleteTag,
   apiUpdateTag,
-} from "@/api/tag"
+} from "@/api/studio-api/tag"
 import {
   apiAddTagToConversation,
   apiDeleteTagFromConversation,
-} from "@/api/conversation"
+} from "@/api/studio-api/conversation"
 import i18n from "@/i18n"
 
 export default {

@@ -12,6 +12,7 @@ const MEDIA_RETENTION = require(
   `${process.cwd()}/lib/dao/organization/mediaRetention`,
 )
 const organizationsModel = require(`./organizations`)
+const LISTED = require(`${process.cwd()}/lib/dao/conversation/listed`)
 const { regexContains } = require(`${process.cwd()}/lib/utility/escapeRegex`)
 
 const BSON_MAX_SIZE = 16 * 1024 * 1024
@@ -236,6 +237,7 @@ class ConvoModel extends MongoModel {
 
       const query = {
         "type.mode": TYPE.CANONICAL,
+        ...LISTED,
         sharedWithUsers: {
           $elemMatch: {
             userId: idUser.toString(),
@@ -340,6 +342,7 @@ class ConvoModel extends MongoModel {
     try {
       const query = {
         "type.mode": TYPE.CANONICAL,
+        ...LISTED,
         sharedWithUsers: {
           $elemMatch: {
             userId: idUser.toString(),
@@ -640,6 +643,7 @@ class ConvoModel extends MongoModel {
           $nin: ["error", "done"],
         },
         "type.mode": TYPE.CANONICAL,
+        ...LISTED,
       }
 
       // The text of a conversation open to append grows while it is processing
@@ -668,6 +672,7 @@ class ConvoModel extends MongoModel {
       let query = {
         "organization.organizationId": organizationId.toString(),
         "type.mode": TYPE.CANONICAL,
+        ...LISTED,
         $or: [
           {
             "organization.customRights": {
@@ -885,6 +890,7 @@ class ConvoModel extends MongoModel {
           $in: convIds,
         },
         "type.mode": TYPE.CANONICAL,
+        ...LISTED,
       }
 
       /* ----------------------- SEARCH name OR text ----------------------------- */

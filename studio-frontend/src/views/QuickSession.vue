@@ -36,7 +36,7 @@ import {
   apiDeleteQuickSession,
   getBotForChannelId,
   apiStopBot,
-} from "@/api/session.js"
+} from "@/api/studio-api/session.js"
 import { userName } from "@/tools/user/userName.js"
 import { capitalizeFirstLetter } from "@/tools/capitalizeFirstLetter.js"
 

@@ -191,12 +191,12 @@ import { computeNextSort } from "@/tools/computeNextSort.js"
 import { sortArray } from "@/tools/sortList.js"
 import { userName } from "@/tools/user/userName.js"
 
-import { apiGetOrganizationById } from "@/api/organisation.js"
+import { apiGetOrganizationById } from "@/api/studio-api/organisation.js"
 import {
   apiAddUserToOrganisation,
   apiUpdateUserRoleInOrganisation,
-} from "@/api/user.js"
-import { apiGetUsage } from "@/api/cloud.js"
+} from "@/api/studio-api/user.js"
+import { apiGetUsage } from "@/api/studio-api/cloud.js"
 
 import UserInvite from "@/components/UserInvite.vue"
 import UserInfoInline from "@/components/molecules/UserInfoInline.vue"
