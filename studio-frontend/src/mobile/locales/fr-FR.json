@@ -30,7 +30,9 @@
     "language": "Langue",
     "install": "Installer l'application",
     "full_version": "Version complète de Studio",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "delete_account": "Supprimer mon compte",
+    "delete_account_hint": "Dans les paramètres de LinTO Studio"
   },
   "login": {
     "title": "Connectez-vous pour continuer",

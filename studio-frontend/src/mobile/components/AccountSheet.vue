@@ -60,6 +60,17 @@
         @click="logout" />
     </div>
 
+    <!-- Account deletion lives in the classic app's settings: the row opens
+         them in the browser (store policies ask for a way from the app). -->
+    <div class="m-account__group">
+      <ListRow
+        icon="trash"
+        :label="$t('mobile.account.delete_account')"
+        :hint="$t('mobile.account.delete_account_hint')"
+        :href="deleteAccountUrl"
+        danger />
+    </div>
+
     <p class="m-muted m-account__version">LinTO Studio {{ version }}</p>
   </BottomSheet>
 </template>
@@ -71,6 +82,9 @@ import ListRow from "@/mobile/components/ListRow.vue"
 import { setLanguage } from "@/mobile/services/preferences/setLanguage.js"
 import { optOutOfMobileApp } from "@/mobile/services/preferences/optOutOfMobileApp.js"
 import { IS_NATIVE_APP, MOBILE_BASE } from "@/mobile/const/appTarget.js"
+import { loadSavedInstance } from "@/mobile/services/native/instanceStorage.js"
+
+const DELETE_ACCOUNT_PATH = "/interface/explore?settings=account-information"
 
 export default {
   name: "AccountSheet",
@@ -85,7 +99,14 @@ export default {
     canInstall: { type: Boolean, default: false },
   },
   data() {
-    return { isNativeApp: IS_NATIVE_APP }
+    return {
+      isNativeApp: IS_NATIVE_APP,
+      // The native app does not embed the classic app: it opens on the
+      // instance's website.
+      deleteAccountUrl: IS_NATIVE_APP
+        ? `${loadSavedInstance().address}${DELETE_ACCOUNT_PATH}`
+        : DELETE_ACCOUNT_PATH,
+    }
   },
   computed: {
     version() {

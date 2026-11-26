@@ -30,7 +30,9 @@
     "language": "Language",
     "install": "Install the app",
     "full_version": "Full Studio version",
-    "logout": "Log out"
+    "logout": "Log out",
+    "delete_account": "Delete my account",
+    "delete_account_hint": "In the LinTO Studio settings"
   },
   "login": {
     "title": "Sign in to continue",

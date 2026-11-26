@@ -2338,6 +2338,15 @@
   },
   "user_settings": {
     "change_password_label": "Change password",
+    "delete_account": {
+      "title": "Delete my account",
+      "description": "Your account and your personal data are permanently deleted.",
+      "button": "Delete my account",
+      "modal_title": "Delete your account?",
+      "modal_content": "This cannot be undone. The organizations you are the only administrator of are deleted with all their media, and their subscription is canceled. You are removed from the other organizations and from the media shared with you.",
+      "modal_action": "Delete permanently",
+      "notif_error": "The account could not be deleted"
+    },
     "email_label": "Email",
     "firstname_label": "Firstname",
     "invite_account_notif": "Please fill in the form and create a password in order to complete the creation of your account",

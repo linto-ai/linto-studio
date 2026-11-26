@@ -146,6 +146,7 @@
         <UserSettingsPersonal :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsVisibility :userInfo="user" v-if="isAuthenticated" />
         <UserSettingsPassword :userInfo="user" v-if="isAuthenticated" />
+        <UserSettingsDeleteAccount v-if="isAuthenticated" />
       </div>
       <div v-if="selectedTab === 'notifications'" class="app-settings__section">
         <UserSettingsNotifications :userInfo="user" v-if="isAuthenticated" />
@@ -229,6 +230,7 @@ import UserSettingsPersonal from "@/components/UserSettingsPersonal.vue"
 import UserSettingsPassword from "@/components/UserSettingsPassword.vue"
 import UserSettingsNotifications from "@/components/UserSettingsNotifications.vue"
 import UserSettingsVisibility from "@/components/UserSettingsVisibility.vue"
+import UserSettingsDeleteAccount from "@/components/UserSettingsDeleteAccount.vue"
 import UserSettingsAvatar from "@/components/UserSettingsAvatar.vue"
 import UserSettingsPreferences from "@/components/UserSettingsPreferences.vue"
 import TagManagement from "@/components/TagManagement.vue"
@@ -253,6 +255,7 @@ export default {
     UserSettingsPassword,
     UserSettingsNotifications,
     UserSettingsVisibility,
+    UserSettingsDeleteAccount,
     UserSettingsAvatar,
     UserSettingsPreferences,
     TagManagement,

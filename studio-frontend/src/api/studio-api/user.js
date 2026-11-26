@@ -208,6 +208,12 @@ export async function apiUpdateUserInfo(payload, notif) {
   )
 }
 
+// Deletes the logged-in user. The API also cancels the billing and deletes
+// the organizations the user is the last administrator of.
+export async function apiDeleteSelfUser() {
+  return await sendRequest(`${BASE_API}/users/self`, { method: "delete" })
+}
+
 export async function apiUpdateUserImage(file, notif) {
   let formData = new FormData()
   formData.append("file", file)

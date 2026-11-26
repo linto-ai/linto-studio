@@ -2,6 +2,7 @@ import {
   apiGetPersonalUserInfo,
   apiUpdateUserInfo,
   apiUpdateUserImage,
+  apiDeleteSelfUser,
   apiSetDefaultOrganization,
   apiUnsetDefaultOrganization,
 } from "@/api/studio-api/user"
@@ -44,6 +45,15 @@ const actions = {
       },
       { root: true },
     )
+  },
+  // The caller handles the reload, as for the logout
+  async deleteAccount({ dispatch }) {
+    const req = await apiDeleteSelfUser()
+    if (req.status === "success") {
+      await dispatch("auth/logout", null, { root: true })
+      dispatch("resetState")
+    }
+    return req
   },
   async register({ commit }, payload) {},
   // Closing OnboardingWizard.vue (any trigger) or leaving for Stripe marks

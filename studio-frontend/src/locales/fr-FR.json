@@ -2332,6 +2332,15 @@
   },
   "user_settings": {
     "change_password_label": "Modifier le mot de passe",
+    "delete_account": {
+      "title": "Supprimer mon compte",
+      "description": "Votre compte et vos données personnelles sont supprimés définitivement.",
+      "button": "Supprimer mon compte",
+      "modal_title": "Supprimer votre compte ?",
+      "modal_content": "Cette action est définitive. Les organisations dont vous êtes le seul administrateur sont supprimées avec tous leurs médias, et leur abonnement est résilié. Vous êtes retiré des autres organisations et des médias partagés avec vous.",
+      "modal_action": "Supprimer définitivement",
+      "notif_error": "Le compte n'a pas pu être supprimé"
+    },
     "email_label": "Adresse e-mail",
     "firstname_label": "Prénom",
     "invite_account_notif": "Veuillez remplir les champs suivants et créer un mot de passe afin de compléter la création de votre compte.",
