@@ -88,6 +88,7 @@
           </template>
           <template v-else>
             <FormInput
+              class="expiration-field"
               inputFullWidth
               :field="expirationField"
               v-model="expirationField.value"
@@ -632,6 +633,12 @@ export default {
 /* In the row of the date field, centred on it */
 .expiration-remove {
   align-self: center;
+}
+
+/* A date picked but not applied keeps its buttons once the focus has left:
+   hidden, they would leave the new date looking saved */
+.expiration-field.form-field--with-confirmation :deep(.form-field__actions) {
+  opacity: 1;
 }
 
 /* Next to the edge of the screen the tooltip folds on the room left */
